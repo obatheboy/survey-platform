@@ -32,14 +32,14 @@ exports.submitSurvey = async (req, res) => {
 
     await client.query("BEGIN");
 
-    /* 🔒 LOCK USER ROW */
+    /* 🔒 LOCK USER */
     const userResult = await client.query(
       `
       SELECT
         id,
         plan,
         surveys_completed,
-        locked_balance,
+        total_earned,
         is_activated
       FROM users
       WHERE id = $1
@@ -60,37 +60,37 @@ exports.submitSurvey = async (req, res) => {
     if (user.surveys_completed >= TOTAL_SURVEYS) {
       await client.query("ROLLBACK");
       return res.status(403).json({
-        message: "All surveys already completed",
+        message: "All surveys completed",
         activation_required: !user.is_activated,
       });
     }
 
-    /* 💰 APPLY SURVEY REWARD */
+    /* 💰 APPLY REWARD */
     const reward = PLAN_REWARDS[activePlan] || 0;
     const newCompleted = user.surveys_completed + 1;
-    const newLockedBalance = Number(user.locked_balance) + reward;
+    const newTotalEarned = Number(user.total_earned) + reward;
 
     await client.query(
       `
       UPDATE users
       SET
         surveys_completed = $1,
-        locked_balance = $2
+        total_earned = $2
       WHERE id = $3
       `,
-      [newCompleted, newLockedBalance, userId]
+      [newCompleted, newTotalEarned, userId]
     );
 
     await client.query("COMMIT");
 
-    /* ✅ SUCCESS */
+    /* ✅ SUCCESS RESPONSE */
     return res.json({
       message: "Survey completed",
       surveys_completed: newCompleted,
       earned_this_survey: reward,
-      locked_balance: newLockedBalance,
-      plan: activePlan,
+      total_earned: newTotalEarned,
       activation_required: newCompleted >= TOTAL_SURVEYS,
+      plan: activePlan,
       next_plan: getNextPlan(activePlan),
     });
   } catch (error) {
