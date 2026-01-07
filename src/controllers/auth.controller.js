@@ -5,6 +5,17 @@ const pool = require("../config/db");
 const TOTAL_SURVEYS = 10;
 
 /* ===============================
+   COOKIE CONFIG (VERCEL + RENDER)
+================================ */
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production", // ✅ HTTPS only in prod
+  sameSite: "none", // ✅ REQUIRED for cross-domain cookies
+  path: "/",
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+};
+
+/* ===============================
    REGISTER
 ================================ */
 exports.register = async (req, res) => {
@@ -29,7 +40,8 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await pool.query(
-      `INSERT INTO users (
+      `
+      INSERT INTO users (
         full_name,
         username,
         email,
@@ -55,7 +67,8 @@ exports.register = async (req, res) => {
         'REGULAR',
         false
       )
-      RETURNING id, full_name, username, email, role, status`,
+      RETURNING id, full_name, username, email, role, status
+      `,
       [fullName, username, email, phone, hashedPassword]
     );
 
@@ -78,9 +91,11 @@ exports.login = async (req, res) => {
     const { username, password } = req.body;
 
     const result = await pool.query(
-      `SELECT id, username, password, role, status
-       FROM users
-       WHERE username = $1`,
+      `
+      SELECT id, username, password, role, status
+      FROM users
+      WHERE username = $1
+      `,
       [username]
     );
 
@@ -96,21 +111,12 @@ exports.login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      {
-        id: user.id,
-        role: user.role,
-      },
+      { id: user.id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
     );
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: false, // true in production
-      path: "/",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie("token", token, COOKIE_OPTIONS);
 
     res.json({
       message: "Login successful",
@@ -131,15 +137,10 @@ exports.login = async (req, res) => {
    LOGOUT
 ================================ */
 exports.logout = (req, res) => {
-  res.clearCookie("token", {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: false,
-    path: "/",
-  });
-
+  res.clearCookie("token", COOKIE_OPTIONS);
   res.json({ message: "Logged out" });
 };
+
 /* ===============================
    GET ME
    🎯 FRONTEND FLOW CONTROLLER
@@ -176,11 +177,8 @@ exports.getMe = async (req, res) => {
     /* ===============================
        FLOW DECISION FLAGS
     ================================ */
-
     const activationRequired = surveysCompleted;
-
     const surveysOpen = !surveysCompleted;
-
     const allPlansCompleted = user.plan === "VVIP" && surveysCompleted;
 
     const canWithdraw =
@@ -199,15 +197,15 @@ exports.getMe = async (req, res) => {
       role: user.role,
       status: user.status,
 
-      // 🔑 PLAN STATE
+      // 🔑 PLAN
       plan: user.plan,
 
-      // 🔄 SURVEY STATE
+      // 🔄 SURVEYS
       completed_surveys: user.completed_surveys,
       surveys_open: surveysOpen,
       surveys_completed: surveysCompleted,
 
-      // 🔓 ACTIVATION STATE
+      // 🔓 ACTIVATION
       activation_required: activationRequired,
       all_plans_completed: allPlansCompleted,
 
