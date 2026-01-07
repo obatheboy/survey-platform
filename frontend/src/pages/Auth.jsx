@@ -19,9 +19,8 @@ export default function Auth() {
   ========================= */
   const [regData, setRegData] = useState({
     fullName: "",
-    username: "",
-    email: "",
     phone: "",
+    email: "",
     password: "",
     confirmPassword: "",
   });
@@ -31,7 +30,7 @@ export default function Auth() {
      LOGIN STATE
   ========================= */
   const [loginData, setLoginData] = useState({
-    username: "",
+    phone: "",
     password: "",
   });
   const [loginMessage, setLoginMessage] = useState("");
@@ -50,11 +49,11 @@ export default function Auth() {
 
     try {
       setLoading(true);
+
       await api.post("/auth/register", {
         fullName: regData.fullName,
-        username: regData.username,
-        email: regData.email,
         phone: regData.phone,
+        email: regData.email,
         password: regData.password,
       });
 
@@ -78,20 +77,16 @@ export default function Auth() {
       setLoading(true);
 
       await api.post("/auth/login", {
-        username: loginData.username,
+        phone: loginData.phone,
         password: loginData.password,
       });
 
       const meRes = await api.get("/auth/me");
       const user = meRes.data;
 
-      if (user.status === "SUSPENDED") {
-        setLoginMessage("🚫 Your account has been suspended. Contact support.");
-        return;
-      }
-
-      if (user.role === "admin") {
-        navigate("/admin", { replace: true });
+      // Simple flow control
+      if (user.is_activated) {
+        navigate("/dashboard", { replace: true });
       } else {
         navigate("/dashboard", { replace: true });
       }
@@ -128,26 +123,21 @@ export default function Auth() {
                 setRegData({ ...regData, fullName: e.target.value })
               }
             />
-            <Input
-              placeholder="Username"
-              value={regData.username}
-              onChange={(e) =>
-                setRegData({ ...regData, username: e.target.value })
-              }
-            />
-            <Input
-              type="email"
-              placeholder="Email"
-              value={regData.email}
-              onChange={(e) =>
-                setRegData({ ...regData, email: e.target.value })
-              }
-            />
+
             <Input
               placeholder="Phone Number"
               value={regData.phone}
               onChange={(e) =>
                 setRegData({ ...regData, phone: e.target.value })
+              }
+            />
+
+            <Input
+              type="email"
+              placeholder="Email (optional)"
+              value={regData.email}
+              onChange={(e) =>
+                setRegData({ ...regData, email: e.target.value })
               }
             />
 
@@ -193,10 +183,10 @@ export default function Auth() {
         {mode === "login" && (
           <form onSubmit={handleLogin}>
             <Input
-              placeholder="Username"
-              value={loginData.username}
+              placeholder="Phone Number"
+              value={loginData.phone}
               onChange={(e) =>
-                setLoginData({ ...loginData, username: e.target.value })
+                setLoginData({ ...loginData, phone: e.target.value })
               }
             />
 
