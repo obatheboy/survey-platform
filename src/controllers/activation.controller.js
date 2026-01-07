@@ -31,7 +31,7 @@ exports.submitActivationPayment = async (req, res) => {
 
     if (!paymentReference) {
       return res.status(400).json({
-        message: "Please enter the payment reference or message",
+        message: "Please enter the M-Pesa payment reference",
       });
     }
 
@@ -58,9 +58,9 @@ exports.submitActivationPayment = async (req, res) => {
     }
 
     const user = userResult.rows[0];
+    const currentPlan = user.plan || "REGULAR";
 
-   
-    /* 🚫 DUPLICATE PER PLAN */
+    /* 🚫 BLOCK DUPLICATE SUBMISSIONS */
     const existing = await client.query(
       `
       SELECT id
@@ -69,31 +69,38 @@ exports.submitActivationPayment = async (req, res) => {
         AND plan = $2
         AND status = 'SUBMITTED'
       `,
-      [userId, user.plan]
+      [userId, currentPlan]
     );
 
+    if (existing.rows.length) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        message: "You already submitted a payment for this plan",
+      });
+    }
 
-    /* 💰 ACTIVATION FEE */
-    const activationFee = PLAN_CONFIG[user.plan].activationFee;
+    /* 💰 SAFE ACTIVATION FEE */
+    const activationFee =
+      PLAN_CONFIG[currentPlan]?.activationFee || PLAN_CONFIG.REGULAR.activationFee;
 
     /* ✅ SAVE PAYMENT */
     await client.query(
       `
       INSERT INTO activation_payments
-      (user_id, plan, mpesa_code, amount, status)
+        (user_id, plan, mpesa_code, amount, status)
       VALUES ($1, $2, $3, $4, 'SUBMITTED')
       `,
-      [userId, user.plan, paymentReference, activationFee]
+      [userId, currentPlan, paymentReference, activationFee]
     );
 
-    const nextPlan = getNextPlan(user.plan);
+    const nextPlan = getNextPlan(currentPlan);
 
     /* ===============================
        PLAN TRANSITION LOGIC
     ================================ */
 
-    // 🔁 REGULAR / VIP → move immediately
     if (nextPlan) {
+      // REGULAR → VIP or VIP → VVIP
       await client.query(
         `
         UPDATE users
@@ -103,14 +110,12 @@ exports.submitActivationPayment = async (req, res) => {
         `,
         [nextPlan, userId]
       );
-    }
-
-    // 🎯 FINAL PLAN (VVIP)
-    if (!nextPlan) {
+    } else {
+      // FINAL PLAN (VVIP) → wait for admin
       await client.query(
         `
         UPDATE users
-        SET status = 'PENDING'
+        SET status = 'INACTIVE'
         WHERE id = $1
         `,
         [userId]
@@ -121,10 +126,10 @@ exports.submitActivationPayment = async (req, res) => {
 
     return res.json({
       message: nextPlan
-        ? "Payment submitted. Next plan unlocked."
-        : "Payment submitted. Awaiting account activation.",
+        ? "Payment submitted successfully. Next plan unlocked."
+        : "Payment submitted successfully. Awaiting admin approval.",
       activation_status: "SUBMITTED",
-      completed_plan: user.plan,
+      completed_plan: currentPlan,
       next_plan: nextPlan,
     });
   } catch (error) {
@@ -169,7 +174,7 @@ exports.approveActivation = async (req, res) => {
     if (activation.rows[0].status !== "SUBMITTED") {
       await client.query("ROLLBACK");
       return res.status(400).json({
-        message: "Activation request already processed",
+        message: "Activation already processed",
       });
     }
 
@@ -182,26 +187,24 @@ exports.approveActivation = async (req, res) => {
       [id]
     );
 
-    /* 🎯 FINAL APPROVAL UNLOCKS WITHDRAW */
+    /* 🎯 FINAL APPROVAL */
     if (activation.rows[0].plan === "VVIP") {
-  await client.query(
-    `
-    UPDATE users
-    SET status = 'ACTIVE',
-        plan_completed = true,
-        available_balance = locked_balance,
-        locked_balance = 0
-    WHERE id = $1
-    `,
-    [activation.rows[0].user_id]
-  );
-}
-
+      await client.query(
+        `
+        UPDATE users
+        SET status = 'ACTIVE',
+            available_balance = locked_balance,
+            locked_balance = 0
+        WHERE id = $1
+        `,
+        [activation.rows[0].user_id]
+      );
+    }
 
     await client.query("COMMIT");
 
     res.json({
-      message: "Activation approved",
+      message: "Activation approved successfully",
       status: "APPROVED",
     });
   } catch (error) {
@@ -246,7 +249,7 @@ exports.rejectActivation = async (req, res) => {
     if (activation.rows[0].status !== "SUBMITTED") {
       await client.query("ROLLBACK");
       return res.status(400).json({
-        message: "Activation request already processed",
+        message: "Activation already processed",
       });
     }
 
