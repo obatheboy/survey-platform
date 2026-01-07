@@ -1,10 +1,5 @@
 const pool = require("../config/db");
 
-const TOTAL_SURVEYS = 10;
-
-/* ===============================
-   PLAN ORDER & FEES
-================================ */
 const PLAN_ORDER = ["REGULAR", "VIP", "VVIP"];
 
 const PLAN_CONFIG = {
@@ -26,25 +21,17 @@ exports.submitActivationPayment = async (req, res) => {
 
   try {
     const userId = req.user.id;
-    const { mpesa_code } = req.body;
-    const paymentReference = String(mpesa_code || "").trim();
+    const paymentReference = String(req.body.mpesa_code || "").trim();
 
     if (!paymentReference) {
-      return res.status(400).json({
-        message: "Please enter the M-Pesa payment reference",
-      });
+      return res.status(400).json({ message: "Enter M-Pesa reference" });
     }
 
     await client.query("BEGIN");
 
-    /* 🔒 LOCK USER */
-    const userResult = await client.query(
+    const userRes = await client.query(
       `
-      SELECT id,
-             plan,
-             completed_surveys,
-             locked_balance,
-             status
+      SELECT plan, surveys_completed, is_activated
       FROM users
       WHERE id = $1
       FOR UPDATE
@@ -52,89 +39,62 @@ exports.submitActivationPayment = async (req, res) => {
       [userId]
     );
 
-    if (!userResult.rows.length) {
+    if (!userRes.rows.length) {
       await client.query("ROLLBACK");
       return res.status(404).json({ message: "User not found" });
     }
 
-    const user = userResult.rows[0];
+    const user = userRes.rows[0];
     const currentPlan = user.plan || "REGULAR";
 
-    /* 🚫 BLOCK DUPLICATE SUBMISSIONS */
-    const existing = await client.query(
+    /* 🚫 Must finish surveys first */
+    if (user.surveys_completed < 10) {
+      await client.query("ROLLBACK");
+      return res.status(403).json({
+        message: "Complete all surveys before activation",
+      });
+    }
+
+    /* 🚫 Block duplicate */
+    const dup = await client.query(
       `
       SELECT id
       FROM activation_payments
-      WHERE user_id = $1
-        AND plan = $2
-        AND status = 'SUBMITTED'
+      WHERE user_id = $1 AND plan = $2 AND status = 'SUBMITTED'
       `,
       [userId, currentPlan]
     );
 
-    if (existing.rows.length) {
+    if (dup.rows.length) {
       await client.query("ROLLBACK");
       return res.status(400).json({
-        message: "You already submitted a payment for this plan",
+        message: "Activation already submitted",
       });
     }
 
-    /* 💰 SAFE ACTIVATION FEE */
-    const activationFee =
-      PLAN_CONFIG[currentPlan]?.activationFee || PLAN_CONFIG.REGULAR.activationFee;
+    const fee =
+      PLAN_CONFIG[currentPlan]?.activationFee ||
+      PLAN_CONFIG.REGULAR.activationFee;
 
-    /* ✅ SAVE PAYMENT */
     await client.query(
       `
       INSERT INTO activation_payments
         (user_id, plan, mpesa_code, amount, status)
       VALUES ($1, $2, $3, $4, 'SUBMITTED')
       `,
-      [userId, currentPlan, paymentReference, activationFee]
+      [userId, currentPlan, paymentReference, fee]
     );
-
-    const nextPlan = getNextPlan(currentPlan);
-
-    /* ===============================
-       PLAN TRANSITION LOGIC
-    ================================ */
-
-    if (nextPlan) {
-      // REGULAR → VIP or VIP → VVIP
-      await client.query(
-        `
-        UPDATE users
-        SET plan = $1,
-            completed_surveys = 0
-        WHERE id = $2
-        `,
-        [nextPlan, userId]
-      );
-    } else {
-      // FINAL PLAN (VVIP) → wait for admin
-      await client.query(
-        `
-        UPDATE users
-        SET status = 'INACTIVE'
-        WHERE id = $1
-        `,
-        [userId]
-      );
-    }
 
     await client.query("COMMIT");
 
-    return res.json({
-      message: nextPlan
-        ? "Payment submitted successfully. Next plan unlocked."
-        : "Payment submitted successfully. Awaiting admin approval.",
-      activation_status: "SUBMITTED",
-      completed_plan: currentPlan,
-      next_plan: nextPlan,
+    res.json({
+      message: "Activation submitted successfully",
+      plan: currentPlan,
+      status: "SUBMITTED",
     });
-  } catch (error) {
+  } catch (err) {
     await client.query("ROLLBACK");
-    console.error("❌ Activation submit error:", error);
+    console.error("❌ Activation submit error:", err);
     res.status(500).json({ message: "Server error" });
   } finally {
     client.release();
@@ -149,14 +109,14 @@ exports.approveActivation = async (req, res) => {
 
   try {
     if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Admin access only" });
+      return res.status(403).json({ message: "Admin only" });
     }
 
     const { id } = req.params;
 
     await client.query("BEGIN");
 
-    const activation = await client.query(
+    const act = await client.query(
       `
       SELECT id, user_id, plan, status
       FROM activation_payments
@@ -166,17 +126,17 @@ exports.approveActivation = async (req, res) => {
       [id]
     );
 
-    if (!activation.rows.length) {
+    if (!act.rows.length) {
       await client.query("ROLLBACK");
-      return res.status(404).json({ message: "Activation request not found" });
+      return res.status(404).json({ message: "Not found" });
     }
 
-    if (activation.rows[0].status !== "SUBMITTED") {
+    if (act.rows[0].status !== "SUBMITTED") {
       await client.query("ROLLBACK");
-      return res.status(400).json({
-        message: "Activation already processed",
-      });
+      return res.status(400).json({ message: "Already processed" });
     }
+
+    const nextPlan = getNextPlan(act.rows[0].plan);
 
     await client.query(
       `
@@ -187,87 +147,27 @@ exports.approveActivation = async (req, res) => {
       [id]
     );
 
-    /* 🎯 FINAL APPROVAL */
-    if (activation.rows[0].plan === "VVIP") {
-      await client.query(
-        `
-        UPDATE users
-        SET status = 'ACTIVE',
-            available_balance = locked_balance,
-            locked_balance = 0
-        WHERE id = $1
-        `,
-        [activation.rows[0].user_id]
-      );
-    }
+    await client.query(
+      `
+      UPDATE users
+      SET
+        plan = $1,
+        surveys_completed = 0,
+        is_activated = true
+      WHERE id = $2
+      `,
+      [nextPlan, act.rows[0].user_id]
+    );
 
     await client.query("COMMIT");
 
     res.json({
-      message: "Activation approved successfully",
-      status: "APPROVED",
+      message: "Activation approved",
+      next_plan: nextPlan,
     });
-  } catch (error) {
+  } catch (err) {
     await client.query("ROLLBACK");
-    console.error("❌ Approve activation error:", error);
-    res.status(500).json({ message: "Server error" });
-  } finally {
-    client.release();
-  }
-};
-
-/* =====================================
-   ADMIN — REJECT ACTIVATION
-===================================== */
-exports.rejectActivation = async (req, res) => {
-  const client = await pool.connect();
-
-  try {
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Admin access only" });
-    }
-
-    const { id } = req.params;
-
-    await client.query("BEGIN");
-
-    const activation = await client.query(
-      `
-      SELECT id, status
-      FROM activation_payments
-      WHERE id = $1
-      FOR UPDATE
-      `,
-      [id]
-    );
-
-    if (!activation.rows.length) {
-      await client.query("ROLLBACK");
-      return res.status(404).json({ message: "Activation request not found" });
-    }
-
-    if (activation.rows[0].status !== "SUBMITTED") {
-      await client.query("ROLLBACK");
-      return res.status(400).json({
-        message: "Activation already processed",
-      });
-    }
-
-    await client.query(
-      `
-      UPDATE activation_payments
-      SET status = 'REJECTED'
-      WHERE id = $1
-      `,
-      [id]
-    );
-
-    await client.query("COMMIT");
-
-    res.json({ message: "Activation rejected successfully" });
-  } catch (error) {
-    await client.query("ROLLBACK");
-    console.error("❌ Reject activation error:", error);
+    console.error("❌ Approve error:", err);
     res.status(500).json({ message: "Server error" });
   } finally {
     client.release();
