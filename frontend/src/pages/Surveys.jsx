@@ -5,7 +5,7 @@ import api from "../api/api";
 const TOTAL_SURVEYS = 10;
 
 /* =========================
-   PLAN CONFIG
+   PLAN CONFIG (DISPLAY ONLY)
 ========================= */
 const PLAN_CONFIG = {
   REGULAR: { label: "Regular", perSurvey: 150 },
@@ -40,6 +40,9 @@ export default function Surveys() {
   const selectedPlanKey = localStorage.getItem("selectedPlan");
   const plan = PLAN_CONFIG[selectedPlanKey];
 
+  /* =========================
+     LOAD USER + DB STATE
+  ========================= */
   useEffect(() => {
     const load = async () => {
       try {
@@ -47,15 +50,17 @@ export default function Surveys() {
         const u = res.data;
         setUser(u);
 
+        // No plan selected → back to dashboard
         if (!selectedPlanKey || !plan) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        const key = `surveysDone_${u.id}_${selectedPlanKey}`;
-        if (!localStorage.getItem(key)) localStorage.setItem(key, "0");
-
-        if (Number(localStorage.getItem(key)) >= TOTAL_SURVEYS) {
+        // COMPLETED PLAN → never re-enter surveys
+        if (
+          u.plan === selectedPlanKey &&
+          u.surveys_completed >= TOTAL_SURVEYS
+        ) {
           navigate("/activation-notice", { replace: true });
           return;
         }
@@ -73,23 +78,37 @@ export default function Surveys() {
     return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
   }
 
-  const storageKey = `surveysDone_${user.id}_${selectedPlanKey}`;
-  const surveysDone = Number(localStorage.getItem(storageKey));
+  /* =========================
+     DB-BASED PROGRESS
+  ========================= */
+  const surveysDone =
+    user.plan === selectedPlanKey ? user.surveys_completed : 0;
+
   const currentQuestion = QUESTIONS[surveysDone];
   const earned = surveysDone * plan.perSurvey;
   const progress = ((surveysDone + 1) / TOTAL_SURVEYS) * 100;
 
+  /* =========================
+     SUBMIT ANSWER
+  ========================= */
   const handleNext = async () => {
-    if (selectedOption === null) return alert("Select an option");
+    if (selectedOption === null) {
+      alert("Select an option");
+      return;
+    }
 
     try {
       setSubmitting(true);
+
       await api.post("/surveys/submit");
 
-      const next = surveysDone + 1;
-      localStorage.setItem(storageKey, String(next));
+      // Reload user state from DB
+      const refreshed = await api.get("/auth/me");
+      const updatedUser = refreshed.data;
+      setUser(updatedUser);
 
-      if (next >= TOTAL_SURVEYS) {
+      // Completed → congratulations
+      if (updatedUser.surveys_completed >= TOTAL_SURVEYS) {
         navigate("/activation-notice", { replace: true });
         return;
       }
@@ -100,13 +119,18 @@ export default function Surveys() {
     }
   };
 
+  /* =========================
+     UI
+  ========================= */
   return (
     <div style={page}>
       <div style={card}>
         <h2 style={title}>📋 {plan.label} Survey</h2>
 
         <div style={meta}>
-          <span>Question {surveysDone + 1} / {TOTAL_SURVEYS}</span>
+          <span>
+            Question {surveysDone + 1} / {TOTAL_SURVEYS}
+          </span>
           <span>💰 KES {earned}</span>
         </div>
 

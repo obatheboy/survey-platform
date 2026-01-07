@@ -50,7 +50,7 @@ exports.register = async (req, res) => {
         total_earned,
         surveys_completed
       )
-      VALUES ($1, $2, $3, $4, 'REGULAR', false, 0, 0)
+      VALUES ($1, $2, $3, $4, NULL, false, 0, 0)
       RETURNING
         id,
         full_name,
@@ -177,11 +177,9 @@ exports.getMe = async (req, res) => {
       surveys_completed: user.surveys_completed,
       surveys_done: surveysCompleted,
 
-      activation_required: surveysCompleted && !user.is_activated,
-      can_withdraw: user.is_activated && user.total_earned > 0,
-
-      total_earned: user.total_earned,
+      // Backend exposes FACTS only
       is_activated: user.is_activated,
+      total_earned: user.total_earned,
     });
   } catch (error) {
     console.error("GET ME ERROR:", error);

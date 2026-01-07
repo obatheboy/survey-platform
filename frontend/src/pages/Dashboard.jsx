@@ -58,7 +58,6 @@ export default function Dashboard() {
      HELPERS (DB-BASED)
   ========================= */
 
-  // surveys are tracked PER ACTIVE PLAN in DB
   const getSurveysDone = (planKey) =>
     user.plan === planKey ? user.surveys_completed : 0;
 
@@ -77,7 +76,7 @@ export default function Dashboard() {
      ACTIONS
   ========================= */
   const startSurvey = (planKey) => {
-    // If this plan already completed → show activation notice
+    // COMPLETED PLAN → always go to Congratulations / Activation
     if (isPlanCompleted(planKey)) {
       navigate("/activation-notice", {
         state: { reason: "completed" },
@@ -85,11 +84,13 @@ export default function Dashboard() {
       return;
     }
 
+    // UI helper only (backend remains source of truth)
     localStorage.setItem("selectedPlan", planKey);
     navigate("/surveys");
   };
 
   const handleWithdraw = (planKey) => {
+    // NOT completed → guidance only, no blocking of surveys
     if (!isPlanCompleted(planKey)) {
       setToast("Complete surveys to unlock withdrawal");
       surveySectionRef.current?.scrollIntoView({
@@ -100,14 +101,10 @@ export default function Dashboard() {
       return;
     }
 
-    if (!user.is_activated) {
-      navigate("/activation-notice", {
-        state: { reason: "withdraw" },
-      });
-      return;
-    }
-
-    navigate("/withdraw");
+    // COMPLETED PLAN → ALWAYS go to Congratulations / Activation
+    navigate("/activation-notice", {
+      state: { reason: "withdraw" },
+    });
   };
 
   /* =========================

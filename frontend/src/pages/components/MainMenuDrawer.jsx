@@ -2,43 +2,40 @@ import { useNavigate } from "react-router-dom";
 import api from "../../api/api";
 
 /* =========================
-   PLAN CONFIG
+   PLAN CONFIG (DISPLAY ONLY)
 ========================= */
 const PLANS = {
-  REGULAR: { name: "Regular", perSurvey: 150, color: "#29b6f6" },
-  VIP: { name: "VIP", perSurvey: 200, color: "#ab47bc" },
-  VVIP: { name: "VVIP", perSurvey: 300, color: "#ffb300" },
+  REGULAR: { name: "Regular", color: "#29b6f6" },
+  VIP: { name: "VIP", color: "#ab47bc" },
+  VVIP: { name: "VVIP", color: "#ffb300" },
 };
 
 export default function MainMenuDrawer({ open, onClose, user }) {
   const navigate = useNavigate();
 
-  /* HELPERS */
-  const getSurveysDone = (key) =>
-    Number(localStorage.getItem(`surveysDone_${key}`) || 0);
-
-  const getEarned = (key) =>
-    getSurveysDone(key) * PLANS[key].perSurvey;
-
-  /* ACTIONS */
+  /* =========================
+     WITHDRAW (MATCH DASHBOARD)
+  ========================= */
   const handleWithdraw = (planKey) => {
-    const earned = getEarned(planKey);
-
-    if (earned === 0) {
-      alert("❌ You have no earnings for this plan.");
+    // 🔒 DB is source of truth
+    if (!user.total_earned || user.total_earned <= 0) {
+      alert("❌ You have no earnings to withdraw.");
       return;
     }
 
+    // Store plan ONLY for navigation context (UI helper)
     localStorage.setItem("selectedPlan", planKey);
     onClose();
 
-    if (user.status !== "ACTIVE") {
+    // 🔐 Activation required → Congratulations / Activation
+    if (user.activation_required) {
       navigate("/activation-notice", {
         state: { reason: "withdraw" },
       });
       return;
     }
 
+    // ✅ Activated → Withdraw
     navigate("/withdraw");
   };
 
@@ -74,12 +71,8 @@ export default function MainMenuDrawer({ open, onClose, user }) {
             <strong style={{ color: "#fff" }}>
               {user.full_name}
             </strong>
-            <span style={statusBadge}>
-              {user.status}
-            </span>
           </div>
 
-          {/* READ-ONLY PROFILE BUTTON */}
           <button
             style={profileBtnDisabled}
             disabled
@@ -107,7 +100,7 @@ export default function MainMenuDrawer({ open, onClose, user }) {
                 {plan.name}
               </strong>
               <p style={withdrawAmount}>
-                KES {getEarned(key).toLocaleString()}
+                KES {Number(user.total_earned || 0).toLocaleString()}
               </p>
             </div>
 
@@ -163,7 +156,6 @@ function MenuItem({ label, onClick, danger }) {
           ? "rgba(211,47,47,0.15)"
           : "rgba(255,255,255,0.08)",
         color: danger ? "#ff5252" : "#e3f2fd",
-        transition: "all 0.25s ease",
       }}
     >
       {label}
@@ -194,7 +186,6 @@ const drawer = {
   zIndex: 100,
   padding: 20,
   animation: "slideIn 0.3s ease-out",
-  boxShadow: "4px 0 30px rgba(0,0,0,0.6)",
 };
 
 const profileCard = {
@@ -214,17 +205,6 @@ const avatar = {
   alignItems: "center",
   justifyContent: "center",
   fontWeight: 800,
-  boxShadow: "0 0 18px rgba(216,27,96,0.6)",
-};
-
-const statusBadge = {
-  display: "inline-block",
-  marginTop: 4,
-  fontSize: 11,
-  padding: "2px 10px",
-  borderRadius: 999,
-  background: "rgba(0,255,200,0.15)",
-  color: "#00e5ff",
 };
 
 const profileBtnDisabled = {
@@ -234,7 +214,6 @@ const profileBtnDisabled = {
   padding: "6px 12px",
   borderRadius: 10,
   fontSize: 12,
-  cursor: "not-allowed",
 };
 
 const divider = {

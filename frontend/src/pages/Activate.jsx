@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/api";
 
 /* =========================
@@ -7,6 +7,7 @@ import api from "../api/api";
 ========================= */
 const TILL_NUMBER = "5628444";
 const TILL_NAME = "MOONLIGHT ENTERPRISE";
+const TOTAL_SURVEYS = 10;
 
 /* =========================
    PLAN CONFIG
@@ -37,6 +38,7 @@ const PLAN_CONFIG = {
 
 export default function Activate() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [user, setUser] = useState(null);
   const [planKey, setPlanKey] = useState(null);
@@ -46,27 +48,42 @@ export default function Activate() {
   const [loading, setLoading] = useState(true);
 
   /* =========================
-     LOAD USER
+     LOAD + VALIDATE ACCESS
   ========================= */
   useEffect(() => {
     const load = async () => {
       try {
         const res = await api.get("/auth/me");
         const u = res.data;
+        setUser(u);
 
-        let resolvedPlan = localStorage.getItem("selectedPlan");
+        const reason = location.state?.reason;
 
-        if (!resolvedPlan && u.plan && PLAN_CONFIG[u.plan]) {
-          resolvedPlan = u.plan;
-        }
-
-        if (!resolvedPlan || !PLAN_CONFIG[resolvedPlan]) {
+        // Plan must exist in DB
+        if (!u.plan || !PLAN_CONFIG[u.plan]) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        setUser(u);
-        setPlanKey(resolvedPlan);
+        // Activation only allowed AFTER plan completion
+        if (u.surveys_completed < TOTAL_SURVEYS) {
+          navigate("/dashboard", { replace: true });
+          return;
+        }
+
+        // If already activated → nothing to do here
+        if (u.is_activated) {
+          navigate("/dashboard", { replace: true });
+          return;
+        }
+
+        // Reason must be valid entry
+        if (reason !== "completed" && reason !== "withdraw") {
+          navigate("/dashboard", { replace: true });
+          return;
+        }
+
+        setPlanKey(u.plan);
       } catch {
         navigate("/auth", { replace: true });
       } finally {
@@ -75,7 +92,7 @@ export default function Activate() {
     };
 
     load();
-  }, [navigate]);
+  }, [navigate, location.state]);
 
   if (loading) {
     return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
@@ -106,7 +123,7 @@ export default function Activate() {
       localStorage.removeItem("selectedPlan");
 
       setMessage(
-        "⚠️ Enter the correct payment message.\n\nFake submissions can lead to suspension.\nIf wrong, pay again and submit the correct M-Pesa message."
+        "✅ Payment submitted.\n\nYour activation is pending admin approval.\nYou can continue doing other surveys while waiting."
       );
     } catch (err) {
       setMessage(
@@ -129,11 +146,11 @@ export default function Activate() {
         }}
       >
         <h2 style={{ textAlign: "center", color: plan.color }}>
-          🔐 Activate {plan.label} Plan
+          🎉 Congratulations!
         </h2>
 
-        <p style={{ textAlign: "center", opacity: 0.85, marginTop: 6 }}>
-          One-time activation unlocks withdrawals & earnings
+        <p style={{ textAlign: "center", marginTop: 6 }}>
+          You have completed the <b>{plan.label}</b> survey plan.
         </p>
 
         <h3 style={{ textAlign: "center", marginTop: 14 }}>
@@ -143,55 +160,27 @@ export default function Activate() {
           </span>
         </h3>
 
-        {/* WHY SECTION */}
         <div style={sectionHighlight}>
           <p style={{ fontWeight: 700, marginBottom: 8, color: "red" }}>
-            🔒 Why Activation Is Required
+            🔐 Activation Required to Withdraw
           </p>
 
           <p>✔ Secures your withdrawals</p>
           <p>✔ Prevents fraud & fake accounts</p>
-          <p>✔ Faster approval</p>
           <p>✔ One-time fee per plan</p>
         </div>
 
-        {/* PAYMENT INFO */}
         <div style={section}>
+          <p><b>Till Name:</b> {TILL_NAME}</p>
+          <p><b>Till Number:</b> {TILL_NUMBER}</p>
           <p>
-            <b style={{ color: "#10d8dfff" }}>Till Name:</b>{" "}
-            {TILL_NAME}
-          </p>
-
-          <p>
-            <b style={{ color: "#10d8dfff" }}>Till Number:</b>{" "}
-            {TILL_NUMBER}
-          </p>
-
-          <p>
-            <b style={{ color: "#00b7ffff" }}>Activation Fee:</b>{" "}
+            <b>Activation Fee:</b>{" "}
             <span style={{ color: plan.color }}>
               KES {plan.activationFee}
             </span>
           </p>
         </div>
 
-        {/* STEP GUIDE */}
-        <div style={sectionHighlight}>
-          <p style={{ fontWeight: 800, marginBottom: 10, color: "#00ffcc" }}>
-            📲 How to Pay Using Lipa na M-Pesa (Till)
-          </p>
-
-          <p>1️⃣ Go to <b>M-Pesa</b> on your phone</p>
-          <p>2️⃣ Select <b>Lipa na M-Pesa</b></p>
-          <p>3️⃣ Choose <b>Buy Goods and Services</b></p>
-          <p>4️⃣ Enter Till Number: <b>{TILL_NUMBER}</b></p>
-          <p>5️⃣ Enter Amount: <b>KES {plan.activationFee}</b></p>
-          <p>6️⃣ Enter your <b>M-Pesa PIN</b> and confirm</p>
-          <p>7️⃣ Copy the <b>M-Pesa confirmation message</b></p>
-          <p>8️⃣ Paste it below and submit for approval ✅</p>
-        </div>
-
-        {/* INPUT */}
         <textarea
           placeholder="Paste M-Pesa confirmation message or transaction code"
           value={paymentText}
@@ -201,7 +190,6 @@ export default function Activate() {
           style={input}
         />
 
-        {/* SUBMIT BUTTON */}
         <button
           onClick={submitActivation}
           disabled={submitting}
@@ -216,10 +204,8 @@ export default function Activate() {
           {submitting ? "Submitting…" : "Submit for Approval"}
         </button>
 
-        {/* MESSAGE */}
         {message && <pre style={messageBox}>{message}</pre>}
 
-        {/* GO TO DASHBOARD */}
         <button
           onClick={() => navigate("/dashboard")}
           style={{

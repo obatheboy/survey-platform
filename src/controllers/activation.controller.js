@@ -47,6 +47,14 @@ exports.submitActivationPayment = async (req, res) => {
 
     const user = rows[0];
 
+    /* 🚫 NO PLAN → NO ACTIVATION */
+    if (!user.plan || !PLAN_CONFIG[user.plan]) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        message: "No active plan found for activation",
+      });
+    }
+
     /* 🚫 ALREADY ACTIVATED */
     if (user.is_activated) {
       await client.query("ROLLBACK");
@@ -73,8 +81,7 @@ exports.submitActivationPayment = async (req, res) => {
       });
     }
 
-    const activationFee =
-      PLAN_CONFIG[user.plan] || PLAN_CONFIG.REGULAR;
+    const activationFee = PLAN_CONFIG[user.plan];
 
     /* ✅ SAVE PAYMENT */
     await client.query(
@@ -183,14 +190,21 @@ exports.rejectActivation = async (req, res) => {
 
     await client.query("BEGIN");
 
-    await client.query(
+    const result = await client.query(
       `
       UPDATE activation_payments
       SET status = 'REJECTED'
-      WHERE id = $1 AND status = 'SUBMITTED'
+      WHERE id = $1
+        AND status = 'SUBMITTED'
+      RETURNING id
       `,
       [id]
     );
+
+    if (!result.rows.length) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ message: "Activation request not found or already processed" });
+    }
 
     await client.query("COMMIT");
 
