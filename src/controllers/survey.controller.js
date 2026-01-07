@@ -32,14 +32,15 @@ exports.submitSurvey = async (req, res) => {
 
     await client.query("BEGIN");
 
-    /* 🔒 LOCK USER ROW */
+    /* 🔒 LOCK USER */
     const userResult = await client.query(
       `
       SELECT
         id,
         plan,
+        status,
         surveys_completed,
-        total_earned,
+        locked_balance,
         is_activated
       FROM users
       WHERE id = $1
@@ -56,7 +57,16 @@ exports.submitSurvey = async (req, res) => {
     const user = userResult.rows[0];
     const activePlan = user.plan || "REGULAR";
 
-    /* ⛔ STOP IF ALREADY COMPLETED ALL SURVEYS */
+    /* 🚫 BLOCK SUSPENDED USERS */
+    if (user.status === "SUSPENDED") {
+      await client.query("ROLLBACK");
+      return res.status(403).json({
+        message: "Account suspended",
+        survey_access: "LOCKED",
+      });
+    }
+
+    /* ⛔ STOP IF SURVEYS COMPLETED */
     if (user.surveys_completed >= TOTAL_SURVEYS) {
       await client.query("ROLLBACK");
       return res.status(403).json({
@@ -65,34 +75,30 @@ exports.submitSurvey = async (req, res) => {
       });
     }
 
-    /* ===============================
-       APPLY SURVEY REWARD
-    ================================ */
+    /* 💰 APPLY SURVEY REWARD */
     const reward = PLAN_REWARDS[activePlan] || 0;
     const newCompleted = user.surveys_completed + 1;
-    const newTotalEarned = Number(user.total_earned) + reward;
+    const newLockedBalance = Number(user.locked_balance) + reward;
 
     await client.query(
       `
       UPDATE users
       SET
         surveys_completed = $1,
-        total_earned = $2
+        locked_balance = $2
       WHERE id = $3
       `,
-      [newCompleted, newTotalEarned, userId]
+      [newCompleted, newLockedBalance, userId]
     );
 
     await client.query("COMMIT");
 
-    /* ===============================
-       RESPONSE (SUCCESS)
-    ================================ */
+    /* ✅ SUCCESS RESPONSE */
     return res.json({
       message: "Survey completed",
       surveys_completed: newCompleted,
       earned_this_survey: reward,
-      total_earned: newTotalEarned,
+      locked_balance: newLockedBalance,
       plan: activePlan,
       activation_required: newCompleted >= TOTAL_SURVEYS,
       next_plan: getNextPlan(activePlan),
