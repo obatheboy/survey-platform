@@ -14,3 +14,16 @@ yarn-error.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# accidental editor artifacts
+*
+!src/
+!routes/
+!controllers/
+!middlewares/
+!config/
+!package.json
+!package-lock.json
+!.gitignore
+!server.js
+!app.js
