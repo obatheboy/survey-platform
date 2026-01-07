@@ -61,18 +61,14 @@ export default function Auth() {
       setRegMessage("✅ Account created. Please login.");
       setMode("login");
     } catch (err) {
-      setRegMessage(
-        err.response?.data?.message || "Registration failed"
-      );
+      setRegMessage(err.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
     }
   };
 
   /* =========================
-     LOGIN (COOKIE BASED)
-     ✅ INACTIVE USERS CAN LOGIN
-     ❌ ONLY SUSPENDED USERS BLOCKED
+     LOGIN
   ========================= */
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -81,206 +77,177 @@ export default function Auth() {
     try {
       setLoading(true);
 
-      // 1️⃣ Login → sets HttpOnly cookie
       await api.post("/auth/login", {
         username: loginData.username,
         password: loginData.password,
       });
 
-      // 2️⃣ Fetch session
       const meRes = await api.get("/auth/me");
       const user = meRes.data;
 
-      // 3️⃣ ONLY block suspended users
       if (user.status === "SUSPENDED") {
-        setLoginMessage(
-          "🚫 Your account has been suspended. Contact support."
-        );
+        setLoginMessage("🚫 Your account has been suspended. Contact support.");
         return;
       }
 
-      // 4️⃣ Redirect by role
       if (user.role === "admin") {
         navigate("/admin", { replace: true });
       } else {
         navigate("/dashboard", { replace: true });
       }
     } catch (err) {
-      setLoginMessage(
-        err.response?.data?.message || "Invalid username or password"
-      );
+      setLoginMessage(err.response?.data?.message || "Invalid credentials");
     } finally {
       setLoading(false);
     }
   };
 
-  /* =========================
-     UI
-  ========================= */
   return (
-    <div
-      style={{
-        maxWidth: "420px",
-        margin: "80px auto",
-        padding: "30px",
-        border: "1px solid #ddd",
-        borderRadius: "8px",
-        opacity: loading ? 0.7 : 1,
-        pointerEvents: loading ? "none" : "auto",
-      }}
-    >
-      <h1 style={{ textAlign: "center" }}>Survey Platform</h1>
+    <div style={page}>
+      <div
+        style={{
+          ...card,
+          opacity: loading ? 0.75 : 1,
+          pointerEvents: loading ? "none" : "auto",
+        }}
+      >
+        <h1 style={logo}>Survey Platform</h1>
+        <p style={subtitle}>
+          {mode === "register"
+            ? "Create your account to start earning"
+            : "Welcome back, login to continue"}
+        </p>
 
-      {/* ================= REGISTER ================= */}
-      {mode === "register" && (
-        <form onSubmit={handleRegister}>
-          <h2>Create Account</h2>
+        {/* ================= REGISTER ================= */}
+        {mode === "register" && (
+          <form onSubmit={handleRegister}>
+            <Input
+              placeholder="Full Name"
+              value={regData.fullName}
+              onChange={(e) =>
+                setRegData({ ...regData, fullName: e.target.value })
+              }
+            />
+            <Input
+              placeholder="Username"
+              value={regData.username}
+              onChange={(e) =>
+                setRegData({ ...regData, username: e.target.value })
+              }
+            />
+            <Input
+              type="email"
+              placeholder="Email"
+              value={regData.email}
+              onChange={(e) =>
+                setRegData({ ...regData, email: e.target.value })
+              }
+            />
+            <Input
+              placeholder="Phone Number"
+              value={regData.phone}
+              onChange={(e) =>
+                setRegData({ ...regData, phone: e.target.value })
+              }
+            />
 
-          <input
-            placeholder="Full Name"
-            value={regData.fullName}
-            onChange={(e) =>
-              setRegData({ ...regData, fullName: e.target.value })
-            }
-            required
-          />
-
-          <input
-            placeholder="Username"
-            value={regData.username}
-            onChange={(e) =>
-              setRegData({ ...regData, username: e.target.value })
-            }
-            required
-          />
-
-          <input
-            type="email"
-            placeholder="Email"
-            value={regData.email}
-            onChange={(e) =>
-              setRegData({ ...regData, email: e.target.value })
-            }
-            required
-          />
-
-          <input
-            placeholder="Phone Number"
-            value={regData.phone}
-            onChange={(e) =>
-              setRegData({ ...regData, phone: e.target.value })
-            }
-            required
-          />
-
-          <div style={{ position: "relative" }}>
-            <input
-              type={showRegPassword ? "text" : "password"}
+            <PasswordInput
               placeholder="Password"
               value={regData.password}
+              show={showRegPassword}
+              toggle={() => setShowRegPassword(!showRegPassword)}
               onChange={(e) =>
                 setRegData({ ...regData, password: e.target.value })
               }
-              required
             />
-            <span
-              style={eyeStyle}
-              onClick={() => setShowRegPassword(!showRegPassword)}
-            >
-              👁
-            </span>
-          </div>
 
-          <div style={{ position: "relative" }}>
-            <input
-              type={showRegConfirm ? "text" : "password"}
+            <PasswordInput
               placeholder="Confirm Password"
               value={regData.confirmPassword}
+              show={showRegConfirm}
+              toggle={() => setShowRegConfirm(!showRegConfirm)}
               onChange={(e) =>
                 setRegData({
                   ...regData,
                   confirmPassword: e.target.value,
                 })
               }
-              required
             />
-            <span
-              style={eyeStyle}
-              onClick={() => setShowRegConfirm(!showRegConfirm)}
-            >
-              👁
-            </span>
-          </div>
 
-          <button type="submit" style={{ width: "100%" }}>
-            {loading ? "Creating..." : "Create Account"}
-          </button>
+            <button style={button} type="submit">
+              {loading ? "Creating..." : "Create Account"}
+            </button>
 
-          {regMessage && <p>{regMessage}</p>}
+            {regMessage && <p style={message}>{regMessage}</p>}
 
-          <p style={{ marginTop: "15px", textAlign: "center" }}>
-            Already have an account?{" "}
-            <span style={linkStyle} onClick={() => setMode("login")}>
-              Login
-            </span>
-          </p>
-        </form>
-      )}
+            <p style={switchText}>
+              Already have an account?{" "}
+              <span style={link} onClick={() => setMode("login")}>
+                Login
+              </span>
+            </p>
+          </form>
+        )}
 
-      {/* ================= LOGIN ================= */}
-      {mode === "login" && (
-        <form onSubmit={handleLogin}>
-          <h2>Login</h2>
+        {/* ================= LOGIN ================= */}
+        {mode === "login" && (
+          <form onSubmit={handleLogin}>
+            <Input
+              placeholder="Username"
+              value={loginData.username}
+              onChange={(e) =>
+                setLoginData({ ...loginData, username: e.target.value })
+              }
+            />
 
-          <input
-            placeholder="Username"
-            value={loginData.username}
-            onChange={(e) =>
-              setLoginData({
-                ...loginData,
-                username: e.target.value,
-              })
-            }
-            required
-          />
-
-          <div style={{ position: "relative" }}>
-            <input
-              type={showLoginPassword ? "text" : "password"}
+            <PasswordInput
               placeholder="Password"
               value={loginData.password}
+              show={showLoginPassword}
+              toggle={() => setShowLoginPassword(!showLoginPassword)}
               onChange={(e) =>
-                setLoginData({
-                  ...loginData,
-                  password: e.target.value,
-                })
+                setLoginData({ ...loginData, password: e.target.value })
               }
-              required
             />
-            <span
-              style={eyeStyle}
-              onClick={() =>
-                setShowLoginPassword(!showLoginPassword)
-              }
-            >
-              👁
-            </span>
-          </div>
 
-          <button type="submit" style={{ width: "100%" }}>
-            {loading ? "Logging in..." : "Login"}
-          </button>
+            <button style={button} type="submit">
+              {loading ? "Logging in..." : "Login"}
+            </button>
 
-          {loginMessage && <p>{loginMessage}</p>}
+            {loginMessage && <p style={message}>{loginMessage}</p>}
 
-          <p style={{ marginTop: "10px", textAlign: "center" }}>
-            Don’t have an account?{" "}
-            <span style={linkStyle} onClick={() => setMode("register")}>
-              Create one
-            </span>
-          </p>
-        </form>
-      )}
+            <p style={switchText}>
+              Don’t have an account?{" "}
+              <span style={link} onClick={() => setMode("register")}>
+                Create one
+              </span>
+            </p>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* =========================
+   REUSABLE INPUTS
+========================= */
+function Input({ type = "text", ...props }) {
+  return <input type={type} style={input} required {...props} />;
+}
+
+function PasswordInput({ show, toggle, ...props }) {
+  return (
+    <div style={passwordWrap}>
+      <input
+        {...props}
+        required
+        type={show ? "text" : "password"}
+        style={input}
+      />
+      <span style={eye} onClick={toggle}>
+        👁
+      </span>
     </div>
   );
 }
@@ -288,15 +255,84 @@ export default function Auth() {
 /* =========================
    STYLES
 ========================= */
-const eyeStyle = {
+const page = {
+  minHeight: "100vh",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  background: "linear-gradient(135deg, #0f2027, #203a43, #2c5364)",
+  padding: "20px",
+};
+
+const card = {
+  width: "100%",
+  maxWidth: "420px",
+  background: "#fff",
+  padding: "32px",
+  borderRadius: "16px",
+  boxShadow: "0 25px 60px rgba(0,0,0,0.25)",
+};
+
+const logo = {
+  textAlign: "center",
+  marginBottom: "6px",
+  color: "#2c5364",
+};
+
+const subtitle = {
+  textAlign: "center",
+  fontSize: "14px",
+  color: "#555",
+  marginBottom: "24px",
+};
+
+const input = {
+  width: "100%",
+  padding: "12px 14px",
+  marginBottom: "14px",
+  borderRadius: "8px",
+  border: "1px solid #ccc",
+  fontSize: "14px",
+};
+
+const passwordWrap = {
+  position: "relative",
+};
+
+const eye = {
   position: "absolute",
-  right: "10px",
+  right: "12px",
   top: "50%",
   transform: "translateY(-50%)",
   cursor: "pointer",
 };
 
-const linkStyle = {
-  color: "blue",
+const button = {
+  width: "100%",
+  padding: "12px",
+  borderRadius: "8px",
+  border: "none",
+  background: "#2c5364",
+  color: "#fff",
+  fontWeight: "bold",
+  cursor: "pointer",
+  marginTop: "6px",
+};
+
+const message = {
+  marginTop: "12px",
+  fontSize: "14px",
+  textAlign: "center",
+};
+
+const switchText = {
+  marginTop: "18px",
+  textAlign: "center",
+  fontSize: "14px",
+};
+
+const link = {
+  color: "#2c5364",
+  fontWeight: "bold",
   cursor: "pointer",
 };
