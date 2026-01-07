@@ -1,37 +1,38 @@
 const pool = require("../config/db");
 
-const PLAN_ORDER = ["REGULAR", "VIP", "VVIP"];
-
+/* ===============================
+   PLAN FEES (DISPLAY ONLY)
+================================ */
 const PLAN_CONFIG = {
-  REGULAR: { activationFee: 100 },
-  VIP: { activationFee: 150 },
-  VVIP: { activationFee: 200 },
-};
-
-const getNextPlan = (plan) => {
-  const index = PLAN_ORDER.indexOf(plan);
-  return PLAN_ORDER[index + 1] || null;
+  REGULAR: 100,
+  VIP: 150,
+  VVIP: 200,
 };
 
 /* =====================================
    USER — SUBMIT ACTIVATION PAYMENT
+   (WITHDRAWAL UNLOCK ONLY)
 ===================================== */
 exports.submitActivationPayment = async (req, res) => {
   const client = await pool.connect();
 
   try {
     const userId = req.user.id;
-    const paymentReference = String(req.body.mpesa_code || "").trim();
+    const { mpesa_code } = req.body;
+    const paymentReference = String(mpesa_code || "").trim();
 
     if (!paymentReference) {
-      return res.status(400).json({ message: "Enter M-Pesa reference" });
+      return res.status(400).json({
+        message: "Please enter the M-Pesa payment reference",
+      });
     }
 
     await client.query("BEGIN");
 
-    const userRes = await client.query(
+    /* 🔒 LOCK USER */
+    const { rows } = await client.query(
       `
-      SELECT plan, surveys_completed, is_activated
+      SELECT id, plan, is_activated
       FROM users
       WHERE id = $1
       FOR UPDATE
@@ -39,62 +40,61 @@ exports.submitActivationPayment = async (req, res) => {
       [userId]
     );
 
-    if (!userRes.rows.length) {
+    if (!rows.length) {
       await client.query("ROLLBACK");
       return res.status(404).json({ message: "User not found" });
     }
 
-    const user = userRes.rows[0];
-    const currentPlan = user.plan || "REGULAR";
+    const user = rows[0];
 
-    /* 🚫 Must finish surveys first */
-    if (user.surveys_completed < 10) {
+    /* 🚫 ALREADY ACTIVATED */
+    if (user.is_activated) {
       await client.query("ROLLBACK");
-      return res.status(403).json({
-        message: "Complete all surveys before activation",
+      return res.status(400).json({
+        message: "Account already activated",
       });
     }
 
-    /* 🚫 Block duplicate */
-    const dup = await client.query(
+    /* 🚫 DUPLICATE SUBMISSION */
+    const existing = await client.query(
       `
       SELECT id
       FROM activation_payments
-      WHERE user_id = $1 AND plan = $2 AND status = 'SUBMITTED'
+      WHERE user_id = $1
+        AND status = 'SUBMITTED'
       `,
-      [userId, currentPlan]
+      [userId]
     );
 
-    if (dup.rows.length) {
+    if (existing.rows.length) {
       await client.query("ROLLBACK");
       return res.status(400).json({
-        message: "Activation already submitted",
+        message: "Activation already submitted and pending review",
       });
     }
 
-    const fee =
-      PLAN_CONFIG[currentPlan]?.activationFee ||
-      PLAN_CONFIG.REGULAR.activationFee;
+    const activationFee =
+      PLAN_CONFIG[user.plan] || PLAN_CONFIG.REGULAR;
 
+    /* ✅ SAVE PAYMENT */
     await client.query(
       `
       INSERT INTO activation_payments
         (user_id, plan, mpesa_code, amount, status)
       VALUES ($1, $2, $3, $4, 'SUBMITTED')
       `,
-      [userId, currentPlan, paymentReference, fee]
+      [userId, user.plan, paymentReference, activationFee]
     );
 
     await client.query("COMMIT");
 
-    res.json({
-      message: "Activation submitted successfully",
-      plan: currentPlan,
-      status: "SUBMITTED",
+    return res.json({
+      message: "Payment submitted successfully. Awaiting approval.",
+      activation_status: "SUBMITTED",
     });
-  } catch (err) {
+  } catch (error) {
     await client.query("ROLLBACK");
-    console.error("❌ Activation submit error:", err);
+    console.error("❌ Activation submit error:", error);
     res.status(500).json({ message: "Server error" });
   } finally {
     client.release();
@@ -109,16 +109,16 @@ exports.approveActivation = async (req, res) => {
 
   try {
     if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Admin only" });
+      return res.status(403).json({ message: "Admin access only" });
     }
 
     const { id } = req.params;
 
     await client.query("BEGIN");
 
-    const act = await client.query(
+    const activation = await client.query(
       `
-      SELECT id, user_id, plan, status
+      SELECT id, user_id, status
       FROM activation_payments
       WHERE id = $1
       FOR UPDATE
@@ -126,18 +126,17 @@ exports.approveActivation = async (req, res) => {
       [id]
     );
 
-    if (!act.rows.length) {
+    if (!activation.rows.length) {
       await client.query("ROLLBACK");
-      return res.status(404).json({ message: "Not found" });
+      return res.status(404).json({ message: "Activation request not found" });
     }
 
-    if (act.rows[0].status !== "SUBMITTED") {
+    if (activation.rows[0].status !== "SUBMITTED") {
       await client.query("ROLLBACK");
       return res.status(400).json({ message: "Already processed" });
     }
 
-    const nextPlan = getNextPlan(act.rows[0].plan);
-
+    /* ✅ APPROVE */
     await client.query(
       `
       UPDATE activation_payments
@@ -147,27 +146,58 @@ exports.approveActivation = async (req, res) => {
       [id]
     );
 
+    /* 🔓 UNLOCK WITHDRAWALS */
     await client.query(
       `
       UPDATE users
-      SET
-        plan = $1,
-        surveys_completed = 0,
-        is_activated = true
-      WHERE id = $2
+      SET is_activated = true
+      WHERE id = $1
       `,
-      [nextPlan, act.rows[0].user_id]
+      [activation.rows[0].user_id]
     );
 
     await client.query("COMMIT");
 
-    res.json({
-      message: "Activation approved",
-      next_plan: nextPlan,
-    });
-  } catch (err) {
+    res.json({ message: "Activation approved" });
+  } catch (error) {
     await client.query("ROLLBACK");
-    console.error("❌ Approve error:", err);
+    console.error("❌ Approve activation error:", error);
+    res.status(500).json({ message: "Server error" });
+  } finally {
+    client.release();
+  }
+};
+
+/* =====================================
+   ADMIN — REJECT ACTIVATION
+===================================== */
+exports.rejectActivation = async (req, res) => {
+  const client = await pool.connect();
+
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Admin access only" });
+    }
+
+    const { id } = req.params;
+
+    await client.query("BEGIN");
+
+    await client.query(
+      `
+      UPDATE activation_payments
+      SET status = 'REJECTED'
+      WHERE id = $1 AND status = 'SUBMITTED'
+      `,
+      [id]
+    );
+
+    await client.query("COMMIT");
+
+    res.json({ message: "Activation rejected" });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("❌ Reject activation error:", error);
     res.status(500).json({ message: "Server error" });
   } finally {
     client.release();
