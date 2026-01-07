@@ -52,8 +52,9 @@ export default function Auth() {
 
       await api.post("/auth/register", {
         fullName: regData.fullName,
+        username: regData.phone, // ✅ REQUIRED BY BACKEND
         phone: regData.phone,
-        email: regData.email,
+        email: regData.email || null,
         password: regData.password,
       });
 
@@ -76,22 +77,25 @@ export default function Auth() {
     try {
       setLoading(true);
 
+      // 🔐 LOGIN (sets HttpOnly cookie)
       await api.post("/auth/login", {
         phone: loginData.phone,
         password: loginData.password,
       });
 
+      // 🔍 VERIFY SESSION
       const meRes = await api.get("/auth/me");
       const user = meRes.data;
 
-      // Simple flow control
-      if (user.is_activated) {
-        navigate("/dashboard", { replace: true });
-      } else {
-        navigate("/dashboard", { replace: true });
+      if (!user?.id) {
+        throw new Error("Session not established");
       }
+
+      navigate("/dashboard", { replace: true });
     } catch (err) {
-      setLoginMessage(err.response?.data?.message || "Invalid credentials");
+      setLoginMessage(
+        err.response?.data?.message || "Login failed. Try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -102,7 +106,7 @@ export default function Auth() {
       <div
         style={{
           ...card,
-          opacity: loading ? 0.75 : 1,
+          opacity: loading ? 0.7 : 1,
           pointerEvents: loading ? "none" : "auto",
         }}
       >
@@ -135,6 +139,7 @@ export default function Auth() {
             <Input
               type="email"
               placeholder="Email (optional)"
+              required={false}
               value={regData.email}
               onChange={(e) =>
                 setRegData({ ...regData, email: e.target.value })
@@ -222,8 +227,8 @@ export default function Auth() {
 /* =========================
    REUSABLE INPUTS
 ========================= */
-function Input({ type = "text", ...props }) {
-  return <input type={type} style={input} required {...props} />;
+function Input({ type = "text", required = true, ...props }) {
+  return <input type={type} style={input} required={required} {...props} />;
 }
 
 function PasswordInput({ show, toggle, ...props }) {
