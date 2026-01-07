@@ -32,7 +32,7 @@ exports.submitSurvey = async (req, res) => {
 
     await client.query("BEGIN");
 
-    /* 🔒 LOCK USER */
+    /* 🔒 LOCK USER ROW */
     const userResult = await client.query(
       `
       SELECT
@@ -56,19 +56,19 @@ exports.submitSurvey = async (req, res) => {
     const user = userResult.rows[0];
     const activePlan = user.plan || "REGULAR";
 
-    /* ⛔ STOP IF ALL SURVEYS DONE */
+    /* ⛔ BLOCK IF ALL SURVEYS DONE */
     if (user.surveys_completed >= TOTAL_SURVEYS) {
       await client.query("ROLLBACK");
       return res.status(403).json({
-        message: "All surveys completed",
+        message: "All surveys already completed",
         activation_required: !user.is_activated,
       });
     }
 
-    /* 💰 APPLY REWARD */
+    /* 💰 APPLY SURVEY REWARD */
     const reward = PLAN_REWARDS[activePlan] || 0;
     const newCompleted = user.surveys_completed + 1;
-    const newTotalEarned = Number(user.total_earned) + reward;
+    const newTotalEarned = Number(user.total_earned || 0) + reward;
 
     await client.query(
       `
