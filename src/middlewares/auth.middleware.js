@@ -3,11 +3,10 @@ const pool = require("../config/db");
 
 /**
  * ===============================
- * 🔐 AUTHENTICATION ONLY
+ * 🔐 AUTHENTICATION MIDDLEWARE
  * - Reads JWT from HttpOnly cookie
  * - Verifies identity
  * - Fetches fresh user from DB
- * - 🚨 ONLY blocks SUSPENDED users
  * ===============================
  */
 exports.protect = async (req, res, next) => {
@@ -19,7 +18,7 @@ exports.protect = async (req, res, next) => {
       return res.status(401).json({ message: "Not authenticated" });
     }
 
-    // ✅ VERIFY TOKEN (IDENTITY ONLY)
+    // ✅ VERIFY TOKEN
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -29,16 +28,19 @@ exports.protect = async (req, res, next) => {
 
     // ✅ FETCH USER (SOURCE OF TRUTH)
     const result = await pool.query(
-      `SELECT
-         id,
-         username,
-         role,
-         status,
-         completed_surveys,
-         locked_balance,
-         available_balance
-       FROM users
-       WHERE id = $1`,
+      `
+      SELECT
+        id,
+        full_name,
+        phone,
+        email,
+        plan,
+        is_activated,
+        surveys_completed,
+        total_earned
+      FROM users
+      WHERE id = $1
+      `,
       [decoded.id]
     );
 
@@ -46,21 +48,8 @@ exports.protect = async (req, res, next) => {
       return res.status(401).json({ message: "User no longer exists" });
     }
 
-    const user = result.rows[0];
-
-    /**
-     * 🚫 GLOBAL BLOCK RULE
-     * - ONLY suspended users are blocked
-     * - Admins always bypass
-     */
-    if (user.status === "SUSPENDED" && user.role !== "admin") {
-      return res.status(403).json({
-        message: "Your account has been suspended by admin",
-      });
-    }
-
-    // ✅ ATTACH USER TO REQUEST
-    req.user = user;
+    // ✅ ATTACH USER
+    req.user = result.rows[0];
 
     next();
   } catch (error) {
@@ -71,12 +60,10 @@ exports.protect = async (req, res, next) => {
 
 /**
  * ===============================
- * 🛡 ADMIN ONLY ACCESS
+ * 🛡 ADMIN ONLY (FUTURE SAFE)
  * ===============================
  */
 exports.adminOnly = (req, res, next) => {
-  if (!req.user || req.user.role !== "admin") {
-    return res.status(403).json({ message: "Admin access only" });
-  }
-  next();
+  // Placeholder until roles are implemented
+  return res.status(403).json({ message: "Admin access not enabled" });
 };
