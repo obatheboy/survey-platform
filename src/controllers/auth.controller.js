@@ -9,8 +9,8 @@ const TOTAL_SURVEYS = 10;
 ================================ */
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production", // ✅ HTTPS only in prod
-  sameSite: "none", // ✅ REQUIRED for cross-domain cookies
+  secure: true,          // REQUIRED for Vercel + Render
+  sameSite: "none",      // REQUIRED for cross-domain cookies
   path: "/",
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
@@ -20,83 +20,73 @@ const COOKIE_OPTIONS = {
 ================================ */
 exports.register = async (req, res) => {
   try {
-    const { fullName, username, email, phone, password } = req.body;
+    const { fullName, phone, email, password } = req.body;
 
-    if (!fullName || !username || !email || !phone || !password) {
-      return res.status(400).json({ message: "All fields are required" });
+    if (!fullName || !phone || !password) {
+      return res.status(400).json({ message: "Required fields missing" });
     }
 
-    const existingUser = await pool.query(
-      "SELECT id FROM users WHERE username = $1 OR email = $2",
-      [username, email]
+    // Phone is UNIQUE
+    const exists = await pool.query(
+      "SELECT id FROM users WHERE phone = $1",
+      [phone]
     );
 
-    if (existingUser.rows.length > 0) {
-      return res
-        .status(409)
-        .json({ message: "Username or email already exists" });
+    if (exists.rows.length) {
+      return res.status(409).json({ message: "Phone already registered" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const passwordHash = await bcrypt.hash(password, 10);
 
-    const newUser = await pool.query(
+    const result = await pool.query(
       `
       INSERT INTO users (
         full_name,
-        username,
-        email,
         phone,
-        password,
-        role,
-        status,
-        locked_balance,
-        available_balance,
-        completed_surveys,
+        email,
+        password_hash,
+        plan
+      )
+      VALUES ($1, $2, $3, $4, 'REGULAR')
+      RETURNING
+        id,
+        full_name,
+        phone,
+        email,
         plan,
-        current_plan,
-        plan_completed
-      )
-      VALUES (
-        $1,$2,$3,$4,$5,
-        'user',
-        'INACTIVE',
-        0,
-        0,
-        0,
-        'REGULAR',
-        'REGULAR',
-        false
-      )
-      RETURNING id, full_name, username, email, role, status
+        is_activated
       `,
-      [fullName, username, email, phone, hashedPassword]
+      [fullName, phone, email || null, passwordHash]
     );
 
     res.status(201).json({
       message: "Registration successful",
-      user: newUser.rows[0],
+      user: result.rows[0],
     });
-  } catch (err) {
-    console.error("Register error:", err);
+  } catch (error) {
+    console.error("Register error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
 /* ===============================
    LOGIN
-   🔐 AUTH ONLY — NO BUSINESS LOGIC
 ================================ */
 exports.login = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { phone, password } = req.body;
 
     const result = await pool.query(
       `
-      SELECT id, username, password, role, status
+      SELECT
+        id,
+        phone,
+        password_hash,
+        is_activated
       FROM users
-      WHERE username = $1
+      WHERE phone = $1
       `,
-      [username]
+      [phone]
     );
 
     if (!result.rows.length) {
@@ -105,15 +95,15 @@ exports.login = async (req, res) => {
 
     const user = result.rows[0];
 
-    const match = await bcrypt.compare(password, user.password);
+    const match = await bcrypt.compare(password, user.password_hash);
     if (!match) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const token = jwt.sign(
-      { id: user.id, role: user.role },
+      { id: user.id },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
+      { expiresIn: "7d" }
     );
 
     res.cookie("token", token, COOKIE_OPTIONS);
@@ -122,13 +112,12 @@ exports.login = async (req, res) => {
       message: "Login successful",
       user: {
         id: user.id,
-        username: user.username,
-        role: user.role,
-        status: user.status,
+        phone: user.phone,
+        is_activated: user.is_activated,
       },
     });
-  } catch (err) {
-    console.error("Login error:", err);
+  } catch (error) {
+    console.error("Login error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -143,7 +132,6 @@ exports.logout = (req, res) => {
 
 /* ===============================
    GET ME
-   🎯 FRONTEND FLOW CONTROLLER
 ================================ */
 exports.getMe = async (req, res) => {
   try {
@@ -152,14 +140,12 @@ exports.getMe = async (req, res) => {
       SELECT
         id,
         full_name,
-        username,
+        phone,
         email,
-        role,
-        status,
         plan,
-        completed_surveys,
-        locked_balance,
-        available_balance
+        is_activated,
+        surveys_completed,
+        total_earned
       FROM users
       WHERE id = $1
       `,
@@ -171,53 +157,26 @@ exports.getMe = async (req, res) => {
     }
 
     const user = result.rows[0];
+    const surveysCompleted = user.surveys_completed >= TOTAL_SURVEYS;
 
-    const surveysCompleted = user.completed_surveys >= TOTAL_SURVEYS;
-
-    /* ===============================
-       FLOW DECISION FLAGS
-    ================================ */
-    const activationRequired = surveysCompleted;
-    const surveysOpen = !surveysCompleted;
-    const allPlansCompleted = user.plan === "VVIP" && surveysCompleted;
-
-    const canWithdraw =
-      user.status === "ACTIVE" &&
-      allPlansCompleted &&
-      user.available_balance > 0;
-
-    /* ===============================
-       RESPONSE (SINGLE SOURCE OF TRUTH)
-    ================================ */
     res.json({
       id: user.id,
       full_name: user.full_name,
-      username: user.username,
+      phone: user.phone,
       email: user.email,
-      role: user.role,
-      status: user.status,
-
-      // 🔑 PLAN
       plan: user.plan,
 
-      // 🔄 SURVEYS
-      completed_surveys: user.completed_surveys,
-      surveys_open: surveysOpen,
-      surveys_completed: surveysCompleted,
+      surveys_completed: user.surveys_completed,
+      surveys_done: surveysCompleted,
 
-      // 🔓 ACTIVATION
-      activation_required: activationRequired,
-      all_plans_completed: allPlansCompleted,
+      activation_required: surveysCompleted && !user.is_activated,
+      can_withdraw: user.is_activated && user.total_earned > 0,
 
-      // 💰 BALANCES
-      locked_balance: user.locked_balance,
-      available_balance: user.available_balance,
-
-      // 🏦 WITHDRAW
-      can_withdraw: canWithdraw,
+      total_earned: user.total_earned,
+      is_activated: user.is_activated,
     });
-  } catch (err) {
-    console.error("GetMe error:", err);
+  } catch (error) {
+    console.error("GetMe error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
