@@ -9,14 +9,29 @@ const withdrawRoutes = require("./routes/withdraw.routes");
 const adminRoutes = require("./routes/admin.routes");
 const adminActivationRoutes = require("./routes/admin.activation.routes");
 
-const app = express(); // ✅ THIS WAS MISSING
+const app = express();
 
 /* ===============================
    CORS (VERCEL + RENDER SAFE)
+   ✅ FIXED
 ================================ */
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://survey-platform-three.vercel.app",
+];
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL, // e.g. https://survey-platform-three.vercel.app
+    origin: function (origin, callback) {
+      // allow server-to-server, curl, mobile apps
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   })
