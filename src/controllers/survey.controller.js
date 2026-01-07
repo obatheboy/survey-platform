@@ -13,8 +13,6 @@ const PLAN_REWARDS = {
 
 /* ===============================
    SUBMIT SURVEY
-   - Single source of truth
-   - Safe across devices
 ================================ */
 exports.submitSurvey = async (req, res) => {
   const client = await pool.connect();
@@ -47,14 +45,16 @@ exports.submitSurvey = async (req, res) => {
     const user = rows[0];
     const activePlan = user.plan || "REGULAR";
 
-    /* ⛔ BLOCK IF PLAN SURVEYS COMPLETED */
+    /* 🎉 PLAN COMPLETED → SHOW CONGRATS (NO ERROR) */
     if (user.surveys_completed >= TOTAL_SURVEYS) {
       await client.query("ROLLBACK");
-      return res.status(403).json({
-        message: "Survey limit reached for this plan",
-        activation_required: !user.is_activated,
-        surveys_completed: user.surveys_completed,
+      return res.status(200).json({
+        completed: true,
         plan: activePlan,
+        surveys_completed: user.surveys_completed,
+        total_earned: Number(user.total_earned || 0),
+        show_activation: true,
+        message: "Congratulations! You have completed this plan.",
       });
     }
 
@@ -62,9 +62,7 @@ exports.submitSurvey = async (req, res) => {
     const reward = PLAN_REWARDS[activePlan];
     if (!reward) {
       await client.query("ROLLBACK");
-      return res.status(400).json({
-        message: "Invalid plan configuration",
-      });
+      return res.status(400).json({ message: "Invalid plan" });
     }
 
     const newCompleted = user.surveys_completed + 1;
@@ -84,14 +82,14 @@ exports.submitSurvey = async (req, res) => {
 
     await client.query("COMMIT");
 
-    /* ✅ SUCCESS RESPONSE */
+    /* ✅ SUCCESS */
     return res.json({
-      message: "Survey completed successfully",
+      completed: newCompleted === TOTAL_SURVEYS,
       plan: activePlan,
       surveys_completed: newCompleted,
       earned_this_survey: reward,
       total_earned: newTotalEarned,
-      activation_required: newCompleted >= TOTAL_SURVEYS,
+      show_activation: newCompleted === TOTAL_SURVEYS,
     });
   } catch (error) {
     await client.query("ROLLBACK");
