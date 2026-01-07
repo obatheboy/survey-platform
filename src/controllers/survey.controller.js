@@ -3,10 +3,8 @@ const pool = require("../config/db");
 const TOTAL_SURVEYS = 10;
 
 /* ===============================
-   PLAN ORDER & REWARDS
+   PLAN REWARDS (SOURCE OF TRUTH)
 ================================ */
-const PLAN_ORDER = ["REGULAR", "VIP", "VVIP"];
-
 const PLAN_REWARDS = {
   REGULAR: 150,
   VIP: 200,
@@ -14,15 +12,9 @@ const PLAN_REWARDS = {
 };
 
 /* ===============================
-   HELPERS
-================================ */
-const getNextPlan = (plan) => {
-  const index = PLAN_ORDER.indexOf(plan);
-  return PLAN_ORDER[index + 1] || null;
-};
-
-/* ===============================
    SUBMIT SURVEY
+   - Single source of truth
+   - Safe across devices
 ================================ */
 exports.submitSurvey = async (req, res) => {
   const client = await pool.connect();
@@ -33,10 +25,9 @@ exports.submitSurvey = async (req, res) => {
     await client.query("BEGIN");
 
     /* 🔒 LOCK USER ROW */
-    const userResult = await client.query(
+    const { rows } = await client.query(
       `
       SELECT
-        id,
         plan,
         surveys_completed,
         total_earned,
@@ -48,28 +39,38 @@ exports.submitSurvey = async (req, res) => {
       [userId]
     );
 
-    if (!userResult.rows.length) {
+    if (!rows.length) {
       await client.query("ROLLBACK");
       return res.status(404).json({ message: "User not found" });
     }
 
-    const user = userResult.rows[0];
+    const user = rows[0];
     const activePlan = user.plan || "REGULAR";
 
-    /* ⛔ BLOCK IF ALL SURVEYS DONE */
+    /* ⛔ BLOCK IF PLAN SURVEYS COMPLETED */
     if (user.surveys_completed >= TOTAL_SURVEYS) {
       await client.query("ROLLBACK");
       return res.status(403).json({
-        message: "All surveys already completed",
+        message: "Survey limit reached for this plan",
         activation_required: !user.is_activated,
+        surveys_completed: user.surveys_completed,
+        plan: activePlan,
       });
     }
 
-    /* 💰 APPLY SURVEY REWARD */
-    const reward = PLAN_REWARDS[activePlan] || 0;
+    /* 💰 CALCULATE REWARD */
+    const reward = PLAN_REWARDS[activePlan];
+    if (!reward) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        message: "Invalid plan configuration",
+      });
+    }
+
     const newCompleted = user.surveys_completed + 1;
     const newTotalEarned = Number(user.total_earned || 0) + reward;
 
+    /* ✅ UPDATE USER */
     await client.query(
       `
       UPDATE users
@@ -85,18 +86,17 @@ exports.submitSurvey = async (req, res) => {
 
     /* ✅ SUCCESS RESPONSE */
     return res.json({
-      message: "Survey completed",
+      message: "Survey completed successfully",
+      plan: activePlan,
       surveys_completed: newCompleted,
       earned_this_survey: reward,
       total_earned: newTotalEarned,
       activation_required: newCompleted >= TOTAL_SURVEYS,
-      plan: activePlan,
-      next_plan: getNextPlan(activePlan),
     });
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("❌ Survey submit error:", error);
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error" });
   } finally {
     client.release();
   }
