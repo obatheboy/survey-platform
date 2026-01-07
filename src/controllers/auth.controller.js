@@ -9,8 +9,8 @@ const TOTAL_SURVEYS = 10;
 ================================ */
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: true,          // REQUIRED for Vercel + Render
-  sameSite: "none",      // REQUIRED for cross-domain cookies
+  secure: true,          // REQUIRED (HTTPS)
+  sameSite: "none",      // REQUIRED cross-domain
   path: "/",
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
@@ -26,7 +26,7 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: "Required fields missing" });
     }
 
-    // Phone is UNIQUE
+    // Phone must be unique
     const exists = await pool.query(
       "SELECT id FROM users WHERE phone = $1",
       [phone]
@@ -45,9 +45,12 @@ exports.register = async (req, res) => {
         phone,
         email,
         password_hash,
-        plan
+        plan,
+        is_activated,
+        total_earned,
+        surveys_completed
       )
-      VALUES ($1, $2, $3, $4, 'REGULAR')
+      VALUES ($1, $2, $3, $4, 'REGULAR', false, 0, 0)
       RETURNING
         id,
         full_name,
@@ -64,13 +67,13 @@ exports.register = async (req, res) => {
       user: result.rows[0],
     });
   } catch (error) {
-    console.error("Register error:", error);
+    console.error("REGISTER ERROR:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
 /* ===============================
-   LOGIN
+   LOGIN (PHONE + PASSWORD)
 ================================ */
 exports.login = async (req, res) => {
   try {
@@ -117,7 +120,7 @@ exports.login = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Login error:", error);
+    console.error("LOGIN ERROR:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -126,15 +129,20 @@ exports.login = async (req, res) => {
    LOGOUT
 ================================ */
 exports.logout = (req, res) => {
-  res.clearCookie("token", COOKIE_OPTIONS);
+  // ❗ Do NOT reuse COOKIE_OPTIONS here
+  res.clearCookie("token", { path: "/" });
   res.json({ message: "Logged out" });
 };
 
 /* ===============================
-   GET ME
+   GET ME (COOKIE SESSION)
 ================================ */
 exports.getMe = async (req, res) => {
   try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "Invalid or expired session" });
+    }
+
     const result = await pool.query(
       `
       SELECT
@@ -153,7 +161,7 @@ exports.getMe = async (req, res) => {
     );
 
     if (!result.rows.length) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(401).json({ message: "Invalid session" });
     }
 
     const user = result.rows[0];
@@ -176,7 +184,7 @@ exports.getMe = async (req, res) => {
       is_activated: user.is_activated,
     });
   } catch (error) {
-    console.error("GetMe error:", error);
+    console.error("GET ME ERROR:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
