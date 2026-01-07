@@ -38,12 +38,10 @@ export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
-
-  /* 🔔 TOAST */
   const [toast, setToast] = useState("");
 
   /* =========================
-     LOAD USER
+     LOAD USER (DB = SOURCE OF TRUTH)
   ========================= */
   useEffect(() => {
     api
@@ -57,16 +55,15 @@ export default function Dashboard() {
   if (!user) return null;
 
   /* =========================
-     HELPERS
+     HELPERS (DB-BASED)
   ========================= */
-  const surveyKey = (planKey) =>
-    `surveysDone_${user.id}_${planKey}`;
 
+  // surveys are tracked PER ACTIVE PLAN in DB
   const getSurveysDone = (planKey) =>
-    Number(localStorage.getItem(surveyKey(planKey)) || 0);
+    user.plan === planKey ? user.surveys_completed : 0;
 
   const isPlanCompleted = (planKey) =>
-    getSurveysDone(planKey) >= TOTAL_SURVEYS;
+    user.plan === planKey && user.surveys_completed >= TOTAL_SURVEYS;
 
   const getPlanEarnings = (planKey) =>
     isPlanCompleted(planKey) ? PLANS[planKey].total : 0;
@@ -74,18 +71,17 @@ export default function Dashboard() {
   /* =========================
      TOTALS
   ========================= */
-  const totalEarnings = Object.keys(PLANS).reduce(
-    (sum, key) => sum + getPlanEarnings(key),
-    0
-  );
+  const totalEarnings = user.total_earned || 0;
 
   /* =========================
      ACTIONS
   ========================= */
   const startSurvey = (planKey) => {
+    // If this plan already completed → show activation notice
     if (isPlanCompleted(planKey)) {
-      setToast("This plan is already completed");
-      setTimeout(() => setToast(""), 2500);
+      navigate("/activation-notice", {
+        state: { reason: "completed" },
+      });
       return;
     }
 
@@ -94,24 +90,17 @@ export default function Dashboard() {
   };
 
   const handleWithdraw = (planKey) => {
-    const earnings = getPlanEarnings(planKey);
-
-    if (earnings === 0) {
-      setToast("Complete surveys and activate account to withdraw");
-      localStorage.setItem("selectedPlan", planKey);
-
+    if (!isPlanCompleted(planKey)) {
+      setToast("Complete surveys to unlock withdrawal");
       surveySectionRef.current?.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
-
       setTimeout(() => setToast(""), 3000);
       return;
     }
 
-    localStorage.setItem("selectedPlan", planKey);
-
-    if (user.status !== "ACTIVE") {
+    if (!user.is_activated) {
       navigate("/activation-notice", {
         state: { reason: "withdraw" },
       });
@@ -126,15 +115,11 @@ export default function Dashboard() {
   ========================= */
   return (
     <div className="dashboard">
-      {/* 🔔 TOAST */}
       {toast && <div className="toast">{toast}</div>}
 
       {/* HEADER */}
       <header className="dashboard-header">
-        <button
-          className="menu-btn"
-          onClick={() => setMenuOpen(true)}
-        >
+        <button className="menu-btn" onClick={() => setMenuOpen(true)}>
           ☰
         </button>
         <h2>Dashboard</h2>
@@ -167,9 +152,7 @@ export default function Dashboard() {
       </section>
 
       {/* WITHDRAW */}
-      <h3 className="section-title withdraw-title">
-        💸 Withdraw Earnings
-      </h3>
+      <h3 className="section-title withdraw-title">💸 Withdraw Earnings</h3>
 
       {Object.entries(PLANS).map(([key, plan]) => {
         const earnings = getPlanEarnings(key);
@@ -179,11 +162,6 @@ export default function Dashboard() {
           <div
             key={key}
             className={`card withdraw-card ${locked ? "locked" : ""}`}
-            title={
-              locked
-                ? "Complete surveys and activate account to withdraw"
-                : ""
-            }
           >
             <div>
               <h4 className={`plan-title ${key.toLowerCase()}`}>
@@ -203,10 +181,7 @@ export default function Dashboard() {
       })}
 
       {/* SURVEYS */}
-      <h3
-        ref={surveySectionRef}
-        className="section-title"
-      >
+      <h3 ref={surveySectionRef} className="section-title">
         Survey Plans
       </h3>
 
