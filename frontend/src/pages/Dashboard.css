@@ -1,0 +1,351 @@
+/* =========================
+   ANIMATIONS
+========================= */
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes floatIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes glowPulse {
+  0% { box-shadow: 0 0 0 rgba(0,0,0,0); }
+  50% { box-shadow: 0 0 26px rgba(186,104,200,0.65); }
+  100% { box-shadow: 0 0 0 rgba(0,0,0,0); }
+}
+
+/* =========================
+   GLOBAL CANVAS
+========================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.dashboard {
+  width: 100%;
+  margin: 0 auto;
+  padding: 16px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(
+    270deg,
+    #0b1020,
+    #1a237e,
+    #311b92,
+    #0d47a1
+  );
+  background-size: 400% 400%;
+  animation: gradientFlow 20s ease infinite;
+  min-height: 100vh;
+  color: #e3f2fd;
+  overflow-x: hidden;
+}
+
+/* =========================
+   HERO / TOP AREA
+========================= */
+.dashboard-hero {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 26px;
+}
+
+@media (min-width: 768px) {
+  .dashboard-hero {
+    grid-template-columns: 1.2fr 1fr;
+    align-items: stretch;
+  }
+}
+
+/* =========================
+   LOADING
+========================= */
+.loading {
+  text-align: center;
+  margin-top: 80px;
+  font-size: 15px;
+  color: #b39ddb;
+  animation: floatIn 0.8s ease;
+}
+
+/* =========================
+   HEADER
+========================= */
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(
+    270deg,
+    #1e88e5,
+    #5e35b1,
+    #8e24aa
+  );
+  background-size: 300% 300%;
+  animation: gradientFlow 12s ease infinite;
+  padding: 18px;
+  border-radius: 24px;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.55);
+}
+
+.dashboard-header h2 {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+.menu-btn {
+  font-size: 22px;
+  background: rgba(255, 255, 255, 0.18);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 14px;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.menu-btn:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* =========================
+   CARD BASE
+========================= */
+.card {
+  width: 100%;
+  padding: 20px;
+  border-radius: 26px;
+  background: linear-gradient(
+    135deg,
+    rgb(119, 4, 4),
+    rgb(28, 70, 3)
+  );
+  backdrop-filter: blur(14px);
+  box-shadow: 0 22px 56px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  animation: floatIn 0.75s ease both;
+  position: relative;
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+  pointer-events: none;
+}
+
+/* =========================
+   GREETING (HERO LEFT)
+========================= */
+.greeting {
+  background: linear-gradient(
+    270deg,
+    #ffb300,
+    #ff9800,
+    #ff6f00
+  );
+  background-size: 300% 300%;
+  animation: gradientFlow 12s ease infinite;
+  color: #212121;
+}
+
+.greeting h3 {
+  font-size: 20px;
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+
+.greeting p {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* =========================
+   EARNINGS (HERO RIGHT)
+========================= */
+.earnings {
+  background: linear-gradient(
+    270deg,
+    #00acc1,
+    #26c6da,
+    #e6d00b
+  );
+  background-size: 300% 300%;
+  animation: gradientFlow 9s ease infinite;
+  color: #102027;
+  border-radius: 26px;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.earnings > div {
+  background: rgb(184, 187, 11);
+  border-radius: 18px;
+  padding: 14px;
+  text-align: center;
+}
+
+.earnings span {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.earnings strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+/* =========================
+   SECTION TITLES
+========================= */
+.section-title {
+  margin: 30px 0 14px;
+  font-size: 18px;
+  color: #ce93d8;
+  letter-spacing: 0.5px;
+}
+
+/* =========================
+   PLAN CARDS
+========================= */
+.plan-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.plan-card:hover {
+  transform: translateY(-5px) scale(1.03);
+  box-shadow: 0 28px 72px rgba(0, 0, 0, 0.6);
+}
+
+.plan-card p {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.plan-btn {
+  margin-top: 14px;
+  width: 100%;
+}
+
+/* =========================
+   PLAN COLORS
+========================= */
+.plan-title.regular { color: #4fc3f7; }
+.plan-title.vip { color: #ce93d8; }
+.plan-title.vvip { color: #ffd54f; }
+
+.plan-regular {
+  background: linear-gradient(270deg, #0288d1, #4fc3f7);
+  box-shadow: 0 0 22px rgba(79,195,247,0.7);
+}
+
+.plan-vip {
+  background: linear-gradient(270deg, #6a1b9a, #ab47bc);
+  box-shadow: 0 0 26px rgba(186,104,200,0.8);
+}
+
+.plan-vvip {
+  background: linear-gradient(270deg, #ffb300, #ffd54f);
+  color: #212121;
+  box-shadow: 0 0 30px rgba(255,213,79,0.9);
+}
+
+/* =========================
+   BUTTONS
+========================= */
+.primary-btn {
+  background-size: 300% 300%;
+  animation: gradientFlow 6s ease infinite, glowPulse 3.4s ease infinite;
+  color: #fff;
+  border: none;
+  padding: 12px 26px;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.outline-btn {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.35);
+  color: #f8bbd0;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* =========================
+   WITHDRAW
+========================= */
+.withdraw-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  gap: 14px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.withdraw-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 26px 68px rgba(0, 0, 0, 0.55);
+}
+
+.withdraw-title {
+  color: #51ff00;
+  text-shadow: 0 0 14px rgba(81, 255, 0, 0.6);
+  animation: glowPulse 3s ease infinite;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (min-width: 768px) {
+  .dashboard {
+    max-width: 1100px;
+    padding: 26px 32px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .dashboard {
+    max-width: 1280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard {
+    padding: 14px;
+  }
+
+  .dashboard-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .withdraw-card,
+  .plan-card {
+    align-items: stretch;
+  }
+}
