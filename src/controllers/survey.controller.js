@@ -38,7 +38,7 @@ exports.submitSurvey = async (req, res) => {
       SELECT
         id,
         plan,
-        completed_surveys,
+        surveys_completed,
         locked_balance,
         is_activated
       FROM users
@@ -57,7 +57,7 @@ exports.submitSurvey = async (req, res) => {
     const activePlan = user.plan || "REGULAR";
 
     /* ⛔ STOP IF ALL SURVEYS DONE */
-    if (user.completed_surveys >= TOTAL_SURVEYS) {
+    if (user.surveys_completed >= TOTAL_SURVEYS) {
       await client.query("ROLLBACK");
       return res.status(403).json({
         message: "All surveys already completed",
@@ -67,14 +67,14 @@ exports.submitSurvey = async (req, res) => {
 
     /* 💰 APPLY SURVEY REWARD */
     const reward = PLAN_REWARDS[activePlan] || 0;
-    const newCompleted = user.completed_surveys + 1;
+    const newCompleted = user.surveys_completed + 1;
     const newLockedBalance = Number(user.locked_balance) + reward;
 
     await client.query(
       `
       UPDATE users
       SET
-        completed_surveys = $1,
+        surveys_completed = $1,
         locked_balance = $2
       WHERE id = $3
       `,
@@ -86,7 +86,7 @@ exports.submitSurvey = async (req, res) => {
     /* ✅ SUCCESS */
     return res.json({
       message: "Survey completed",
-      completed_surveys: newCompleted,
+      surveys_completed: newCompleted,
       earned_this_survey: reward,
       locked_balance: newLockedBalance,
       plan: activePlan,
