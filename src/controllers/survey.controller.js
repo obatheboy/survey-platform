@@ -38,7 +38,6 @@ exports.submitSurvey = async (req, res) => {
       SELECT
         id,
         plan,
-        status,
         completed_surveys,
         locked_balance,
         is_activated
@@ -56,15 +55,6 @@ exports.submitSurvey = async (req, res) => {
 
     const user = userResult.rows[0];
     const activePlan = user.plan || "REGULAR";
-
-    /* 🚫 BLOCK SUSPENDED USERS */
-    if (user.status === "SUSPENDED") {
-      await client.query("ROLLBACK");
-      return res.status(403).json({
-        message: "Account suspended",
-        survey_access: "LOCKED",
-      });
-    }
 
     /* ⛔ STOP IF ALL SURVEYS DONE */
     if (user.completed_surveys >= TOTAL_SURVEYS) {
