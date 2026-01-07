@@ -9,20 +9,14 @@ const withdrawRoutes = require("./routes/withdraw.routes");
 const adminRoutes = require("./routes/admin.routes");
 const adminActivationRoutes = require("./routes/admin.activation.routes");
 
-/* ===============================
-   INIT APP  ✅ THIS WAS MISSING
-================================ */
-const app = express();
+const app = express(); // ✅ THIS WAS MISSING
 
 /* ===============================
-   CORS (RENDER + VERCEL SAFE)
+   CORS (VERCEL + RENDER SAFE)
 ================================ */
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://survey-platform-three.vercel.app",
-    ],
+    origin: process.env.FRONTEND_URL, // e.g. https://survey-platform-three.vercel.app
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   })
@@ -49,7 +43,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/admin", adminActivationRoutes);
 
 /* ===============================
-   HEALTH CHECK
+   HEALTH CHECK (RENDER)
 ================================ */
 app.get("/", (req, res) => {
   res.status(200).json({
