@@ -1,12 +1,17 @@
 import axios from "axios";
 
+/* =====================================================
+   🌍 AXIOS INSTANCE
+   - Uses Vite environment variable
+   - Works in dev & production
+===================================================== */
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true, // ✅ REQUIRED for HttpOnly cookies
 });
 
 /* =====================================================
-   🌍 GLOBAL AUTH HANDLER
+   🔐 GLOBAL AUTH HANDLER
    - Handles expired / invalid sessions
    - Redirects ONLY when truly unauthenticated
 ===================================================== */
