@@ -3,7 +3,7 @@ const pool = require("../config/db");
 
 /**
  * ===============================
- * 🔐 AUTHENTICATION MIDDLEWARE (FIXED)
+ * 🔐 AUTHENTICATION MIDDLEWARE (SAFE)
  * ===============================
  */
 exports.protect = async (req, res, next) => {
@@ -27,8 +27,7 @@ exports.protect = async (req, res, next) => {
         id,
         full_name,
         phone,
-        email,
-        is_admin
+        email
       FROM users
       WHERE id = $1
       `,
@@ -49,12 +48,11 @@ exports.protect = async (req, res, next) => {
 
 /**
  * ===============================
- * 🛡 ADMIN ONLY (FIXED)
+ * 🛡 ADMIN ONLY (TEMP DISABLED)
  * ===============================
  */
-exports.adminOnly = (req, res, next) => {
-  if (!req.user || !req.user.is_admin) {
-    return res.status(403).json({ message: "Admin access denied" });
-  }
-  next();
+exports.adminOnly = (req, res) => {
+  return res.status(403).json({
+    message: "Admin access not configured",
+  });
 };
