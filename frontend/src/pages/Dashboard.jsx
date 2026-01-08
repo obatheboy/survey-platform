@@ -6,12 +6,12 @@ import LiveWithdrawalFeed from "./components/LiveWithdrawalFeed.jsx";
 import "./Dashboard.css";
 
 /* =========================
-   PLAN CONFIG (DISPLAY)
+   PLAN CONFIG (DISPLAY ONLY)
 ========================= */
 const PLANS = {
-  REGULAR: { name: "Regular", icon: "⭐", total: 1500 },
-  VIP: { name: "VIP", icon: "💎", total: 2000 },
-  VVIP: { name: "VVIP", icon: "👑", total: 3000 },
+  REGULAR: { name: "Regular", icon: "⭐", total: 1500, perSurvey: 150 },
+  VIP: { name: "VIP", icon: "💎", total: 2000, perSurvey: 200 },
+  VVIP: { name: "VVIP", icon: "👑", total: 3000, perSurvey: 300 },
 };
 
 const TOTAL_SURVEYS = 10;
@@ -40,7 +40,7 @@ export default function Dashboard() {
   if (!user) return null;
 
   /* =========================
-     HELPERS (STRICT + UX SAFE)
+     HELPERS (STRICT LAW)
   ========================= */
   const isCurrentPlan = (planKey) => user.plan === planKey;
 
@@ -48,29 +48,34 @@ export default function Dashboard() {
     isCurrentPlan(planKey) ? user.surveys_completed : 0;
 
   const isCompleted = (planKey) =>
-    isCurrentPlan(planKey) && user.surveys_completed >= TOTAL_SURVEYS;
+    isCurrentPlan(planKey) && user.surveys_completed === TOTAL_SURVEYS;
 
-  const isWithdrawable = (planKey) =>
-    isCompleted(planKey) && user.is_activated;
+  const canWithdraw = (planKey) =>
+    isCompleted(planKey) && user.is_activated === true;
 
   /* =========================
      ACTIONS
   ========================= */
   const startSurvey = (planKey) => {
+    if (isCompleted(planKey)) {
+      navigate("/activation-notice", { replace: true });
+      return;
+    }
+
     localStorage.setItem("selectedPlan", planKey);
     navigate("/surveys");
   };
 
   const handleWithdraw = (planKey) => {
     if (!isCompleted(planKey)) {
-      setToast("Complete all surveys to unlock withdrawal");
+      setToast("Complete surveys to unlock withdrawal");
       surveySectionRef.current?.scrollIntoView({ behavior: "smooth" });
       setTimeout(() => setToast(""), 3000);
       return;
     }
 
     if (!user.is_activated) {
-      navigate("/activation-notice");
+      navigate("/activation-notice", { replace: true });
       return;
     }
 
@@ -96,10 +101,7 @@ export default function Dashboard() {
         user={user}
       />
 
-      {/* 🔒 FEED MUST NOT BLOCK CLICKS */}
-      <div style={{ pointerEvents: "none" }}>
-        <LiveWithdrawalFeed />
-      </div>
+      <LiveWithdrawalFeed />
 
       {/* GREETING */}
       <section className="card greeting">
@@ -110,7 +112,11 @@ export default function Dashboard() {
       {/* TOTALS */}
       <section className="card earnings">
         <div>
-          <span>Total Earned</span>
+          <span>Total Earnings</span>
+          <strong>KES {Number(user.total_earned || 0).toLocaleString()}</strong>
+        </div>
+        <div>
+          <span>Current Balance</span>
           <strong>KES {Number(user.total_earned || 0).toLocaleString()}</strong>
         </div>
       </section>
@@ -122,14 +128,9 @@ export default function Dashboard() {
         <div key={key} className="card withdraw-card">
           <div>
             <h4>{plan.icon} {plan.name}</h4>
-            <p>
-              💰 {plan.total}{" "}
-              {isWithdrawable(key)
-                ? "(Withdrawable)"
-                : isCompleted(key)
-                ? "(Activation required)"
-                : "(Locked)"}
-            </p>
+            <strong>
+              KES {isCompleted(key) ? plan.total.toLocaleString() : "0"}
+            </strong>
           </div>
 
           <button
@@ -150,8 +151,11 @@ export default function Dashboard() {
         <div key={key} className="card plan-card">
           <div>
             <h4>{plan.icon} {plan.name}</h4>
-            <p>Earn up to <b>KES {plan.total}</b></p>
-            <p>Progress: {surveysDone(key)} / {TOTAL_SURVEYS}</p>
+            <p><b>Total Earnings:</b> KES {plan.total}</p>
+            <p><b>Per Survey:</b> KES {plan.perSurvey}</p>
+            <p>
+              <b>Progress:</b> {surveysDone(key)} / {TOTAL_SURVEYS}
+            </p>
           </div>
 
           <button
