@@ -5,13 +5,12 @@ const pool = require("../config/db");
 const TOTAL_SURVEYS = 10;
 
 /* ===============================
-   🍪 COOKIE CONFIG (FIXED)
-   REQUIRED FOR CROSS-SITE AUTH
+   🍪 COOKIE CONFIG (ENV SAFE)
 ================================ */
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: true,          // 🔒 REQUIRED
-  sameSite: "none",      // 🔥 REQUIRED
+  secure: process.env.NODE_ENV === "production", // ✅ FIX
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // ✅ FIX
   path: "/",
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
@@ -21,7 +20,11 @@ const COOKIE_OPTIONS = {
 ================================ */
 exports.register = async (req, res) => {
   try {
-    const { fullName, phone, email, password } = req.body;
+    // ✅ ACCEPT MULTIPLE FRONTEND FIELD NAMES
+    const fullName =
+      req.body.fullName || req.body.name || req.body.full_name;
+
+    const { phone, email, password } = req.body;
 
     if (!fullName || !phone || !password) {
       return res.status(400).json({ message: "Required fields missing" });
@@ -97,7 +100,6 @@ exports.login = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    // 🔥 FIX: CROSS-SITE COOKIE
     res.cookie("token", token, COOKIE_OPTIONS);
 
     res.json({
@@ -123,7 +125,7 @@ exports.logout = (req, res) => {
 };
 
 /* ===============================
-   GET ME (SESSION SOURCE OF TRUTH)
+   GET ME
 ================================ */
 exports.getMe = async (req, res) => {
   try {
