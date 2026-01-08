@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
-const { protect, adminOnly } = require("../middlewares/auth.middleware");
+const { protect } = require("../middlewares/auth.middleware");
+const adminOnly = require("../middlewares/adminOnly"); // ✅ CORRECT SOURCE
+
 const {
   requestWithdraw,
   getPendingWithdrawals,
@@ -25,7 +27,6 @@ router.post("/request", protect, requestWithdraw);
  */
 
 // 🔄 Get pending withdrawals
-// GET /api/withdraw/admin/pending
 router.get(
   "/admin/pending",
   protect,
@@ -34,7 +35,6 @@ router.get(
 );
 
 // 📋 Get all withdrawals
-// GET /api/withdraw/admin/all
 router.get(
   "/admin/all",
   protect,
@@ -43,7 +43,6 @@ router.get(
 );
 
 // ✅ Approve withdrawal
-// PATCH /api/withdraw/admin/:id/approve
 router.patch(
   "/admin/:id/approve",
   protect,
@@ -52,7 +51,6 @@ router.patch(
 );
 
 // ❌ Reject withdrawal
-// PATCH /api/withdraw/admin/:id/reject
 router.patch(
   "/admin/:id/reject",
   protect,
