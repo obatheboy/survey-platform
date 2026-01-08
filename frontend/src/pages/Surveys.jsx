@@ -38,18 +38,30 @@ export default function Surveys() {
   const [submitting, setSubmitting] = useState(false);
 
   /* =========================
-     LOAD USER (DB IS KING)
+     LOAD USER (DB = SOURCE OF TRUTH)
   ========================= */
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await api.get("/auth/me");
-        const u = res.data;
+        let res = await api.get("/auth/me");
+        let u = res.data;
 
-        /* 🚫 NO PLAN */
+        /* 🧠 ONE-TIME PLAN SYNC */
         if (!u.plan) {
-          navigate("/dashboard", { replace: true });
-          return;
+          const selectedPlan = localStorage.getItem("selectedPlan");
+
+          if (!selectedPlan) {
+            navigate("/dashboard", { replace: true });
+            return;
+          }
+
+          await api.post("/surveys/select-plan", {
+            plan: selectedPlan,
+          });
+
+          // 🔄 Reload AFTER DB update
+          res = await api.get("/auth/me");
+          u = res.data;
         }
 
         /* 🔒 COMPLETED */
@@ -78,7 +90,6 @@ export default function Surveys() {
   ========================= */
   const surveysDone = user.surveys_completed;
 
-  /* 🛡 HARD SAFETY: never exceed questions */
   if (surveysDone >= QUESTIONS.length) {
     navigate("/activation-notice", { replace: true });
     return null;
@@ -96,14 +107,11 @@ export default function Surveys() {
     try {
       setSubmitting(true);
 
-      /* 🔐 BACKEND AUTHORITATIVE UPDATE */
       await api.post("/surveys/submit");
 
-      /* 🔄 RE-SYNC FROM DB */
       const refreshed = await api.get("/auth/me");
       const updatedUser = refreshed.data;
 
-      /* 🎉 COMPLETED */
       if (updatedUser.surveys_completed >= TOTAL_SURVEYS) {
         navigate("/activation-notice", { replace: true });
         return;
@@ -111,7 +119,7 @@ export default function Surveys() {
 
       setUser(updatedUser);
       setSelectedOption(null);
-    } catch (err) {
+    } catch {
       alert("❌ Failed to submit survey. Please try again.");
     } finally {
       setSubmitting(false);
