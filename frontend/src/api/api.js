@@ -1,26 +1,19 @@
 import axios from "axios";
 
 /* =====================================================
-   🌍 AXIOS INSTANCE
+   🌍 AXIOS INSTANCE (API PREFIX FIXED)
 ===================================================== */
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  withCredentials: true, // ✅ REQUIRED for HttpOnly cookies
+  baseURL: `${import.meta.env.VITE_API_URL}/api`, // ✅ CRITICAL FIX
+  withCredentials: true,
 });
 
 /* =====================================================
-   🚫 NO GLOBAL AUTH REDIRECTS
-   - Axios must NEVER decide navigation
-   - Pages (Dashboard, Surveys, etc.) handle auth
+   ❌ NO REDIRECTS HERE — EVER
 ===================================================== */
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    // ❌ Do NOT redirect here
-    // ❌ Do NOT inspect status codes here
-    // ✔ Just forward the error
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 export default api;
