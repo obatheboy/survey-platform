@@ -38,6 +38,8 @@ export default function Congratulations() {
      LOAD PLAN STATE (DB = LAW)
   ========================= */
   useEffect(() => {
+    let alive = true;
+
     const load = async () => {
       try {
         const activePlan = localStorage.getItem("active_plan");
@@ -49,31 +51,30 @@ export default function Congratulations() {
         const res = await api.get("/auth/me");
         const plan = res.data.plans?.[activePlan];
 
-        // 🚫 INVALID ACCESS
         if (!plan || !plan.completed) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        // ✅ ALREADY ACTIVATED
         if (plan.is_activated) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
+        if (!alive) return;
         setPlanKey(activePlan);
         setPlanState(plan);
         setTotalEarned(res.data.total_earned);
       } catch (err) {
-        // ❗ DO NOT LOG OUT USER FROM HERE
-        console.error("Congratulations load failed:", err);
-        navigate("/dashboard", { replace: true });
+        // ✅ DO NOTHING — interceptor handles real auth failure
+        console.warn("Congratulations: transient auth/me failure");
       } finally {
-        setLoading(false);
+        if (alive) setLoading(false);
       }
     };
 
     load();
+    return () => (alive = false);
   }, [navigate]);
 
   if (loading) {
@@ -93,12 +94,7 @@ export default function Congratulations() {
 
   return (
     <div style={page}>
-      <div
-        style={{
-          ...card,
-          boxShadow: `0 0 60px ${plan.glow}`,
-        }}
-      >
+      <div style={{ ...card, boxShadow: `0 0 60px ${plan.glow}` }}>
         <div style={flagWrap}>
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/4/49/Flag_of_Kenya.svg"
@@ -107,21 +103,14 @@ export default function Congratulations() {
           />
         </div>
 
-        <h2
-          style={{
-            color: plan.color,
-            textShadow: `0 0 20px ${plan.glow}`,
-          }}
-        >
+        <h2 style={{ color: plan.color, textShadow: `0 0 20px ${plan.glow}` }}>
           🎉 CONGRATULATIONS 🎉
         </h2>
 
         <p style={text}>
-          You have successfully completed the{" "}
-          <b>{plan.label}</b> survey plan and earned{" "}
-          <b style={{ color: plan.color }}>
-            KES {totalEarned}
-          </b>.
+          You have successfully completed the <b>{plan.label}</b> survey plan and
+          earned{" "}
+          <b style={{ color: plan.color }}>KES {totalEarned}</b>.
           <br /><br />
           Activate your account now to unlock withdrawals via
           <b style={{ color: "#00e676" }}> M-Pesa</b>.
@@ -161,10 +150,7 @@ export default function Congratulations() {
           🔓 ACTIVATE & WITHDRAW
         </button>
 
-        <button
-          style={backBtn}
-          onClick={() => navigate("/dashboard")}
-        >
+        <button style={backBtn} onClick={() => navigate("/dashboard")}>
           Back to Dashboard
         </button>
       </div>

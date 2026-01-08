@@ -39,9 +39,11 @@ export default function Surveys() {
   const [submitting, setSubmitting] = useState(false);
 
   /* =========================
-     LOAD STATE (BACKEND = TRUTH)
+     LOAD STATE (BACKEND = LAW)
   ========================= */
   useEffect(() => {
+    let alive = true;
+
     const load = async () => {
       try {
         const res = await api.get("/auth/me");
@@ -58,35 +60,31 @@ export default function Surveys() {
           return;
         }
 
-        // ✅ HARD STOP: already completed
         if (planState.completed || planState.surveys_completed >= TOTAL_SURVEYS) {
           navigate("/congratulations", { replace: true });
           return;
         }
 
+        if (!alive) return;
         setActivePlan(storedPlan);
         setSurveysDone(planState.surveys_completed);
-      } catch {
-        navigate("/auth", { replace: true });
+      } catch (err) {
+        console.warn("Survey auth check failed — waiting for interceptor");
+        // ❌ DO NOT redirect to /auth here
       } finally {
-        setLoading(false);
+        if (alive) setLoading(false);
       }
     };
 
     load();
+    return () => (alive = false);
   }, [navigate]);
 
-  /* =========================
-     ABSOLUTE SAFETY GUARD
-  ========================= */
   if (loading) {
     return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
   }
 
-  if (!activePlan || surveysDone >= TOTAL_SURVEYS) {
-    navigate("/congratulations", { replace: true });
-    return null;
-  }
+  if (!activePlan) return null;
 
   const currentQuestion = QUESTIONS[surveysDone];
   const progress = (surveysDone / TOTAL_SURVEYS) * 100;
@@ -200,10 +198,7 @@ const card = {
   boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
 };
 
-const title = {
-  textAlign: "center",
-  marginBottom: 12,
-};
+const title = { textAlign: "center", marginBottom: 12 };
 
 const meta = {
   display: "flex",
@@ -221,14 +216,9 @@ const progressBar = {
   marginBottom: 20,
 };
 
-const progressFill = {
-  height: "100%",
-  background: "#6a1b9a",
-};
+const progressFill = { height: "100%", background: "#6a1b9a" };
 
-const question = {
-  marginBottom: 16,
-};
+const question = { marginBottom: 16 };
 
 const optionCard = {
   padding: 14,
@@ -253,5 +243,4 @@ const button = {
   color: "#fff",
   fontSize: 16,
   fontWeight: "bold",
-  cursor: "pointer",
 };

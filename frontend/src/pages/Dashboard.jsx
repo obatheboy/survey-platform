@@ -30,20 +30,27 @@ export default function Dashboard() {
      LOAD USER + PLAN STATES
   ========================= */
   useEffect(() => {
+    let alive = true;
+
     const load = async () => {
       try {
         const res = await api.get("/auth/me");
+        if (!alive) return;
+
         setUser(res.data);
         setPlans(res.data.plans || {});
-      } catch {
-        navigate("/auth", { replace: true });
+      } catch (err) {
+        console.warn("Dashboard auth check failed — waiting for interceptor");
+        // ❌ DO NOT redirect here
+        // Axios interceptor handles real logout
       } finally {
-        setLoading(false);
+        if (alive) setLoading(false);
       }
     };
 
     load();
-  }, [navigate]);
+    return () => (alive = false);
+  }, []);
 
   if (loading) return <p className="loading">Loading dashboard…</p>;
   if (!user) return null;
@@ -60,12 +67,8 @@ export default function Dashboard() {
   ========================= */
   const startSurvey = async (plan) => {
     try {
-      // 🔑 remember active plan
       localStorage.setItem("active_plan", plan);
-
-      // Ensure plan row exists
       await api.post("/surveys/select-plan", { plan });
-
       navigate("/surveys");
     } catch (err) {
       console.error(err);
@@ -172,9 +175,7 @@ export default function Dashboard() {
             <button
               className="primary-btn"
               onClick={() =>
-                completed
-                  ? openCongratulations(key)
-                  : startSurvey(key)
+                completed ? openCongratulations(key) : startSurvey(key)
               }
             >
               {completed ? "View Completion" : "Start Survey"}
