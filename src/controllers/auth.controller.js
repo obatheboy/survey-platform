@@ -5,14 +5,16 @@ const pool = require("../config/db");
 const TOTAL_SURVEYS = 10;
 
 /* ===============================
-   🍪 COOKIE CONFIG (SAFE: DEV + PROD)
+   🍪 COOKIE CONFIG (DEV + PROD SAFE)
 ================================ */
+const isProduction = process.env.NODE_ENV === "production";
+
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production", // ✅ HTTPS only in prod
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  secure: isProduction,                 // ✅ HTTPS only in prod
+  sameSite: isProduction ? "none" : "lax",
   path: "/",
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  maxAge: 7 * 24 * 60 * 60 * 1000,       // 7 days
 };
 
 /* ===============================
@@ -96,7 +98,7 @@ exports.login = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    // ✅ FIXED COOKIE BEHAVIOR
+    // ✅ COOKIE FIX (NO RANDOM LOGOUTS)
     res.cookie("token", token, COOKIE_OPTIONS);
 
     res.json({
@@ -119,8 +121,8 @@ exports.login = async (req, res) => {
 exports.logout = (req, res) => {
   res.clearCookie("token", {
     path: "/",
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
   });
 
   res.json({ message: "Logged out" });
@@ -192,12 +194,12 @@ exports.getMe = async (req, res) => {
     res.json({
       ...userRes.rows[0],
 
-      // required by surveys page
+      // surveys page
       active_plan: activePlan,
       surveys_completed: activePlanData?.surveys_completed || 0,
       surveys_locked: activePlanData?.completed === true,
 
-      // required by dashboard
+      // dashboard
       plans,
     });
   } catch (error) {
