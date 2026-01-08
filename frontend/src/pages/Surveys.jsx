@@ -44,11 +44,6 @@ export default function Surveys() {
   useEffect(() => {
     const load = async () => {
       try {
-        /**
-         * Backend MUST tell frontend
-         * which plan is currently active
-         * and its progress
-         */
         const res = await api.get("/auth/me");
 
         const {
@@ -92,16 +87,22 @@ export default function Surveys() {
   const progress = (surveysDone / TOTAL_SURVEYS) * 100;
 
   /* =========================
-     SUBMIT ANSWER (BACKEND LAW)
+     SUBMIT ANSWER (FIXED)
   ========================= */
   const handleNext = async () => {
-    if (selectedOption === null || submitting) return;
+    if (submitting) return;
+
+    if (selectedOption === null) {
+      alert("Please select an option to continue");
+      return;
+    }
 
     try {
       setSubmitting(true);
 
       const res = await api.post("/surveys/submit", {
         plan: activePlan,
+        answer: selectedOption,
       });
 
       setSurveysDone(res.data.surveys_completed);
@@ -110,7 +111,8 @@ export default function Surveys() {
       if (res.data.completed) {
         navigate("/activation-notice", { replace: true });
       }
-    } catch {
+    } catch (err) {
+      console.error(err);
       alert("❌ Failed to submit survey. Please try again.");
     } finally {
       setSubmitting(false);
@@ -155,10 +157,11 @@ export default function Surveys() {
 
         <button
           onClick={handleNext}
-          disabled={submitting}
+          disabled={submitting || selectedOption === null}
           style={{
             ...button,
-            opacity: submitting ? 0.7 : 1,
+            opacity: submitting || selectedOption === null ? 0.6 : 1,
+            cursor: submitting || selectedOption === null ? "not-allowed" : "pointer",
           }}
         >
           {surveysDone + 1 === TOTAL_SURVEYS ? "Finish Surveys" : "Next"}
