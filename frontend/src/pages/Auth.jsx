@@ -49,14 +49,13 @@ export default function Auth() {
 
     try {
       setLoading(true);
-
-     await api.post("/auth/register", {
-  full_name: regData.fullName, // ✅ FIXED
-  username: regData.phone,     // backend expects this
+await api.post("/auth/register", {
+  full_name: regData.full_name, // ✅ FIX
   phone: regData.phone,
   email: regData.email || null,
   password: regData.password,
 });
+
 
 
       setRegMessage("✅ Account created. Please login.");
