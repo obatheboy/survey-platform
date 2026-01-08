@@ -12,8 +12,12 @@ const adminActivationRoutes = require("./routes/admin.activation.routes");
 const app = express();
 
 /* ===============================
+   🔥 TRUST PROXY (CRITICAL FIX)
+================================ */
+app.set("trust proxy", 1);
+
+/* ===============================
    CORS (VERCEL + RENDER SAFE)
-   ✅ FIXED
 ================================ */
 const allowedOrigins = [
   "http://localhost:5173",
@@ -23,7 +27,6 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow server-to-server, curl, mobile apps
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
@@ -58,7 +61,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/admin", adminActivationRoutes);
 
 /* ===============================
-   HEALTH CHECK (RENDER)
+   HEALTH CHECK
 ================================ */
 app.get("/", (req, res) => {
   res.status(200).json({
