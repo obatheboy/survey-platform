@@ -3,7 +3,7 @@ const pool = require("../config/db");
 
 /**
  * ===============================
- * 🔐 AUTHENTICATION MIDDLEWARE
+ * 🔐 AUTHENTICATION MIDDLEWARE (FIXED)
  * ===============================
  */
 exports.protect = async (req, res, next) => {
@@ -28,7 +28,7 @@ exports.protect = async (req, res, next) => {
         full_name,
         phone,
         email,
-        role
+        is_admin
       FROM users
       WHERE id = $1
       `,
@@ -40,23 +40,21 @@ exports.protect = async (req, res, next) => {
     }
 
     req.user = result.rows[0];
-
     next();
   } catch (error) {
-    console.error("Auth middleware error:", error);
+    console.error("❌ Auth middleware error:", error.message);
     return res.status(401).json({ message: "Invalid or expired session" });
   }
 };
 
 /**
  * ===============================
- * 🛡 ADMIN ONLY (REAL)
+ * 🛡 ADMIN ONLY (FIXED)
  * ===============================
  */
 exports.adminOnly = (req, res, next) => {
-  if (!req.user || req.user.role !== "admin") {
+  if (!req.user || !req.user.is_admin) {
     return res.status(403).json({ message: "Admin access denied" });
   }
-
   next();
 };
