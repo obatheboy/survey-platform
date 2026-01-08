@@ -2,78 +2,79 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 
+const TOTAL_SURVEYS = 10;
+
 export default function Withdraw() {
   const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
+  const [planKey, setPlanKey] = useState(null);
+  const [planData, setPlanData] = useState(null);
+
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitted, setSubmitted] = useState(false);
 
   /* =========================
-     🔐 ACCESS GUARD
-     (BACKEND = LAW)
+     🔐 ACCESS GUARD (PLAN-BASED)
   ========================= */
   useEffect(() => {
-    let alive = true;
-
     const load = async () => {
       try {
+        const activePlan = localStorage.getItem("active_plan");
+        if (!activePlan) {
+          navigate("/dashboard", { replace: true });
+          return;
+        }
+
         const res = await api.get("/auth/me");
+        const u = res.data;
+        const p = u.plans?.[activePlan];
 
-        const activePlan = res.data.active_plan;
-        const plan = res.data.plans?.[activePlan];
-
-        if (!activePlan || !plan) {
+        if (!p) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        // ❌ surveys not completed
-        if (!plan.completed) {
+        // ❌ SURVEYS NOT COMPLETED
+        if (p.surveys_completed < TOTAL_SURVEYS) {
+          alert("❌ Complete all surveys before withdrawing.");
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        // ❌ not activated
-        if (!plan.is_activated) {
-          navigate("/activation-notice", {
-            state: { reason: "withdraw" },
-            replace: true,
-          });
+        // ❌ NOT ACTIVATED
+        if (!p.is_activated) {
+          navigate("/congratulations", { replace: true });
           return;
         }
 
-        // ❌ no earnings
-        if (!res.data.total_earned || res.data.total_earned <= 0) {
+        // ❌ NO EARNINGS (USER LEVEL — SOURCE OF TRUTH)
+        if (!u.total_earned || u.total_earned <= 0) {
+          alert("❌ No available balance to withdraw.");
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        if (!alive) return;
-        setUser(res.data);
-      } catch (err) {
-        console.warn("Withdraw: transient auth/me failure");
-        // ❌ DO NOT redirect — interceptor handles auth
+        setUser(u);
+        setPlanKey(activePlan);
+        setPlanData(p);
+      } catch {
+        navigate("/auth", { replace: true });
       } finally {
-        if (alive) setLoading(false);
+        setLoading(false);
       }
     };
 
     load();
-    return () => (alive = false);
   }, [navigate]);
 
   if (loading) {
-    return (
-      <p style={{ textAlign: "center", marginTop: 80 }}>
-        Loading…
-      </p>
-    );
+    return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
   }
 
-  if (!user) return null;
+  if (!user || !planData) return null;
 
   /* =========================
      WITHDRAW ACTION
@@ -88,16 +89,16 @@ export default function Withdraw() {
       setMessage("⏳ Submitting withdrawal request…");
 
       await api.post("/withdraw/request", {
-        phone_number: phone.trim(),
-        amount: user.total_earned,
+        plan: planKey,
+        phone_number: phone,
+        amount: user.total_earned, // ✅ FIXED
       });
 
       setSubmitted(true);
       setMessage("⏳ Your withdrawal is being processed.");
     } catch (err) {
       setMessage(
-        err.response?.data?.message ||
-          "❌ Withdrawal request failed"
+        err.response?.data?.message || "❌ Withdrawal request failed"
       );
     }
   };
@@ -114,6 +115,10 @@ export default function Withdraw() {
     <div style={page}>
       <div style={card}>
         <h2>💸 Withdraw Earnings</h2>
+
+        <p>
+          <b>Plan:</b> {planKey}
+        </p>
 
         <p>
           <b>Available Balance:</b>{" "}
@@ -133,10 +138,7 @@ export default function Withdraw() {
 
             <button
               onClick={submitWithdraw}
-              style={{
-                ...button,
-                background: "#0a7c4a",
-              }}
+              style={{ ...button, background: "#0a7c4a" }}
             >
               Withdraw KES{" "}
               {Number(user.total_earned).toLocaleString()}
@@ -145,10 +147,7 @@ export default function Withdraw() {
         ) : (
           <div style={processingBox}>
             <p>⏳ Your withdrawal is being processed.</p>
-            <p>
-              For faster processing, share this platform
-              link with friends.
-            </p>
+            <p>For faster processing, share this platform link.</p>
 
             <button onClick={shareLink} style={shareBtn}>
               👉 Share Link
@@ -156,16 +155,14 @@ export default function Withdraw() {
           </div>
         )}
 
-        {message && (
-          <p style={{ marginTop: 12 }}>{message}</p>
-        )}
+        {message && <p style={{ marginTop: 12 }}>{message}</p>}
       </div>
     </div>
   );
 }
 
 /* =========================
-   STYLES
+   STYLES (UNCHANGED)
 ========================= */
 const page = {
   minHeight: "100vh",
