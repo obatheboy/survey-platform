@@ -49,13 +49,13 @@ export default function Congratulations() {
         const res = await api.get("/auth/me");
         const plan = res.data.plans?.[activePlan];
 
-        /* 🚫 INVALID ACCESS */
+        // 🚫 INVALID ACCESS
         if (!plan || !plan.completed) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        /* ✅ ALREADY ACTIVATED */
+        // ✅ ALREADY ACTIVATED
         if (plan.is_activated) {
           navigate("/dashboard", { replace: true });
           return;
@@ -64,8 +64,10 @@ export default function Congratulations() {
         setPlanKey(activePlan);
         setPlanState(plan);
         setTotalEarned(res.data.total_earned);
-      } catch {
-        navigate("/auth", { replace: true });
+      } catch (err) {
+        // ❗ DO NOT LOG OUT USER FROM HERE
+        console.error("Congratulations load failed:", err);
+        navigate("/dashboard", { replace: true });
       } finally {
         setLoading(false);
       }
@@ -97,7 +99,6 @@ export default function Congratulations() {
           boxShadow: `0 0 60px ${plan.glow}`,
         }}
       >
-        {/* FLAG */}
         <div style={flagWrap}>
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/4/49/Flag_of_Kenya.svg"
@@ -149,20 +150,11 @@ export default function Congratulations() {
           <p>🛡️ Verified & secure account</p>
         </div>
 
-        <div style={socialProof}>
-          🔔 <b>98%</b> of users activate and withdraw instantly
-        </div>
-
-        <div style={mpesaBadge}>
-          🇰🇪 Official Kenya Payments • <b>M-Pesa Secured</b>
-        </div>
-
         <button
           style={{
             ...activateBtn,
             background: "linear-gradient(135deg, #e60000, #ffeb3b)",
             boxShadow: "0 0 40px rgba(255,235,59,0.9)",
-            animation: "pulse 1.4s infinite",
           }}
           onClick={handleActivate}
         >
@@ -176,20 +168,12 @@ export default function Congratulations() {
           Back to Dashboard
         </button>
       </div>
-
-      <style>{`
-        @keyframes pulse {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.08); }
-          100% { transform: scale(1); }
-        }
-      `}</style>
     </div>
   );
 }
 
 /* =========================
-   STYLES (UNCHANGED)
+   STYLES
 ========================= */
 const page = {
   minHeight: "100vh",
@@ -239,9 +223,6 @@ const highlightBox = {
   textAlign: "left",
   border: "1px solid rgba(0,230,118,0.4)",
 };
-
-const socialProof = { marginTop: 16, fontSize: 13, color: "#ffd600" };
-const mpesaBadge = { marginTop: 10, fontSize: 13, color: "#00e676" };
 
 const activateBtn = {
   width: "100%",
