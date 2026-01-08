@@ -5,14 +5,14 @@ const pool = require("../config/db");
 const TOTAL_SURVEYS = 10;
 
 /* ===============================
-   🍪 COOKIE CONFIG (ENV SAFE)
+   🍪 COOKIE CONFIG (RENDER + VERCEL SAFE)
 ================================ */
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  secure: true,          // ✅ ALWAYS TRUE ON HTTPS
+  sameSite: "none",      // ✅ REQUIRED FOR CROSS-SITE COOKIE
   path: "/",
-  maxAge: 7 * 24 * 60 * 60 * 1000,
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
 /* ===============================
@@ -99,6 +99,7 @@ exports.login = async (req, res) => {
       { expiresIn: "7d" }
     );
 
+    // ✅ SET COOKIE (RENDER SAFE)
     res.cookie("token", token, COOKIE_OPTIONS);
 
     res.json({
@@ -119,12 +120,17 @@ exports.login = async (req, res) => {
    LOGOUT
 ================================ */
 exports.logout = (req, res) => {
-  res.clearCookie("token", COOKIE_OPTIONS);
+  // ✅ MUST MATCH COOKIE OPTIONS
+  res.clearCookie("token", {
+    ...COOKIE_OPTIONS,
+    maxAge: 0,
+  });
+
   res.json({ message: "Logged out" });
 };
 
 /* ===============================
-   GET ME (FIXED)
+   GET ME
 ================================ */
 exports.getMe = async (req, res) => {
   try {
@@ -177,7 +183,6 @@ exports.getMe = async (req, res) => {
         total_surveys: TOTAL_SURVEYS,
       };
 
-      // ✅ FIX: keep active_plan until ACTIVATED (not until completed)
       if (!row.is_activated && !activePlan) {
         activePlan = row.plan;
       }
