@@ -1,17 +1,19 @@
 const pool = require("../config/db");
 
 /* ===============================
-   PLAN FEES (DISPLAY ONLY)
+   PLAN ACTIVATION FEES (SOURCE OF TRUTH)
 ================================ */
-const PLAN_CONFIG = {
+const PLAN_FEES = {
   REGULAR: 100,
   VIP: 150,
   VVIP: 200,
 };
 
+const TOTAL_SURVEYS = 10;
+
 /* =====================================
    USER — SUBMIT ACTIVATION PAYMENT
-   (WITHDRAWAL UNLOCK ONLY)
+   (STRICT LAW ENFORCED)
 ===================================== */
 exports.submitActivationPayment = async (req, res) => {
   const client = await pool.connect();
@@ -32,7 +34,11 @@ exports.submitActivationPayment = async (req, res) => {
     /* 🔒 LOCK USER */
     const { rows } = await client.query(
       `
-      SELECT id, plan, is_activated
+      SELECT
+        id,
+        plan,
+        surveys_completed,
+        is_activated
       FROM users
       WHERE id = $1
       FOR UPDATE
@@ -47,8 +53,16 @@ exports.submitActivationPayment = async (req, res) => {
 
     const user = rows[0];
 
-    /* 🚫 NO PLAN → NO ACTIVATION */
-    if (!user.plan || !PLAN_CONFIG[user.plan]) {
+    /* 🚫 MUST HAVE COMPLETED SURVEYS */
+    if (user.surveys_completed !== TOTAL_SURVEYS) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        message: "Complete all surveys before activation",
+      });
+    }
+
+    /* 🚫 NO PLAN */
+    if (!user.plan || !PLAN_FEES[user.plan]) {
       await client.query("ROLLBACK");
       return res.status(400).json({
         message: "No active plan found for activation",
@@ -77,11 +91,11 @@ exports.submitActivationPayment = async (req, res) => {
     if (existing.rows.length) {
       await client.query("ROLLBACK");
       return res.status(400).json({
-        message: "Activation already submitted and pending review",
+        message: "Activation already submitted and pending approval",
       });
     }
 
-    const activationFee = PLAN_CONFIG[user.plan];
+    const activationFee = PLAN_FEES[user.plan];
 
     /* ✅ SAVE PAYMENT */
     await client.query(
@@ -96,13 +110,15 @@ exports.submitActivationPayment = async (req, res) => {
     await client.query("COMMIT");
 
     return res.json({
-      message: "Payment submitted successfully. Awaiting approval.",
       activation_status: "SUBMITTED",
+      activation_required: true,
+      withdraw_unlocked: false,
+      message: "Payment submitted successfully. Awaiting admin approval.",
     });
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("❌ Activation submit error:", error);
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error" });
   } finally {
     client.release();
   }
@@ -125,7 +141,10 @@ exports.approveActivation = async (req, res) => {
 
     const activation = await client.query(
       `
-      SELECT id, user_id, status
+      SELECT
+        id,
+        user_id,
+        status
       FROM activation_payments
       WHERE id = $1
       FOR UPDATE
@@ -140,10 +159,31 @@ exports.approveActivation = async (req, res) => {
 
     if (activation.rows[0].status !== "SUBMITTED") {
       await client.query("ROLLBACK");
-      return res.status(400).json({ message: "Already processed" });
+      return res.status(400).json({ message: "Activation already processed" });
     }
 
-    /* ✅ APPROVE */
+    /* 🔒 ENSURE USER REALLY COMPLETED SURVEYS */
+    const userCheck = await client.query(
+      `
+      SELECT surveys_completed
+      FROM users
+      WHERE id = $1
+      FOR UPDATE
+      `,
+      [activation.rows[0].user_id]
+    );
+
+    if (
+      !userCheck.rows.length ||
+      userCheck.rows[0].surveys_completed !== TOTAL_SURVEYS
+    ) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        message: "User has not completed required surveys",
+      });
+    }
+
+    /* ✅ APPROVE PAYMENT */
     await client.query(
       `
       UPDATE activation_payments
@@ -165,11 +205,14 @@ exports.approveActivation = async (req, res) => {
 
     await client.query("COMMIT");
 
-    res.json({ message: "Activation approved" });
+    return res.json({
+      message: "Activation approved",
+      withdraw_unlocked: true,
+    });
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("❌ Approve activation error:", error);
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error" });
   } finally {
     client.release();
   }
@@ -203,16 +246,18 @@ exports.rejectActivation = async (req, res) => {
 
     if (!result.rows.length) {
       await client.query("ROLLBACK");
-      return res.status(404).json({ message: "Activation request not found or already processed" });
+      return res.status(404).json({
+        message: "Activation request not found or already processed",
+      });
     }
 
     await client.query("COMMIT");
 
-    res.json({ message: "Activation rejected" });
+    return res.json({ message: "Activation rejected" });
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("❌ Reject activation error:", error);
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error" });
   } finally {
     client.release();
   }

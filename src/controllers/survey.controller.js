@@ -3,16 +3,16 @@ const pool = require("../config/db");
 const TOTAL_SURVEYS = 10;
 
 /* ===============================
-   PLAN REWARDS (SOURCE OF TRUTH)
+   PLAN TOTAL EARNINGS (SOURCE OF TRUTH)
 ================================ */
-const PLAN_REWARDS = {
-  REGULAR: 150,
-  VIP: 200,
-  VVIP: 300,
+const PLAN_TOTAL_EARNINGS = {
+  REGULAR: 1500,
+  VIP: 2000,
+  VVIP: 3000,
 };
 
 /* ===============================
-   SUBMIT SURVEY
+   SUBMIT SURVEY (LAW ENFORCED)
 ================================ */
 exports.submitSurvey = async (req, res) => {
   const client = await pool.connect();
@@ -44,28 +44,39 @@ exports.submitSurvey = async (req, res) => {
 
     const user = rows[0];
 
-    /* ✅ SAFE PLAN RESOLUTION (NO BLOCKING EVER) */
-    const activePlan =
-      PLAN_REWARDS[user.plan] ? user.plan : "REGULAR";
-
-    /* 🎉 PLAN COMPLETED → SHOW CONGRATS */
-    if (user.surveys_completed >= TOTAL_SURVEYS) {
+    /* 🚫 NO PLAN → CANNOT SUBMIT */
+    if (!user.plan || !PLAN_TOTAL_EARNINGS[user.plan]) {
       await client.query("ROLLBACK");
-      return res.status(200).json({
-        completed: true,
-        plan: activePlan,
-        surveys_completed: user.surveys_completed,
-        total_earned: Number(user.total_earned || 0),
-        show_activation: true,
-        message: "Congratulations! You have completed this plan.",
+      return res.status(400).json({
+        message: "No active survey plan",
       });
     }
 
-    /* 💰 CALCULATE REWARD (SAFE) */
-    const reward = PLAN_REWARDS[activePlan];
+    /* 🔒 SURVEYS ALREADY COMPLETED → HARD LOCK */
+    if (user.surveys_completed >= TOTAL_SURVEYS) {
+      await client.query("ROLLBACK");
+      return res.json({
+        completed: true,
+        surveys_completed: TOTAL_SURVEYS,
+        total_earned: Number(user.total_earned),
+        surveys_locked: true,
+        activation_required: !user.is_activated,
+      });
+    }
 
+    /* ➕ INCREMENT SURVEYS */
     const newCompleted = user.surveys_completed + 1;
-    const newTotalEarned = Number(user.total_earned || 0) + reward;
+
+    let newTotalEarned = Number(user.total_earned || 0);
+    let surveysLocked = false;
+    let activationRequired = false;
+
+    /* 🎉 CREDIT EARNINGS ONLY ON 10/10 */
+    if (newCompleted === TOTAL_SURVEYS) {
+      newTotalEarned += PLAN_TOTAL_EARNINGS[user.plan];
+      surveysLocked = true;
+      activationRequired = true;
+    }
 
     /* ✅ UPDATE USER */
     await client.query(
@@ -81,13 +92,13 @@ exports.submitSurvey = async (req, res) => {
 
     await client.query("COMMIT");
 
+    /* ✅ SINGLE, CANONICAL RESPONSE */
     return res.json({
       completed: newCompleted === TOTAL_SURVEYS,
-      plan: activePlan,
       surveys_completed: newCompleted,
-      earned_this_survey: reward,
       total_earned: newTotalEarned,
-      show_activation: newCompleted === TOTAL_SURVEYS,
+      surveys_locked: surveysLocked,
+      activation_required: activationRequired,
     });
   } catch (error) {
     await client.query("ROLLBACK");
