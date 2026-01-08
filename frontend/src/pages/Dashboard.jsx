@@ -6,12 +6,12 @@ import LiveWithdrawalFeed from "./components/LiveWithdrawalFeed.jsx";
 import "./Dashboard.css";
 
 /* =========================
-   PLAN CONFIG (DISPLAY ONLY)
+   PLAN CONFIG (DISPLAY)
 ========================= */
 const PLANS = {
-  REGULAR: { name: "Regular", icon: "⭐" },
-  VIP: { name: "VIP", icon: "💎" },
-  VVIP: { name: "VVIP", icon: "👑" },
+  REGULAR: { name: "Regular", icon: "⭐", total: 1500 },
+  VIP: { name: "VIP", icon: "💎", total: 2000 },
+  VVIP: { name: "VVIP", icon: "👑", total: 3000 },
 };
 
 const TOTAL_SURVEYS = 10;
@@ -26,7 +26,7 @@ export default function Dashboard() {
   const [toast, setToast] = useState("");
 
   /* =========================
-     LOAD USER (DB = LAW)
+     LOAD USER (DB = TRUTH)
   ========================= */
   useEffect(() => {
     api
@@ -40,43 +40,37 @@ export default function Dashboard() {
   if (!user) return null;
 
   /* =========================
-     STRICT HELPERS
+     HELPERS (STRICT + UX SAFE)
   ========================= */
-  const isUserPlan = (planKey) => user.plan === planKey;
-  const isCompleted = user.surveys_completed >= TOTAL_SURVEYS;
-  const requiresActivation = isCompleted && !user.is_activated;
+  const isCurrentPlan = (planKey) => user.plan === planKey;
+
+  const surveysDone = (planKey) =>
+    isCurrentPlan(planKey) ? user.surveys_completed : 0;
+
+  const isCompleted = (planKey) =>
+    isCurrentPlan(planKey) && user.surveys_completed >= TOTAL_SURVEYS;
+
+  const isWithdrawable = (planKey) =>
+    isCompleted(planKey) && user.is_activated;
 
   /* =========================
      ACTIONS
   ========================= */
   const startSurvey = (planKey) => {
-    if (!isUserPlan(planKey)) {
-      setToast("You can only continue your selected plan");
-      setTimeout(() => setToast(""), 3000);
-      return;
-    }
-
-    if (isCompleted) {
-      navigate("/activation-notice", { replace: true });
-      return;
-    }
-
     localStorage.setItem("selectedPlan", planKey);
     navigate("/surveys");
   };
 
   const handleWithdraw = (planKey) => {
-    if (!isUserPlan(planKey)) return;
-
-    if (!isCompleted) {
-      setToast("Complete surveys to unlock withdrawal");
+    if (!isCompleted(planKey)) {
+      setToast("Complete all surveys to unlock withdrawal");
       surveySectionRef.current?.scrollIntoView({ behavior: "smooth" });
       setTimeout(() => setToast(""), 3000);
       return;
     }
 
-    if (requiresActivation) {
-      navigate("/activation-notice", { replace: true });
+    if (!user.is_activated) {
+      navigate("/activation-notice");
       return;
     }
 
@@ -102,7 +96,10 @@ export default function Dashboard() {
         user={user}
       />
 
-      <LiveWithdrawalFeed />
+      {/* 🔒 FEED MUST NOT BLOCK CLICKS */}
+      <div style={{ pointerEvents: "none" }}>
+        <LiveWithdrawalFeed />
+      </div>
 
       {/* GREETING */}
       <section className="card greeting">
@@ -113,40 +110,36 @@ export default function Dashboard() {
       {/* TOTALS */}
       <section className="card earnings">
         <div>
-          <span>Total Earnings</span>
-          <strong>KES {Number(user.total_earned).toLocaleString()}</strong>
-        </div>
-        <div>
-          <span>Current Balance</span>
-          <strong>KES {Number(user.total_earned).toLocaleString()}</strong>
+          <span>Total Earned</span>
+          <strong>KES {Number(user.total_earned || 0).toLocaleString()}</strong>
         </div>
       </section>
 
       {/* WITHDRAW */}
       <h3 className="section-title withdraw-title">💸 Withdraw Earnings</h3>
 
-      {Object.entries(PLANS).map(([key, plan]) => {
-        const show = isUserPlan(key);
-
-        return (
-          <div key={key} className={`card withdraw-card ${!show ? "locked" : ""}`}>
-            <div>
-              <h4>{plan.icon} {plan.name}</h4>
-              <strong>
-                KES {show && isCompleted ? Number(user.total_earned).toLocaleString() : "0"}
-              </strong>
-            </div>
-
-            <button
-              className="outline-btn"
-              disabled={!show}
-              onClick={() => handleWithdraw(key)}
-            >
-              Withdraw
-            </button>
+      {Object.entries(PLANS).map(([key, plan]) => (
+        <div key={key} className="card withdraw-card">
+          <div>
+            <h4>{plan.icon} {plan.name}</h4>
+            <p>
+              💰 {plan.total}{" "}
+              {isWithdrawable(key)
+                ? "(Withdrawable)"
+                : isCompleted(key)
+                ? "(Activation required)"
+                : "(Locked)"}
+            </p>
           </div>
-        );
-      })}
+
+          <button
+            className="outline-btn"
+            onClick={() => handleWithdraw(key)}
+          >
+            Withdraw
+          </button>
+        </div>
+      ))}
 
       {/* SURVEYS */}
       <h3 ref={surveySectionRef} className="section-title">
@@ -157,15 +150,15 @@ export default function Dashboard() {
         <div key={key} className="card plan-card">
           <div>
             <h4>{plan.icon} {plan.name}</h4>
-            <p>Progress: {isUserPlan(key) ? user.surveys_completed : 0} / {TOTAL_SURVEYS}</p>
+            <p>Earn up to <b>KES {plan.total}</b></p>
+            <p>Progress: {surveysDone(key)} / {TOTAL_SURVEYS}</p>
           </div>
 
           <button
             className="primary-btn"
-            disabled={!isUserPlan(key)}
             onClick={() => startSurvey(key)}
           >
-            {isUserPlan(key) && isCompleted ? "Completed" : "Start Survey"}
+            {isCompleted(key) ? "Completed" : "Start Survey"}
           </button>
         </div>
       ))}
