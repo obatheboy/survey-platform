@@ -56,11 +56,8 @@ export default function Surveys() {
           return;
         }
 
-        // COMPLETED PLAN → never re-enter surveys
-        if (
-          u.plan === selectedPlanKey &&
-          u.surveys_completed >= TOTAL_SURVEYS
-        ) {
+        // COMPLETED SURVEYS → activation
+        if (u.surveys_completed >= TOTAL_SURVEYS) {
           navigate("/activation-notice", { replace: true });
           return;
         }
@@ -79,12 +76,12 @@ export default function Surveys() {
   }
 
   /* =========================
-     DB-BASED PROGRESS
+     DB-BASED PROGRESS (FIXED)
   ========================= */
-  const surveysDone =
-    user.plan === selectedPlanKey ? user.surveys_completed : 0;
+  const surveysDone = user.surveys_completed;
+  const safeIndex = Math.min(surveysDone, QUESTIONS.length - 1);
 
-  const currentQuestion = QUESTIONS[surveysDone];
+  const currentQuestion = QUESTIONS[safeIndex];
   const earned = surveysDone * plan.perSurvey;
   const progress = ((surveysDone + 1) / TOTAL_SURVEYS) * 100;
 
@@ -107,7 +104,6 @@ export default function Surveys() {
       const updatedUser = refreshed.data;
       setUser(updatedUser);
 
-      // Completed → congratulations
       if (updatedUser.surveys_completed >= TOTAL_SURVEYS) {
         navigate("/activation-notice", { replace: true });
         return;

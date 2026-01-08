@@ -14,20 +14,18 @@ export default function MainMenuDrawer({ open, onClose, user }) {
   const navigate = useNavigate();
 
   /* =========================
-     WITHDRAW (MATCH DASHBOARD)
+     WITHDRAW (MATCH DASHBOARD EXACTLY)
   ========================= */
-  const handleWithdraw = (planKey) => {
+  const handleWithdraw = () => {
     // 🔒 DB is source of truth
     if (!user.total_earned || user.total_earned <= 0) {
       alert("❌ You have no earnings to withdraw.");
       return;
     }
 
-    // Store plan ONLY for navigation context (UI helper)
-    localStorage.setItem("selectedPlan", planKey);
     onClose();
 
-    // 🔐 Activation required → Congratulations / Activation
+    // 🔐 Activation required
     if (user.activation_required) {
       navigate("/activation-notice", {
         state: { reason: "withdraw" },
@@ -110,7 +108,7 @@ export default function MainMenuDrawer({ open, onClose, user }) {
                 borderColor: plan.color,
                 color: plan.color,
               }}
-              onClick={() => handleWithdraw(key)}
+              onClick={handleWithdraw}
             >
               Withdraw
             </button>
