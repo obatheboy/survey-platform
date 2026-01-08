@@ -9,27 +9,16 @@ const api = axios.create({
 });
 
 /* =====================================================
-   🔐 GLOBAL AUTH HANDLER (SAFE)
+   🚫 NO GLOBAL AUTH REDIRECTS
+   - Axios must NEVER decide navigation
+   - Pages (Dashboard, Surveys, etc.) handle auth
 ===================================================== */
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const status = error?.response?.status;
-    const url = error?.config?.url || "";
-
-    /**
-     * 🔒 Redirect ONLY when session is truly invalid
-     * That is ONLY confirmed via /auth/me
-     */
-    if (status === 401 && url.includes("/auth/me")) {
-      const path = window.location.pathname;
-
-      // Prevent infinite redirect loop
-      if (!path.startsWith("/auth")) {
-        window.location.replace("/auth");
-      }
-    }
-
+    // ❌ Do NOT redirect here
+    // ❌ Do NOT inspect status codes here
+    // ✔ Just forward the error
     return Promise.reject(error);
   }
 );
