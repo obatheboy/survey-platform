@@ -32,44 +32,43 @@ const QUESTIONS = [
 export default function Surveys() {
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(null);
+  const [activePlan, setActivePlan] = useState(null);
+  const [surveysDone, setSurveysDone] = useState(0);
   const [loading, setLoading] = useState(true);
   const [selectedOption, setSelectedOption] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  /* ✅ AUTHORITATIVE PLAN (LOCKED) */
-  const activePlan = localStorage.getItem("selectedPlan");
-
   /* =========================
-     LOAD USER (DB = SOURCE OF TRUTH)
+     LOAD ACTIVE PLAN + STATE (DB ONLY)
   ========================= */
   useEffect(() => {
     const load = async () => {
       try {
-        if (!activePlan) {
+        /**
+         * Backend MUST tell frontend
+         * which plan is currently active
+         * and its progress
+         */
+        const res = await api.get("/auth/me");
+
+        const {
+          active_plan,
+          surveys_completed,
+          surveys_locked,
+        } = res.data;
+
+        if (!active_plan) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        let res = await api.get("/auth/me");
-        let u = res.data;
-
-        /* 🧠 ENSURE PLAN EXISTS IN DB */
-        await api.post("/surveys/select-plan", {
-          plan: activePlan,
-        });
-
-        /* 🔄 RELOAD AFTER DB SYNC */
-        res = await api.get("/auth/me");
-        u = res.data;
-
-        /* 🔒 COMPLETED (THIS PLAN ONLY) */
-        if (u.surveys_completed >= TOTAL_SURVEYS) {
+        if (surveys_locked) {
           navigate("/activation-notice", { replace: true });
           return;
         }
 
-        setUser(u);
+        setActivePlan(active_plan);
+        setSurveysDone(surveys_completed);
       } catch {
         navigate("/auth", { replace: true });
       } finally {
@@ -78,18 +77,13 @@ export default function Surveys() {
     };
 
     load();
-  }, [navigate, activePlan]);
+  }, [navigate]);
 
-  if (loading || !user) {
+  if (loading || !activePlan) {
     return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
   }
 
-  /* =========================
-     DB-DRIVEN STATE
-  ========================= */
-  const surveysDone = user.surveys_completed;
-
-  if (surveysDone >= QUESTIONS.length) {
+  if (surveysDone >= TOTAL_SURVEYS) {
     navigate("/activation-notice", { replace: true });
     return null;
   }
@@ -98,7 +92,7 @@ export default function Surveys() {
   const progress = (surveysDone / TOTAL_SURVEYS) * 100;
 
   /* =========================
-     SUBMIT ANSWER (PLAN-AWARE)
+     SUBMIT ANSWER (BACKEND LAW)
   ========================= */
   const handleNext = async () => {
     if (selectedOption === null || submitting) return;
@@ -106,20 +100,16 @@ export default function Surveys() {
     try {
       setSubmitting(true);
 
-      await api.post("/surveys/submit", {
+      const res = await api.post("/surveys/submit", {
         plan: activePlan,
       });
 
-      const refreshed = await api.get("/auth/me");
-      const updatedUser = refreshed.data;
-
-      if (updatedUser.surveys_completed >= TOTAL_SURVEYS) {
-        navigate("/activation-notice", { replace: true });
-        return;
-      }
-
-      setUser(updatedUser);
+      setSurveysDone(res.data.surveys_completed);
       setSelectedOption(null);
+
+      if (res.data.completed) {
+        navigate("/activation-notice", { replace: true });
+      }
     } catch {
       alert("❌ Failed to submit survey. Please try again.");
     } finally {
