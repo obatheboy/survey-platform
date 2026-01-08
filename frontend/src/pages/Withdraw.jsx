@@ -16,9 +16,6 @@ export default function Withdraw() {
   const [loading, setLoading] = useState(true);
   const [submitted, setSubmitted] = useState(false);
 
-  /* =========================
-     🔐 ACCESS GUARD (PLAN-BASED)
-  ========================= */
   useEffect(() => {
     const load = async () => {
       try {
@@ -37,22 +34,17 @@ export default function Withdraw() {
           return;
         }
 
-        // ❌ SURVEYS NOT COMPLETED
         if (p.surveys_completed < TOTAL_SURVEYS) {
-          alert("❌ Complete all surveys before withdrawing.");
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        // ❌ NOT ACTIVATED
         if (!p.is_activated) {
           navigate("/congratulations", { replace: true });
           return;
         }
 
-        // ❌ NO EARNINGS (USER LEVEL — SOURCE OF TRUTH)
         if (!u.total_earned || u.total_earned <= 0) {
-          alert("❌ No available balance to withdraw.");
           navigate("/dashboard", { replace: true });
           return;
         }
@@ -74,11 +66,10 @@ export default function Withdraw() {
     return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
   }
 
-  if (!user || !planData) return null;
+  if (!user || !planData) {
+    return <p style={{ textAlign: "center", marginTop: 80 }}>Redirecting…</p>;
+  }
 
-  /* =========================
-     WITHDRAW ACTION
-  ========================= */
   const submitWithdraw = async () => {
     if (!phone.trim()) {
       setMessage("❌ Phone number is required");
@@ -91,34 +82,22 @@ export default function Withdraw() {
       await api.post("/withdraw/request", {
         plan: planKey,
         phone_number: phone,
-        amount: user.total_earned, // ✅ FIXED
+        amount: user.total_earned,
       });
 
       setSubmitted(true);
       setMessage("⏳ Your withdrawal is being processed.");
     } catch (err) {
-      setMessage(
-        err.response?.data?.message || "❌ Withdrawal request failed"
-      );
+      setMessage(err.response?.data?.message || "❌ Withdrawal failed");
     }
   };
 
-  const shareLink = () => {
-    navigator.clipboard.writeText(window.location.origin);
-    alert("✅ Link copied. Share with friends!");
-  };
-
-  /* =========================
-     UI
-  ========================= */
   return (
     <div style={page}>
       <div style={card}>
         <h2>💸 Withdraw Earnings</h2>
 
-        <p>
-          <b>Plan:</b> {planKey}
-        </p>
+        <p><b>Plan:</b> {planKey}</p>
 
         <p>
           <b>Available Balance:</b>{" "}
@@ -136,34 +115,21 @@ export default function Withdraw() {
               style={input}
             />
 
-            <button
-              onClick={submitWithdraw}
-              style={{ ...button, background: "#0a7c4a" }}
-            >
-              Withdraw KES{" "}
-              {Number(user.total_earned).toLocaleString()}
+            <button onClick={submitWithdraw} style={button}>
+              Withdraw KES {Number(user.total_earned).toLocaleString()}
             </button>
           </>
         ) : (
-          <div style={processingBox}>
-            <p>⏳ Your withdrawal is being processed.</p>
-            <p>For faster processing, share this platform link.</p>
-
-            <button onClick={shareLink} style={shareBtn}>
-              👉 Share Link
-            </button>
-          </div>
+          <p>⏳ Withdrawal is being processed.</p>
         )}
 
-        {message && <p style={{ marginTop: 12 }}>{message}</p>}
+        {message && <p>{message}</p>}
       </div>
     </div>
   );
 }
 
-/* =========================
-   STYLES (UNCHANGED)
-========================= */
+/* STYLES */
 const page = {
   minHeight: "100vh",
   background: "#f3f6f2",
@@ -192,25 +158,8 @@ const button = {
   marginTop: 16,
   padding: 12,
   color: "#fff",
+  background: "#0a7c4a",
   border: "none",
   borderRadius: 8,
-  cursor: "pointer",
-};
-
-const processingBox = {
-  marginTop: 20,
-  padding: 16,
-  background: "#fff7e6",
-  borderRadius: 12,
-};
-
-const shareBtn = {
-  marginTop: 10,
-  padding: 10,
-  width: "100%",
-  borderRadius: 8,
-  border: "none",
-  background: "#007bff",
-  color: "#fff",
   cursor: "pointer",
 };
