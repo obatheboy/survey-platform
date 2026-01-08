@@ -5,16 +5,15 @@ const pool = require("../config/db");
 const TOTAL_SURVEYS = 10;
 
 /* ===============================
-   🍪 COOKIE CONFIG (DEV + PROD SAFE)
+   🍪 COOKIE CONFIG (FIXED)
+   REQUIRED FOR CROSS-SITE AUTH
 ================================ */
-const isProduction = process.env.NODE_ENV === "production";
-
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: isProduction,                 // ✅ HTTPS only in prod
-  sameSite: isProduction ? "none" : "lax",
+  secure: true,          // 🔒 REQUIRED
+  sameSite: "none",      // 🔥 REQUIRED
   path: "/",
-  maxAge: 7 * 24 * 60 * 60 * 1000,       // 7 days
+  maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
 /* ===============================
@@ -98,7 +97,7 @@ exports.login = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    // ✅ COOKIE FIX (NO RANDOM LOGOUTS)
+    // 🔥 FIX: CROSS-SITE COOKIE
     res.cookie("token", token, COOKIE_OPTIONS);
 
     res.json({
@@ -119,17 +118,12 @@ exports.login = async (req, res) => {
    LOGOUT
 ================================ */
 exports.logout = (req, res) => {
-  res.clearCookie("token", {
-    path: "/",
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
-  });
-
+  res.clearCookie("token", COOKIE_OPTIONS);
   res.json({ message: "Logged out" });
 };
 
 /* ===============================
-   GET ME (MULTI-PLAN SAFE)
+   GET ME (SESSION SOURCE OF TRUTH)
 ================================ */
 exports.getMe = async (req, res) => {
   try {
@@ -137,7 +131,6 @@ exports.getMe = async (req, res) => {
       return res.status(401).json({ message: "Invalid session" });
     }
 
-    /* 🔹 USER CORE */
     const userRes = await pool.query(
       `
       SELECT
@@ -157,7 +150,6 @@ exports.getMe = async (req, res) => {
       return res.status(401).json({ message: "Invalid session" });
     }
 
-    /* 🔹 PLAN STATES */
     const plansRes = await pool.query(
       `
       SELECT
@@ -193,13 +185,9 @@ exports.getMe = async (req, res) => {
 
     res.json({
       ...userRes.rows[0],
-
-      // surveys page
       active_plan: activePlan,
       surveys_completed: activePlanData?.surveys_completed || 0,
       surveys_locked: activePlanData?.completed === true,
-
-      // dashboard
       plans,
     });
   } catch (error) {
