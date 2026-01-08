@@ -12,7 +12,7 @@ const PLAN_TOTAL_EARNINGS = {
 };
 
 /* ===============================
-   SELECT PLAN (DB = SOURCE OF TRUTH)
+   SELECT PLAN (PER-PLAN ISOLATION)
 ================================ */
 exports.selectPlan = async (req, res) => {
   const userId = req.user.id;
@@ -23,19 +23,23 @@ exports.selectPlan = async (req, res) => {
   }
 
   try {
+    /**
+     * Create plan row if it doesn't exist
+     * DO NOT touch other plans
+     */
     await pool.query(
       `
-      UPDATE users
-      SET
-        plan = $1,
-        surveys_completed = 0,
-        is_activated = false
-      WHERE id = $2
+      INSERT INTO user_surveys (user_id, plan)
+      VALUES ($1, $2)
+      ON CONFLICT (user_id, plan) DO NOTHING
       `,
-      [plan, userId]
+      [userId, plan]
     );
 
-    return res.json({ success: true, plan });
+    return res.json({
+      success: true,
+      plan,
+    });
   } catch (err) {
     console.error("❌ Select plan error:", err);
     return res.status(500).json({ message: "Server error" });
@@ -50,86 +54,100 @@ exports.submitSurvey = async (req, res) => {
 
   try {
     const userId = req.user.id;
+    const { plan } = req.body;
+
+    if (!PLAN_TOTAL_EARNINGS[plan]) {
+      return res.status(400).json({ message: "Invalid plan" });
+    }
 
     await client.query("BEGIN");
 
-    /* 🔒 LOCK USER ROW */
+    /* 🔒 LOCK PLAN ROW */
     const { rows } = await client.query(
       `
       SELECT
-        plan,
         surveys_completed,
-        total_earned,
+        completed,
         is_activated
-      FROM users
-      WHERE id = $1
+      FROM user_surveys
+      WHERE user_id = $1 AND plan = $2
       FOR UPDATE
       `,
-      [userId]
+      [userId, plan]
     );
 
     if (!rows.length) {
       await client.query("ROLLBACK");
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const user = rows[0];
-
-    /* 🚫 NO PLAN → CANNOT SUBMIT */
-    if (!user.plan || !PLAN_TOTAL_EARNINGS[user.plan]) {
-      await client.query("ROLLBACK");
       return res.status(400).json({
-        message: "No active survey plan",
+        message: "Plan not selected",
       });
     }
 
-    /* 🔒 SURVEYS ALREADY COMPLETED → HARD LOCK */
-    if (user.surveys_completed >= TOTAL_SURVEYS) {
+    const survey = rows[0];
+
+    /* 🔒 PLAN ALREADY COMPLETED */
+    if (survey.completed) {
       await client.query("ROLLBACK");
       return res.json({
         completed: true,
         surveys_completed: TOTAL_SURVEYS,
-        total_earned: Number(user.total_earned),
         surveys_locked: true,
-        activation_required: !user.is_activated,
+        activation_required: !survey.is_activated,
       });
     }
 
-    /* ➕ INCREMENT SURVEYS */
-    const newCompleted = user.surveys_completed + 1;
+    const newCompleted = survey.surveys_completed + 1;
 
-    let newTotalEarned = Number(user.total_earned || 0);
-    let surveysLocked = false;
-    let activationRequired = false;
-
-    /* 🎉 CREDIT EARNINGS ONLY ON 10/10 */
+    /* 🎉 COMPLETE PLAN */
     if (newCompleted === TOTAL_SURVEYS) {
-      newTotalEarned += PLAN_TOTAL_EARNINGS[user.plan];
-      surveysLocked = true;
-      activationRequired = true;
+      await client.query(
+        `
+        UPDATE user_surveys
+        SET
+          surveys_completed = $1,
+          completed = true
+        WHERE user_id = $2 AND plan = $3
+        `,
+        [TOTAL_SURVEYS, userId, plan]
+      );
+
+      /* 💰 CREDIT WALLET ONCE */
+      await client.query(
+        `
+        UPDATE users
+        SET total_earned = COALESCE(total_earned, 0) + $1
+        WHERE id = $2
+        `,
+        [PLAN_TOTAL_EARNINGS[plan], userId]
+      );
+
+      await client.query("COMMIT");
+
+      return res.json({
+        completed: true,
+        surveys_completed: TOTAL_SURVEYS,
+        surveys_locked: true,
+        activation_required: true,
+        total_earned_added: PLAN_TOTAL_EARNINGS[plan],
+      });
     }
 
-    /* ✅ UPDATE USER */
+    /* ➕ NORMAL STEP */
     await client.query(
       `
-      UPDATE users
-      SET
-        surveys_completed = $1,
-        total_earned = $2
-      WHERE id = $3
+      UPDATE user_surveys
+      SET surveys_completed = $1
+      WHERE user_id = $2 AND plan = $3
       `,
-      [newCompleted, newTotalEarned, userId]
+      [newCompleted, userId, plan]
     );
 
     await client.query("COMMIT");
 
-    /* ✅ SINGLE, CANONICAL RESPONSE */
     return res.json({
-      completed: newCompleted === TOTAL_SURVEYS,
+      completed: false,
       surveys_completed: newCompleted,
-      total_earned: newTotalEarned,
-      surveys_locked: surveysLocked,
-      activation_required: activationRequired,
+      surveys_locked: false,
     });
   } catch (error) {
     await client.query("ROLLBACK");

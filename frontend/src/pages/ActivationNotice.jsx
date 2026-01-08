@@ -74,6 +74,13 @@ export default function ActivationNotice() {
 
   const plan = PLAN_CONFIG[user.plan];
 
+  /* =========================
+     FIXED: ACTIVATE HANDLER
+  ========================= */
+  const handleActivate = () => {
+    navigate("/activate");
+  };
+
   return (
     <div style={page}>
       <div
@@ -151,7 +158,7 @@ export default function ActivationNotice() {
             boxShadow: "0 0 40px rgba(255,235,59,0.9)",
             animation: "pulse 1.4s infinite",
           }}
-          onClick={() => navigate("/activate")}
+          onClick={handleActivate}
         >
           🔓 ACTIVATE & WITHDRAW
         </button>

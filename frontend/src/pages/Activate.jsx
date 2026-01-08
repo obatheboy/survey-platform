@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 
 /* =========================
@@ -38,7 +38,6 @@ const PLAN_CONFIG = {
 
 export default function Activate() {
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [user, setUser] = useState(null);
   const [planKey, setPlanKey] = useState(null);
@@ -49,6 +48,7 @@ export default function Activate() {
 
   /* =========================
      LOAD + VALIDATE ACCESS
+     (DB = SOURCE OF TRUTH)
   ========================= */
   useEffect(() => {
     const load = async () => {
@@ -56,8 +56,6 @@ export default function Activate() {
         const res = await api.get("/auth/me");
         const u = res.data;
         setUser(u);
-
-        const reason = location.state?.reason;
 
         // Plan must exist in DB
         if (!u.plan || !PLAN_CONFIG[u.plan]) {
@@ -77,12 +75,6 @@ export default function Activate() {
           return;
         }
 
-        // Reason must be valid entry
-        if (reason !== "completed" && reason !== "withdraw") {
-          navigate("/dashboard", { replace: true });
-          return;
-        }
-
         setPlanKey(u.plan);
       } catch {
         navigate("/auth", { replace: true });
@@ -92,7 +84,7 @@ export default function Activate() {
     };
 
     load();
-  }, [navigate, location.state]);
+  }, [navigate]);
 
   if (loading) {
     return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;

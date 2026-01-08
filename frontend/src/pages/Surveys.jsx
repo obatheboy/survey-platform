@@ -37,34 +37,33 @@ export default function Surveys() {
   const [selectedOption, setSelectedOption] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
+  /* ✅ AUTHORITATIVE PLAN (LOCKED) */
+  const activePlan = localStorage.getItem("selectedPlan");
+
   /* =========================
      LOAD USER (DB = SOURCE OF TRUTH)
   ========================= */
   useEffect(() => {
     const load = async () => {
       try {
+        if (!activePlan) {
+          navigate("/dashboard", { replace: true });
+          return;
+        }
+
         let res = await api.get("/auth/me");
         let u = res.data;
 
-        /* 🧠 ONE-TIME PLAN SYNC */
-        if (!u.plan) {
-          const selectedPlan = localStorage.getItem("selectedPlan");
+        /* 🧠 ENSURE PLAN EXISTS IN DB */
+        await api.post("/surveys/select-plan", {
+          plan: activePlan,
+        });
 
-          if (!selectedPlan) {
-            navigate("/dashboard", { replace: true });
-            return;
-          }
+        /* 🔄 RELOAD AFTER DB SYNC */
+        res = await api.get("/auth/me");
+        u = res.data;
 
-          await api.post("/surveys/select-plan", {
-            plan: selectedPlan,
-          });
-
-          // 🔄 Reload AFTER DB update
-          res = await api.get("/auth/me");
-          u = res.data;
-        }
-
-        /* 🔒 COMPLETED */
+        /* 🔒 COMPLETED (THIS PLAN ONLY) */
         if (u.surveys_completed >= TOTAL_SURVEYS) {
           navigate("/activation-notice", { replace: true });
           return;
@@ -79,7 +78,7 @@ export default function Surveys() {
     };
 
     load();
-  }, [navigate]);
+  }, [navigate, activePlan]);
 
   if (loading || !user) {
     return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
@@ -99,7 +98,7 @@ export default function Surveys() {
   const progress = (surveysDone / TOTAL_SURVEYS) * 100;
 
   /* =========================
-     SUBMIT ANSWER
+     SUBMIT ANSWER (PLAN-AWARE)
   ========================= */
   const handleNext = async () => {
     if (selectedOption === null || submitting) return;
@@ -107,7 +106,9 @@ export default function Surveys() {
     try {
       setSubmitting(true);
 
-      await api.post("/surveys/submit");
+      await api.post("/surveys/submit", {
+        plan: activePlan,
+      });
 
       const refreshed = await api.get("/auth/me");
       const updatedUser = refreshed.data;
@@ -132,7 +133,7 @@ export default function Surveys() {
   return (
     <div style={page}>
       <div style={card}>
-        <h2 style={title}>📋 {PLAN_LABELS[user.plan]} Survey</h2>
+        <h2 style={title}>📋 {PLAN_LABELS[activePlan]} Survey</h2>
 
         <div style={meta}>
           <span>
@@ -178,7 +179,7 @@ export default function Surveys() {
 }
 
 /* =========================
-   STYLES
+   STYLES (UNCHANGED)
 ========================= */
 
 const page = {

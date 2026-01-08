@@ -21,51 +21,68 @@ export default function Dashboard() {
   const surveySectionRef = useRef(null);
 
   const [user, setUser] = useState(null);
+  const [surveyStatus, setSurveyStatus] = useState({});
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState("");
 
   /* =========================
-     LOAD USER (DB = TRUTH)
+     LOAD DATA (DB = TRUTH)
   ========================= */
   useEffect(() => {
-    api
-      .get("/auth/me")
-      .then((res) => setUser(res.data))
-      .catch(() => navigate("/auth", { replace: true }))
-      .finally(() => setLoading(false));
+    const load = async () => {
+      try {
+        const userRes = await api.get("/auth/me");
+        setUser(userRes.data);
+
+        const surveyRes = await api.get("/surveys/status");
+        const map = {};
+
+        surveyRes.data.forEach((row) => {
+          map[row.plan] = row;
+        });
+
+        setSurveyStatus(map);
+      } catch {
+        navigate("/auth", { replace: true });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
   }, [navigate]);
 
   if (loading) return <p className="loading">Loading dashboard…</p>;
   if (!user) return null;
 
   /* =========================
-     HELPERS (STRICT LAW)
+     HELPERS (PER-PLAN LAW)
   ========================= */
-  const isCurrentPlan = (planKey) => user.plan === planKey;
+  const surveysDone = (plan) =>
+    surveyStatus[plan]?.surveys_completed || 0;
 
-  const surveysDone = (planKey) =>
-    isCurrentPlan(planKey) ? user.surveys_completed : 0;
+  const isCompleted = (plan) =>
+    surveyStatus[plan]?.completed === true;
 
-  // ✅ FIX: >= not === (DB truth protection)
-  const isCompleted = (planKey) =>
-    isCurrentPlan(planKey) && user.surveys_completed >= TOTAL_SURVEYS;
+  const canWithdraw = (plan) =>
+    isCompleted(plan) && user.is_activated;
 
   /* =========================
      ACTIONS
   ========================= */
-  const startSurvey = (planKey) => {
-    if (isCompleted(planKey)) {
+  const startSurvey = (plan) => {
+    if (isCompleted(plan)) {
       navigate("/activation-notice", { replace: true });
       return;
     }
 
-    localStorage.setItem("selectedPlan", planKey);
+    localStorage.setItem("selectedPlan", plan);
     navigate("/surveys");
   };
 
-  const handleWithdraw = (planKey) => {
-    if (!isCompleted(planKey)) {
+  const handleWithdraw = (plan) => {
+    if (!isCompleted(plan)) {
       setToast("Complete surveys to unlock withdrawal");
       surveySectionRef.current?.scrollIntoView({ behavior: "smooth" });
       setTimeout(() => setToast(""), 3000);
@@ -87,7 +104,6 @@ export default function Dashboard() {
     <div className="dashboard">
       {toast && <div className="toast">{toast}</div>}
 
-      {/* HEADER */}
       <header className="dashboard-header">
         <button className="menu-btn" onClick={() => setMenuOpen(true)}>☰</button>
         <h2>Dashboard</h2>
@@ -101,13 +117,11 @@ export default function Dashboard() {
 
       <LiveWithdrawalFeed />
 
-      {/* GREETING */}
       <section className="card greeting">
         <h3>Hello, {user.full_name} 👋</h3>
         <p>Your journey to real earnings continues.</p>
       </section>
 
-      {/* TOTALS */}
       <section className="card earnings">
         <div>
           <span>Total Earnings</span>
@@ -119,7 +133,6 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* WITHDRAW */}
       <h3 className="section-title withdraw-title">💸 Withdraw Earnings</h3>
 
       {Object.entries(PLANS).map(([key, plan]) => (
@@ -140,7 +153,6 @@ export default function Dashboard() {
         </div>
       ))}
 
-      {/* SURVEYS */}
       <h3 ref={surveySectionRef} className="section-title">
         Survey Plans
       </h3>
