@@ -2,8 +2,6 @@ import axios from "axios";
 
 /* =====================================================
    🌍 AXIOS INSTANCE
-   - Uses Vite environment variable
-   - Works in dev & production
 ===================================================== */
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -11,17 +9,19 @@ const api = axios.create({
 });
 
 /* =====================================================
-   🔐 GLOBAL AUTH HANDLER
-   - Handles expired / invalid sessions
-   - Redirects ONLY when truly unauthenticated
+   🔐 GLOBAL AUTH HANDLER (SAFE)
 ===================================================== */
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error?.response?.status;
+    const url = error?.config?.url || "";
 
-    // ✅ Redirect only on AUTH failure
-    if (status === 401) {
+    /**
+     * 🔒 Redirect ONLY when session is truly invalid
+     * That is ONLY confirmed via /auth/me
+     */
+    if (status === 401 && url.includes("/auth/me")) {
       const path = window.location.pathname;
 
       // Prevent infinite redirect loop
