@@ -47,11 +47,9 @@ export default function Dashboard() {
   const surveysDone = (planKey) =>
     isCurrentPlan(planKey) ? user.surveys_completed : 0;
 
+  // ✅ FIX: >= not === (DB truth protection)
   const isCompleted = (planKey) =>
-    isCurrentPlan(planKey) && user.surveys_completed === TOTAL_SURVEYS;
-
-  const canWithdraw = (planKey) =>
-    isCompleted(planKey) && user.is_activated === true;
+    isCurrentPlan(planKey) && user.surveys_completed >= TOTAL_SURVEYS;
 
   /* =========================
      ACTIONS
