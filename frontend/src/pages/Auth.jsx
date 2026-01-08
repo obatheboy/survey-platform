@@ -50,12 +50,14 @@ export default function Auth() {
     try {
       setLoading(true);
 
-      await api.post("/auth/register", {
-        full_name: regData.full_name, // ✅ MATCHES BACKEND + DB
-        phone: regData.phone,
-        email: regData.email || null,
-        password: regData.password,
-      });
+     await api.post("/auth/register", {
+  full_name: regData.fullName, // ✅ FIXED
+  username: regData.phone,     // backend expects this
+  phone: regData.phone,
+  email: regData.email || null,
+  password: regData.password,
+});
+
 
       setRegMessage("✅ Account created. Please login.");
       setMode("login");
