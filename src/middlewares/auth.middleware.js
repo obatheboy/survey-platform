@@ -6,7 +6,7 @@ const pool = require("../config/db");
  * 🔐 AUTHENTICATION MIDDLEWARE
  * - Reads JWT from HttpOnly cookie
  * - Verifies identity
- * - Fetches fresh user from DB
+ * - Fetches ONLY core user identity
  * ===============================
  */
 exports.protect = async (req, res, next) => {
@@ -22,22 +22,18 @@ exports.protect = async (req, res, next) => {
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (err) {
+    } catch {
       return res.status(401).json({ message: "Session expired, please login" });
     }
 
-    // ✅ FETCH USER (SOURCE OF TRUTH)
+    // ✅ FETCH USER (IDENTITY ONLY)
     const result = await pool.query(
       `
       SELECT
         id,
         full_name,
         phone,
-        email,
-        plan,
-        is_activated,
-        surveys_completed,
-        total_earned
+        email
       FROM users
       WHERE id = $1
       `,
@@ -48,7 +44,7 @@ exports.protect = async (req, res, next) => {
       return res.status(401).json({ message: "User no longer exists" });
     }
 
-    // ✅ ATTACH USER
+    // ✅ ATTACH USER (LIGHTWEIGHT)
     req.user = result.rows[0];
 
     next();
@@ -63,7 +59,6 @@ exports.protect = async (req, res, next) => {
  * 🛡 ADMIN ONLY (FUTURE SAFE)
  * ===============================
  */
-exports.adminOnly = (req, res, next) => {
-  // Placeholder until roles are implemented
+exports.adminOnly = (req, res) => {
   return res.status(403).json({ message: "Admin access not enabled" });
 };
