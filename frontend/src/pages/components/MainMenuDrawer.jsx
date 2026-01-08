@@ -10,30 +10,38 @@ const PLANS = {
   VVIP: { name: "VVIP", color: "#ffb300" },
 };
 
+const TOTAL_SURVEYS = 10;
+
 export default function MainMenuDrawer({ open, onClose, user }) {
   const navigate = useNavigate();
 
+  if (!open || !user) return null;
+
   /* =========================
-     WITHDRAW (MATCH DASHBOARD EXACTLY)
+     STRICT DERIVED STATE
+  ========================= */
+  const isCompleted = user.surveys_completed >= TOTAL_SURVEYS;
+  const requiresActivation = isCompleted && !user.is_activated;
+
+  /* =========================
+     WITHDRAW (LAW MATCHES DASHBOARD)
   ========================= */
   const handleWithdraw = () => {
-    // 🔒 DB is source of truth
-    if (!user.total_earned || user.total_earned <= 0) {
-      alert("❌ You have no earnings to withdraw.");
+    onClose();
+
+    if (!isCompleted) {
+      alert("❌ Complete all surveys to withdraw.");
       return;
     }
 
-    onClose();
-
-    // 🔐 Activation required
-    if (user.activation_required) {
+    if (requiresActivation) {
       navigate("/activation-notice", {
         state: { reason: "withdraw" },
+        replace: true,
       });
       return;
     }
 
-    // ✅ Activated → Withdraw
     navigate("/withdraw");
   };
 
@@ -49,8 +57,6 @@ export default function MainMenuDrawer({ open, onClose, user }) {
     } catch {}
     navigate("/auth", { replace: true });
   };
-
-  if (!open || !user) return null;
 
   return (
     <>
@@ -85,35 +91,46 @@ export default function MainMenuDrawer({ open, onClose, user }) {
         {/* WITHDRAW */}
         <h4 style={withdrawTitle}>💸 Withdraw Earnings</h4>
 
-        {Object.entries(PLANS).map(([key, plan]) => (
-          <div
-            key={key}
-            style={{
-              ...withdrawCard,
-              borderColor: plan.color,
-            }}
-          >
-            <div>
-              <strong style={{ color: plan.color }}>
-                {plan.name}
-              </strong>
-              <p style={withdrawAmount}>
-                KES {Number(user.total_earned || 0).toLocaleString()}
-              </p>
-            </div>
+        {Object.entries(PLANS).map(([key, plan]) => {
+          const isUserPlan = user.plan === key;
 
-            <button
+          return (
+            <div
+              key={key}
               style={{
-                ...withdrawBtn,
+                ...withdrawCard,
                 borderColor: plan.color,
-                color: plan.color,
+                opacity: isUserPlan ? 1 : 0.35,
               }}
-              onClick={handleWithdraw}
             >
-              Withdraw
-            </button>
-          </div>
-        ))}
+              <div>
+                <strong style={{ color: plan.color }}>
+                  {plan.name}
+                </strong>
+
+                <p style={withdrawAmount}>
+                  KES{" "}
+                  {isUserPlan && isCompleted
+                    ? Number(user.total_earned).toLocaleString()
+                    : "0"}
+                </p>
+              </div>
+
+              <button
+                style={{
+                  ...withdrawBtn,
+                  borderColor: plan.color,
+                  color: plan.color,
+                  cursor: isUserPlan ? "pointer" : "not-allowed",
+                }}
+                disabled={!isUserPlan}
+                onClick={handleWithdraw}
+              >
+                Withdraw
+              </button>
+            </div>
+          );
+        })}
 
         <hr style={divider} />
 
@@ -162,7 +179,7 @@ function MenuItem({ label, onClick, danger }) {
 }
 
 /* =========================
-   STYLES
+   STYLES (UNCHANGED)
 ========================= */
 const overlay = {
   position: "fixed",
@@ -179,8 +196,7 @@ const drawer = {
   width: "80vw",
   maxWidth: 320,
   minWidth: 260,
-  background:
-    "linear-gradient(180deg, #0b1020, #1a237e)",
+  background: "linear-gradient(180deg, #0b1020, #1a237e)",
   zIndex: 100,
   padding: 20,
   animation: "slideIn 0.3s ease-out",
@@ -196,8 +212,7 @@ const avatar = {
   width: 44,
   height: 44,
   borderRadius: "50%",
-  background:
-    "linear-gradient(135deg,#8e24aa,#d81b60)",
+  background: "linear-gradient(135deg,#8e24aa,#d81b60)",
   color: "#fff",
   display: "flex",
   alignItems: "center",
@@ -247,7 +262,6 @@ const withdrawBtn = {
   padding: "6px 16px",
   borderRadius: 999,
   fontWeight: 700,
-  cursor: "pointer",
 };
 
 const referralCaption = {

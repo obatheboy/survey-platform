@@ -5,16 +5,16 @@ import api from "../api/api";
 const TOTAL_SURVEYS = 10;
 
 /* =========================
-   PLAN CONFIG (DISPLAY ONLY)
+   PLAN LABELS (DISPLAY ONLY)
 ========================= */
-const PLAN_CONFIG = {
-  REGULAR: { label: "Regular", perSurvey: 150 },
-  VIP: { label: "VIP", perSurvey: 200 },
-  VVIP: { label: "VVIP", perSurvey: 300 },
+const PLAN_LABELS = {
+  REGULAR: "Regular",
+  VIP: "VIP",
+  VVIP: "VVIP",
 };
 
 /* =========================
-   QUESTIONS
+   QUESTIONS (STATIC)
 ========================= */
 const QUESTIONS = [
   { q: "How often do you use the internet daily?", options: ["Less than 1 hour", "1–3 hours", "4–6 hours", "More than 6 hours"] },
@@ -37,11 +37,8 @@ export default function Surveys() {
   const [selectedOption, setSelectedOption] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const selectedPlanKey = localStorage.getItem("selectedPlan");
-  const plan = PLAN_CONFIG[selectedPlanKey];
-
   /* =========================
-     LOAD USER + DB STATE
+     LOAD USER (DB IS KING)
   ========================= */
   useEffect(() => {
     const load = async () => {
@@ -50,13 +47,13 @@ export default function Surveys() {
         const u = res.data;
         setUser(u);
 
-        // No plan selected → back to dashboard
-        if (!selectedPlanKey || !plan) {
+        /* 🚫 NO PLAN → EXIT */
+        if (!u.plan) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        // COMPLETED SURVEYS → activation
+        /* 🔒 SURVEYS COMPLETED → CONGRATS */
         if (u.surveys_completed >= TOTAL_SURVEYS) {
           navigate("/activation-notice", { replace: true });
           return;
@@ -69,21 +66,19 @@ export default function Surveys() {
     };
 
     load();
-  }, [navigate, selectedPlanKey, plan]);
+  }, [navigate]);
 
   if (loading || !user) {
     return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
   }
 
   /* =========================
-     DB-BASED PROGRESS (FIXED)
+     DB-DRIVEN STATE
   ========================= */
   const surveysDone = user.surveys_completed;
-  const safeIndex = Math.min(surveysDone, QUESTIONS.length - 1);
-
-  const currentQuestion = QUESTIONS[safeIndex];
-  const earned = surveysDone * plan.perSurvey;
-  const progress = ((surveysDone + 1) / TOTAL_SURVEYS) * 100;
+  const questionIndex = surveysDone; // 0-based, strict
+  const currentQuestion = QUESTIONS[questionIndex];
+  const progress = (surveysDone / TOTAL_SURVEYS) * 100;
 
   /* =========================
      SUBMIT ANSWER
@@ -99,11 +94,11 @@ export default function Surveys() {
 
       await api.post("/surveys/submit");
 
-      // Reload user state from DB
       const refreshed = await api.get("/auth/me");
       const updatedUser = refreshed.data;
       setUser(updatedUser);
 
+      /* 🎉 FINISHED → CONGRATS */
       if (updatedUser.surveys_completed >= TOTAL_SURVEYS) {
         navigate("/activation-notice", { replace: true });
         return;
@@ -121,13 +116,13 @@ export default function Surveys() {
   return (
     <div style={page}>
       <div style={card}>
-        <h2 style={title}>📋 {plan.label} Survey</h2>
+        <h2 style={title}>📋 {PLAN_LABELS[user.plan]} Survey</h2>
 
         <div style={meta}>
           <span>
             Question {surveysDone + 1} / {TOTAL_SURVEYS}
           </span>
-          <span>💰 KES {earned}</span>
+          <span>{progress.toFixed(0)}%</span>
         </div>
 
         <div style={progressBar}>

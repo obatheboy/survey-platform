@@ -6,27 +6,12 @@ import LiveWithdrawalFeed from "./components/LiveWithdrawalFeed.jsx";
 import "./Dashboard.css";
 
 /* =========================
-   PLAN CONFIG
+   PLAN CONFIG (DISPLAY ONLY)
 ========================= */
 const PLANS = {
-  REGULAR: {
-    name: "Regular",
-    icon: "⭐",
-    total: 1500,
-    perSurvey: 150,
-  },
-  VIP: {
-    name: "VIP",
-    icon: "💎",
-    total: 2000,
-    perSurvey: 200,
-  },
-  VVIP: {
-    name: "VVIP",
-    icon: "👑",
-    total: 3000,
-    perSurvey: 300,
-  },
+  REGULAR: { name: "Regular", icon: "⭐" },
+  VIP: { name: "VIP", icon: "💎" },
+  VVIP: { name: "VVIP", icon: "👑" },
 };
 
 const TOTAL_SURVEYS = 10;
@@ -41,7 +26,7 @@ export default function Dashboard() {
   const [toast, setToast] = useState("");
 
   /* =========================
-     LOAD USER (DB = SOURCE OF TRUTH)
+     LOAD USER (DB = LAW)
   ========================= */
   useEffect(() => {
     api
@@ -55,56 +40,47 @@ export default function Dashboard() {
   if (!user) return null;
 
   /* =========================
-     HELPERS (DB-BASED)
+     STRICT HELPERS
   ========================= */
-
-  const getSurveysDone = (planKey) =>
-    user.plan === planKey ? user.surveys_completed : 0;
-
-  const isPlanCompleted = (planKey) =>
-    user.plan === planKey && user.surveys_completed >= TOTAL_SURVEYS;
-
-  const getPlanEarnings = (planKey) =>
-    isPlanCompleted(planKey) ? PLANS[planKey].total : 0;
-
-  /* =========================
-     TOTALS
-  ========================= */
-  const totalEarnings = user.total_earned || 0;
+  const isUserPlan = (planKey) => user.plan === planKey;
+  const isCompleted = user.surveys_completed >= TOTAL_SURVEYS;
+  const requiresActivation = isCompleted && !user.is_activated;
 
   /* =========================
      ACTIONS
   ========================= */
   const startSurvey = (planKey) => {
-    // COMPLETED PLAN → always go to Congratulations / Activation
-    if (isPlanCompleted(planKey)) {
-      navigate("/activation-notice", {
-        state: { reason: "completed" },
-      });
+    if (!isUserPlan(planKey)) {
+      setToast("You can only continue your selected plan");
+      setTimeout(() => setToast(""), 3000);
       return;
     }
 
-    // UI helper only (backend remains source of truth)
+    if (isCompleted) {
+      navigate("/activation-notice", { replace: true });
+      return;
+    }
+
     localStorage.setItem("selectedPlan", planKey);
     navigate("/surveys");
   };
 
   const handleWithdraw = (planKey) => {
-    // NOT completed → guidance only, no blocking of surveys
-    if (!isPlanCompleted(planKey)) {
+    if (!isUserPlan(planKey)) return;
+
+    if (!isCompleted) {
       setToast("Complete surveys to unlock withdrawal");
-      surveySectionRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+      surveySectionRef.current?.scrollIntoView({ behavior: "smooth" });
       setTimeout(() => setToast(""), 3000);
       return;
     }
 
-    // COMPLETED PLAN → ALWAYS go to Congratulations / Activation
-    navigate("/activation-notice", {
-      state: { reason: "withdraw" },
-    });
+    if (requiresActivation) {
+      navigate("/activation-notice", { replace: true });
+      return;
+    }
+
+    navigate("/withdraw");
   };
 
   /* =========================
@@ -116,9 +92,7 @@ export default function Dashboard() {
 
       {/* HEADER */}
       <header className="dashboard-header">
-        <button className="menu-btn" onClick={() => setMenuOpen(true)}>
-          ☰
-        </button>
+        <button className="menu-btn" onClick={() => setMenuOpen(true)}>☰</button>
         <h2>Dashboard</h2>
       </header>
 
@@ -136,15 +110,15 @@ export default function Dashboard() {
         <p>Your journey to real earnings continues.</p>
       </section>
 
-      {/* EARNINGS */}
+      {/* TOTALS */}
       <section className="card earnings">
         <div>
           <span>Total Earnings</span>
-          <strong>KES {totalEarnings.toLocaleString()}</strong>
+          <strong>KES {Number(user.total_earned).toLocaleString()}</strong>
         </div>
         <div>
           <span>Current Balance</span>
-          <strong>KES {totalEarnings.toLocaleString()}</strong>
+          <strong>KES {Number(user.total_earned).toLocaleString()}</strong>
         </div>
       </section>
 
@@ -152,23 +126,20 @@ export default function Dashboard() {
       <h3 className="section-title withdraw-title">💸 Withdraw Earnings</h3>
 
       {Object.entries(PLANS).map(([key, plan]) => {
-        const earnings = getPlanEarnings(key);
-        const locked = earnings === 0;
+        const show = isUserPlan(key);
 
         return (
-          <div
-            key={key}
-            className={`card withdraw-card ${locked ? "locked" : ""}`}
-          >
+          <div key={key} className={`card withdraw-card ${!show ? "locked" : ""}`}>
             <div>
-              <h4 className={`plan-title ${key.toLowerCase()}`}>
-                {plan.icon} {plan.name}
-              </h4>
-              <strong>KES {earnings.toLocaleString()}</strong>
+              <h4>{plan.icon} {plan.name}</h4>
+              <strong>
+                KES {show && isCompleted ? Number(user.total_earned).toLocaleString() : "0"}
+              </strong>
             </div>
 
             <button
-              className={`outline-btn plan-btn plan-${key.toLowerCase()}`}
+              className="outline-btn"
+              disabled={!show}
               onClick={() => handleWithdraw(key)}
             >
               Withdraw
@@ -185,21 +156,16 @@ export default function Dashboard() {
       {Object.entries(PLANS).map(([key, plan]) => (
         <div key={key} className="card plan-card">
           <div>
-            <h4 className={`plan-title ${key.toLowerCase()}`}>
-              {plan.icon} {plan.name}
-            </h4>
-            <p>Total Earnings: KES {plan.total}</p>
-            <p>Per Survey: KES {plan.perSurvey}</p>
-            <p>
-              Progress: {getSurveysDone(key)} / {TOTAL_SURVEYS}
-            </p>
+            <h4>{plan.icon} {plan.name}</h4>
+            <p>Progress: {isUserPlan(key) ? user.surveys_completed : 0} / {TOTAL_SURVEYS}</p>
           </div>
 
           <button
-            className={`primary-btn plan-btn plan-${key.toLowerCase()}`}
+            className="primary-btn"
+            disabled={!isUserPlan(key)}
             onClick={() => startSurvey(key)}
           >
-            {isPlanCompleted(key) ? "Completed" : "Start Survey"}
+            {isUserPlan(key) && isCompleted ? "Completed" : "Start Survey"}
           </button>
         </div>
       ))}

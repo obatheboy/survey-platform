@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 
+const TOTAL_SURVEYS = 10;
+
 export default function Withdraw() {
   const navigate = useNavigate();
 
@@ -12,7 +14,7 @@ export default function Withdraw() {
   const [submitted, setSubmitted] = useState(false);
 
   /* =========================
-     🔐 ACCESS GUARD
+     🔐 ACCESS GUARD (LAW)
   ========================= */
   useEffect(() => {
     const load = async () => {
@@ -20,22 +22,31 @@ export default function Withdraw() {
         const res = await api.get("/auth/me");
         const u = res.data;
 
-        // ❌ NOT ACTIVE → ACTIVATE FIRST
-        if (u.status !== "ACTIVE") {
-          alert("❌ Your account is not active");
+        // ❌ SURVEYS NOT COMPLETED
+        if (u.surveys_completed < TOTAL_SURVEYS) {
+          alert("❌ Complete all surveys before withdrawing.");
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        // ❌ NO WALLET BALANCE
-        if (!u.wallet_balance || u.wallet_balance <= 0) {
-          alert("❌ No available balance to withdraw");
+        // ❌ NOT ACTIVATED
+        if (!u.is_activated) {
+          navigate("/activation-notice", {
+            state: { reason: "withdraw" },
+            replace: true,
+          });
+          return;
+        }
+
+        // ❌ NO EARNINGS
+        if (!u.total_earned || u.total_earned <= 0) {
+          alert("❌ No available balance to withdraw.");
           navigate("/dashboard", { replace: true });
           return;
         }
 
         setUser(u);
-      } catch (err) {
+      } catch {
         navigate("/auth", { replace: true });
       } finally {
         setLoading(false);
@@ -69,7 +80,7 @@ export default function Withdraw() {
 
       await api.post("/withdraw/request", {
         phone_number: phone,
-        amount: user.wallet_balance,
+        amount: user.total_earned,
       });
 
       setSubmitted(true);
@@ -83,8 +94,7 @@ export default function Withdraw() {
   };
 
   const shareLink = () => {
-    const link = window.location.origin;
-    navigator.clipboard.writeText(link);
+    navigator.clipboard.writeText(window.location.origin);
     alert("✅ Link copied. Share with friends!");
   };
 
@@ -99,7 +109,7 @@ export default function Withdraw() {
         <p>
           <b>Available Balance:</b>{" "}
           <span style={{ color: "green" }}>
-            KES {user.wallet_balance}
+            KES {Number(user.total_earned).toLocaleString()}
           </span>
         </p>
 
@@ -119,7 +129,8 @@ export default function Withdraw() {
                 background: "#0a7c4a",
               }}
             >
-              Withdraw KES {user.wallet_balance}
+              Withdraw KES{" "}
+              {Number(user.total_earned).toLocaleString()}
             </button>
           </>
         ) : (
@@ -145,7 +156,7 @@ export default function Withdraw() {
 }
 
 /* =========================
-   STYLES
+   STYLES (UNCHANGED)
 ========================= */
 const page = {
   minHeight: "100vh",
