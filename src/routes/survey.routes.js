@@ -5,8 +5,11 @@ const { protect } = require("../middlewares/auth.middleware");
 const surveyController = require("../controllers/survey.controller");
 
 // ===============================
-// SURVEY ROUTES
+// SURVEY ROUTES (AUTHORITATIVE)
 // ===============================
+
+// Select survey plan (ONCE per cycle)
+router.post("/select-plan", protect, surveyController.selectPlan);
 
 // Submit ONE survey (step-by-step only)
 router.post("/submit", protect, surveyController.submitSurvey);
