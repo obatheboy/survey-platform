@@ -44,15 +44,11 @@ exports.submitSurvey = async (req, res) => {
 
     const user = rows[0];
 
-    /* 🚫 NO PLAN → CANNOT SUBMIT SURVEY */
-    if (!user.plan || !PLAN_REWARDS[user.plan]) {
-      await client.query("ROLLBACK");
-      return res.status(400).json({ message: "No active survey plan" });
-    }
+    /* ✅ SAFE PLAN RESOLUTION (NO BLOCKING EVER) */
+    const activePlan =
+      PLAN_REWARDS[user.plan] ? user.plan : "REGULAR";
 
-    const activePlan = user.plan;
-
-    /* 🎉 PLAN COMPLETED → SHOW CONGRATS (NO BLOCKING) */
+    /* 🎉 PLAN COMPLETED → SHOW CONGRATS */
     if (user.surveys_completed >= TOTAL_SURVEYS) {
       await client.query("ROLLBACK");
       return res.status(200).json({
@@ -65,7 +61,7 @@ exports.submitSurvey = async (req, res) => {
       });
     }
 
-    /* 💰 CALCULATE REWARD */
+    /* 💰 CALCULATE REWARD (SAFE) */
     const reward = PLAN_REWARDS[activePlan];
 
     const newCompleted = user.surveys_completed + 1;
@@ -85,7 +81,6 @@ exports.submitSurvey = async (req, res) => {
 
     await client.query("COMMIT");
 
-    /* ✅ SUCCESS */
     return res.json({
       completed: newCompleted === TOTAL_SURVEYS,
       plan: activePlan,
