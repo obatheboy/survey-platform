@@ -48,14 +48,9 @@ exports.requestWithdraw = async (req, res) => {
 
     await client.query("BEGIN");
 
-    /* 🔒 LOCK USER */
     const userRes = await client.query(
       `
-      SELECT
-        is_activated,
-        surveys_completed,
-        plan,
-        balance
+      SELECT is_activated, surveys_completed, plan, balance
       FROM users
       WHERE id = $1
       FOR UPDATE
@@ -70,15 +65,11 @@ exports.requestWithdraw = async (req, res) => {
 
     const user = userRes.rows[0];
 
-    /* 🚫 NOT ACTIVATED */
     if (!user.is_activated) {
       await client.query("ROLLBACK");
-      return res.status(403).json({
-        message: "Account not activated",
-      });
+      return res.status(403).json({ message: "Account not activated" });
     }
 
-    /* 🚫 SURVEYS NOT COMPLETED */
     if (user.surveys_completed !== TOTAL_SURVEYS) {
       await client.query("ROLLBACK");
       return res.status(403).json({
@@ -86,7 +77,6 @@ exports.requestWithdraw = async (req, res) => {
       });
     }
 
-    /* 💸 PLAN FEE */
     const fee = WITHDRAW_FEES[user.plan] ?? WITHDRAW_FEES.REGULAR;
 
     if (withdrawAmount <= fee) {
@@ -103,13 +93,11 @@ exports.requestWithdraw = async (req, res) => {
       });
     }
 
-    /* 🚫 ONE ACTIVE WITHDRAWAL */
     const active = await client.query(
       `
       SELECT id
       FROM withdraw_requests
-      WHERE user_id = $1
-        AND status = 'PROCESSING'
+      WHERE user_id = $1 AND status = 'PROCESSING'
       `,
       [userId]
     );
@@ -121,7 +109,6 @@ exports.requestWithdraw = async (req, res) => {
       });
     }
 
-    /* 🚫 DAILY LIMIT */
     const daily = await client.query(
       `
       SELECT COUNT(*)::int AS count
@@ -141,7 +128,6 @@ exports.requestWithdraw = async (req, res) => {
 
     const netAmount = withdrawAmount - fee;
 
-    /* ✅ CREATE REQUEST */
     await client.query(
       `
       INSERT INTO withdraw_requests
@@ -151,7 +137,6 @@ exports.requestWithdraw = async (req, res) => {
       [userId, phone_number, withdrawAmount, fee, netAmount]
     );
 
-    /* 🔒 DEDUCT BALANCE */
     await client.query(
       `
       UPDATE users
@@ -177,4 +162,67 @@ exports.requestWithdraw = async (req, res) => {
   } finally {
     client.release();
   }
+};
+
+/* =====================================
+   ADMIN — GET PENDING WITHDRAWALS
+===================================== */
+exports.getPendingWithdrawals = async (req, res) => {
+  const { rows } = await pool.query(
+    `
+    SELECT wr.*, u.email
+    FROM withdraw_requests wr
+    JOIN users u ON u.id = wr.user_id
+    WHERE wr.status = 'PROCESSING'
+    ORDER BY wr.created_at DESC
+    `
+  );
+  res.json(rows);
+};
+
+/* =====================================
+   ADMIN — GET ALL WITHDRAWALS
+===================================== */
+exports.getAllWithdrawals = async (req, res) => {
+  const { rows } = await pool.query(
+    `
+    SELECT wr.*, u.email
+    FROM withdraw_requests wr
+    JOIN users u ON u.id = wr.user_id
+    ORDER BY wr.created_at DESC
+    `
+  );
+  res.json(rows);
+};
+
+/* =====================================
+   ADMIN — APPROVE WITHDRAWAL
+===================================== */
+exports.approveWithdraw = async (req, res) => {
+  await pool.query(
+    `
+    UPDATE withdraw_requests
+    SET status = 'APPROVED'
+    WHERE id = $1 AND status = 'PROCESSING'
+    `,
+    [req.params.id]
+  );
+
+  res.json({ message: "Withdrawal approved" });
+};
+
+/* =====================================
+   ADMIN — REJECT WITHDRAWAL
+===================================== */
+exports.rejectWithdraw = async (req, res) => {
+  await pool.query(
+    `
+    UPDATE withdraw_requests
+    SET status = 'REJECTED'
+    WHERE id = $1 AND status = 'PROCESSING'
+    `,
+    [req.params.id]
+  );
+
+  res.json({ message: "Withdrawal rejected" });
 };
