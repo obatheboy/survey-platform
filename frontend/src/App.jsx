@@ -17,29 +17,28 @@ import AdminWithdrawals from "./pages/admin/AdminWithdrawals.jsx";
 import AdminUsers from "./pages/admin/AdminUsers.jsx";
 
 /* =====================================================
-   🔐 GLOBAL AUTH GUARD (COOKIE BASED — FIXED)
+   🔐 GLOBAL AUTH GUARD (COOKIE BASED — HARD FIX)
 ===================================================== */
 function ProtectedRoute({ children, role }) {
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(undefined); // 👈 IMPORTANT (not null)
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     api
       .get("/auth/me")
-      .then((res) => setUser(res.data))
-      .catch((err) => {
-        // 🔒 ONLY logout on real auth failure
-        if (err.response?.status === 401) {
-          setUser(null);
-        } else {
-          // 403 or other errors ≠ logout
-          setUser(undefined);
-        }
+      .then((res) => {
+        setUser(res.data);
       })
-      .finally(() => setLoading(false));
+      .catch((err) => {
+        // ANY error → treat as not authenticated
+        setUser(null);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
-  if (loading || user === undefined) {
+  if (loading) {
     return (
       <p style={{ textAlign: "center", marginTop: 80 }}>
         Loading…
@@ -47,7 +46,7 @@ function ProtectedRoute({ children, role }) {
     );
   }
 
-  if (user === null) {
+  if (!user) {
     return <Navigate to="/auth" replace />;
   }
 
