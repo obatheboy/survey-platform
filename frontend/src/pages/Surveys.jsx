@@ -39,7 +39,7 @@ export default function Surveys() {
   const [submitting, setSubmitting] = useState(false);
 
   /* =========================
-     LOAD STATE (SOURCE OF TRUTH = BACKEND)
+     LOAD STATE (BACKEND = TRUTH)
   ========================= */
   useEffect(() => {
     const load = async () => {
@@ -58,7 +58,8 @@ export default function Surveys() {
           return;
         }
 
-        if (planState.completed) {
+        // ✅ HARD STOP: already completed
+        if (planState.completed || planState.surveys_completed >= TOTAL_SURVEYS) {
           navigate("/congratulations", { replace: true });
           return;
         }
@@ -75,8 +76,16 @@ export default function Surveys() {
     load();
   }, [navigate]);
 
-  if (loading || !activePlan) {
+  /* =========================
+     ABSOLUTE SAFETY GUARD
+  ========================= */
+  if (loading) {
     return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
+  }
+
+  if (!activePlan || surveysDone >= TOTAL_SURVEYS) {
+    navigate("/congratulations", { replace: true });
+    return null;
   }
 
   const currentQuestion = QUESTIONS[surveysDone];
@@ -101,12 +110,14 @@ export default function Surveys() {
         answer: selectedOption,
       });
 
-      setSurveysDone(res.data.surveys_completed);
       setSelectedOption(null);
 
-      if (res.data.completed) {
+      if (res.data.completed || res.data.surveys_completed >= TOTAL_SURVEYS) {
         navigate("/congratulations", { replace: true });
+        return;
       }
+
+      setSurveysDone(res.data.surveys_completed);
     } catch (err) {
       console.error(err);
       alert("❌ Failed to submit survey. Please try again.");
