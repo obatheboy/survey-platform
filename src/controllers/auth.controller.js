@@ -121,7 +121,7 @@ exports.logout = (req, res) => {
 };
 
 /* ===============================
-   GET ME (🔥 FIXED – MULTI PLAN)
+   GET ME (✅ MULTI-PLAN + ACTIVE PLAN)
 ================================ */
 exports.getMe = async (req, res) => {
   try {
@@ -156,14 +156,18 @@ exports.getMe = async (req, res) => {
         plan,
         surveys_completed,
         completed,
-        is_activated
+        is_activated,
+        created_at
       FROM user_surveys
       WHERE user_id = $1
+      ORDER BY created_at DESC
       `,
       [req.user.id]
     );
 
     const plans = {};
+    let activePlan = null;
+
     for (const row of plansRes.rows) {
       plans[row.plan] = {
         surveys_completed: row.surveys_completed,
@@ -171,11 +175,25 @@ exports.getMe = async (req, res) => {
         is_activated: row.is_activated,
         total_surveys: TOTAL_SURVEYS,
       };
+
+      // 🔥 first incomplete plan becomes active
+      if (!row.completed && !activePlan) {
+        activePlan = row.plan;
+      }
     }
+
+    const activePlanData = activePlan ? plans[activePlan] : null;
 
     res.json({
       ...userRes.rows[0],
-      plans, // 🔥 THIS IS WHAT DASHBOARD & SURVEYS NEED
+
+      // ✅ REQUIRED BY SURVEYS PAGE
+      active_plan: activePlan,
+      surveys_completed: activePlanData?.surveys_completed || 0,
+      surveys_locked: activePlanData?.completed === true,
+
+      // ✅ REQUIRED BY DASHBOARD
+      plans,
     });
   } catch (error) {
     console.error("GET ME ERROR:", error);
