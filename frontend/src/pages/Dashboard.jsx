@@ -21,28 +21,18 @@ export default function Dashboard() {
   const surveySectionRef = useRef(null);
 
   const [user, setUser] = useState(null);
-  const [surveyStatus, setSurveyStatus] = useState({});
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState("");
 
   /* =========================
-     LOAD DATA (DB = TRUTH)
+     LOAD USER (DB = SOURCE OF TRUTH)
   ========================= */
   useEffect(() => {
     const load = async () => {
       try {
-        const userRes = await api.get("/auth/me");
-        setUser(userRes.data);
-
-        const surveyRes = await api.get("/surveys/status");
-        const map = {};
-
-        surveyRes.data.forEach((row) => {
-          map[row.plan] = row;
-        });
-
-        setSurveyStatus(map);
+        const res = await api.get("/auth/me");
+        setUser(res.data);
       } catch {
         navigate("/auth", { replace: true });
       } finally {
@@ -57,16 +47,15 @@ export default function Dashboard() {
   if (!user) return null;
 
   /* =========================
-     HELPERS (PER-PLAN LAW)
+     HELPERS (DB LAW)
   ========================= */
+  const isCurrentPlan = (plan) => user.plan === plan;
+
   const surveysDone = (plan) =>
-    surveyStatus[plan]?.surveys_completed || 0;
+    isCurrentPlan(plan) ? user.surveys_completed : 0;
 
   const isCompleted = (plan) =>
-    surveyStatus[plan]?.completed === true;
-
-  const canWithdraw = (plan) =>
-    isCompleted(plan) && user.is_activated;
+    isCurrentPlan(plan) && user.surveys_completed >= TOTAL_SURVEYS;
 
   /* =========================
      ACTIONS
