@@ -5,14 +5,14 @@ const pool = require("../config/db");
 const TOTAL_SURVEYS = 10;
 
 /* ===============================
-   COOKIE CONFIG (VERCEL + RENDER)
+   🍪 COOKIE CONFIG (SAFE: DEV + PROD)
 ================================ */
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: true,
-  sameSite: "none",
+  secure: process.env.NODE_ENV === "production", // ✅ HTTPS only in prod
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   path: "/",
-  maxAge: 7 * 24 * 60 * 60 * 1000,
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
 /* ===============================
@@ -96,6 +96,7 @@ exports.login = async (req, res) => {
       { expiresIn: "7d" }
     );
 
+    // ✅ FIXED COOKIE BEHAVIOR
     res.cookie("token", token, COOKIE_OPTIONS);
 
     res.json({
@@ -116,12 +117,17 @@ exports.login = async (req, res) => {
    LOGOUT
 ================================ */
 exports.logout = (req, res) => {
-  res.clearCookie("token", { path: "/" });
+  res.clearCookie("token", {
+    path: "/",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  });
+
   res.json({ message: "Logged out" });
 };
 
 /* ===============================
-   GET ME (✅ MULTI-PLAN + ACTIVE PLAN)
+   GET ME (MULTI-PLAN SAFE)
 ================================ */
 exports.getMe = async (req, res) => {
   try {
@@ -149,7 +155,7 @@ exports.getMe = async (req, res) => {
       return res.status(401).json({ message: "Invalid session" });
     }
 
-    /* 🔹 ALL PLAN STATES */
+    /* 🔹 PLAN STATES */
     const plansRes = await pool.query(
       `
       SELECT
@@ -176,7 +182,6 @@ exports.getMe = async (req, res) => {
         total_surveys: TOTAL_SURVEYS,
       };
 
-      // 🔥 first incomplete plan becomes active
       if (!row.completed && !activePlan) {
         activePlan = row.plan;
       }
@@ -187,12 +192,12 @@ exports.getMe = async (req, res) => {
     res.json({
       ...userRes.rows[0],
 
-      // ✅ REQUIRED BY SURVEYS PAGE
+      // required by surveys page
       active_plan: activePlan,
       surveys_completed: activePlanData?.surveys_completed || 0,
       surveys_locked: activePlanData?.completed === true,
 
-      // ✅ REQUIRED BY DASHBOARD
+      // required by dashboard
       plans,
     });
   } catch (error) {
