@@ -14,7 +14,7 @@ const PLAN_LABELS = {
 };
 
 /* =========================
-   QUESTIONS (STATIC)
+   QUESTIONS
 ========================= */
 const QUESTIONS = [
   { q: "How often do you use the internet daily?", options: ["Less than 1 hour", "1–3 hours", "4–6 hours", "More than 6 hours"] },
@@ -48,29 +48,24 @@ export default function Surveys() {
       try {
         const res = await api.get("/auth/me");
 
-        const backendActivePlan = res.data.active_plan;
-        if (!backendActivePlan) {
+        const planKey = res.data.active_plan;
+        const plan = res.data.plans?.[planKey];
+
+        if (!planKey || !plan) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        const planState = res.data.plans?.[backendActivePlan];
-        if (!planState) {
-          navigate("/dashboard", { replace: true });
-          return;
-        }
-
-        if (planState.completed || planState.surveys_completed >= TOTAL_SURVEYS) {
+        if (plan.completed === true) {
           navigate("/activation-notice", { replace: true });
           return;
         }
 
         if (!alive) return;
-        setActivePlan(backendActivePlan);
-        setSurveysDone(planState.surveys_completed);
-      } catch (err) {
-        console.warn("Survey state load failed");
-        // ❌ DO NOT redirect here
+        setActivePlan(planKey);
+        setSurveysDone(plan.surveys_completed || 0);
+      } catch {
+        // auth guard will handle logout
       } finally {
         if (alive) setLoading(false);
       }
@@ -80,10 +75,7 @@ export default function Surveys() {
     return () => (alive = false);
   }, [navigate]);
 
-  if (loading) {
-    return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
-  }
-
+  if (loading) return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
   if (!activePlan) return null;
 
   const currentQuestion = QUESTIONS[surveysDone];
@@ -93,12 +85,7 @@ export default function Surveys() {
      SUBMIT ANSWER
   ========================= */
   const handleNext = async () => {
-    if (submitting) return;
-
-    if (selectedOption === null) {
-      alert("Please select an option to continue");
-      return;
-    }
+    if (submitting || selectedOption === null) return;
 
     try {
       setSubmitting(true);
@@ -110,15 +97,15 @@ export default function Surveys() {
 
       setSelectedOption(null);
 
-      if (res.data.completed || res.data.surveys_completed >= TOTAL_SURVEYS) {
+      // ✅ FINAL SURVEY — TRUST BACKEND RESPONSE
+      if (res.data.completed === true) {
         navigate("/activation-notice", { replace: true });
         return;
       }
 
       setSurveysDone(res.data.surveys_completed);
-    } catch (err) {
-      console.error(err);
-      alert("❌ Failed to submit survey. Please try again.");
+    } catch {
+      alert("❌ Failed to submit survey. Try again.");
     } finally {
       setSubmitting(false);
     }
@@ -133,9 +120,7 @@ export default function Surveys() {
         <h2 style={title}>📋 {PLAN_LABELS[activePlan]} Survey</h2>
 
         <div style={meta}>
-          <span>
-            Question {surveysDone + 1} / {TOTAL_SURVEYS}
-          </span>
+          <span>Question {surveysDone + 1} / {TOTAL_SURVEYS}</span>
           <span>{progress.toFixed(0)}%</span>
         </div>
 
@@ -145,32 +130,23 @@ export default function Surveys() {
 
         <h3 style={question}>{currentQuestion.q}</h3>
 
-        <div>
-          {currentQuestion.options.map((opt, idx) => (
-            <div
-              key={idx}
-              onClick={() => setSelectedOption(idx)}
-              style={{
-                ...optionCard,
-                ...(selectedOption === idx ? optionActive : {}),
-              }}
-            >
-              {opt}
-            </div>
-          ))}
-        </div>
+        {currentQuestion.options.map((opt, idx) => (
+          <div
+            key={idx}
+            onClick={() => setSelectedOption(idx)}
+            style={{
+              ...optionCard,
+              ...(selectedOption === idx ? optionActive : {}),
+            }}
+          >
+            {opt}
+          </div>
+        ))}
 
         <button
           onClick={handleNext}
           disabled={submitting || selectedOption === null}
-          style={{
-            ...button,
-            opacity: submitting || selectedOption === null ? 0.6 : 1,
-            cursor:
-              submitting || selectedOption === null
-                ? "not-allowed"
-                : "pointer",
-          }}
+          style={{ ...button, opacity: submitting ? 0.6 : 1 }}
         >
           {surveysDone + 1 === TOTAL_SURVEYS ? "Finish Surveys" : "Next"}
         </button>
@@ -182,68 +158,13 @@ export default function Surveys() {
 /* =========================
    STYLES
 ========================= */
-
-const page = {
-  minHeight: "100vh",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  padding: 16,
-  background: "#f4f6fb",
-};
-
-const card = {
-  width: "100%",
-  maxWidth: 480,
-  background: "#fff",
-  borderRadius: 16,
-  padding: 24,
-  boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
-};
-
-const title = { textAlign: "center", marginBottom: 12 };
-
-const meta = {
-  display: "flex",
-  justifyContent: "space-between",
-  fontSize: 14,
-  color: "#555",
-  marginBottom: 10,
-};
-
-const progressBar = {
-  height: 6,
-  background: "#eee",
-  borderRadius: 4,
-  overflow: "hidden",
-  marginBottom: 20,
-};
-
+const page = { minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", background: "#f4f6fb" };
+const card = { width: "100%", maxWidth: 480, background: "#fff", padding: 24, borderRadius: 16 };
+const title = { textAlign: "center" };
+const meta = { display: "flex", justifyContent: "space-between", marginBottom: 10 };
+const progressBar = { height: 6, background: "#eee", borderRadius: 4 };
 const progressFill = { height: "100%", background: "#6a1b9a" };
-
-const question = { marginBottom: 16 };
-
-const optionCard = {
-  padding: 14,
-  borderRadius: 10,
-  border: "1px solid #ddd",
-  marginBottom: 10,
-  cursor: "pointer",
-};
-
-const optionActive = {
-  borderColor: "#6a1b9a",
-  background: "#f3e5f5",
-};
-
-const button = {
-  width: "100%",
-  padding: 14,
-  marginTop: 20,
-  borderRadius: 10,
-  border: "none",
-  background: "#6a1b9a",
-  color: "#fff",
-  fontSize: 16,
-  fontWeight: "bold",
-};
+const question = { margin: "16px 0" };
+const optionCard = { padding: 14, borderRadius: 10, border: "1px solid #ddd", marginBottom: 10 };
+const optionActive = { borderColor: "#6a1b9a", background: "#f3e5f5" };
+const button = { width: "100%", padding: 14, background: "#6a1b9a", color: "#fff", border: "none", borderRadius: 10 };

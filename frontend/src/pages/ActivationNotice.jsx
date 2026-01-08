@@ -26,6 +26,8 @@ const PLAN_CONFIG = {
   },
 };
 
+const TOTAL_SURVEYS = 10;
+
 export default function ActivationNotice() {
   const navigate = useNavigate();
 
@@ -45,29 +47,33 @@ export default function ActivationNotice() {
         const res = await api.get("/auth/me");
 
         const activePlan = res.data.active_plan;
-        if (!activePlan) {
-          navigate("/dashboard", { replace: true });
-          return;
-        }
-
         const plan = res.data.plans?.[activePlan];
-        if (!plan || !plan.completed) {
+
+        // ❌ No active plan or no plan data
+        if (!activePlan || !plan) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        if (plan.is_activated) {
+        // ✅ TRUST SURVEY COUNT (NO RACE CONDITION)
+        if (plan.surveys_completed < TOTAL_SURVEYS) {
           navigate("/dashboard", { replace: true });
+          return;
+        }
+
+        // ✅ Already activated → dashboard
+        if (plan.is_activated) {
+          navigate("/dashboard?activated=true", { replace: true });
           return;
         }
 
         if (!alive) return;
+
         setPlanKey(activePlan);
         setPlanState(plan);
         setTotalEarned(res.data.total_earned);
-      } catch (err) {
-        console.warn("ActivationNotice: auth/me transient failure");
-        // ❌ do NOT redirect — interceptor handles auth
+      } catch {
+        // ❌ Do nothing — auth interceptor handles failures
       } finally {
         if (alive) setLoading(false);
       }
