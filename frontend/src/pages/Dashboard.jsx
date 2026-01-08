@@ -59,9 +59,16 @@ export default function Dashboard() {
   ========================= */
   const startSurvey = async (plan) => {
     try {
+      // 1️⃣ Ensure plan exists in DB
       await api.post("/surveys/select-plan", { plan });
+
+      // 2️⃣ Force backend truth before navigation
+      await api.get("/auth/me");
+
+      // 3️⃣ Now safe to enter surveys
       navigate("/surveys");
-    } catch {
+    } catch (err) {
+      console.error(err);
       setToast("Failed to start survey. Try again.");
       setTimeout(() => setToast(""), 3000);
     }
