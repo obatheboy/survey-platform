@@ -21,18 +21,20 @@ export default function Dashboard() {
   const surveySectionRef = useRef(null);
 
   const [user, setUser] = useState(null);
+  const [plans, setPlans] = useState({});
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState("");
 
   /* =========================
-     LOAD USER (DB = SOURCE OF TRUTH)
+     LOAD USER + PLAN STATES
   ========================= */
   useEffect(() => {
     const load = async () => {
       try {
         const res = await api.get("/auth/me");
         setUser(res.data);
+        setPlans(res.data.plans || {});
       } catch {
         navigate("/auth", { replace: true });
       } finally {
@@ -47,27 +49,22 @@ export default function Dashboard() {
   if (!user) return null;
 
   /* =========================
-     HELPERS (DB LAW)
+     HELPERS (PER-PLAN)
   ========================= */
-  const isCurrentPlan = (plan) => user.plan === plan;
-
-  const surveysDone = (plan) =>
-    isCurrentPlan(plan) ? user.surveys_completed : 0;
-
-  const isCompleted = (plan) =>
-    isCurrentPlan(plan) && user.surveys_completed >= TOTAL_SURVEYS;
+  const surveysDone = (plan) => plans[plan]?.surveys_completed || 0;
+  const isCompleted = (plan) => plans[plan]?.completed === true;
 
   /* =========================
      ACTIONS
   ========================= */
-  const startSurvey = (plan) => {
-    if (isCompleted(plan)) {
-      navigate("/activation-notice", { replace: true });
-      return;
+  const startSurvey = async (plan) => {
+    try {
+      await api.post("/surveys/select-plan", { plan });
+      navigate("/surveys");
+    } catch {
+      setToast("Failed to start survey. Try again.");
+      setTimeout(() => setToast(""), 3000);
     }
-
-    localStorage.setItem("selectedPlan", plan);
-    navigate("/surveys");
   };
 
   const handleWithdraw = (plan) => {
@@ -160,6 +157,7 @@ export default function Dashboard() {
           <button
             className="primary-btn"
             onClick={() => startSurvey(key)}
+            disabled={isCompleted(key)}
           >
             {isCompleted(key) ? "Completed" : "Start Survey"}
           </button>
