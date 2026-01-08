@@ -12,6 +12,37 @@ const PLAN_TOTAL_EARNINGS = {
 };
 
 /* ===============================
+   SELECT PLAN (DB = SOURCE OF TRUTH)
+================================ */
+exports.selectPlan = async (req, res) => {
+  const userId = req.user.id;
+  const { plan } = req.body;
+
+  if (!PLAN_TOTAL_EARNINGS[plan]) {
+    return res.status(400).json({ message: "Invalid plan" });
+  }
+
+  try {
+    await pool.query(
+      `
+      UPDATE users
+      SET
+        plan = $1,
+        surveys_completed = 0,
+        is_activated = false
+      WHERE id = $2
+      `,
+      [plan, userId]
+    );
+
+    return res.json({ success: true, plan });
+  } catch (err) {
+    console.error("❌ Select plan error:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+/* ===============================
    SUBMIT SURVEY (LAW ENFORCED)
 ================================ */
 exports.submitSurvey = async (req, res) => {
