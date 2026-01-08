@@ -1,7 +1,7 @@
 const pool = require("../config/db");
 
 /* ======================================================
-   👤 USERS MANAGEMENT (ADMIN)
+   👤 USERS MANAGEMENT (ADMIN — FIXED)
 ====================================================== */
 
 /**
@@ -9,12 +9,23 @@ const pool = require("../config/db");
  */
 exports.getAllUsers = async (req, res) => {
   try {
-    const result = await pool.query(
-      `SELECT id, full_name, username, email, phone, role, status,
-              locked_balance, available_balance, created_at
-       FROM users
-       ORDER BY created_at DESC`
-    );
+    const result = await pool.query(`
+      SELECT
+        id,
+        full_name,
+        username,
+        email,
+        phone,
+        role,
+        status,
+        is_activated,
+        plan,
+        surveys_completed,
+        balance,
+        created_at
+      FROM users
+      ORDER BY created_at DESC
+    `);
 
     res.json(result.rows);
   } catch (error) {
@@ -31,10 +42,23 @@ exports.getUserById = async (req, res) => {
     const { id } = req.params;
 
     const result = await pool.query(
-      `SELECT id, full_name, username, email, phone, role, status,
-              locked_balance, available_balance, completed_surveys, created_at
-       FROM users
-       WHERE id = $1`,
+      `
+      SELECT
+        id,
+        full_name,
+        username,
+        email,
+        phone,
+        role,
+        status,
+        is_activated,
+        plan,
+        surveys_completed,
+        balance,
+        created_at
+      FROM users
+      WHERE id = $1
+      `,
       [id]
     );
 
@@ -51,15 +75,14 @@ exports.getUserById = async (req, res) => {
 
 /**
  * UPDATE USER STATUS
- * ⚠️ Admin may SUSPEND or REACTIVATE only
+ * ⚠️ Moderation only (does NOT activate)
  */
 exports.updateUserStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
-    const allowed = ["ACTIVE", "SUSPENDED"];
-    if (!allowed.includes(status)) {
+    if (!["ACTIVE", "SUSPENDED"].includes(status)) {
       return res.status(400).json({
         message: "Only ACTIVE or SUSPENDED allowed",
       });
@@ -72,10 +95,12 @@ exports.updateUserStatus = async (req, res) => {
     }
 
     const result = await pool.query(
-      `UPDATE users
-       SET status = $1
-       WHERE id = $2
-       RETURNING id, username, status`,
+      `
+      UPDATE users
+      SET status = $1
+      WHERE id = $2
+      RETURNING id, username, status
+      `,
       [status, id]
     );
 
@@ -112,10 +137,12 @@ exports.updateUserRole = async (req, res) => {
     }
 
     const result = await pool.query(
-      `UPDATE users
-       SET role = $1
-       WHERE id = $2
-       RETURNING id, username, role`,
+      `
+      UPDATE users
+      SET role = $1
+      WHERE id = $2
+      RETURNING id, username, role
+      `,
       [role, id]
     );
 
@@ -134,7 +161,8 @@ exports.updateUserRole = async (req, res) => {
 };
 
 /**
- * 💰 MANUAL BALANCE ADJUSTMENT (ADMIN TOOL)
+ * 💰 MANUAL BALANCE ADJUSTMENT (ADMIN)
+ * Uses REAL balance
  */
 exports.adjustUserBalance = async (req, res) => {
   const client = await pool.connect();
@@ -145,7 +173,7 @@ exports.adjustUserBalance = async (req, res) => {
 
     amount = Number(amount);
 
-    if (!amount || amount <= 0) {
+    if (!Number.isFinite(amount) || amount <= 0) {
       return res.status(400).json({ message: "Invalid amount" });
     }
 
@@ -156,7 +184,12 @@ exports.adjustUserBalance = async (req, res) => {
     await client.query("BEGIN");
 
     const userRes = await client.query(
-      `SELECT available_balance FROM users WHERE id = $1 FOR UPDATE`,
+      `
+      SELECT balance
+      FROM users
+      WHERE id = $1
+      FOR UPDATE
+      `,
       [id]
     );
 
@@ -165,23 +198,27 @@ exports.adjustUserBalance = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    let available = userRes.rows[0].available_balance;
+    let balance = Number(userRes.rows[0].balance);
 
-    if (type === "DEBIT" && available < amount) {
+    if (type === "DEBIT" && balance < amount) {
       await client.query("ROLLBACK");
-      return res.status(400).json({ message: "Insufficient balance" });
+      return res.status(400).json({
+        message: "Insufficient balance",
+      });
     }
 
-    available = type === "CREDIT"
-      ? available + amount
-      : available - amount;
+    balance = type === "CREDIT"
+      ? balance + amount
+      : balance - amount;
 
     const update = await client.query(
-      `UPDATE users
-       SET available_balance = $1
-       WHERE id = $2
-       RETURNING id, username, available_balance`,
-      [available, id]
+      `
+      UPDATE users
+      SET balance = $1
+      WHERE id = $2
+      RETURNING id, username, balance
+      `,
+      [balance, id]
     );
 
     await client.query("COMMIT");
@@ -213,7 +250,11 @@ exports.deleteUser = async (req, res) => {
     }
 
     const result = await pool.query(
-      `DELETE FROM users WHERE id = $1 RETURNING id`,
+      `
+      DELETE FROM users
+      WHERE id = $1
+      RETURNING id
+      `,
       [id]
     );
 
@@ -231,7 +272,6 @@ exports.deleteUser = async (req, res) => {
 /* ======================================================
    📊 ADMIN DASHBOARD STATS
 ====================================================== */
-
 exports.getAdminStats = async (req, res) => {
   try {
     const users = await pool.query(`SELECT COUNT(*) FROM users`);

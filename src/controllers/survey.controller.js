@@ -12,7 +12,7 @@ const PLAN_TOTAL_EARNINGS = {
 };
 
 /* ===============================
-   SELECT PLAN (NO SIDE EFFECTS)
+   SELECT PLAN (FIXED)
 ================================ */
 exports.selectPlan = async (req, res) => {
   const userId = req.user.id;
@@ -25,8 +25,14 @@ exports.selectPlan = async (req, res) => {
   try {
     await pool.query(
       `
-      INSERT INTO user_surveys (user_id, plan)
-      VALUES ($1, $2)
+      INSERT INTO user_surveys (
+        user_id,
+        plan,
+        surveys_completed,
+        completed,
+        is_activated
+      )
+      VALUES ($1, $2, 0, false, false)
       ON CONFLICT (user_id, plan) DO NOTHING
       `,
       [userId, plan]
@@ -43,7 +49,7 @@ exports.selectPlan = async (req, res) => {
 };
 
 /* ===============================
-   SUBMIT SURVEY (PURE LOGIC)
+   SUBMIT SURVEY (NO CHANGE)
 ================================ */
 exports.submitSurvey = async (req, res) => {
   const client = await pool.connect();

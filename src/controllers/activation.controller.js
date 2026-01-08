@@ -1,5 +1,7 @@
 const pool = require("../config/db");
 
+const TOTAL_SURVEYS = 10;
+
 /* ===============================
    PLAN ACTIVATION FEES (SOURCE OF TRUTH)
 ================================ */
@@ -9,18 +11,15 @@ const PLAN_FEES = {
   VVIP: 200,
 };
 
-const TOTAL_SURVEYS = 10;
-
 /* =====================================
    USER — SUBMIT ACTIVATION PAYMENT
-   (STRICT LAW ENFORCED)
 ===================================== */
 exports.submitActivationPayment = async (req, res) => {
   const client = await pool.connect();
 
   try {
     const userId = req.user.id;
-    const { mpesa_code } = req.body;
+    const { mpesa_code, plan } = req.body;
     const paymentReference = String(mpesa_code || "").trim();
 
     if (!paymentReference) {
@@ -29,63 +28,54 @@ exports.submitActivationPayment = async (req, res) => {
       });
     }
 
+    if (!PLAN_FEES[plan]) {
+      return res.status(400).json({
+        message: "Invalid plan",
+      });
+    }
+
     await client.query("BEGIN");
 
-    /* 🔒 LOCK USER */
     const { rows } = await client.query(
       `
-      SELECT
-        id,
-        plan,
-        surveys_completed,
-        is_activated
-      FROM users
-      WHERE id = $1
+      SELECT surveys_completed, completed, is_activated
+      FROM user_surveys
+      WHERE user_id = $1 AND plan = $2
       FOR UPDATE
       `,
-      [userId]
+      [userId, plan]
     );
 
     if (!rows.length) {
       await client.query("ROLLBACK");
-      return res.status(404).json({ message: "User not found" });
+      return res.status(400).json({ message: "Survey plan not found" });
     }
 
-    const user = rows[0];
+    const planRow = rows[0];
 
-    /* 🚫 MUST HAVE COMPLETED SURVEYS */
-    if (user.surveys_completed !== TOTAL_SURVEYS) {
+    if (!planRow.completed || planRow.surveys_completed !== TOTAL_SURVEYS) {
       await client.query("ROLLBACK");
       return res.status(400).json({
         message: "Complete all surveys before activation",
       });
     }
 
-    /* 🚫 NO PLAN */
-    if (!user.plan || !PLAN_FEES[user.plan]) {
+    if (planRow.is_activated) {
       await client.query("ROLLBACK");
       return res.status(400).json({
-        message: "No active plan found for activation",
+        message: "Plan already activated",
       });
     }
 
-    /* 🚫 ALREADY ACTIVATED */
-    if (user.is_activated) {
-      await client.query("ROLLBACK");
-      return res.status(400).json({
-        message: "Account already activated",
-      });
-    }
-
-    /* 🚫 DUPLICATE SUBMISSION */
     const existing = await client.query(
       `
       SELECT id
       FROM activation_payments
       WHERE user_id = $1
+        AND plan = $2
         AND status = 'SUBMITTED'
       `,
-      [userId]
+      [userId, plan]
     );
 
     if (existing.rows.length) {
@@ -95,16 +85,13 @@ exports.submitActivationPayment = async (req, res) => {
       });
     }
 
-    const activationFee = PLAN_FEES[user.plan];
-
-    /* ✅ SAVE PAYMENT */
     await client.query(
       `
       INSERT INTO activation_payments
         (user_id, plan, mpesa_code, amount, status)
       VALUES ($1, $2, $3, $4, 'SUBMITTED')
       `,
-      [userId, user.plan, paymentReference, activationFee]
+      [userId, plan, paymentReference, PLAN_FEES[plan]]
     );
 
     await client.query("COMMIT");
@@ -139,12 +126,9 @@ exports.approveActivation = async (req, res) => {
 
     await client.query("BEGIN");
 
-    const activation = await client.query(
+    const activationRes = await client.query(
       `
-      SELECT
-        id,
-        user_id,
-        status
+      SELECT id, user_id, plan, status
       FROM activation_payments
       WHERE id = $1
       FOR UPDATE
@@ -152,30 +136,34 @@ exports.approveActivation = async (req, res) => {
       [id]
     );
 
-    if (!activation.rows.length) {
+    if (!activationRes.rows.length) {
       await client.query("ROLLBACK");
       return res.status(404).json({ message: "Activation request not found" });
     }
 
-    if (activation.rows[0].status !== "SUBMITTED") {
+    const activation = activationRes.rows[0];
+
+    if (activation.status !== "SUBMITTED") {
       await client.query("ROLLBACK");
-      return res.status(400).json({ message: "Activation already processed" });
+      return res.status(400).json({
+        message: "Activation already processed",
+      });
     }
 
-    /* 🔒 ENSURE USER REALLY COMPLETED SURVEYS */
-    const userCheck = await client.query(
+    const planCheck = await client.query(
       `
-      SELECT surveys_completed
-      FROM users
-      WHERE id = $1
+      SELECT surveys_completed, completed, is_activated
+      FROM user_surveys
+      WHERE user_id = $1 AND plan = $2
       FOR UPDATE
       `,
-      [activation.rows[0].user_id]
+      [activation.user_id, activation.plan]
     );
 
     if (
-      !userCheck.rows.length ||
-      userCheck.rows[0].surveys_completed !== TOTAL_SURVEYS
+      !planCheck.rows.length ||
+      !planCheck.rows[0].completed ||
+      planCheck.rows[0].surveys_completed !== TOTAL_SURVEYS
     ) {
       await client.query("ROLLBACK");
       return res.status(400).json({
@@ -183,30 +171,42 @@ exports.approveActivation = async (req, res) => {
       });
     }
 
-    /* ✅ APPROVE PAYMENT */
+    if (planCheck.rows[0].is_activated) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        message: "Plan already activated",
+      });
+    }
+
     await client.query(
-      `
-      UPDATE activation_payments
-      SET status = 'APPROVED'
-      WHERE id = $1
-      `,
+      `UPDATE activation_payments SET status = 'APPROVED' WHERE id = $1`,
       [id]
     );
 
-    /* 🔓 UNLOCK WITHDRAWALS */
+    await client.query(
+      `
+      UPDATE user_surveys
+      SET is_activated = true
+      WHERE user_id = $1 AND plan = $2
+      `,
+      [activation.user_id, activation.plan]
+    );
+
+    /* 🔑 CRITICAL FIX — GLOBAL UNLOCK */
     await client.query(
       `
       UPDATE users
       SET is_activated = true
       WHERE id = $1
       `,
-      [activation.rows[0].user_id]
+      [activation.user_id]
     );
 
     await client.query("COMMIT");
 
     return res.json({
       message: "Activation approved",
+      plan: activation.plan,
       withdraw_unlocked: true,
     });
   } catch (error) {

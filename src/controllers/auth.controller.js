@@ -9,8 +9,8 @@ const TOTAL_SURVEYS = 10;
 ================================ */
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production", // ✅ FIX
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // ✅ FIX
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   path: "/",
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
@@ -20,7 +20,6 @@ const COOKIE_OPTIONS = {
 ================================ */
 exports.register = async (req, res) => {
   try {
-    // ✅ ACCEPT MULTIPLE FRONTEND FIELD NAMES
     const fullName =
       req.body.fullName || req.body.name || req.body.full_name;
 
@@ -125,7 +124,7 @@ exports.logout = (req, res) => {
 };
 
 /* ===============================
-   GET ME
+   GET ME (FIXED)
 ================================ */
 exports.getMe = async (req, res) => {
   try {
@@ -178,7 +177,8 @@ exports.getMe = async (req, res) => {
         total_surveys: TOTAL_SURVEYS,
       };
 
-      if (!row.completed && !activePlan) {
+      // ✅ FIX: keep active_plan until ACTIVATED (not until completed)
+      if (!row.is_activated && !activePlan) {
         activePlan = row.plan;
       }
     }

@@ -5,15 +5,16 @@ module.exports = (req, res, next) => {
   }
 
   /**
-   * IMPORTANT:
-   * - auth.middleware does NOT attach `status`
-   * - undefined status MUST NOT block activation flow
-   * - Only explicitly INACTIVE / PENDING users should be blocked
+   * RULES:
+   * - status = moderation only (ACTIVE / SUSPENDED)
+   * - is_activated = withdrawal & post-survey access
+   * - NEVER block activation routes here
    */
 
-  if (req.user.status && req.user.status !== "ACTIVE") {
+  // 🚫 Suspended users blocked globally
+  if (req.user.status === "SUSPENDED") {
     return res.status(403).json({
-      message: "Account not activated. Please activate your account first.",
+      message: "Account suspended. Contact support.",
     });
   }
 
