@@ -5,7 +5,7 @@ import api from "../api/api";
 const TOTAL_SURVEYS = 10;
 
 /* =========================
-   PLAN LABELS (DISPLAY ONLY)
+   PLAN LABELS
 ========================= */
 const PLAN_LABELS = {
   REGULAR: "Regular",
@@ -39,31 +39,32 @@ export default function Surveys() {
   const [submitting, setSubmitting] = useState(false);
 
   /* =========================
-     LOAD ACTIVE PLAN + STATE (DB ONLY)
+     LOAD STATE (SOURCE OF TRUTH = BACKEND)
   ========================= */
   useEffect(() => {
     const load = async () => {
       try {
         const res = await api.get("/auth/me");
 
-        const {
-          active_plan,
-          surveys_completed,
-          surveys_locked,
-        } = res.data;
-
-        if (!active_plan) {
+        const storedPlan = localStorage.getItem("active_plan");
+        if (!storedPlan) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        if (surveys_locked) {
-          navigate("/activation-notice", { replace: true });
+        const planState = res.data.plans?.[storedPlan];
+        if (!planState) {
+          navigate("/dashboard", { replace: true });
           return;
         }
 
-        setActivePlan(active_plan);
-        setSurveysDone(surveys_completed);
+        if (planState.completed) {
+          navigate("/congratulations", { replace: true });
+          return;
+        }
+
+        setActivePlan(storedPlan);
+        setSurveysDone(planState.surveys_completed);
       } catch {
         navigate("/auth", { replace: true });
       } finally {
@@ -78,16 +79,11 @@ export default function Surveys() {
     return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
   }
 
-  if (surveysDone >= TOTAL_SURVEYS) {
-    navigate("/activation-notice", { replace: true });
-    return null;
-  }
-
   const currentQuestion = QUESTIONS[surveysDone];
   const progress = (surveysDone / TOTAL_SURVEYS) * 100;
 
   /* =========================
-     SUBMIT ANSWER (FIXED)
+     SUBMIT ANSWER
   ========================= */
   const handleNext = async () => {
     if (submitting) return;
@@ -109,7 +105,7 @@ export default function Surveys() {
       setSelectedOption(null);
 
       if (res.data.completed) {
-        navigate("/activation-notice", { replace: true });
+        navigate("/congratulations", { replace: true });
       }
     } catch (err) {
       console.error(err);

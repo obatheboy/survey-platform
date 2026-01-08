@@ -26,36 +26,44 @@ const PLAN_CONFIG = {
   },
 };
 
-const TOTAL_SURVEYS = 10;
-
-export default function ActivationNotice() {
+export default function Congratulations() {
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(null);
+  const [planKey, setPlanKey] = useState(null);
+  const [planState, setPlanState] = useState(null);
+  const [totalEarned, setTotalEarned] = useState(0);
   const [loading, setLoading] = useState(true);
 
   /* =========================
-     LOAD USER (DB = LAW)
+     LOAD PLAN STATE (DB = LAW)
   ========================= */
   useEffect(() => {
     const load = async () => {
       try {
+        const activePlan = localStorage.getItem("active_plan");
+        if (!activePlan) {
+          navigate("/dashboard", { replace: true });
+          return;
+        }
+
         const res = await api.get("/auth/me");
-        const u = res.data;
+        const plan = res.data.plans?.[activePlan];
 
-        /* 🚫 NO PLAN OR NOT COMPLETED → DASHBOARD */
-        if (!u.plan || u.surveys_completed < TOTAL_SURVEYS) {
+        /* 🚫 INVALID ACCESS */
+        if (!plan || !plan.completed) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        /* ✅ ALREADY ACTIVATED → DASHBOARD */
-        if (u.is_activated) {
+        /* ✅ ALREADY ACTIVATED */
+        if (plan.is_activated) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        setUser(u);
+        setPlanKey(activePlan);
+        setPlanState(plan);
+        setTotalEarned(res.data.total_earned);
       } catch {
         navigate("/auth", { replace: true });
       } finally {
@@ -70,12 +78,12 @@ export default function ActivationNotice() {
     return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
   }
 
-  if (!user) return null;
+  if (!planKey || !planState) return null;
 
-  const plan = PLAN_CONFIG[user.plan];
+  const plan = PLAN_CONFIG[planKey];
 
   /* =========================
-     FIXED: ACTIVATE HANDLER
+     ACTIVATE
   ========================= */
   const handleActivate = () => {
     navigate("/activate");
@@ -111,10 +119,9 @@ export default function ActivationNotice() {
           You have successfully completed the{" "}
           <b>{plan.label}</b> survey plan and earned{" "}
           <b style={{ color: plan.color }}>
-            KES {user.total_earned}
+            KES {totalEarned}
           </b>.
-          <br />
-          <br />
+          <br /><br />
           Activate your account now to unlock withdrawals via
           <b style={{ color: "#00e676" }}> M-Pesa</b>.
         </p>
@@ -127,7 +134,7 @@ export default function ActivationNotice() {
           <p>
             💰 <b>Total Earnings:</b>{" "}
             <span style={{ color: plan.color }}>
-              KES {user.total_earned}
+              KES {totalEarned}
             </span>
           </p>
 
@@ -153,8 +160,7 @@ export default function ActivationNotice() {
         <button
           style={{
             ...activateBtn,
-            background:
-              "linear-gradient(135deg, #e60000, #ffeb3b)",
+            background: "linear-gradient(135deg, #e60000, #ffeb3b)",
             boxShadow: "0 0 40px rgba(255,235,59,0.9)",
             animation: "pulse 1.4s infinite",
           }}
@@ -183,7 +189,7 @@ export default function ActivationNotice() {
 }
 
 /* =========================
-   STYLES
+   STYLES (UNCHANGED)
 ========================= */
 const page = {
   minHeight: "100vh",
@@ -259,4 +265,3 @@ const backBtn = {
   borderRadius: 999,
   cursor: "pointer",
 };
- 

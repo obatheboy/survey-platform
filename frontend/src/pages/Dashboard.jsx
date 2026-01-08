@@ -49,29 +49,34 @@ export default function Dashboard() {
   if (!user) return null;
 
   /* =========================
-     HELPERS (PER-PLAN)
+     HELPERS
   ========================= */
   const surveysDone = (plan) => plans[plan]?.surveys_completed || 0;
   const isCompleted = (plan) => plans[plan]?.completed === true;
+  const isActivated = (plan) => plans[plan]?.is_activated === true;
 
   /* =========================
      ACTIONS
   ========================= */
   const startSurvey = async (plan) => {
     try {
-      // 1️⃣ Ensure plan exists in DB
+      // 🔑 remember active plan
+      localStorage.setItem("active_plan", plan);
+
+      // Ensure plan row exists
       await api.post("/surveys/select-plan", { plan });
 
-      // 2️⃣ Force backend truth before navigation
-      await api.get("/auth/me");
-
-      // 3️⃣ Now safe to enter surveys
       navigate("/surveys");
     } catch (err) {
       console.error(err);
       setToast("Failed to start survey. Try again.");
       setTimeout(() => setToast(""), 3000);
     }
+  };
+
+  const openCongratulations = (plan) => {
+    localStorage.setItem("active_plan", plan);
+    navigate("/congratulations");
   };
 
   const handleWithdraw = (plan) => {
@@ -82,8 +87,8 @@ export default function Dashboard() {
       return;
     }
 
-    if (!user.is_activated) {
-      navigate("/activation-notice", { replace: true });
+    if (!isActivated(plan)) {
+      openCongratulations(plan);
       return;
     }
 
@@ -150,26 +155,33 @@ export default function Dashboard() {
         Survey Plans
       </h3>
 
-      {Object.entries(PLANS).map(([key, plan]) => (
-        <div key={key} className="card plan-card">
-          <div>
-            <h4>{plan.icon} {plan.name}</h4>
-            <p><b>Total Earnings:</b> KES {plan.total}</p>
-            <p><b>Per Survey:</b> KES {plan.perSurvey}</p>
-            <p>
-              <b>Progress:</b> {surveysDone(key)} / {TOTAL_SURVEYS}
-            </p>
-          </div>
+      {Object.entries(PLANS).map(([key, plan]) => {
+        const completed = isCompleted(key);
 
-          <button
-            className="primary-btn"
-            onClick={() => startSurvey(key)}
-            disabled={isCompleted(key)}
-          >
-            {isCompleted(key) ? "Completed" : "Start Survey"}
-          </button>
-        </div>
-      ))}
+        return (
+          <div key={key} className="card plan-card">
+            <div>
+              <h4>{plan.icon} {plan.name}</h4>
+              <p><b>Total Earnings:</b> KES {plan.total}</p>
+              <p><b>Per Survey:</b> KES {plan.perSurvey}</p>
+              <p>
+                <b>Progress:</b> {surveysDone(key)} / {TOTAL_SURVEYS}
+              </p>
+            </div>
+
+            <button
+              className="primary-btn"
+              onClick={() =>
+                completed
+                  ? openCongratulations(key)
+                  : startSurvey(key)
+              }
+            >
+              {completed ? "View Completion" : "Start Survey"}
+            </button>
+          </div>
+        );
+      })}
     </div>
   );
 }
