@@ -48,29 +48,29 @@ export default function Surveys() {
       try {
         const res = await api.get("/auth/me");
 
-        const storedPlan = localStorage.getItem("active_plan");
-        if (!storedPlan) {
+        const backendActivePlan = res.data.active_plan;
+        if (!backendActivePlan) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        const planState = res.data.plans?.[storedPlan];
+        const planState = res.data.plans?.[backendActivePlan];
         if (!planState) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
         if (planState.completed || planState.surveys_completed >= TOTAL_SURVEYS) {
-          navigate("/congratulations", { replace: true });
+          navigate("/activation-notice", { replace: true });
           return;
         }
 
         if (!alive) return;
-        setActivePlan(storedPlan);
+        setActivePlan(backendActivePlan);
         setSurveysDone(planState.surveys_completed);
       } catch (err) {
-        console.warn("Survey auth check failed — waiting for interceptor");
-        // ❌ DO NOT redirect to /auth here
+        console.warn("Survey state load failed");
+        // ❌ DO NOT redirect here
       } finally {
         if (alive) setLoading(false);
       }
@@ -111,7 +111,7 @@ export default function Surveys() {
       setSelectedOption(null);
 
       if (res.data.completed || res.data.surveys_completed >= TOTAL_SURVEYS) {
-        navigate("/congratulations", { replace: true });
+        navigate("/activation-notice", { replace: true });
         return;
       }
 
@@ -166,7 +166,10 @@ export default function Surveys() {
           style={{
             ...button,
             opacity: submitting || selectedOption === null ? 0.6 : 1,
-            cursor: submitting || selectedOption === null ? "not-allowed" : "pointer",
+            cursor:
+              submitting || selectedOption === null
+                ? "not-allowed"
+                : "pointer",
           }}
         >
           {surveysDone + 1 === TOTAL_SURVEYS ? "Finish Surveys" : "Next"}
@@ -177,7 +180,7 @@ export default function Surveys() {
 }
 
 /* =========================
-   STYLES (UNCHANGED)
+   STYLES
 ========================= */
 
 const page = {

@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 
-const TOTAL_SURVEYS = 10;
-
 export default function Withdraw() {
   const navigate = useNavigate();
 
@@ -14,23 +12,32 @@ export default function Withdraw() {
   const [submitted, setSubmitted] = useState(false);
 
   /* =========================
-     🔐 ACCESS GUARD (LAW)
+     🔐 ACCESS GUARD
+     (BACKEND = LAW)
   ========================= */
   useEffect(() => {
+    let alive = true;
+
     const load = async () => {
       try {
         const res = await api.get("/auth/me");
-        const u = res.data;
 
-        // ❌ SURVEYS NOT COMPLETED
-        if (u.surveys_completed < TOTAL_SURVEYS) {
-          alert("❌ Complete all surveys before withdrawing.");
+        const activePlan = res.data.active_plan;
+        const plan = res.data.plans?.[activePlan];
+
+        if (!activePlan || !plan) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        // ❌ NOT ACTIVATED
-        if (!u.is_activated) {
+        // ❌ surveys not completed
+        if (!plan.completed) {
+          navigate("/dashboard", { replace: true });
+          return;
+        }
+
+        // ❌ not activated
+        if (!plan.is_activated) {
           navigate("/activation-notice", {
             state: { reason: "withdraw" },
             replace: true,
@@ -38,22 +45,24 @@ export default function Withdraw() {
           return;
         }
 
-        // ❌ NO EARNINGS
-        if (!u.total_earned || u.total_earned <= 0) {
-          alert("❌ No available balance to withdraw.");
+        // ❌ no earnings
+        if (!res.data.total_earned || res.data.total_earned <= 0) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        setUser(u);
-      } catch {
-        navigate("/auth", { replace: true });
+        if (!alive) return;
+        setUser(res.data);
+      } catch (err) {
+        console.warn("Withdraw: transient auth/me failure");
+        // ❌ DO NOT redirect — interceptor handles auth
       } finally {
-        setLoading(false);
+        if (alive) setLoading(false);
       }
     };
 
     load();
+    return () => (alive = false);
   }, [navigate]);
 
   if (loading) {
@@ -79,7 +88,7 @@ export default function Withdraw() {
       setMessage("⏳ Submitting withdrawal request…");
 
       await api.post("/withdraw/request", {
-        phone_number: phone,
+        phone_number: phone.trim(),
         amount: user.total_earned,
       });
 
@@ -156,7 +165,7 @@ export default function Withdraw() {
 }
 
 /* =========================
-   STYLES (UNCHANGED)
+   STYLES
 ========================= */
 const page = {
   minHeight: "100vh",

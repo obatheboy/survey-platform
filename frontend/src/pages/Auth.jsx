@@ -18,7 +18,7 @@ export default function Auth() {
      REGISTER STATE
   ========================= */
   const [regData, setRegData] = useState({
-    fullName: "",
+    full_name: "",
     phone: "",
     email: "",
     password: "",
@@ -51,8 +51,7 @@ export default function Auth() {
       setLoading(true);
 
       await api.post("/auth/register", {
-        fullName: regData.fullName,
-        username: regData.phone, // ✅ REQUIRED BY BACKEND
+        full_name: regData.full_name, // ✅ MATCHES BACKEND + DB
         phone: regData.phone,
         email: regData.email || null,
         password: regData.password,
@@ -77,19 +76,12 @@ export default function Auth() {
     try {
       setLoading(true);
 
-      // 🔐 LOGIN (sets HttpOnly cookie)
       await api.post("/auth/login", {
         phone: loginData.phone,
         password: loginData.password,
       });
 
-      // 🔍 VERIFY SESSION
-      const meRes = await api.get("/auth/me");
-      const user = meRes.data;
-
-      if (!user?.id) {
-        throw new Error("Session not established");
-      }
+      await api.get("/auth/me"); // verify cookie
 
       navigate("/dashboard", { replace: true });
     } catch (err) {
@@ -117,14 +109,13 @@ export default function Auth() {
             : "Welcome back, login to continue"}
         </p>
 
-        {/* ================= REGISTER ================= */}
         {mode === "register" && (
           <form onSubmit={handleRegister}>
             <Input
               placeholder="Full Name"
-              value={regData.fullName}
+              value={regData.full_name}
               onChange={(e) =>
-                setRegData({ ...regData, fullName: e.target.value })
+                setRegData({ ...regData, full_name: e.target.value })
               }
             />
 
@@ -184,7 +175,6 @@ export default function Auth() {
           </form>
         )}
 
-        {/* ================= LOGIN ================= */}
         {mode === "login" && (
           <form onSubmit={handleLogin}>
             <Input
@@ -240,9 +230,7 @@ function PasswordInput({ show, toggle, ...props }) {
         type={show ? "text" : "password"}
         style={input}
       />
-      <span style={eye} onClick={toggle}>
-        👁
-      </span>
+      <span style={eye} onClick={toggle}>👁</span>
     </div>
   );
 }
@@ -268,66 +256,12 @@ const card = {
   boxShadow: "0 25px 60px rgba(0,0,0,0.25)",
 };
 
-const logo = {
-  textAlign: "center",
-  marginBottom: "6px",
-  color: "#2c5364",
-};
-
-const subtitle = {
-  textAlign: "center",
-  fontSize: "14px",
-  color: "#555",
-  marginBottom: "24px",
-};
-
-const input = {
-  width: "100%",
-  padding: "12px 14px",
-  marginBottom: "14px",
-  borderRadius: "8px",
-  border: "1px solid #ccc",
-  fontSize: "14px",
-};
-
-const passwordWrap = {
-  position: "relative",
-};
-
-const eye = {
-  position: "absolute",
-  right: "12px",
-  top: "50%",
-  transform: "translateY(-50%)",
-  cursor: "pointer",
-};
-
-const button = {
-  width: "100%",
-  padding: "12px",
-  borderRadius: "8px",
-  border: "none",
-  background: "#2c5364",
-  color: "#fff",
-  fontWeight: "bold",
-  cursor: "pointer",
-  marginTop: "6px",
-};
-
-const message = {
-  marginTop: "12px",
-  fontSize: "14px",
-  textAlign: "center",
-};
-
-const switchText = {
-  marginTop: "18px",
-  textAlign: "center",
-  fontSize: "14px",
-};
-
-const link = {
-  color: "#2c5364",
-  fontWeight: "bold",
-  cursor: "pointer",
-};
+const logo = { textAlign: "center", marginBottom: "6px", color: "#2c5364" };
+const subtitle = { textAlign: "center", fontSize: "14px", color: "#555", marginBottom: "24px" };
+const input = { width: "100%", padding: "12px 14px", marginBottom: "14px", borderRadius: "8px", border: "1px solid #ccc" };
+const passwordWrap = { position: "relative" };
+const eye = { position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", cursor: "pointer" };
+const button = { width: "100%", padding: "12px", borderRadius: "8px", border: "none", background: "#2c5364", color: "#fff", fontWeight: "bold", cursor: "pointer", marginTop: "6px" };
+const message = { marginTop: "12px", fontSize: "14px", textAlign: "center" };
+const switchText = { marginTop: "18px", textAlign: "center", fontSize: "14px" };
+const link = { color: "#2c5364", fontWeight: "bold", cursor: "pointer" };

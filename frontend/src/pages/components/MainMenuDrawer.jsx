@@ -18,27 +18,35 @@ export default function MainMenuDrawer({ open, onClose, user }) {
   if (!open || !user) return null;
 
   /* =========================
-     STRICT DERIVED STATE
+     ACTIVE PLAN (SOURCE OF TRUTH)
   ========================= */
-  const isCompleted = user.surveys_completed >= TOTAL_SURVEYS;
-  const requiresActivation = isCompleted && !user.is_activated;
+  const activePlan = localStorage.getItem("active_plan");
+  const planData = activePlan ? user.plans?.[activePlan] : null;
+
+  const isCompleted =
+    planData?.surveys_completed >= TOTAL_SURVEYS;
+
+  const isActivated =
+    planData?.is_activated === true;
 
   /* =========================
-     WITHDRAW (LAW MATCHES DASHBOARD)
+     WITHDRAW (MATCHES DASHBOARD)
   ========================= */
   const handleWithdraw = () => {
     onClose();
+
+    if (!activePlan || !planData) {
+      navigate("/dashboard", { replace: true });
+      return;
+    }
 
     if (!isCompleted) {
       alert("❌ Complete all surveys to withdraw.");
       return;
     }
 
-    if (requiresActivation) {
-      navigate("/activation-notice", {
-        state: { reason: "withdraw" },
-        replace: true,
-      });
+    if (!isActivated) {
+      navigate("/congratulations", { replace: true });
       return;
     }
 
@@ -92,7 +100,11 @@ export default function MainMenuDrawer({ open, onClose, user }) {
         <h4 style={withdrawTitle}>💸 Withdraw Earnings</h4>
 
         {Object.entries(PLANS).map(([key, plan]) => {
-          const isUserPlan = user.plan === key;
+          const isActive = key === activePlan;
+          const earned =
+            isActive && isCompleted
+              ? Number(planData?.total_earned || 0).toLocaleString()
+              : "0";
 
           return (
             <div
@@ -100,7 +112,7 @@ export default function MainMenuDrawer({ open, onClose, user }) {
               style={{
                 ...withdrawCard,
                 borderColor: plan.color,
-                opacity: isUserPlan ? 1 : 0.35,
+                opacity: isActive ? 1 : 0.35,
               }}
             >
               <div>
@@ -109,10 +121,7 @@ export default function MainMenuDrawer({ open, onClose, user }) {
                 </strong>
 
                 <p style={withdrawAmount}>
-                  KES{" "}
-                  {isUserPlan && isCompleted
-                    ? Number(user.total_earned).toLocaleString()
-                    : "0"}
+                  KES {earned}
                 </p>
               </div>
 
@@ -121,9 +130,9 @@ export default function MainMenuDrawer({ open, onClose, user }) {
                   ...withdrawBtn,
                   borderColor: plan.color,
                   color: plan.color,
-                  cursor: isUserPlan ? "pointer" : "not-allowed",
+                  cursor: isActive ? "pointer" : "not-allowed",
                 }}
-                disabled={!isUserPlan}
+                disabled={!isActive}
                 onClick={handleWithdraw}
               >
                 Withdraw

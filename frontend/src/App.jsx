@@ -17,21 +17,29 @@ import AdminWithdrawals from "./pages/admin/AdminWithdrawals.jsx";
 import AdminUsers from "./pages/admin/AdminUsers.jsx";
 
 /* =====================================================
-   🔐 GLOBAL AUTH GUARD (COOKIE BASED)
+   🔐 GLOBAL AUTH GUARD (COOKIE BASED — FIXED)
 ===================================================== */
 function ProtectedRoute({ children, role }) {
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(undefined); // 👈 IMPORTANT (not null)
 
   useEffect(() => {
     api
       .get("/auth/me")
       .then((res) => setUser(res.data))
-      .catch(() => setUser(null))
+      .catch((err) => {
+        // 🔒 ONLY logout on real auth failure
+        if (err.response?.status === 401) {
+          setUser(null);
+        } else {
+          // 403 or other errors ≠ logout
+          setUser(undefined);
+        }
+      })
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
+  if (loading || user === undefined) {
     return (
       <p style={{ textAlign: "center", marginTop: 80 }}>
         Loading…
@@ -39,7 +47,7 @@ function ProtectedRoute({ children, role }) {
     );
   }
 
-  if (!user) {
+  if (user === null) {
     return <Navigate to="/auth" replace />;
   }
 
@@ -82,7 +90,6 @@ export default function App() {
           }
         />
 
-        {/* 🔔 ACTIVATION NOTICE (NEW STEP) */}
         <Route
           path="/activation-notice"
           element={

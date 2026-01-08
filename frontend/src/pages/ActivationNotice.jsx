@@ -26,7 +26,7 @@ const PLAN_CONFIG = {
   },
 };
 
-export default function Congratulations() {
+export default function ActivationNotice() {
   const navigate = useNavigate();
 
   const [planKey, setPlanKey] = useState(null);
@@ -35,22 +35,22 @@ export default function Congratulations() {
   const [loading, setLoading] = useState(true);
 
   /* =========================
-     LOAD PLAN STATE (DB = LAW)
+     LOAD STATE (BACKEND = LAW)
   ========================= */
   useEffect(() => {
     let alive = true;
 
     const load = async () => {
       try {
-        const activePlan = localStorage.getItem("active_plan");
+        const res = await api.get("/auth/me");
+
+        const activePlan = res.data.active_plan;
         if (!activePlan) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        const res = await api.get("/auth/me");
         const plan = res.data.plans?.[activePlan];
-
         if (!plan || !plan.completed) {
           navigate("/dashboard", { replace: true });
           return;
@@ -66,8 +66,8 @@ export default function Congratulations() {
         setPlanState(plan);
         setTotalEarned(res.data.total_earned);
       } catch (err) {
-        // ✅ DO NOTHING — interceptor handles real auth failure
-        console.warn("Congratulations: transient auth/me failure");
+        console.warn("ActivationNotice: auth/me transient failure");
+        // ❌ do NOT redirect — interceptor handles auth
       } finally {
         if (alive) setLoading(false);
       }

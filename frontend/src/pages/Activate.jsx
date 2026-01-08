@@ -7,10 +7,9 @@ import api from "../api/api";
 ========================= */
 const TILL_NUMBER = "5628444";
 const TILL_NAME = "MOONLIGHT ENTERPRISE";
-const TOTAL_SURVEYS = 10;
 
 /* =========================
-   PLAN CONFIG
+   PLAN CONFIG (DISPLAY ONLY)
 ========================= */
 const PLAN_CONFIG = {
   REGULAR: {
@@ -39,8 +38,8 @@ const PLAN_CONFIG = {
 export default function Activate() {
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(null);
   const [planKey, setPlanKey] = useState(null);
+  const [planState, setPlanState] = useState(null);
   const [paymentText, setPaymentText] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -48,49 +47,53 @@ export default function Activate() {
 
   /* =========================
      LOAD + VALIDATE ACCESS
-     (DB = SOURCE OF TRUTH)
+     (BACKEND = LAW)
   ========================= */
   useEffect(() => {
+    let alive = true;
+
     const load = async () => {
       try {
         const res = await api.get("/auth/me");
-        const u = res.data;
-        setUser(u);
 
-        // Plan must exist in DB
-        if (!u.plan || !PLAN_CONFIG[u.plan]) {
+        const activePlan = res.data.active_plan;
+        const plan = res.data.plans?.[activePlan];
+
+        if (!activePlan || !plan) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        // Activation only allowed AFTER plan completion
-        if (u.surveys_completed < TOTAL_SURVEYS) {
+        if (!plan.completed) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        // If already activated → nothing to do here
-        if (u.is_activated) {
+        if (plan.is_activated) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        setPlanKey(u.plan);
-      } catch {
-        navigate("/auth", { replace: true });
+        if (!alive) return;
+        setPlanKey(activePlan);
+        setPlanState(plan);
+      } catch (err) {
+        console.warn("Activate: auth/me transient failure");
+        // ❌ do NOT redirect — interceptor handles auth
       } finally {
-        setLoading(false);
+        if (alive) setLoading(false);
       }
     };
 
     load();
+    return () => (alive = false);
   }, [navigate]);
 
   if (loading) {
     return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
   }
 
-  if (!user || !planKey) return null;
+  if (!planKey || !planState) return null;
 
   const plan = PLAN_CONFIG[planKey];
 
@@ -99,7 +102,7 @@ export default function Activate() {
   ========================= */
   const submitActivation = async () => {
     if (!paymentText.trim()) {
-      setMessage("❌ Enter M-Pesa message or transaction code");
+      setMessage("❌ Enter M-Pesa confirmation message or transaction code");
       return;
     }
 
@@ -108,14 +111,12 @@ export default function Activate() {
       setMessage("⏳ Submitting payment for approval…");
 
       await api.post("/activation/submit", {
-        mpesa_code: paymentText,
+        mpesa_code: paymentText.trim(),
         plan: planKey,
       });
 
-      localStorage.removeItem("selectedPlan");
-
       setMessage(
-        "✅ Payment submitted.\n\nYour activation is pending admin approval.\nYou can continue doing other surveys while waiting."
+        "✅ Payment submitted.\n\nYour activation is pending admin approval."
       );
     } catch (err) {
       setMessage(
@@ -131,18 +132,13 @@ export default function Activate() {
   ========================= */
   return (
     <div style={page}>
-      <div
-        style={{
-          ...card,
-          boxShadow: `0 0 40px ${plan.glow}`,
-        }}
-      >
+      <div style={{ ...card, boxShadow: `0 0 40px ${plan.glow}` }}>
         <h2 style={{ textAlign: "center", color: plan.color }}>
-          🎉 Congratulations!
+          🔓 Account Activation
         </h2>
 
         <p style={{ textAlign: "center", marginTop: 6 }}>
-          You have completed the <b>{plan.label}</b> survey plan.
+          You completed the <b>{plan.label}</b> survey plan
         </p>
 
         <h3 style={{ textAlign: "center", marginTop: 14 }}>
@@ -153,13 +149,12 @@ export default function Activate() {
         </h3>
 
         <div style={sectionHighlight}>
-          <p style={{ fontWeight: 700, marginBottom: 8, color: "red" }}>
+          <p style={{ fontWeight: 700, color: "red" }}>
             🔐 Activation Required to Withdraw
           </p>
-
-          <p>✔ Secures your withdrawals</p>
-          <p>✔ Prevents fraud & fake accounts</p>
-          <p>✔ One-time fee per plan</p>
+          <p>✔ One-time fee</p>
+          <p>✔ Instant withdrawals after approval</p>
+          <p>✔ Secured account</p>
         </div>
 
         <div style={section}>
@@ -231,11 +226,10 @@ const card = {
   maxWidth: 520,
   width: "100%",
   background: "rgba(14, 58, 56, 1)",
-  backdropFilter: "blur(16px)",
   padding: 24,
   borderRadius: 22,
-  color: "#ffffffff",
-  border: "1px solid rgba(255, 0, 0, 1)",
+  color: "#fff",
+  border: "1px solid rgba(255,0,0,1)",
 };
 
 const section = {
@@ -256,7 +250,6 @@ const input = {
   marginTop: 16,
   borderRadius: 10,
   border: "none",
-  outline: "none",
   background: "rgba(255,255,255,0.12)",
   color: "#fff",
 };
@@ -265,8 +258,6 @@ const button = {
   width: "100%",
   marginTop: 16,
   padding: 14,
-  color: "#fff",
-  border: "none",
   borderRadius: 999,
   fontWeight: 800,
   cursor: "pointer",
@@ -278,4 +269,3 @@ const messageBox = {
   fontSize: 13,
   color: "#ff8a80",
 };
- 
