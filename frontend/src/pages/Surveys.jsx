@@ -45,19 +45,20 @@ export default function Surveys() {
       try {
         const res = await api.get("/auth/me");
         const u = res.data;
-        setUser(u);
 
-        /* 🚫 NO PLAN → EXIT */
+        /* 🚫 NO PLAN */
         if (!u.plan) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        /* 🔒 SURVEYS COMPLETED → CONGRATS */
+        /* 🔒 COMPLETED */
         if (u.surveys_completed >= TOTAL_SURVEYS) {
           navigate("/activation-notice", { replace: true });
           return;
         }
+
+        setUser(u);
       } catch {
         navigate("/auth", { replace: true });
       } finally {
@@ -76,35 +77,42 @@ export default function Surveys() {
      DB-DRIVEN STATE
   ========================= */
   const surveysDone = user.surveys_completed;
-  const questionIndex = surveysDone; // 0-based, strict
-  const currentQuestion = QUESTIONS[questionIndex];
+
+  /* 🛡 HARD SAFETY: never exceed questions */
+  if (surveysDone >= QUESTIONS.length) {
+    navigate("/activation-notice", { replace: true });
+    return null;
+  }
+
+  const currentQuestion = QUESTIONS[surveysDone];
   const progress = (surveysDone / TOTAL_SURVEYS) * 100;
 
   /* =========================
      SUBMIT ANSWER
   ========================= */
   const handleNext = async () => {
-    if (selectedOption === null) {
-      alert("Select an option");
-      return;
-    }
+    if (selectedOption === null || submitting) return;
 
     try {
       setSubmitting(true);
 
+      /* 🔐 BACKEND AUTHORITATIVE UPDATE */
       await api.post("/surveys/submit");
 
+      /* 🔄 RE-SYNC FROM DB */
       const refreshed = await api.get("/auth/me");
       const updatedUser = refreshed.data;
-      setUser(updatedUser);
 
-      /* 🎉 FINISHED → CONGRATS */
+      /* 🎉 COMPLETED */
       if (updatedUser.surveys_completed >= TOTAL_SURVEYS) {
         navigate("/activation-notice", { replace: true });
         return;
       }
 
+      setUser(updatedUser);
       setSelectedOption(null);
+    } catch (err) {
+      alert("❌ Failed to submit survey. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -219,7 +227,6 @@ const optionCard = {
   border: "1px solid #ddd",
   marginBottom: 10,
   cursor: "pointer",
-  transition: "all 0.2s ease",
 };
 
 const optionActive = {
