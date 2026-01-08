@@ -9,10 +9,10 @@ const TOTAL_SURVEYS = 10;
 ================================ */
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: true,          // REQUIRED (HTTPS)
-  sameSite: "none",      // REQUIRED cross-domain
+  secure: true,
+  sameSite: "none",
   path: "/",
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
 /* ===============================
@@ -26,7 +26,6 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: "Required fields missing" });
     }
 
-    // Phone must be unique
     const exists = await pool.query(
       "SELECT id FROM users WHERE phone = $1",
       [phone]
@@ -45,19 +44,11 @@ exports.register = async (req, res) => {
         phone,
         email,
         password_hash,
-        plan,
         is_activated,
-        total_earned,
-        surveys_completed
+        total_earned
       )
-      VALUES ($1, $2, $3, $4, NULL, false, 0, 0)
-      RETURNING
-        id,
-        full_name,
-        phone,
-        email,
-        plan,
-        is_activated
+      VALUES ($1, $2, $3, $4, false, 0)
+      RETURNING id, full_name, phone, email, is_activated
       `,
       [fullName, phone, email || null, passwordHash]
     );
@@ -73,7 +64,7 @@ exports.register = async (req, res) => {
 };
 
 /* ===============================
-   LOGIN (PHONE + PASSWORD)
+   LOGIN
 ================================ */
 exports.login = async (req, res) => {
   try {
@@ -81,11 +72,7 @@ exports.login = async (req, res) => {
 
     const result = await pool.query(
       `
-      SELECT
-        id,
-        phone,
-        password_hash,
-        is_activated
+      SELECT id, phone, password_hash, is_activated
       FROM users
       WHERE phone = $1
       `,
@@ -97,8 +84,8 @@ exports.login = async (req, res) => {
     }
 
     const user = result.rows[0];
-
     const match = await bcrypt.compare(password, user.password_hash);
+
     if (!match) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
@@ -129,30 +116,28 @@ exports.login = async (req, res) => {
    LOGOUT
 ================================ */
 exports.logout = (req, res) => {
-  // ❗ Do NOT reuse COOKIE_OPTIONS here
   res.clearCookie("token", { path: "/" });
   res.json({ message: "Logged out" });
 };
 
 /* ===============================
-   GET ME (COOKIE SESSION)
+   GET ME (🔥 FIXED – MULTI PLAN)
 ================================ */
 exports.getMe = async (req, res) => {
   try {
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({ message: "Invalid or expired session" });
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Invalid session" });
     }
 
-    const result = await pool.query(
+    /* 🔹 USER CORE */
+    const userRes = await pool.query(
       `
       SELECT
         id,
         full_name,
         phone,
         email,
-        plan,
         is_activated,
-        surveys_completed,
         total_earned
       FROM users
       WHERE id = $1
@@ -160,26 +145,37 @@ exports.getMe = async (req, res) => {
       [req.user.id]
     );
 
-    if (!result.rows.length) {
+    if (!userRes.rows.length) {
       return res.status(401).json({ message: "Invalid session" });
     }
 
-    const user = result.rows[0];
-    const surveysCompleted = user.surveys_completed >= TOTAL_SURVEYS;
+    /* 🔹 ALL PLAN STATES */
+    const plansRes = await pool.query(
+      `
+      SELECT
+        plan,
+        surveys_completed,
+        completed,
+        is_activated
+      FROM user_surveys
+      WHERE user_id = $1
+      `,
+      [req.user.id]
+    );
+
+    const plans = {};
+    for (const row of plansRes.rows) {
+      plans[row.plan] = {
+        surveys_completed: row.surveys_completed,
+        completed: row.completed,
+        is_activated: row.is_activated,
+        total_surveys: TOTAL_SURVEYS,
+      };
+    }
 
     res.json({
-      id: user.id,
-      full_name: user.full_name,
-      phone: user.phone,
-      email: user.email,
-      plan: user.plan,
-
-      surveys_completed: user.surveys_completed,
-      surveys_done: surveysCompleted,
-
-      // Backend exposes FACTS only
-      is_activated: user.is_activated,
-      total_earned: user.total_earned,
+      ...userRes.rows[0],
+      plans, // 🔥 THIS IS WHAT DASHBOARD & SURVEYS NEED
     });
   } catch (error) {
     console.error("GET ME ERROR:", error);
