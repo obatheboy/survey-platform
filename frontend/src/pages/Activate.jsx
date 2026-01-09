@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
-import { notify } from "../../../src/app";
 
 /* =========================
    CONSTANTS
@@ -192,12 +191,11 @@ export default function Activate() {
             </span>
           </p>
         </div>
-
-        <div style={notify}>
-          📋 Paste the <b>exact M-Pesa confirmation message down below</b>.
-          <br />
-          Fake or altered messages will lead to <b>account suspension</b>.
-        </div>
+<div style={noteBox}>
+  📋 <b>Important:</b> Please paste the <b>exact M-Pesa confirmation message</b> below after payment.
+  <br />
+  Make sure the message is complete and unedited so your activation can be verified quickly.
+</div>
 
         <textarea
           placeholder="Paste full M-Pesa confirmation message here"
@@ -274,6 +272,18 @@ const sectionHighlight = {
   ...section,
   background: "rgba(0,255,128,0.08)",
 };
+
+const noteBox = {
+  marginTop: 16,
+  padding: 14,
+  borderRadius: 12,
+  background: "rgba(0, 255, 204, 0.12)",
+  color: "#b2fff1",
+  fontSize: 13,
+  fontWeight: 600,
+  border: "1px solid rgba(0, 255, 204, 0.4)",
+};
+
 
 const warningBox = {
   marginTop: 16,
