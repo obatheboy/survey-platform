@@ -1,11 +1,21 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import {
+  useNavigate,
+  useSearchParams
+} from "react-router-dom";
 import api from "../api/api";
 
 export default function Auth() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const [mode, setMode] = useState("login"); // login | register
+  /* =========================
+     MODE (REGISTER DEFAULT)
+  ========================= */
+  const initialMode =
+    searchParams.get("mode") === "login" ? "login" : "register";
+
+  const [mode, setMode] = useState(initialMode);
   const [loading, setLoading] = useState(false);
 
   /* =========================
@@ -16,7 +26,7 @@ export default function Auth() {
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   /* =========================
-     REGISTER STATE (USERS)
+     REGISTER STATE
   ========================= */
   const [regData, setRegData] = useState({
     full_name: "",
@@ -28,7 +38,7 @@ export default function Auth() {
   const [regMessage, setRegMessage] = useState("");
 
   /* =========================
-     LOGIN STATE (USER ONLY)
+     LOGIN STATE
   ========================= */
   const [loginData, setLoginData] = useState({
     phone: "",
@@ -37,7 +47,14 @@ export default function Auth() {
   const [loginMessage, setLoginMessage] = useState("");
 
   /* =========================
-     REGISTER (USER)
+     KEEP URL IN SYNC
+  ========================= */
+  useEffect(() => {
+    navigate(`/auth?mode=${mode}`, { replace: true });
+  }, [mode, navigate]);
+
+  /* =========================
+     REGISTER
   ========================= */
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -61,14 +78,16 @@ export default function Auth() {
       setRegMessage("✅ Account created. Please login.");
       setMode("login");
     } catch (err) {
-      setRegMessage(err.response?.data?.message || "Registration failed");
+      setRegMessage(
+        err.response?.data?.message || "Registration failed"
+      );
     } finally {
       setLoading(false);
     }
   };
 
   /* =========================
-     LOGIN (USER)
+     LOGIN
   ========================= */
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -82,13 +101,13 @@ export default function Auth() {
         password: loginData.password,
       });
 
-      // verify session
       await api.get("/auth/me");
 
       navigate("/dashboard", { replace: true });
     } catch (err) {
       setLoginMessage(
-        err.response?.data?.message || "Login failed. Try again."
+        err.response?.data?.message ||
+          "Login failed. Try again."
       );
     } finally {
       setLoading(false);
@@ -119,7 +138,10 @@ export default function Auth() {
               placeholder="Full Name"
               value={regData.full_name}
               onChange={(e) =>
-                setRegData({ ...regData, full_name: e.target.value })
+                setRegData({
+                  ...regData,
+                  full_name: e.target.value,
+                })
               }
             />
 
@@ -127,7 +149,10 @@ export default function Auth() {
               placeholder="Phone Number"
               value={regData.phone}
               onChange={(e) =>
-                setRegData({ ...regData, phone: e.target.value })
+                setRegData({
+                  ...regData,
+                  phone: e.target.value,
+                })
               }
             />
 
@@ -137,7 +162,10 @@ export default function Auth() {
               required={false}
               value={regData.email}
               onChange={(e) =>
-                setRegData({ ...regData, email: e.target.value })
+                setRegData({
+                  ...regData,
+                  email: e.target.value,
+                })
               }
             />
 
@@ -145,9 +173,14 @@ export default function Auth() {
               placeholder="Password"
               value={regData.password}
               show={showRegPassword}
-              toggle={() => setShowRegPassword(!showRegPassword)}
+              toggle={() =>
+                setShowRegPassword(!showRegPassword)
+              }
               onChange={(e) =>
-                setRegData({ ...regData, password: e.target.value })
+                setRegData({
+                  ...regData,
+                  password: e.target.value,
+                })
               }
             />
 
@@ -155,7 +188,9 @@ export default function Auth() {
               placeholder="Confirm Password"
               value={regData.confirmPassword}
               show={showRegConfirm}
-              toggle={() => setShowRegConfirm(!showRegConfirm)}
+              toggle={() =>
+                setShowRegConfirm(!showRegConfirm)
+              }
               onChange={(e) =>
                 setRegData({
                   ...regData,
@@ -168,11 +203,16 @@ export default function Auth() {
               {loading ? "Creating..." : "Create Account"}
             </button>
 
-            {regMessage && <p style={message}>{regMessage}</p>}
+            {regMessage && (
+              <p style={message}>{regMessage}</p>
+            )}
 
             <p style={switchText}>
               Already have an account?{" "}
-              <span style={link} onClick={() => setMode("login")}>
+              <span
+                style={link}
+                onClick={() => setMode("login")}
+              >
                 Login
               </span>
             </p>
@@ -186,7 +226,10 @@ export default function Auth() {
               placeholder="Phone Number"
               value={loginData.phone}
               onChange={(e) =>
-                setLoginData({ ...loginData, phone: e.target.value })
+                setLoginData({
+                  ...loginData,
+                  phone: e.target.value,
+                })
               }
             />
 
@@ -194,9 +237,14 @@ export default function Auth() {
               placeholder="Password"
               value={loginData.password}
               show={showLoginPassword}
-              toggle={() => setShowLoginPassword(!showLoginPassword)}
+              toggle={() =>
+                setShowLoginPassword(!showLoginPassword)
+              }
               onChange={(e) =>
-                setLoginData({ ...loginData, password: e.target.value })
+                setLoginData({
+                  ...loginData,
+                  password: e.target.value,
+                })
               }
             />
 
@@ -204,11 +252,16 @@ export default function Auth() {
               {loading ? "Logging in..." : "Login"}
             </button>
 
-            {loginMessage && <p style={message}>{loginMessage}</p>}
+            {loginMessage && (
+              <p style={message}>{loginMessage}</p>
+            )}
 
             <p style={switchText}>
               Don’t have an account?{" "}
-              <span style={link} onClick={() => setMode("register")}>
+              <span
+                style={link}
+                onClick={() => setMode("register")}
+              >
                 Create one
               </span>
             </p>
@@ -223,7 +276,14 @@ export default function Auth() {
    REUSABLE INPUTS
 ========================= */
 function Input({ type = "text", required = true, ...props }) {
-  return <input type={type} style={input} required={required} {...props} />;
+  return (
+    <input
+      type={type}
+      style={input}
+      required={required}
+      {...props}
+    />
+  );
 }
 
 function PasswordInput({ show, toggle, ...props }) {
@@ -235,20 +295,23 @@ function PasswordInput({ show, toggle, ...props }) {
         type={show ? "text" : "password"}
         style={input}
       />
-      <span style={eye} onClick={toggle}>👁</span>
+      <span style={eye} onClick={toggle}>
+        👁
+      </span>
     </div>
   );
 }
 
 /* =========================
-   STYLES
+   STYLES (UNCHANGED)
 ========================= */
 const page = {
   minHeight: "100vh",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  background: "linear-gradient(135deg, #0f2027, #203a43, #2c5364)",
+  background:
+    "linear-gradient(135deg, #0f2027, #203a43, #2c5364)",
   padding: "20px",
 };
 
@@ -261,12 +324,63 @@ const card = {
   boxShadow: "0 25px 60px rgba(0,0,0,0.25)",
 };
 
-const logo = { textAlign: "center", marginBottom: "6px", color: "#2c5364" };
-const subtitle = { textAlign: "center", fontSize: "14px", color: "#555", marginBottom: "24px" };
-const input = { width: "100%", padding: "12px 14px", marginBottom: "14px", borderRadius: "8px", border: "1px solid #ccc" };
+const logo = {
+  textAlign: "center",
+  marginBottom: "6px",
+  color: "#2c5364",
+};
+
+const subtitle = {
+  textAlign: "center",
+  fontSize: "14px",
+  color: "#555",
+  marginBottom: "24px",
+};
+
+const input = {
+  width: "100%",
+  padding: "12px 14px",
+  marginBottom: "14px",
+  borderRadius: "8px",
+  border: "1px solid #ccc",
+};
+
 const passwordWrap = { position: "relative" };
-const eye = { position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", cursor: "pointer" };
-const button = { width: "100%", padding: "12px", borderRadius: "8px", border: "none", background: "#2c5364", color: "#fff", fontWeight: "bold", cursor: "pointer", marginTop: "6px" };
-const message = { marginTop: "12px", fontSize: "14px", textAlign: "center" };
-const switchText = { marginTop: "18px", textAlign: "center", fontSize: "14px" };
-const link = { color: "#2c5364", fontWeight: "bold", cursor: "pointer" };
+
+const eye = {
+  position: "absolute",
+  right: "12px",
+  top: "50%",
+  transform: "translateY(-50%)",
+  cursor: "pointer",
+};
+
+const button = {
+  width: "100%",
+  padding: "12px",
+  borderRadius: "8px",
+  border: "none",
+  background: "#2c5364",
+  color: "#fff",
+  fontWeight: "bold",
+  cursor: "pointer",
+  marginTop: "6px",
+};
+
+const message = {
+  marginTop: "12px",
+  fontSize: "14px",
+  textAlign: "center",
+};
+
+const switchText = {
+  marginTop: "18px",
+  textAlign: "center",
+  fontSize: "14px",
+};
+
+const link = {
+  color: "#2c5364",
+  fontWeight: "bold",
+  cursor: "pointer",
+};
