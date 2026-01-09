@@ -10,47 +10,37 @@ const PLANS = {
   VVIP: { name: "VVIP", color: "#ffb300" },
 };
 
-const TOTAL_SURVEYS = 10;
-
 export default function MainMenuDrawer({ open, onClose, user }) {
   const navigate = useNavigate();
 
   if (!open || !user) return null;
 
   /* =========================
-     ACTIVE PLAN (SOURCE OF TRUTH)
-  ========================= */
-  const activePlan = localStorage.getItem("active_plan");
-
-  /* =========================
-     WITHDRAW (MATCHES DASHBOARD EXACTLY)
+     WITHDRAW (EXACT DASHBOARD LOGIC)
   ========================= */
   const handleWithdraw = (planKey) => {
     onClose();
 
-    const planData = user.plans?.[planKey];
+    const plan = user.plans?.[planKey];
+    if (!plan) return;
 
-    if (!planData) {
-      navigate("/dashboard", { replace: true });
+    const completed = plan.completed === true;
+    const activated = plan.is_activated === true;
+
+    // ❌ Not completed
+    if (!completed) {
+      alert("❌ Complete surveys to unlock withdrawal");
       return;
     }
 
-    const isCompleted =
-      planData.surveys_completed >= TOTAL_SURVEYS;
-
-    const isActivated =
-      planData.is_activated === true;
-
-    if (!isCompleted) {
-      alert("❌ Complete all surveys to withdraw.");
+    // ❌ Completed but not activated
+    if (!activated) {
+      localStorage.setItem("active_plan", planKey);
+      navigate("/activation-notice");
       return;
     }
 
-    if (!isActivated) {
-      navigate("/congratulations", { replace: true });
-      return;
-    }
-
+    // ✅ Activated
     navigate("/withdraw");
   };
 
@@ -102,15 +92,11 @@ export default function MainMenuDrawer({ open, onClose, user }) {
 
         {Object.entries(PLANS).map(([key, plan]) => {
           const planData = user.plans?.[key];
-          const isActive = key === activePlan;
+          const completed = planData?.completed === true;
 
-          const isCompleted =
-            planData?.surveys_completed >= TOTAL_SURVEYS;
-
-          const earned =
-            isCompleted
-              ? Number(planData?.total_earned || 0).toLocaleString()
-              : "0";
+          const earned = completed
+            ? Number(planData?.total_earned || 0).toLocaleString()
+            : "0";
 
           return (
             <div
@@ -118,7 +104,6 @@ export default function MainMenuDrawer({ open, onClose, user }) {
               style={{
                 ...withdrawCard,
                 borderColor: plan.color,
-                opacity: isActive ? 1 : 0.35,
               }}
             >
               <div>
@@ -136,9 +121,7 @@ export default function MainMenuDrawer({ open, onClose, user }) {
                   ...withdrawBtn,
                   borderColor: plan.color,
                   color: plan.color,
-                  cursor: isActive ? "pointer" : "not-allowed",
                 }}
-                disabled={!isActive}
                 onClick={() => handleWithdraw(key)}
               >
                 Withdraw
