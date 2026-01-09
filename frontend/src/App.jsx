@@ -57,9 +57,19 @@ function ProtectedRoute({ children, role }) {
 }
 
 /* =====================================================
-   🚦 ROUTER
+   🚦 ROUTER + 🔥 AUTO-WAKE (RENDER FIX)
 ===================================================== */
 export default function App() {
+  // 🔥 AUTO-WAKE RENDER (RUNS ONCE)
+  useEffect(() => {
+    fetch(import.meta.env.VITE_API_URL, {
+      method: "GET",
+      credentials: "include",
+    }).catch(() => {
+      // silent — Render may be asleep
+    });
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>
