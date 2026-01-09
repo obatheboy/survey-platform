@@ -29,8 +29,7 @@ function ProtectedRoute({ children, role }) {
       .then((res) => {
         setUser(res.data);
       })
-      .catch((err) => {
-        // ANY error → treat as not authenticated
+      .catch(() => {
         setUser(null);
       })
       .finally(() => {
@@ -47,11 +46,11 @@ function ProtectedRoute({ children, role }) {
   }
 
   if (!user) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/auth?mode=register" replace />;
   }
 
   if (role && user.role !== role) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/auth?mode=register" replace />;
   }
 
   return children;
@@ -64,8 +63,11 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* ENTRY */}
-        <Route path="/" element={<Navigate to="/auth" replace />} />
+        {/* ENTRY → REGISTER */}
+        <Route
+          path="/"
+          element={<Navigate to="/auth?mode=register" replace />}
+        />
 
         {/* AUTH */}
         <Route path="/auth" element={<Auth />} />
@@ -131,8 +133,11 @@ export default function App() {
           <Route path="users" element={<AdminUsers />} />
         </Route>
 
-        {/* FALLBACK */}
-        <Route path="*" element={<Navigate to="/auth" replace />} />
+        {/* FALLBACK → REGISTER */}
+        <Route
+          path="*"
+          element={<Navigate to="/auth?mode=register" replace />}
+        />
       </Routes>
     </BrowserRouter>
   );
