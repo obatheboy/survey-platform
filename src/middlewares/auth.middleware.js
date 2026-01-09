@@ -12,7 +12,12 @@ exports.protect = async (req, res, next) => {
       return res.status(401).json({ message: "Not authenticated" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch {
+      return res.status(401).json({ message: "Session expired, please login" });
+    }
 
     const result = await pool.query(
       `
@@ -47,7 +52,13 @@ exports.adminProtect = async (req, res, next) => {
     }
 
     const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch {
+      return res.status(401).json({ message: "Admin session expired" });
+    }
 
     if (decoded.role !== "admin") {
       return res.status(403).json({ message: "Admin access denied" });
