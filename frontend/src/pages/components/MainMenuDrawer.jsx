@@ -2,12 +2,12 @@ import { useNavigate } from "react-router-dom";
 import api from "../../api/api";
 
 /* =========================
-   PLAN CONFIG (DISPLAY ONLY)
+   PLAN CONFIG (MATCH DASHBOARD)
 ========================= */
 const PLANS = {
-  REGULAR: { name: "Regular", color: "#29b6f6" },
-  VIP: { name: "VIP", color: "#ab47bc" },
-  VVIP: { name: "VVIP", color: "#ffb300" },
+  REGULAR: { name: "Regular", color: "#29b6f6", total: 1500 },
+  VIP: { name: "VIP", color: "#ab47bc", total: 2000 },
+  VVIP: { name: "VVIP", color: "#ffb300", total: 3000 },
 };
 
 export default function MainMenuDrawer({ open, onClose, user }) {
@@ -15,8 +15,10 @@ export default function MainMenuDrawer({ open, onClose, user }) {
 
   if (!open || !user) return null;
 
+  const activePlan = localStorage.getItem("active_plan");
+
   /* =========================
-     WITHDRAW (EXACT DASHBOARD LOGIC)
+     WITHDRAW (EXACT DASHBOARD FLOW)
   ========================= */
   const handleWithdraw = (planKey) => {
     onClose();
@@ -27,20 +29,17 @@ export default function MainMenuDrawer({ open, onClose, user }) {
     const completed = plan.completed === true;
     const activated = plan.is_activated === true;
 
-    // ❌ Not completed
     if (!completed) {
       alert("❌ Complete surveys to unlock withdrawal");
       return;
     }
 
-    // ❌ Completed but not activated
     if (!activated) {
       localStorage.setItem("active_plan", planKey);
-      navigate("/activation-notice");
+      navigate("/activation-notice", { replace: true });
       return;
     }
 
-    // ✅ Activated
     navigate("/withdraw");
   };
 
@@ -71,16 +70,10 @@ export default function MainMenuDrawer({ open, onClose, user }) {
           </div>
 
           <div style={{ flex: 1 }}>
-            <strong style={{ color: "#fff" }}>
-              {user.full_name}
-            </strong>
+            <strong style={{ color: "#fff" }}>{user.full_name}</strong>
           </div>
 
-          <button
-            style={profileBtnDisabled}
-            disabled
-            title="Profile information is read-only"
-          >
+          <button style={profileBtnDisabled} disabled>
             Profile
           </button>
         </div>
@@ -93,10 +86,9 @@ export default function MainMenuDrawer({ open, onClose, user }) {
         {Object.entries(PLANS).map(([key, plan]) => {
           const planData = user.plans?.[key];
           const completed = planData?.completed === true;
+          const isActive = key === activePlan;
 
-          const earned = completed
-            ? Number(planData?.total_earned || 0).toLocaleString()
-            : "0";
+          const earned = completed ? plan.total.toLocaleString() : "0";
 
           return (
             <div
@@ -104,16 +96,12 @@ export default function MainMenuDrawer({ open, onClose, user }) {
               style={{
                 ...withdrawCard,
                 borderColor: plan.color,
+                opacity: isActive ? 1 : 0.35,
               }}
             >
               <div>
-                <strong style={{ color: plan.color }}>
-                  {plan.name}
-                </strong>
-
-                <p style={withdrawAmount}>
-                  KES {earned}
-                </p>
+                <strong style={{ color: plan.color }}>{plan.name}</strong>
+                <p style={withdrawAmount}>KES {earned}</p>
               </div>
 
               <button
@@ -121,7 +109,9 @@ export default function MainMenuDrawer({ open, onClose, user }) {
                   ...withdrawBtn,
                   borderColor: plan.color,
                   color: plan.color,
+                  cursor: isActive ? "pointer" : "not-allowed",
                 }}
+                disabled={!isActive}
                 onClick={() => handleWithdraw(key)}
               >
                 Withdraw
@@ -140,13 +130,6 @@ export default function MainMenuDrawer({ open, onClose, user }) {
         <MenuItem label="⬅ Back to Dashboard" onClick={onClose} />
         <MenuItem label="🚪 Logout" danger onClick={logout} />
       </div>
-
-      <style>{`
-        @keyframes slideIn {
-          from { transform: translateX(-100%); }
-          to { transform: translateX(0); }
-        }
-      `}</style>
     </>
   );
 }
@@ -177,7 +160,7 @@ function MenuItem({ label, onClick, danger }) {
 }
 
 /* =========================
-   STYLES (UNCHANGED)
+   STYLES
 ========================= */
 const overlay = {
   position: "fixed",
@@ -200,11 +183,7 @@ const drawer = {
   animation: "slideIn 0.3s ease-out",
 };
 
-const profileCard = {
-  display: "flex",
-  alignItems: "center",
-  gap: 12,
-};
+const profileCard = { display: "flex", alignItems: "center", gap: 12 };
 
 const avatar = {
   width: 44,
@@ -227,15 +206,8 @@ const profileBtnDisabled = {
   fontSize: 12,
 };
 
-const divider = {
-  margin: "16px 0",
-  opacity: 0.15,
-};
-
-const withdrawTitle = {
-  marginBottom: 12,
-  color: "#ce93d8",
-};
+const divider = { margin: "16px 0", opacity: 0.15 };
+const withdrawTitle = { marginBottom: 12, color: "#ce93d8" };
 
 const withdrawCard = {
   background: "rgba(255,255,255,0.08)",
