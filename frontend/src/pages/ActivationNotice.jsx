@@ -49,19 +49,16 @@ export default function ActivationNotice() {
         const activePlan = res.data.active_plan;
         const plan = res.data.plans?.[activePlan];
 
-        // ❌ No active plan or no plan data
         if (!activePlan || !plan) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        // ✅ TRUST SURVEY COUNT (NO RACE CONDITION)
         if (plan.surveys_completed < TOTAL_SURVEYS) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        // ✅ Already activated → dashboard
         if (plan.is_activated) {
           navigate("/dashboard?activated=true", { replace: true });
           return;
@@ -73,7 +70,7 @@ export default function ActivationNotice() {
         setPlanState(plan);
         setTotalEarned(res.data.total_earned);
       } catch {
-        // ❌ Do nothing — auth interceptor handles failures
+        // handled globally
       } finally {
         if (alive) setLoading(false);
       }
@@ -91,9 +88,6 @@ export default function ActivationNotice() {
 
   const plan = PLAN_CONFIG[planKey];
 
-  /* =========================
-     ACTIVATE
-  ========================= */
   const handleActivate = () => {
     navigate("/activate");
   };
@@ -110,39 +104,48 @@ export default function ActivationNotice() {
         </div>
 
         <h2 style={{ color: plan.color, textShadow: `0 0 20px ${plan.glow}` }}>
-          🎉 CONGRATULATIONS 🎉
+          🎉 Congratulations! 🎉
         </h2>
 
         <p style={text}>
-          You have successfully completed the <b>{plan.label}</b> survey plan and
-          earned{" "}
-          <b style={{ color: plan.color }}>KES {totalEarned}</b>.
+          You have successfully completed all required surveys under the{" "}
+          <b>{plan.label}</b> plan.
           <br /><br />
-          Activate your account now to unlock withdrawals via
-          <b style={{ color: "#00e676" }}> M-Pesa</b>.
+          Your account has generated{" "}
+          <b style={{ color: plan.color }}>KES {totalEarned}</b> in earnings.
+          <br /><br />
+          To comply with payment regulations and unlock withdrawals to
+          <b style={{ color: "#00e676" }}> M-Pesa</b>, a one-time account
+          activation is required.
         </p>
 
         <div style={urgencyBox}>
-          ⏳ ACTIVATE NOW — secure your earnings
+          ⏳ Action Required: Activate to secure and withdraw your earnings
         </div>
 
         <div style={highlightBox}>
           <p>
-            💰 <b>Total Earnings:</b>{" "}
+            💼 <b>Account Status:</b>{" "}
+            <span style={{ color: "#ffd600" }}>Pending Activation</span>
+          </p>
+
+          <p>
+            💰 <b>Total Earnings Ready:</b>{" "}
             <span style={{ color: plan.color }}>
               KES {totalEarned}
             </span>
           </p>
 
           <p>
-            🔓 <b>Activation Fee (once):</b>{" "}
+            🔐 <b>One-Time Activation Fee:</b>{" "}
             <span style={{ color: "#ff5252" }}>
               KES {plan.activationFee}
             </span>
           </p>
 
-          <p>✅ Instant withdrawals after activation</p>
-          <p>🛡️ Verified & secure account</p>
+          <p>✅ Instant access to withdrawals after activation</p>
+          <p>🛡️ Secure, verified & compliant payout account</p>
+          <p>📲 Withdraw directly to M-Pesa anytime</p>
         </div>
 
         <button
@@ -153,11 +156,11 @@ export default function ActivationNotice() {
           }}
           onClick={handleActivate}
         >
-          🔓 ACTIVATE & WITHDRAW
+          🔓 Activate Account & Withdraw Earnings
         </button>
 
         <button style={backBtn} onClick={() => navigate("/dashboard")}>
-          Back to Dashboard
+          Return to Dashboard
         </button>
       </div>
     </div>
