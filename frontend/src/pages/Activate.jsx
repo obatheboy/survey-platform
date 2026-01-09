@@ -42,6 +42,7 @@ export default function Activate() {
   const [planState, setPlanState] = useState(null);
   const [paymentText, setPaymentText] = useState("");
   const [message, setMessage] = useState("");
+  const [copied, setCopied] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -66,8 +67,6 @@ export default function Activate() {
         if (!alive) return;
         setPlanKey(activePlan);
         setPlanState(plan);
-      } catch {
-        // handled globally
       } finally {
         if (alive) setLoading(false);
       }
@@ -90,7 +89,9 @@ export default function Activate() {
   ========================= */
   const copyTill = async () => {
     await navigator.clipboard.writeText(TILL_NUMBER);
-    setMessage("✅ Till number copied. Proceed to M-Pesa payment.");
+    setCopied(true);
+    setMessage("✅ Till number copied successfully. Proceed to M-Pesa payment.");
+    setTimeout(() => setCopied(false), 2500);
   };
 
   /* =========================
@@ -111,11 +112,10 @@ export default function Activate() {
         plan: planKey,
       });
 
-    setMessage(
-  "❌ You have pasted a wrong message.\n\nDid you pay the activation fee?\n\nPlease pay the activation fee and paste the CORRECT original M-Pesa confirmation message."
-);
-
-    } catch (err) {
+      setMessage(
+        "❌ You have pasted a wrong message.\n\nDid you pay the activation fee?\n\nPlease pay the activation fee and paste the CORRECT original M-Pesa confirmation message."
+      );
+    } catch {
       setMessage(
         "⚠️ WARNING:\n\nIncorrect or fake M-Pesa message detected.\n\nPlease make the correct payment and paste the ORIGINAL M-Pesa confirmation message exactly as received.\n\n❗ Attempting to fake payments may result in permanent account suspension."
       );
@@ -143,51 +143,55 @@ export default function Activate() {
           <span style={{ color: plan.color }}>KES {plan.total}</span>
         </h3>
 
-        {/* ===== Activation Info ===== */}
         <div style={sectionHighlight}>
-          <p style={{ fontWeight: 800, color: "#ff5252" }}>
-            🔐 Activation Required to Withdraw
+          <p style={{ fontWeight: 900, color: "#ff3b3b" }}>
+            🔐 ACTIVATION REQUIRED TO WITHDRAW
           </p>
           <p>✔ One-time activation fee</p>
           <p>✔ Withdraw directly to M-Pesa</p>
           <p>✔ Secure & verified account</p>
         </div>
 
-        {/* ===== M-Pesa Guide ===== */}
         <div style={section}>
           <p style={{ fontWeight: 800 }}>📲 How to Pay via Lipa na M-Pesa</p>
           <ol style={{ fontSize: 14, lineHeight: 1.6 }}>
-            <li>Open <b>M-Pesa</b> on your phone</li>
+            <li>Open <b>M-Pesa</b></li>
             <li>Select <b>Lipa na M-Pesa</b></li>
             <li>Choose <b>Buy Goods & Services</b></li>
             <li>
               Enter Till Number: <b>{TILL_NUMBER}</b>
             </li>
             <li>
-              Enter Amount: <b>KES {plan.activationFee}</b>
+              Enter Amount:{" "}
+              <span style={activationFee}>
+                KES {plan.activationFee}
+              </span>
             </li>
             <li>Confirm payment with your M-Pesa PIN</li>
           </ol>
         </div>
 
-        {/* ===== Till Details ===== */}
         <div style={section}>
           <p><b>Till Name:</b> {TILL_NAME}</p>
           <p>
-            <b>Till Number:</b> {TILL_NUMBER}{" "}
+            <b>Till Number:</b> {TILL_NUMBER}
             <button onClick={copyTill} style={copyBtn}>
               📋 Copy
             </button>
           </p>
+
+          {copied && (
+            <p style={copiedNote}>✅ Copied! Paste this till number in M-Pesa</p>
+          )}
+
           <p>
             <b>Activation Fee:</b>{" "}
-            <span style={{ color: plan.color }}>
+            <span style={activationFee}>
               KES {plan.activationFee}
             </span>
           </p>
         </div>
 
-        {/* ===== WARNING ===== */}
         <div style={warningBox}>
           ⚠️ Paste the <b>exact M-Pesa confirmation message</b>.
           <br />
@@ -278,6 +282,19 @@ const warningBox = {
   color: "#ffb3b3",
   fontSize: 13,
   fontWeight: 700,
+};
+
+const activationFee = {
+  color: "#ff2d2d",
+  fontWeight: 900,
+  fontSize: 18,
+};
+
+const copiedNote = {
+  marginTop: 6,
+  color: "#00ff99",
+  fontWeight: 800,
+  fontSize: 13,
 };
 
 const input = {
