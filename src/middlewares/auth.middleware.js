@@ -2,13 +2,14 @@ const jwt = require("jsonwebtoken");
 const pool = require("../config/db");
 
 /* ===============================
-   🔐 USER AUTH (COOKIE + HEADER)
+   🔐 USER AUTH (COOKIE + BEARER)
+   - NO role column
 ================================ */
 exports.protect = async (req, res, next) => {
   try {
     let token = req.cookies?.token;
 
-    // ✅ Fallback: allow Bearer token (Vercel / axios / mobile safe)
+    // ✅ Allow Bearer token fallback (Vercel safe)
     if (!token && req.headers.authorization?.startsWith("Bearer ")) {
       token = req.headers.authorization.split(" ")[1];
     }
@@ -26,7 +27,7 @@ exports.protect = async (req, res, next) => {
 
     const result = await pool.query(
       `
-      SELECT id, full_name, phone, email, role
+      SELECT id, full_name, phone, email
       FROM users
       WHERE id = $1
       `,
@@ -47,6 +48,7 @@ exports.protect = async (req, res, next) => {
 
 /* ===============================
    🛡 ADMIN AUTH (HEADER ONLY)
+   - Admins table
 ================================ */
 exports.adminProtect = async (req, res, next) => {
   try {
@@ -63,10 +65,6 @@ exports.adminProtect = async (req, res, next) => {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch {
       return res.status(401).json({ message: "Admin session expired" });
-    }
-
-    if (decoded.role !== "admin") {
-      return res.status(403).json({ message: "Admin access denied" });
     }
 
     const result = await pool.query(
