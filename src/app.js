@@ -6,9 +6,10 @@ const authRoutes = require("./routes/auth.routes");
 const surveyRoutes = require("./routes/survey.routes");
 const activationRoutes = require("./routes/activation.routes");
 const withdrawRoutes = require("./routes/withdraw.routes");
+
 const adminRoutes = require("./routes/admin.routes");
 const adminActivationRoutes = require("./routes/admin.activation.routes");
-const adminAuthRoutes = require("./routes/admin.auth.routes"); // ✅ ADDED
+const adminAuthRoutes = require("./routes/admin.auth.routes");
 
 const app = express();
 
@@ -18,7 +19,7 @@ const app = express();
 app.set("trust proxy", 1);
 
 /* ===============================
-   CORS (VERCEL + RENDER SAFE)
+   🌍 CORS (VERCEL + RENDER SAFE)
 ================================ */
 const allowedOrigins = [
   "http://localhost:5173",
@@ -42,28 +43,20 @@ app.use(
 );
 
 /* ===============================
-   MIDDLEWARE
+   🧩 MIDDLEWARE
 ================================ */
 app.use(express.json());
 app.use(cookieParser());
 
 /* ===============================
-   USER ROUTES
+   🩺 HEALTH CHECK (RENDER WAKE-UP)
 ================================ */
-app.use("/api/auth", authRoutes);
-app.use("/api/surveys", surveyRoutes);
-app.use("/api/activation", activationRoutes);
-app.use("/api/withdraw", withdrawRoutes);
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
 
 /* ===============================
-   ADMIN ROUTES
-================================ */
-app.use("/api/admin/auth", adminAuthRoutes); // ✅ ADMIN LOGIN
-app.use("/api/admin", adminRoutes);
-app.use("/api/admin", adminActivationRoutes);
-
-/* ===============================
-   HEALTH CHECK
+   🏠 ROOT (OPTIONAL INFO)
 ================================ */
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -71,5 +64,20 @@ app.get("/", (req, res) => {
     service: "Survey Platform API",
   });
 });
+
+/* ===============================
+   👤 USER ROUTES
+================================ */
+app.use("/api/auth", authRoutes);
+app.use("/api/surveys", surveyRoutes);
+app.use("/api/activation", activationRoutes);
+app.use("/api/withdraw", withdrawRoutes);
+
+/* ===============================
+   🛡 ADMIN ROUTES
+================================ */
+app.use("/api/admin/auth", adminAuthRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/admin", adminActivationRoutes);
 
 module.exports = app;
