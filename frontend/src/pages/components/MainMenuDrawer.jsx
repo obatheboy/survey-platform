@@ -21,24 +21,25 @@ export default function MainMenuDrawer({ open, onClose, user }) {
      ACTIVE PLAN (SOURCE OF TRUTH)
   ========================= */
   const activePlan = localStorage.getItem("active_plan");
-  const planData = activePlan ? user.plans?.[activePlan] : null;
-
-  const isCompleted =
-    planData?.surveys_completed >= TOTAL_SURVEYS;
-
-  const isActivated =
-    planData?.is_activated === true;
 
   /* =========================
-     WITHDRAW (MATCHES DASHBOARD)
+     WITHDRAW (MATCHES DASHBOARD EXACTLY)
   ========================= */
-  const handleWithdraw = () => {
+  const handleWithdraw = (planKey) => {
     onClose();
 
-    if (!activePlan || !planData) {
+    const planData = user.plans?.[planKey];
+
+    if (!planData) {
       navigate("/dashboard", { replace: true });
       return;
     }
+
+    const isCompleted =
+      planData.surveys_completed >= TOTAL_SURVEYS;
+
+    const isActivated =
+      planData.is_activated === true;
 
     if (!isCompleted) {
       alert("❌ Complete all surveys to withdraw.");
@@ -100,9 +101,14 @@ export default function MainMenuDrawer({ open, onClose, user }) {
         <h4 style={withdrawTitle}>💸 Withdraw Earnings</h4>
 
         {Object.entries(PLANS).map(([key, plan]) => {
+          const planData = user.plans?.[key];
           const isActive = key === activePlan;
+
+          const isCompleted =
+            planData?.surveys_completed >= TOTAL_SURVEYS;
+
           const earned =
-            isActive && isCompleted
+            isCompleted
               ? Number(planData?.total_earned || 0).toLocaleString()
               : "0";
 
@@ -133,7 +139,7 @@ export default function MainMenuDrawer({ open, onClose, user }) {
                   cursor: isActive ? "pointer" : "not-allowed",
                 }}
                 disabled={!isActive}
-                onClick={handleWithdraw}
+                onClick={() => handleWithdraw(key)}
               >
                 Withdraw
               </button>
