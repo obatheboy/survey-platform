@@ -6,7 +6,6 @@ export default function Auth() {
   const navigate = useNavigate();
 
   const [mode, setMode] = useState("login"); // login | register
-  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(false);
 
   /* =========================
@@ -29,7 +28,7 @@ export default function Auth() {
   const [regMessage, setRegMessage] = useState("");
 
   /* =========================
-     LOGIN STATE
+     LOGIN STATE (USER ONLY)
   ========================= */
   const [loginData, setLoginData] = useState({
     phone: "",
@@ -38,7 +37,7 @@ export default function Auth() {
   const [loginMessage, setLoginMessage] = useState("");
 
   /* =========================
-     REGISTER (USER ONLY)
+     REGISTER (USER)
   ========================= */
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -69,7 +68,7 @@ export default function Auth() {
   };
 
   /* =========================
-     LOGIN (USER / ADMIN)
+     LOGIN (USER)
   ========================= */
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -78,17 +77,15 @@ export default function Auth() {
     try {
       setLoading(true);
 
-      const endpoint = isAdmin ? "/admin/login" : "/auth/login";
-
-      await api.post(endpoint, {
+      await api.post("/auth/login", {
         phone: loginData.phone,
         password: loginData.password,
       });
 
       // verify session
-      await api.get(isAdmin ? "/admin/me" : "/auth/me");
+      await api.get("/auth/me");
 
-      navigate(isAdmin ? "/admin" : "/dashboard", { replace: true });
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       setLoginMessage(
         err.response?.data?.message || "Login failed. Try again."
@@ -110,30 +107,13 @@ export default function Auth() {
         <h1 style={logo}>Survey Platform</h1>
 
         <p style={subtitle}>
-          {isAdmin
-            ? "Admin access only"
-            : mode === "register"
+          {mode === "register"
             ? "Create your account to start earning"
             : "Welcome back, login to continue"}
         </p>
 
-        {/* ===== ADMIN TOGGLE ===== */}
-        <div style={{ textAlign: "center", marginBottom: 14 }}>
-          <label style={{ fontSize: 13 }}>
-            <input
-              type="checkbox"
-              checked={isAdmin}
-              onChange={() => {
-                setIsAdmin(!isAdmin);
-                setMode("login");
-              }}
-            />{" "}
-            Login as Admin
-          </label>
-        </div>
-
         {/* ================= REGISTER ================= */}
-        {!isAdmin && mode === "register" && (
+        {mode === "register" && (
           <form onSubmit={handleRegister}>
             <Input
               placeholder="Full Name"
@@ -226,14 +206,12 @@ export default function Auth() {
 
             {loginMessage && <p style={message}>{loginMessage}</p>}
 
-            {!isAdmin && (
-              <p style={switchText}>
-                Don’t have an account?{" "}
-                <span style={link} onClick={() => setMode("register")}>
-                  Create one
-                </span>
-              </p>
-            )}
+            <p style={switchText}>
+              Don’t have an account?{" "}
+              <span style={link} onClick={() => setMode("register")}>
+                Create one
+              </span>
+            </p>
           </form>
         )}
       </div>
