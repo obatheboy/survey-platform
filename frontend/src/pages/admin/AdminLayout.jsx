@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate, NavLink } from "react-router-dom";
-import api from "../../api/api";
+import adminApi from "../../api/adminApi"; // ✅ FIX: use admin API
 
 export default function AdminLayout() {
   const navigate = useNavigate();
@@ -10,7 +10,8 @@ export default function AdminLayout() {
   useEffect(() => {
     const checkAdmin = async () => {
       try {
-        const res = await api.get("/auth/me");
+        // ✅ FIX: admin auth check
+        const res = await adminApi.get("/admin/me");
 
         if (res.data.role !== "admin") {
           navigate("/dashboard", { replace: true });
@@ -18,8 +19,8 @@ export default function AdminLayout() {
         }
 
         setAdmin(res.data);
-      } catch {
-        navigate("/auth", { replace: true });
+      } catch (err) {
+        navigate("/admin/login", { replace: true });
       } finally {
         setLoading(false);
       }

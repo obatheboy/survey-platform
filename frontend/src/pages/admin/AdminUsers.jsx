@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../../api/api";
+import adminApi from "../../api/adminApi"; // ✅ FIX: use admin API
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
@@ -18,7 +18,7 @@ export default function AdminUsers() {
   =========================== */
   const fetchUsers = async () => {
     try {
-      const res = await api.get("/admin/users");
+      const res = await adminApi.get("/admin/users"); // ✅ FIX
       setUsers(res.data);
     } catch (err) {
       setError("Failed to load users");
@@ -35,7 +35,7 @@ export default function AdminUsers() {
     if (!window.confirm(`Change status to ${newStatus}?`)) return;
 
     try {
-      await api.patch(`/admin/users/${userId}/status`, {
+      await adminApi.patch(`/admin/users/${userId}/status`, {
         status: newStatus,
       });
 
@@ -58,11 +58,11 @@ export default function AdminUsers() {
     }
 
     try {
-      await api.patch(
+      await adminApi.patch(
         `/admin/users/${editingUser.id}/balance`,
         {
           amount: Number(balanceAmount),
-          type, // CREDIT | DEBIT | LOCK
+          type, // CREDIT | DEBIT
         }
       );
 
@@ -88,8 +88,7 @@ export default function AdminUsers() {
             <th>Email</th>
             <th>Role</th>
             <th>Status</th>
-            <th>Locked</th>
-            <th>Available</th>
+            <th>Balance</th>
             <th>Created</th>
             <th>Actions</th>
           </tr>
@@ -108,12 +107,10 @@ export default function AdminUsers() {
                 </span>
               </td>
 
-              <td>{user.locked_balance}</td>
-              <td>{user.available_balance}</td>
+              <td>{user.balance}</td>
               <td>{new Date(user.created_at).toLocaleDateString()}</td>
 
               <td>
-                {/* ACTIVATE (only if inactive via payment approval) */}
                 {user.status !== "ACTIVE" && (
                   <button
                     onClick={() => updateStatus(user.id, "ACTIVE")}
@@ -122,7 +119,6 @@ export default function AdminUsers() {
                   </button>
                 )}
 
-                {/* SUSPEND */}
                 {user.status !== "SUSPENDED" && (
                   <button
                     onClick={() =>
@@ -131,15 +127,6 @@ export default function AdminUsers() {
                     style={{ color: "red" }}
                   >
                     Suspend
-                  </button>
-                )}
-
-                {/* UNSUSPEND */}
-                {user.status === "SUSPENDED" && (
-                  <button
-                    onClick={() => updateStatus(user.id, "ACTIVE")}
-                  >
-                    Unsuspend
                   </button>
                 )}
 
@@ -187,12 +174,6 @@ export default function AdminUsers() {
                 onClick={() => adjustBalance("DEBIT")}
               >
                 Debit
-              </button>
-
-              <button
-                onClick={() => adjustBalance("LOCK")}
-              >
-                Lock
               </button>
             </div>
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../../api/api";
+import adminApi from "../../api/adminApi"; // ✅ FIX
 
 export default function AdminWithdrawals() {
   const [withdrawals, setWithdrawals] = useState([]);
@@ -19,10 +19,10 @@ export default function AdminWithdrawals() {
 
       const endpoint =
         view === "PENDING"
-          ? "/withdraw/admin/pending"
-          : "/withdraw/admin/all";
+          ? "/admin/withdrawals/pending"
+          : "/admin/withdrawals";
 
-      const res = await api.get(endpoint);
+      const res = await adminApi.get(endpoint); // ✅ FIX
       setWithdrawals(res.data);
     } catch (err) {
       console.error("Fetch withdrawals error:", err);
@@ -45,7 +45,7 @@ export default function AdminWithdrawals() {
 
     setProcessingId(id);
     try {
-      await api.patch(`/withdraw/admin/${id}/approve`);
+      await adminApi.patch(`/admin/withdrawals/${id}/approve`); // ✅ FIX
 
       setWithdrawals((prev) =>
         prev.map((w) =>
@@ -64,7 +64,7 @@ export default function AdminWithdrawals() {
 
     setProcessingId(id);
     try {
-      await api.patch(`/withdraw/admin/${id}/reject`);
+      await adminApi.patch(`/admin/withdrawals/${id}/reject`); // ✅ FIX
 
       setWithdrawals((prev) =>
         prev.map((w) =>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../../api/api";
+import adminApi from "../../api/adminApi"; // ✅ FIX
 
 export default function AdminActivations() {
   const [payments, setPayments] = useState([]);
@@ -22,7 +22,7 @@ export default function AdminActivations() {
           ? "/admin/activations/pending"
           : "/admin/activations";
 
-      const res = await api.get(endpoint);
+      const res = await adminApi.get(endpoint); // ✅ FIX
       setPayments(res.data);
     } catch (err) {
       console.error("Fetch activations error:", err);
@@ -40,26 +40,25 @@ export default function AdminActivations() {
   /* =========================
      ACTIONS (OPTIMISTIC)
   ========================= */
-const approve = async (id) => {
-  if (!window.confirm("Approve this activation?")) return;
+  const approve = async (id) => {
+    if (!window.confirm("Approve this activation?")) return;
 
-  setProcessingId(id);
+    setProcessingId(id);
 
-  try {
-    await api.patch(`/activation/${id}/approve`);
+    try {
+      await adminApi.patch(`/admin/activations/${id}/approve`); // ✅ FIX
 
-    // ✅ Optimistic update
-    setPayments((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, status: "APPROVED" } : p
-      )
-    );
-  } catch (err) {
-    alert(err.response?.data?.message || "Approval failed");
-  } finally {
-    setProcessingId(null);
-  }
-};
+      setPayments((prev) =>
+        prev.map((p) =>
+          p.id === id ? { ...p, status: "APPROVED" } : p
+        )
+      );
+    } catch (err) {
+      alert(err.response?.data?.message || "Approval failed");
+    } finally {
+      setProcessingId(null);
+    }
+  };
 
   const reject = async (id) => {
     if (!window.confirm("Reject this activation?")) return;
@@ -67,9 +66,8 @@ const approve = async (id) => {
     setProcessingId(id);
 
     try {
-      await api.patch(`/admin/activations/${id}/reject`);
+      await adminApi.patch(`/admin/activations/${id}/reject`); // ✅ OK
 
-      // ✅ Optimistic update
       setPayments((prev) =>
         prev.map((p) =>
           p.id === id ? { ...p, status: "REJECTED" } : p
@@ -85,13 +83,8 @@ const approve = async (id) => {
   /* =========================
      SAFE GUARDS
   ========================= */
-  if (loading) {
-    return <p>Loading activation payments...</p>;
-  }
-
-  if (error) {
-    return <p style={{ color: "red" }}>{error}</p>;
-  }
+  if (loading) return <p>Loading activation payments...</p>;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   /* =========================
      UI
@@ -164,10 +157,7 @@ const approve = async (id) => {
                       <button
                         onClick={() => reject(p.id)}
                         disabled={processingId === p.id}
-                        style={{
-                          marginLeft: 8,
-                          color: "red",
-                        }}
+                        style={{ marginLeft: 8, color: "red" }}
                       >
                         Reject
                       </button>
