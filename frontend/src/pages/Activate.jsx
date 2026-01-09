@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
+import { notify } from "../../../src/app";
 
 /* =========================
    CONSTANTS
@@ -192,7 +193,7 @@ export default function Activate() {
           </p>
         </div>
 
-        <div style={warningBox}>
+        <div style={notify}>
           📋 Paste the <b>exact M-Pesa confirmation message down below</b>.
           <br />
           Fake or altered messages will lead to <b>account suspension</b>.
