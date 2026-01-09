@@ -1,11 +1,13 @@
 const express = require("express");
 const router = express.Router();
 
-const { protect, adminOnly } = require("../middlewares/auth.middleware");
+const { protect } = require("../middlewares/auth.middleware");
+
+// ✅ IMPORT FROM THE CORRECT CONTROLLER
 const {
   submitActivationPayment,
   approveActivation,
-  rejectActivation, // ✅ ADD THIS
+  rejectActivation,
 } = require("../controllers/activation.controller");
 
 /**
@@ -22,7 +24,7 @@ router.post("/submit", protect, submitActivationPayment);
  * PATCH /api/activation/:id/approve
  * =====================================
  */
-router.patch("/:id/approve", protect, adminOnly, approveActivation);
+router.patch("/:id/approve", protect, approveActivation);
 
 /**
  * =====================================
@@ -30,6 +32,6 @@ router.patch("/:id/approve", protect, adminOnly, approveActivation);
  * PATCH /api/activation/:id/reject
  * =====================================
  */
-router.patch("/:id/reject", protect, adminOnly, rejectActivation);
+router.patch("/:id/reject", protect, rejectActivation);
 
 module.exports = router;
