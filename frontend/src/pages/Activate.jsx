@@ -193,7 +193,7 @@ export default function Activate() {
         </div>
 
         <div style={warningBox}>
-          ⚠️ Paste the <b>exact M-Pesa confirmation message</b>.
+          📋 Paste the <b>exact M-Pesa confirmation message down below</b>.
           <br />
           Fake or altered messages will lead to <b>account suspension</b>.
         </div>
