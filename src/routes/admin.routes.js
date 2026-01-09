@@ -1,16 +1,16 @@
 const express = require("express");
 const router = express.Router();
 
-const { protect, adminOnly } = require("../middlewares/auth.middleware");
+const { protect } = require("../middlewares/auth.middleware");
 const adminController = require("../controllers/admin.controller");
 
 /**
  * =========================================
- * 🔐 ADMIN ROUTES (GLOBAL PROTECTION)
+ * 🔐 ADMIN ROUTES
+ * (AUTH ONLY — ADMIN CHECK COMING LATER)
  * =========================================
  */
 router.use(protect);
-router.use(adminOnly);
 
 /**
  * =========================================

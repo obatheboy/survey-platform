@@ -1,55 +1,27 @@
 const express = require("express");
 const router = express.Router();
 
-const { protect, adminOnly } = require("../middlewares/auth.middleware");
+const { protect } = require("../middlewares/auth.middleware");
 
 const {
   requestWithdraw,
-  getPendingWithdrawals,
-  getAllWithdrawals,
-  approveWithdraw,
-  rejectWithdraw,
+  getUserWithdrawals,
 } = require("../controllers/withdraw.controller");
 
 /**
  * =====================================
  * USER — REQUEST WITHDRAWAL
+ * POST /api/withdraw/request
  * =====================================
  */
 router.post("/request", protect, requestWithdraw);
 
 /**
  * =====================================
- * ADMIN — WITHDRAWALS
+ * USER — VIEW OWN WITHDRAWALS
+ * GET /api/withdraw/my
  * =====================================
  */
-
-router.get(
-  "/admin/pending",
-  protect,
-  adminOnly,
-  getPendingWithdrawals
-);
-
-router.get(
-  "/admin/all",
-  protect,
-  adminOnly,
-  getAllWithdrawals
-);
-
-router.patch(
-  "/admin/:id/approve",
-  protect,
-  adminOnly,
-  approveWithdraw
-);
-
-router.patch(
-  "/admin/:id/reject",
-  protect,
-  adminOnly,
-  rejectWithdraw
-);
+router.get("/my", protect, getUserWithdrawals);
 
 module.exports = router;
