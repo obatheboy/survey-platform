@@ -8,6 +8,7 @@ const activationRoutes = require("./routes/activation.routes");
 const withdrawRoutes = require("./routes/withdraw.routes");
 const adminRoutes = require("./routes/admin.routes");
 const adminActivationRoutes = require("./routes/admin.activation.routes");
+const adminAuthRoutes = require("./routes/admin.auth.routes"); // ✅ ADDED
 
 const app = express();
 
@@ -57,6 +58,7 @@ app.use("/api/withdraw", withdrawRoutes);
 /* ===============================
    ADMIN ROUTES
 ================================ */
+app.use("/api/admin/auth", adminAuthRoutes); // ✅ ADMIN LOGIN
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin", adminActivationRoutes);
 
