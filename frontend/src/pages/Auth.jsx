@@ -4,8 +4,7 @@ import api from "../api/api";
 
 export default function Auth() {
   const navigate = useNavigate();
-
-  const [mode, setMode] = useState("login"); // login | register
+  const [mode, setMode] = useState("register");
   const [loading, setLoading] = useState(false);
 
   /* =========================
@@ -16,7 +15,7 @@ export default function Auth() {
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   /* =========================
-     REGISTER STATE (USERS)
+     REGISTER STATE
   ========================= */
   const [regData, setRegData] = useState({
     full_name: "",
@@ -28,7 +27,7 @@ export default function Auth() {
   const [regMessage, setRegMessage] = useState("");
 
   /* =========================
-     LOGIN STATE (USER ONLY)
+     LOGIN STATE
   ========================= */
   const [loginData, setLoginData] = useState({
     phone: "",
@@ -37,7 +36,7 @@ export default function Auth() {
   const [loginMessage, setLoginMessage] = useState("");
 
   /* =========================
-     REGISTER (USER)
+     REGISTER
   ========================= */
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -50,13 +49,14 @@ export default function Auth() {
 
     try {
       setLoading(true);
+await api.post("/auth/register", {
+  full_name: regData.full_name, // ✅ FIX
+  phone: regData.phone,
+  email: regData.email || null,
+  password: regData.password,
+});
 
-      await api.post("/auth/register", {
-        full_name: regData.full_name,
-        phone: regData.phone,
-        email: regData.email || null,
-        password: regData.password,
-      });
+
 
       setRegMessage("✅ Account created. Please login.");
       setMode("login");
@@ -68,7 +68,7 @@ export default function Auth() {
   };
 
   /* =========================
-     LOGIN (USER)
+     LOGIN
   ========================= */
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -82,8 +82,7 @@ export default function Auth() {
         password: loginData.password,
       });
 
-      // verify session
-      await api.get("/auth/me");
+      await api.get("/auth/me"); // verify cookie
 
       navigate("/dashboard", { replace: true });
     } catch (err) {
@@ -105,14 +104,12 @@ export default function Auth() {
         }}
       >
         <h1 style={logo}>Survey Platform</h1>
-
         <p style={subtitle}>
           {mode === "register"
             ? "Create your account to start earning"
             : "Welcome back, login to continue"}
         </p>
 
-        {/* ================= REGISTER ================= */}
         {mode === "register" && (
           <form onSubmit={handleRegister}>
             <Input
@@ -179,7 +176,6 @@ export default function Auth() {
           </form>
         )}
 
-        {/* ================= LOGIN ================= */}
         {mode === "login" && (
           <form onSubmit={handleLogin}>
             <Input
@@ -255,7 +251,7 @@ const page = {
 const card = {
   width: "100%",
   maxWidth: "420px",
-  background: "#fff",
+  background: "#9ddd08ff",
   padding: "32px",
   borderRadius: "16px",
   boxShadow: "0 25px 60px rgba(0,0,0,0.25)",
