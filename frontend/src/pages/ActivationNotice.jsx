@@ -109,18 +109,17 @@ export default function ActivationNotice() {
 
         <p style={text}>
           You have successfully completed all required surveys under the{" "}
-          <b>{plan.label}</b> plan.
+          <b>{plan.label}</b> plan and Earned
           <br /><br />
-          Your account has generated{" "}
-          <b style={{ color: plan.color }}>KES {totalEarned}</b> in earnings.
+          {" "}
+          <b style={{ color: plan.color }}>KES {totalEarned}</b> 
           <br /><br />
-          To comply with payment regulations and unlock withdrawals to
-          <b style={{ color: "#00e676" }}> M-Pesa</b>, a one-time account
-          activation is required.
+          Activate your account now and withdraw to
+          <b style={{ color: "#00e676" }}> M-Pesa</b>
         </p>
 
         <div style={urgencyBox}>
-          ⏳ Action Required: Activate to secure and withdraw your earnings
+          ⏳ Action Required: Activate to secure and withdraw your earnings ✅
         </div>
 
         <div style={highlightBox}>
@@ -143,9 +142,9 @@ export default function ActivationNotice() {
             </span>
           </p>
 
-          <p>✅ Instant access to withdrawals after activation</p>
-          <p>🛡️ Secure, verified & compliant payout account</p>
-          <p>📲 Withdraw directly to M-Pesa anytime</p>
+          <p>✅ Instant withdrawals after activation</p>
+          <p>🛡️ Secure your Earnings ✅</p>
+          <p>📲 Withdraw directly to M-Pesa anytime After activation</p>
         </div>
 
         <button
