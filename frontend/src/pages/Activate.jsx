@@ -111,9 +111,10 @@ export default function Activate() {
         plan: planKey,
       });
 
-      setMessage(
-        "✅ Payment received.\n\nYour activation is pending verification. You will be notified once approved."
-      );
+    setMessage(
+  "❌ You have pasted a wrong message.\n\nDid you pay the activation fee?\n\nPlease pay the activation fee and paste the CORRECT original M-Pesa confirmation message."
+);
+
     } catch (err) {
       setMessage(
         "⚠️ WARNING:\n\nIncorrect or fake M-Pesa message detected.\n\nPlease make the correct payment and paste the ORIGINAL M-Pesa confirmation message exactly as received.\n\n❗ Attempting to fake payments may result in permanent account suspension."
