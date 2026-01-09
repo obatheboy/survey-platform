@@ -2,11 +2,16 @@ const jwt = require("jsonwebtoken");
 const pool = require("../config/db");
 
 /* ===============================
-   🔐 USER AUTH (COOKIE BASED)
+   🔐 USER AUTH (COOKIE + HEADER)
 ================================ */
 exports.protect = async (req, res, next) => {
   try {
-    const token = req.cookies?.token;
+    let token = req.cookies?.token;
+
+    // ✅ Fallback: allow Bearer token (Vercel / axios / mobile safe)
+    if (!token && req.headers.authorization?.startsWith("Bearer ")) {
+      token = req.headers.authorization.split(" ")[1];
+    }
 
     if (!token) {
       return res.status(401).json({ message: "Not authenticated" });
@@ -41,7 +46,7 @@ exports.protect = async (req, res, next) => {
 };
 
 /* ===============================
-   🛡 ADMIN AUTH (HEADER TOKEN)
+   🛡 ADMIN AUTH (HEADER ONLY)
 ================================ */
 exports.adminProtect = async (req, res, next) => {
   try {
