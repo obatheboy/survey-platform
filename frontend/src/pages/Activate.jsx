@@ -194,7 +194,7 @@ export default function Activate() {
 <div style={noteBox}>
   📋 <b>Important:</b> Please paste the <b>exact M-Pesa confirmation message</b> below after payment.
   <br />
-  Make sure the message is complete and unedited so your activation can be verified quickly.
+  Make sure the message is complete and legit so your activation can be verified quickly.
 </div>
 
         <textarea
