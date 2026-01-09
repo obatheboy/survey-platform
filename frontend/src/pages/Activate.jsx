@@ -5,8 +5,8 @@ import api from "../api/api";
 /* =========================
    CONSTANTS
 ========================= */
-const TILL_NUMBER = "5628444";
-const TILL_NAME = "MOONLIGHT ENTERPRISE";
+const TILL_NUMBER = "7282886";
+const TILL_NAME = "OBADIAH NYAKUNDI OTOKI";
 
 /* =========================
    PLAN CONFIG (DISPLAY ONLY)
@@ -47,7 +47,6 @@ export default function Activate() {
 
   /* =========================
      LOAD + VALIDATE ACCESS
-     (BACKEND = LAW)
   ========================= */
   useEffect(() => {
     let alive = true;
@@ -59,17 +58,7 @@ export default function Activate() {
         const activePlan = res.data.active_plan;
         const plan = res.data.plans?.[activePlan];
 
-        if (!activePlan || !plan) {
-          navigate("/dashboard", { replace: true });
-          return;
-        }
-
-        if (!plan.completed) {
-          navigate("/dashboard", { replace: true });
-          return;
-        }
-
-        if (plan.is_activated) {
+        if (!activePlan || !plan || !plan.completed || plan.is_activated) {
           navigate("/dashboard", { replace: true });
           return;
         }
@@ -77,9 +66,8 @@ export default function Activate() {
         if (!alive) return;
         setPlanKey(activePlan);
         setPlanState(plan);
-      } catch (err) {
-        console.warn("Activate: auth/me transient failure");
-        // ❌ do NOT redirect — interceptor handles auth
+      } catch {
+        // handled globally
       } finally {
         if (alive) setLoading(false);
       }
@@ -98,17 +86,25 @@ export default function Activate() {
   const plan = PLAN_CONFIG[planKey];
 
   /* =========================
+     COPY TILL
+  ========================= */
+  const copyTill = async () => {
+    await navigator.clipboard.writeText(TILL_NUMBER);
+    setMessage("✅ Till number copied. Proceed to M-Pesa payment.");
+  };
+
+  /* =========================
      SUBMIT ACTIVATION
   ========================= */
   const submitActivation = async () => {
     if (!paymentText.trim()) {
-      setMessage("❌ Enter M-Pesa confirmation message or transaction code");
+      setMessage("❌ Please paste the full M-Pesa confirmation message.");
       return;
     }
 
     try {
       setSubmitting(true);
-      setMessage("⏳ Submitting payment for approval…");
+      setMessage("⏳ Submitting payment for verification…");
 
       await api.post("/activation/submit", {
         mpesa_code: paymentText.trim(),
@@ -116,11 +112,11 @@ export default function Activate() {
       });
 
       setMessage(
-        "✅ Payment submitted.\n\nYour activation is pending admin approval."
+        "✅ Payment received.\n\nYour activation is pending verification. You will be notified once approved."
       );
     } catch (err) {
       setMessage(
-        err.response?.data?.message || "❌ Activation submission failed"
+        "⚠️ WARNING:\n\nIncorrect or fake M-Pesa message detected.\n\nPlease make the correct payment and paste the ORIGINAL M-Pesa confirmation message exactly as received.\n\n❗ Attempting to fake payments may result in permanent account suspension."
       );
     } finally {
       setSubmitting(false);
@@ -142,24 +138,46 @@ export default function Activate() {
         </p>
 
         <h3 style={{ textAlign: "center", marginTop: 14 }}>
-          💰 Earnings:{" "}
-          <span style={{ color: plan.color }}>
-            KES {plan.total}
-          </span>
+          💰 Earnings Ready:{" "}
+          <span style={{ color: plan.color }}>KES {plan.total}</span>
         </h3>
 
+        {/* ===== Activation Info ===== */}
         <div style={sectionHighlight}>
-          <p style={{ fontWeight: 700, color: "red" }}>
+          <p style={{ fontWeight: 800, color: "#ff5252" }}>
             🔐 Activation Required to Withdraw
           </p>
-          <p>✔ One-time fee</p>
-          <p>✔ Instant withdrawals after approval</p>
-          <p>✔ Secured account</p>
+          <p>✔ One-time activation fee</p>
+          <p>✔ Withdraw directly to M-Pesa</p>
+          <p>✔ Secure & verified account</p>
         </div>
 
+        {/* ===== M-Pesa Guide ===== */}
+        <div style={section}>
+          <p style={{ fontWeight: 800 }}>📲 How to Pay via Lipa na M-Pesa</p>
+          <ol style={{ fontSize: 14, lineHeight: 1.6 }}>
+            <li>Open <b>M-Pesa</b> on your phone</li>
+            <li>Select <b>Lipa na M-Pesa</b></li>
+            <li>Choose <b>Buy Goods & Services</b></li>
+            <li>
+              Enter Till Number: <b>{TILL_NUMBER}</b>
+            </li>
+            <li>
+              Enter Amount: <b>KES {plan.activationFee}</b>
+            </li>
+            <li>Confirm payment with your M-Pesa PIN</li>
+          </ol>
+        </div>
+
+        {/* ===== Till Details ===== */}
         <div style={section}>
           <p><b>Till Name:</b> {TILL_NAME}</p>
-          <p><b>Till Number:</b> {TILL_NUMBER}</p>
+          <p>
+            <b>Till Number:</b> {TILL_NUMBER}{" "}
+            <button onClick={copyTill} style={copyBtn}>
+              📋 Copy
+            </button>
+          </p>
           <p>
             <b>Activation Fee:</b>{" "}
             <span style={{ color: plan.color }}>
@@ -168,8 +186,15 @@ export default function Activate() {
           </p>
         </div>
 
+        {/* ===== WARNING ===== */}
+        <div style={warningBox}>
+          ⚠️ Paste the <b>exact M-Pesa confirmation message</b>.
+          <br />
+          Fake or altered messages will lead to <b>account suspension</b>.
+        </div>
+
         <textarea
-          placeholder="Paste M-Pesa confirmation message or transaction code"
+          placeholder="Paste full M-Pesa confirmation message here"
           value={paymentText}
           onChange={(e) => setPaymentText(e.target.value)}
           disabled={submitting}
@@ -188,7 +213,7 @@ export default function Activate() {
             boxShadow: `0 0 22px ${plan.glow}`,
           }}
         >
-          {submitting ? "Submitting…" : "Submit for Approval"}
+          {submitting ? "Submitting…" : "Submit Payment for Approval"}
         </button>
 
         {message && <pre style={messageBox}>{message}</pre>}
@@ -244,6 +269,16 @@ const sectionHighlight = {
   background: "rgba(0,255,128,0.08)",
 };
 
+const warningBox = {
+  marginTop: 16,
+  padding: 14,
+  borderRadius: 12,
+  background: "rgba(255,0,0,0.15)",
+  color: "#ffb3b3",
+  fontSize: 13,
+  fontWeight: 700,
+};
+
 const input = {
   width: "100%",
   padding: 12,
@@ -261,6 +296,15 @@ const button = {
   borderRadius: 999,
   fontWeight: 800,
   cursor: "pointer",
+};
+
+const copyBtn = {
+  marginLeft: 10,
+  padding: "4px 10px",
+  borderRadius: 8,
+  border: "none",
+  cursor: "pointer",
+  fontWeight: 700,
 };
 
 const messageBox = {

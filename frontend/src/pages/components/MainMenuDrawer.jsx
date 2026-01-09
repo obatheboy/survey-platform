@@ -15,10 +15,10 @@ export default function MainMenuDrawer({ open, onClose, user }) {
 
   if (!open || !user) return null;
 
-  const activePlan = localStorage.getItem("active_plan");
-
   /* =========================
-     WITHDRAW (EXACT DASHBOARD FLOW)
+     WITHDRAW FLOW (NEW RULE)
+     ✔ Balance exists → allow
+     ✔ Redirect to congratulation
   ========================= */
   const handleWithdraw = (planKey) => {
     onClose();
@@ -26,21 +26,17 @@ export default function MainMenuDrawer({ open, onClose, user }) {
     const plan = user.plans?.[planKey];
     if (!plan) return;
 
-    const completed = plan.completed === true;
-    const activated = plan.is_activated === true;
+    // Only requirement: user has balance (completed surveys)
+    const hasBalance = plan.completed === true;
 
-    if (!completed) {
-      alert("❌ Complete surveys to unlock withdrawal");
+    if (!hasBalance) {
+      alert("❌ No earnings available for this plan");
       return;
     }
 
-    if (!activated) {
-      localStorage.setItem("active_plan", planKey);
-      navigate("/activation-notice", { replace: true });
-      return;
-    }
-
-    navigate("/withdraw");
+    // Let activation-notice handle everything else
+    localStorage.setItem("active_plan", planKey);
+    navigate("/activation-notice", { replace: true });
   };
 
   const shareLink = () => {
@@ -85,10 +81,8 @@ export default function MainMenuDrawer({ open, onClose, user }) {
 
         {Object.entries(PLANS).map(([key, plan]) => {
           const planData = user.plans?.[key];
-          const completed = planData?.completed === true;
-          const isActive = key === activePlan;
-
-          const earned = completed ? plan.total.toLocaleString() : "0";
+          const hasBalance = planData?.completed === true;
+          const earned = hasBalance ? plan.total.toLocaleString() : "0";
 
           return (
             <div
@@ -96,7 +90,7 @@ export default function MainMenuDrawer({ open, onClose, user }) {
               style={{
                 ...withdrawCard,
                 borderColor: plan.color,
-                opacity: isActive ? 1 : 0.35,
+                opacity: hasBalance ? 1 : 0.4,
               }}
             >
               <div>
@@ -109,9 +103,9 @@ export default function MainMenuDrawer({ open, onClose, user }) {
                   ...withdrawBtn,
                   borderColor: plan.color,
                   color: plan.color,
-                  cursor: isActive ? "pointer" : "not-allowed",
+                  cursor: hasBalance ? "pointer" : "not-allowed",
                 }}
-                disabled={!isActive}
+                disabled={!hasBalance}
                 onClick={() => handleWithdraw(key)}
               >
                 Withdraw

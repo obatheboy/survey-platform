@@ -20,14 +20,24 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const surveySectionRef = useRef(null);
 
-  const [user, setUser] = useState(null);
+  /* =========================
+     STATE (WITH CACHE)
+  ========================= */
+  const [user, setUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("cached_user"));
+    } catch {
+      return null;
+    }
+  });
+
   const [plans, setPlans] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!user);
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState("");
 
   /* =========================
-     LOAD USER + PLAN STATES
+     LOAD + AUTO REFRESH
   ========================= */
   useEffect(() => {
     let alive = true;
@@ -39,15 +49,28 @@ export default function Dashboard() {
 
         setUser(res.data);
         setPlans(res.data.plans || {});
+        localStorage.setItem("cached_user", JSON.stringify(res.data));
       } catch {
-        // do NOT redirect here
+        // silent fail (offline / slow net)
       } finally {
         if (alive) setLoading(false);
       }
     };
 
     load();
-    return () => (alive = false);
+
+    // 🔁 auto refresh every 30s
+    const interval = setInterval(load, 30000);
+
+    // 🔄 refresh when user comes back to tab
+    const onFocus = () => load();
+    window.addEventListener("focus", onFocus);
+
+    return () => {
+      alive = false;
+      clearInterval(interval);
+      window.removeEventListener("focus", onFocus);
+    };
   }, []);
 
   if (loading) return <p className="loading">Loading dashboard…</p>;
@@ -76,7 +99,7 @@ export default function Dashboard() {
 
   const openActivationNotice = (plan) => {
     localStorage.setItem("active_plan", plan);
-    navigate("/activation-notice"); // ✅ FIXED
+    navigate("/activation-notice");
   };
 
   const handleWithdraw = (plan) => {
@@ -88,7 +111,7 @@ export default function Dashboard() {
     }
 
     if (!isActivated(plan)) {
-      openActivationNotice(plan); // ✅ FIXED
+      openActivationNotice(plan);
       return;
     }
 
@@ -115,22 +138,26 @@ export default function Dashboard() {
 
       <LiveWithdrawalFeed />
 
-      <section className="card greeting">
-        <h3>Hello, {user.full_name} 👋</h3>
-        <p>Your journey to real earnings continues.</p>
+      {/* HERO */}
+      <section className="dashboard-hero">
+        <div className="card greeting">
+          <h3>Hello, {user.full_name} 👋</h3>
+          <p>Your journey to real earnings continues.</p>
+        </div>
+
+        <div className="earnings">
+          <div>
+            <span>Total Earnings</span>
+            <strong>KES {Number(user.total_earned || 0).toLocaleString()}</strong>
+          </div>
+          <div>
+            <span>Current Balance</span>
+            <strong>KES {Number(user.total_earned || 0).toLocaleString()}</strong>
+          </div>
+        </div>
       </section>
 
-      <section className="card earnings">
-        <div>
-          <span>Total Earnings</span>
-          <strong>KES {Number(user.total_earned || 0).toLocaleString()}</strong>
-        </div>
-        <div>
-          <span>Current Balance</span>
-          <strong>KES {Number(user.total_earned || 0).toLocaleString()}</strong>
-        </div>
-      </section>
-
+      {/* WITHDRAW */}
       <h3 className="section-title withdraw-title">💸 Withdraw Earnings</h3>
 
       {Object.entries(PLANS).map(([key, plan]) => (
@@ -148,17 +175,33 @@ export default function Dashboard() {
         </div>
       ))}
 
+      {/* SURVEYS */}
       <h3 ref={surveySectionRef} className="section-title">
         Survey Plans
       </h3>
 
       {Object.entries(PLANS).map(([key, plan]) => {
         const completed = isCompleted(key);
+        const planClass =
+          key === "REGULAR"
+            ? "plan-regular"
+            : key === "VIP"
+            ? "plan-vip"
+            : "plan-vvip";
+
+        const titleClass =
+          key === "REGULAR"
+            ? "regular"
+            : key === "VIP"
+            ? "vip"
+            : "vvip";
 
         return (
-          <div key={key} className="card plan-card">
+          <div key={key} className={`card plan-card ${planClass}`}>
             <div>
-              <h4>{plan.icon} {plan.name}</h4>
+              <h4 className={`plan-title ${titleClass}`}>
+                {plan.icon} {plan.name}
+              </h4>
               <p><b>Total Earnings:</b> KES {plan.total}</p>
               <p><b>Per Survey:</b> KES {plan.perSurvey}</p>
               <p>
@@ -167,11 +210,9 @@ export default function Dashboard() {
             </div>
 
             <button
-              className="primary-btn"
+              className="primary-btn plan-btn"
               onClick={() =>
-                completed
-                  ? openActivationNotice(key) // ✅ FIXED
-                  : startSurvey(key)
+                completed ? openActivationNotice(key) : startSurvey(key)
               }
             >
               {completed ? "View Completion" : "Start Survey"}

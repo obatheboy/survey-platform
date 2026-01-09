@@ -109,17 +109,21 @@ export default function ActivationNotice() {
 
         <p style={text}>
           You have successfully completed all required surveys under the{" "}
-          <b>{plan.label}</b> plan and Earned
+          <b>{plan.label}</b> plan.
           <br /><br />
-          {" "}
-          <b style={{ color: plan.color }}>KES {totalEarned}</b> 
+          Your total confirmed earnings are:
+          <br />
+          <b style={{ color: plan.color, fontSize: 18 }}>
+            KES {totalEarned}
+          </b>
           <br /><br />
-          Activate your account now and withdraw to
-          <b style={{ color: "#00e676" }}> M-Pesa</b>
+          Activate your account now to unlock withdrawals directly to
+          <b style={{ color: "#00e676" }}> M-Pesa</b>.
         </p>
 
         <div style={urgencyBox}>
-          ⏳ Action Required: Activate to secure and withdraw your earnings ✅
+          ⏳ Action Required: Activate your account to secure and withdraw your
+          earnings
         </div>
 
         <div style={highlightBox}>
@@ -129,7 +133,7 @@ export default function ActivationNotice() {
           </p>
 
           <p>
-            💰 <b>Total Earnings Ready:</b>{" "}
+            💰 <b>Earnings Available:</b>{" "}
             <span style={{ color: plan.color }}>
               KES {totalEarned}
             </span>
@@ -143,8 +147,8 @@ export default function ActivationNotice() {
           </p>
 
           <p>✅ Instant withdrawals after activation</p>
-          <p>🛡️ Secure your Earnings ✅</p>
-          <p>📲 Withdraw directly to M-Pesa anytime After activation</p>
+          <p>🛡️ Your earnings are secured and protected</p>
+          <p>📲 Withdraw to M-Pesa anytime after activation</p>
         </div>
 
         <button
