@@ -4,7 +4,9 @@ import api from "../api/api";
 
 export default function Auth() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState("register");
+
+  const [mode, setMode] = useState("login"); // login | register
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(false);
 
   /* =========================
@@ -15,7 +17,7 @@ export default function Auth() {
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   /* =========================
-     REGISTER STATE
+     REGISTER STATE (USERS)
   ========================= */
   const [regData, setRegData] = useState({
     full_name: "",
@@ -36,7 +38,7 @@ export default function Auth() {
   const [loginMessage, setLoginMessage] = useState("");
 
   /* =========================
-     REGISTER
+     REGISTER (USER ONLY)
   ========================= */
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -49,14 +51,13 @@ export default function Auth() {
 
     try {
       setLoading(true);
-await api.post("/auth/register", {
-  full_name: regData.full_name, // ✅ FIX
-  phone: regData.phone,
-  email: regData.email || null,
-  password: regData.password,
-});
 
-
+      await api.post("/auth/register", {
+        full_name: regData.full_name,
+        phone: regData.phone,
+        email: regData.email || null,
+        password: regData.password,
+      });
 
       setRegMessage("✅ Account created. Please login.");
       setMode("login");
@@ -68,7 +69,7 @@ await api.post("/auth/register", {
   };
 
   /* =========================
-     LOGIN
+     LOGIN (USER / ADMIN)
   ========================= */
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -77,14 +78,17 @@ await api.post("/auth/register", {
     try {
       setLoading(true);
 
-      await api.post("/auth/login", {
+      const endpoint = isAdmin ? "/admin/login" : "/auth/login";
+
+      await api.post(endpoint, {
         phone: loginData.phone,
         password: loginData.password,
       });
 
-      await api.get("/auth/me"); // verify cookie
+      // verify session
+      await api.get(isAdmin ? "/admin/me" : "/auth/me");
 
-      navigate("/dashboard", { replace: true });
+      navigate(isAdmin ? "/admin" : "/dashboard", { replace: true });
     } catch (err) {
       setLoginMessage(
         err.response?.data?.message || "Login failed. Try again."
@@ -104,13 +108,32 @@ await api.post("/auth/register", {
         }}
       >
         <h1 style={logo}>Survey Platform</h1>
+
         <p style={subtitle}>
-          {mode === "register"
+          {isAdmin
+            ? "Admin access only"
+            : mode === "register"
             ? "Create your account to start earning"
             : "Welcome back, login to continue"}
         </p>
 
-        {mode === "register" && (
+        {/* ===== ADMIN TOGGLE ===== */}
+        <div style={{ textAlign: "center", marginBottom: 14 }}>
+          <label style={{ fontSize: 13 }}>
+            <input
+              type="checkbox"
+              checked={isAdmin}
+              onChange={() => {
+                setIsAdmin(!isAdmin);
+                setMode("login");
+              }}
+            />{" "}
+            Login as Admin
+          </label>
+        </div>
+
+        {/* ================= REGISTER ================= */}
+        {!isAdmin && mode === "register" && (
           <form onSubmit={handleRegister}>
             <Input
               placeholder="Full Name"
@@ -176,6 +199,7 @@ await api.post("/auth/register", {
           </form>
         )}
 
+        {/* ================= LOGIN ================= */}
         {mode === "login" && (
           <form onSubmit={handleLogin}>
             <Input
@@ -202,12 +226,14 @@ await api.post("/auth/register", {
 
             {loginMessage && <p style={message}>{loginMessage}</p>}
 
-            <p style={switchText}>
-              Don’t have an account?{" "}
-              <span style={link} onClick={() => setMode("register")}>
-                Create one
-              </span>
-            </p>
+            {!isAdmin && (
+              <p style={switchText}>
+                Don’t have an account?{" "}
+                <span style={link} onClick={() => setMode("register")}>
+                  Create one
+                </span>
+              </p>
+            )}
           </form>
         )}
       </div>
