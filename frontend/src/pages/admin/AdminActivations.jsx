@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import adminApi from "../../api/adminApi"; // ✅ FIX
+
+import api from "../../api/api";
 
 export default function AdminActivations() {
   const [payments, setPayments] = useState([]);

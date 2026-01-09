@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate, NavLink } from "react-router-dom";
-import adminApi from "../../api/adminApi"; // ✅ FIX: use admin API
+
+import api from "../../api/api";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
