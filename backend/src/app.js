@@ -14,28 +14,34 @@ const adminAuthRoutes = require("./routes/admin.auth.routes");
 const app = express();
 
 /* ===============================
-   🔥 TRUST PROXY (CRITICAL FIX)
+   🔥 TRUST PROXY (CRITICAL FOR VERCEL/RENDER)
 ================================ */
 app.set("trust proxy", 1);
 
 /* ===============================
-   🌍 CORS (VERCEL + RENDER SAFE)
+   🌍 CORS (DEV + LIVE + POSTMAN SAFE)
 ================================ */
 const allowedOrigins = [
-  "http://localhost:5173",
-  "https://survey-platform-three.vercel.app",
+  "http://localhost:5173", // local dev
+  "https://survey-platform-three.vercel.app", // live frontend
+  "https://www.survey-platform-three.vercel.app", // optional www
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
+      // allow requests with no origin (Postman, mobile apps, server-to-server)
       if (!origin) return callback(null, true);
 
-      if (allowedOrigins.includes(origin)) {
+      // normalize origin (remove trailing slash)
+      const cleanOrigin = origin.replace(/\/$/, "");
+
+      if (allowedOrigins.includes(cleanOrigin)) {
         return callback(null, true);
       }
 
-      return callback(new Error("Not allowed by CORS"));
+      console.warn("Blocked by CORS:", origin);
+      return callback(new Error(`CORS not allowed for ${origin}`));
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
@@ -56,7 +62,7 @@ app.get("/health", (req, res) => {
 });
 
 /* ===============================
-   🏠 ROOT (OPTIONAL INFO)
+   🏠 ROOT INFO
 ================================ */
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -79,5 +85,13 @@ app.use("/api/withdraw", withdrawRoutes);
 app.use("/api/admin/auth", adminAuthRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin", adminActivationRoutes);
+
+/* ===============================
+   ❌ GLOBAL ERROR HANDLER (OPTIONAL)
+================================ */
+app.use((err, req, res, next) => {
+  console.error("Global error:", err.message || err);
+  res.status(500).json({ message: err.message || "Server error" });
+});
 
 module.exports = app;
