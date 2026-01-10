@@ -20,12 +20,13 @@ exports.adminLogin = async (req, res) => {
       SELECT id, username
       FROM admins
       WHERE phone = $1
+      AND password_hash IS NOT NULL
       AND password_hash = crypt($2, password_hash)
       `,
       [phone, password]
     );
 
-    if (!result.rows.length) {
+    if (result.rowCount === 0) {
       return res.status(401).json({
         message: "Invalid admin credentials",
       });
@@ -42,7 +43,7 @@ exports.adminLogin = async (req, res) => {
       { expiresIn: "12h" }
     );
 
-    res.json({
+    return res.status(200).json({
       message: "Admin login successful",
       token,
       admin: {
@@ -52,6 +53,6 @@ exports.adminLogin = async (req, res) => {
     });
   } catch (error) {
     console.error("Admin login error:", error);
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error" });
   }
 };

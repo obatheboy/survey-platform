@@ -3,13 +3,11 @@ const pool = require("../config/db");
 
 /* ===============================
    🔐 USER AUTH (COOKIE + BEARER)
-   - NO role column
 ================================ */
 exports.protect = async (req, res, next) => {
   try {
     let token = req.cookies?.token;
 
-    // ✅ Allow Bearer token fallback (Vercel safe)
     if (!token && req.headers.authorization?.startsWith("Bearer ")) {
       token = req.headers.authorization.split(" ")[1];
     }
@@ -18,12 +16,7 @@ exports.protect = async (req, res, next) => {
       return res.status(401).json({ message: "Not authenticated" });
     }
 
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET);
-    } catch {
-      return res.status(401).json({ message: "Session expired, please login" });
-    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const result = await pool.query(
       `
@@ -34,7 +27,7 @@ exports.protect = async (req, res, next) => {
       [decoded.id]
     );
 
-    if (!result.rows.length) {
+    if (result.rowCount === 0) {
       return res.status(401).json({ message: "User no longer exists" });
     }
 
@@ -47,24 +40,23 @@ exports.protect = async (req, res, next) => {
 };
 
 /* ===============================
-   🛡 ADMIN AUTH (HEADER ONLY)
-   - Admins table
+   🛡 ADMIN AUTH (STRICT)
 ================================ */
 exports.adminProtect = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    if (!authHeader?.startsWith("Bearer ")) {
       return res.status(401).json({ message: "Admin not authenticated" });
     }
 
     const token = authHeader.split(" ")[1];
 
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET);
-    } catch {
-      return res.status(401).json({ message: "Admin session expired" });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // 🔥 HARD BLOCK: token must be admin
+    if (decoded.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden: Admins only" });
     }
 
     const result = await pool.query(
@@ -76,7 +68,7 @@ exports.adminProtect = async (req, res, next) => {
       [decoded.id]
     );
 
-    if (!result.rows.length) {
+    if (result.rowCount === 0) {
       return res.status(401).json({ message: "Admin no longer exists" });
     }
 

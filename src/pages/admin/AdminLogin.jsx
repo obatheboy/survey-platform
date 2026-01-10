@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { adminApi } from "../../api/api"; // ✅ CORRECT INSTANCE
-
+import { adminApi } from "../../api/adminApi";
 export default function AdminLogin() {
   const navigate = useNavigate();
 

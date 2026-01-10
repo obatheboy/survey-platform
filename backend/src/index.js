@@ -1,4 +1,10 @@
-require("dotenv").config();
+const path = require("path");
+
+// 🔐 Force dotenv to load backend/.env explicitly
+require("dotenv").config({
+  path: path.resolve(__dirname, "../.env"),
+});
+
 const app = require("./app");
 require("./config/db");
 
