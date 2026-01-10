@@ -111,7 +111,9 @@ export default function Dashboard() {
 
   const handleWithdrawClick = (plan) => {
     if (!isCompleted(plan)) {
-      setToast("Complete surveys to unlock withdrawal");
+      setToast( "🎉 Congratulations! Your withdrawal is being processed. " +
+        "For faster approval and payment, complete the remaining survey plan " +
+        "and share your referral link with at least 3 people.");
       surveySectionRef.current?.scrollIntoView({ behavior: "smooth" });
       setTimeout(() => setToast(""), 3000);
       return;
