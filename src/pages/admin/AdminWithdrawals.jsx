@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
-import api from "../../api/api";
+// ✅ FIX: import adminApi instead of api
+import { adminApi } from "../../api/adminApi";
 
 export default function AdminWithdrawals() {
   const [withdrawals, setWithdrawals] = useState([]);
@@ -23,7 +24,7 @@ export default function AdminWithdrawals() {
           ? "/admin/withdrawals/pending"
           : "/admin/withdrawals";
 
-      const res = await adminApi.get(endpoint); // ✅ FIX
+      const res = await adminApi.get(endpoint); // ✅ JWT auto-attached
       setWithdrawals(res.data);
     } catch (err) {
       console.error("Fetch withdrawals error:", err);
@@ -46,7 +47,7 @@ export default function AdminWithdrawals() {
 
     setProcessingId(id);
     try {
-      await adminApi.patch(`/admin/withdrawals/${id}/approve`); // ✅ FIX
+      await adminApi.patch(`/admin/withdrawals/${id}/approve`);
 
       setWithdrawals((prev) =>
         prev.map((w) =>
@@ -65,7 +66,7 @@ export default function AdminWithdrawals() {
 
     setProcessingId(id);
     try {
-      await adminApi.patch(`/admin/withdrawals/${id}/reject`); // ✅ FIX
+      await adminApi.patch(`/admin/withdrawals/${id}/reject`);
 
       setWithdrawals((prev) =>
         prev.map((w) =>
@@ -144,9 +145,7 @@ export default function AdminWithdrawals() {
                     {w.status}
                   </span>
                 </td>
-                <td>
-                  {new Date(w.created_at).toLocaleString()}
-                </td>
+                <td>{new Date(w.created_at).toLocaleString()}</td>
                 <td>
                   {w.status === "PROCESSING" ? (
                     <>
@@ -181,7 +180,6 @@ export default function AdminWithdrawals() {
 }
 
 /* ───────── styles ───────── */
-
 const styles = {
   table: {
     width: "100%",

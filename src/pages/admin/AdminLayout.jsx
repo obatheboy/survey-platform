@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate, NavLink } from "react-router-dom";
-import { adminApi } from "../../api/api";
+
+// 🔑 FIX: import the correct adminApi instance
+import { adminApi } from "../../api/adminApi";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
@@ -10,7 +12,6 @@ export default function AdminLayout() {
   useEffect(() => {
     const checkAdminSession = async () => {
       try {
-        // 🔐 VERIFY ADMIN SESSION (BACKEND SOURCE OF TRUTH)
         const res = await adminApi.get("/admin/me");
 
         if (res.data.role !== "admin") {
@@ -19,7 +20,6 @@ export default function AdminLayout() {
 
         setAdmin(res.data);
       } catch (err) {
-        // ❌ Invalid / expired token
         localStorage.removeItem("adminToken");
         navigate("/admin/login", { replace: true });
       } finally {
@@ -35,7 +35,6 @@ export default function AdminLayout() {
 
   return (
     <div style={styles.container}>
-      {/* ================= SIDEBAR ================= */}
       <aside style={styles.sidebar}>
         <h2 style={{ marginBottom: 20 }}>Admin Panel</h2>
 
@@ -62,7 +61,6 @@ export default function AdminLayout() {
         </button>
       </aside>
 
-      {/* ================= CONTENT ================= */}
       <main style={styles.content}>
         <Outlet />
       </main>
@@ -70,9 +68,7 @@ export default function AdminLayout() {
   );
 }
 
-/* ===============================
-   REUSABLE NAV ITEM
-================================ */
+/* REUSABLE NAV ITEM */
 function NavItem({ to, label }) {
   return (
     <NavLink
@@ -88,20 +84,10 @@ function NavItem({ to, label }) {
   );
 }
 
-/* ===============================
-   STYLES
-================================ */
+/* STYLES */
 const styles = {
-  container: {
-    display: "flex",
-    minHeight: "100vh",
-  },
-  sidebar: {
-    width: 240,
-    padding: 20,
-    background: "#111",
-    color: "#fff",
-  },
+  container: { display: "flex", minHeight: "100vh" },
+  sidebar: { width: 240, padding: 20, background: "#111", color: "#fff" },
   link: {
     display: "block",
     margin: "10px 0",
@@ -111,11 +97,7 @@ const styles = {
     borderRadius: 6,
     transition: "background 0.2s",
   },
-  content: {
-    flex: 1,
-    padding: 20,
-    background: "#f5f5f5",
-  },
+  content: { flex: 1, padding: 20, background: "#f5f5f5" },
   logout: {
     marginTop: 20,
     padding: 10,

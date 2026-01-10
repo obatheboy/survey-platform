@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
-import api from "../../api/api";
+// ✅ FIX: import adminApi instead of api
+import { adminApi } from "../../api/adminApi";
 
 export default function AdminActivations() {
   const [payments, setPayments] = useState([]);
@@ -23,7 +24,7 @@ export default function AdminActivations() {
           ? "/admin/activations/pending"
           : "/admin/activations";
 
-      const res = await adminApi.get(endpoint); // ✅ FIX
+      const res = await adminApi.get(endpoint); // ✅ now works
       setPayments(res.data);
     } catch (err) {
       console.error("Fetch activations error:", err);
@@ -47,7 +48,7 @@ export default function AdminActivations() {
     setProcessingId(id);
 
     try {
-      await adminApi.patch(`/admin/activations/${id}/approve`); // ✅ FIX
+      await adminApi.patch(`/admin/activations/${id}/approve`);
 
       setPayments((prev) =>
         prev.map((p) =>
@@ -67,7 +68,7 @@ export default function AdminActivations() {
     setProcessingId(id);
 
     try {
-      await adminApi.patch(`/admin/activations/${id}/reject`); // ✅ OK
+      await adminApi.patch(`/admin/activations/${id}/reject`);
 
       setPayments((prev) =>
         prev.map((p) =>

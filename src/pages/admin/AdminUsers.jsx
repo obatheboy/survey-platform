@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import api from "../../api/api";
+
+// ✅ FIX: use adminApi instead of api
+import { adminApi } from "../../api/adminApi";
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
@@ -8,6 +10,7 @@ export default function AdminUsers() {
 
   useEffect(() => {
     fetchUsers();
+    // eslint-disable-next-line
   }, []);
 
   /* ===========================
@@ -15,17 +18,11 @@ export default function AdminUsers() {
   =========================== */
   const fetchUsers = async () => {
     try {
-      const res = await api.get("/admin/users", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-        },
-      });
-
+      const res = await adminApi.get("/admin/users"); // ✅ JWT auto-attached
       setUsers(res.data);
     } catch (err) {
-      setError(
-        err.response?.data?.message || "Failed to load users"
-      );
+      console.error("Fetch users error:", err);
+      setError(err.response?.data?.message || "Failed to load users");
     } finally {
       setLoading(false);
     }
@@ -38,7 +35,7 @@ export default function AdminUsers() {
     <div style={{ padding: 20 }}>
       <h2>👑 Admin — Registered Users</h2>
 
-      <table style={styles.table}>
+      <table style={styles.table} border="1" cellPadding="8">
         <thead>
           <tr>
             <th>Full Name</th>
@@ -54,9 +51,7 @@ export default function AdminUsers() {
               <td>{user.full_name}</td>
               <td>{user.phone}</td>
               <td>{user.email || "—"}</td>
-              <td>
-                {new Date(user.created_at).toLocaleDateString()}
-              </td>
+              <td>{new Date(user.created_at).toLocaleDateString()}</td>
             </tr>
           ))}
         </tbody>
@@ -75,4 +70,3 @@ const styles = {
     background: "#fff",
   },
 };
-
