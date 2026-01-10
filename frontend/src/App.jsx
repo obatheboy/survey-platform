@@ -20,37 +20,23 @@ import AdminUsers from "./pages/admin/AdminUsers.jsx";
 /* =====================================================
    🔐 GLOBAL AUTH GUARD (COOKIE BASED — USERS ONLY)
 ===================================================== */
-function ProtectedRoute({ children, role }) {
+function ProtectedRoute({ children }) {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
     api
       .get("/auth/me")
-      .then((res) => {
-        setUser(res.data);
-      })
-      .catch(() => {
-        setUser(null);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      .then((res) => setUser(res.data))
+      .catch(() => setUser(null))
+      .finally(() => setLoading(false));
   }, []);
 
   if (loading) {
-    return (
-      <p style={{ textAlign: "center", marginTop: 80 }}>
-        Loading…
-      </p>
-    );
+    return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
   }
 
   if (!user) {
-    return <Navigate to="/auth?mode=register" replace />;
-  }
-
-  if (role && user.role !== role) {
     return <Navigate to="/auth?mode=register" replace />;
   }
 
@@ -58,27 +44,19 @@ function ProtectedRoute({ children, role }) {
 }
 
 /* =====================================================
-   🚦 ROUTER + 🔥 AUTO-WAKE (RENDER FIX)
+   🚦 ROUTER
 ===================================================== */
 export default function App() {
-  // 🔥 AUTO-WAKE RENDER (RUNS ONCE)
+  // 🔥 AUTO-WAKE RENDER
   useEffect(() => {
-    fetch(import.meta.env.VITE_API_URL, {
-      method: "GET",
-      credentials: "include",
-    }).catch(() => {
-      // silent — Render may be asleep
-    });
+    fetch(import.meta.env.VITE_API_URL).catch(() => {});
   }, []);
 
   return (
     <BrowserRouter>
       <Routes>
-        {/* ENTRY → REGISTER */}
-        <Route
-          path="/"
-          element={<Navigate to="/auth?mode=register" replace />}
-        />
+        {/* ENTRY */}
+        <Route path="/" element={<Navigate to="/auth?mode=register" replace />} />
 
         {/* AUTH */}
         <Route path="/auth" element={<Auth />} />
@@ -132,26 +110,16 @@ export default function App() {
           }
         />
 
-        {/* ================= ADMIN (PROTECTED) ================= */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute role="admin">
-              <AdminLayout />
-            </ProtectedRoute>
-          }
-        >
+        {/* ================= ADMIN (JWT PROTECTED INSIDE LAYOUT) ================= */}
+        <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Navigate to="activations" replace />} />
           <Route path="activations" element={<AdminActivations />} />
           <Route path="withdrawals" element={<AdminWithdrawals />} />
           <Route path="users" element={<AdminUsers />} />
         </Route>
 
-        {/* FALLBACK → REGISTER */}
-        <Route
-          path="*"
-          element={<Navigate to="/auth?mode=register" replace />}
-        />
+        {/* FALLBACK */}
+        <Route path="*" element={<Navigate to="/auth?mode=register" replace />} />
       </Routes>
     </BrowserRouter>
   );
