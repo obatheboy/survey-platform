@@ -48,6 +48,38 @@ export default function AdminUsers() {
     }
   };
 
+  /* ===========================
+     DELETE USER
+  =========================== */
+  const deleteUser = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
+
+    try {
+      await adminApi.delete(`/admin/users/${id}`);
+      setUsers((prev) => prev.filter((u) => u.id !== id));
+    } catch (err) {
+      alert(err.response?.data?.message || "Delete failed");
+    }
+  };
+
+  /* ===========================
+     UPDATE USER ROLE
+  =========================== */
+  const updateUserRole = async (id, role) => {
+    const newRole = role === "user" ? "admin" : "user"; // Toggle role between user/admin
+
+    try {
+      await adminApi.patch(`/admin/users/${id}/role`, { role: newRole });
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === id ? { ...u, role: newRole } : u
+        )
+      );
+    } catch (err) {
+      alert(err.response?.data?.message || "Role update failed");
+    }
+  };
+
   if (loading) return <p>Loading users...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
@@ -63,6 +95,7 @@ export default function AdminUsers() {
             <th>Email</th>
             <th>Registered</th>
             <th>Status</th>
+            <th>Role</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -75,6 +108,7 @@ export default function AdminUsers() {
               <td>{user.email || "—"}</td>
               <td>{new Date(user.created_at).toLocaleDateString()}</td>
               <td>{user.is_activated ? "ACTIVE" : "INACTIVE"}</td>
+              <td>{user.role}</td>
               <td>
                 {!user.is_activated ? (
                   <button
@@ -86,6 +120,12 @@ export default function AdminUsers() {
                 ) : (
                   <em>—</em>
                 )}
+                <button onClick={() => updateUserRole(user.id, user.role)}>
+                  Toggle Role
+                </button>
+                <button onClick={() => deleteUser(user.id)} style={{ marginLeft: 8 }}>
+                  Delete
+                </button>
               </td>
             </tr>
           ))}

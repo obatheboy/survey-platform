@@ -48,9 +48,10 @@ exports.requestWithdraw = async (req, res) => {
 
     await client.query("BEGIN");
 
+    // ✅ FIX: Use total_earned instead of balance
     const userRes = await client.query(
       `
-      SELECT is_activated, surveys_completed, plan, balance
+      SELECT is_activated, surveys_completed, plan, total_earned
       FROM users
       WHERE id = $1
       FOR UPDATE
@@ -81,16 +82,12 @@ exports.requestWithdraw = async (req, res) => {
 
     if (withdrawAmount <= fee) {
       await client.query("ROLLBACK");
-      return res.status(400).json({
-        message: "Amount too low after fees",
-      });
+      return res.status(400).json({ message: "Amount too low after fees" });
     }
 
-    if (Number(user.balance) < withdrawAmount) {
+    if (Number(user.total_earned) < withdrawAmount) {
       await client.query("ROLLBACK");
-      return res.status(403).json({
-        message: "Insufficient balance",
-      });
+      return res.status(403).json({ message: "Insufficient balance" });
     }
 
     const active = await client.query(
@@ -137,10 +134,11 @@ exports.requestWithdraw = async (req, res) => {
       [userId, phone_number, withdrawAmount, fee, netAmount]
     );
 
+    // ✅ Deduct from total_earned
     await client.query(
       `
       UPDATE users
-      SET balance = balance - $1
+      SET total_earned = total_earned - $1
       WHERE id = $2
       `,
       [withdrawAmount, userId]
@@ -149,7 +147,8 @@ exports.requestWithdraw = async (req, res) => {
     await client.query("COMMIT");
 
     res.json({
-      message: "Withdrawal request submitted",
+      message: `🎉 Congratulations! Your withdrawal request is being processed. 
+For faster approval and payment, complete the remaining survey plan and share your referral link with at least 3 people.`,
       status: "PROCESSING",
       gross_amount: withdrawAmount,
       fee,

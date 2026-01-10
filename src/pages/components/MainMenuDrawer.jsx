@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/api";
 
@@ -12,45 +13,76 @@ const PLANS = {
 
 export default function MainMenuDrawer({ open, onClose, user }) {
   const navigate = useNavigate();
+  const [phones, setPhones] = useState({});
+  const [amounts, setAmounts] = useState({});
+  const [toast, setToast] = useState("");
 
   if (!open || !user) return null;
 
   /* =========================
-     WITHDRAW FLOW (NEW RULE)
+     WITHDRAW FLOW
   ========================= */
-  const handleWithdraw = (planKey) => {
-    onClose();
+  const handleWithdraw = async (planKey) => {
+    const planData = user.plans?.[planKey];
+    if (!planData) return;
 
-    const plan = user.plans?.[planKey];
-    if (!plan) return;
-
-    const completed = plan.completed === true;
-    const activated = plan.is_activated === true;
-    const submitted = plan.activation_status === "SUBMITTED";
+    const completed = planData.completed === true;
+    const activated = planData.is_activated === true;
+    const submitted = planData.activation_status === "SUBMITTED";
 
     if (!completed) {
-      alert("❌ Complete surveys to unlock withdrawal for this plan");
+      setToast("❌ Complete surveys to unlock withdrawal for this plan");
+      setTimeout(() => setToast(""), 4000);
       return;
     }
 
     if (!activated) {
       if (submitted) {
-        alert("⏳ Activation submitted. Waiting for admin approval.");
+        setToast("⏳ Activation submitted. Waiting for admin approval.");
       } else {
         localStorage.setItem("active_plan", planKey);
         navigate("/activation-notice", { replace: true });
       }
+      setTimeout(() => setToast(""), 4000);
       return;
     }
 
-    // ✅ Plan completed + activated → allow withdraw
-    localStorage.setItem("active_plan", planKey);
-    navigate("/withdraw", { replace: true });
+    // ✅ Validate phone and amount
+    const phone = phones[planKey];
+    const amount = Number(amounts[planKey]);
+
+    if (!phone || !amount) {
+      setToast("❌ Enter both phone number and amount");
+      setTimeout(() => setToast(""), 3000);
+      return;
+    }
+
+    try {
+      const res = await api.post("/withdraw/request", {
+        phone_number: phone,
+        amount,
+      });
+
+      setToast(
+        `🎉 Success! ${res.data.message}. For faster approval, complete remaining surveys and share your link with at least 3 people.`
+      );
+
+      setTimeout(() => setToast(""), 6000);
+      setPhones((prev) => ({ ...prev, [planKey]: "" }));
+      setAmounts((prev) => ({ ...prev, [planKey]: "" }));
+      onClose();
+    } catch (err) {
+      setToast(
+        err.response?.data?.message || "❌ Withdraw request failed"
+      );
+      setTimeout(() => setToast(""), 4000);
+    }
   };
 
   const shareLink = () => {
     navigator.clipboard.writeText(window.location.origin);
-    alert("✅ Referral link copied");
+    setToast("✅ Referral link copied");
+    setTimeout(() => setToast(""), 3000);
     onClose();
   };
 
@@ -63,6 +95,12 @@ export default function MainMenuDrawer({ open, onClose, user }) {
 
   return (
     <>
+      {toast && (
+        <div style={toastStyle}>
+          {toast}
+        </div>
+      )}
+
       {/* OVERLAY */}
       <div style={overlay} onClick={onClose} />
 
@@ -73,11 +111,9 @@ export default function MainMenuDrawer({ open, onClose, user }) {
           <div style={avatar}>
             {user.full_name?.charAt(0).toUpperCase() || "U"}
           </div>
-
           <div style={{ flex: 1 }}>
             <strong style={{ color: "#fff" }}>{user.full_name}</strong>
           </div>
-
           <button style={profileBtnDisabled} disabled>
             Profile
           </button>
@@ -92,8 +128,6 @@ export default function MainMenuDrawer({ open, onClose, user }) {
           const planData = user.plans?.[key];
           const completed = planData?.completed === true;
           const activated = planData?.is_activated === true;
-          const submitted = planData?.activation_status === "SUBMITTED";
-
           const earned = completed ? plan.total.toLocaleString() : "0";
           const canWithdraw = completed && activated;
 
@@ -109,6 +143,29 @@ export default function MainMenuDrawer({ open, onClose, user }) {
               <div>
                 <strong style={{ color: plan.color }}>{plan.name}</strong>
                 <p style={withdrawAmount}>KES {earned}</p>
+
+                {canWithdraw && (
+                  <>
+                    <input
+                      type="text"
+                      placeholder="Phone Number"
+                      value={phones[key] || ""}
+                      onChange={(e) =>
+                        setPhones({ ...phones, [key]: e.target.value })
+                      }
+                      style={inputStyle}
+                    />
+                    <input
+                      type="number"
+                      placeholder="Amount"
+                      value={amounts[key] || ""}
+                      onChange={(e) =>
+                        setAmounts({ ...amounts, [key]: e.target.value })
+                      }
+                      style={inputStyle}
+                    />
+                  </>
+                )}
               </div>
 
               <button
@@ -191,7 +248,6 @@ const drawer = {
 };
 
 const profileCard = { display: "flex", alignItems: "center", gap: 12 };
-
 const avatar = {
   width: 44,
   height: 44,
@@ -203,7 +259,6 @@ const avatar = {
   justifyContent: "center",
   fontWeight: 800,
 };
-
 const profileBtnDisabled = {
   border: "none",
   background: "rgba(255,255,255,0.08)",
@@ -212,10 +267,8 @@ const profileBtnDisabled = {
   borderRadius: 10,
   fontSize: 12,
 };
-
 const divider = { margin: "16px 0", opacity: 0.15 };
 const withdrawTitle = { marginBottom: 12, color: "#ce93d8" };
-
 const withdrawCard = {
   background: "rgba(255,255,255,0.08)",
   padding: 12,
@@ -226,13 +279,7 @@ const withdrawCard = {
   alignItems: "center",
   border: "1px solid",
 };
-
-const withdrawAmount = {
-  margin: "4px 0",
-  fontSize: 13,
-  color: "#e3f2fd",
-};
-
+const withdrawAmount = { margin: "4px 0", fontSize: 13, color: "#e3f2fd" };
 const withdrawBtn = {
   background: "transparent",
   border: "1px solid",
@@ -240,10 +287,28 @@ const withdrawBtn = {
   borderRadius: 999,
   fontWeight: 700,
 };
-
+const inputStyle = {
+  width: "100%",
+  margin: "4px 0",
+  padding: "4px 8px",
+  borderRadius: 6,
+  border: "1px solid #ccc",
+};
 const referralCaption = {
   fontSize: 12,
   color: "#80deea",
   textAlign: "center",
   marginBottom: 16,
+};
+const toastStyle = {
+  position: "fixed",
+  top: 20,
+  left: "50%",
+  transform: "translateX(-50%)",
+  background: "#4caf50",
+  color: "#fff",
+  padding: "8px 16px",
+  borderRadius: 8,
+  zIndex: 200,
+  fontWeight: 700,
 };

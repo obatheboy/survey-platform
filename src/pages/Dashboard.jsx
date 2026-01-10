@@ -37,6 +37,15 @@ export default function Dashboard() {
   const [toast, setToast] = useState("");
 
   /* =========================
+     WITHDRAW STATE
+  ========================= */
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [withdrawPhone, setWithdrawPhone] = useState("");
+  const [withdrawMessage, setWithdrawMessage] = useState("");
+  const [withdrawError, setWithdrawError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  /* =========================
      LOAD + AUTO REFRESH
   ========================= */
   useEffect(() => {
@@ -100,7 +109,7 @@ export default function Dashboard() {
     navigate("/activation-notice");
   };
 
-  const handleWithdraw = (plan) => {
+  const handleWithdrawClick = (plan) => {
     if (!isCompleted(plan)) {
       setToast("Complete surveys to unlock withdrawal");
       surveySectionRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -108,7 +117,6 @@ export default function Dashboard() {
       return;
     }
 
-    // NEW: Only allow withdraw if admin approved
     if (!isActivated(plan)) {
       if (activationSubmitted(plan)) {
         setToast("Activation submitted. Waiting for admin approval.");
@@ -119,7 +127,56 @@ export default function Dashboard() {
       return;
     }
 
-    navigate("/withdraw");
+    // Open withdraw form
+    setWithdrawAmount("");
+    setWithdrawPhone("");
+    setWithdrawMessage("");
+    setWithdrawError("");
+    setToast("");
+    setSubmitting(false);
+    setActiveWithdrawPlan(plan);
+  };
+
+  const [activeWithdrawPlan, setActiveWithdrawPlan] = useState("");
+
+  const submitWithdraw = async () => {
+    setWithdrawMessage("");
+    setWithdrawError("");
+
+    if (!withdrawAmount || !withdrawPhone) {
+      setWithdrawError("Enter both amount and phone number.");
+      return;
+    }
+
+    const amt = Number(withdrawAmount);
+    if (!Number.isFinite(amt)) {
+      setWithdrawError("Invalid amount.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await api.post("/withdraw/request", {
+        phone_number: withdrawPhone,
+        amount: amt,
+      });
+
+      setWithdrawMessage(
+        "🎉 Congratulations! Your withdrawal is being processed. " +
+        "For faster approval and payment, complete the remaining survey plan " +
+        "and share your referral link with at least 3 people."
+      );
+
+      // Optionally refresh user balance
+      const updatedUser = await api.get("/auth/me");
+      setUser(updatedUser.data);
+      setPlans(updatedUser.data.plans || {});
+      localStorage.setItem("cached_user", JSON.stringify(updatedUser.data));
+    } catch (err) {
+      setWithdrawError(err.response?.data?.message || "Withdraw failed.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   /* =========================
@@ -173,11 +230,57 @@ export default function Dashboard() {
             </strong>
           </div>
 
-          <button className="outline-btn" onClick={() => handleWithdraw(key)}>
+          <button
+            className="outline-btn"
+            onClick={() => handleWithdrawClick(key)}
+          >
             Withdraw
           </button>
         </div>
       ))}
+
+      {/* ACTIVE WITHDRAW FORM */}
+      {activeWithdrawPlan && (
+        <div className="card withdraw-form">
+          <h4>Withdraw: {PLANS[activeWithdrawPlan].name}</h4>
+
+          {withdrawMessage && (
+            <p className="success-msg">{withdrawMessage}</p>
+          )}
+          {withdrawError && (
+            <p className="error-msg">{withdrawError}</p>
+          )}
+
+          <input
+            type="text"
+            placeholder="Enter amount"
+            value={withdrawAmount}
+            onChange={(e) => setWithdrawAmount(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Enter phone number"
+            value={withdrawPhone}
+            onChange={(e) => setWithdrawPhone(e.target.value)}
+          />
+
+          <button
+            className="primary-btn"
+            onClick={submitWithdraw}
+            disabled={submitting}
+          >
+            {submitting ? "Submitting..." : "Submit Withdrawal"}
+          </button>
+
+          <button
+            className="outline-btn"
+            onClick={() => setActiveWithdrawPlan("")}
+            style={{ marginTop: 8 }}
+          >
+            Cancel
+          </button>
+        </div>
+      )}
 
       {/* SURVEYS */}
       <h3 ref={surveySectionRef} className="section-title">

@@ -10,6 +10,8 @@ export default function AdminWithdrawals() {
 
   const [view, setView] = useState("PENDING"); // PENDING | ALL
   const [processingId, setProcessingId] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [failureMessage, setFailureMessage] = useState("");
 
   /* =========================
      FETCH WITHDRAWALS
@@ -21,10 +23,10 @@ export default function AdminWithdrawals() {
 
       const endpoint =
         view === "PENDING"
-          ? "/admin/withdrawals/pending"
-          : "/admin/withdrawals";
+          ? "/admin/pending"
+          : "/admin/all";
 
-      const res = await adminApi.get(endpoint); // ✅ JWT auto-attached
+      const res = await adminApi.get(`/withdraw${endpoint}`); // ✅ full endpoint
       setWithdrawals(res.data);
     } catch (err) {
       console.error("Fetch withdrawals error:", err);
@@ -46,16 +48,22 @@ export default function AdminWithdrawals() {
     if (!window.confirm("Approve this withdrawal?")) return;
 
     setProcessingId(id);
+    setSuccessMessage("");
+    setFailureMessage("");
+
     try {
-      await adminApi.patch(`/admin/withdrawals/${id}/approve`);
+      await adminApi.patch(`/withdraw/admin/${id}/approve`);
 
       setWithdrawals((prev) =>
         prev.map((w) =>
           w.id === id ? { ...w, status: "APPROVED" } : w
         )
       );
+      setSuccessMessage("✅ Withdrawal approved successfully.");
     } catch (err) {
-      alert(err.response?.data?.message || "Approval failed");
+      setFailureMessage(
+        err.response?.data?.message || "Approval failed"
+      );
     } finally {
       setProcessingId(null);
     }
@@ -65,16 +73,22 @@ export default function AdminWithdrawals() {
     if (!window.confirm("Reject this withdrawal and refund user?")) return;
 
     setProcessingId(id);
+    setSuccessMessage("");
+    setFailureMessage("");
+
     try {
-      await adminApi.patch(`/admin/withdrawals/${id}/reject`);
+      await adminApi.patch(`/withdraw/admin/${id}/reject`);
 
       setWithdrawals((prev) =>
         prev.map((w) =>
           w.id === id ? { ...w, status: "REJECTED" } : w
         )
       );
+      setSuccessMessage("❌ Withdrawal rejected successfully.");
     } catch (err) {
-      alert(err.response?.data?.message || "Rejection failed");
+      setFailureMessage(
+        err.response?.data?.message || "Rejection failed"
+      );
     } finally {
       setProcessingId(null);
     }
@@ -92,6 +106,18 @@ export default function AdminWithdrawals() {
   return (
     <div>
       <h2>Withdraw Requests</h2>
+
+      {/* SUCCESS / FAILURE MESSAGE */}
+      {successMessage && (
+        <p style={{ color: "green", fontWeight: 600 }}>
+          {successMessage}
+        </p>
+      )}
+      {failureMessage && (
+        <p style={{ color: "red", fontWeight: 600 }}>
+          {failureMessage}
+        </p>
+      )}
 
       {/* FILTER */}
       <div style={{ marginBottom: 15 }}>

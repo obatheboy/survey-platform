@@ -8,6 +8,7 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [admin, setAdmin] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const checkAdminSession = async () => {
@@ -20,6 +21,7 @@ export default function AdminLayout() {
 
         setAdmin(res.data);
       } catch (err) {
+        setError(err.message || "An error occurred. Please try again.");
         localStorage.removeItem("adminToken");
         navigate("/admin/login", { replace: true });
       } finally {
@@ -31,6 +33,7 @@ export default function AdminLayout() {
   }, [navigate]);
 
   if (loading) return <p>Loading admin panel...</p>;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
   if (!admin) return null;
 
   return (
@@ -47,7 +50,7 @@ export default function AdminLayout() {
         <p style={{ fontSize: 12, opacity: 0.8 }}>
           Logged in as:
           <br />
-          <strong>{admin.username}</strong>
+          <strong>{admin.full_name}</strong> {/* Fixed username to full_name */}
         </p>
 
         <button
