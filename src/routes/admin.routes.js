@@ -13,6 +13,19 @@ router.use(adminProtect);
 
 /**
  * =========================================
+ * 👑 ADMIN SESSION (VERIFY LOGIN)
+ * =========================================
+ */
+router.get("/me", (req, res) => {
+  res.json({
+    id: req.admin.id,
+    username: req.admin.username,
+    role: "admin",
+  });
+});
+
+/**
+ * =========================================
  * 👤 USERS MANAGEMENT
  * =========================================
  */

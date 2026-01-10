@@ -1,6 +1,23 @@
 const pool = require("../config/db");
 
 /* ======================================================
+   👑 ADMIN SESSION
+   - Used by /api/admin/me
+====================================================== */
+exports.getAdminMe = async (req, res) => {
+  try {
+    res.json({
+      id: req.admin.id,
+      username: req.admin.username,
+      role: "admin",
+    });
+  } catch (error) {
+    console.error("Admin me error:", error);
+    res.status(500).json({ message: "Failed to load admin session" });
+  }
+};
+
+/* ======================================================
    👤 USERS MANAGEMENT (ADMIN — FIXED)
 ====================================================== */
 
@@ -75,7 +92,6 @@ exports.getUserById = async (req, res) => {
 
 /**
  * UPDATE USER STATUS
- * ⚠️ Moderation only (does NOT activate)
  */
 exports.updateUserStatus = async (req, res) => {
   try {
@@ -86,12 +102,6 @@ exports.updateUserStatus = async (req, res) => {
       return res.status(400).json({
         message: "Only ACTIVE or SUSPENDED allowed",
       });
-    }
-
-    if (Number(id) === req.user.id) {
-      return res
-        .status(403)
-        .json({ message: "You cannot change your own status" });
     }
 
     const result = await pool.query(
@@ -130,12 +140,6 @@ exports.updateUserRole = async (req, res) => {
       return res.status(400).json({ message: "Invalid role" });
     }
 
-    if (Number(id) === req.user.id) {
-      return res
-        .status(403)
-        .json({ message: "You cannot change your own role" });
-    }
-
     const result = await pool.query(
       `
       UPDATE users
@@ -161,8 +165,7 @@ exports.updateUserRole = async (req, res) => {
 };
 
 /**
- * 💰 MANUAL BALANCE ADJUSTMENT (ADMIN)
- * Uses REAL balance
+ * 💰 MANUAL BALANCE ADJUSTMENT
  */
 exports.adjustUserBalance = async (req, res) => {
   const client = await pool.connect();
@@ -202,14 +205,11 @@ exports.adjustUserBalance = async (req, res) => {
 
     if (type === "DEBIT" && balance < amount) {
       await client.query("ROLLBACK");
-      return res.status(400).json({
-        message: "Insufficient balance",
-      });
+      return res.status(400).json({ message: "Insufficient balance" });
     }
 
-    balance = type === "CREDIT"
-      ? balance + amount
-      : balance - amount;
+    balance =
+      type === "CREDIT" ? balance + amount : balance - amount;
 
     const update = await client.query(
       `
@@ -242,12 +242,6 @@ exports.adjustUserBalance = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-
-    if (Number(id) === req.user.id) {
-      return res.status(403).json({
-        message: "You cannot delete yourself",
-      });
-    }
 
     const result = await pool.query(
       `
