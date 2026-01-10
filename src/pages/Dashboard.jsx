@@ -44,6 +44,7 @@ export default function Dashboard() {
   const [withdrawMessage, setWithdrawMessage] = useState("");
   const [withdrawError, setWithdrawError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [activeWithdrawPlan, setActiveWithdrawPlan] = useState("");
 
   /* =========================
      LOAD + AUTO REFRESH
@@ -60,7 +61,7 @@ export default function Dashboard() {
         setPlans(res.data.plans || {});
         localStorage.setItem("cached_user", JSON.stringify(res.data));
       } catch {
-        // silent fail (offline / slow net)
+        // silent fail
       } finally {
         if (alive) setLoading(false);
       }
@@ -88,7 +89,8 @@ export default function Dashboard() {
   const surveysDone = (plan) => plans[plan]?.surveys_completed || 0;
   const isCompleted = (plan) => plans[plan]?.completed === true;
   const isActivated = (plan) => plans[plan]?.is_activated === true;
-  const activationSubmitted = (plan) => plans[plan]?.activation_status === "SUBMITTED";
+  const activationSubmitted = (plan) =>
+    plans[plan]?.activation_status === "SUBMITTED";
 
   /* =========================
      ACTIONS
@@ -111,7 +113,7 @@ export default function Dashboard() {
 
   const handleWithdrawClick = (plan) => {
     if (!isCompleted(plan)) {
-      setToast("Complete surveys to unlock withdrawal");
+      setToast("Complete all surveys to unlock withdrawal");
       surveySectionRef.current?.scrollIntoView({ behavior: "smooth" });
       setTimeout(() => setToast(""), 3000);
       return;
@@ -127,17 +129,13 @@ export default function Dashboard() {
       return;
     }
 
-    // Open withdraw form
     setWithdrawAmount("");
     setWithdrawPhone("");
     setWithdrawMessage("");
     setWithdrawError("");
-    setToast("");
     setSubmitting(false);
     setActiveWithdrawPlan(plan);
   };
-
-  const [activeWithdrawPlan, setActiveWithdrawPlan] = useState("");
 
   const submitWithdraw = async () => {
     setWithdrawMessage("");
@@ -148,26 +146,15 @@ export default function Dashboard() {
       return;
     }
 
-    const amt = Number(withdrawAmount);
-    if (!Number.isFinite(amt)) {
-      setWithdrawError("Invalid amount.");
-      return;
-    }
-
     setSubmitting(true);
     try {
-      const res = await api.post("/withdraw/request", {
+      await api.post("/withdraw/request", {
         phone_number: withdrawPhone,
-        amount: amt,
+        amount: Number(withdrawAmount),
       });
 
-      setWithdrawMessage(
-        "🎉 Congratulations! Your withdrawal is being processed. " +
-        "For faster approval and payment, complete the remaining survey plan " +
-        "and share your referral link with at least 3 people."
-      );
+      setWithdrawMessage("Withdrawal request submitted successfully.");
 
-      // Optionally refresh user balance
       const updatedUser = await api.get("/auth/me");
       setUser(updatedUser.data);
       setPlans(updatedUser.data.plans || {});
@@ -191,32 +178,8 @@ export default function Dashboard() {
         <h2>Dashboard</h2>
       </header>
 
-      <MainMenuDrawer
-        open={menuOpen}
-        onClose={() => setMenuOpen(false)}
-        user={user}
-      />
-
+      <MainMenuDrawer open={menuOpen} onClose={() => setMenuOpen(false)} user={user} />
       <LiveWithdrawalFeed />
-
-      {/* HERO */}
-      <section className="dashboard-hero">
-        <div className="card greeting">
-          <h3>Hello, {user.full_name} 👋</h3>
-          <p>Your journey to real earnings continues.</p>
-        </div>
-
-        <div className="earnings">
-          <div>
-            <span>Total Earnings</span>
-            <strong>KES {Number(user.total_earned || 0).toLocaleString()}</strong>
-          </div>
-          <div>
-            <span>Current Balance</span>
-            <strong>KES {Number(user.total_earned || 0).toLocaleString()}</strong>
-          </div>
-        </div>
-      </section>
 
       {/* WITHDRAW */}
       <h3 className="section-title withdraw-title">💸 Withdraw Earnings</h3>
@@ -225,64 +188,55 @@ export default function Dashboard() {
         <div key={key} className="card withdraw-card">
           <div>
             <h4>{plan.icon} {plan.name}</h4>
-            <strong>
-              KES {isCompleted(key) ? plan.total.toLocaleString() : "0"}
-            </strong>
+            <strong>KES {isCompleted(key) ? plan.total.toLocaleString() : "0"}</strong>
           </div>
 
-          <button
-            className="outline-btn"
-            onClick={() => handleWithdrawClick(key)}
-          >
-            Withdraw
-          </button>
+          <div className="withdraw-actions">
+            <button
+              className="outline-btn"
+              onClick={() => handleWithdrawClick(key)}
+            >
+              Withdraw
+            </button>
+
+            {/* INLINE FORM – APPEARS NEXT TO BUTTON */}
+            {activeWithdrawPlan === key && (
+              <div className="withdraw-form inline">
+                {withdrawMessage && <p className="success-msg">{withdrawMessage}</p>}
+                {withdrawError && <p className="error-msg">{withdrawError}</p>}
+
+                <input
+                  type="number"
+                  placeholder="Amount"
+                  value={withdrawAmount}
+                  onChange={(e) => setWithdrawAmount(e.target.value)}
+                />
+                <input
+                  type="tel"
+                  placeholder="Phone"
+                  value={withdrawPhone}
+                  onChange={(e) => setWithdrawPhone(e.target.value)}
+                />
+
+                <button
+                  className="primary-btn"
+                  onClick={submitWithdraw}
+                  disabled={submitting}
+                >
+                  {submitting ? "Submitting..." : "Submit"}
+                </button>
+
+                <button
+                  className="outline-btn"
+                  onClick={() => setActiveWithdrawPlan("")}
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       ))}
-
-      {/* ACTIVE WITHDRAW FORM */}
-      {activeWithdrawPlan && (
-        <div className="card withdraw-form">
-          <h4>Withdraw: {PLANS[activeWithdrawPlan].name}</h4>
-
-          {withdrawMessage && (
-            <p className="success-msg">{withdrawMessage}</p>
-          )}
-          {withdrawError && (
-            <p className="error-msg">{withdrawError}</p>
-          )}
-
-          <input
-            type="number"
-            placeholder="Enter amount"
-            value={withdrawAmount}
-            onChange={(e) => setWithdrawAmount(e.target.value)}
-            className="withdraw-input"
-          />
-          <input
-            type="tel"
-            placeholder="Enter phone number"
-            value={withdrawPhone}
-            onChange={(e) => setWithdrawPhone(e.target.value)}
-            className="withdraw-input"
-          />
-
-          <button
-            className="primary-btn"
-            onClick={submitWithdraw}
-            disabled={submitting}
-          >
-            {submitting ? "Submitting..." : "Submit Withdrawal"}
-          </button>
-
-          <button
-            className="outline-btn"
-            onClick={() => setActiveWithdrawPlan("")}
-            style={{ marginTop: 8 }}
-          >
-            Cancel
-          </button>
-        </div>
-      )}
 
       {/* SURVEYS */}
       <h3 ref={surveySectionRef} className="section-title">
