@@ -2,23 +2,23 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "./api/api";
 
-/* ================= PAGES ================= */
-import Auth from "./pages/Auth.jsx";
-import Dashboard from "./pages/Dashboard.jsx";
-import Surveys from "./pages/Surveys.jsx";
-import Activate from "./pages/Activate.jsx";
-import ActivationNotice from "./pages/ActivationNotice.jsx";
-import Withdraw from "./pages/Withdraw.jsx";
+/* ================= USER PAGES ================= */
+import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
+import Surveys from "./pages/Surveys";
+import Activate from "./pages/Activate";
+import ActivationNotice from "./pages/ActivationNotice";
+import Withdraw from "./pages/Withdraw";
 
 /* ================= ADMIN ================= */
-import AdminLogin from "./pages/admin/AdminLogin.jsx";
-import AdminLayout from "./pages/admin/AdminLayout.jsx";
-import AdminActivations from "./pages/admin/AdminActivations.jsx";
-import AdminWithdrawals from "./pages/admin/AdminWithdrawals.jsx";
-import AdminUsers from "./pages/admin/AdminUsers.jsx";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminActivations from "./pages/admin/AdminActivations";
+import AdminWithdrawals from "./pages/admin/AdminWithdrawals";
+import AdminUsers from "./pages/admin/AdminUsers";
 
 /* =====================================================
-   🔐 GLOBAL AUTH GUARD (COOKIE BASED — USERS ONLY)
+   🔐 USER AUTH GUARD (COOKIE BASED)
 ===================================================== */
 function ProtectedRoute({ children }) {
   const [loading, setLoading] = useState(true);
@@ -44,12 +44,27 @@ function ProtectedRoute({ children }) {
 }
 
 /* =====================================================
+   🔐 ADMIN GUARD (TOKEN BASED)
+===================================================== */
+function AdminRoute({ children }) {
+  const token = localStorage.getItem("adminToken");
+
+  if (!token) {
+    return <Navigate to="/admin/login" replace />;
+  }
+
+  return children;
+}
+
+/* =====================================================
    🚦 ROUTER
 ===================================================== */
 export default function App() {
-  // 🔥 AUTO-WAKE RENDER
+  // Wake backend (Render)
   useEffect(() => {
-    fetch(import.meta.env.VITE_API_URL).catch(() => {});
+    fetch(import.meta.env.VITE_API_URL, {
+      credentials: "include",
+    }).catch(() => {});
   }, []);
 
   return (
@@ -58,13 +73,10 @@ export default function App() {
         {/* ENTRY */}
         <Route path="/" element={<Navigate to="/auth?mode=register" replace />} />
 
-        {/* AUTH */}
+        {/* USER AUTH */}
         <Route path="/auth" element={<Auth />} />
 
-        {/* ================= ADMIN LOGIN (PUBLIC) ================= */}
-        <Route path="/admin/login" element={<AdminLogin />} />
-
-        {/* ================= USER ================= */}
+        {/* USER APP */}
         <Route
           path="/dashboard"
           element={
@@ -110,8 +122,17 @@ export default function App() {
           }
         />
 
-        {/* ================= ADMIN (JWT PROTECTED INSIDE LAYOUT) ================= */}
-        <Route path="/admin" element={<AdminLayout />}>
+        {/* ================= ADMIN ================= */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminLayout />
+            </AdminRoute>
+          }
+        >
           <Route index element={<Navigate to="activations" replace />} />
           <Route path="activations" element={<AdminActivations />} />
           <Route path="withdrawals" element={<AdminWithdrawals />} />
@@ -119,7 +140,7 @@ export default function App() {
         </Route>
 
         {/* FALLBACK */}
-        <Route path="*" element={<Navigate to="/auth?mode=register" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
