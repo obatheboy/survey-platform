@@ -8,7 +8,7 @@ exports.getAdminMe = async (req, res) => {
   try {
     res.json({
       id: req.admin.id,
-      username: req.admin.username,
+      full_name: req.admin.full_name,
       role: "admin",
     });
   } catch (error) {
@@ -18,7 +18,7 @@ exports.getAdminMe = async (req, res) => {
 };
 
 /* ======================================================
-   👤 USERS MANAGEMENT (ADMIN — FIXED)
+   👤 USERS MANAGEMENT (ADMIN)
 ====================================================== */
 
 /**
@@ -30,7 +30,6 @@ exports.getAllUsers = async (req, res) => {
       SELECT
         id,
         full_name,
-        username,
         email,
         phone,
         role,
@@ -63,7 +62,6 @@ exports.getUserById = async (req, res) => {
       SELECT
         id,
         full_name,
-        username,
         email,
         phone,
         role,
@@ -109,7 +107,7 @@ exports.updateUserStatus = async (req, res) => {
       UPDATE users
       SET status = $1
       WHERE id = $2
-      RETURNING id, username, status
+      RETURNING id, full_name, status
       `,
       [status, id]
     );
@@ -145,7 +143,7 @@ exports.updateUserRole = async (req, res) => {
       UPDATE users
       SET role = $1
       WHERE id = $2
-      RETURNING id, username, role
+      RETURNING id, full_name, role
       `,
       [role, id]
     );
@@ -208,15 +206,14 @@ exports.adjustUserBalance = async (req, res) => {
       return res.status(400).json({ message: "Insufficient balance" });
     }
 
-    balance =
-      type === "CREDIT" ? balance + amount : balance - amount;
+    balance = type === "CREDIT" ? balance + amount : balance - amount;
 
     const update = await client.query(
       `
       UPDATE users
       SET balance = $1
       WHERE id = $2
-      RETURNING id, username, balance
+      RETURNING id, full_name, balance
       `,
       [balance, id]
     );
