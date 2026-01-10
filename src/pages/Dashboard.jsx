@@ -252,16 +252,18 @@ export default function Dashboard() {
           )}
 
           <input
-            type="text"
+            type="number"
             placeholder="Enter amount"
             value={withdrawAmount}
             onChange={(e) => setWithdrawAmount(e.target.value)}
+            className="withdraw-input"
           />
           <input
-            type="text"
+            type="tel"
             placeholder="Enter phone number"
             value={withdrawPhone}
             onChange={(e) => setWithdrawPhone(e.target.value)}
+            className="withdraw-input"
           />
 
           <button
