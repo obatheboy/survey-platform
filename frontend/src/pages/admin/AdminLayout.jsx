@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate, NavLink } from "react-router-dom";
-
-import api from "../../api/api";
+import { adminApi } from "../../api/api";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
@@ -9,25 +8,26 @@ export default function AdminLayout() {
   const [admin, setAdmin] = useState(null);
 
   useEffect(() => {
-    const checkAdmin = async () => {
+    const checkAdminSession = async () => {
       try {
-        // ✅ FIX: admin auth check
+        // 🔐 VERIFY ADMIN SESSION (BACKEND SOURCE OF TRUTH)
         const res = await adminApi.get("/admin/me");
 
         if (res.data.role !== "admin") {
-          navigate("/dashboard", { replace: true });
-          return;
+          throw new Error("Not admin");
         }
 
         setAdmin(res.data);
       } catch (err) {
+        // ❌ Invalid / expired token
+        localStorage.removeItem("adminToken");
         navigate("/admin/login", { replace: true });
       } finally {
         setLoading(false);
       }
     };
 
-    checkAdmin();
+    checkAdminSession();
   }, [navigate]);
 
   if (loading) return <p>Loading admin panel...</p>;
@@ -50,6 +50,16 @@ export default function AdminLayout() {
           <br />
           <strong>{admin.username}</strong>
         </p>
+
+        <button
+          style={styles.logout}
+          onClick={() => {
+            localStorage.removeItem("adminToken");
+            navigate("/admin/login", { replace: true });
+          }}
+        >
+          Logout
+        </button>
       </aside>
 
       {/* ================= CONTENT ================= */}
@@ -105,5 +115,14 @@ const styles = {
     flex: 1,
     padding: 20,
     background: "#f5f5f5",
+  },
+  logout: {
+    marginTop: 20,
+    padding: 10,
+    width: "100%",
+    background: "#c0392b",
+    color: "#fff",
+    border: "none",
+    cursor: "pointer",
   },
 };
