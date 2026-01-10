@@ -11,13 +11,14 @@ import ActivationNotice from "./pages/ActivationNotice.jsx";
 import Withdraw from "./pages/Withdraw.jsx";
 
 /* ================= ADMIN ================= */
+import AdminLogin from "./pages/admin/AdminLogin.jsx";
 import AdminLayout from "./pages/admin/AdminLayout.jsx";
 import AdminActivations from "./pages/admin/AdminActivations.jsx";
 import AdminWithdrawals from "./pages/admin/AdminWithdrawals.jsx";
 import AdminUsers from "./pages/admin/AdminUsers.jsx";
 
 /* =====================================================
-   🔐 GLOBAL AUTH GUARD (COOKIE BASED — HARD FIX)
+   🔐 GLOBAL AUTH GUARD (COOKIE BASED — USERS ONLY)
 ===================================================== */
 function ProtectedRoute({ children, role }) {
   const [loading, setLoading] = useState(true);
@@ -82,6 +83,9 @@ export default function App() {
         {/* AUTH */}
         <Route path="/auth" element={<Auth />} />
 
+        {/* ================= ADMIN LOGIN (PUBLIC) ================= */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+
         {/* ================= USER ================= */}
         <Route
           path="/dashboard"
@@ -128,7 +132,7 @@ export default function App() {
           }
         />
 
-        {/* ================= ADMIN ================= */}
+        {/* ================= ADMIN (PROTECTED) ================= */}
         <Route
           path="/admin"
           element={
