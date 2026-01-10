@@ -163,6 +163,37 @@ exports.updateUserRole = async (req, res) => {
 };
 
 /**
+ * 🔓 ACTIVATE USER ACCOUNT
+ */
+exports.activateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await pool.query(
+      `
+      UPDATE users
+      SET is_activated = TRUE
+      WHERE id = $1
+      RETURNING id, full_name, email, phone, is_activated
+      `,
+      [id]
+    );
+
+    if (!result.rows.length) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({
+      message: "User activated successfully",
+      user: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Admin activate user error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+/**
  * 💰 MANUAL BALANCE ADJUSTMENT
  */
 exports.adjustUserBalance = async (req, res) => {

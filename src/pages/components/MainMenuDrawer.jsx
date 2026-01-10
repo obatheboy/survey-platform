@@ -17,8 +17,6 @@ export default function MainMenuDrawer({ open, onClose, user }) {
 
   /* =========================
      WITHDRAW FLOW (NEW RULE)
-     ✔ Balance exists → allow
-     ✔ Redirect to congratulation
   ========================= */
   const handleWithdraw = (planKey) => {
     onClose();
@@ -26,17 +24,28 @@ export default function MainMenuDrawer({ open, onClose, user }) {
     const plan = user.plans?.[planKey];
     if (!plan) return;
 
-    // Only requirement: user has balance (completed surveys)
-    const hasBalance = plan.completed === true;
+    const completed = plan.completed === true;
+    const activated = plan.is_activated === true;
+    const submitted = plan.activation_status === "SUBMITTED";
 
-    if (!hasBalance) {
-      alert("❌ No earnings available for this plan");
+    if (!completed) {
+      alert("❌ Complete surveys to unlock withdrawal for this plan");
       return;
     }
 
-    // Let activation-notice handle everything else
+    if (!activated) {
+      if (submitted) {
+        alert("⏳ Activation submitted. Waiting for admin approval.");
+      } else {
+        localStorage.setItem("active_plan", planKey);
+        navigate("/activation-notice", { replace: true });
+      }
+      return;
+    }
+
+    // ✅ Plan completed + activated → allow withdraw
     localStorage.setItem("active_plan", planKey);
-    navigate("/activation-notice", { replace: true });
+    navigate("/withdraw", { replace: true });
   };
 
   const shareLink = () => {
@@ -81,8 +90,12 @@ export default function MainMenuDrawer({ open, onClose, user }) {
 
         {Object.entries(PLANS).map(([key, plan]) => {
           const planData = user.plans?.[key];
-          const hasBalance = planData?.completed === true;
-          const earned = hasBalance ? plan.total.toLocaleString() : "0";
+          const completed = planData?.completed === true;
+          const activated = planData?.is_activated === true;
+          const submitted = planData?.activation_status === "SUBMITTED";
+
+          const earned = completed ? plan.total.toLocaleString() : "0";
+          const canWithdraw = completed && activated;
 
           return (
             <div
@@ -90,7 +103,7 @@ export default function MainMenuDrawer({ open, onClose, user }) {
               style={{
                 ...withdrawCard,
                 borderColor: plan.color,
-                opacity: hasBalance ? 1 : 0.4,
+                opacity: completed ? 1 : 0.4,
               }}
             >
               <div>
@@ -103,9 +116,9 @@ export default function MainMenuDrawer({ open, onClose, user }) {
                   ...withdrawBtn,
                   borderColor: plan.color,
                   color: plan.color,
-                  cursor: hasBalance ? "pointer" : "not-allowed",
+                  cursor: canWithdraw ? "pointer" : "not-allowed",
                 }}
-                disabled={!hasBalance}
+                disabled={!completed}
                 onClick={() => handleWithdraw(key)}
               >
                 Withdraw

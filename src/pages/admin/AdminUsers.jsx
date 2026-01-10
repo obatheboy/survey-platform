@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-
-// ✅ FIX: use adminApi instead of api
 import { adminApi } from "../../api/adminApi";
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [processingId, setProcessingId] = useState(null);
 
   useEffect(() => {
     fetchUsers();
@@ -18,13 +17,34 @@ export default function AdminUsers() {
   =========================== */
   const fetchUsers = async () => {
     try {
-      const res = await adminApi.get("/admin/users"); // ✅ JWT auto-attached
+      const res = await adminApi.get("/admin/users"); // JWT auto-attached
       setUsers(res.data);
     } catch (err) {
       console.error("Fetch users error:", err);
       setError(err.response?.data?.message || "Failed to load users");
     } finally {
       setLoading(false);
+    }
+  };
+
+  /* ===========================
+     ACTIVATE USER
+  =========================== */
+  const activateUser = async (id) => {
+    if (!window.confirm("Activate this account?")) return;
+
+    setProcessingId(id);
+    try {
+      await adminApi.patch(`/admin/users/${id}/activate`);
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === id ? { ...u, is_activated: true, status: "ACTIVE" } : u
+        )
+      );
+    } catch (err) {
+      alert(err.response?.data?.message || "Activation failed");
+    } finally {
+      setProcessingId(null);
     }
   };
 
@@ -42,6 +62,8 @@ export default function AdminUsers() {
             <th>Phone Number</th>
             <th>Email</th>
             <th>Registered</th>
+            <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
 
@@ -52,6 +74,19 @@ export default function AdminUsers() {
               <td>{user.phone}</td>
               <td>{user.email || "—"}</td>
               <td>{new Date(user.created_at).toLocaleDateString()}</td>
+              <td>{user.is_activated ? "ACTIVE" : "INACTIVE"}</td>
+              <td>
+                {!user.is_activated ? (
+                  <button
+                    onClick={() => activateUser(user.id)}
+                    disabled={processingId === user.id}
+                  >
+                    {processingId === user.id ? "Activating..." : "Activate"}
+                  </button>
+                ) : (
+                  <em>—</em>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>

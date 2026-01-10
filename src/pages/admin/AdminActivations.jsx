@@ -10,6 +10,8 @@ export default function AdminActivations() {
 
   const [view, setView] = useState("PENDING"); // PENDING | ALL
   const [processingId, setProcessingId] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [failureMessage, setFailureMessage] = useState("");
 
   /* =========================
      FETCH PAYMENTS
@@ -46,6 +48,8 @@ export default function AdminActivations() {
     if (!window.confirm("Approve this activation?")) return;
 
     setProcessingId(id);
+    setSuccessMessage("");
+    setFailureMessage("");
 
     try {
       await adminApi.patch(`/admin/activations/${id}/approve`);
@@ -55,8 +59,9 @@ export default function AdminActivations() {
           p.id === id ? { ...p, status: "APPROVED" } : p
         )
       );
+      setSuccessMessage("Activation successfully approved.");
     } catch (err) {
-      alert(err.response?.data?.message || "Approval failed");
+      setFailureMessage(err.response?.data?.message || "Approval failed");
     } finally {
       setProcessingId(null);
     }
@@ -66,6 +71,8 @@ export default function AdminActivations() {
     if (!window.confirm("Reject this activation?")) return;
 
     setProcessingId(id);
+    setSuccessMessage("");
+    setFailureMessage("");
 
     try {
       await adminApi.patch(`/admin/activations/${id}/reject`);
@@ -75,8 +82,9 @@ export default function AdminActivations() {
           p.id === id ? { ...p, status: "REJECTED" } : p
         )
       );
+      setSuccessMessage("Activation successfully rejected.");
     } catch (err) {
-      alert(err.response?.data?.message || "Rejection failed");
+      setFailureMessage(err.response?.data?.message || "Rejection failed");
     } finally {
       setProcessingId(null);
     }
@@ -94,6 +102,10 @@ export default function AdminActivations() {
   return (
     <div>
       <h2>Activation Payments</h2>
+
+      {/* SUCCESS / FAILURE MESSAGE */}
+      {successMessage && <p style={{ color: "green", fontWeight: "bold" }}>{successMessage}</p>}
+      {failureMessage && <p style={{ color: "red", fontWeight: "bold" }}>{failureMessage}</p>}
 
       {/* FILTER */}
       <div style={{ marginBottom: 15 }}>
@@ -137,9 +149,7 @@ export default function AdminActivations() {
                 <td>{p.mpesa_code}</td>
                 <td>Ksh {p.amount}</td>
                 <td>
-                  <span style={statusStyle(p.status)}>
-                    {p.status}
-                  </span>
+                  <span style={statusStyle(p.status)}>{p.status}</span>
                 </td>
                 <td>
                   {new Date(p.created_at).toLocaleString()}

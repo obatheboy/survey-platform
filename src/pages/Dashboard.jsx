@@ -59,10 +59,7 @@ export default function Dashboard() {
 
     load();
 
-    // 🔁 auto refresh every 30s
     const interval = setInterval(load, 30000);
-
-    // 🔄 refresh when user comes back to tab
     const onFocus = () => load();
     window.addEventListener("focus", onFocus);
 
@@ -82,6 +79,7 @@ export default function Dashboard() {
   const surveysDone = (plan) => plans[plan]?.surveys_completed || 0;
   const isCompleted = (plan) => plans[plan]?.completed === true;
   const isActivated = (plan) => plans[plan]?.is_activated === true;
+  const activationSubmitted = (plan) => plans[plan]?.activation_status === "SUBMITTED";
 
   /* =========================
      ACTIONS
@@ -110,8 +108,14 @@ export default function Dashboard() {
       return;
     }
 
+    // NEW: Only allow withdraw if admin approved
     if (!isActivated(plan)) {
-      openActivationNotice(plan);
+      if (activationSubmitted(plan)) {
+        setToast("Activation submitted. Waiting for admin approval.");
+      } else {
+        openActivationNotice(plan);
+      }
+      setTimeout(() => setToast(""), 3000);
       return;
     }
 
@@ -223,4 +227,3 @@ export default function Dashboard() {
     </div>
   );
 }
- 

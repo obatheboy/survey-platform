@@ -19,7 +19,7 @@ router.use(adminProtect);
 router.get("/me", (req, res) => {
   res.json({
     id: req.admin.id,
-    username: req.admin.username,
+    full_name: req.admin.full_name,
     role: "admin",
   });
 });
@@ -34,6 +34,7 @@ router.get("/users/:id", adminController.getUserById);
 router.patch("/users/:id/status", adminController.updateUserStatus);
 router.patch("/users/:id/role", adminController.updateUserRole);
 router.patch("/users/:id/balance", adminController.adjustUserBalance);
+router.patch("/users/:id/activate", adminController.activateUser); // ✅ NEW ROUTE
 router.delete("/users/:id", adminController.deleteUser);
 
 /**

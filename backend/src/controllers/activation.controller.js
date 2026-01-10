@@ -183,6 +183,7 @@ exports.approveActivation = async (req, res) => {
       [id]
     );
 
+    // ✅ Activate only the specific plan in user_surveys
     await client.query(
       `
       UPDATE user_surveys
@@ -190,16 +191,6 @@ exports.approveActivation = async (req, res) => {
       WHERE user_id = $1 AND plan = $2
       `,
       [activation.user_id, activation.plan]
-    );
-
-    /* 🔑 CRITICAL FIX — GLOBAL UNLOCK */
-    await client.query(
-      `
-      UPDATE users
-      SET is_activated = true
-      WHERE id = $1
-      `,
-      [activation.user_id]
     );
 
     await client.query("COMMIT");
