@@ -17,9 +17,7 @@ import AdminActivations from "./pages/admin/AdminActivations";
 import AdminWithdrawals from "./pages/admin/AdminWithdrawals";
 import AdminUsers from "./pages/admin/AdminUsers";
 
-/* =====================================================
-   🔐 USER AUTH GUARD (COOKIE BASED)
-===================================================== */
+/* ================= USER AUTH GUARD ================= */
 function ProtectedRoute({ children }) {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
@@ -43,9 +41,7 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
-/* =====================================================
-   🔐 ADMIN GUARD (TOKEN BASED)
-===================================================== */
+/* ================= ADMIN AUTH GUARD ================= */
 function AdminRoute({ children }) {
   const token = localStorage.getItem("adminToken");
 
@@ -56,9 +52,7 @@ function AdminRoute({ children }) {
   return children;
 }
 
-/* =====================================================
-   🚦 ROUTER
-===================================================== */
+/* ================= ROUTER ================= */
 export default function App() {
   // Wake backend (Render)
   useEffect(() => {
@@ -122,7 +116,7 @@ export default function App() {
           }
         />
 
-        {/* ================= ADMIN ================= */}
+        {/* ADMIN */}
         <Route path="/admin/login" element={<AdminLogin />} />
 
         <Route
@@ -139,8 +133,8 @@ export default function App() {
           <Route path="users" element={<AdminUsers />} />
         </Route>
 
-        {/* FALLBACK */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* ✅ FIXED FALLBACK */}
+        <Route path="*" element={<Navigate to="/auth?mode=register" replace />} />
       </Routes>
     </BrowserRouter>
   );
