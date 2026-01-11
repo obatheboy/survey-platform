@@ -20,21 +20,28 @@ app.set("trust proxy", 1);
 
 /* ===============================
    🌍 CORS (DEV + LIVE + POSTMAN SAFE)
+   ✅ Supports any Vercel subdomain
 ================================ */
 const allowedOrigins = [
   "http://localhost:5173", // local dev
-  "https://survey-platform-three.vercel.app", // live frontend
-  "https://www.survey-platform-three.vercel.app", // optional www
+  "https://survey-platform-three.vercel.app", // old live frontend
+  "https://www.survey-platform-three.vercel.app", // old www
+  /\.vercel\.app$/, // matches any vercel deployment automatically
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
+      if (!origin) return callback(null, true); // Postman / server-to-server
 
       const cleanOrigin = origin.replace(/\/$/, "");
 
-      if (allowedOrigins.includes(cleanOrigin)) {
+      // Allow if in array OR matches regex
+      if (
+        allowedOrigins.some((o) =>
+          o instanceof RegExp ? o.test(cleanOrigin) : o === cleanOrigin
+        )
+      ) {
         return callback(null, true);
       }
 
