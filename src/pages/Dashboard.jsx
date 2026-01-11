@@ -21,7 +21,7 @@ export default function Dashboard() {
   const surveySectionRef = useRef(null);
 
   /* =========================
-     STATE
+     STATE (WITH CACHE)
   ========================= */
   const [user, setUser] = useState(() => {
     try {
@@ -39,7 +39,6 @@ export default function Dashboard() {
   /* =========================
      WITHDRAW STATE
   ========================= */
-  const [activeWithdrawPlan, setActiveWithdrawPlan] = useState("");
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [withdrawPhone, setWithdrawPhone] = useState("");
   const [withdrawMessage, setWithdrawMessage] = useState("");
@@ -47,7 +46,7 @@ export default function Dashboard() {
   const [submitting, setSubmitting] = useState(false);
 
   /* =========================
-     LOAD USER
+     LOAD + AUTO REFRESH
   ========================= */
   useEffect(() => {
     let alive = true;
@@ -56,19 +55,27 @@ export default function Dashboard() {
       try {
         const res = await api.get("/auth/me");
         if (!alive) return;
+
         setUser(res.data);
         setPlans(res.data.plans || {});
         localStorage.setItem("cached_user", JSON.stringify(res.data));
+      } catch {
+        // silent fail (offline / slow net)
       } finally {
         if (alive) setLoading(false);
       }
     };
 
     load();
+
     const interval = setInterval(load, 30000);
+    const onFocus = () => load();
+    window.addEventListener("focus", onFocus);
+
     return () => {
       alive = false;
       clearInterval(interval);
+      window.removeEventListener("focus", onFocus);
     };
   }, []);
 
@@ -81,56 +88,90 @@ export default function Dashboard() {
   const surveysDone = (plan) => plans[plan]?.surveys_completed || 0;
   const isCompleted = (plan) => plans[plan]?.completed === true;
   const isActivated = (plan) => plans[plan]?.is_activated === true;
-  const activationSubmitted = (plan) =>
-    plans[plan]?.activation_status === "SUBMITTED";
+  const activationSubmitted = (plan) => plans[plan]?.activation_status === "SUBMITTED";
 
   /* =========================
      ACTIONS
   ========================= */
+  const startSurvey = async (plan) => {
+    try {
+      localStorage.setItem("active_plan", plan);
+      await api.post("/surveys/select-plan", { plan });
+      navigate("/surveys");
+    } catch {
+      setToast("Failed to start survey. Try again.");
+      setTimeout(() => setToast(""), 3000);
+    }
+  };
+
+  const openActivationNotice = (plan) => {
+    localStorage.setItem("active_plan", plan);
+    navigate("/activation-notice");
+  };
+
   const handleWithdrawClick = (plan) => {
     if (!isCompleted(plan)) {
-      setToast("Complete all surveys to unlock withdrawal");
+      setToast("Complete All surveys plans to unlock withdrawal");
       surveySectionRef.current?.scrollIntoView({ behavior: "smooth" });
       setTimeout(() => setToast(""), 3000);
       return;
     }
 
     if (!isActivated(plan)) {
-      activationSubmitted(plan)
-        ? setToast("Activation pending admin approval")
-        : navigate("/activation-notice");
+      if (activationSubmitted(plan)) {
+        setToast("Activation submitted. Waiting for admin approval.");
+      } else {
+        openActivationNotice(plan);
+      }
       setTimeout(() => setToast(""), 3000);
       return;
     }
 
+    // Open withdraw form
     setWithdrawAmount("");
     setWithdrawPhone("");
     setWithdrawMessage("");
     setWithdrawError("");
+    setToast("");
     setSubmitting(false);
     setActiveWithdrawPlan(plan);
   };
 
+  const [activeWithdrawPlan, setActiveWithdrawPlan] = useState("");
+
   const submitWithdraw = async () => {
-    setWithdrawError("");
     setWithdrawMessage("");
+    setWithdrawError("");
 
     if (!withdrawAmount || !withdrawPhone) {
-      setWithdrawError("Enter amount and phone number.");
+      setWithdrawError("Enter both amount and phone number.");
+      return;
+    }
+
+    const amt = Number(withdrawAmount);
+    if (!Number.isFinite(amt)) {
+      setWithdrawError("Invalid amount.");
       return;
     }
 
     setSubmitting(true);
     try {
-      await api.post("/withdraw/request", {
+      const res = await api.post("/withdraw/request", {
         phone_number: withdrawPhone,
-        amount: Number(withdrawAmount),
+        amount: amt,
       });
 
-      setWithdrawMessage("Withdrawal request submitted successfully.");
-      const refreshed = await api.get("/auth/me");
-      setUser(refreshed.data);
-      setPlans(refreshed.data.plans || {});
+      setWithdrawMessage(
+        "🎉 Congratulations! Your withdrawal is being processed. " +
+        "For faster approval and payment, complete the remaining survey plan " +
+        "and share your referral link with at least 3 people."
+      );
+
+      // Optionally refresh user balance
+      const updatedUser = await api.get("/auth/me");
+      setUser(updatedUser.data);
+      setPlans(updatedUser.data.plans || {});
+      localStorage.setItem("cached_user", JSON.stringify(updatedUser.data));
     } catch (err) {
       setWithdrawError(err.response?.data?.message || "Withdraw failed.");
     } finally {
@@ -150,70 +191,99 @@ export default function Dashboard() {
         <h2>Dashboard</h2>
       </header>
 
-      <MainMenuDrawer open={menuOpen} onClose={() => setMenuOpen(false)} user={user} />
+      <MainMenuDrawer
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        user={user}
+      />
+
       <LiveWithdrawalFeed />
 
+      {/* HERO */}
+      <section className="dashboard-hero">
+        <div className="card greeting">
+          <h3>Hello, {user.full_name} 👋</h3>
+          <p>Your journey to real earnings continues.</p>
+        </div>
+
+        <div className="earnings">
+          <div>
+            <span>Total Earnings</span>
+            <strong>KES {Number(user.total_earned || 0).toLocaleString()}</strong>
+          </div>
+          <div>
+            <span>Current Balance</span>
+            <strong>KES {Number(user.total_earned || 0).toLocaleString()}</strong>
+          </div>
+        </div>
+      </section>
+
+      {/* WITHDRAW */}
       <h3 className="section-title withdraw-title">💸 Withdraw Earnings</h3>
 
       {Object.entries(PLANS).map(([key, plan]) => (
-        <div key={key} style={{ marginBottom: 16 }}>
-          {/* Withdraw Card */}
-          <div className="card withdraw-card">
-            <div>
-              <h4>{plan.icon} {plan.name}</h4>
-              <strong>KES {isCompleted(key) ? plan.total.toLocaleString() : "0"}</strong>
-            </div>
-
-            <button
-              className="outline-btn"
-              onClick={() => handleWithdrawClick(key)}
-            >
-              Withdraw
-            </button>
+        <div key={key} className="card withdraw-card">
+          <div>
+            <h4>{plan.icon} {plan.name}</h4>
+            <strong>
+              KES {isCompleted(key) ? plan.total.toLocaleString() : "0"}
+            </strong>
           </div>
 
-          {/* INLINE WITHDRAW FORM (NEXT TO CARD) */}
-          {activeWithdrawPlan === key && (
-            <div className="card withdraw-form" style={{ marginTop: 12 }}>
-              <h4>Withdraw {plan.name}</h4>
-
-              {withdrawMessage && <p className="success-msg">{withdrawMessage}</p>}
-              {withdrawError && <p className="error-msg">{withdrawError}</p>}
-
-              <input
-                type="number"
-                placeholder="Amount"
-                value={withdrawAmount}
-                onChange={(e) => setWithdrawAmount(e.target.value)}
-              />
-
-              <input
-                type="tel"
-                placeholder="Phone number"
-                value={withdrawPhone}
-                onChange={(e) => setWithdrawPhone(e.target.value)}
-              />
-
-              <button
-                className="primary-btn"
-                onClick={submitWithdraw}
-                disabled={submitting}
-              >
-                {submitting ? "Submitting..." : "Submit"}
-              </button>
-
-              <button
-                className="outline-btn"
-                onClick={() => setActiveWithdrawPlan("")}
-              >
-                Cancel
-              </button>
-            </div>
-          )}
+          <button
+            className="outline-btn"
+            onClick={() => handleWithdrawClick(key)}
+          >
+            Withdraw
+          </button>
         </div>
       ))}
 
-      <h3 ref={surveySectionRef} className="section-title">Survey Plans</h3>
+      {/* ACTIVE WITHDRAW FORM */}
+      {activeWithdrawPlan && (
+        <div className="card withdraw-form">
+          <h4>Withdraw: {PLANS[activeWithdrawPlan].name}</h4>
+
+          {withdrawMessage && (
+            <p className="success-msg">{withdrawMessage}</p>
+          )}
+          {withdrawError && (
+            <p className="error-msg">{withdrawError}</p>
+          )}
+
+          <input
+            type="number"
+            placeholder="Enter amount"
+            value={withdrawAmount}
+            onChange={(e) => setWithdrawAmount(e.target.value)}
+            className="withdraw-input"
+          />
+          <input
+            type="tel"
+            placeholder="Enter phone number"
+            value={withdrawPhone}
+            onChange={(e) => setWithdrawPhone(e.target.value)}
+            className="withdraw-input"
+          />
+
+          <button
+            className="primary-btn"
+            onClick={submitWithdraw}
+            disabled={submitting}
+          >
+            {submitting ? "Submitting..." : "Submit Withdrawal"}
+          </button>
+
+          <button
+            className="outline-btn"
+            onClick={() => setActiveWithdrawPlan("")}
+            style={{ marginTop: 8 }}
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+
       {/* SURVEYS */}
       <h3 ref={surveySectionRef} className="section-title">
         Survey Plans
