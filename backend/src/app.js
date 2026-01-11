@@ -30,10 +30,8 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (Postman, mobile apps, server-to-server)
       if (!origin) return callback(null, true);
 
-      // normalize origin (remove trailing slash)
       const cleanOrigin = origin.replace(/\/$/, "");
 
       if (allowedOrigins.includes(cleanOrigin)) {
@@ -56,9 +54,10 @@ app.use(cookieParser());
 
 /* ===============================
    🩺 HEALTH CHECK (RENDER WAKE-UP)
+   MUST BE /api/health
 ================================ */
-app.get("/health", (req, res) => {
-  res.status(200).send("OK");
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "awake" });
 });
 
 /* ===============================
@@ -87,7 +86,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/admin", adminActivationRoutes);
 
 /* ===============================
-   ❌ GLOBAL ERROR HANDLER (OPTIONAL)
+   ❌ GLOBAL ERROR HANDLER
 ================================ */
 app.use((err, req, res, next) => {
   console.error("Global error:", err.message || err);

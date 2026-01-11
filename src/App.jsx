@@ -54,11 +54,24 @@ function AdminRoute({ children }) {
 
 /* ================= ROUTER ================= */
 export default function App() {
-  // Wake backend (Render)
+  /* ===============================
+     🔥 GLOBAL BACKEND WAKE (ONCE)
+  ================================ */
   useEffect(() => {
-    fetch(import.meta.env.VITE_API_URL, {
-      credentials: "include",
-    }).catch(() => {});
+    const wakeBackend = async () => {
+      const controller = new AbortController();
+      setTimeout(() => controller.abort(), 8000);
+
+      try {
+        await api.get("/health", {
+          signal: controller.signal,
+        });
+      } catch {
+        // Silent: Render is waking up
+      }
+    };
+
+    wakeBackend();
   }, []);
 
   return (
@@ -133,7 +146,7 @@ export default function App() {
           <Route path="users" element={<AdminUsers />} />
         </Route>
 
-        {/* ✅ FIXED FALLBACK */}
+        {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/auth?mode=register" replace />} />
       </Routes>
     </BrowserRouter>

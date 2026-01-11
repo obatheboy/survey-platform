@@ -47,6 +47,26 @@ export default function Auth() {
   const [loginMessage, setLoginMessage] = useState("");
 
   /* =========================
+     🔥 WAKE RENDER BACKEND
+  ========================= */
+  useEffect(() => {
+    const wakeBackend = async () => {
+      const controller = new AbortController();
+      setTimeout(() => controller.abort(), 8000);
+
+      try {
+        await api.get("/health", {
+          signal: controller.signal,
+        });
+      } catch {
+        // Silent – backend is waking up
+      }
+    };
+
+    wakeBackend();
+  }, []);
+
+  /* =========================
      KEEP URL IN SYNC
   ========================= */
   useEffect(() => {
