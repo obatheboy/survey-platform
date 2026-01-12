@@ -6,8 +6,8 @@ const {
   markNotificationRead,
 } = require("../controllers/notification.controller");
 
-// Fixed import: added .js extension
-const authMiddleware = require("../middleware/auth.middleware.js");
+// Correct import without .js
+const authMiddleware = require("../middleware/auth.middleware");
 
 /* ===============================
    USER NOTIFICATIONS
