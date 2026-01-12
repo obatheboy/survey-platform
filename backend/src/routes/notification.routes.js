@@ -6,14 +6,12 @@ const {
   markNotificationRead,
 } = require("../controllers/notification.controller");
 
-// Correct import without .js
-
-const authMiddleware = require("../middlewares/auth.middleware");
+const { protect } = require("../middlewares/auth.middleware"); // fixed path
 
 /* ===============================
    USER NOTIFICATIONS
 ================================ */
-router.get("/", authMiddleware, getMyNotifications);
-router.patch("/:id/read", authMiddleware, markNotificationRead);
+router.get("/", protect, getMyNotifications);
+router.patch("/:id/read", protect, markNotificationRead);
 
 module.exports = router;
