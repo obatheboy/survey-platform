@@ -7,7 +7,8 @@ const {
 } = require("../controllers/notification.controller");
 
 // Correct import without .js
-const authMiddleware = require("../middleware/auth.middleware");
+
+const authMiddleware = require("../middlewares/auth.middleware");
 
 /* ===============================
    USER NOTIFICATIONS
