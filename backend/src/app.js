@@ -10,6 +10,7 @@ const withdrawRoutes = require("./routes/withdraw.routes");
 const adminRoutes = require("./routes/admin.routes");
 const adminActivationRoutes = require("./routes/admin.activation.routes");
 const adminAuthRoutes = require("./routes/admin.auth.routes");
+const notificationRoutes = require("./routes/notification.routes");
 
 const app = express();
 
@@ -84,6 +85,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/surveys", surveyRoutes);
 app.use("/api/activation", activationRoutes);
 app.use("/api/withdraw", withdrawRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 /* ===============================
    🛡 ADMIN ROUTES

@@ -41,21 +41,20 @@ export default function Activate() {
   const [planKey, setPlanKey] = useState(null);
   const [planState, setPlanState] = useState(null);
   const [paymentText, setPaymentText] = useState("");
-  const [message, setMessage] = useState("");
+  const [notification, setNotification] = useState(null); // 🔔 Notification
   const [copied, setCopied] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
 
   /* =========================
      LOAD + VALIDATE ACCESS
-  ========================= */
+  ========================== */
   useEffect(() => {
     let alive = true;
 
     const load = async () => {
       try {
         const res = await api.get("/auth/me");
-
         const activePlan = res.data.active_plan;
         const plan = res.data.plans?.[activePlan];
 
@@ -76,10 +75,7 @@ export default function Activate() {
     return () => (alive = false);
   }, [navigate]);
 
-  if (loading) {
-    return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
-  }
-
+  if (loading) return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
   if (!planKey || !planState) return null;
 
   const plan = PLAN_CONFIG[planKey];
@@ -90,7 +86,7 @@ export default function Activate() {
   const copyTill = async () => {
     await navigator.clipboard.writeText(TILL_NUMBER);
     setCopied(true);
-    setMessage("✅ Till number copied successfully. Proceed to M-Pesa payment.");
+    setNotification("✅ Till number copied successfully. Proceed to M-Pesa payment.");
     setTimeout(() => setCopied(false), 2500);
   };
 
@@ -99,25 +95,53 @@ export default function Activate() {
   ========================= */
   const submitActivation = async () => {
     if (!paymentText.trim()) {
-      setMessage("❌ Please paste the full M-Pesa confirmation message.");
+      setNotification("❌ Please paste the full M-Pesa confirmation message.");
       return;
     }
 
     try {
       setSubmitting(true);
-      setMessage("⏳ Submitting payment for verification…");
 
       await api.post("/activation/submit", {
         mpesa_code: paymentText.trim(),
         plan: planKey,
       });
 
-      setMessage(
-        "❌ You have pasted a wrong message.\n\nDid you pay the activation fee?\n\nPlease pay the activation fee and paste the CORRECT original M-Pesa confirmation message."
+      // 🔔 Friendly notification after submission
+      setNotification(
+        <div style={{ lineHeight: 1.5 }}>
+          <div>
+            🎉 <b>{plan.label} plan submitted successfully!</b>
+          </div>
+          <div style={{ marginTop: 8 }}>
+            You're now ready for the next step — complete the <b>VIP plan</b> surveys.
+            <br />
+            Activate VIP with a KES 150 fee to unlock withdrawals for your full remaining balance.
+          </div>
+          <button
+            style={{
+              marginTop: 12,
+              padding: "12px 18px",
+              borderRadius: 12,
+              border: "none",
+              background: "#00ffd4",
+              color: "#000",
+              fontWeight: 900,
+              fontSize: 15,
+              cursor: "pointer",
+              boxShadow: "0 0 15px #00ffd4",
+            }}
+            onClick={() => navigate("/dashboard?vip=true")}
+          >
+            🚀 Go to VIP Surveys
+          </button>
+        </div>
       );
+
+      setPaymentText(""); // Clear input
     } catch {
-      setMessage(
-        "⚠️ WARNING:\n\nIncorrect or fake M-Pesa message detected.\n\nPlease make the correct payment and paste the ORIGINAL M-Pesa confirmation message exactly as received.\n\n❗ Attempting to fake payments may result in permanent account suspension."
+      setNotification(
+        "⚠️ Submission failed. Please paste the ORIGINAL M-Pesa confirmation message exactly as received."
       );
     } finally {
       setSubmitting(false);
@@ -126,7 +150,7 @@ export default function Activate() {
 
   /* =========================
      UI
-  ========================= */
+  ========================== */
   return (
     <div style={page}>
       <div style={{ ...card, boxShadow: `0 0 40px ${plan.glow}` }}>
@@ -139,8 +163,7 @@ export default function Activate() {
         </p>
 
         <h3 style={{ textAlign: "center", marginTop: 14 }}>
-          💰 Earnings Ready:{" "}
-          <span style={{ color: plan.color }}>KES {plan.total}</span>
+          💰 Earnings Ready: <span style={{ color: plan.color }}>KES {plan.total}</span>
         </h3>
 
         <div style={sectionHighlight}>
@@ -158,15 +181,8 @@ export default function Activate() {
             <li>Open <b>M-Pesa</b></li>
             <li>Select <b>Lipa na M-Pesa</b></li>
             <li>Choose <b>Buy Goods & Services</b></li>
-            <li>
-              Enter Till Number: <b>{TILL_NUMBER}</b>
-            </li>
-            <li>
-              Enter Amount:{" "}
-              <span style={activationFee}>
-                KES {plan.activationFee}
-              </span>
-            </li>
+            <li>Enter Till Number: <b>{TILL_NUMBER}</b></li>
+            <li>Enter Amount: <span style={activationFee}>KES {plan.activationFee}</span></li>
             <li>Confirm payment with your M-Pesa PIN</li>
           </ol>
         </div>
@@ -175,27 +191,19 @@ export default function Activate() {
           <p><b>Till Name:</b> {TILL_NAME}</p>
           <p>
             <b>Till Number:</b> {TILL_NUMBER}
-            <button onClick={copyTill} style={copyBtn}>
-              📋 Copy
-            </button>
+            <button onClick={copyTill} style={copyBtn}>📋 Copy</button>
           </p>
-
-          {copied && (
-            <p style={copiedNote}>✅ Copied! Paste this till number in M-Pesa</p>
-          )}
-
+          {copied && <p style={copiedNote}>✅ Copied! Paste this till number in M-Pesa</p>}
           <p>
-            <b>Activation Fee:</b>{" "}
-            <span style={activationFee}>
-              KES {plan.activationFee}
-            </span>
+            <b>Activation Fee:</b> <span style={activationFee}>KES {plan.activationFee}</span>
           </p>
         </div>
-<div style={noteBox}>
-  📋 <b>Important:</b> Please paste the <b>exact M-Pesa confirmation message</b> below after payment.
-  <br />
-  Make sure the message is complete and legit so your activation can be verified quickly.
-</div>
+
+        <div style={noteBox}>
+          📋 <b>Important:</b> Paste the <b>exact M-Pesa confirmation message</b> below after payment.
+          <br />
+          Make sure it is complete so your activation can be verified quickly.
+        </div>
 
         <textarea
           placeholder="Paste full M-Pesa confirmation message here"
@@ -211,16 +219,14 @@ export default function Activate() {
           disabled={submitting}
           style={{
             ...button,
-            background: submitting
-              ? "#555"
-              : `linear-gradient(135deg, ${plan.color}, #0a7c4a)`,
+            background: submitting ? "#555" : `linear-gradient(135deg, ${plan.color}, #0a7c4a)`,
             boxShadow: `0 0 22px ${plan.glow}`,
           }}
         >
-          {submitting ? "Submitting…" : "Submit Payment for Approval"}
+          {submitting ? "Submitting…" : "Submit Payment"}
         </button>
 
-        {message && <pre style={messageBox}>{message}</pre>}
+        {notification && <div style={notificationBox}>{notification}</div>}
 
         <button
           onClick={() => navigate("/dashboard")}
@@ -284,15 +290,14 @@ const noteBox = {
   border: "1px solid rgba(0, 255, 204, 0.4)",
 };
 
-
-const warningBox = {
+const notificationBox = {
   marginTop: 16,
-  padding: 14,
-  borderRadius: 12,
-  background: "rgba(255,0,0,0.15)",
-  color: "#ffb3b3",
-  fontSize: 13,
+  padding: 16,
+  borderRadius: 14,
+  background: "rgba(0,255,128,0.15)",
+  color: "#00ffcc",
   fontWeight: 700,
+  fontSize: 14,
 };
 
 const activationFee = {
@@ -334,11 +339,4 @@ const copyBtn = {
   border: "none",
   cursor: "pointer",
   fontWeight: 700,
-};
-
-const messageBox = {
-  marginTop: 16,
-  whiteSpace: "pre-wrap",
-  fontSize: 13,
-  color: "#ff8a80",
 };

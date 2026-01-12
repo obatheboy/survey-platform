@@ -183,7 +183,7 @@ exports.approveActivation = async (req, res) => {
       [id]
     );
 
-    // ✅ Activate only the specific plan in user_surveys
+    // ✅ Activate only the specific plan
     await client.query(
       `
       UPDATE user_surveys
@@ -192,6 +192,28 @@ exports.approveActivation = async (req, res) => {
       `,
       [activation.user_id, activation.plan]
     );
+
+    /* =====================================
+       🔔 CREATE USER NOTIFICATION
+    ===================================== */
+    if (activation.plan === "REGULAR") {
+      await client.query(
+        `
+        INSERT INTO notifications
+          (user_id, title, message, action_route, is_read)
+        VALUES
+          ($1, $2, $3, $4, false)
+        `,
+        [
+          activation.user_id,
+          "🎉 REGULAR Plan Activated",
+          "Congratulations! Your REGULAR plan has been successfully activated.\n\n" +
+            "You now have 1 remaining survey plan — VIP.\n\n" +
+            "Complete VIP surveys and activate VIP with a KES 150 activation fee to unlock withdrawals for your entire remaining balance.",
+          "/dashboard?vip=true",
+        ]
+      );
+    }
 
     await client.query("COMMIT");
 
