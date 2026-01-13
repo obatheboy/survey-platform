@@ -88,43 +88,36 @@ exports.login = async (req, res) => {
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
     res.cookie("token", token, COOKIE_OPTIONS);
 
-    // ---------------------------
-    // 🌟 WELCOME BONUS LOGIC
-    // ---------------------------
-    try {
-      if (!user.welcome_bonus_received) {
-        // 1️⃣ Add 1200 to balance
-        await pool.query(
-          `UPDATE balances
-           SET amount = amount + 1200
-           WHERE user_id = $1`,
-          [user.id]
-        );
+  // ---------------------------
+// 🌟 WELCOME BONUS LOGIC
+// ---------------------------
+try {
+  if (!user.welcome_bonus_received) {
+    // 1️⃣ Add 1200 to total_earned directly in users table
+    await pool.query(
+      `UPDATE users
+       SET total_earned = total_earned + 1200,
+           welcome_bonus_received = true
+       WHERE id = $1`,
+      [user.id]
+    );
 
-        // 2️⃣ Mark bonus as received
-        await pool.query(
-          `UPDATE users
-           SET welcome_bonus_received = true
-           WHERE id = $1`,
-          [user.id]
-        );
-
-        // 3️⃣ Add notification
-        await pool.query(
-          `INSERT INTO notifications (user_id, title, message, action_route, is_read, type, created_at)
-           VALUES ($1,$2,$3,$4,false,'welcome_bonus',NOW())`,
-          [
-            user.id,
-            "🎉 Welcome Bonus Unlocked!",
-            "You’ve received KES 1,200 as a welcome bonus. Withdraw it now to M-Pesa!",
-            "/dashboard",
-          ]
-        );
-      }
-    } catch (bonusError) {
-      console.error("WELCOME BONUS ERROR:", bonusError);
-      // Don't block login even if bonus fails
-    }
+    // 2️⃣ Add notification
+    await pool.query(
+      `INSERT INTO notifications (user_id, title, message, action_route, is_read, type, created_at)
+       VALUES ($1,$2,$3,$4,false,'welcome_bonus',NOW())`,
+      [
+        user.id,
+        "🎉 Welcome Bonus Unlocked!",
+        "You’ve received KES 1,200 as a welcome bonus. Withdraw it now to M-Pesa!",
+        "/dashboard",
+      ]
+    );
+  }
+} catch (bonusError) {
+  console.error("WELCOME BONUS ERROR:", bonusError);
+  // Don't block login even if bonus fails
+}
 
     res.json({
       message: "Login successful",
