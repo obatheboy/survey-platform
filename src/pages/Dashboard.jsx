@@ -42,7 +42,6 @@ export default function Dashboard() {
   const [activeWithdrawPlan, setActiveWithdrawPlan] = useState("");
 
   const [notifications, setNotifications] = useState([]);
-  const [welcomeBonus, setWelcomeBonus] = useState(null);
 
   /* =========================
      LOAD USER & NOTIFICATIONS
@@ -60,10 +59,7 @@ export default function Dashboard() {
 
         const resNotifs = await api.get("/notifications");
         if (!alive) return;
-
         setNotifications(resNotifs.data);
-        const welcome = resNotifs.data.find(n => n.type === "welcome_bonus");
-        setWelcomeBonus(welcome || null);
       } catch (err) {
         console.error("Failed to load dashboard data:", err);
       } finally {
@@ -113,49 +109,28 @@ export default function Dashboard() {
     navigate("/activation-notice");
   };
 
-  /* =========================
-     WITHDRAW HANDLERS
-  ========================== */
-  const handleWithdrawClick = (planOrBonus) => {
+  const handleWithdrawClick = (type) => {
     setWithdrawMessage("");
     setWithdrawError("");
 
-    // Welcome bonus special
-    if (planOrBonus === "welcome_bonus") {
-      if (!user.is_activated) {
-        setToast("⚠️ Activate your account to withdraw Welcome Bonus!");
-        setTimeout(() => setToast(""), 3000);
-        navigate("/activation?welcome_bonus=true");
-        return;
-      }
-
-      setActiveWithdrawPlan("welcome_bonus");
-      setWithdrawAmount(welcomeBonus?.amount || 1200);
-      setWithdrawPhone(user.phone || "");
-      return;
-    }
-
-    // Regular plans
-    if (!isCompleted(planOrBonus)) {
+    if (!isCompleted(type)) {
       setToast("Complete all survey plans to unlock withdrawal");
       surveySectionRef.current?.scrollIntoView({ behavior: "smooth" });
       setTimeout(() => setToast(""), 3000);
       return;
     }
 
-    if (!isActivated(planOrBonus)) {
-      if (activationSubmitted(planOrBonus)) {
+    if (!isActivated(type)) {
+      if (activationSubmitted(type)) {
         setToast("Activation submitted. Waiting for admin approval.");
       } else {
-        openActivationNotice(planOrBonus);
+        openActivationNotice(type);
       }
       setTimeout(() => setToast(""), 3000);
       return;
     }
 
-    setActiveWithdrawPlan(planOrBonus);
-    setWithdrawAmount("");
-    setWithdrawPhone(user.phone || "");
+    setActiveWithdrawPlan(type);
   };
 
   const submitWithdraw = async () => {
@@ -182,7 +157,7 @@ export default function Dashboard() {
         type: activeWithdrawPlan,
       });
 
-      setWithdrawMessage("🎉 Your withdrawal is being processed!");
+      setWithdrawMessage("🎉 Congratulations! Your withdrawal is being processed.");
 
       // Refresh user & notifications
       const updatedUser = await api.get("/auth/me");
@@ -192,12 +167,8 @@ export default function Dashboard() {
 
       const resNotifs = await api.get("/notifications");
       setNotifications(resNotifs.data);
-      const welcome = resNotifs.data.find(n => n.type === "welcome_bonus");
-      setWelcomeBonus(welcome || null);
     } catch (err) {
-      if (err.response?.status === 403 && activeWithdrawPlan === "welcome_bonus") {
-        setWithdrawError(err.response.data.message);
-      } else if (err.response?.data?.message) {
+      if (err.response?.data?.message) {
         setWithdrawError(err.response.data.message);
       } else {
         setWithdrawError("Withdraw failed.");
@@ -234,22 +205,6 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* WELCOME BONUS */}
-      {welcomeBonus && (
-        <>
-          <h3 className="section-title">🎉 Welcome Bonus</h3>
-          <div className="card welcome-bonus-card">
-            <div>
-              <strong>KES {welcomeBonus.amount?.toLocaleString() || 1200}</strong>
-              <p>Withdraw your welcome bonus now!</p>
-            </div>
-            <button className="primary-btn" onClick={() => handleWithdrawClick("welcome_bonus")}>
-              Withdraw
-            </button>
-          </div>
-        </>
-      )}
-
       {/* REGULAR PLAN WITHDRAWALS */}
       <h3 className="section-title withdraw-title">💸 Withdraw Earnings</h3>
       {Object.entries(PLANS).map(([key, plan]) => (
@@ -265,43 +220,17 @@ export default function Dashboard() {
       {/* ACTIVE WITHDRAW FORM */}
       {activeWithdrawPlan && (
         <div className="card withdraw-form">
-          <h4>
-            Withdraw: {activeWithdrawPlan === "welcome_bonus"
-              ? "Welcome Bonus"
-              : PLANS[activeWithdrawPlan].name}
-          </h4>
+          <h4>Withdraw: {PLANS[activeWithdrawPlan].name}</h4>
           {withdrawMessage && <p className="success-msg">{withdrawMessage}</p>}
           {withdrawError && <p className="error-msg">{withdrawError}</p>}
 
-          <input
-            type="number"
-            placeholder="Enter amount"
-            value={withdrawAmount}
-            onChange={(e) => setWithdrawAmount(e.target.value)}
-            className="withdraw-input"
-          />
-          <input
-            type="tel"
-            placeholder="Enter phone number"
-            value={withdrawPhone}
-            onChange={(e) => setWithdrawPhone(e.target.value)}
-            className="withdraw-input"
-          />
+          <input type="number" placeholder="Enter amount" value={withdrawAmount} onChange={(e) => setWithdrawAmount(e.target.value)} className="withdraw-input"/>
+          <input type="tel" placeholder="Enter phone number" value={withdrawPhone} onChange={(e) => setWithdrawPhone(e.target.value)} className="withdraw-input"/>
 
-          <button
-            className="primary-btn"
-            onClick={submitWithdraw}
-            disabled={submitting}
-          >
+          <button className="primary-btn" onClick={submitWithdraw} disabled={submitting}>
             {submitting ? "Submitting..." : "Submit Withdrawal"}
           </button>
-          <button
-            className="outline-btn"
-            onClick={() => setActiveWithdrawPlan("")}
-            style={{ marginTop: 8 }}
-          >
-            Cancel
-          </button>
+          <button className="outline-btn" onClick={() => setActiveWithdrawPlan("")} style={{ marginTop: 8 }}>Cancel</button>
         </div>
       )}
 
