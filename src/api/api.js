@@ -2,27 +2,36 @@ import axios from "axios";
 
 /* =====================================================
    🌍 BASE API URL
+   (ensure no double /api)
 ===================================================== */
-const BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
+const RAW_BASE = import.meta.env.VITE_API_URL;
+const BASE_URL = RAW_BASE.endsWith("/api")
+  ? RAW_BASE
+  : `${RAW_BASE}/api`;
 
 /* =====================================================
    👤 USER API (COOKIE BASED)
-   - Used by normal users
-   - Uses HttpOnly cookies
 ===================================================== */
 const api = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true, // ✅ user auth cookies
+  withCredentials: true, // ✅ required
 });
+
+/* 🔐 FORCE credentials on every request (IMPORTANT) */
+api.interceptors.request.use(
+  (config) => {
+    config.withCredentials = true; // 👈 prevents cookie drop
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 /* =====================================================
    👑 ADMIN API (BEARER TOKEN)
-   - Used only for admin routes
-   - Uses Authorization header
 ===================================================== */
 export const adminApi = axios.create({
   baseURL: BASE_URL,
-  withCredentials: false, // ❌ admins do NOT use cookies
+  withCredentials: false,
 });
 
 /* =====================================================
