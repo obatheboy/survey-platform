@@ -1,6 +1,6 @@
 // ========================= Dashboard.jsx =========================
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/api";
 import MainMenuDrawer from "./components/MainMenuDrawer.jsx";
 import LiveWithdrawalFeed from "./components/LiveWithdrawalFeed.jsx";
@@ -20,6 +20,7 @@ const TOTAL_SURVEYS = 10;
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
   const surveySectionRef = useRef(null);
 
   const [user, setUser] = useState(() => {
@@ -121,7 +122,7 @@ export default function Dashboard() {
   };
 
   /* =========================
-     UNIFIED FULL SCREEN NOTIFICATION HANDLER
+     FULL SCREEN NOTIFICATION HANDLER
   ========================== */
   const showFullScreenNotification = ({ message, redirect }) => {
     setFullScreenNotification({ message, redirect });
@@ -235,9 +236,11 @@ export default function Dashboard() {
               <button
                 className="primary-btn"
                 onClick={() => {
-                  const redirect = fullScreenNotification.redirect;
                   setFullScreenNotification(null);
-                  navigate(redirect);
+                  // ✅ Fix: always redirect properly, even from dashboard
+                  if (location.pathname !== fullScreenNotification.redirect) {
+                    navigate(fullScreenNotification.redirect);
+                  }
                 }}
               >
                 Activate
