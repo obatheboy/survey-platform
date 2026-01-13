@@ -1,3 +1,4 @@
+// ========================= Activate.jsx =========================
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../api/api";
@@ -42,6 +43,7 @@ export default function Activate() {
         if (!alive) return;
         setUser(res.data);
 
+        // detect if this activation is for welcome bonus
         const isWelcome = searchParams.get("welcome_bonus");
         const planFromQuery = isWelcome ? "WELCOME" : res.data.active_plan;
 
@@ -52,11 +54,11 @@ export default function Activate() {
           plan = res.data.plans?.[res.data.active_plan];
         }
 
+        // if no plan, or already activated → redirect dashboard
         if (!plan) {
           navigate("/dashboard", { replace: true });
           return;
         }
-
         if (planFromQuery !== "WELCOME" && plan.is_activated) {
           navigate("/dashboard", { replace: true });
           return;
@@ -113,7 +115,10 @@ export default function Activate() {
           <div style={{ marginTop: 8 }}>
             You can now withdraw your <b>{plan.label}</b> earnings.
           </div>
-          <button style={goDashboardBtn} onClick={() => navigate("/dashboard")}>
+          <button
+            style={goDashboardBtn}
+            onClick={() => navigate("/dashboard")}
+          >
             ⬅ Go to Dashboard
           </button>
         </div>
@@ -199,6 +204,7 @@ export default function Activate() {
 
         {notification && <div style={notificationBox}>{notification}</div>}
 
+        {/* ✅ Fix: Go to dashboard button for welcome bonus works with query param */}
         <button
           onClick={() => navigate("/dashboard")}
           style={{ ...button, marginTop: 10, background: "transparent", border: "2px solid #00ffcc", color: "#00ffcc" }}
