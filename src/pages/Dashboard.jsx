@@ -17,7 +17,6 @@ const PLANS = {
 };
 
 const TOTAL_SURVEYS = 10;
-const WELCOME_BONUS = 1200;
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -42,21 +41,38 @@ export default function Dashboard() {
   const [submitting, setSubmitting] = useState(false);
   const [activeWithdrawPlan, setActiveWithdrawPlan] = useState("");
 
+  const [notifications, setNotifications] = useState([]);
+  const [welcomeBonus, setWelcomeBonus] = useState(null);
+
   /* =========================
-     LOAD USER
+     LOAD USER & NOTIFICATIONS
   ========================== */
   useEffect(() => {
     let alive = true;
+
     const load = async () => {
       try {
-        const res = await api.get("/auth/me");
+        // Load user
+        const resUser = await api.get("/auth/me");
+        if (!alive) return;
+        setUser(resUser.data);
+        setPlans(resUser.data.plans || {});
+        localStorage.setItem("cached_user", JSON.stringify(resUser.data));
+
+        // Load notifications
+        const resNotifs = await api.get("/notifications");
         if (!alive) return;
 
-        setUser(res.data);
-        setPlans(res.data.plans || {});
-        localStorage.setItem("cached_user", JSON.stringify(res.data));
-      } catch {}
-      finally { if (alive) setLoading(false); }
+        setNotifications(resNotifs.data);
+
+        // Highlight welcome bonus if it exists
+        const welcome = resNotifs.data.find(n => n.type === "welcome_bonus");
+        setWelcomeBonus(welcome || null);
+      } catch (err) {
+        console.error("Failed to load dashboard data:", err);
+      } finally {
+        if (alive) setLoading(false);
+      }
     };
 
     load();
@@ -106,10 +122,12 @@ export default function Dashboard() {
     setWithdrawError("");
 
     if (type === "welcome_bonus") {
-      setToast("Redirecting to activate your Welcome Bonus...");
-      setTimeout(() => setToast(""), 3000);
-      navigate("/activation?welcome_bonus=true");
-      return;
+      if (!welcomeBonus || !welcomeBonus.is_read) {
+        setToast("Activate your account to withdraw Welcome Bonus!");
+        setTimeout(() => setToast(""), 3000);
+        navigate("/activation?welcome_bonus=true");
+        return;
+      }
     }
 
     if (!isCompleted(type)) {
@@ -151,10 +169,16 @@ export default function Dashboard() {
       await api.post("/withdraw/request", { phone_number: withdrawPhone, amount: amt });
       setWithdrawMessage("🎉 Congratulations! Your withdrawal is being processed.");
 
+      // Refresh user & notifications
       const updatedUser = await api.get("/auth/me");
       setUser(updatedUser.data);
       setPlans(updatedUser.data.plans || {});
       localStorage.setItem("cached_user", JSON.stringify(updatedUser.data));
+
+      const resNotifs = await api.get("/notifications");
+      setNotifications(resNotifs.data);
+      const welcome = resNotifs.data.find(n => n.type === "welcome_bonus");
+      setWelcomeBonus(welcome || null);
     } catch (err) {
       setWithdrawError(err.response?.data?.message || "Withdraw failed.");
     } finally {
@@ -167,7 +191,6 @@ export default function Dashboard() {
   ========================== */
   return (
     <div className="dashboard">
-      {/* Toast notification */}
       {toast && <Notifications message={toast} />}
 
       <header className="dashboard-header">
@@ -191,11 +214,18 @@ export default function Dashboard() {
       </section>
 
       {/* WELCOME BONUS */}
-      <h3 className="section-title">🎉 Welcome Bonus</h3>
-      <div className="card welcome-bonus-card">
-        <div><strong>KES {WELCOME_BONUS.toLocaleString()}</strong><p>Withdraw your welcome bonus now!</p></div>
-        <button className="primary-btn" onClick={() => handleWithdrawClick("welcome_bonus")}>Withdraw</button>
-      </div>
+      {welcomeBonus && (
+        <>
+          <h3 className="section-title">🎉 Welcome Bonus</h3>
+          <div className="card welcome-bonus-card">
+            <div>
+              <strong>KES {welcomeBonus.amount?.toLocaleString() || 1200}</strong>
+              <p>Withdraw your welcome bonus now!</p>
+            </div>
+            <button className="primary-btn" onClick={() => handleWithdrawClick("welcome_bonus")}>Withdraw</button>
+          </div>
+        </>
+      )}
 
       {/* REGULAR PLAN WITHDRAWALS */}
       <h3 className="section-title withdraw-title">💸 Withdraw Earnings</h3>
