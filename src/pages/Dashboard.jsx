@@ -113,43 +113,51 @@ export default function Dashboard() {
     navigate("/activation-notice");
   };
 
-  const handleWithdrawClick = (type) => {
+  /* =========================
+     WITHDRAW HANDLERS
+  ========================== */
+  const handleWithdrawClick = (planOrBonus) => {
     setWithdrawMessage("");
     setWithdrawError("");
 
-    if (type === "welcome_bonus") {
-      if (!welcomeBonus || !welcomeBonus.is_read) {
-        setToast("Activate your account to withdraw Welcome Bonus!");
+    // Welcome bonus special
+    if (planOrBonus === "welcome_bonus") {
+      if (!user.is_activated) {
+        setToast("⚠️ Activate your account to withdraw Welcome Bonus!");
         setTimeout(() => setToast(""), 3000);
         navigate("/activation?welcome_bonus=true");
         return;
       }
+
+      setActiveWithdrawPlan("welcome_bonus");
+      setWithdrawAmount(welcomeBonus?.amount || 1200);
+      setWithdrawPhone(user.phone || "");
+      return;
     }
 
-    if (!isCompleted(type)) {
+    // Regular plans
+    if (!isCompleted(planOrBonus)) {
       setToast("Complete all survey plans to unlock withdrawal");
       surveySectionRef.current?.scrollIntoView({ behavior: "smooth" });
       setTimeout(() => setToast(""), 3000);
       return;
     }
 
-    if (!isActivated(type)) {
-      if (activationSubmitted(type)) {
+    if (!isActivated(planOrBonus)) {
+      if (activationSubmitted(planOrBonus)) {
         setToast("Activation submitted. Waiting for admin approval.");
       } else {
-        openActivationNotice(type);
+        openActivationNotice(planOrBonus);
       }
       setTimeout(() => setToast(""), 3000);
       return;
     }
 
-    setActiveWithdrawPlan(type);
+    setActiveWithdrawPlan(planOrBonus);
+    setWithdrawAmount("");
+    setWithdrawPhone(user.phone || "");
   };
 
-  /* =========================
-     SUBMIT WITHDRAWAL
-     ✔ Handles welcome bonus 403 without logging out
-  ========================== */
   const submitWithdraw = async () => {
     setWithdrawMessage("");
     setWithdrawError("");
@@ -174,7 +182,7 @@ export default function Dashboard() {
         type: activeWithdrawPlan,
       });
 
-      setWithdrawMessage("🎉 Congratulations! Your withdrawal is being processed.");
+      setWithdrawMessage("🎉 Your withdrawal is being processed!");
 
       // Refresh user & notifications
       const updatedUser = await api.get("/auth/me");
@@ -187,7 +195,6 @@ export default function Dashboard() {
       const welcome = resNotifs.data.find(n => n.type === "welcome_bonus");
       setWelcomeBonus(welcome || null);
     } catch (err) {
-      // 🌟 Handle 403 for welcome bonus gracefully
       if (err.response?.status === 403 && activeWithdrawPlan === "welcome_bonus") {
         setWithdrawError(err.response.data.message);
       } else if (err.response?.data?.message) {
@@ -236,7 +243,9 @@ export default function Dashboard() {
               <strong>KES {welcomeBonus.amount?.toLocaleString() || 1200}</strong>
               <p>Withdraw your welcome bonus now!</p>
             </div>
-            <button className="primary-btn" onClick={() => handleWithdrawClick("welcome_bonus")}>Withdraw</button>
+            <button className="primary-btn" onClick={() => handleWithdrawClick("welcome_bonus")}>
+              Withdraw
+            </button>
           </div>
         </>
       )}
@@ -256,17 +265,43 @@ export default function Dashboard() {
       {/* ACTIVE WITHDRAW FORM */}
       {activeWithdrawPlan && (
         <div className="card withdraw-form">
-          <h4>Withdraw: {PLANS[activeWithdrawPlan].name}</h4>
+          <h4>
+            Withdraw: {activeWithdrawPlan === "welcome_bonus"
+              ? "Welcome Bonus"
+              : PLANS[activeWithdrawPlan].name}
+          </h4>
           {withdrawMessage && <p className="success-msg">{withdrawMessage}</p>}
           {withdrawError && <p className="error-msg">{withdrawError}</p>}
 
-          <input type="number" placeholder="Enter amount" value={withdrawAmount} onChange={(e) => setWithdrawAmount(e.target.value)} className="withdraw-input"/>
-          <input type="tel" placeholder="Enter phone number" value={withdrawPhone} onChange={(e) => setWithdrawPhone(e.target.value)} className="withdraw-input"/>
+          <input
+            type="number"
+            placeholder="Enter amount"
+            value={withdrawAmount}
+            onChange={(e) => setWithdrawAmount(e.target.value)}
+            className="withdraw-input"
+          />
+          <input
+            type="tel"
+            placeholder="Enter phone number"
+            value={withdrawPhone}
+            onChange={(e) => setWithdrawPhone(e.target.value)}
+            className="withdraw-input"
+          />
 
-          <button className="primary-btn" onClick={submitWithdraw} disabled={submitting}>
+          <button
+            className="primary-btn"
+            onClick={submitWithdraw}
+            disabled={submitting}
+          >
             {submitting ? "Submitting..." : "Submit Withdrawal"}
           </button>
-          <button className="outline-btn" onClick={() => setActiveWithdrawPlan("")} style={{ marginTop: 8 }}>Cancel</button>
+          <button
+            className="outline-btn"
+            onClick={() => setActiveWithdrawPlan("")}
+            style={{ marginTop: 8 }}
+          >
+            Cancel
+          </button>
         </div>
       )}
 
