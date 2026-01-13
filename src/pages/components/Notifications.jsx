@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import api from "../../api/api.js";
 import { useNavigate } from "react-router-dom";
 
@@ -31,32 +30,22 @@ export default function Notifications() {
     }
   };
 
-  const handleWithdraw = async (notif) => {
+  const handleWithdraw = (notif) => {
+    // If account not activated → redirect to activation page
     if (!notif.is_activated) {
-      // Redirect to activation page if account is not activated
-      navigate("/activate");
+      navigate("/activation?welcome_bonus=true");
       return;
     }
 
+    // Welcome bonus after activation
     if (notif.type === "welcome_bonus") {
-      try {
-        await api.post("/withdraw/request", {
-          type: "welcome_bonus",
-          amount: 1200,
-          phone_number: "user-phone", // replace with actual phone if available
-        });
-        alert("🎉 Welcome bonus withdrawal request sent!");
-        markRead(notif.id);
-      } catch (error) {
-        if (error.response?.data?.message) {
-          alert(error.response.data.message);
-        } else {
-          alert("Failed to request withdrawal");
-        }
-      }
-    } else {
-      alert("Withdrawal not supported for this notification");
+      alert("🎉 You can now withdraw your Welcome Bonus from the dashboard!");
+      markRead(notif.id);
+      return;
     }
+
+    // Other notifications
+    alert("Withdrawal not supported for this notification");
   };
 
   return (
@@ -70,7 +59,10 @@ export default function Notifications() {
           <p>{notif.message}</p>
           <div className="notification-actions">
             {notif.is_welcome_bonus && (
-              <button className="withdraw-btn" onClick={() => handleWithdraw(notif)}>
+              <button
+                className="withdraw-btn"
+                onClick={() => handleWithdraw(notif)}
+              >
                 Withdraw
               </button>
             )}
