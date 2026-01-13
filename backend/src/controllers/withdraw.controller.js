@@ -25,7 +25,7 @@ exports.requestWithdraw = async (req, res) => {
 
   try {
     const userId = req.user.id;
-    let { phone_number, amount } = req.body;
+    let { phone_number, amount, type } = req.body;
 
     if (!phone_number || !amount) {
       return res.status(400).json({
@@ -48,10 +48,10 @@ exports.requestWithdraw = async (req, res) => {
 
     await client.query("BEGIN");
 
-    // ✅ FIX: Use total_earned instead of balance
+    // Fetch user with all relevant fields
     const userRes = await client.query(
       `
-      SELECT is_activated, surveys_completed, plan, total_earned
+      SELECT is_activated, surveys_completed, plan, total_earned, welcome_bonus, welcome_bonus_withdrawn
       FROM users
       WHERE id = $1
       FOR UPDATE
@@ -65,6 +65,64 @@ exports.requestWithdraw = async (req, res) => {
     }
 
     const user = userRes.rows[0];
+
+    // -------------------------------
+    // 🌟 SPECIAL LOGIC FOR WELCOME BONUS
+    // -------------------------------
+    if (type === "welcome_bonus") {
+      if (user.welcome_bonus_withdrawn) {
+        await client.query("ROLLBACK");
+        return res.status(400).json({ message: "Welcome bonus already withdrawn" });
+      }
+
+      if (!user.is_activated) {
+        await client.query("ROLLBACK");
+        return res.status(403).json({
+          message:
+            "⚠️ Account not activated. Activate your account with KSh 100 to withdraw your welcome bonus",
+        });
+      }
+
+      if (withdrawAmount > Number(user.welcome_bonus)) {
+        await client.query("ROLLBACK");
+        return res.status(400).json({
+          message: "Withdrawal amount exceeds available welcome bonus",
+        });
+      }
+
+      // Insert withdraw request
+      await client.query(
+        `
+        INSERT INTO withdraw_requests
+          (user_id, phone_number, amount, fee, net_amount, status, type)
+        VALUES ($1, $2, $3, 0, $3, 'PROCESSING', 'welcome_bonus')
+        `,
+        [userId, phone_number, withdrawAmount]
+      );
+
+      // Mark welcome bonus as withdrawn
+      await client.query(
+        `
+        UPDATE users
+        SET welcome_bonus_withdrawn = true
+        WHERE id = $1
+        `,
+        [userId]
+      );
+
+      await client.query("COMMIT");
+
+      return res.json({
+        message: "🎉 Your welcome bonus withdrawal request is being processed!",
+        status: "PROCESSING",
+        gross_amount: withdrawAmount,
+        fee: 0,
+        net_amount: withdrawAmount,
+      });
+    }
+    // -------------------------------
+    // 🌟 NORMAL BALANCE WITHDRAWAL
+    // -------------------------------
 
     if (!user.is_activated) {
       await client.query("ROLLBACK");
@@ -128,13 +186,13 @@ exports.requestWithdraw = async (req, res) => {
     await client.query(
       `
       INSERT INTO withdraw_requests
-        (user_id, phone_number, amount, fee, net_amount, status)
-      VALUES ($1, $2, $3, $4, $5, 'PROCESSING')
+        (user_id, phone_number, amount, fee, net_amount, status, type)
+      VALUES ($1, $2, $3, $4, $5, 'PROCESSING', 'normal')
       `,
       [userId, phone_number, withdrawAmount, fee, netAmount]
     );
 
-    // ✅ Deduct from total_earned
+    // Deduct from total_earned
     await client.query(
       `
       UPDATE users
@@ -148,7 +206,7 @@ exports.requestWithdraw = async (req, res) => {
 
     res.json({
       message: `🎉 Congratulations! Your withdrawal request is being processed. 
-For faster approval and payment, complete the remaining survey plan and share your referral link with at least 3 people.`,
+For faster approval, complete your surveys and share your referral link with at least 3 people.`,
       status: "PROCESSING",
       gross_amount: withdrawAmount,
       fee,
@@ -172,7 +230,6 @@ exports.getPendingWithdrawals = async (req, res) => {
     SELECT wr.*, u.email
     FROM withdraw_requests wr
     JOIN users u ON u.id = wr.user_id
-    WHERE wr.status = 'PROCESSING'
     ORDER BY wr.created_at DESC
     `
   );

