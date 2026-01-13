@@ -30,22 +30,30 @@ export default function Notifications() {
     }
   };
 
-  const handleWithdraw = (notif) => {
-    // If account not activated → redirect to activation page
+  const handleWithdraw = async (notif) => {
+    // Redirect to activation page if account is not activated
     if (!notif.is_activated) {
       navigate("/activation?welcome_bonus=true");
       return;
     }
 
-    // Welcome bonus after activation
+    // Welcome bonus flow
     if (notif.type === "welcome_bonus") {
-      alert("🎉 You can now withdraw your Welcome Bonus from the dashboard!");
-      markRead(notif.id);
+      try {
+        // Optionally mark as read immediately
+        await markRead(notif.id);
+
+        // Notify user to withdraw via dashboard
+        alert("🎉 Your Welcome Bonus is ready! Withdraw it now from the Dashboard.");
+      } catch (err) {
+        console.error("Error handling welcome bonus:", err);
+        alert("Unable to process this action. Try again later.");
+      }
       return;
     }
 
     // Other notifications
-    alert("Withdrawal not supported for this notification");
+    alert("Withdrawal not supported for this notification.");
   };
 
   return (

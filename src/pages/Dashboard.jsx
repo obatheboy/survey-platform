@@ -52,20 +52,16 @@ export default function Dashboard() {
 
     const load = async () => {
       try {
-        // Load user
         const resUser = await api.get("/auth/me");
         if (!alive) return;
         setUser(resUser.data);
         setPlans(resUser.data.plans || {});
         localStorage.setItem("cached_user", JSON.stringify(resUser.data));
 
-        // Load notifications
         const resNotifs = await api.get("/notifications");
         if (!alive) return;
 
         setNotifications(resNotifs.data);
-
-        // Highlight welcome bonus if it exists
         const welcome = resNotifs.data.find(n => n.type === "welcome_bonus");
         setWelcomeBonus(welcome || null);
       } catch (err) {
@@ -150,9 +146,14 @@ export default function Dashboard() {
     setActiveWithdrawPlan(type);
   };
 
+  /* =========================
+     SUBMIT WITHDRAWAL
+     ✔ Handles welcome bonus 403 without logging out
+  ========================== */
   const submitWithdraw = async () => {
     setWithdrawMessage("");
     setWithdrawError("");
+
     if (!withdrawAmount || !withdrawPhone) {
       setWithdrawError("Enter both amount and phone number.");
       return;
@@ -165,8 +166,14 @@ export default function Dashboard() {
     }
 
     setSubmitting(true);
+
     try {
-      await api.post("/withdraw/request", { phone_number: withdrawPhone, amount: amt });
+      await api.post("/withdraw/request", {
+        phone_number: withdrawPhone,
+        amount: amt,
+        type: activeWithdrawPlan,
+      });
+
       setWithdrawMessage("🎉 Congratulations! Your withdrawal is being processed.");
 
       // Refresh user & notifications
@@ -180,7 +187,14 @@ export default function Dashboard() {
       const welcome = resNotifs.data.find(n => n.type === "welcome_bonus");
       setWelcomeBonus(welcome || null);
     } catch (err) {
-      setWithdrawError(err.response?.data?.message || "Withdraw failed.");
+      // 🌟 Handle 403 for welcome bonus gracefully
+      if (err.response?.status === 403 && activeWithdrawPlan === "welcome_bonus") {
+        setWithdrawError(err.response.data.message);
+      } else if (err.response?.data?.message) {
+        setWithdrawError(err.response.data.message);
+      } else {
+        setWithdrawError("Withdraw failed.");
+      }
     } finally {
       setSubmitting(false);
     }
