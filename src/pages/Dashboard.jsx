@@ -45,6 +45,11 @@ export default function Dashboard() {
   const [showWelcomeBonus, setShowWelcomeBonus] = useState(false);
 
   /* =========================
+     FULL SCREEN NOTIFICATION STATE
+  ========================== */
+  const [fullScreenNotification, setFullScreenNotification] = useState(null);
+
+  /* =========================
      LOAD USER & NOTIFICATIONS
   ========================== */
   useEffect(() => {
@@ -116,20 +121,20 @@ export default function Dashboard() {
   };
 
   /* =========================
+     UNIFIED FULL SCREEN NOTIFICATION HANDLER
+  ========================== */
+  const showFullScreenNotification = ({ message, redirect }) => {
+    setFullScreenNotification({ message, redirect });
+  };
+
+  /* =========================
      WELCOME BONUS HANDLER
   ========================== */
   const handleWelcomeBonusWithdraw = () => {
-    if (!user.is_activated) {
-      setToast("❌ Account not activated. Activate your account with KES 100 to withdraw.");
-      setTimeout(() => setToast(""), 4000);
-      navigate("/activate");
-      return;
-    }
-
-    // Proceed with withdrawal flow
-    setActiveWithdrawPlan("WELCOME_BONUS");
-    setShowWelcomeBonus(false);
-    setWithdrawAmount("1200");
+    showFullScreenNotification({
+      message: "❌ Your account is not activated. Activate your account with KES 100 to withdraw your welcome bonus.",
+      redirect: "/activate",
+    });
   };
 
   /* =========================
@@ -148,17 +153,25 @@ export default function Dashboard() {
 
     if (!isActivated(type)) {
       if (activationSubmitted(type)) {
-        setToast("Activation submitted. Waiting for admin approval.");
+        showFullScreenNotification({
+          message: "Activation submitted. Waiting for admin approval.",
+          redirect: null, // No redirect needed
+        });
       } else {
-        openActivationNotice(type);
+        showFullScreenNotification({
+          message: "❌ Your account is not activated. Activate now to withdraw earnings.",
+          redirect: "/activation-notice",
+        });
       }
-      setTimeout(() => setToast(""), 3000);
       return;
     }
 
     setActiveWithdrawPlan(type);
   };
 
+  /* =========================
+     SUBMIT WITHDRAW
+  ========================== */
   const submitWithdraw = async () => {
     setWithdrawMessage("");
     setWithdrawError("");
@@ -201,7 +214,7 @@ export default function Dashboard() {
       }
     } finally {
       setSubmitting(false);
-      setActiveWithdrawPlan(""); // close form after submission
+      setActiveWithdrawPlan("");
     }
   };
 
@@ -210,7 +223,29 @@ export default function Dashboard() {
   ========================== */
   return (
     <div className="dashboard">
+      {/* TOAST NOTIFICATIONS */}
       {toast && <Notifications message={toast} />}
+
+      {/* FULL SCREEN UNIFIED NOTIFICATION */}
+      {fullScreenNotification && (
+        <div className="full-screen-notif">
+          <div className="notif-content">
+            <p>{fullScreenNotification.message}</p>
+            {fullScreenNotification.redirect && (
+              <button
+                className="primary-btn"
+                onClick={() => {
+                  const redirect = fullScreenNotification.redirect;
+                  setFullScreenNotification(null);
+                  navigate(redirect);
+                }}
+              >
+                Go to Dashboard
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       <header className="dashboard-header">
         <button className="menu-btn" onClick={() => setMenuOpen(true)}>☰</button>
@@ -240,13 +275,17 @@ export default function Dashboard() {
       </section>
 
       {/* ================= WELCOME BONUS CARD ================= */}
-      {showWelcomeBonus && (
+      {showWelcomeBonus && !fullScreenNotification && (
         <div className="card welcome-bonus-card">
           <h3>🎉 Welcome Bonus</h3>
           <p>You’ve received KES 1,200 as a welcome bonus!</p>
           <div className="btn-group">
-            <button className="primary-btn" onClick={handleWelcomeBonusWithdraw}>Withdraw</button>
-            <button className="outline-btn" onClick={() => setShowWelcomeBonus(false)}>Go to Dashboard</button>
+            <button className="primary-btn" onClick={handleWelcomeBonusWithdraw}>
+              Withdraw
+            </button>
+            <button className="outline-btn" onClick={() => setShowWelcomeBonus(false)}>
+              Go to Dashboard
+            </button>
           </div>
         </div>
       )}
@@ -259,7 +298,9 @@ export default function Dashboard() {
             <h4>{plan.icon} {plan.name}</h4>
             <strong>KES {isCompleted(key) ? plan.total.toLocaleString() : "0"}</strong>
           </div>
-          <button className="outline-btn" onClick={() => handleWithdrawClick(key)}>Withdraw</button>
+          <button className="outline-btn" onClick={() => handleWithdrawClick(key)}>
+            Withdraw
+          </button>
         </div>
       ))}
 
@@ -270,13 +311,27 @@ export default function Dashboard() {
           {withdrawMessage && <p className="success-msg">{withdrawMessage}</p>}
           {withdrawError && <p className="error-msg">{withdrawError}</p>}
 
-          <input type="number" placeholder="Enter amount" value={withdrawAmount} onChange={(e) => setWithdrawAmount(e.target.value)} className="withdraw-input"/>
-          <input type="tel" placeholder="Enter phone number" value={withdrawPhone} onChange={(e) => setWithdrawPhone(e.target.value)} className="withdraw-input"/>
+          <input
+            type="number"
+            placeholder="Enter amount"
+            value={withdrawAmount}
+            onChange={(e) => setWithdrawAmount(e.target.value)}
+            className="withdraw-input"
+          />
+          <input
+            type="tel"
+            placeholder="Enter phone number"
+            value={withdrawPhone}
+            onChange={(e) => setWithdrawPhone(e.target.value)}
+            className="withdraw-input"
+          />
 
           <button className="primary-btn" onClick={submitWithdraw} disabled={submitting}>
             {submitting ? "Submitting..." : "Submit Withdrawal"}
           </button>
-          <button className="outline-btn" onClick={() => setActiveWithdrawPlan("")} style={{ marginTop: 8 }}>Cancel</button>
+          <button className="outline-btn" onClick={() => setActiveWithdrawPlan("")} style={{ marginTop: 8 }}>
+            Cancel
+          </button>
         </div>
       )}
 
@@ -295,7 +350,10 @@ export default function Dashboard() {
               <p><b>Per Survey:</b> KES {plan.perSurvey}</p>
               <p><b>Progress:</b> {surveysDone(key)} / {TOTAL_SURVEYS}</p>
             </div>
-            <button className="primary-btn plan-btn" onClick={() => completed ? openActivationNotice(key) : startSurvey(key)}>
+            <button
+              className="primary-btn plan-btn"
+              onClick={() => completed ? openActivationNotice(key) : startSurvey(key)}
+            >
               {completed ? "View Completion" : "Start Survey"}
             </button>
           </div>

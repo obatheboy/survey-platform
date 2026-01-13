@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
+  const [activeNotif, setActiveNotif] = useState(null); // full-screen modal
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -14,7 +15,7 @@ export default function Notifications() {
   const isNotificationsPage = location.pathname === "/notifications";
 
   useEffect(() => {
-    if (!isNotificationsPage) return; // 🚫 critical fix
+    if (!isNotificationsPage) return;
     fetchNotifications();
   }, [isNotificationsPage]);
 
@@ -38,27 +39,36 @@ export default function Notifications() {
     }
   };
 
+  /* =========================
+     HANDLE WITHDRAW / SHOW FULL-SCREEN NOTIF
+  ========================= */
   const handleWithdraw = async (notif) => {
-    // Not activated → go activate
-    if (!notif.is_activated) {
-      navigate("/activation?welcome_bonus=true");
-      return;
-    }
+    // Mark read
+    await markRead(notif.id);
 
-    // Welcome bonus → dashboard handles withdrawal
+    // For welcome bonus → full-screen modal + redirect
     if (notif.type === "welcome_bonus") {
-      await markRead(notif.id);
-      navigate("/dashboard");
+      setActiveNotif({
+        message: "❌ Your account is not activated. Activate your account with KES 100 to withdraw to M-Pesa",
+        goDashboard: false, // dashboard button hidden if not on dashboard
+        redirect: "/activate",
+      });
       return;
     }
 
+    // Other notifications: fallback alert
     alert("Withdrawal not supported for this notification.");
+  };
+
+  const handleGoDashboard = () => {
+    setActiveNotif(null);
+    navigate("/dashboard");
   };
 
   /* =========================
      RENDER
   ========================= */
-  if (!isNotificationsPage) return null; // 🚫 never render elsewhere
+  if (!isNotificationsPage) return null;
 
   return (
     <div className="notifications-container">
@@ -71,7 +81,7 @@ export default function Notifications() {
           <p>{notif.message}</p>
 
           <div className="notification-actions">
-            {notif.is_welcome_bonus && (
+            {notif.type === "welcome_bonus" && (
               <button
                 className="withdraw-btn"
                 onClick={() => handleWithdraw(notif)}
@@ -89,6 +99,22 @@ export default function Notifications() {
           </div>
         </div>
       ))}
+
+      {/* =========================
+         FULL-SCREEN NOTIFICATION MODAL
+      ========================= */}
+      {activeNotif && (
+        <div className="full-screen-notif">
+          <div className="notif-content">
+            <p>{activeNotif.message}</p>
+            {activeNotif.goDashboard !== false && (
+              <button className="primary-btn" onClick={handleGoDashboard}>
+                ⬅ Go to Dashboard
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       <style>{`
         .notifications-container {
@@ -117,22 +143,69 @@ export default function Notifications() {
         }
 
         .withdraw-btn {
-          background: #4ade80;
+          background: #f5a623;
+          color: white;
           border: none;
-          padding: 6px 12px;
+          padding: 8px 14px;
           border-radius: 8px;
           font-weight: bold;
           cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .withdraw-btn:hover {
+          background: #d48806;
         }
 
         .dashboard-btn {
           background: #60a5fa;
           color: white;
           border: none;
-          padding: 6px 12px;
+          padding: 8px 14px;
           border-radius: 8px;
           font-weight: bold;
           cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .dashboard-btn:hover {
+          background: #3b82f6;
+        }
+
+        .full-screen-notif {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0,0,0,0.85);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 9999;
+        }
+
+        .full-screen-notif .notif-content {
+          background: #111;
+          color: #fff;
+          padding: 28px;
+          border-radius: 18px;
+          max-width: 420px;
+          text-align: center;
+          line-height: 1.5;
+          box-shadow: 0 0 25px #0ff;
+        }
+
+        .full-screen-notif .notif-content .primary-btn {
+          margin-top: 16px;
+          padding: 10px 18px;
+          border-radius: 12px;
+          font-weight: 700;
+          cursor: pointer;
+          background: #00ffcc;
+          color: #000;
+          border: none;
+          box-shadow: 0 0 12px #00ffcc;
         }
       `}</style>
     </div>
