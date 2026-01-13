@@ -1,14 +1,22 @@
 import { useEffect, useState } from "react";
 import api from "../../api/api.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  /* =========================
+     🔐 SAFETY GUARD
+     Fetch ONLY on /notifications page
+  ========================= */
+  const isNotificationsPage = location.pathname === "/notifications";
 
   useEffect(() => {
+    if (!isNotificationsPage) return; // 🚫 critical fix
     fetchNotifications();
-  }, []);
+  }, [isNotificationsPage]);
 
   const fetchNotifications = async () => {
     try {
@@ -31,30 +39,26 @@ export default function Notifications() {
   };
 
   const handleWithdraw = async (notif) => {
-    // Redirect to activation page if account is not activated
+    // Not activated → go activate
     if (!notif.is_activated) {
       navigate("/activation?welcome_bonus=true");
       return;
     }
 
-    // Welcome bonus flow
+    // Welcome bonus → dashboard handles withdrawal
     if (notif.type === "welcome_bonus") {
-      try {
-        // Optionally mark as read immediately
-        await markRead(notif.id);
-
-        // Notify user to withdraw via dashboard
-        alert("🎉 Your Welcome Bonus is ready! Withdraw it now from the Dashboard.");
-      } catch (err) {
-        console.error("Error handling welcome bonus:", err);
-        alert("Unable to process this action. Try again later.");
-      }
+      await markRead(notif.id);
+      navigate("/dashboard");
       return;
     }
 
-    // Other notifications
     alert("Withdrawal not supported for this notification.");
   };
+
+  /* =========================
+     RENDER
+  ========================= */
+  if (!isNotificationsPage) return null; // 🚫 never render elsewhere
 
   return (
     <div className="notifications-container">
@@ -65,6 +69,7 @@ export default function Notifications() {
         >
           <h3>{notif.title}</h3>
           <p>{notif.message}</p>
+
           <div className="notification-actions">
             {notif.is_welcome_bonus && (
               <button
@@ -74,6 +79,7 @@ export default function Notifications() {
                 Withdraw
               </button>
             )}
+
             <button
               className="dashboard-btn"
               onClick={() => navigate(notif.action_route || "/dashboard")}
@@ -98,26 +104,10 @@ export default function Notifications() {
           background: rgba(255,255,255,0.1);
           backdrop-filter: blur(10px);
           border: 1px solid rgba(255,255,255,0.15);
-          transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .notification-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .notification-card.read {
           opacity: 0.6;
-        }
-
-        .notification-card h3 {
-          margin: 0 0 6px 0;
-          font-size: 1.1rem;
-        }
-
-        .notification-card p {
-          margin: 0;
-          font-size: 0.95rem;
         }
 
         .notification-actions {
@@ -126,30 +116,23 @@ export default function Notifications() {
           gap: 8px;
         }
 
-        .notification-actions button {
+        .withdraw-btn {
+          background: #4ade80;
+          border: none;
           padding: 6px 12px;
           border-radius: 8px;
-          border: none;
-          cursor: pointer;
           font-weight: bold;
-        }
-
-        .withdraw-btn {
-          background-color: #4ade80;
-          color: #000;
-        }
-
-        .withdraw-btn:hover {
-          background-color: #22c55e;
+          cursor: pointer;
         }
 
         .dashboard-btn {
-          background-color: #60a5fa;
-          color: #fff;
-        }
-
-        .dashboard-btn:hover {
-          background-color: #2563eb;
+          background: #60a5fa;
+          color: white;
+          border: none;
+          padding: 6px 12px;
+          border-radius: 8px;
+          font-weight: bold;
+          cursor: pointer;
         }
       `}</style>
     </div>
