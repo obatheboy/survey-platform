@@ -1,15 +1,11 @@
-// ========================= Notifications.jsx =========================
 import { useEffect, useState } from "react";
-import api from "../api/api"; // your axios instance
+import api from "../api/api";
 import { useNavigate } from "react-router-dom";
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
 
-  /* =========================
-     FETCH NOTIFICATIONS
-  ========================== */
   useEffect(() => {
     fetchNotifications();
   }, []);
@@ -23,9 +19,6 @@ export default function Notifications() {
     }
   };
 
-  /* =========================
-     MARK NOTIFICATION READ
-  ========================== */
   const markRead = async (id) => {
     try {
       await api.patch(`/notifications/${id}/read`);
@@ -37,66 +30,59 @@ export default function Notifications() {
     }
   };
 
-  /* =========================
-     HANDLE WITHDRAW FROM NOTIF
-  ========================== */
   const handleWithdraw = async (notif) => {
-    if (!notif.is_welcome_bonus) return alert("Withdrawal not supported for this notification");
+    if (!notif.is_activated) {
+      // Redirect to activation page if account is not activated
+      navigate("/activate");
+      return;
+    }
 
-    try {
-      await api.post("/withdraw", {
-        type: "welcome_bonus",
-        amount: notif.amount || 1200, // fallback if amount not provided
-        phone_number: notif.phone_number || "", // should ideally be user's saved phone
-      });
-
-      alert("🎉 Withdrawal request sent!");
-      markRead(notif.id);
-    } catch (error) {
-      alert(error.response?.data?.message || "Failed to request withdrawal");
+    if (notif.type === "welcome_bonus") {
+      try {
+        await api.post("/withdraw/request", {
+          type: "welcome_bonus",
+          amount: 1200,
+          phone_number: "user-phone", // replace with actual phone if available
+        });
+        alert("🎉 Welcome bonus withdrawal request sent!");
+        markRead(notif.id);
+      } catch (error) {
+        if (error.response?.data?.message) {
+          alert(error.response.data.message);
+        } else {
+          alert("Failed to request withdrawal");
+        }
+      }
+    } else {
+      alert("Withdrawal not supported for this notification");
     }
   };
 
-  /* =========================
-     RENDER
-  ========================== */
   return (
-    <>
-      <div className="notifications-container">
-        {notifications.length === 0 && <p style={{ color: "#fff", textAlign: "center" }}>No notifications</p>}
-
-        {notifications.map((notif) => (
-          <div
-            key={notif.id}
-            className={`notification-card ${notif.is_read ? "read" : "unread"}`}
-          >
-            <h3>{notif.title}</h3>
-            <p>{notif.message}</p>
-
-            <div className="notification-actions">
-              {notif.is_welcome_bonus && (
-                <button className="withdraw-btn" onClick={() => handleWithdraw(notif)}>
-                  Withdraw
-                </button>
-              )}
-
-              <button
-                className="dashboard-btn"
-                onClick={() => {
-                  navigate(notif.action_route || "/dashboard");
-                  markRead(notif.id);
-                }}
-              >
-                Go to Dashboard
+    <div className="notifications-container">
+      {notifications.map((notif) => (
+        <div
+          key={notif.id}
+          className={`notification-card ${notif.is_read ? "read" : "unread"}`}
+        >
+          <h3>{notif.title}</h3>
+          <p>{notif.message}</p>
+          <div className="notification-actions">
+            {notif.is_welcome_bonus && (
+              <button className="withdraw-btn" onClick={() => handleWithdraw(notif)}>
+                Withdraw
               </button>
-            </div>
+            )}
+            <button
+              className="dashboard-btn"
+              onClick={() => navigate(notif.action_route || "/dashboard")}
+            >
+              Go to Dashboard
+            </button>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
 
-      {/* =========================
-          STYLES
-      ========================== */}
       <style>{`
         .notifications-container {
           display: flex;
@@ -111,7 +97,7 @@ export default function Notifications() {
           background: rgba(255,255,255,0.1);
           backdrop-filter: blur(10px);
           border: 1px solid rgba(255,255,255,0.15);
-          transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+          transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .notification-card:hover {
@@ -150,7 +136,6 @@ export default function Notifications() {
         .withdraw-btn {
           background-color: #4ade80;
           color: #000;
-          transition: background 0.2s;
         }
 
         .withdraw-btn:hover {
@@ -160,13 +145,12 @@ export default function Notifications() {
         .dashboard-btn {
           background-color: #60a5fa;
           color: #fff;
-          transition: background 0.2s;
         }
 
         .dashboard-btn:hover {
           background-color: #2563eb;
         }
       `}</style>
-    </>
+    </div>
   );
 }

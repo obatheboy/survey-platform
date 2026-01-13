@@ -88,24 +88,29 @@ exports.login = async (req, res) => {
     res.cookie("token", token, COOKIE_OPTIONS);
 
     // ---------------------------
-    // 🌟 WELCOME BONUS NOTIFICATION
+    // 🌟 WELCOME BONUS NOTIFICATION (SAFE)
     // ---------------------------
-    const notifCheck = await pool.query(
-      `SELECT id FROM notifications WHERE user_id = $1 AND type = 'welcome_bonus'`,
-      [user.id]
-    );
-
-    if (!notifCheck.rows.length) {
-      await pool.query(
-        `INSERT INTO notifications (user_id, title, message, action_route, is_read, type, created_at)
-         VALUES ($1,$2,$3,$4,false,'welcome_bonus',NOW())`,
-        [
-          user.id,
-          "🎉 Welcome Bonus Unlocked!",
-          "You’ve received KES 1,200 as a welcome bonus. Withdraw it now to M-Pesa!",
-          "/dashboard",
-        ]
+    try {
+      const notifCheck = await pool.query(
+        `SELECT id FROM notifications WHERE user_id = $1 AND type = 'welcome_bonus'`,
+        [user.id]
       );
+
+      if (!notifCheck.rows.length) {
+        await pool.query(
+          `INSERT INTO notifications (user_id, title, message, action_route, is_read, type, created_at)
+           VALUES ($1,$2,$3,$4,false,'welcome_bonus',NOW())`,
+          [
+            user.id,
+            "🎉 Welcome Bonus Unlocked!",
+            "You’ve received KES 1,200 as a welcome bonus. Withdraw it now to M-Pesa!",
+            "/dashboard",
+          ]
+        );
+      }
+    } catch (notifError) {
+      console.error("WELCOME BONUS NOTIFICATION ERROR:", notifError);
+      // Don't throw — login still works even if notifications fail
     }
 
     res.json({
@@ -138,23 +143,19 @@ exports.getMe = async (req, res) => {
     if (!req.user?.id) return res.status(401).json({ message: "Invalid session" });
 
     const userRes = await pool.query(
-      `
-      SELECT id, full_name, phone, email, is_activated, total_earned, welcome_bonus
-      FROM users
-      WHERE id = $1
-      `,
+      `SELECT id, full_name, phone, email, is_activated, total_earned, welcome_bonus
+       FROM users
+       WHERE id = $1`,
       [req.user.id]
     );
 
     if (!userRes.rows.length) return res.status(401).json({ message: "Invalid session" });
 
     const plansRes = await pool.query(
-      `
-      SELECT plan, surveys_completed, completed, is_activated, created_at
-      FROM user_surveys
-      WHERE user_id = $1
-      ORDER BY created_at DESC
-      `,
+      `SELECT plan, surveys_completed, completed, is_activated, created_at
+       FROM user_surveys
+       WHERE user_id = $1
+       ORDER BY created_at DESC`,
       [req.user.id]
     );
 
