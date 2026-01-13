@@ -11,7 +11,7 @@ export default function Notifications() {
   /* =========================
      🔐 SAFETY GUARD
      Fetch ONLY on /notifications page
-  ========================= */
+  ========================== */
   const isNotificationsPage = location.pathname === "/notifications";
 
   useEffect(() => {
@@ -43,20 +43,18 @@ export default function Notifications() {
      HANDLE WITHDRAW / SHOW FULL-SCREEN NOTIF
   ========================= */
   const handleWithdraw = async (notif) => {
-    // Mark read
     await markRead(notif.id);
 
-    // For welcome bonus → full-screen modal + redirect
+    // ✅ FIXED: welcome bonus redirect includes query param
     if (notif.type === "welcome_bonus") {
       setActiveNotif({
         message: "❌ Your account is not activated. Activate your account with KES 100 to withdraw to M-Pesa",
-        goDashboard: false, // dashboard button hidden if not on dashboard
-        redirect: "/activate",
+        goDashboard: false,
+        redirect: "/activate?welcome_bonus=1", // <-- fix applied here
       });
       return;
     }
 
-    // Other notifications: fallback alert
     alert("Withdrawal not supported for this notification.");
   };
 
@@ -67,7 +65,7 @@ export default function Notifications() {
 
   /* =========================
      RENDER
-  ========================= */
+  ========================== */
   if (!isNotificationsPage) return null;
 
   return (
@@ -100,9 +98,6 @@ export default function Notifications() {
         </div>
       ))}
 
-      {/* =========================
-         FULL-SCREEN NOTIFICATION MODAL
-      ========================= */}
       {activeNotif && (
         <div className="full-screen-notif">
           <div className="notif-content">

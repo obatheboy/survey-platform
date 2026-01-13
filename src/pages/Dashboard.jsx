@@ -64,7 +64,6 @@ export default function Dashboard() {
         setPlans(resUser.data.plans || {});
         localStorage.setItem("cached_user", JSON.stringify(resUser.data));
 
-        // Show welcome bonus if user received it but balance not withdrawn
         if (resUser.data.welcome_bonus_received) {
           setShowWelcomeBonus(true);
         }
@@ -134,7 +133,7 @@ export default function Dashboard() {
   const handleWelcomeBonusWithdraw = () => {
     showFullScreenNotification({
       message: "❌ Your account is not activated. Activate your account with KES 100 to withdraw your welcome bonus.",
-      redirect: "/activate",
+      redirect: "/activate?welcome_bonus=1", // ✅ fixed
     });
   };
 
@@ -199,7 +198,6 @@ export default function Dashboard() {
 
       setWithdrawMessage("🎉 Congratulations! Your withdrawal is being processed.");
 
-      // Refresh user & notifications
       const updatedUser = await api.get("/auth/me");
       setUser(updatedUser.data);
       setPlans(updatedUser.data.plans || {});
@@ -224,10 +222,8 @@ export default function Dashboard() {
   ========================== */
   return (
     <div className="dashboard">
-      {/* TOAST NOTIFICATIONS */}
       {toast && <Notifications message={toast} />}
 
-      {/* FULL SCREEN UNIFIED NOTIFICATION */}
       {fullScreenNotification && (
         <div className="full-screen-notif">
           <div className="notif-content">
@@ -237,10 +233,8 @@ export default function Dashboard() {
                 className="primary-btn"
                 onClick={() => {
                   setFullScreenNotification(null);
-                  // ✅ Fix: always redirect properly, even from dashboard
-                  if (location.pathname !== fullScreenNotification.redirect) {
-                    navigate(fullScreenNotification.redirect);
-                  }
+                  // ✅ Navigate properly with query param
+                  navigate(fullScreenNotification.redirect);
                 }}
               >
                 Activate
@@ -258,7 +252,6 @@ export default function Dashboard() {
       <MainMenuDrawer open={menuOpen} onClose={() => setMenuOpen(false)} user={user} />
       <LiveWithdrawalFeed />
 
-      {/* HERO */}
       <section className="dashboard-hero">
         <div className="card greeting">
           <h3>Hello, {user.full_name} 👋</h3>
@@ -277,7 +270,6 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* ================= WELCOME BONUS CARD ================= */}
       {showWelcomeBonus && !fullScreenNotification && (
         <div className="card welcome-bonus-card">
           <h3>🎉 Welcome Bonus</h3>
@@ -290,7 +282,6 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* REGULAR PLAN WITHDRAWALS */}
       <h3 className="section-title withdraw-title">💸 Withdraw Earnings</h3>
       {Object.entries(PLANS).map(([key, plan]) => (
         <div key={key} className="card withdraw-card">
@@ -304,7 +295,6 @@ export default function Dashboard() {
         </div>
       ))}
 
-      {/* ACTIVE WITHDRAW FORM */}
       {activeWithdrawPlan && (
         <div className="card withdraw-form">
           <h4>Withdraw: {activeWithdrawPlan === "WELCOME_BONUS" ? "Welcome Bonus" : PLANS[activeWithdrawPlan].name}</h4>
@@ -335,7 +325,6 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* SURVEYS */}
       <h3 ref={surveySectionRef} className="section-title">Survey Plans</h3>
       {Object.entries(PLANS).map(([key, plan]) => {
         const completed = isCompleted(key);
