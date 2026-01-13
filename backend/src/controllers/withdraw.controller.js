@@ -120,10 +120,10 @@ exports.requestWithdraw = async (req, res) => {
         net_amount: withdrawAmount,
       });
     }
+
     // -------------------------------
     // 🌟 NORMAL BALANCE WITHDRAWAL
     // -------------------------------
-
     if (!user.is_activated) {
       await client.query("ROLLBACK");
       return res.status(403).json({ message: "Account not activated" });
