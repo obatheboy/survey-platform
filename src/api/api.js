@@ -5,22 +5,22 @@ import axios from "axios";
    (ensure no double /api)
 ===================================================== */
 const RAW_BASE = import.meta.env.VITE_API_URL;
-const BASE_URL = RAW_BASE.endsWith("/api")
-  ? RAW_BASE
-  : `${RAW_BASE}/api`;
+const BASE_URL = RAW_BASE.endsWith("/api") ? RAW_BASE : `${RAW_BASE}/api`;
 
 /* =====================================================
    👤 USER API (COOKIE BASED)
+   - All normal users
+   - HttpOnly cookies
 ===================================================== */
 const api = axios.create({
   baseURL: BASE_URL,
   withCredentials: true, // ✅ required
 });
 
-/* 🔐 FORCE credentials on every request (IMPORTANT) */
+/* 🔐 FORCE credentials on every request (prevents cookie drop) */
 api.interceptors.request.use(
   (config) => {
-    config.withCredentials = true; // 👈 prevents cookie drop
+    config.withCredentials = true;
     return config;
   },
   (error) => Promise.reject(error)
@@ -28,15 +28,14 @@ api.interceptors.request.use(
 
 /* =====================================================
    👑 ADMIN API (BEARER TOKEN)
+   - No cookies
 ===================================================== */
 export const adminApi = axios.create({
   baseURL: BASE_URL,
   withCredentials: false,
 });
 
-/* =====================================================
-   🔐 ADMIN TOKEN ATTACHER
-===================================================== */
+/* 🔐 ADMIN TOKEN ATTACHER */
 adminApi.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("adminToken");
@@ -49,11 +48,22 @@ adminApi.interceptors.request.use(
 );
 
 /* =====================================================
-   ❌ NO GLOBAL REDIRECTS — EVER
+   ⚠️ RESPONSE INTERCEPTOR
+   - Prevent accidental forced logout
+   - Only throw 401 for ProtectedRoute
 ===================================================== */
 api.interceptors.response.use(
   (response) => response,
-  (error) => Promise.reject(error)
+  (error) => {
+    // Allow non-critical routes to fail without logging out
+    if (error?.response?.status === 401) {
+      console.warn(
+        "User request returned 401. Do not force logout here.",
+        error.response?.data?.message
+      );
+    }
+    return Promise.reject(error);
+  }
 );
 
 adminApi.interceptors.response.use(
