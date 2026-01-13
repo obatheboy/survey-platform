@@ -545,82 +545,74 @@
   }
 }
 
+
+
 /* =========================
-   Notifications.css
+   WELCOME BONUS CARD
 ========================= */
-
-/* Notification Card Container */
-.notifications-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin: 20px;
-}
-
-/* Individual Notification Card */
-.notification-card {
-  padding: 16px;
-  border-radius: 12px;
+.welcome-bonus-card {
+  max-width: 420px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 20px;
   background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(18px);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  animation: fadeIn 0.5s ease;
 }
 
-.notification-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.welcome-bonus-card h3 {
+  margin-bottom: 10px;
+  font-size: 1.4rem;
 }
 
-.notification-card.read {
-  opacity: 0.6;
+.welcome-bonus-card p {
+  margin-bottom: 16px;
+  font-size: 1rem;
+  color: #f0f0f0;
 }
 
-.notification-card h3 {
-  margin: 0 0 6px 0;
-  font-size: 1.1rem;
-}
-
-.notification-card p {
-  margin: 0;
-  font-size: 0.95rem;
-}
-
-/* Buttons Container */
-.notification-actions {
-  margin-top: 12px;
+/* Button group inside welcome bonus */
+.welcome-bonus-card .btn-group {
   display: flex;
-  gap: 8px;
+  justify-content: center;
+  gap: 12px;
 }
 
-/* Withdraw Button */
-.withdraw-btn {
-  padding: 6px 12px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-  background-color: #4ade80; /* green */
-  color: #000;
-  transition: background-color 0.2s;
-}
-
-.withdraw-btn:hover {
-  background-color: #22c55e;
-}
-
-/* Dashboard Button */
-.dashboard-btn {
-  padding: 6px 12px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-  background-color: #60a5fa; /* blue */
+/* Primary button */
+.welcome-bonus-card .primary-btn {
+  background-color: #4caf50;
   color: #fff;
-  transition: background-color 0.2s;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.3s;
 }
 
-.dashboard-btn:hover {
-  background-color: #2563eb;
+.welcome-bonus-card .primary-btn:hover {
+  background-color: #45a049;
+}
+
+/* Outline button */
+.welcome-bonus-card .outline-btn {
+  background: transparent;
+  border: 1px solid #fff;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.welcome-bonus-card .outline-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

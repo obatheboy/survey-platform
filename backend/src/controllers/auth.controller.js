@@ -42,9 +42,10 @@ exports.register = async (req, res) => {
         email,
         password_hash,
         is_activated,
-        total_earned
+        total_earned,
+        welcome_bonus_received
       )
-      VALUES ($1, $2, $3, $4, false, 0)
+      VALUES ($1, $2, $3, $4, false, 0, false)
       RETURNING id, full_name, phone, email, is_activated
       `,
       [fullName, phone, email || null, passwordHash]
@@ -74,7 +75,7 @@ exports.login = async (req, res) => {
     const { phone, password } = req.body;
 
     const result = await pool.query(
-      `SELECT id, phone, password_hash, is_activated FROM users WHERE phone = $1`,
+      `SELECT id, phone, password_hash, is_activated, welcome_bonus_received FROM users WHERE phone = $1`,
       [phone]
     );
 
@@ -88,15 +89,27 @@ exports.login = async (req, res) => {
     res.cookie("token", token, COOKIE_OPTIONS);
 
     // ---------------------------
-    // 🌟 WELCOME BONUS NOTIFICATION (SAFE)
+    // 🌟 WELCOME BONUS LOGIC
     // ---------------------------
     try {
-      const notifCheck = await pool.query(
-        `SELECT id FROM notifications WHERE user_id = $1 AND type = 'welcome_bonus'`,
-        [user.id]
-      );
+      if (!user.welcome_bonus_received) {
+        // 1️⃣ Add 1200 to balance
+        await pool.query(
+          `UPDATE balances
+           SET amount = amount + 1200
+           WHERE user_id = $1`,
+          [user.id]
+        );
 
-      if (!notifCheck.rows.length) {
+        // 2️⃣ Mark bonus as received
+        await pool.query(
+          `UPDATE users
+           SET welcome_bonus_received = true
+           WHERE id = $1`,
+          [user.id]
+        );
+
+        // 3️⃣ Add notification
         await pool.query(
           `INSERT INTO notifications (user_id, title, message, action_route, is_read, type, created_at)
            VALUES ($1,$2,$3,$4,false,'welcome_bonus',NOW())`,
@@ -108,9 +121,9 @@ exports.login = async (req, res) => {
           ]
         );
       }
-    } catch (notifError) {
-      console.error("WELCOME BONUS NOTIFICATION ERROR:", notifError);
-      // Don't throw — login still works even if notifications fail
+    } catch (bonusError) {
+      console.error("WELCOME BONUS ERROR:", bonusError);
+      // Don't block login even if bonus fails
     }
 
     res.json({
@@ -143,7 +156,7 @@ exports.getMe = async (req, res) => {
     if (!req.user?.id) return res.status(401).json({ message: "Invalid session" });
 
     const userRes = await pool.query(
-      `SELECT id, full_name, phone, email, is_activated, total_earned, welcome_bonus
+      `SELECT id, full_name, phone, email, is_activated, total_earned, welcome_bonus_received
        FROM users
        WHERE id = $1`,
       [req.user.id]

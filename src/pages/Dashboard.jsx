@@ -42,6 +42,7 @@ export default function Dashboard() {
   const [activeWithdrawPlan, setActiveWithdrawPlan] = useState("");
 
   const [notifications, setNotifications] = useState([]);
+  const [showWelcomeBonus, setShowWelcomeBonus] = useState(false);
 
   /* =========================
      LOAD USER & NOTIFICATIONS
@@ -56,6 +57,11 @@ export default function Dashboard() {
         setUser(resUser.data);
         setPlans(resUser.data.plans || {});
         localStorage.setItem("cached_user", JSON.stringify(resUser.data));
+
+        // Show welcome bonus if user received it but balance not withdrawn
+        if (resUser.data.welcome_bonus_received) {
+          setShowWelcomeBonus(true);
+        }
 
         const resNotifs = await api.get("/notifications");
         if (!alive) return;
@@ -109,6 +115,26 @@ export default function Dashboard() {
     navigate("/activation-notice");
   };
 
+  /* =========================
+     WELCOME BONUS HANDLER
+  ========================== */
+  const handleWelcomeBonusWithdraw = () => {
+    if (!user.is_activated) {
+      setToast("❌ Account not activated. Activate your account with KES 100 to withdraw.");
+      setTimeout(() => setToast(""), 4000);
+      navigate("/activate");
+      return;
+    }
+
+    // Proceed with withdrawal flow
+    setActiveWithdrawPlan("WELCOME_BONUS");
+    setShowWelcomeBonus(false);
+    setWithdrawAmount("1200");
+  };
+
+  /* =========================
+     NORMAL WITHDRAW HANDLER
+  ========================== */
   const handleWithdrawClick = (type) => {
     setWithdrawMessage("");
     setWithdrawError("");
@@ -175,6 +201,7 @@ export default function Dashboard() {
       }
     } finally {
       setSubmitting(false);
+      setActiveWithdrawPlan(""); // close form after submission
     }
   };
 
@@ -199,11 +226,30 @@ export default function Dashboard() {
           <h3>Hello, {user.full_name} 👋</h3>
           <p>Your journey to real earnings continues.</p>
         </div>
+
         <div className="earnings">
-          <div><span>Total Earnings</span><strong>KES {Number(user.total_earned || 0).toLocaleString()}</strong></div>
-          <div><span>Current Balance</span><strong>KES {Number(user.total_earned || 0).toLocaleString()}</strong></div>
+          <div>
+            <span>Total Earnings</span>
+            <strong>KES {Number(user.total_earned || 0).toLocaleString()}</strong>
+          </div>
+          <div>
+            <span>Current Balance</span>
+            <strong>KES {Number(user.total_earned || 0).toLocaleString()}</strong>
+          </div>
         </div>
       </section>
+
+      {/* ================= WELCOME BONUS CARD ================= */}
+      {showWelcomeBonus && (
+        <div className="card welcome-bonus-card">
+          <h3>🎉 Welcome Bonus</h3>
+          <p>You’ve received KES 1,200 as a welcome bonus!</p>
+          <div className="btn-group">
+            <button className="primary-btn" onClick={handleWelcomeBonusWithdraw}>Withdraw</button>
+            <button className="outline-btn" onClick={() => setShowWelcomeBonus(false)}>Go to Dashboard</button>
+          </div>
+        </div>
+      )}
 
       {/* REGULAR PLAN WITHDRAWALS */}
       <h3 className="section-title withdraw-title">💸 Withdraw Earnings</h3>
@@ -220,7 +266,7 @@ export default function Dashboard() {
       {/* ACTIVE WITHDRAW FORM */}
       {activeWithdrawPlan && (
         <div className="card withdraw-form">
-          <h4>Withdraw: {PLANS[activeWithdrawPlan].name}</h4>
+          <h4>Withdraw: {activeWithdrawPlan === "WELCOME_BONUS" ? "Welcome Bonus" : PLANS[activeWithdrawPlan].name}</h4>
           {withdrawMessage && <p className="success-msg">{withdrawMessage}</p>}
           {withdrawError && <p className="error-msg">{withdrawError}</p>}
 
