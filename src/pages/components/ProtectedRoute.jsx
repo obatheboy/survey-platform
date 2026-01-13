@@ -1,49 +1,71 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import api from "../api/api";
 
 /* ======================================================
-   ProtectedRoute
-   - Only logs out if token is expired or invalid (401)
-   - Ignores 400/403 errors (like account not activated)
+   ProtectedRoute (FINAL FIX)
+   - No premature logout
+   - No race conditions
+   - Safe for navigation (activation, withdraw, bonus)
 ====================================================== */
 export default function ProtectedRoute({ children }) {
   const [checking, setChecking] = useState(true);
-  const [authenticated, setAuthenticated] = useState(false);
-  const hasChecked = useRef(false);
+  const [authenticated, setAuthenticated] = useState(null); // 🔥 IMPORTANT
 
   useEffect(() => {
-    if (hasChecked.current) return;
-    hasChecked.current = true;
+    let isMounted = true;
 
     const checkAuth = async () => {
       try {
         const res = await api.get("/auth/me");
+
+        if (!isMounted) return;
+
         if (res.data) {
           setAuthenticated(true);
+        } else {
+          setAuthenticated(false);
         }
       } catch (err) {
+        if (!isMounted) return;
+
         const status = err?.response?.status;
-        // Only logout if truly unauthorized (expired token)
+
+        // 🔐 Only treat 401 as real logout
         if (status === 401) {
           setAuthenticated(false);
         } else {
-          console.warn("ProtectedRoute ignored non-auth error:", err?.response?.data?.message || err.message);
-          setAuthenticated(true); // Keep user logged in
+          // Ignore activation / permission / validation errors
+          console.warn(
+            "ProtectedRoute ignored non-auth error:",
+            err?.response?.data?.message || err.message
+          );
+          setAuthenticated(true);
         }
       } finally {
-        setChecking(false);
+        if (isMounted) {
+          setChecking(false);
+        }
       }
     };
 
     checkAuth();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  if (checking) return null; // or loader component
+  // ⏳ Still checking — NEVER redirect yet
+  if (checking || authenticated === null) {
+    return null; // or <Loader />
+  }
 
-  if (!authenticated) {
+  // 🔒 Truly logged out
+  if (authenticated === false) {
     return <Navigate to="/auth" replace />;
   }
 
+  // ✅ Authenticated
   return children;
 }
