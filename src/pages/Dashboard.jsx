@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 import MainMenuDrawer from "./components/MainMenuDrawer.jsx";
 import LiveWithdrawalFeed from "./components/LiveWithdrawalFeed.jsx";
+import Notifications from "./components/Notifications.jsx";
 import "./Dashboard.css";
 
 /* =========================
@@ -41,6 +42,9 @@ export default function Dashboard() {
   const [submitting, setSubmitting] = useState(false);
   const [activeWithdrawPlan, setActiveWithdrawPlan] = useState("");
 
+  /* =========================
+     LOAD USER
+  ========================== */
   useEffect(() => {
     let alive = true;
     const load = async () => {
@@ -70,11 +74,17 @@ export default function Dashboard() {
   if (loading) return <p className="loading">Loading dashboard…</p>;
   if (!user) return null;
 
+  /* =========================
+     PLAN HELPERS
+  ========================== */
   const surveysDone = (plan) => plans[plan]?.surveys_completed || 0;
   const isCompleted = (plan) => plans[plan]?.completed === true;
   const isActivated = (plan) => plans[plan]?.is_activated === true;
   const activationSubmitted = (plan) => plans[plan]?.activation_status === "SUBMITTED";
 
+  /* =========================
+     SURVEY / ACTIVATION
+  ========================== */
   const startSurvey = async (plan) => {
     try {
       localStorage.setItem("active_plan", plan);
@@ -96,6 +106,8 @@ export default function Dashboard() {
     setWithdrawError("");
 
     if (type === "welcome_bonus") {
+      setToast("Redirecting to activate your Welcome Bonus...");
+      setTimeout(() => setToast(""), 3000);
       navigate("/activation?welcome_bonus=true");
       return;
     }
@@ -150,9 +162,13 @@ export default function Dashboard() {
     }
   };
 
+  /* =========================
+     RENDER
+  ========================== */
   return (
     <div className="dashboard">
-      {toast && <div className="toast">{toast}</div>}
+      {/* Toast notification */}
+      {toast && <Notifications message={toast} />}
 
       <header className="dashboard-header">
         <button className="menu-btn" onClick={() => setMenuOpen(true)}>☰</button>

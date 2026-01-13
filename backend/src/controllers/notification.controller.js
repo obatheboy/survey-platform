@@ -15,6 +15,7 @@ exports.getMyNotifications = async (req, res) => {
         message,
         action_route,
         is_read,
+        type,
         created_at
       FROM notifications
       WHERE user_id = $1
@@ -23,7 +24,13 @@ exports.getMyNotifications = async (req, res) => {
       [userId]
     );
 
-    return res.json(rows);
+    // Optional: Highlight welcome bonus notification
+    const notifications = rows.map((notif) => ({
+      ...notif,
+      is_welcome_bonus: notif.type === "welcome_bonus",
+    }));
+
+    return res.json(notifications);
   } catch (error) {
     console.error("❌ Get notifications error:", error);
     return res.status(500).json({ message: "Server error" });

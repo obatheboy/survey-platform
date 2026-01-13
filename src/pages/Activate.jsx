@@ -42,7 +42,7 @@ export default function Activate() {
   const [planKey, setPlanKey] = useState(null);
   const [planState, setPlanState] = useState(null);
   const [paymentText, setPaymentText] = useState("");
-  const [notification, setNotification] = useState(null); // 🔔 Notification
+  const [notification, setNotification] = useState(null);
   const [copied, setCopied] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -58,16 +58,30 @@ export default function Activate() {
       try {
         const res = await api.get("/auth/me");
         if (!alive) return;
-
         setUser(res.data);
 
-        // Check if redirected from a welcome bonus withdraw attempt
-        const planFromQuery = searchParams.get("welcome_bonus") ? "WELCOME" : res.data.active_plan;
-        const plan = planFromQuery === "WELCOME"
-          ? { is_activated: res.data.is_activated, completed: true, total: res.data.welcome_bonus || 1200 }
-          : res.data.plans?.[res.data.active_plan];
+        // Determine plan type (WELCOME bonus or normal plan)
+        const isWelcome = searchParams.get("welcome_bonus");
+        const planFromQuery = isWelcome ? "WELCOME" : res.data.active_plan;
 
-        if (!plan || plan.is_activated) {
+        let plan;
+        if (planFromQuery === "WELCOME") {
+          plan = {
+            is_activated: false,
+            completed: true,
+            total: res.data.welcome_bonus || 1200,
+          };
+        } else {
+          plan = res.data.plans?.[res.data.active_plan];
+        }
+
+        if (!plan) {
+          navigate("/dashboard", { replace: true });
+          return;
+        }
+
+        // Only redirect if a normal plan is already activated
+        if (planFromQuery !== "WELCOME" && plan.is_activated) {
           navigate("/dashboard", { replace: true });
           return;
         }
@@ -86,18 +100,29 @@ export default function Activate() {
   if (loading) return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
   if (!planKey || !planState) return null;
 
-  const plan = planKey === "WELCOME"
-    ? { label: "Welcome Bonus", total: user.welcome_bonus || 1200, activationFee: 100, color: "#00ffcc", glow: "rgba(0, 255, 204, 0.5)" }
-    : PLAN_CONFIG[planKey];
+  const plan =
+    planKey === "WELCOME"
+      ? {
+          label: "Welcome Bonus",
+          total: user.welcome_bonus || 1200,
+          activationFee: 100,
+          color: "#00ffcc",
+          glow: "rgba(0, 255, 204, 0.5)",
+        }
+      : PLAN_CONFIG[planKey];
 
   /* =========================
      COPY TILL
   ========================== */
   const copyTill = async () => {
-    await navigator.clipboard.writeText(TILL_NUMBER);
-    setCopied(true);
-    setNotification("✅ Till number copied successfully. Proceed to M-Pesa payment.");
-    setTimeout(() => setCopied(false), 2500);
+    try {
+      await navigator.clipboard.writeText(TILL_NUMBER);
+      setCopied(true);
+      setNotification("✅ Till number copied successfully. Proceed to M-Pesa payment.");
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      setNotification("⚠️ Failed to copy till number. Please copy manually.");
+    }
   };
 
   /* =========================
@@ -123,16 +148,13 @@ export default function Activate() {
           <div style={{ marginTop: 8 }}>
             You can now withdraw your <b>{plan.label}</b> earnings.
           </div>
-          <button
-            style={goDashboardBtn}
-            onClick={() => navigate("/dashboard")}
-          >
+          <button style={goDashboardBtn} onClick={() => navigate("/dashboard")}>
             ⬅ Go to Dashboard
           </button>
         </div>
       );
 
-      setPaymentText(""); // Clear input
+      setPaymentText("");
     } catch {
       setNotification(
         "⚠️ Submission failed. Please paste the ORIGINAL M-Pesa confirmation message exactly as received."

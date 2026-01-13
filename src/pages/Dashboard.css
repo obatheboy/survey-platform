@@ -544,3 +544,83 @@
     align-self: flex-end;
   }
 }
+
+/* =========================
+   Notifications.css
+========================= */
+
+/* Notification Card Container */
+.notifications-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px;
+}
+
+/* Individual Notification Card */
+.notification-card {
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.notification-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.notification-card.read {
+  opacity: 0.6;
+}
+
+.notification-card h3 {
+  margin: 0 0 6px 0;
+  font-size: 1.1rem;
+}
+
+.notification-card p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* Buttons Container */
+.notification-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+/* Withdraw Button */
+.withdraw-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  background-color: #4ade80; /* green */
+  color: #000;
+  transition: background-color 0.2s;
+}
+
+.withdraw-btn:hover {
+  background-color: #22c55e;
+}
+
+/* Dashboard Button */
+.dashboard-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  background-color: #60a5fa; /* blue */
+  color: #fff;
+  transition: background-color 0.2s;
+}
+
+.dashboard-btn:hover {
+  background-color: #2563eb;
+}
