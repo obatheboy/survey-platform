@@ -112,6 +112,18 @@ export default function Notifications() {
                 ⬅ Go to Dashboard
               </button>
             )}
+            {activeNotif.redirect && activeNotif.goDashboard === false && (
+              <button
+                className="primary-btn"
+                onClick={() => {
+                  const redirect = activeNotif.redirect;
+                  setActiveNotif(null);
+                  navigate(redirect);
+                }}
+              >
+                Activate
+              </button>
+            )}
           </div>
         </div>
       )}

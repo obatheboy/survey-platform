@@ -155,7 +155,7 @@ export default function Dashboard() {
       if (activationSubmitted(type)) {
         showFullScreenNotification({
           message: "Activation submitted. Waiting for admin approval.",
-          redirect: null, // No redirect needed
+          redirect: null,
         });
       } else {
         showFullScreenNotification({
@@ -240,7 +240,7 @@ export default function Dashboard() {
                   navigate(redirect);
                 }}
               >
-                Go to Dashboard
+                Activate
               </button>
             )}
           </div>
@@ -282,9 +282,6 @@ export default function Dashboard() {
           <div className="btn-group">
             <button className="primary-btn" onClick={handleWelcomeBonusWithdraw}>
               Withdraw
-            </button>
-            <button className="outline-btn" onClick={() => setShowWelcomeBonus(false)}>
-              Go to Dashboard
             </button>
           </div>
         </div>
