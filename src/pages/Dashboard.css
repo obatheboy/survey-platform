@@ -39,15 +39,16 @@
    SMOOTH SCROLLING ON MOBILE
 ========================= */
 html {
-  scroll-behavior: smooth; /* smooth anchor scroll */
+  scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch; /* iOS momentum scroll */
 }
 
 body {
-  overflow-y: scroll; /* always enable vertical scroll */
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: none; /* hide scrollbar IE/Edge */
   scrollbar-width: thin; /* Firefox */
+  overscroll-behavior: contain; /* prevent bounce glitches */
 }
 
 body::-webkit-scrollbar {
@@ -64,13 +65,7 @@ body::-webkit-scrollbar-thumb {
   margin: 0 auto;
   padding: 16px;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: linear-gradient(
-    270deg,
-    #0b1020,
-    #1a237e,
-    #311b92,
-    #0d47a1
-  );
+  background: linear-gradient(270deg, #0b1020, #1a237e, #311b92, #0d47a1);
   background-size: 400% 400%;
   animation: gradientFlow 20s ease infinite;
   min-height: 100vh;
@@ -79,6 +74,7 @@ body::-webkit-scrollbar-thumb {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
+  will-change: transform; /* GPU acceleration for smooth scroll */
 }
 
 /* =========================
@@ -115,6 +111,7 @@ body::-webkit-scrollbar-thumb {
   font-size: 15px;
   color: #b39ddb;
   animation: floatIn 0.8s ease;
+  will-change: transform, opacity;
 }
 
 /* =========================
@@ -124,17 +121,13 @@ body::-webkit-scrollbar-thumb {
   display: flex;
   align-items: center;
   gap: 14px;
-  background: linear-gradient(
-    270deg,
-    #1e88e5,
-    #5e35b1,
-    #8e24aa
-  );
+  background: linear-gradient(270deg, #1e88e5, #5e35b1, #8e24aa);
   background-size: 300% 300%;
   animation: gradientFlow 12s ease infinite;
   padding: 18px;
   border-radius: 24px;
   box-shadow: 0 18px 46px rgba(0, 0, 0, 0.55);
+  will-change: transform, background;
 }
 
 .dashboard-header h2 {
@@ -166,16 +159,13 @@ body::-webkit-scrollbar-thumb {
   width: 100%;
   padding: 20px;
   border-radius: 26px;
-  background: linear-gradient(
-    135deg,
-    rgb(119, 4, 4),
-    rgb(28, 70, 3)
-  );
+  background: linear-gradient(135deg, rgb(119, 4, 4), rgb(28, 70, 3));
   backdrop-filter: blur(14px);
   box-shadow: 0 22px 56px rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.12);
   animation: floatIn 0.75s ease both;
   position: relative;
+  will-change: transform, opacity;
 }
 
 .card::after {
@@ -191,15 +181,11 @@ body::-webkit-scrollbar-thumb {
    GREETING (HERO LEFT)
 ========================= */
 .greeting {
-  background: linear-gradient(
-    270deg,
-    #ffb300,
-    #ff9800,
-    #ff6f00
-  );
+  background: linear-gradient(270deg, #ffb300, #ff9800, #ff6f00);
   background-size: 300% 300%;
   animation: gradientFlow 12s ease infinite;
   color: #212121;
+  will-change: background;
 }
 
 .greeting h3 {
@@ -217,12 +203,7 @@ body::-webkit-scrollbar-thumb {
    EARNINGS (HERO RIGHT)
 ========================= */
 .earnings {
-  background: linear-gradient(
-    270deg,
-    #00acc1,
-    #26c6da,
-    #e6d00b
-  );
+  background: linear-gradient(270deg, #00acc1, #26c6da, #e6d00b);
   background-size: 300% 300%;
   animation: gradientFlow 9s ease infinite;
   color: #102027;
@@ -231,6 +212,7 @@ body::-webkit-scrollbar-thumb {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
+  will-change: background;
 }
 
 .earnings > div {
@@ -251,7 +233,7 @@ body::-webkit-scrollbar-thumb {
   margin-top: 6px;
   font-size: 24px;
   font-weight: 900;
-  word-break: break-word; /* prevent overlapping numbers */
+  word-break: break-word;
 }
 
 /* =========================
@@ -272,6 +254,7 @@ body::-webkit-scrollbar-thumb {
   flex-direction: column;
   gap: 8px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  will-change: transform;
 }
 
 .plan-card:hover {
@@ -325,6 +308,7 @@ body::-webkit-scrollbar-thumb {
   border-radius: 999px;
   font-weight: 800;
   cursor: pointer;
+  will-change: transform, box-shadow, filter;
 }
 
 .plan-regular .primary-btn {
@@ -363,6 +347,7 @@ body::-webkit-scrollbar-thumb {
   padding: 14px 16px;
   gap: 14px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  will-change: transform;
 }
 
 .withdraw-card:hover {
@@ -374,6 +359,7 @@ body::-webkit-scrollbar-thumb {
   color: #51ff00;
   text-shadow: 0 0 14px rgba(81, 255, 0, 0.6);
   animation: glowPulse 3s ease infinite;
+  will-change: box-shadow;
 }
 
 /* =========================
@@ -384,19 +370,14 @@ body::-webkit-scrollbar-thumb {
   margin: 28px auto 0;
   padding: 26px;
   border-radius: 22px;
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.14),
-    rgba(255,255,255,0.06)
-  );
+  background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.06));
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255,255,255,0.18);
-  box-shadow:
-    0 22px 50px rgba(0,0,0,0.55),
-    inset 0 1px 0 rgba(255,255,255,0.15);
+  box-shadow: 0 22px 50px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.15);
   display: flex;
   flex-direction: column;
   gap: 16px;
+  will-change: transform;
 }
 
 /* INPUTS */
@@ -418,9 +399,7 @@ body::-webkit-scrollbar-thumb {
 
 .withdraw-form input:focus {
   border-color: #6366f1;
-  box-shadow:
-    0 0 0 3px rgba(99,102,241,0.35),
-    inset 0 0 0 1px rgba(99,102,241,0.25);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.35), inset 0 0 0 1px rgba(99,102,241,0.25);
 }
 
 /* PRIMARY BUTTON */
@@ -434,20 +413,14 @@ body::-webkit-scrollbar-thumb {
   cursor: pointer;
   color: #fff;
   background: linear-gradient(135deg, #6366f1, #4f46e5);
-  box-shadow:
-    0 10px 26px rgba(99,102,241,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.25);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    filter 0.2s ease;
+  box-shadow: 0 10px 26px rgba(99,102,241,0.45), inset 0 1px 0 rgba(255,255,255,0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  will-change: transform, box-shadow, filter;
 }
 
 .withdraw-form .primary-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow:
-    0 16px 36px rgba(99,102,241,0.6),
-    inset 0 1px 0 rgba(255,255,255,0.3);
+  box-shadow: 0 16px 36px rgba(99,102,241,0.6), inset 0 1px 0 rgba(255,255,255,0.3);
   filter: brightness(1.05);
 }
 
@@ -510,6 +483,7 @@ body::-webkit-scrollbar-thumb {
   border-left: 6px solid #f5a623;
   text-align: center;
   animation: fadeIn 0.4s ease-out;
+  will-change: transform, opacity;
 }
 
 .welcome-bonus-card h3 { font-size: 1.4rem; margin-bottom: 8px; color: #333; }
