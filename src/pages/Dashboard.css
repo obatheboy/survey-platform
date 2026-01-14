@@ -1,6 +1,7 @@
 /* =========================================================
    WONDERFUL MOBILE DASHBOARD UI ✨
    Phone-first • High Contrast • Premium Neon Glass
+   FIXED BALANCE & ORANGE BUTTONS
 ========================================================= */
 
 /* =========================
@@ -14,7 +15,7 @@
 
   --blue: #6366f1;
   --purple: #8b5cf6;
-  --orange: #fb923c;
+  --orange: #fb923c;  /* Primary button now orange */
   --gold: #facc15;
   --cyan: #22d3ee;
   --green: #22c55e;
@@ -96,22 +97,15 @@ body {
 }
 
 /* =========================
-   HEADER (MENU LEFT ✔)
+   HEADER (MENU LEFT)
 ========================= */
 .dashboard-header {
   display: flex;
   align-items: center;
   gap: 14px;
-
   padding: 16px 18px;
   border-radius: var(--radius-lg);
-
-  background: linear-gradient(
-    135deg,
-    var(--purple),
-    var(--blue)
-  );
-
+  background: linear-gradient(135deg, var(--purple), var(--blue));
   box-shadow: 0 18px 44px rgba(0,0,0,0.6);
 }
 
@@ -137,10 +131,8 @@ body {
 .card {
   padding: 20px;
   border-radius: var(--radius-lg);
-
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-
   box-shadow: 0 20px 48px rgba(0,0,0,0.55);
   animation: floatIn .5s ease both;
 }
@@ -149,11 +141,7 @@ body {
    GREETING
 ========================= */
 .greeting {
-  background: linear-gradient(
-    135deg,
-    var(--gold),
-    var(--orange)
-  );
+  background: linear-gradient(135deg, var(--gold), var(--orange));
   color: #1f2937;
 }
 
@@ -167,36 +155,40 @@ body {
 }
 
 /* =========================
-   EARNINGS
+   EARNINGS / TOTAL BALANCE
 ========================= */
 .earnings {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;              /* Flex for proper spacing */
+  flex-wrap: wrap;            /* Wrap numbers to avoid overlap */
   gap: 14px;
-
-  background: linear-gradient(
-    135deg,
-    var(--cyan),
-    var(--blue)
-  );
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  padding: 14px;
+  border-radius: var(--radius-md);
   color: #04131c;
 }
 
 .earnings > div {
-  background: rgba(255,255,255,0.9);
+  flex: 1 1 45%;             /* Grow, shrink, basis */
+  min-width: 120px;          /* Prevent overlap */
+  background: rgba(255,255,255,0.95);
   border-radius: var(--radius-md);
-  padding: 14px;
+  padding: 16px;
   text-align: center;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.25);
 }
 
 .earnings span {
+  display: block;
   font-size: 12px;
   opacity: 0.8;
+  margin-bottom: 4px;
 }
 
 .earnings strong {
-  font-size: 22px;
+  display: block;
+  font-size: 24px;
   font-weight: 900;
+  word-wrap: break-word;      /* Fix overlapping long numbers */
 }
 
 /* =========================
@@ -243,33 +235,24 @@ body {
 }
 
 /* =========================
-   BUTTONS (TOUCH SAFE)
+   BUTTONS (ORANGE PRIMARY)
 ========================= */
 .primary-btn {
   margin-top: auto;
   min-height: 44px;
   padding: 12px 26px;
   border-radius: var(--radius-pill);
-
   font-weight: 900;
   letter-spacing: .4px;
   border: none;
   cursor: pointer;
-}
-
-.plan-regular .primary-btn {
-  background: linear-gradient(135deg, var(--blue), var(--cyan));
+  background: linear-gradient(135deg, var(--orange), var(--gold));
   color: #fff;
 }
 
-.plan-vip .primary-btn {
-  background: linear-gradient(135deg, var(--purple), var(--pink));
-  color: #fff;
-}
-
-.plan-vvip .primary-btn {
-  background: linear-gradient(135deg, var(--gold), var(--orange));
-  color: #1f2937;
+.primary-btn:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
 }
 
 /* =========================
@@ -294,11 +277,9 @@ body {
   max-width: 420px;
   margin: 26px auto 0;
   padding: 22px;
-
   border-radius: var(--radius-lg);
   background: rgba(10,12,30,0.95);
   box-shadow: 0 18px 44px rgba(0,0,0,0.65);
-
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -326,9 +307,17 @@ body {
     padding: 14px;
   }
 
+  .earnings {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .earnings > div {
+    min-width: 100%;
+  }
+
   .withdraw-card {
     flex-direction: column;
     align-items: stretch;
   }
 }
-    
