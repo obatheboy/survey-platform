@@ -289,9 +289,10 @@ export default function Dashboard() {
             <h4>{plan.icon} {plan.name}</h4>
             <strong>KES {isCompleted(key) ? plan.total.toLocaleString() : "0"}</strong>
           </div>
-          <button className="outline-btn" onClick={() => handleWithdrawClick(key)}>
-            Withdraw
-          </button>
+          <button className="withdraw-btn" onClick={() => handleWithdrawClick(key)}>
+          Withdraw
+      </button>
+
         </div>
       ))}
 
