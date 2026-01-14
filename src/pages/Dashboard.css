@@ -299,7 +299,7 @@ body::-webkit-scrollbar-thumb {
 .primary-btn {
   background-size: 300% 300%;
   animation: gradientFlow 6s ease infinite, glowPulse 3.4s ease infinite;
-  color: #fff;
+  color: #ffbb00;
   border: none;
   padding: 12px 26px;
   border-radius: 999px;
