@@ -23,40 +23,43 @@
   50% { box-shadow: 0 0 26px rgba(186,104,200,0.65); }
   100% { box-shadow: 0 0 0 rgba(0,0,0,0); }
 }
-
 /* =========================
-   SMOOTH SCROLLING ON MOBILE
+   FULL MOBILE SMOOTH SCROLL
 ========================= */
-html {
-  scroll-behavior: smooth; /* smooth scroll for anchor links */
-  -webkit-overflow-scrolling: touch; /* momentum scrolling for iOS */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto; /* allow vertical scrolling */
+  -webkit-overflow-scrolling: touch; /* smooth momentum scroll for iOS */
+  scroll-behavior: smooth; /* smooth scroll for anchors */
 }
 
 body {
-  overflow-y: scroll; /* ensures vertical scrolling is enabled */
-  -webkit-overflow-scrolling: touch; /* iOS momentum scrolling */
+  display: flex;
+  flex-direction: column;
 }
 
 .dashboard {
-  width: 100%;
-  margin: 0 auto;
-  padding: 16px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: linear-gradient(
-    270deg,
-    #0b1020,
-    #1a237e,
-    #311b92,
-    #0d47a1
-  );
-  background-size: 400% 400%;
-  animation: gradientFlow 20s ease infinite;
+  flex: 1 0 auto; /* allow dashboard to expand and scroll */
   min-height: 100vh;
-  color: #e3f2fd;
-  overflow-x: hidden;
-  overflow-y: auto; /* enable vertical scroll */
-  -webkit-overflow-scrolling: touch; /* smooth momentum scroll for iOS */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* smooth scroll */
+  padding: 16px;
+  width: 100%;
 }
+
+/* Optional: prevent horizontal scroll */
+* {
+  box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+  .dashboard {
+    padding: 14px;
+  }
+}
+
 
 /* =========================
    GLOBAL CANVAS
