@@ -1,4 +1,4 @@
-/* =========================
+/* ========================= 
    ANIMATIONS
 ========================= */
 @keyframes gradientFlow {
@@ -23,33 +23,40 @@
   50% { box-shadow: 0 0 26px rgba(186,104,200,0.65); }
   100% { box-shadow: 0 0 0 rgba(0,0,0,0); }
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* =========================
    SMOOTH SCROLLING ON MOBILE
 ========================= */
 html {
-  scroll-behavior: smooth; /* smooth scroll for anchor links */
-  -webkit-overflow-scrolling: touch; /* momentum scrolling for iOS */
+  scroll-behavior: smooth; /* smooth anchor scroll */
+  -webkit-overflow-scrolling: touch; /* iOS momentum scroll */
 }
 
 body {
-  overflow-y: scroll; /* ensures vertical scrolling is enabled */
-  -webkit-overflow-scrolling: touch; /* iOS momentum scrolling */
+  overflow-y: scroll; /* always enable vertical scroll */
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none; /* hide scrollbar IE/Edge */
+  scrollbar-width: thin; /* Firefox */
 }
 
-.dashboard {
-  overflow-y: auto; /* make the main dashboard scrollable if needed */
-  -webkit-overflow-scrolling: touch; /* iOS smooth scroll */
+body::-webkit-scrollbar {
+  width: 6px;
 }
 
-
-
-/* =========================
-   GLOBAL CANVAS
-========================= */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+body::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.18);
+  border-radius: 3px;
 }
 
 .dashboard {
@@ -69,6 +76,18 @@ body {
   min-height: 100vh;
   color: #e3f2fd;
   overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* =========================
+   GLOBAL CANVAS
+========================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 /* =========================
@@ -224,6 +243,7 @@ body {
 .earnings span {
   font-size: 12px;
   opacity: 0.85;
+  display: block;
 }
 
 .earnings strong {
@@ -231,6 +251,7 @@ body {
   margin-top: 6px;
   font-size: 24px;
   font-weight: 900;
+  word-break: break-word; /* prevent overlapping numbers */
 }
 
 /* =========================
@@ -261,6 +282,7 @@ body {
 .plan-card p {
   font-size: 13px;
   opacity: 0.85;
+  word-break: break-word;
 }
 
 .plan-btn {
@@ -271,12 +293,9 @@ body {
 /* =========================
    PLAN COLORS
 ========================= */
-
-
-
-.plan-title.regular { color: #09448b; }   /* cool blue */
-.plan-title.vip { color: #a78bfa; }       /* royal indigo */
-.plan-title.vvip { color: #facc15; }      /* premium gold */
+.plan-title.regular { color: #09448b; }
+.plan-title.vip { color: #a78bfa; }
+.plan-title.vvip { color: #facc15; }
 
 .plan-regular {
   background: linear-gradient(145deg, #0f172a, #020617);
@@ -324,7 +343,6 @@ body {
   box-shadow: 0 10px 32px rgba(250,204,21,0.6);
 }
 
-
 .outline-btn {
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.35);
@@ -359,36 +377,6 @@ body {
 }
 
 /* =========================
-   RESPONSIVE
-========================= */
-@media (min-width: 768px) {
-  .dashboard {
-    max-width: 1100px;
-    padding: 26px 32px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .dashboard {
-    max-width: 1280px;
-  }
-}
-
-@media (max-width: 480px) {
-  .dashboard {
-    padding: 14px;
-  }
-
-  .dashboard-hero {
-    grid-template-columns: 1fr;
-  }
-
-  .withdraw-card,
-  .plan-card {
-    align-items: stretch;
-  }
-}
-/* =========================
    WITHDRAW FORM (ENHANCED)
 ========================= */
 .withdraw-form {
@@ -396,44 +384,29 @@ body {
   margin: 28px auto 0;
   padding: 26px;
   border-radius: 22px;
-
   background: linear-gradient(
     180deg,
     rgba(255,255,255,0.14),
     rgba(255,255,255,0.06)
   );
   backdrop-filter: blur(20px);
-
   border: 1px solid rgba(255,255,255,0.18);
   box-shadow:
     0 22px 50px rgba(0,0,0,0.55),
     inset 0 1px 0 rgba(255,255,255,0.15);
-
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.withdraw-form h4 {
-  font-size: 19px;
-  font-weight: 900;
-  letter-spacing: 0.3px;
-  color: #f9fafb;
-  margin-bottom: 4px;
-}
-
-/* =========================
-   INPUTS
-========================= */
+/* INPUTS */
 .withdraw-form input {
   padding: 13px 16px;
   border-radius: 14px;
   border: 1px solid rgba(255,255,255,0.22);
-
   background: rgba(0,0,0,0.32);
   color: #f9fafb;
   font-size: 14.5px;
-
   outline: none;
   transition: border 0.2s ease, box-shadow 0.2s ease;
 }
@@ -450,26 +423,20 @@ body {
     inset 0 0 0 1px rgba(99,102,241,0.25);
 }
 
-/* =========================
-   PRIMARY BUTTON
-========================= */
+/* PRIMARY BUTTON */
 .withdraw-form .primary-btn {
   padding: 13px;
   border-radius: 999px;
-
   font-weight: 900;
   font-size: 14.5px;
   letter-spacing: 0.4px;
-
   border: none;
   cursor: pointer;
   color: #fff;
-
   background: linear-gradient(135deg, #6366f1, #4f46e5);
   box-shadow:
     0 10px 26px rgba(99,102,241,0.45),
     inset 0 1px 0 rgba(255,255,255,0.25);
-
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
@@ -490,21 +457,16 @@ body {
   filter: grayscale(0.2);
 }
 
-/* =========================
-   SECONDARY BUTTON
-========================= */
+/* SECONDARY BUTTON */
 .withdraw-form .outline-btn {
   padding: 12px;
   border-radius: 999px;
-
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.35);
   color: #e5e7eb;
-
   font-weight: 800;
   font-size: 14px;
   cursor: pointer;
-
   transition: background 0.2s ease, border 0.2s ease;
 }
 
@@ -513,9 +475,7 @@ body {
   border-color: rgba(255,255,255,0.55);
 }
 
-/* =========================
-   FEEDBACK MESSAGES
-========================= */
+/* FEEDBACK MESSAGES */
 .success-msg,
 .error-msg {
   padding: 11px 15px;
@@ -526,42 +486,15 @@ body {
 }
 
 .success-msg {
-  background: linear-gradient(
-    135deg,
-    rgba(34,197,94,0.2),
-    rgba(34,197,94,0.1)
-  );
+  background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,197,94,0.1));
   color: #22c55e;
   box-shadow: inset 0 0 0 1px rgba(34,197,94,0.25);
 }
 
 .error-msg {
-  background: linear-gradient(
-    135deg,
-    rgba(239,68,68,0.2),
-    rgba(239,68,68,0.1)
-  );
+  background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(239,68,68,0.1));
   color: #ef4444;
   box-shadow: inset 0 0 0 1px rgba(239,68,68,0.25);
-}
-
-/* =========================
-   RESPONSIVE
-========================= */
-@media (max-width: 480px) {
-  .withdraw-form {
-    padding: 22px;
-  }
-
-  .withdraw-card {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .withdraw-amount {
-    align-self: flex-end;
-  }
 }
 
 /* =========================
@@ -573,29 +506,16 @@ body {
   padding: 20px 25px;
   border-radius: 18px;
   background: #fff;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-  border-left: 6px solid #f5a623; /* highlight */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  border-left: 6px solid #f5a623;
   text-align: center;
   animation: fadeIn 0.4s ease-out;
 }
 
-.welcome-bonus-card h3 {
-  font-size: 1.4rem;
-  margin-bottom: 8px;
-  color: #333;
-}
+.welcome-bonus-card h3 { font-size: 1.4rem; margin-bottom: 8px; color: #333; }
+.welcome-bonus-card p { font-size: 1rem; margin-bottom: 16px; color: #555; }
 
-.welcome-bonus-card p {
-  font-size: 1rem;
-  margin-bottom: 16px;
-  color: #555;
-}
-
-.welcome-bonus-card .btn-group {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-}
+.welcome-bonus-card .btn-group { display: flex; justify-content: center; gap: 12px; }
 
 .welcome-bonus-card .primary-btn {
   flex: 1;
@@ -609,9 +529,7 @@ body {
   transition: all 0.2s ease;
 }
 
-.welcome-bonus-card .primary-btn:hover {
-  background: #d48806;
-}
+.welcome-bonus-card .primary-btn:hover { background: #d48806; }
 
 .welcome-bonus-card .outline-btn {
   flex: 1;
@@ -630,17 +548,6 @@ body {
   color: #fff;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* =========================
    FULL SCREEN NOTIFICATION
 ========================= */
@@ -650,7 +557,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0,0,0,0.85);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -679,3 +586,17 @@ body {
   border: none;
   box-shadow: 0 0 12px #00ffcc;
 }
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 480px) {
+  .dashboard { padding: 14px; }
+  .dashboard-hero { grid-template-columns: 1fr; }
+  .withdraw-card, .plan-card { align-items: stretch; }
+  .withdraw-form { padding: 22px; }
+  .withdraw-card { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .withdraw-amount { align-self: flex-end; }
+}
+@media (min-width: 768px) { .dashboard { max-width: 1100px; padding: 26px 32px; } }
+@media (min-width: 1200px) { .dashboard { max-width: 1280px; } }
