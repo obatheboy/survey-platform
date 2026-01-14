@@ -352,9 +352,6 @@ body::-webkit-scrollbar-thumb {
   box-shadow: 0 10px 28px rgba(244, 67, 54, 0.75);
 }
 
-/* =========================
-   PLAN WITHDRAW BUTTONS (REGULAR / VIP / VVIP)
-========================= */
 .plan-btn .withdraw-btn {
   width: 100%;
   padding: 12px 0;
@@ -364,16 +361,18 @@ body::-webkit-scrollbar-thumb {
   text-transform: uppercase;
   cursor: pointer;
   border: none;
-  color: #ffc400;
+  color: #212121 !important; /* ensures text color shows */
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   background-size: 300% 300%;
   animation: gradientFlow 6s ease infinite, glowPulse 3s ease infinite;
   box-shadow: 0 6px 18px rgba(0,0,0,0.35);
 }
 
+/* REGULAR PLAN */
 .plan-btn .withdraw-btn.regular {
   background: linear-gradient(135deg, #0f172a, #1e3a8a, #0f172a, #3b82f6);
   box-shadow: 0 6px 18px rgba(59,130,246,0.55);
+  color: #fff; /* ensure text visible on dark gradient */
 }
 
 .plan-btn .withdraw-btn.regular:hover {
@@ -381,9 +380,11 @@ body::-webkit-scrollbar-thumb {
   box-shadow: 0 10px 28px rgba(59,130,246,0.75);
 }
 
+/* VIP PLAN */
 .plan-btn .withdraw-btn.vip {
   background: linear-gradient(135deg, #4c1d95, #7e22ce, #4c1d95, #a78bfa);
   box-shadow: 0 6px 18px rgba(167,139,250,0.55);
+  color: #fff;
 }
 
 .plan-btn .withdraw-btn.vip:hover {
@@ -391,10 +392,11 @@ body::-webkit-scrollbar-thumb {
   box-shadow: 0 10px 28px rgba(167,139,250,0.75);
 }
 
+/* VVIP PLAN */
 .plan-btn .withdraw-btn.vvip {
   background: linear-gradient(135deg, #713f12, #facc15, #713f12, #fef3c7);
-  color: #212121;
   box-shadow: 0 6px 18px rgba(250,204,21,0.55);
+  color: #212121; /* darker text on light gradient */
 }
 
 .plan-btn .withdraw-btn.vvip:hover {
