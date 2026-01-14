@@ -524,86 +524,64 @@ body {
 .welcome-bonus-card {
   max-width: 400px;
   margin: 20px auto;
-  padding: 24px 28px;
-  border-radius: 22px;
-  background: linear-gradient(135deg, #ffdd00, #ff6f00, #f50057); /* vibrant gradient */
-  box-shadow: 0 12px 28px rgba(255, 111, 0, 0.4), 0 0 14px rgba(255, 221, 0, 0.3); /* glowing shadow */
-  border-left: 8px solid #00ffcc;
+  padding: 20px 25px;
+  border-radius: 18px;
+  background: #dd1212;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  border-left: 6px solid #f5a623;
   text-align: center;
-  animation: fadeIn 0.5s ease-out;
-  color: #fff;
-  position: relative;
-  overflow: hidden;
-  font-family: 'Poppins', sans-serif;
-  will-change: transform, opacity;
-}
-
-.welcome-bonus-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at top left, rgba(255,255,255,0.2), transparent 70%);
-  border-radius: inherit;
-  pointer-events: none;
+  animation: fadeIn 0.4s ease-out;
 }
 
 .welcome-bonus-card h3 {
-  font-size: 1.6rem;
-  margin-bottom: 10px;
-  font-weight: 900;
-  letter-spacing: 0.5px;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  font-size: 1.4rem;
+  margin-bottom: 8px;
+  color: #333;
 }
 
 .welcome-bonus-card p {
-  font-size: 1.1rem;
-  margin-bottom: 18px;
-  font-weight: 600;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  font-size: 1rem;
+  margin-bottom: 16px;
+  color: #555;
 }
 
 .welcome-bonus-card .btn-group {
   display: flex;
   justify-content: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .welcome-bonus-card .primary-btn {
   flex: 1;
-  padding: 12px 16px;
-  background: linear-gradient(135deg, #ff6f00, #f50057);
+  padding: 10px 14px;
+  background: #f5a623;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   color: #fff;
-  font-weight: 800;
-  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(245,0,87,0.45);
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
 }
 
 .welcome-bonus-card .primary-btn:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 20px rgba(245,0,87,0.55), 0 0 8px rgba(255,111,0,0.45);
+  background: #d48806;
 }
 
 .welcome-bonus-card .outline-btn {
   flex: 1;
-  padding: 12px 16px;
+  padding: 10px 14px;
   background: transparent;
-  border: 2px solid #00ffcc;
-  border-radius: 12px;
-  color: #00ffcc;
-  font-weight: 700;
-  font-size: 0.95rem;
+  border: 2px solid #f5a623;
+  border-radius: 8px;
+  color: #f5a623;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
 }
 
 .welcome-bonus-card .outline-btn:hover {
-  background: #00ffcc;
-  color: #111;
-  box-shadow: 0 4px 14px rgba(0,255,204,0.45);
+  background: #f5a623;
+  color: #fff;
 }
 
 /* =========================
@@ -617,36 +595,68 @@ body {
   height: 100%;
   background: rgba(0, 0, 0, 0.85);
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: center; /* center horizontally */
+  align-items: center;     /* center vertically */
+  padding: 20px;           /* ensures content never touches edges on small screens */
   z-index: 9999;
+  overflow-y: auto;        /* scroll if content is taller than viewport */
 }
 
 .full-screen-notif .notif-content {
   background: #111;
   color: #fff;
   padding: 28px;
-  border-radius: 20px;
+  border-radius: 18px;
   max-width: 420px;
+  width: 100%;             /* ensures it adapts to small screens */
   text-align: center;
   line-height: 1.5;
-  box-shadow: 0 0 32px #0ff, 0 12px 28px rgba(0,255,204,0.35);
+  box-shadow: 0 0 25px #0ff;
+  transform: translateZ(0); /* GPU acceleration */
 }
 
 .full-screen-notif .notif-content .primary-btn {
   margin-top: 16px;
-  padding: 12px 20px;
-  border-radius: 14px;
+  padding: 10px 18px;
+  border-radius: 12px;
   font-weight: 700;
   cursor: pointer;
-  background: linear-gradient(135deg, #00ffcc, #00bfa5);
-  color: #111;
+  background: #00ffcc;
+  color: #000;
   border: none;
-  box-shadow: 0 0 16px #00ffcc, 0 6px 14px rgba(0,191,165,0.45);
+  box-shadow: 0 0 12px #00ffcc;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .full-screen-notif .notif-content .primary-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 22px #00ffcc, 0 10px 20px rgba(0,191,165,0.55);
+  box-shadow: 0 0 18px #00ffcc;
+}
+
+/* =========================
+   MOBILE OPTIMIZATION
+========================= */
+@media (max-width: 480px) {
+  .full-screen-notif {
+    padding: 16px; /* tighter padding for small screens */
+  }
+
+  .full-screen-notif .notif-content {
+    padding: 20px;
+  }
+
+  .welcome-bonus-card {
+    margin: 16px auto;
+    padding: 16px 20px;
+  }
+
+  .welcome-bonus-card .btn-group {
+    flex-direction: column; /* stack buttons on small screens */
+    gap: 10px;
+  }
+
+  .welcome-bonus-card .primary-btn,
+  .welcome-bonus-card .outline-btn {
+    flex: 1 1 100%;
+  }
 }
