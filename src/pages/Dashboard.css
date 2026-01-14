@@ -39,17 +39,17 @@
    SMOOTH SCROLLING ON MOBILE
 ========================= */
 html {
-  scroll-behavior: smooth; /* smooth anchor link scroll */
-  -webkit-overflow-scrolling: touch; /* iOS momentum scrolling */
-  touch-action: pan-y; /* ensures vertical scroll works smoothly */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 
 body {
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
-  -webkit-tap-highlight-color: transparent; /* prevents tap flicker on mobile */
-  transform: translateZ(0); /* GPU acceleration for smoother scroll */
+  -webkit-tap-highlight-color: transparent;
+  transform: translateZ(0);
 }
 
 /* =========================
@@ -114,19 +114,23 @@ body {
 .dashboard-header {
   display: flex;
   align-items: center;
-  gap: 14px;
+  justify-content: space-between; /* better spacing */
+  gap: 20px; /* slightly more space between buttons and title */
   background: linear-gradient(270deg, #1e88e5, #5e35b1, #8e24aa);
   background-size: 300% 300%;
   animation: gradientFlow 12s ease infinite;
-  padding: 18px;
+  padding: 18px 20px; /* improved horizontal padding for buttons */
   border-radius: 24px;
   box-shadow: 0 18px 46px rgba(0, 0, 0, 0.55);
+  flex-wrap: wrap; /* allow wrapping on small screens */
 }
 
 .dashboard-header h2 {
   font-size: 20px;
   font-weight: 800;
   letter-spacing: 0.3px;
+  flex: 1; /* take remaining space */
+  min-width: 120px;
 }
 
 .menu-btn {
@@ -135,7 +139,7 @@ body {
   border: none;
   color: #fff;
   cursor: pointer;
-  padding: 8px 12px;
+  padding: 10px 16px; /* slightly larger tap area */
   border-radius: 14px;
   transition: transform 0.2s ease, background 0.2s ease;
 }
@@ -258,29 +262,6 @@ body {
 .plan-btn {
   margin-top: 14px;
   width: 100%;
-}
-
-/* =========================
-   PLAN COLORS
-========================= */
-.plan-title.regular { color: #09448b; }
-.plan-title.vip { color: #a78bfa; }
-.plan-title.vvip { color: #facc15; }
-
-.plan-regular {
-  background: linear-gradient(145deg, #0f172a, #020617);
-  box-shadow: 0 0 26px rgba(96,165,250,0.45);
-}
-
-.plan-vip {
-  background: linear-gradient(145deg, #1e1b4b, #312e81);
-  box-shadow: 0 0 30px rgba(167,139,250,0.55);
-}
-
-.plan-vvip {
-  background: linear-gradient(145deg, #422006, #713f12);
-  color: #fef3c7;
-  box-shadow: 0 0 34px rgba(250,204,21,0.6);
 }
 
 /* =========================
@@ -527,7 +508,7 @@ body {
   margin: 20px auto;
   padding: 20px 25px;
   border-radius: 18px;
-  background: #dd1212;
+  background: #7af706;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   border-left: 6px solid #f5a623;
   text-align: center;
@@ -623,3 +604,24 @@ body {
   border: none;
   box-shadow: 0 0 12px #00ffcc;
 }
+
+
+@media (max-width: 480px) {
+  .dashboard-header {
+    flex-direction: column; /* stack buttons on very small screens */
+    gap: 12px;
+    padding: 14px 16px;
+  }
+
+  .menu-btn {
+    width: 100%; /* full width tap target on mobile */
+    text-align: center;
+  }
+
+  .dashboard-hero {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
