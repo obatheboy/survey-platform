@@ -10,7 +10,7 @@
 @keyframes floatIn {
   from {
     opacity: 0;
-    transform: translateY(16px) scale(0.97);
+    transform: translateY(18px) scale(0.96);
   }
   to {
     opacity: 1;
@@ -20,12 +20,12 @@
 
 @keyframes glowPulse {
   0% { box-shadow: 0 0 0 rgba(0,0,0,0); }
-  50% { box-shadow: 0 0 26px rgba(186,104,200,0.65); }
+  50% { box-shadow: 0 0 28px rgba(186,104,200,0.6); }
   100% { box-shadow: 0 0 0 rgba(0,0,0,0); }
 }
 
 /* =========================
-   GLOBAL CANVAS
+   GLOBAL
 ========================= */
 *,
 *::before,
@@ -34,26 +34,59 @@
 }
 
 .dashboard {
-  width: 100%;
-  margin: 0 auto;
-  padding: 16px;
+  min-height: 100vh;
+  padding: 18px;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: linear-gradient(
-    270deg,
-    #0b1020,
-    #1a237e,
-    #311b92,
-    #0d47a1
-  );
+  background: linear-gradient(270deg, #0b1020, #1a237e, #311b92, #0d47a1);
   background-size: 400% 400%;
   animation: gradientFlow 20s ease infinite;
-  min-height: 100vh;
   color: #e3f2fd;
-  overflow-x: hidden;
 }
 
 /* =========================
-   HERO / TOP AREA
+   HEADER
+========================= */
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 22px;
+  border-radius: 24px;
+  background: linear-gradient(270deg, #1e88e5, #5e35b1, #8e24aa);
+  background-size: 300% 300%;
+  animation: gradientFlow 12s ease infinite;
+  box-shadow: 0 18px 46px rgba(0,0,0,0.55);
+}
+
+.dashboard-header h2 {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.menu-btn {
+  background: rgba(255,255,255,0.18);
+  border: none;
+  padding: 10px 14px;
+  border-radius: 14px;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* =========================
+   CARD BASE
+========================= */
+.card {
+  position: relative;
+  padding: 22px;
+  border-radius: 26px;
+  background: linear-gradient(145deg, #111827, #020617);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 22px 54px rgba(0,0,0,0.55);
+  animation: floatIn 0.7s ease both;
+}
+
+/* =========================
+   HERO
 ========================= */
 .dashboard-hero {
   display: grid;
@@ -64,110 +97,22 @@
 @media (min-width: 768px) {
   .dashboard-hero {
     grid-template-columns: 1.2fr 1fr;
-    align-items: stretch;
   }
 }
 
 /* =========================
-   LOADING
-========================= */
-.loading {
-  text-align: center;
-  margin-top: 80px;
-  font-size: 15px;
-  color: #b39ddb;
-  animation: floatIn 0.8s ease;
-}
-
-/* =========================
-   HEADER
-========================= */
-.dashboard-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  background: linear-gradient(
-    270deg,
-    #1e88e5,
-    #5e35b1,
-    #8e24aa
-  );
-  background-size: 300% 300%;
-  animation: gradientFlow 12s ease infinite;
-  padding: 18px;
-  border-radius: 24px;
-  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.55);
-}
-
-.dashboard-header h2 {
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: 0.3px;
-}
-
-.menu-btn {
-  font-size: 22px;
-  background: rgba(255, 255, 255, 0.18);
-  border: none;
-  color: #fff;
-  cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 14px;
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.menu-btn:hover {
-  transform: scale(1.1);
-  background: rgba(255, 255, 255, 0.28);
-}
-
-/* =========================
-   CARD BASE
-========================= */
-.card {
-  width: 100%;
-  padding: 20px;
-  border-radius: 26px;
-  background: linear-gradient(
-    135deg,
-    rgb(119, 4, 4),
-    rgb(28, 70, 3)
-  );
-  backdrop-filter: blur(14px);
-  box-shadow: 0 22px 56px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  animation: floatIn 0.75s ease both;
-  position: relative;
-}
-
-.card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
-  pointer-events: none;
-}
-
-/* =========================
-   GREETING (HERO LEFT)
+   GREETING
 ========================= */
 .greeting {
-  background: linear-gradient(
-    270deg,
-    #ffb300,
-    #ff9800,
-    #ff6f00
-  );
+  background: linear-gradient(270deg, #ffb300, #ff9800, #ff6f00);
   background-size: 300% 300%;
   animation: gradientFlow 12s ease infinite;
-  color: #212121;
+  color: #1f2937;
 }
 
 .greeting h3 {
   font-size: 20px;
   font-weight: 900;
-  margin-bottom: 6px;
 }
 
 .greeting p {
@@ -176,487 +121,152 @@
 }
 
 /* =========================
-   EARNINGS (HERO RIGHT)
+   EARNINGS
 ========================= */
 .earnings {
-  background: linear-gradient(
-    270deg,
-    #00acc1,
-    #26c6da,
-    #e6d00b
-  );
-  background-size: 300% 300%;
-  animation: gradientFlow 9s ease infinite;
-  color: #102027;
-  border-radius: 26px;
-  padding: 20px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
+  padding: 20px;
+  border-radius: 26px;
+  background: linear-gradient(270deg, #00acc1, #26c6da, #e6d00b);
+  background-size: 300% 300%;
+  animation: gradientFlow 9s ease infinite;
 }
 
 .earnings > div {
-  background: rgb(184, 187, 11);
+  background: rgba(255,255,255,0.9);
   border-radius: 18px;
   padding: 14px;
   text-align: center;
 }
 
-.earnings span {
-  font-size: 12px;
-  opacity: 0.85;
-}
-
-.earnings strong {
-  display: block;
-  margin-top: 6px;
-  font-size: 24px;
-  font-weight: 900;
-}
-
 /* =========================
-   SECTION TITLES
-========================= */
-.section-title {
-  margin: 30px 0 14px;
-  font-size: 18px;
-  color: #ce93d8;
-  letter-spacing: 0.5px;
-}
-
-/* =========================
-   PLAN CARDS
+   PLAN CARDS (IMPORTANT)
 ========================= */
 .plan-card {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  height: 100%;
+  gap: 10px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .plan-card:hover {
-  transform: translateY(-5px) scale(1.03);
-  box-shadow: 0 28px 72px rgba(0, 0, 0, 0.6);
+  transform: translateY(-6px);
+  box-shadow: 0 30px 72px rgba(0,0,0,0.65);
 }
 
-.plan-card p {
-  font-size: 13px;
-  opacity: 0.85;
-}
-
+/* 🔒 LOCK BUTTON POSITION */
 .plan-btn {
-  margin-top: 14px;
+  margin-top: auto;
   width: 100%;
 }
 
 /* =========================
    PLAN COLORS
 ========================= */
-
-
-
-.plan-title.regular { color: #09448b; }   /* cool blue */
-.plan-title.vip { color: #a78bfa; }       /* royal indigo */
-.plan-title.vvip { color: #facc15; }      /* premium gold */
+.plan-title.regular { color: #60a5fa; }
+.plan-title.vip { color: #a78bfa; }
+.plan-title.vvip { color: #facc15; }
 
 .plan-regular {
   background: linear-gradient(145deg, #0f172a, #020617);
-  box-shadow: 0 0 26px rgba(96,165,250,0.45);
 }
 
 .plan-vip {
   background: linear-gradient(145deg, #1e1b4b, #312e81);
-  box-shadow: 0 0 30px rgba(167,139,250,0.55);
 }
 
 .plan-vvip {
   background: linear-gradient(145deg, #422006, #713f12);
   color: #fef3c7;
-  box-shadow: 0 0 34px rgba(250,204,21,0.6);
 }
 
 /* =========================
    BUTTONS
 ========================= */
 .primary-btn {
-  background-size: 300% 300%;
-  animation: gradientFlow 6s ease infinite, glowPulse 3.4s ease infinite;
-  color: #fff;
-  border: none;
-  padding: 12px 26px;
+  padding: 13px 26px;
   border-radius: 999px;
   font-weight: 800;
+  border: none;
   cursor: pointer;
+  color: #fff;
+  animation: glowPulse 3.4s ease infinite;
 }
 
 .plan-regular .primary-btn {
   background: linear-gradient(135deg, #3b82f6, #2563eb);
-  box-shadow: 0 10px 28px rgba(59,130,246,0.45);
 }
 
 .plan-vip .primary-btn {
   background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-  box-shadow: 0 10px 30px rgba(139,92,246,0.5);
 }
 
 .plan-vvip .primary-btn {
   background: linear-gradient(135deg, #facc15, #ca8a04);
   color: #1f2937;
-  box-shadow: 0 10px 32px rgba(250,204,21,0.6);
 }
 
-
 .outline-btn {
+  padding: 11px 22px;
+  border-radius: 999px;
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.35);
   color: #f8bbd0;
-  padding: 10px 22px;
-  border-radius: 999px;
-  font-weight: 700;
   cursor: pointer;
 }
 
 /* =========================
-   WITHDRAW
+   WITHDRAW CARDS
 ========================= */
 .withdraw-card {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 14px 16px;
-  gap: 14px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 18px;
 }
 
-.withdraw-card:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 26px 68px rgba(0, 0, 0, 0.55);
-}
-
-.withdraw-title {
-  color: #51ff00;
-  text-shadow: 0 0 14px rgba(81, 255, 0, 0.6);
-  animation: glowPulse 3s ease infinite;
+.withdraw-card .primary-btn {
+  min-width: 140px;
 }
 
 /* =========================
-   RESPONSIVE
-========================= */
-@media (min-width: 768px) {
-  .dashboard {
-    max-width: 1100px;
-    padding: 26px 32px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .dashboard {
-    max-width: 1280px;
-  }
-}
-
-@media (max-width: 480px) {
-  .dashboard {
-    padding: 14px;
-  }
-
-  .dashboard-hero {
-    grid-template-columns: 1fr;
-  }
-
-  .withdraw-card,
-  .plan-card {
-    align-items: stretch;
-  }
-}
-/* =========================
-   WITHDRAW FORM (ENHANCED)
+   WITHDRAW FORM
 ========================= */
 .withdraw-form {
   max-width: 440px;
   margin: 28px auto 0;
   padding: 26px;
   border-radius: 22px;
-
+  backdrop-filter: blur(20px);
   background: linear-gradient(
     180deg,
     rgba(255,255,255,0.14),
     rgba(255,255,255,0.06)
   );
-  backdrop-filter: blur(20px);
-
-  border: 1px solid rgba(255,255,255,0.18);
-  box-shadow:
-    0 22px 50px rgba(0,0,0,0.55),
-    inset 0 1px 0 rgba(255,255,255,0.15);
-
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
-
-.withdraw-form h4 {
-  font-size: 19px;
-  font-weight: 900;
-  letter-spacing: 0.3px;
-  color: #f9fafb;
-  margin-bottom: 4px;
-}
-
-/* =========================
-   INPUTS
-========================= */
-.withdraw-form input {
-  padding: 13px 16px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.22);
-
-  background: rgba(0,0,0,0.32);
-  color: #f9fafb;
-  font-size: 14.5px;
-
-  outline: none;
-  transition: border 0.2s ease, box-shadow 0.2s ease;
-}
-
-.withdraw-form input::placeholder {
-  color: #c7d2fe;
-  opacity: 0.75;
-}
-
-.withdraw-form input:focus {
-  border-color: #6366f1;
-  box-shadow:
-    0 0 0 3px rgba(99,102,241,0.35),
-    inset 0 0 0 1px rgba(99,102,241,0.25);
-}
-
-/* =========================
-   PRIMARY BUTTON
-========================= */
-.withdraw-form .primary-btn {
-  padding: 13px;
-  border-radius: 999px;
-
-  font-weight: 900;
-  font-size: 14.5px;
-  letter-spacing: 0.4px;
-
-  border: none;
-  cursor: pointer;
-  color: #fff;
-
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
-  box-shadow:
-    0 10px 26px rgba(99,102,241,0.45),
-    inset 0 1px 0 rgba(255,255,255,0.25);
-
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    filter 0.2s ease;
-}
-
-.withdraw-form .primary-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow:
-    0 16px 36px rgba(99,102,241,0.6),
-    inset 0 1px 0 rgba(255,255,255,0.3);
-  filter: brightness(1.05);
-}
-
-.withdraw-form .primary-btn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-  filter: grayscale(0.2);
-}
-
-/* =========================
-   SECONDARY BUTTON
-========================= */
-.withdraw-form .outline-btn {
-  padding: 12px;
-  border-radius: 999px;
-
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.35);
-  color: #e5e7eb;
-
-  font-weight: 800;
-  font-size: 14px;
-  cursor: pointer;
-
-  transition: background 0.2s ease, border 0.2s ease;
-}
-
-.withdraw-form .outline-btn:hover {
-  background: rgba(255,255,255,0.15);
-  border-color: rgba(255,255,255,0.55);
-}
-
-/* =========================
-   FEEDBACK MESSAGES
-========================= */
-.success-msg,
-.error-msg {
-  padding: 11px 15px;
-  border-radius: 14px;
-  font-weight: 800;
-  font-size: 13px;
-  line-height: 1.3;
-}
-
-.success-msg {
-  background: linear-gradient(
-    135deg,
-    rgba(34,197,94,0.2),
-    rgba(34,197,94,0.1)
-  );
-  color: #22c55e;
-  box-shadow: inset 0 0 0 1px rgba(34,197,94,0.25);
-}
-
-.error-msg {
-  background: linear-gradient(
-    135deg,
-    rgba(239,68,68,0.2),
-    rgba(239,68,68,0.1)
-  );
-  color: #ef4444;
-  box-shadow: inset 0 0 0 1px rgba(239,68,68,0.25);
 }
 
 /* =========================
    RESPONSIVE
 ========================= */
 @media (max-width: 480px) {
-  .withdraw-form {
-    padding: 22px;
+  .dashboard {
+    padding: 14px;
   }
 
   .withdraw-card {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+    align-items: stretch;
   }
 
-  .withdraw-amount {
-    align-self: flex-end;
+  .withdraw-card .primary-btn {
+    width: 100%;
   }
-}
-
-/* =========================
-   WELCOME BONUS CARD
-========================= */
-.welcome-bonus-card {
-  max-width: 400px;
-  margin: 20px auto;
-  padding: 20px 25px;
-  border-radius: 18px;
-  background: #fff;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-  border-left: 6px solid #f5a623; /* highlight */
-  text-align: center;
-  animation: fadeIn 0.4s ease-out;
-}
-
-.welcome-bonus-card h3 {
-  font-size: 1.4rem;
-  margin-bottom: 8px;
-  color: #333;
-}
-
-.welcome-bonus-card p {
-  font-size: 1rem;
-  margin-bottom: 16px;
-  color: #555;
-}
-
-.welcome-bonus-card .btn-group {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-}
-
-.welcome-bonus-card .primary-btn {
-  flex: 1;
-  padding: 10px 14px;
-  background: #f5a623;
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.welcome-bonus-card .primary-btn:hover {
-  background: #d48806;
-}
-
-.welcome-bonus-card .outline-btn {
-  flex: 1;
-  padding: 10px 14px;
-  background: transparent;
-  border: 2px solid #f5a623;
-  border-radius: 8px;
-  color: #f5a623;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.welcome-bonus-card .outline-btn:hover {
-  background: #f5a623;
-  color: #fff;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* =========================
-   FULL SCREEN NOTIFICATION
-========================= */
-.full-screen-notif {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.85);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.full-screen-notif .notif-content {
-  background: #111;
-  color: #fff;
-  padding: 28px;
-  border-radius: 18px;
-  max-width: 420px;
-  text-align: center;
-  line-height: 1.5;
-  box-shadow: 0 0 25px #0ff;
-}
-
-.full-screen-notif .notif-content .primary-btn {
-  margin-top: 16px;
-  padding: 10px 18px;
-  border-radius: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  background: #00ffcc;
-  color: #000;
-  border: none;
-  box-shadow: 0 0 12px #00ffcc;
 }
