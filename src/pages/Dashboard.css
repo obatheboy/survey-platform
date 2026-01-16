@@ -26,91 +26,40 @@
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-    will-change: transform, opacity;
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* =========================
-   SMOOTH SCROLLING ON MOBILE
+   SMOOTH SCROLLING
 ========================= */
 html {
-  scroll-behavior: smooth; 
-  -webkit-overflow-scrolling: touch; 
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
-  overflow-y: scroll; 
+  overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
-  -ms-overflow-style: none;
-  scrollbar-width: thin;
-  will-change: scroll-position;
-}
-
-body::-webkit-scrollbar {
-  width: 6px;
-}
-
-body::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.18);
-  border-radius: 3px;
-}
-
-.dashboard {
-  width: 100%;
-  margin: 0 auto;
-  padding: 16px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: linear-gradient(270deg, #0b1020, #1a237e, #311b92, #0d47a1);
-  background-size: 400% 400%;
-  animation: gradientFlow 20s ease infinite;
-  min-height: 100vh;
-  color: #e3f2fd;
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
 }
 
 /* =========================
-   GLOBAL CANVAS
+   GLOBAL
 ========================= */
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
-/* =========================
-   HERO / TOP AREA
-========================= */
-.dashboard-hero {
-  display: grid;
-  gap: 18px;
-  margin-bottom: 26px;
-}
-
-@media (min-width: 768px) {
-  .dashboard-hero {
-    grid-template-columns: 1.2fr 1fr;
-    align-items: stretch;
-  }
-}
-
-/* =========================
-   LOADING
-========================= */
-.loading {
-  text-align: center;
-  margin-top: 80px;
-  font-size: 15px;
-  color: #b39ddb;
-  animation: floatIn 0.8s ease;
-  will-change: transform, opacity;
+.dashboard {
+  width: 100%;
+  min-height: 100vh;
+  padding: 16px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(270deg, #0b1020, #1a237e, #311b92, #0d47a1);
+  background-size: 400% 400%;
+  animation: gradientFlow 20s ease infinite;
+  color: #e3f2fd;
+  overflow-x: hidden;
 }
 
 /* =========================
@@ -120,65 +69,54 @@ body::-webkit-scrollbar-thumb {
   display: flex;
   align-items: center;
   gap: 14px;
+  padding: 18px;
+  border-radius: 24px;
   background: linear-gradient(270deg, #1e88e5, #5e35b1, #8e24aa);
   background-size: 300% 300%;
   animation: gradientFlow 12s ease infinite;
-  padding: 18px;
-  border-radius: 24px;
-  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.55);
-  will-change: transform, background;
-}
-
-.dashboard-header h2 {
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: 0.3px;
+  box-shadow: 0 18px 46px rgba(0,0,0,0.55);
 }
 
 .menu-btn {
   font-size: 22px;
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255,255,255,0.18);
   border: none;
   color: #fff;
-  cursor: pointer;
   padding: 8px 12px;
   border-radius: 14px;
-  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
 }
 
-.menu-btn:hover {
-  transform: scale(1.1);
-  background: rgba(255, 255, 255, 0.28);
-  box-shadow: 0 0 12px rgba(255,255,255,0.35);
+/* =========================
+   HERO
+========================= */
+.dashboard-hero {
+  display: grid;
+  gap: 18px;
+  margin: 26px 0;
+}
+
+@media (min-width: 768px) {
+  .dashboard-hero {
+    grid-template-columns: 1.2fr 1fr;
+  }
 }
 
 /* =========================
    CARD BASE
 ========================= */
 .card {
-  width: 100%;
   padding: 20px;
   border-radius: 26px;
   background: linear-gradient(135deg, rgb(119, 4, 4), rgb(28, 70, 3));
   backdrop-filter: blur(14px);
-  box-shadow: 0 22px 56px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 22px 56px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.12);
   animation: floatIn 0.75s ease both;
-  position: relative;
-  will-change: transform, opacity;
-}
-
-.card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
-  pointer-events: none;
 }
 
 /* =========================
-   GREETING (HERO LEFT)
+   GREETING
 ========================= */
 .greeting {
   background: linear-gradient(270deg, #ffb300, #ff9800, #ff6f00);
@@ -187,19 +125,8 @@ body::-webkit-scrollbar-thumb {
   color: #212121;
 }
 
-.greeting h3 {
-  font-size: 20px;
-  font-weight: 900;
-  margin-bottom: 6px;
-}
-
-.greeting p {
-  font-size: 14px;
-  opacity: 0.9;
-}
-
 /* =========================
-   EARNINGS (HERO RIGHT)
+   EARNINGS
 ========================= */
 .earnings {
   background: linear-gradient(270deg, #00acc1, #26c6da, #e6d00b);
@@ -214,206 +141,111 @@ body::-webkit-scrollbar-thumb {
 }
 
 .earnings > div {
-  background: rgb(184, 187, 11);
+  background: rgb(184,187,11);
   border-radius: 18px;
   padding: 14px;
   text-align: center;
 }
 
-.earnings span {
-  font-size: 12px;
-  opacity: 0.85;
-  display: block;
+/* =========================
+   🔥 DASHBOARD TABS (NEW)
+========================= */
+.dashboard-tabs {
+  display: flex;
+  gap: 10px;
+  margin: 30px 0 20px;
+  padding: 8px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
 }
 
-.earnings strong {
-  display: block;
-  margin-top: 6px;
-  font-size: 24px;
-  font-weight: 900;
-  word-break: break-word;
+.tab-btn {
+  flex: 1;
+  padding: 12px 10px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 14px;
+  text-transform: uppercase;
+  color: #b39ddb;
+  background: transparent;
+  transition: all 0.25s ease;
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, #ffca28, #ff8f00);
+  color: #212121;
+  box-shadow: 0 6px 18px rgba(255,193,7,0.55);
+  transform: scale(1.05);
 }
 
 /* =========================
    SECTION TITLES
 ========================= */
 .section-title {
-  margin: 30px 0 14px;
+  margin: 26px 0 14px;
   font-size: 18px;
   color: #ce93d8;
-  letter-spacing: 0.5px;
 }
 
 /* =========================
-   PLAN CARDS
+   PLAN / WITHDRAW CARDS
 ========================= */
-.plan-card {
+.plan-card,
+.withdraw-card {
+  margin-bottom: 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  will-change: transform, box-shadow;
+  gap: 10px;
 }
 
-.plan-card:hover {
+.plan-card:hover,
+.withdraw-card:hover {
   transform: translateY(-5px) scale(1.03);
-  box-shadow: 0 28px 72px rgba(0, 0, 0, 0.6);
-}
-
-.plan-card p {
-  font-size: 13px;
-  opacity: 0.85;
-  word-break: break-word;
-}
-
-.plan-btn {
-  margin-top: 14px;
-  width: 100%;
 }
 
 /* =========================
-   PLAN COLORS
-========================= */
-.plan-title.regular { color: #09448b; }
-.plan-title.vip { color: #a78bfa; }
-.plan-title.vvip { color: #facc15; }
-
-.plan-regular {
-  background: linear-gradient(145deg, #0f172a, #020617);
-  box-shadow: 0 0 26px rgba(96,165,250,0.45);
-}
-
-.plan-vip {
-  background: linear-gradient(145deg, #1e1b4b, #312e81);
-  box-shadow: 0 0 30px rgba(167,139,250,0.55);
-}
-
-.plan-vvip {
-  background: linear-gradient(145deg, #422006, #713f12);
-  color: #fef3c7;
-  box-shadow: 0 0 34px rgba(250,204,21,0.6);
-}
-
-/* =========================
-   BUTTONS (ALL STYLES IMPROVED)
+   BUTTONS
 ========================= */
 .primary-btn {
-  background: linear-gradient(135deg, #ff6f00, #ffca28, #ff8f00, #ffd54f);
-  background-size: 300% 300%;
-  animation: gradientFlow 6s ease infinite, glowPulse 3.4s ease infinite;
+  background: linear-gradient(135deg, #ff6f00, #ffca28);
   color: #212121;
   border: none;
   padding: 14px 28px;
   border-radius: 50px;
   font-weight: 800;
-  font-size: 15px;
   cursor: pointer;
-  text-transform: uppercase;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 6px 18px rgba(255, 193, 7, 0.55);
+  box-shadow: 0 6px 18px rgba(255,193,7,0.55);
 }
 
-.primary-btn:hover {
-  transform: scale(1.08);
-  box-shadow: 0 10px 28px rgba(255, 193, 7, 0.75);
-}
-
-.secondary-btn {
-  background: linear-gradient(135deg, #42a5f5, #1e88e5, #64b5f6);
-  color: #fff;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 50px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 14px rgba(33, 150, 243, 0.45);
-}
-
-.secondary-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 22px rgba(33, 150, 243, 0.6);
-}
-
-.danger-btn {
-  background: linear-gradient(135deg, #e53935, #f44336, #ef5350);
-  color: #fff;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 50px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 16px rgba(244, 67, 54, 0.55);
-}
-
-.danger-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 10px 28px rgba(244, 67, 54, 0.75);
-}
-
-/* =========================
-   PLAN WITHDRAW BUTTON FIX
-========================= */
 .withdraw-btn {
-  background: linear-gradient(135deg, #ff9100, #ffc400, #ff6d00, #ffd740);
-  background-size: 300% 300%;
-  animation: gradientFlow 5s ease infinite, glowPulse 3s ease infinite;
-  color: #212121; /* Text color */
+  background: linear-gradient(135deg, #ff9100, #ffc400);
   border: none;
   padding: 12px 26px;
   border-radius: 50px;
   font-weight: 800;
-  font-size: 14px;
   cursor: pointer;
-  text-transform: uppercase;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 6px 18px rgba(255, 193, 7, 0.55);
-}
-
-.withdraw-btn:hover {
-  transform: scale(1.08);
-  box-shadow: 0 10px 28px rgba(255, 193, 7, 0.75);
 }
 
 /* =========================
-   RESPONSIVE
+   WITHDRAW FORM
 ========================= */
-@media (max-width: 480px) {
-  .dashboard { padding: 14px; }
-  .dashboard-hero { grid-template-columns: 1fr; }
-  .withdraw-card, .plan-card { align-items: stretch; }
-  .withdraw-form { padding: 22px; }
-  .withdraw-card { flex-direction: column; align-items: flex-start; gap: 10px; }
-  .withdraw-amount { align-self: flex-end; }
-
-  /* Reduce heavy animations on mobile */
-  .dashboard, .greeting, .earnings, .dashboard-header, .primary-btn, .card {
-    animation: none !important;
-    will-change: auto;
-    background-size: cover;
-  }
+.withdraw-form input {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
 }
-
-@media (min-width: 768px) { .dashboard { max-width: 1100px; padding: 26px 32px; } }
-@media (min-width: 1200px) { .dashboard { max-width: 1280px; } }
 
 /* =========================
-   REDUCED MOTION SUPPORT
+   FULL SCREEN NOTIFICATION
 ========================= */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation: none !important;
-    transition: none !important;
-  }
-}
-
-/* ========================= FULL SCREEN NOTIFICATION ========================= */
 .full-screen-notif {
   position: fixed;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: rgba(0,0,0,0.85);
   display: flex;
   justify-content: center;
@@ -428,24 +260,35 @@ body::-webkit-scrollbar-thumb {
   border-radius: 18px;
   max-width: 420px;
   text-align: center;
-  line-height: 1.5;
   box-shadow: 0 0 25px #0ff;
 }
 
-.full-screen-notif .notif-content .primary-btn {
-  margin-top: 16px;
-  padding: 12px 24px;
-  border-radius: 50px;
-  font-weight: 700;
-  cursor: pointer;
-  background: linear-gradient(135deg, #00ffcc, #00bfa5);
-  color: #000;
-  border: none;
-  box-shadow: 0 0 18px #00ffcc;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+/* =========================
+   MOBILE OPTIMIZATION
+========================= */
+@media (max-width: 480px) {
+  .dashboard { padding: 14px; }
+  .dashboard-hero { grid-template-columns: 1fr; }
+
+  .dashboard-tabs {
+    flex-direction: column;
+  }
+
+  /* Reduce heavy animations */
+  .dashboard,
+  .card,
+  .dashboard-header,
+  .primary-btn {
+    animation: none !important;
+  }
 }
 
-.full-screen-notif .notif-content .primary-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 28px #00ffcc;
+/* =========================
+   REDUCED MOTION
+========================= */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
 }
