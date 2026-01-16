@@ -182,6 +182,9 @@ export default function Surveys() {
 /* =========================
    STYLES
 ========================= */
+/* ===============================
+   SURVEY PAGE STYLES (ENHANCED)
+================================ */
 
 const page = {
   minHeight: "100vh",
@@ -189,61 +192,121 @@ const page = {
   justifyContent: "center",
   alignItems: "center",
   padding: 16,
-  background: "#f4f6fb",
+  background:
+    "linear-gradient(135deg, #0f172a, #1e293b)",
 };
 
 const card = {
   width: "100%",
   maxWidth: 480,
-  background: "#fff",
-  borderRadius: 16,
+  background: "linear-gradient(180deg, #ffffff, #f8fafc)",
+  borderRadius: 20,
   padding: 24,
-  boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+  boxShadow: "0 25px 60px rgba(0,0,0,0.25)",
+  border: "1px solid rgba(0,0,0,0.06)",
 };
 
-const title = { textAlign: "center", marginBottom: 12 };
+const title = {
+  textAlign: "center",
+  marginBottom: 14,
+  fontSize: 20,
+  fontWeight: 900,
+  color: "#0f172a",
+};
 
 const meta = {
   display: "flex",
   justifyContent: "space-between",
-  fontSize: 14,
-  color: "#555",
-  marginBottom: 10,
+  fontSize: 13,
+  fontWeight: 600,
+  color: "#475569",
+  marginBottom: 12,
 };
 
+/* ===============================
+   PROGRESS BAR
+================================ */
 const progressBar = {
-  height: 6,
-  background: "#eee",
-  borderRadius: 4,
+  height: 8,
+  background: "#e5e7eb",
+  borderRadius: 8,
   overflow: "hidden",
-  marginBottom: 20,
+  marginBottom: 22,
 };
 
-const progressFill = { height: "100%", background: "#6a1b9a" };
+const progressFill = {
+  height: "100%",
+  background: "linear-gradient(90deg, #7c3aed, #a855f7)",
+  borderRadius: 8,
+  transition: "width 0.3s ease",
+};
 
-const question = { marginBottom: 16 };
+/* ===============================
+   QUESTION
+================================ */
+const question = {
+  marginBottom: 18,
+  fontSize: 16,
+  fontWeight: 700,
+  color: "#1e293b",
+};
 
+/* ===============================
+   OPTION CARDS
+================================ */
 const optionCard = {
-  padding: 14,
-  borderRadius: 10,
-  border: "1px solid #ddd",
-  marginBottom: 10,
+  padding: 16,
+  borderRadius: 14,
+  border: "1px solid #e5e7eb",
+  marginBottom: 12,
   cursor: "pointer",
+  background: "#ffffff",
+  fontSize: 15,
+  fontWeight: 600,
+  color: "#334155",
+  transition: "all 0.2s ease",
+  boxShadow: "0 4px 12px rgba(0,0,0,0.04)",
 };
 
 const optionActive = {
-  borderColor: "#6a1b9a",
-  background: "#f3e5f5",
+  borderColor: "#7c3aed",
+  background:
+    "linear-gradient(135deg, #ede9fe, #f5f3ff)",
+  color: "#4c1d95",
+  boxShadow: "0 10px 25px rgba(124,58,237,0.25)",
 };
 
+/* ===============================
+   BUTTON
+================================ */
 const button = {
   width: "100%",
-  padding: 14,
-  marginTop: 20,
-  borderRadius: 10,
+  padding: 15,
+  marginTop: 22,
+  borderRadius: 50,
   border: "none",
-  background: "#6a1b9a",
-  color: "#fff",
+  background:
+    "linear-gradient(135deg, #7c3aed, #a855f7)",
+  color: "#ffffff",
   fontSize: 16,
-  fontWeight: "bold",
+  fontWeight: 900,
+  letterSpacing: "0.3px",
+  cursor: "pointer",
+  boxShadow: "0 15px 40px rgba(124,58,237,0.45)",
+};
+
+/* ===============================
+   EXPORT
+================================ */
+export {
+  page,
+  card,
+  title,
+  meta,
+  progressBar,
+  progressFill,
+  question,
+  optionCard,
+  optionActive,
+  button,
 };

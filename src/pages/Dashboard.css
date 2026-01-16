@@ -373,3 +373,90 @@ body {
   font-size: 15px;
   line-height: 1.5;
 }
+/* =========================================================
+   MOBILE COMPACT MODE – FIT EVERYTHING ON ONE SCREEN
+========================================================= */
+@media (max-width: 480px) {
+
+  /* Reduce overall dashboard padding */
+  .dashboard {
+    padding: 10px;
+  }
+
+  /* HEADER: slimmer */
+  .dashboard-header {
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    border-radius: var(--radius-lg);
+  }
+
+  .dashboard-header h2 {
+    font-size: 16px;
+  }
+
+  /* HERO: tighter spacing */
+  .dashboard-hero {
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  /* ALL CARDS: slimmer */
+  .card {
+    padding: 12px;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+  }
+
+  /* GREETING */
+  .greeting h3 {
+    font-size: 17px;
+  }
+
+  .greeting p {
+    font-size: 12px;
+  }
+
+  /* EARNINGS: shorter cards */
+  .earnings {
+    gap: 8px;
+  }
+
+  .earnings > div {
+    padding: 10px;
+  }
+
+  .earnings strong {
+    font-size: 18px;
+  }
+
+  /* WELCOME BONUS: compact */
+  .welcome-bonus-card {
+    margin-bottom: 14px;
+  }
+
+  .welcome-bonus-card h3 {
+    font-size: 18px;
+  }
+
+  .welcome-bonus-card p {
+    font-size: 13px;
+    line-height: 1.3;
+  }
+
+  /* TABS: thinner */
+  .dashboard-tabs {
+    margin-bottom: 14px;
+  }
+
+  .dashboard-tabs button {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  /* BUTTONS: slimmer */
+  .primary-btn,
+  .withdraw-btn {
+    padding: 12px;
+    font-size: 14px;
+  }
+}
