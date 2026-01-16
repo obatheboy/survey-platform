@@ -110,7 +110,7 @@ export default function ActivationNotice() {
             textShadow: `0 0 20px ${plan.glow}`,
           }}
         >
-          🎉 Congratulations! 🎉
+          🎉🎉 Congratulations! 🎉🎉
         </h2>
 
         <p style={text}>
@@ -131,7 +131,7 @@ export default function ActivationNotice() {
 
         <div style={urgencyBox}>
           ⏳ Action Required: Activate your account to secure and withdraw your
-          earnings
+          earnings now !!
         </div>
 
         <div style={highlightBox}>

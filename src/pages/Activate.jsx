@@ -151,12 +151,13 @@ export default function Activate() {
         <div style={sectionHighlight}>
           <p style={{ fontWeight: 900, color: "#ff3b3b" }}>🔐 ACTIVATION REQUIRED TO WITHDRAW</p>
           <p>✔ One-time activation fee</p>
+          <p>✔Unlock access to all surveys</p>
           <p>✔ Withdraw directly to M-Pesa</p>
-          <p>✔ Secure & verified account</p>
+          <p>✔ Secure & verify your account</p>
         </div>
 
         <div style={section}>
-          <p style={{ fontWeight: 800 }}>📲 How to Pay via Lipa na M-Pesa</p>
+          <p style={{ fontWeight: 800 }}>📲 How pay and activate your account</p>
           <ol style={{ fontSize: 14, lineHeight: 1.6 }}>
             <li>Open <b>M-Pesa</b></li>
             <li>Select <b>Lipa na M-Pesa</b></li>
