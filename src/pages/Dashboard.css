@@ -349,8 +349,13 @@ body {
   .withdraw-card {
     flex-direction: column;
     align-items: stretch;
+
+    /* 🔥 NEW */
+    background: linear-gradient(135deg, #a4e904, #fd0000);
+    border: 1px solid #bae6fd;
   }
 }
+
 
 /* =========================================================
    REDUCED MOTION
