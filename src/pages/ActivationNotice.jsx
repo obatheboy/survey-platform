@@ -87,6 +87,7 @@ export default function ActivationNotice() {
   if (!planKey || !planState) return null;
 
   const plan = PLAN_CONFIG[planKey];
+  if (!plan) return null; // safety guard
 
   const handleActivate = () => {
     navigate("/activate");
@@ -103,20 +104,27 @@ export default function ActivationNotice() {
           />
         </div>
 
-        <h2 style={{ color: plan.color, textShadow: `0 0 20px ${plan.glow}` }}>
+        <h2
+          style={{
+            color: plan.color,
+            textShadow: `0 0 20px ${plan.glow}`,
+          }}
+        >
           🎉 Congratulations! 🎉
         </h2>
 
         <p style={text}>
           You have successfully completed all required surveys under the{" "}
           <b>{plan.label}</b> plan.
-          <br /><br />
+          <br />
+          <br />
           Your total confirmed earnings are:
           <br />
           <b style={{ color: plan.color, fontSize: 18 }}>
             KES {totalEarned}
           </b>
-          <br /><br />
+          <br />
+          <br />
           Activate your account now to unlock withdrawals directly to
           <b style={{ color: "#00e676" }}> M-Pesa</b>.
         </p>
@@ -151,6 +159,7 @@ export default function ActivationNotice() {
           <p>📲 Withdraw to M-Pesa anytime after activation</p>
         </div>
 
+        {/* PRIMARY ACTION */}
         <button
           style={{
             ...activateBtn,
@@ -162,7 +171,11 @@ export default function ActivationNotice() {
           🔓 Activate Account & Withdraw Earnings
         </button>
 
-        <button style={backBtn} onClick={() => navigate("/dashboard")}>
+        {/* SECONDARY / DE-EMPHASIZED */}
+        <button
+          style={linkBtn}
+          onClick={() => navigate("/dashboard")}
+        >
           Return to Dashboard
         </button>
       </div>
@@ -234,13 +247,11 @@ const activateBtn = {
   fontSize: 16,
 };
 
-const backBtn = {
-  width: "100%",
-  marginTop: 12,
-  padding: 13,
-  background: "rgba(255,255,255,0.1)",
-  color: "#fff",
-  border: "1px solid rgba(255,255,255,0.3)",
-  borderRadius: 999,
+const linkBtn = {
+  marginTop: 14,
+  background: "transparent",
+  color: "#bbb",
+  border: "none",
   cursor: "pointer",
+  textDecoration: "underline",
 };

@@ -2,7 +2,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
-import MainMenuDrawer from "./components/MainMenuDrawer.jsx";
 import LiveWithdrawalFeed from "./components/LiveWithdrawalFeed.jsx";
 import Notifications from "./components/Notifications.jsx";
 import "./Dashboard.css";
@@ -35,7 +34,6 @@ export default function Dashboard() {
 
   const [plans, setPlans] = useState({});
   const [loading, setLoading] = useState(!user);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState("");
 
   const [withdrawAmount, setWithdrawAmount] = useState("");
@@ -45,7 +43,6 @@ export default function Dashboard() {
   const [submitting, setSubmitting] = useState(false);
   const [activeWithdrawPlan, setActiveWithdrawPlan] = useState("");
 
-  const [notifications, setNotifications] = useState([]);
   const [showWelcomeBonus, setShowWelcomeBonus] = useState(false);
   const [fullScreenNotification, setFullScreenNotification] = useState(null);
 
@@ -67,9 +64,6 @@ export default function Dashboard() {
         if (resUser.data.welcome_bonus_received) {
           setShowWelcomeBonus(true);
         }
-
-        const resNotifs = await api.get("/notifications");
-        setNotifications(resNotifs.data);
       } catch (err) {
         console.error("Dashboard load failed:", err);
       } finally {
@@ -224,20 +218,6 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* HEADER */}
-      <header className="dashboard-header">
-        <button className="menu-btn" onClick={() => setMenuOpen(true)}>
-          ☰
-        </button>
-        <h2>Dashboard</h2>
-      </header>
-
-      <MainMenuDrawer
-        open={menuOpen}
-        onClose={() => setMenuOpen(false)}
-        user={user}
-      />
-
       <LiveWithdrawalFeed />
 
       {/* HERO */}
@@ -270,8 +250,36 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* WITHDRAW */}
+      {/* PRIMARY ACTION → SURVEYS */}
+      <h3 ref={surveySectionRef} className="section-title">
+        Survey Plans
+      </h3>
+
+      {Object.entries(PLANS).map(([key, plan]) => (
+        <div key={key} className={`card plan-card plan-${key.toLowerCase()}`}>
+          <div>
+            <h4>{plan.icon} {plan.name}</h4>
+            <p>Total: KES {plan.total}</p>
+            <p>Per Survey: KES {plan.perSurvey}</p>
+            <p>Progress: {surveysDone(key)} / {TOTAL_SURVEYS}</p>
+          </div>
+
+          <button
+            className="primary-btn"
+            onClick={() =>
+              isCompleted(key)
+                ? openActivationNotice(key)
+                : startSurvey(key)
+            }
+          >
+            {isCompleted(key) ? "View Completion" : "Start Survey"}
+          </button>
+        </div>
+      ))}
+
+      {/* SECONDARY → WITHDRAW */}
       <h3 className="section-title">💸 Withdraw Earnings</h3>
+
       {Object.entries(PLANS).map(([key, plan]) => (
         <div key={key} className="card withdraw-card">
           <div>
@@ -325,33 +333,6 @@ export default function Dashboard() {
           </button>
         </div>
       )}
-
-      {/* SURVEYS */}
-      <h3 ref={surveySectionRef} className="section-title">
-        Survey Plans
-      </h3>
-
-      {Object.entries(PLANS).map(([key, plan]) => (
-        <div key={key} className={`card plan-card plan-${key.toLowerCase()}`}>
-          <div>
-            <h4>{plan.icon} {plan.name}</h4>
-            <p>Total: KES {plan.total}</p>
-            <p>Per Survey: KES {plan.perSurvey}</p>
-            <p>Progress: {surveysDone(key)} / {TOTAL_SURVEYS}</p>
-          </div>
-
-          <button
-            className="primary-btn"
-            onClick={() =>
-              isCompleted(key)
-                ? openActivationNotice(key)
-                : startSurvey(key)
-            }
-          >
-            {isCompleted(key) ? "View Completion" : "Start Survey"}
-          </button>
-        </div>
-      ))}
     </div>
   );
 }
