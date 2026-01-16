@@ -393,41 +393,57 @@ body {
   .dashboard-header h2 {
     font-size: 16px;
   }
+/* ================= HERO ================= */
+.dashboard-hero {
+  gap: 10px;
+  margin-bottom: 14px;
+}
 
-  /* HERO: tighter spacing */
-  .dashboard-hero {
-    gap: 10px;
-    margin-bottom: 14px;
-  }
+/* ================= CARDS ================= */
+.card {
+  padding: 12px 14px;
+  border-radius: var(--radius-lg);
+  background: #ffffff;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+}
 
-  /* ALL CARDS: slimmer */
-  .card {
-    padding: 12px;
-    border-radius: var(--radius-lg);
-    box-shadow: 0 16px 40px rgba(0,0,0,0.35);
-  }
+/* ================= GREETING ================= */
+.greeting h3 {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
 
-  /* GREETING */
-  .greeting h3 {
-    font-size: 17px;
-  }
+.greeting p {
+  font-size: 12px;
+  opacity: 0.75;
+  margin-top: 4px;
+}
 
-  .greeting p {
-    font-size: 12px;
-  }
+/* ================= EARNINGS ================= */
+.earnings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
 
-  /* EARNINGS: shorter cards */
-  .earnings {
-    gap: 8px;
-  }
+.earnings > div {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f9f9fc, #ffffff);
+}
 
-  .earnings > div {
-    padding: 10px;
-  }
+.earnings span {
+  font-size: 11px;
+  opacity: 0.7;
+}
 
-  .earnings strong {
-    font-size: 18px;
-  }
+.earnings strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 18px;
+  font-weight: 800;
+}
 
   /* WELCOME BONUS: compact */
   .welcome-bonus-card {

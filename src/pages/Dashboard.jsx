@@ -27,7 +27,7 @@ export default function Dashboard() {
   /* =========================
      UI STATE
   ========================= */
-  const [activeTab, setActiveTab] = useState("SURVEYS");
+  const [openSection, setOpenSection] = useState(null); // SURVEYS | WITHDRAW | null
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(true);
@@ -64,10 +64,7 @@ export default function Dashboard() {
 
         setUser(resUser.data);
         setPlans(resUser.data.plans || {});
-
-        if (resUser.data.welcome_bonus_received) {
-          setShowWelcomeBonus(true);
-        }
+        setShowWelcomeBonus(resUser.data.welcome_bonus_received === true);
       } catch (err) {
         console.error("Dashboard load failed:", err);
       } finally {
@@ -95,23 +92,24 @@ export default function Dashboard() {
   const surveysDone = (plan) => plans[plan]?.surveys_completed || 0;
   const isCompleted = (plan) => surveysDone(plan) >= TOTAL_SURVEYS;
   const isActivated = (plan) => plans[plan]?.is_activated === true;
-  const activationSubmitted = (plan) => plans[plan]?.activation_status === "SUBMITTED";
+  const activationSubmitted = (plan) =>
+    plans[plan]?.activation_status === "SUBMITTED";
 
   const earnedSoFar = (plan) =>
     surveysDone(plan) * PLANS[plan].perSurvey;
 
   /* =========================
-     TAB + SCROLL
+     TOGGLES
   ========================= */
-  const goToSurveys = () => {
-    setActiveTab("SURVEYS");
+  const toggleSurveys = () => {
+    setOpenSection((prev) => (prev === "SURVEYS" ? null : "SURVEYS"));
     setTimeout(() => {
       surveyRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 50);
   };
 
-  const goToWithdraw = () => {
-    setActiveTab("WITHDRAW");
+  const toggleWithdraw = () => {
+    setOpenSection((prev) => (prev === "WITHDRAW" ? null : "WITHDRAW"));
     setTimeout(() => {
       withdrawRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 50);
@@ -140,7 +138,6 @@ export default function Dashboard() {
 
     if (!isCompleted(plan)) {
       setToast("Complete all surveys to withdraw");
-      goToSurveys();
       setTimeout(() => setToast(""), 3000);
       return;
     }
@@ -190,7 +187,8 @@ export default function Dashboard() {
   ========================= */
   const handleWelcomeBonusWithdraw = () => {
     setFullScreenNotification({
-      message: "Activate your account with KES 100 to withdraw your welcome bonus.",
+      message:
+        "Activate your account with KES 100 to withdraw your welcome bonus.",
       redirect: "/activate?welcome_bonus=1",
     });
   };
@@ -209,7 +207,9 @@ export default function Dashboard() {
             {fullScreenNotification.redirect && (
               <button
                 className="primary-btn"
-                onClick={() => navigate(fullScreenNotification.redirect)}
+                onClick={() =>
+                  navigate(fullScreenNotification.redirect)
+                }
               >
                 Activate
               </button>
@@ -219,107 +219,158 @@ export default function Dashboard() {
       )}
 
       <header className="dashboard-header">
-        <button className="menu-btn" onClick={() => setMenuOpen(true)}>☰</button>
+        <button className="menu-btn" onClick={() => setMenuOpen(true)}>
+          ☰
+        </button>
         <h2>Dashboard</h2>
       </header>
 
-      <MainMenuDrawer open={menuOpen} onClose={() => setMenuOpen(false)} user={user} />
+      <MainMenuDrawer
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        user={user}
+      />
+
       <LiveWithdrawalFeed />
+{/* ================= HERO ================= */}
+<section className="dashboard-hero">
+  {/* Greeting */}
+  <div className="card greeting">
+    <h3>
+      Welcome back, <span className="user-name">{user.full_name}</span> 👋
+    </h3>
+    <p className="subtitle">
+      Complete surveys, earn rewards, and withdraw instantly.
+    </p>
+  </div>
 
-      {/* ================= HERO ================= */}
-      <section className="dashboard-hero">
-        <div className="card greeting">
-          <h3>Hello, {user.full_name} 👋</h3>
-          <p>Your journey to real earnings continues.</p>
-        </div>
+  {/* Earnings Summary */}
+  <div className="earnings">
+    <div className="earnings-card total">
+      <span>Total Earnings</span>
+      <strong>
+        KES {Number(user.total_earned || 0).toLocaleString()}
+      </strong>
+    </div>
 
-        <div className="earnings">
-          <div>
-            <span>Total Earnings</span>
-            <strong>KES {Number(user.total_earned || 0).toLocaleString()}</strong>
-          </div>
-          <div>
-            <span>Current Balance</span>
-            <strong>KES {Number(user.total_earned || 0).toLocaleString()}</strong>
-          </div>
-        </div>
-      </section>
+    <div className="earnings-card balance">
+      <span>Available Balance</span>
+      <strong>
+        KES {Number(user.total_earned || 0).toLocaleString()}
+      </strong>
+    </div>
+  </div>
+</section>
 
       {/* ================= WELCOME BONUS ================= */}
       {showWelcomeBonus && (
         <div className="card welcome-bonus-card">
-          <h3>🎉🎉🎉Welcome Bonus🎉🎉🎉</h3>
-          <p>🎉You’ve Successful received a welcome bonus of KES 1,200.  Withdraw it now!!!!</p>
-          <button className="primary-btn" onClick={handleWelcomeBonusWithdraw}>
+          <h3>🎉🎉🎉 Welcome Bonus 🎉🎉🎉</h3>
+          <p>
+            🎉 You’ve successfully received a welcome bonus of
+            KES 1,200. Withdraw it now!
+          </p>
+          <button
+            className="primary-btn"
+            onClick={handleWelcomeBonusWithdraw}
+          >
             Withdraw
           </button>
         </div>
       )}
 
-      {/* ================= TABS ================= */}
+      {/* ================= ACTION BUTTONS ================= */}
       <div className="dashboard-tabs">
-        <button className={activeTab === "SURVEYS" ? "active" : ""} onClick={goToSurveys}>
+        <button
+          className={openSection === "SURVEYS" ? "active" : ""}
+          onClick={toggleSurveys}
+        >
           Surveys
         </button>
-        <button className={activeTab === "WITHDRAW" ? "active" : ""} onClick={goToWithdraw}>
+        <button
+          className={openSection === "WITHDRAW" ? "active" : ""}
+          onClick={toggleWithdraw}
+        >
           Withdraw
         </button>
       </div>
-{/* ================= SURVEYS ================= */}
-{activeTab === "SURVEYS" && (
-  <section ref={surveyRef} id="surveys-section" className="tab-section">
-    {Object.entries(PLANS).map(([key, plan]) => {
-      const planClass =
-        key === "REGULAR"
-          ? "regular"
-          : key === "VIP"
-          ? "vip"
-          : "vvip";
 
-      return (
-        <div key={key} className={`card plan-card ${planClass}`}>
-          <h4>{plan.icon} {plan.name}</h4>
+      {/* ================= SURVEYS ================= */}
+      {openSection === "SURVEYS" && (
+        <section ref={surveyRef} className="tab-section">
+          {Object.entries(PLANS).map(([key, plan]) => {
+            const planClass =
+              key === "REGULAR"
+                ? "regular"
+                : key === "VIP"
+                ? "vip"
+                : "vvip";
 
-          <p>
-            Per Survey: <strong>KES {plan.perSurvey.toLocaleString()}</strong>
-          </p>
+            return (
+              <div
+                key={key}
+                className={`card plan-card ${planClass}`}
+              >
+                <h4>
+                  {plan.icon} {plan.name}
+                </h4>
 
-          <p>
-            Surveys Done: {surveysDone(key)} / {TOTAL_SURVEYS}
-          </p>
+                <p>
+                  Per Survey:{" "}
+                  <strong>
+                    KES {plan.perSurvey.toLocaleString()}
+                  </strong>
+                </p>
 
-          <p>
-            Earned So Far:{" "}
-            <strong>KES {earnedSoFar(key).toLocaleString()}</strong>
-          </p>
+                <p>
+                  Surveys Done: {surveysDone(key)} /{" "}
+                  {TOTAL_SURVEYS}
+                </p>
 
-          <p>
-            Total Plan Earnings:{" "}
-            <strong>KES {plan.total.toLocaleString()}</strong>
-          </p>
+                <p>
+                  Earned So Far:{" "}
+                  <strong>
+                    KES {earnedSoFar(key).toLocaleString()}
+                  </strong>
+                </p>
 
-          <button
-            className="primary-btn"
-            onClick={() => startSurvey(key)}
-          >
-            Start Survey
-          </button>
-        </div>
-      );
-    })}
-  </section>
-)}
+                <p>
+                  Total Plan Earnings:{" "}
+                  <strong>
+                    KES {plan.total.toLocaleString()}
+                  </strong>
+                </p>
+
+                <button
+                  className="primary-btn"
+                  onClick={() => startSurvey(key)}
+                >
+                  Start Survey
+                </button>
+              </div>
+            );
+          })}
+        </section>
+      )}
 
       {/* ================= WITHDRAW ================= */}
-      {activeTab === "WITHDRAW" && (
-        <section ref={withdrawRef} id="withdraw-section" className="tab-section">
+      {openSection === "WITHDRAW" && (
+        <section ref={withdrawRef} className="tab-section">
           {Object.entries(PLANS).map(([key, plan]) => (
             <div key={key} className="card withdraw-card">
               <div>
-                <h4>{plan.icon} {plan.name}</h4>
-                <p>Earned: KES {earnedSoFar(key)}</p>
+                <h4>
+                  {plan.icon} {plan.name}
+                </h4>
+                <p>
+                  Earned: KES{" "}
+                  {earnedSoFar(key).toLocaleString()}
+                </p>
               </div>
-              <button className="withdraw-btn" onClick={() => handleWithdrawClick(key)}>
+              <button
+                className="withdraw-btn"
+                onClick={() => handleWithdrawClick(key)}
+              >
                 Withdraw
               </button>
             </div>
@@ -327,26 +378,47 @@ export default function Dashboard() {
 
           {activeWithdrawPlan && (
             <div className="card withdraw-form">
-              <h4>Withdraw {PLANS[activeWithdrawPlan].name}</h4>
+              <h4>
+                Withdraw {PLANS[activeWithdrawPlan].name}
+              </h4>
 
-              {withdrawMessage && <p className="success-msg">{withdrawMessage}</p>}
-              {withdrawError && <p className="error-msg">{withdrawError}</p>}
+              {withdrawMessage && (
+                <p className="success-msg">
+                  {withdrawMessage}
+                </p>
+              )}
+              {withdrawError && (
+                <p className="error-msg">
+                  {withdrawError}
+                </p>
+              )}
 
               <input
                 type="number"
                 placeholder="Amount"
                 value={withdrawAmount}
-                onChange={(e) => setWithdrawAmount(e.target.value)}
+                onChange={(e) =>
+                  setWithdrawAmount(e.target.value)
+                }
               />
+
               <input
                 type="tel"
                 placeholder="Phone Number"
                 value={withdrawPhone}
-                onChange={(e) => setWithdrawPhone(e.target.value)}
+                onChange={(e) =>
+                  setWithdrawPhone(e.target.value)
+                }
               />
 
-              <button className="primary-btn" onClick={submitWithdraw} disabled={submitting}>
-                {submitting ? "Submitting..." : "Submit"}
+              <button
+                className="primary-btn"
+                onClick={submitWithdraw}
+                disabled={submitting}
+              >
+                {submitting
+                  ? "Submitting..."
+                  : "Submit"}
               </button>
             </div>
           )}

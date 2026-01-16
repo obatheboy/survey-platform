@@ -7,7 +7,7 @@ const KENYA_FLAG =
   "https://upload.wikimedia.org/wikipedia/commons/4/49/Flag_of_Kenya.svg";
 
 /* =========================
-   KENYA ONLY DATA
+   DATA
 ========================= */
 const NAMES = [
   "James","Brian","Kevin","Mary","Lucy","John","Sarah","Michael","Faith",
@@ -67,15 +67,15 @@ export default function LiveWithdrawalFeed() {
   const [item, setItem] = useState(null);
   const audioRef = useRef(null);
 
-  /* SUBTLE SOUND */
+  /* SOUND */
   useEffect(() => {
     audioRef.current = new Audio(
       "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA="
     );
-    audioRef.current.volume = 0.12;
+    audioRef.current.volume = 0.1;
   }, []);
 
-  /* LIVE GENERATOR (3.2s) */
+  /* LIVE GENERATOR */
   useEffect(() => {
     const generate = () => {
       const name = NAMES[Math.floor(Math.random() * NAMES.length)];
@@ -93,15 +93,14 @@ export default function LiveWithdrawalFeed() {
     };
 
     generate();
-    const interval = setInterval(generate, 3200);
-
+    const interval = setInterval(generate, 3500);
     return () => clearInterval(interval);
   }, []);
 
   if (!item) return null;
 
   return (
-    <div style={wrapper}>
+    <div style={container}>
       <div
         style={{
           ...card,
@@ -110,18 +109,14 @@ export default function LiveWithdrawalFeed() {
           animation: `${item.telco.pulse} 1.8s infinite`,
         }}
       >
-        {/* LIVE */}
         <span style={liveBadge}>LIVE</span>
 
-        {/* FLAG */}
         <img src={KENYA_FLAG} alt="Kenya" style={flag} />
 
-        {/* AVATAR */}
         <div style={{ ...avatar, background: item.telco.color }}>
           {item.avatar}
         </div>
 
-        {/* DETAILS */}
         <div style={{ flex: 1 }}>
           <div style={nameRow}>
             <strong style={nameText}>{item.name}</strong>
@@ -129,7 +124,7 @@ export default function LiveWithdrawalFeed() {
           </div>
 
           <div style={amountRow}>
-            <span style={verified}>✔ Verified withdrawal</span>
+            <span style={verified}>✔ Withdrawal successful</span>
             <span style={amountText}>
               KES {item.amount.toLocaleString()}
             </span>
@@ -145,14 +140,14 @@ export default function LiveWithdrawalFeed() {
       <style>
         {`
           @keyframes mpesaPulse {
-            0% { box-shadow: 0 0 0 0 rgba(27,94,32,0.5); }
-            70% { box-shadow: 0 0 0 14px rgba(27,94,32,0); }
+            0% { box-shadow: 0 0 0 0 rgba(27,94,32,0.4); }
+            70% { box-shadow: 0 0 0 12px rgba(27,94,32,0); }
             100% { box-shadow: 0 0 0 0 rgba(27,94,32,0); }
           }
 
           @keyframes airtelPulse {
-            0% { box-shadow: 0 0 0 0 rgba(198,40,40,0.5); }
-            70% { box-shadow: 0 0 0 14px rgba(198,40,40,0); }
+            0% { box-shadow: 0 0 0 0 rgba(198,40,40,0.4); }
+            70% { box-shadow: 0 0 0 12px rgba(198,40,40,0); }
             100% { box-shadow: 0 0 0 0 rgba(198,40,40,0); }
           }
         `}
@@ -164,26 +159,23 @@ export default function LiveWithdrawalFeed() {
 /* =========================
    STYLES
 ========================= */
-const wrapper = {
-  position: "sticky",
-  top: 62,
-  zIndex: 50,
+const container = {
+  margin: "16px 0",
 };
 
 const card = {
-  marginTop: 10,
-  padding: "12px 14px",
-  borderRadius: 18,
+  padding: "14px 16px",
+  borderRadius: 22,
   display: "flex",
   alignItems: "center",
-  gap: 10,
+  gap: 12,
 };
 
 const liveBadge = {
   background: "#d32f2f",
   color: "#fff",
   fontSize: 11,
-  fontWeight: 700,
+  fontWeight: 800,
   padding: "4px 10px",
   borderRadius: 999,
 };
@@ -192,8 +184,6 @@ const flag = {
   width: 26,
   height: 18,
   borderRadius: 4,
-  objectFit: "cover",
-  display: "block",
 };
 
 const avatar = {
@@ -204,10 +194,9 @@ const avatar = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  fontWeight: 700,
+  fontWeight: 800,
 };
 
-/* 🔥 NEW COLOR SYSTEM */
 const nameRow = {
   display: "flex",
   gap: 6,
@@ -216,7 +205,7 @@ const nameRow = {
 
 const nameText = {
   color: "#0b1020",
-  fontWeight: 800,
+  fontWeight: 900,
 };
 
 const phoneText = {
@@ -234,13 +223,13 @@ const amountRow = {
 const verified = {
   fontSize: 12,
   color: "#2e7d32",
-  fontWeight: 600,
+  fontWeight: 700,
 };
 
 const amountText = {
   fontSize: 14,
-  fontWeight: 800,
-  color: "#ff0000ff",
+  fontWeight: 900,
+  color: "#b91c1c",
 };
 
 const telcoBadge = {
@@ -248,7 +237,7 @@ const telcoBadge = {
   marginTop: 6,
   color: "#fff",
   fontSize: 11,
-  fontWeight: 700,
+  fontWeight: 800,
   padding: "3px 10px",
   borderRadius: 999,
 };
