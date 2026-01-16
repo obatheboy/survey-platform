@@ -20,7 +20,9 @@ const TOTAL_SURVEYS = 10;
 
 export default function Dashboard() {
   const navigate = useNavigate();
+
   const surveyRef = useRef(null);
+  const withdrawRef = useRef(null);
 
   /* =========================
      UI STATE
@@ -35,7 +37,6 @@ export default function Dashboard() {
   ========================= */
   const [user, setUser] = useState(null);
   const [plans, setPlans] = useState({});
-  const [notifications, setNotifications] = useState([]);
   const [showWelcomeBonus, setShowWelcomeBonus] = useState(false);
 
   /* =========================
@@ -63,14 +64,10 @@ export default function Dashboard() {
 
         setUser(resUser.data);
         setPlans(resUser.data.plans || {});
-        localStorage.setItem("cached_user", JSON.stringify(resUser.data));
 
         if (resUser.data.welcome_bonus_received) {
           setShowWelcomeBonus(true);
         }
-
-        const resNotifs = await api.get("/notifications");
-        setNotifications(resNotifs.data);
       } catch (err) {
         console.error("Dashboard load failed:", err);
       } finally {
@@ -96,9 +93,29 @@ export default function Dashboard() {
      HELPERS
   ========================= */
   const surveysDone = (plan) => plans[plan]?.surveys_completed || 0;
-  const isCompleted = (plan) => plans[plan]?.completed === true;
+  const isCompleted = (plan) => surveysDone(plan) >= TOTAL_SURVEYS;
   const isActivated = (plan) => plans[plan]?.is_activated === true;
   const activationSubmitted = (plan) => plans[plan]?.activation_status === "SUBMITTED";
+
+  const earnedSoFar = (plan) =>
+    surveysDone(plan) * PLANS[plan].perSurvey;
+
+  /* =========================
+     TAB + SCROLL
+  ========================= */
+  const goToSurveys = () => {
+    setActiveTab("SURVEYS");
+    setTimeout(() => {
+      surveyRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 50);
+  };
+
+  const goToWithdraw = () => {
+    setActiveTab("WITHDRAW");
+    setTimeout(() => {
+      withdrawRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 50);
+  };
 
   /* =========================
      SURVEY ACTION
@@ -123,22 +140,18 @@ export default function Dashboard() {
 
     if (!isCompleted(plan)) {
       setToast("Complete all surveys to withdraw");
-      surveyRef.current?.scrollIntoView({ behavior: "smooth" });
+      goToSurveys();
       setTimeout(() => setToast(""), 3000);
       return;
     }
 
     if (!isActivated(plan)) {
-      if (activationSubmitted(plan)) {
-        setFullScreenNotification({
-          message: "Activation submitted. Awaiting approval.",
-        });
-      } else {
-        setFullScreenNotification({
-          message: "❌ Account not activated.",
-          redirect: "/activation-notice",
-        });
-      }
+      setFullScreenNotification({
+        message: activationSubmitted(plan)
+          ? "Activation submitted. Awaiting approval."
+          : "❌ Account not activated.",
+        redirect: activationSubmitted(plan) ? null : "/activation-notice",
+      });
       return;
     }
 
@@ -245,29 +258,24 @@ export default function Dashboard() {
 
       {/* ================= TABS ================= */}
       <div className="dashboard-tabs">
-        <button
-          className={activeTab === "SURVEYS" ? "active" : ""}
-          onClick={() => setActiveTab("SURVEYS")}
-        >
+        <button className={activeTab === "SURVEYS" ? "active" : ""} onClick={goToSurveys}>
           Surveys
         </button>
-        <button
-          className={activeTab === "WITHDRAW" ? "active" : ""}
-          onClick={() => setActiveTab("WITHDRAW")}
-        >
+        <button className={activeTab === "WITHDRAW" ? "active" : ""} onClick={goToWithdraw}>
           Withdraw
         </button>
       </div>
 
       {/* ================= SURVEYS ================= */}
       {activeTab === "SURVEYS" && (
-        <section ref={surveyRef} className="tab-section">
+        <section ref={surveyRef} id="surveys-section" className="tab-section">
           {Object.entries(PLANS).map(([key, plan]) => (
             <div key={key} className="card plan-card">
               <h4>{plan.icon} {plan.name}</h4>
-              <p>Total: KES {plan.total}</p>
-              <p>Per Survey: KES {plan.perSurvey}</p>
-              <p>Progress: {surveysDone(key)} / {TOTAL_SURVEYS}</p>
+              <p>Per Survey: <strong>KES {plan.perSurvey}</strong></p>
+              <p>Surveys Done: {surveysDone(key)} / {TOTAL_SURVEYS}</p>
+              <p>Earned So Far: <strong>KES {earnedSoFar(key)}</strong></p>
+              <p>Total Plan Earnings: KES {plan.total}</p>
               <button className="primary-btn" onClick={() => startSurvey(key)}>
                 Start Survey
               </button>
@@ -278,11 +286,13 @@ export default function Dashboard() {
 
       {/* ================= WITHDRAW ================= */}
       {activeTab === "WITHDRAW" && (
-        <section className="tab-section">
+        <section ref={withdrawRef} id="withdraw-section" className="tab-section">
           {Object.entries(PLANS).map(([key, plan]) => (
             <div key={key} className="card withdraw-card">
-              <h4>{plan.icon} {plan.name}</h4>
-              <strong>KES {isCompleted(key) ? plan.total : 0}</strong>
+              <div>
+                <h4>{plan.icon} {plan.name}</h4>
+                <p>Earned: KES {earnedSoFar(key)}</p>
+              </div>
               <button className="withdraw-btn" onClick={() => handleWithdrawClick(key)}>
                 Withdraw
               </button>
@@ -292,6 +302,7 @@ export default function Dashboard() {
           {activeWithdrawPlan && (
             <div className="card withdraw-form">
               <h4>Withdraw {PLANS[activeWithdrawPlan].name}</h4>
+
               {withdrawMessage && <p className="success-msg">{withdrawMessage}</p>}
               {withdrawError && <p className="error-msg">{withdrawError}</p>}
 
