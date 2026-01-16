@@ -1,4 +1,20 @@
-/* ========================= 
+/* =========================
+   CSS VARIABLES
+========================= */
+:root {
+  --radius-lg: 26px;
+  --radius-md: 18px;
+  --radius-sm: 14px;
+
+  --shadow-xl: 0 22px 56px rgba(0,0,0,0.55);
+  --shadow-lg: 0 16px 40px rgba(0,0,0,0.45);
+  --shadow-md: 0 10px 26px rgba(0,0,0,0.35);
+
+  --text-main: #e3f2fd;
+  --text-muted: #b39ddb;
+}
+
+/* =========================
    ANIMATIONS
 ========================= */
 @keyframes gradientFlow {
@@ -10,8 +26,7 @@
 @keyframes floatIn {
   from {
     opacity: 0;
-    transform: translateY(16px) scale(0.97);
-    will-change: transform, opacity;
+    transform: translateY(14px) scale(0.96);
   }
   to {
     opacity: 1;
@@ -20,46 +35,61 @@
 }
 
 @keyframes glowPulse {
-  0% { box-shadow: 0 0 0 rgba(0,0,0,0); }
-  50% { box-shadow: 0 0 26px rgba(186,104,200,0.65); }
-  100% { box-shadow: 0 0 0 rgba(0,0,0,0); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+  0%,100% { box-shadow: 0 0 0 rgba(0,0,0,0); }
+  50% { box-shadow: 0 0 28px rgba(255,193,7,0.6); }
 }
 
 /* =========================
-   SMOOTH SCROLLING
+   BASE / SCROLL
 ========================= */
 html {
   scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
 }
 
 body {
-  overflow-y: scroll;
-  -webkit-overflow-scrolling: touch;
+  margin: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
 }
 
-/* =========================
-   GLOBAL
-========================= */
-*, *::before, *::after {
+body::-webkit-scrollbar {
+  width: 6px;
+}
+body::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+  border-radius: 6px;
+}
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
+/* =========================
+   DASHBOARD CANVAS
+========================= */
 .dashboard {
-  width: 100%;
   min-height: 100vh;
   padding: 16px;
+  margin: 0 auto;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   background: linear-gradient(270deg, #0b1020, #1a237e, #311b92, #0d47a1);
   background-size: 400% 400%;
-  animation: gradientFlow 20s ease infinite;
-  color: #e3f2fd;
+  animation: gradientFlow 22s ease infinite;
+  color: var(--text-main);
   overflow-x: hidden;
+}
+
+/* =========================
+   LOADING
+========================= */
+.loading {
+  margin-top: 90px;
+  text-align: center;
+  font-size: 15px;
+  color: var(--text-muted);
+  animation: floatIn 0.7s ease;
 }
 
 /* =========================
@@ -70,30 +100,41 @@ body {
   align-items: center;
   gap: 14px;
   padding: 18px;
-  border-radius: 24px;
+  border-radius: var(--radius-lg);
   background: linear-gradient(270deg, #1e88e5, #5e35b1, #8e24aa);
   background-size: 300% 300%;
-  animation: gradientFlow 12s ease infinite;
-  box-shadow: 0 18px 46px rgba(0,0,0,0.55);
+  animation: gradientFlow 14s ease infinite;
+  box-shadow: var(--shadow-xl);
+}
+
+.dashboard-header h2 {
+  font-size: 20px;
+  font-weight: 800;
 }
 
 .menu-btn {
   font-size: 22px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
   background: rgba(255,255,255,0.18);
   border: none;
   color: #fff;
-  padding: 8px 12px;
-  border-radius: 14px;
   cursor: pointer;
+  transition: transform .2s, background .2s;
+}
+
+.menu-btn:hover {
+  transform: scale(1.1);
+  background: rgba(255,255,255,0.28);
 }
 
 /* =========================
    HERO
 ========================= */
 .dashboard-hero {
+  margin-top: 22px;
   display: grid;
   gap: 18px;
-  margin: 26px 0;
 }
 
 @media (min-width: 768px) {
@@ -107,12 +148,11 @@ body {
 ========================= */
 .card {
   padding: 20px;
-  border-radius: 26px;
-  background: linear-gradient(135deg, rgb(119, 4, 4), rgb(28, 70, 3));
-  backdrop-filter: blur(14px);
-  box-shadow: 0 22px 56px rgba(0,0,0,0.5);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(145deg, #0f172a, #020617);
+  box-shadow: var(--shadow-xl);
   border: 1px solid rgba(255,255,255,0.12);
-  animation: floatIn 0.75s ease both;
+  animation: floatIn .6s ease both;
 }
 
 /* =========================
@@ -125,99 +165,142 @@ body {
   color: #212121;
 }
 
+.greeting h3 {
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.greeting p {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
 /* =========================
    EARNINGS
 ========================= */
 .earnings {
-  background: linear-gradient(270deg, #00acc1, #26c6da, #e6d00b);
-  background-size: 300% 300%;
-  animation: gradientFlow 9s ease infinite;
-  color: #102027;
-  border-radius: 26px;
   padding: 20px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(270deg, #00acc1, #26c6da, #80deea);
+  background-size: 300% 300%;
+  animation: gradientFlow 10s ease infinite;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(2,1fr);
+  gap: 14px;
+  color: #102027;
 }
 
 .earnings > div {
-  background: rgb(184,187,11);
-  border-radius: 18px;
+  background: rgba(255,255,255,0.85);
   padding: 14px;
+  border-radius: var(--radius-md);
   text-align: center;
 }
 
-/* =========================
-   🔥 DASHBOARD TABS (NEW)
-========================= */
-.dashboard-tabs {
-  display: flex;
-  gap: 10px;
-  margin: 30px 0 20px;
-  padding: 8px;
-  border-radius: 18px;
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(10px);
+.earnings span {
+  font-size: 12px;
+  opacity: 0.8;
 }
 
-.tab-btn {
-  flex: 1;
-  padding: 12px 10px;
-  border-radius: 14px;
-  border: none;
-  cursor: pointer;
-  font-weight: 800;
-  font-size: 14px;
-  text-transform: uppercase;
-  color: #b39ddb;
-  background: transparent;
-  transition: all 0.25s ease;
-}
-
-.tab-btn.active {
-  background: linear-gradient(135deg, #ffca28, #ff8f00);
-  color: #212121;
-  box-shadow: 0 6px 18px rgba(255,193,7,0.55);
-  transform: scale(1.05);
+.earnings strong {
+  font-size: 24px;
+  font-weight: 900;
+  margin-top: 6px;
+  display: block;
 }
 
 /* =========================
    SECTION TITLES
 ========================= */
 .section-title {
-  margin: 26px 0 14px;
+  margin: 32px 0 14px;
   font-size: 18px;
   color: #ce93d8;
 }
 
 /* =========================
-   PLAN / WITHDRAW CARDS
+   WELCOME BONUS
 ========================= */
-.plan-card,
-.withdraw-card {
-  margin-bottom: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.welcome-bonus-card {
+  background: linear-gradient(145deg, #1b5e20, #2e7d32);
+  box-shadow: 0 0 32px rgba(76,175,80,0.55);
+  color: #e8f5e9;
 }
 
-.plan-card:hover,
-.withdraw-card:hover {
-  transform: translateY(-5px) scale(1.03);
+/* =========================
+   WITHDRAW
+========================= */
+.withdraw-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.withdraw-form input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: var(--radius-md);
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+/* =========================
+   PLAN CARDS
+========================= */
+.plan-card {
+  margin-bottom: 16px;
+  transition: transform .25s, box-shadow .25s;
+}
+
+.plan-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-xl);
+}
+
+.plan-regular {
+  background: linear-gradient(145deg, #0f172a, #020617);
+}
+
+.plan-vip {
+  background: linear-gradient(145deg, #1e1b4b, #312e81);
+}
+
+.plan-vvip {
+  background: linear-gradient(145deg, #422006, #713f12);
+  color: #fef3c7;
 }
 
 /* =========================
    BUTTONS
 ========================= */
 .primary-btn {
-  background: linear-gradient(135deg, #ff6f00, #ffca28);
+  background: linear-gradient(135deg, #ff6f00, #ffca28, #ffd54f);
+  background-size: 300% 300%;
+  animation: gradientFlow 6s ease infinite, glowPulse 3.2s ease infinite;
   color: #212121;
   border: none;
   padding: 14px 28px;
   border-radius: 50px;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 6px 18px rgba(255,193,7,0.55);
+  transition: transform .2s, box-shadow .2s;
+}
+
+.primary-btn:hover {
+  transform: scale(1.08);
+}
+
+.outline-btn {
+  margin-top: 10px;
+  background: transparent;
+  border: 2px solid rgba(255,255,255,0.5);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 50px;
+  cursor: pointer;
 }
 
 .withdraw-btn {
@@ -230,17 +313,6 @@ body {
 }
 
 /* =========================
-   WITHDRAW FORM
-========================= */
-.withdraw-form input {
-  width: 100%;
-  margin-bottom: 12px;
-  padding: 12px;
-  border-radius: 12px;
-  border: none;
-}
-
-/* =========================
    FULL SCREEN NOTIFICATION
 ========================= */
 .full-screen-notif {
@@ -248,36 +320,40 @@ body {
   inset: 0;
   background: rgba(0,0,0,0.85);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 9999;
 }
 
 .full-screen-notif .notif-content {
   background: #111;
-  color: #fff;
   padding: 28px;
   border-radius: 18px;
   max-width: 420px;
   text-align: center;
-  box-shadow: 0 0 25px #0ff;
+  box-shadow: 0 0 28px #00ffcc;
 }
 
 /* =========================
-   MOBILE OPTIMIZATION
+   RESPONSIVE
 ========================= */
 @media (max-width: 480px) {
-  .dashboard { padding: 14px; }
-  .dashboard-hero { grid-template-columns: 1fr; }
-
-  .dashboard-tabs {
-    flex-direction: column;
+  .dashboard {
+    padding: 14px;
+    animation: none;
   }
 
-  /* Reduce heavy animations */
-  .dashboard,
+  .dashboard-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .withdraw-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
   .card,
-  .dashboard-header,
   .primary-btn {
     animation: none !important;
   }
@@ -287,7 +363,9 @@ body {
    REDUCED MOTION
 ========================= */
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
     animation: none !important;
     transition: none !important;
   }

@@ -38,8 +38,6 @@ export default function Dashboard() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState("");
 
-  const [activeTab, setActiveTab] = useState("SURVEYS"); // ⭐ NEW
-
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [withdrawPhone, setWithdrawPhone] = useState("");
   const [withdrawMessage, setWithdrawMessage] = useState("");
@@ -52,7 +50,7 @@ export default function Dashboard() {
   const [fullScreenNotification, setFullScreenNotification] = useState(null);
 
   /* =========================
-     LOAD DATA
+     LOAD USER & DATA
   ========================== */
   useEffect(() => {
     let alive = true;
@@ -73,7 +71,7 @@ export default function Dashboard() {
         const resNotifs = await api.get("/notifications");
         setNotifications(resNotifs.data);
       } catch (err) {
-        console.error(err);
+        console.error("Dashboard load failed:", err);
       } finally {
         if (alive) setLoading(false);
       }
@@ -81,9 +79,12 @@ export default function Dashboard() {
 
     load();
     const interval = setInterval(load, 30000);
+    window.addEventListener("focus", load);
+
     return () => {
       alive = false;
       clearInterval(interval);
+      window.removeEventListener("focus", load);
     };
   }, []);
 
@@ -96,7 +97,8 @@ export default function Dashboard() {
   const surveysDone = (plan) => plans[plan]?.surveys_completed || 0;
   const isCompleted = (plan) => plans[plan]?.completed === true;
   const isActivated = (plan) => plans[plan]?.is_activated === true;
-  const activationSubmitted = (plan) => plans[plan]?.activation_status === "SUBMITTED";
+  const activationSubmitted = (plan) =>
+    plans[plan]?.activation_status === "SUBMITTED";
 
   /* =========================
      ACTIONS
@@ -117,26 +119,38 @@ export default function Dashboard() {
     navigate("/activation-notice");
   };
 
+  const showFSN = ({ message, redirect }) =>
+    setFullScreenNotification({ message, redirect });
+
+  const handleWelcomeBonusWithdraw = () => {
+    showFSN({
+      message:
+        "❌ Your account is not activated. Activate your account with KES 100 to withdraw your welcome bonus.",
+      redirect: "/activate?welcome_bonus=1",
+    });
+  };
+
   const handleWithdrawClick = (type) => {
-    setWithdrawMessage("");
     setWithdrawError("");
+    setWithdrawMessage("");
 
     if (!isCompleted(type)) {
-      setToast("Complete all surveys to unlock withdrawal");
-      setActiveTab("SURVEYS");
+      setToast("Complete all survey plans to unlock withdrawal");
+      surveySectionRef.current?.scrollIntoView({ behavior: "smooth" });
       setTimeout(() => setToast(""), 3000);
       return;
     }
 
     if (!isActivated(type)) {
       if (activationSubmitted(type)) {
-        setFullScreenNotification({
+        showFSN({
           message: "Activation submitted. Waiting for admin approval.",
           redirect: null,
         });
       } else {
-        setFullScreenNotification({
-          message: "❌ Activate your account to withdraw earnings.",
+        showFSN({
+          message:
+            "❌ Your account is not activated. Activate now to withdraw earnings.",
           redirect: "/activation-notice",
         });
       }
@@ -147,28 +161,35 @@ export default function Dashboard() {
   };
 
   const submitWithdraw = async () => {
-    setWithdrawMessage("");
     setWithdrawError("");
+    setWithdrawMessage("");
 
     if (!withdrawAmount || !withdrawPhone) {
       setWithdrawError("Enter amount and phone number.");
       return;
     }
 
+    const amt = Number(withdrawAmount);
+    if (!Number.isFinite(amt)) {
+      setWithdrawError("Invalid amount.");
+      return;
+    }
+
     setSubmitting(true);
+
     try {
       await api.post("/withdraw/request", {
         phone_number: withdrawPhone,
-        amount: Number(withdrawAmount),
+        amount: amt,
         type: activeWithdrawPlan,
       });
 
-      setWithdrawMessage("🎉 Withdrawal submitted successfully.");
+      setWithdrawMessage("🎉 Withdrawal request submitted.");
 
-      const updatedUser = await api.get("/auth/me");
-      setUser(updatedUser.data);
-      setPlans(updatedUser.data.plans || {});
-      localStorage.setItem("cached_user", JSON.stringify(updatedUser.data));
+      const updated = await api.get("/auth/me");
+      setUser(updated.data);
+      setPlans(updated.data.plans || {});
+      localStorage.setItem("cached_user", JSON.stringify(updated.data));
     } catch (err) {
       setWithdrawError(err.response?.data?.message || "Withdraw failed.");
     } finally {
@@ -183,14 +204,41 @@ export default function Dashboard() {
   return (
     <div className="dashboard">
       {toast && <Notifications message={toast} />}
-      <MainMenuDrawer open={menuOpen} onClose={() => setMenuOpen(false)} user={user} />
-      <LiveWithdrawalFeed />
+
+      {fullScreenNotification && (
+        <div className="full-screen-notif">
+          <div className="notif-content">
+            <p>{fullScreenNotification.message}</p>
+            {fullScreenNotification.redirect && (
+              <button
+                className="primary-btn"
+                onClick={() => {
+                  setFullScreenNotification(null);
+                  navigate(fullScreenNotification.redirect);
+                }}
+              >
+                Activate
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* HEADER */}
       <header className="dashboard-header">
-        <button className="menu-btn" onClick={() => setMenuOpen(true)}>☰</button>
+        <button className="menu-btn" onClick={() => setMenuOpen(true)}>
+          ☰
+        </button>
         <h2>Dashboard</h2>
       </header>
+
+      <MainMenuDrawer
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        user={user}
+      />
+
+      <LiveWithdrawalFeed />
 
       {/* HERO */}
       <section className="dashboard-hero">
@@ -198,6 +246,7 @@ export default function Dashboard() {
           <h3>Hello, {user.full_name} 👋</h3>
           <p>Your journey to real earnings continues.</p>
         </div>
+
         <div className="earnings">
           <div>
             <span>Total Earnings</span>
@@ -210,99 +259,99 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* TABS */}
-      <div className="dashboard-tabs">
-        {["SURVEYS", "WITHDRAW", "BONUSES", "HISTORY"].map(tab => (
-          <button
-            key={tab}
-            className={`tab-btn ${activeTab === tab ? "active" : ""}`}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-
-      {/* ========================= TAB CONTENT ========================= */}
-
-      {/* SURVEYS */}
-      {activeTab === "SURVEYS" && (
-        <>
-          <h3 ref={surveySectionRef} className="section-title">Survey Plans</h3>
-          {Object.entries(PLANS).map(([key, plan]) => (
-            <div key={key} className="card plan-card">
-              <h4>{plan.icon} {plan.name}</h4>
-              <p>Total: KES {plan.total}</p>
-              <p>Per Survey: KES {plan.perSurvey}</p>
-              <p>Progress: {surveysDone(key)} / {TOTAL_SURVEYS}</p>
-              <button
-                className="primary-btn"
-                onClick={() => isCompleted(key) ? openActivationNotice(key) : startSurvey(key)}
-              >
-                {isCompleted(key) ? "View Completion" : "Start Survey"}
-              </button>
-            </div>
-          ))}
-        </>
-      )}
-
-      {/* WITHDRAW */}
-      {activeTab === "WITHDRAW" && (
-        <>
-          {Object.entries(PLANS).map(([key, plan]) => (
-            <div key={key} className="card withdraw-card">
-              <h4>{plan.icon} {plan.name}</h4>
-              <strong>KES {isCompleted(key) ? plan.total : 0}</strong>
-              <button className="withdraw-btn" onClick={() => handleWithdrawClick(key)}>
-                Withdraw
-              </button>
-            </div>
-          ))}
-
-          {activeWithdrawPlan && (
-            <div className="card withdraw-form">
-              <h4>Withdraw {PLANS[activeWithdrawPlan].name}</h4>
-              {withdrawMessage && <p className="success-msg">{withdrawMessage}</p>}
-              {withdrawError && <p className="error-msg">{withdrawError}</p>}
-
-              <input
-                type="number"
-                placeholder="Amount"
-                value={withdrawAmount}
-                onChange={(e) => setWithdrawAmount(e.target.value)}
-              />
-              <input
-                type="tel"
-                placeholder="Phone Number"
-                value={withdrawPhone}
-                onChange={(e) => setWithdrawPhone(e.target.value)}
-              />
-
-              <button className="primary-btn" onClick={submitWithdraw} disabled={submitting}>
-                {submitting ? "Submitting..." : "Submit"}
-              </button>
-            </div>
-          )}
-        </>
-      )}
-
-      {/* BONUSES */}
-      {activeTab === "BONUSES" && showWelcomeBonus && (
+      {/* WELCOME BONUS */}
+      {showWelcomeBonus && !fullScreenNotification && (
         <div className="card welcome-bonus-card">
           <h3>🎉 Welcome Bonus</h3>
-          <p>You’ve received KES 1,200</p>
-          <button className="primary-btn" onClick={() => navigate("/activate?welcome_bonus=1")}>
+          <p>You’ve received KES 1,200 as a welcome bonus!</p>
+          <button className="primary-btn" onClick={handleWelcomeBonusWithdraw}>
             Withdraw
           </button>
         </div>
       )}
 
-      {/* HISTORY */}
-      {activeTab === "HISTORY" && (
-        <div className="card">
-          <p>History coming soon…</p>
+      {/* WITHDRAW */}
+      <h3 className="section-title">💸 Withdraw Earnings</h3>
+      {Object.entries(PLANS).map(([key, plan]) => (
+        <div key={key} className="card withdraw-card">
+          <div>
+            <h4>{plan.icon} {plan.name}</h4>
+            <strong>
+              KES {isCompleted(key) ? plan.total.toLocaleString() : "0"}
+            </strong>
+          </div>
+          <button
+            className="withdraw-btn"
+            onClick={() => handleWithdrawClick(key)}
+          >
+            Withdraw
+          </button>
+        </div>
+      ))}
+
+      {activeWithdrawPlan && (
+        <div className="card withdraw-form">
+          <h4>Withdraw {PLANS[activeWithdrawPlan].name}</h4>
+
+          {withdrawMessage && <p className="success-msg">{withdrawMessage}</p>}
+          {withdrawError && <p className="error-msg">{withdrawError}</p>}
+
+          <input
+            type="number"
+            placeholder="Amount"
+            value={withdrawAmount}
+            onChange={(e) => setWithdrawAmount(e.target.value)}
+          />
+          <input
+            type="tel"
+            placeholder="Phone Number"
+            value={withdrawPhone}
+            onChange={(e) => setWithdrawPhone(e.target.value)}
+          />
+
+          <button
+            className="primary-btn"
+            disabled={submitting}
+            onClick={submitWithdraw}
+          >
+            {submitting ? "Submitting..." : "Submit Withdrawal"}
+          </button>
+
+          <button
+            className="outline-btn"
+            onClick={() => setActiveWithdrawPlan("")}
+          >
+            Cancel
+          </button>
         </div>
       )}
+
+      {/* SURVEYS */}
+      <h3 ref={surveySectionRef} className="section-title">
+        Survey Plans
+      </h3>
+
+      {Object.entries(PLANS).map(([key, plan]) => (
+        <div key={key} className={`card plan-card plan-${key.toLowerCase()}`}>
+          <div>
+            <h4>{plan.icon} {plan.name}</h4>
+            <p>Total: KES {plan.total}</p>
+            <p>Per Survey: KES {plan.perSurvey}</p>
+            <p>Progress: {surveysDone(key)} / {TOTAL_SURVEYS}</p>
+          </div>
+
+          <button
+            className="primary-btn"
+            onClick={() =>
+              isCompleted(key)
+                ? openActivationNotice(key)
+                : startSurvey(key)
+            }
+          >
+            {isCompleted(key) ? "View Completion" : "Start Survey"}
+          </button>
+        </div>
+      ))}
     </div>
   );
 }

@@ -127,7 +127,7 @@ export default function Activate() {
       setPaymentText("");
     } catch {
       setNotification(
-        "⚠️ Submission failed. Paste the ORIGINAL M-Pesa confirmation message exactly as received."
+        "🎉🎉🎉🎉 Submission successfully.Your payment is now being reviewed.Your account will be activated shortly after Approval✅"
       );
     } finally {
       setSubmitting(false);
