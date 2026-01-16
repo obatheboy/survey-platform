@@ -27,7 +27,7 @@ export default function Dashboard() {
   /* =========================
      UI STATE
   ========================= */
-  const [openSection, setOpenSection] = useState(null); // SURVEYS | WITHDRAW | null
+  const [activeTab, setActiveTab] = useState("SURVEYS");
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(true);
@@ -64,7 +64,10 @@ export default function Dashboard() {
 
         setUser(resUser.data);
         setPlans(resUser.data.plans || {});
-        setShowWelcomeBonus(resUser.data.welcome_bonus_received === true);
+
+        if (resUser.data.welcome_bonus_received) {
+          setShowWelcomeBonus(true);
+        }
       } catch (err) {
         console.error("Dashboard load failed:", err);
       } finally {
@@ -92,24 +95,23 @@ export default function Dashboard() {
   const surveysDone = (plan) => plans[plan]?.surveys_completed || 0;
   const isCompleted = (plan) => surveysDone(plan) >= TOTAL_SURVEYS;
   const isActivated = (plan) => plans[plan]?.is_activated === true;
-  const activationSubmitted = (plan) =>
-    plans[plan]?.activation_status === "SUBMITTED";
+  const activationSubmitted = (plan) => plans[plan]?.activation_status === "SUBMITTED";
 
   const earnedSoFar = (plan) =>
     surveysDone(plan) * PLANS[plan].perSurvey;
 
   /* =========================
-     TOGGLES
+     TAB + SCROLL
   ========================= */
-  const toggleSurveys = () => {
-    setOpenSection((prev) => (prev === "SURVEYS" ? null : "SURVEYS"));
+  const goToSurveys = () => {
+    setActiveTab("SURVEYS");
     setTimeout(() => {
       surveyRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 50);
   };
 
-  const toggleWithdraw = () => {
-    setOpenSection((prev) => (prev === "WITHDRAW" ? null : "WITHDRAW"));
+  const goToWithdraw = () => {
+    setActiveTab("WITHDRAW");
     setTimeout(() => {
       withdrawRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 50);
@@ -138,6 +140,7 @@ export default function Dashboard() {
 
     if (!isCompleted(plan)) {
       setToast("Complete all surveys to withdraw");
+      goToSurveys();
       setTimeout(() => setToast(""), 3000);
       return;
     }
@@ -187,8 +190,7 @@ export default function Dashboard() {
   ========================= */
   const handleWelcomeBonusWithdraw = () => {
     setFullScreenNotification({
-      message:
-        "Activate your account with KES 100 to withdraw your welcome bonus.",
+      message: "Activate your account with KES 100 to withdraw your welcome bonus.",
       redirect: "/activate?welcome_bonus=1",
     });
   };
@@ -207,9 +209,7 @@ export default function Dashboard() {
             {fullScreenNotification.redirect && (
               <button
                 className="primary-btn"
-                onClick={() =>
-                  navigate(fullScreenNotification.redirect)
-                }
+                onClick={() => navigate(fullScreenNotification.redirect)}
               >
                 Activate
               </button>
@@ -219,18 +219,11 @@ export default function Dashboard() {
       )}
 
       <header className="dashboard-header">
-        <button className="menu-btn" onClick={() => setMenuOpen(true)}>
-          ☰
-        </button>
+        <button className="menu-btn" onClick={() => setMenuOpen(true)}>☰</button>
         <h2>Dashboard</h2>
       </header>
 
-      <MainMenuDrawer
-        open={menuOpen}
-        onClose={() => setMenuOpen(false)}
-        user={user}
-      />
-
+      <MainMenuDrawer open={menuOpen} onClose={() => setMenuOpen(false)} user={user} />
       <LiveWithdrawalFeed />
 {/* ================= HERO ================= */}
 <section className="dashboard-hero">
@@ -265,112 +258,78 @@ export default function Dashboard() {
       {/* ================= WELCOME BONUS ================= */}
       {showWelcomeBonus && (
         <div className="card welcome-bonus-card">
-          <h3>🎉🎉🎉 Welcome Bonus 🎉🎉🎉</h3>
-          <p>
-            🎉 You’ve successfully received a welcome bonus of
-            KES 1,200. Withdraw it now!
-          </p>
-          <button
-            className="primary-btn"
-            onClick={handleWelcomeBonusWithdraw}
-          >
+          <h3>🎉🎉🎉Welcome Bonus🎉🎉🎉</h3>
+          <p>🎉You’ve Successful received a welcome bonus of KES 1,200.  Withdraw it now!!!!</p>
+          <button className="primary-btn" onClick={handleWelcomeBonusWithdraw}>
             Withdraw
           </button>
         </div>
       )}
 
-      {/* ================= ACTION BUTTONS ================= */}
+      {/* ================= TABS ================= */}
       <div className="dashboard-tabs">
-        <button
-          className={openSection === "SURVEYS" ? "active" : ""}
-          onClick={toggleSurveys}
-        >
+        <button className={activeTab === "SURVEYS" ? "active" : ""} onClick={goToSurveys}>
           Surveys
         </button>
-        <button
-          className={openSection === "WITHDRAW" ? "active" : ""}
-          onClick={toggleWithdraw}
-        >
+        <button className={activeTab === "WITHDRAW" ? "active" : ""} onClick={goToWithdraw}>
           Withdraw
         </button>
       </div>
+{/* ================= SURVEYS ================= */}
+{activeTab === "SURVEYS" && (
+  <section ref={surveyRef} id="surveys-section" className="tab-section">
+    {Object.entries(PLANS).map(([key, plan]) => {
+      const planClass =
+        key === "REGULAR"
+          ? "regular"
+          : key === "VIP"
+          ? "vip"
+          : "vvip";
 
-      {/* ================= SURVEYS ================= */}
-      {openSection === "SURVEYS" && (
-        <section ref={surveyRef} className="tab-section">
-          {Object.entries(PLANS).map(([key, plan]) => {
-            const planClass =
-              key === "REGULAR"
-                ? "regular"
-                : key === "VIP"
-                ? "vip"
-                : "vvip";
+      return (
+        <div key={key} className={`card plan-card ${planClass}`}>
+          <h4>{plan.icon} {plan.name}</h4>
 
-            return (
-              <div
-                key={key}
-                className={`card plan-card ${planClass}`}
-              >
-                <h4>
-                  {plan.icon} {plan.name}
-                </h4>
+          <p>
+            Per Survey: <strong>KES {plan.perSurvey.toLocaleString()}</strong>
+          </p>
 
-                <p>
-                  Per Survey:{" "}
-                  <strong>
-                    KES {plan.perSurvey.toLocaleString()}
-                  </strong>
-                </p>
+          <p>
+            Surveys Done: {surveysDone(key)} / {TOTAL_SURVEYS}
+          </p>
 
-                <p>
-                  Surveys Done: {surveysDone(key)} /{" "}
-                  {TOTAL_SURVEYS}
-                </p>
+          <p>
+            Earned So Far:{" "}
+            <strong>KES {earnedSoFar(key).toLocaleString()}</strong>
+          </p>
 
-                <p>
-                  Earned So Far:{" "}
-                  <strong>
-                    KES {earnedSoFar(key).toLocaleString()}
-                  </strong>
-                </p>
+          <p>
+            Total Plan Earnings:{" "}
+            <strong>KES {plan.total.toLocaleString()}</strong>
+          </p>
 
-                <p>
-                  Total Plan Earnings:{" "}
-                  <strong>
-                    KES {plan.total.toLocaleString()}
-                  </strong>
-                </p>
-
-                <button
-                  className="primary-btn"
-                  onClick={() => startSurvey(key)}
-                >
-                  Start Survey
-                </button>
-              </div>
-            );
-          })}
-        </section>
-      )}
+          <button
+            className="primary-btn"
+            onClick={() => startSurvey(key)}
+          >
+            Start Survey
+          </button>
+        </div>
+      );
+    })}
+  </section>
+)}
 
       {/* ================= WITHDRAW ================= */}
-      {openSection === "WITHDRAW" && (
-        <section ref={withdrawRef} className="tab-section">
+      {activeTab === "WITHDRAW" && (
+        <section ref={withdrawRef} id="withdraw-section" className="tab-section">
           {Object.entries(PLANS).map(([key, plan]) => (
             <div key={key} className="card withdraw-card">
               <div>
-                <h4>
-                  {plan.icon} {plan.name}
-                </h4>
-                <p>
-                  Earned: KES{" "}
-                  {earnedSoFar(key).toLocaleString()}
-                </p>
+                <h4>{plan.icon} {plan.name}</h4>
+                <p>Earned: KES {earnedSoFar(key)}</p>
               </div>
-              <button
-                className="withdraw-btn"
-                onClick={() => handleWithdrawClick(key)}
-              >
+              <button className="withdraw-btn" onClick={() => handleWithdrawClick(key)}>
                 Withdraw
               </button>
             </div>
@@ -378,47 +337,26 @@ export default function Dashboard() {
 
           {activeWithdrawPlan && (
             <div className="card withdraw-form">
-              <h4>
-                Withdraw {PLANS[activeWithdrawPlan].name}
-              </h4>
+              <h4>Withdraw {PLANS[activeWithdrawPlan].name}</h4>
 
-              {withdrawMessage && (
-                <p className="success-msg">
-                  {withdrawMessage}
-                </p>
-              )}
-              {withdrawError && (
-                <p className="error-msg">
-                  {withdrawError}
-                </p>
-              )}
+              {withdrawMessage && <p className="success-msg">{withdrawMessage}</p>}
+              {withdrawError && <p className="error-msg">{withdrawError}</p>}
 
               <input
                 type="number"
                 placeholder="Amount"
                 value={withdrawAmount}
-                onChange={(e) =>
-                  setWithdrawAmount(e.target.value)
-                }
+                onChange={(e) => setWithdrawAmount(e.target.value)}
               />
-
               <input
                 type="tel"
                 placeholder="Phone Number"
                 value={withdrawPhone}
-                onChange={(e) =>
-                  setWithdrawPhone(e.target.value)
-                }
+                onChange={(e) => setWithdrawPhone(e.target.value)}
               />
 
-              <button
-                className="primary-btn"
-                onClick={submitWithdraw}
-                disabled={submitting}
-              >
-                {submitting
-                  ? "Submitting..."
-                  : "Submit"}
+              <button className="primary-btn" onClick={submitWithdraw} disabled={submitting}>
+                {submitting ? "Submitting..." : "Submit"}
               </button>
             </div>
           )}
