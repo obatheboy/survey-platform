@@ -335,3 +335,15 @@ body {
     transition: none !important;
   }
 }
+/* ===== WELCOME BONUS TEXT EMPHASIS ===== */
+.welcome-bonus-card h3 {
+  font-weight: 900;
+  font-size: 24px;
+  letter-spacing: 0.4px;
+}
+
+.welcome-bonus-card p {
+  font-weight: 800;
+  font-size: 15px;
+  line-height: 1.5;
+}

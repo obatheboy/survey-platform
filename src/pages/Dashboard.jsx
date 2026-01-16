@@ -249,7 +249,7 @@ export default function Dashboard() {
       {showWelcomeBonus && (
         <div className="card welcome-bonus-card">
           <h3>🎉🎉🎉Welcome Bonus🎉🎉🎉</h3>
-          <p>🎉You’ve Successful received a welcome bonus of KES 1,200.Withdraw it now!!!!</p>
+          <p>🎉You’ve Successful received a welcome bonus of KES 1,200.  Withdraw it now!!!!</p>
           <button className="primary-btn" onClick={handleWelcomeBonusWithdraw}>
             Withdraw
           </button>
