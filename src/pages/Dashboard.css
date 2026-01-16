@@ -1,45 +1,26 @@
 /* =========================================================
-   ROOT VARIABLES
+   ROOT VARIABLES (DESIGN SYSTEM)
 ========================================================= */
 :root {
-  --radius-xl: 26px;
-  --radius-lg: 20px;
-  --radius-md: 14px;
-
-  --glass-bg: rgba(255,255,255,0.08);
-  --glass-border: rgba(255,255,255,0.14);
+  --bg-main: #0b1020;
+  --bg-card: rgba(255, 255, 255, 0.08);
+  --border-soft: rgba(255, 255, 255, 0.12);
 
   --text-main: #e3f2fd;
   --text-muted: #b39ddb;
+
+  --primary: #ffb703;
+  --secondary: #3f8cff;
+  --success: #4ade80;
+  --danger: #ef4444;
+
+  --radius-lg: 26px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
 }
 
 /* =========================================================
-   ANIMATIONS
-========================================================= */
-@keyframes gradientFlow {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-@keyframes floatIn {
-  from { opacity: 0; transform: translateY(18px) scale(0.97); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@keyframes glowPulse {
-  0% { box-shadow: 0 0 0 rgba(0,0,0,0); }
-  50% { box-shadow: 0 0 28px rgba(255,193,7,0.65); }
-  100% { box-shadow: 0 0 0 rgba(0,0,0,0); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* =========================================================
-   GLOBAL / SCROLL
+   GLOBAL RESET
 ========================================================= */
 *,
 *::before,
@@ -49,40 +30,23 @@
 
 html {
   scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
 }
 
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #0b1020;
+  background: linear-gradient(135deg, #0b1020, #1a237e, #311b92);
   color: var(--text-main);
-  overflow-y: auto;
-}
-
-body::-webkit-scrollbar {
-  width: 6px;
-}
-body::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.18);
-  border-radius: 3px;
 }
 
 /* =========================================================
-   DASHBOARD CANVAS
+   DASHBOARD WRAPPER
 ========================================================= */
 .dashboard {
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
   min-height: 100vh;
-  padding: 16px;
-  background: linear-gradient(
-    270deg,
-    #0b1020,
-    #1a237e,
-    #311b92,
-    #0d47a1
-  );
-  background-size: 400% 400%;
-  animation: gradientFlow 22s ease infinite;
 }
 
 /* =========================================================
@@ -91,9 +55,8 @@ body::-webkit-scrollbar-thumb {
 .loading {
   text-align: center;
   margin-top: 80px;
-  font-size: 15px;
   color: var(--text-muted);
-  animation: floatIn 0.8s ease;
+  font-size: 15px;
 }
 
 /* =========================================================
@@ -103,42 +66,35 @@ body::-webkit-scrollbar-thumb {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 18px;
-  border-radius: var(--radius-xl);
-  background: linear-gradient(270deg, #1e88e5, #5e35b1, #8e24aa);
-  background-size: 300% 300%;
-  animation: gradientFlow 14s ease infinite;
-  box-shadow: 0 18px 46px rgba(0,0,0,0.55);
+  padding: 18px 22px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(90deg, #7a4dff, #3f8cff);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+  margin-bottom: 22px;
 }
 
 .dashboard-header h2 {
   font-size: 20px;
-  font-weight: 900;
-  letter-spacing: 0.4px;
+  font-weight: 800;
 }
 
 .menu-btn {
-  font-size: 22px;
-  background: rgba(255,255,255,0.18);
+  background: rgba(255, 255, 255, 0.2);
   border: none;
   color: #fff;
-  padding: 8px 12px;
+  font-size: 22px;
+  padding: 8px 14px;
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: transform .2s ease, background .2s ease;
-}
-.menu-btn:hover {
-  transform: scale(1.1);
-  background: rgba(255,255,255,0.28);
 }
 
 /* =========================================================
-   HERO
+   HERO SECTION
 ========================================================= */
 .dashboard-hero {
-  margin-top: 20px;
   display: grid;
   gap: 18px;
+  margin-bottom: 24px;
 }
 
 @media (min-width: 768px) {
@@ -151,39 +107,28 @@ body::-webkit-scrollbar-thumb {
    CARD BASE
 ========================================================= */
 .card {
-  position: relative;
+  background: var(--bg-card);
+  backdrop-filter: blur(14px);
+  border-radius: var(--radius-lg);
   padding: 20px;
-  border-radius: var(--radius-xl);
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 22px 56px rgba(0,0,0,0.55);
-  animation: floatIn .75s ease both;
-}
-
-.card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
-  pointer-events: none;
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
 }
 
 /* =========================================================
    GREETING
 ========================================================= */
 .greeting {
-  background: linear-gradient(270deg, #ffb300, #ff9800, #ff6f00);
-  background-size: 300% 300%;
-  animation: gradientFlow 12s ease infinite;
-  color: #212121;
+  background: linear-gradient(135deg, #ffb703, #ffd166);
+  color: #1a1a1a;
 }
 
 .greeting h3 {
   font-size: 20px;
   font-weight: 900;
+  margin-bottom: 6px;
 }
+
 .greeting p {
   font-size: 14px;
 }
@@ -192,90 +137,111 @@ body::-webkit-scrollbar-thumb {
    EARNINGS
 ========================================================= */
 .earnings {
-  border-radius: var(--radius-xl);
-  padding: 20px;
   display: grid;
-  grid-template-columns: repeat(2,1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 14px;
-  background: linear-gradient(270deg, #00acc1, #26c6da, #ffee58);
-  background-size: 300% 300%;
-  animation: gradientFlow 10s ease infinite;
-  color: #102027;
 }
 
 .earnings > div {
-  background: rgba(255,255,255,0.85);
-  border-radius: var(--radius-lg);
-  padding: 14px;
+  background: linear-gradient(135deg, #9ef01a, #70e000);
+  color: #102027;
+  border-radius: var(--radius-md);
+  padding: 16px;
   text-align: center;
 }
 
 .earnings span {
   font-size: 12px;
+  opacity: 0.85;
 }
+
 .earnings strong {
-  font-size: 22px;
-  font-weight: 900;
   display: block;
   margin-top: 6px;
+  font-size: 22px;
+  font-weight: 900;
 }
 
 /* =========================================================
-   DASHBOARD TABS
+   WELCOME BONUS
+========================================================= */
+.welcome-bonus-card {
+  margin-bottom: 22px;
+  background: linear-gradient(135deg, #ffd166, #ffb703);
+  color: #1a1a1a;
+  text-align: center;
+}
+
+.welcome-bonus-card h3 {
+  font-weight: 900;
+}
+
+.welcome-bonus-card button {
+  margin-top: 12px;
+}
+
+/* =========================================================
+   TABS
 ========================================================= */
 .dashboard-tabs {
-  margin: 26px 0 20px;
   display: flex;
-  gap: 10px;
-  background: rgba(0,0,0,0.35);
-  padding: 10px;
-  border-radius: 50px;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 22px;
 }
 
 .dashboard-tabs button {
   flex: 1;
+  padding: 16px;
   border: none;
   background: transparent;
-  color: #cfd8dc;
-  padding: 12px 0;
-  font-weight: 800;
-  border-radius: 50px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
-  transition: all .25s ease;
 }
 
 .dashboard-tabs button.active {
-  background: linear-gradient(135deg, #ffca28, #ff9100);
-  color: #212121;
-  box-shadow: 0 8px 26px rgba(255,193,7,0.6);
-  transform: scale(1.05);
+  background: var(--primary);
+  color: #1a1a1a;
+}
+
+/* =========================================================
+   TAB SECTIONS
+========================================================= */
+.tab-section {
+  display: grid;
+  gap: 18px;
+}
+
+@media (min-width: 768px) {
+  .tab-section {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
 }
 
 /* =========================================================
    PLAN CARDS
 ========================================================= */
-.plan-card {
-  margin-bottom: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  transition: transform .3s ease, box-shadow .3s ease;
+.plan-card h4 {
+  font-size: 17px;
+  margin-bottom: 6px;
 }
 
-.plan-card:hover {
-  transform: translateY(-6px) scale(1.03);
-  box-shadow: 0 28px 72px rgba(0,0,0,0.6);
+.plan-card p {
+  font-size: 13px;
+  opacity: 0.9;
 }
 
 /* =========================================================
    WITHDRAW CARDS
 ========================================================= */
 .withdraw-card {
-  margin-bottom: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .withdraw-card strong {
@@ -285,41 +251,55 @@ body::-webkit-scrollbar-thumb {
 /* =========================================================
    WITHDRAW FORM
 ========================================================= */
-.withdraw-form {
-  margin-top: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
 .withdraw-form input {
+  width: 100%;
   padding: 14px;
+  margin-bottom: 10px;
   border-radius: var(--radius-md);
   border: none;
-  font-size: 14px;
-  outline: none;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.withdraw-form input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
 }
 
 /* =========================================================
    BUTTONS
 ========================================================= */
 .primary-btn {
-  background: linear-gradient(135deg, #ff6f00, #ffca28);
-  background-size: 300% 300%;
-  animation: gradientFlow 6s ease infinite, glowPulse 3.2s ease infinite;
-  color: #212121;
+  background: linear-gradient(135deg, #ffb703, #ffd166);
+  color: #1a1a1a;
   border: none;
   padding: 14px 28px;
   border-radius: 50px;
-  font-weight: 900;
-  font-size: 14px;
+  font-weight: 800;
   cursor: pointer;
-  text-transform: uppercase;
-  transition: transform .2s ease, box-shadow .2s ease;
+  width: 100%;
 }
 
-.primary-btn:hover {
-  transform: scale(1.08);
+.withdraw-btn {
+  background: linear-gradient(135deg, #3f8cff, #7a4dff);
+  color: #fff;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 50px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* =========================================================
+   MESSAGES
+========================================================= */
+.success-msg {
+  color: var(--success);
+  font-size: 14px;
+}
+
+.error-msg {
+  color: var(--danger);
+  font-size: 14px;
 }
 
 /* =========================================================
@@ -328,40 +308,39 @@ body::-webkit-scrollbar-thumb {
 .full-screen-notif {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.85);
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
 }
 
-.full-screen-notif .notif-content {
+.notif-content {
   background: #111;
-  color: #fff;
-  padding: 28px;
-  border-radius: 20px;
+  padding: 26px;
+  border-radius: var(--radius-lg);
   max-width: 420px;
   text-align: center;
-  box-shadow: 0 0 30px #00e5ff;
-  animation: fadeIn .4s ease;
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.35);
 }
 
 /* =========================================================
-   RESPONSIVE / PERFORMANCE
+   RESPONSIVE
 ========================================================= */
 @media (max-width: 480px) {
-  .dashboard { padding: 14px; }
-  .dashboard-hero { grid-template-columns: 1fr; }
+  .dashboard {
+    padding: 14px;
+  }
 
-  /* reduce animation cost */
-  .dashboard,
-  .dashboard-header,
-  .card,
-  .primary-btn {
-    animation: none !important;
+  .withdraw-card {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation: none !important;
