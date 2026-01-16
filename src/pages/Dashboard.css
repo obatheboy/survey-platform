@@ -228,15 +228,21 @@ body {
 /* =========================================================
    PLAN CARDS
 ========================================================= */
-.plan-card h4 {
-  font-size: 18px;
-  font-weight: 800;
+/* REGULAR */
+.plan-card.regular h4 {
+  color: #4ade80; /* green */
 }
 
-.plan-card p {
-  font-size: 13px;
-  opacity: 0.85;
+/* VIP */
+.plan-card.vip h4 {
+  color: #60a5fa; /* blue */
 }
+
+/* VVIP */
+.plan-card.vvip h4 {
+  color: #facc15; /* gold */
+}
+
 
 /* =========================================================
    WITHDRAW CARDS

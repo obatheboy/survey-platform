@@ -265,24 +265,50 @@ export default function Dashboard() {
           Withdraw
         </button>
       </div>
+{/* ================= SURVEYS ================= */}
+{activeTab === "SURVEYS" && (
+  <section ref={surveyRef} id="surveys-section" className="tab-section">
+    {Object.entries(PLANS).map(([key, plan]) => {
+      const planClass =
+        key === "REGULAR"
+          ? "regular"
+          : key === "VIP"
+          ? "vip"
+          : "vvip";
 
-      {/* ================= SURVEYS ================= */}
-      {activeTab === "SURVEYS" && (
-        <section ref={surveyRef} id="surveys-section" className="tab-section">
-          {Object.entries(PLANS).map(([key, plan]) => (
-            <div key={key} className="card plan-card">
-              <h4>{plan.icon} {plan.name}</h4>
-              <p>Per Survey: <strong>KES {plan.perSurvey}</strong></p>
-              <p>Surveys Done: {surveysDone(key)} / {TOTAL_SURVEYS}</p>
-              <p>Earned So Far: <strong>KES {earnedSoFar(key)}</strong></p>
-              <p>Total Plan Earnings: KES {plan.total}</p>
-              <button className="primary-btn" onClick={() => startSurvey(key)}>
-                Start Survey
-              </button>
-            </div>
-          ))}
-        </section>
-      )}
+      return (
+        <div key={key} className={`card plan-card ${planClass}`}>
+          <h4>{plan.icon} {plan.name}</h4>
+
+          <p>
+            Per Survey: <strong>KES {plan.perSurvey.toLocaleString()}</strong>
+          </p>
+
+          <p>
+            Surveys Done: {surveysDone(key)} / {TOTAL_SURVEYS}
+          </p>
+
+          <p>
+            Earned So Far:{" "}
+            <strong>KES {earnedSoFar(key).toLocaleString()}</strong>
+          </p>
+
+          <p>
+            Total Plan Earnings:{" "}
+            <strong>KES {plan.total.toLocaleString()}</strong>
+          </p>
+
+          <button
+            className="primary-btn"
+            onClick={() => startSurvey(key)}
+          >
+            Start Survey
+          </button>
+        </div>
+      );
+    })}
+  </section>
+)}
 
       {/* ================= WITHDRAW ================= */}
       {activeTab === "WITHDRAW" && (
