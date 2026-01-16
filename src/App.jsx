@@ -2,9 +2,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "./api/api";
 
-/* ================= USER LAYOUT ================= */
-import UserLayout from "./layouts/UserLayout";
-
 /* ================= USER PAGES ================= */
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -55,7 +52,7 @@ function AdminRoute({ children }) {
   return children;
 }
 
-/* ================= APP ROUTER ================= */
+/* ================= ROUTER ================= */
 export default function App() {
   /* ===============================
      🔥 GLOBAL BACKEND WAKE (ONCE)
@@ -66,9 +63,11 @@ export default function App() {
       setTimeout(() => controller.abort(), 8000);
 
       try {
-        await api.get("/health", { signal: controller.signal });
+        await api.get("/health", {
+          signal: controller.signal,
+        });
       } catch {
-        // Silent wake
+        // Silent: Render is waking up
       }
     };
 
@@ -81,25 +80,56 @@ export default function App() {
         {/* ENTRY */}
         <Route path="/" element={<Navigate to="/auth?mode=register" replace />} />
 
-        {/* AUTH */}
+        {/* USER AUTH */}
         <Route path="/auth" element={<Auth />} />
 
-        {/* ================= USER APP ================= */}
+        {/* USER APP */}
         <Route
+          path="/dashboard"
           element={
             <ProtectedRoute>
-              <UserLayout />
+              <Dashboard />
             </ProtectedRoute>
           }
-        >
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/surveys" element={<Surveys />} />
-          <Route path="/withdraw" element={<Withdraw />} />
-          <Route path="/activate" element={<Activate />} />
-          <Route path="/activation-notice" element={<ActivationNotice />} />
-        </Route>
+        />
 
-        {/* ================= ADMIN ================= */}
+        <Route
+          path="/surveys"
+          element={
+            <ProtectedRoute>
+              <Surveys />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/activation-notice"
+          element={
+            <ProtectedRoute>
+              <ActivationNotice />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/activate"
+          element={
+            <ProtectedRoute>
+              <Activate />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/withdraw"
+          element={
+            <ProtectedRoute>
+              <Withdraw />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ADMIN */}
         <Route path="/admin/login" element={<AdminLogin />} />
 
         <Route

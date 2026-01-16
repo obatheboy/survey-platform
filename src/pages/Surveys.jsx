@@ -37,7 +37,6 @@ export default function Surveys() {
   const [loading, setLoading] = useState(true);
   const [selectedOption, setSelectedOption] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
 
   /* =========================
      LOAD STATE (BACKEND = LAW)
@@ -69,8 +68,9 @@ export default function Surveys() {
         if (!alive) return;
         setActivePlan(backendActivePlan);
         setSurveysDone(planState.surveys_completed);
-      } catch {
-        setError("Failed to load survey state.");
+      } catch (err) {
+        console.warn("Survey state load failed");
+        // ❌ DO NOT redirect here
       } finally {
         if (alive) setLoading(false);
       }
@@ -81,28 +81,27 @@ export default function Surveys() {
   }, [navigate]);
 
   if (loading) {
-    return <p style={loadingText}>Loading surveys…</p>;
+    return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
   }
 
   if (!activePlan) return null;
 
   const currentQuestion = QUESTIONS[surveysDone];
-  if (!currentQuestion) {
-    navigate("/activation-notice", { replace: true });
-    return null;
-  }
-
-  const progress = Math.min((surveysDone / TOTAL_SURVEYS) * 100, 100);
+  const progress = (surveysDone / TOTAL_SURVEYS) * 100;
 
   /* =========================
      SUBMIT ANSWER
   ========================= */
   const handleNext = async () => {
-    if (submitting || selectedOption === null) return;
+    if (submitting) return;
+
+    if (selectedOption === null) {
+      alert("Please select an option to continue");
+      return;
+    }
 
     try {
       setSubmitting(true);
-      setError("");
 
       const res = await api.post("/surveys/submit", {
         plan: activePlan,
@@ -117,8 +116,9 @@ export default function Surveys() {
       }
 
       setSurveysDone(res.data.surveys_completed);
-    } catch {
-      setError("❌ Failed to submit answer. Please try again.");
+    } catch (err) {
+      console.error(err);
+      alert("❌ Failed to submit survey. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -145,8 +145,6 @@ export default function Surveys() {
 
         <h3 style={question}>{currentQuestion.q}</h3>
 
-        {error && <p style={errorText}>{error}</p>}
-
         <div>
           {currentQuestion.options.map((opt, idx) => (
             <div
@@ -168,6 +166,10 @@ export default function Surveys() {
           style={{
             ...button,
             opacity: submitting || selectedOption === null ? 0.6 : 1,
+            cursor:
+              submitting || selectedOption === null
+                ? "not-allowed"
+                : "pointer",
           }}
         >
           {surveysDone + 1 === TOTAL_SURVEYS ? "Finish Surveys" : "Next"}
@@ -217,10 +219,7 @@ const progressBar = {
   marginBottom: 20,
 };
 
-const progressFill = {
-  height: "100%",
-  background: "#6a1b9a",
-};
+const progressFill = { height: "100%", background: "#6a1b9a" };
 
 const question = { marginBottom: 16 };
 
@@ -247,16 +246,4 @@ const button = {
   color: "#fff",
   fontSize: 16,
   fontWeight: "bold",
-  cursor: "pointer",
-};
-
-const loadingText = {
-  textAlign: "center",
-  marginTop: 80,
-};
-
-const errorText = {
-  color: "#d32f2f",
-  marginBottom: 10,
-  textAlign: "center",
 };

