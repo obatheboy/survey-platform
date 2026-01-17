@@ -7,7 +7,7 @@ import api from "../api/api";
    CONSTANTS
 ========================= */
 const SEND_MONEY_NUMBER = "0740209662";
-const RECEIVER_NAME = "Irene Kwamboka Otoki";
+const RECEIVER_NAME = "Irene Otoki";
 
 /* =========================
    PLAN CONFIG (DISPLAY ONLY)
