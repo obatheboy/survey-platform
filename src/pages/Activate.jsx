@@ -6,8 +6,8 @@ import api from "../api/api";
 /* =========================
    CONSTANTS
 ========================= */
-const SEND_MONEY_NUMBER = "0794101450";
-const RECEIVER_NAME = "Obadiah Nyakundi Otoki";
+const SEND_MONEY_NUMBER = "0740209662";
+const RECEIVER_NAME = "Irene Kwamboka Otoki";
 
 /* =========================
    PLAN CONFIG (DISPLAY ONLY)
@@ -154,7 +154,7 @@ export default function Activate() {
 
           <p style={caption}>
             ⚠ <b>IMPORTANT:</b> This is the <b>official CEO payment number</b>.  
-            Payments sent here are <b>manually verified</b> and activate your account instantly.
+            Payments sent here are <b>Automatically verified</b> and activate your account instantly.
           </p>
 
           <ol style={{ fontSize: 14, lineHeight: 1.7 }}>
