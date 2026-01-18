@@ -366,25 +366,14 @@ body {
     transition: none !important;
   }
 }
-/* ===== WELCOME BONUS TEXT EMPHASIS ===== */
-.welcome-bonus-card h3 {
-  font-weight: 900;
-  font-size: 24px;
-  letter-spacing: 0.4px;
-}
-
-.welcome-bonus-card p {
-  font-weight: 800;
-  font-size: 15px;
-  line-height: 1.5;
-}
 /* =========================================================
    ROOT VARIABLES
 ========================================================= */
 :root {
   --radius-lg: 16px;
   --bonus-gradient: linear-gradient(135deg, #ff9800, #ff5722);
-  --bonus-glow: 0 0 35px rgba(255, 152, 0, 0.8);
+  --bonus-glow-strong: 0 0 45px rgba(255, 152, 0, 0.9);
+  --bonus-glow-soft: 0 0 25px rgba(255, 152, 0, 0.6);
 }
 
 /* =========================================================
@@ -396,7 +385,7 @@ body {
 }
 
 /* =========================================================
-   WELCOME BONUS – BLOWING EFFECT
+   WELCOME BONUS CARD – CORE
 ========================================================= */
 
 .welcome-bonus-card {
@@ -404,39 +393,44 @@ body {
   background: var(--bonus-gradient);
   border-radius: var(--radius-lg);
   padding: 18px;
-  box-shadow: var(--bonus-glow);
+  box-shadow: var(--bonus-glow-soft);
   overflow: hidden;
+
   animation: bonusThrob 1.6s ease-in-out infinite;
+  transform-origin: center;
 }
 
-/* =========================
-   BLOWING ENERGY WAVE
-========================= */
+/* =========================================================
+   ENERGY WAVE (BLOWING CORE)
+========================================================= */
+
 .welcome-bonus-card::before {
   content: "";
   position: absolute;
-  inset: -40%;
+  inset: -50%;
   background: radial-gradient(
     circle,
-    rgba(255,255,255,0.35),
-    rgba(255,255,255,0.15),
+    rgba(255,255,255,0.45),
+    rgba(255,255,255,0.2),
     transparent 70%
   );
-  animation: blowWave 2.5s ease-out infinite;
+  animation: blowWave 2.2s ease-out infinite;
+  pointer-events: none;
 }
 
-/* =========================
-   BLOWING PARTICLES
-========================= */
+/* =========================================================
+   PARTICLES (SPARKS)
+========================================================= */
+
 .welcome-bonus-card::after {
   content: "";
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 20% 40%, rgba(255,255,255,.6) 2px, transparent 3px),
-    radial-gradient(circle at 70% 30%, rgba(255,255,255,.5) 2px, transparent 3px),
-    radial-gradient(circle at 40% 80%, rgba(255,255,255,.4) 2px, transparent 3px),
-    radial-gradient(circle at 80% 70%, rgba(255,255,255,.6) 2px, transparent 3px);
+    radial-gradient(circle at 20% 40%, rgba(255,255,255,.7) 2px, transparent 3px),
+    radial-gradient(circle at 70% 30%, rgba(255,255,255,.6) 2px, transparent 3px),
+    radial-gradient(circle at 40% 80%, rgba(255,255,255,.5) 2px, transparent 3px),
+    radial-gradient(circle at 80% 70%, rgba(255,255,255,.7) 2px, transparent 3px);
   animation: particlesBlow 2s linear infinite;
   pointer-events: none;
 }
@@ -446,14 +440,17 @@ body {
 ========================================================= */
 
 .welcome-bonus-card h3 {
-  font-size: 20px;
-  font-weight: 700;
+  font-weight: 900;
+  font-size: 22px;
+  letter-spacing: 0.3px;
   position: relative;
   z-index: 2;
 }
 
 .welcome-bonus-card p {
+  font-weight: 800;
   font-size: 14px;
+  line-height: 1.45;
   opacity: 0.95;
   position: relative;
   z-index: 2;
@@ -466,38 +463,40 @@ body {
 .welcome-bonus-card .primary-btn {
   margin-top: 12px;
   width: 100%;
-  font-size: 15px;
-  font-weight: 700;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 800;
   border-radius: 14px;
   background: #000;
   color: #fff;
   position: relative;
   z-index: 2;
-  animation: buttonPressure 1.2s ease-in-out infinite;
+
+  animation: buttonPressure 1.3s ease-in-out infinite;
 }
 
 /* =========================================================
-   ANIMATIONS
+   ANIMATIONS (DESKTOP)
 ========================================================= */
 
 @keyframes bonusThrob {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 0 25px rgba(255,152,0,.6);
+    box-shadow: var(--bonus-glow-soft);
   }
   50% {
-    transform: scale(1.05);
-    box-shadow: 0 0 55px rgba(255,152,0,1);
+    transform: scale(1.04);
+    box-shadow: var(--bonus-glow-strong);
   }
 }
 
 @keyframes blowWave {
   0% {
-    transform: scale(0.2);
+    transform: scale(0.3);
     opacity: 0.9;
   }
   100% {
-    transform: scale(1.4);
+    transform: scale(1.35);
     opacity: 0;
   }
 }
@@ -508,33 +507,32 @@ body {
     opacity: 1;
   }
   100% {
-    transform: translate(-20px, -30px);
+    transform: translate(-18px, -26px);
     opacity: 0;
   }
 }
 
 @keyframes buttonPressure {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.12); }
+  50% { transform: scale(1.1); }
 }
 
 /* =========================================================
-   MOBILE COMPACT MODE
+   MOBILE – SMALLER BUT STRONGER
 ========================================================= */
 
 @media (max-width: 480px) {
 
   .dashboard {
-    padding: 10px;
-  }
-
-  .card {
-    padding: 12px;
-    border-radius: var(--radius-lg);
+    padding: 8px;
   }
 
   .welcome-bonus-card {
-    margin-bottom: 14px;
+    padding: 14px;
+    border-radius: 14px;
+
+    /* Faster + stronger on phones */
+    animation: bonusThrobMobile 1.2s ease-in-out infinite;
   }
 
   .welcome-bonus-card h3 {
@@ -545,8 +543,45 @@ body {
     font-size: 13px;
   }
 
-  .primary-btn {
-    padding: 12px;
-    font-size: 14px;
+  .welcome-bonus-card .primary-btn {
+    padding: 11px;
+    font-size: 13px;
+    animation: buttonPressureMobile 1s ease-in-out infinite;
   }
+
+  /* Mobile-specific stronger wave */
+  .welcome-bonus-card::before {
+    animation: blowWaveMobile 1.8s ease-out infinite;
+  }
+}
+
+/* =========================================================
+   MOBILE ANIMATIONS
+========================================================= */
+
+@keyframes bonusThrobMobile {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 28px rgba(255,152,0,.7);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 0 55px rgba(255,152,0,1);
+  }
+}
+
+@keyframes blowWaveMobile {
+  0% {
+    transform: scale(0.25);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+}
+
+@keyframes buttonPressureMobile {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
 }

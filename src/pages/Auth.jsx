@@ -255,7 +255,11 @@ function PasswordInput({ show, toggle, ...props }) {
   );
 }
 /* =========================
-   COLOR-RICH STYLES (SHOUTING)
+   COLOR-RICH STYLES (SHOUTING v2)
+========================= */
+
+/* =========================
+   PAGE BACKGROUND
 ========================= */
 
 const page = {
@@ -264,40 +268,42 @@ const page = {
   alignItems: "center",
   justifyContent: "center",
   padding: "20px",
+
   background: `
-    radial-gradient(circle at 15% 15%, #2563eb66, transparent 40%),
-    radial-gradient(circle at 85% 25%, #7c3aed66, transparent 45%),
-    radial-gradient(circle at 35% 85%, #0ea5e966, transparent 45%),
+    radial-gradient(circle at 12% 12%, #2563eb77, transparent 42%),
+    radial-gradient(circle at 88% 22%, #7c3aed77, transparent 45%),
+    radial-gradient(circle at 40% 88%, #0ea5e977, transparent 45%),
+    radial-gradient(circle at 70% 70%, #f59e0b33, transparent 50%),
     linear-gradient(135deg, #020617, #020617)
   `,
 };
 
 /* =========================
-   CARD – ORANGE / YELLOW ENERGY
+   CARD – FIRE / SUN ENERGY
 ========================= */
 
 const card = {
   width: "100%",
   maxWidth: "420px",
-  padding: "32px 28px",
-  borderRadius: "22px",
+  padding: "34px 30px",
+  borderRadius: "24px",
 
-  /* Dark base + warm energy layers */
   background: `
     linear-gradient(160deg,
       #1e1b4b 0%,
-      #312e81 35%,
-      #78350f 65%,
+      #312e81 28%,
+      #78350f 55%,
+      #b45309 75%,
       #f59e0b 100%
     )
   `,
 
   boxShadow: `
-    0 40px 90px rgba(0,0,0,0.6),
-    0 0 45px rgba(245,158,11,0.35)
+    0 45px 100px rgba(0,0,0,0.7),
+    0 0 55px rgba(245,158,11,0.45)
   `,
 
-  border: "1px solid rgba(245,158,11,0.35)",
+  border: "1px solid rgba(253,224,71,0.45)",
 };
 
 /* =========================
@@ -306,26 +312,29 @@ const card = {
 
 const logo = {
   textAlign: "center",
-  fontSize: "26px",
+  fontSize: "27px",
   fontWeight: "900",
   marginBottom: "6px",
 
   background: `
     linear-gradient(135deg,
-      #fde68a,
+      #fff7cd,
+      #fde047,
       #f59e0b,
       #fb923c
     )
   `,
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
+
+  textShadow: "0 0 22px rgba(253,224,71,0.45)",
 };
 
 const subtitle = {
   textAlign: "center",
   fontSize: "14px",
   color: "#fde68a",
-  marginBottom: "26px",
+  marginBottom: "28px",
 };
 
 /* =========================
@@ -337,18 +346,24 @@ const input = {
   padding: "14px 16px",
   marginBottom: "14px",
   borderRadius: "14px",
-  border: "1px solid rgba(251,191,36,0.35)",
+
+  border: "1px solid rgba(251,191,36,0.4)",
   background: "rgba(255,255,255,0.08)",
+
   color: "#ffffff",
   fontSize: "15px",
   outline: "none",
+
+  boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.2)",
 };
 
 /* =========================
    PASSWORD EYE
 ========================= */
 
-const passwordWrap = { position: "relative" };
+const passwordWrap = {
+  position: "relative",
+};
 
 const eye = {
   position: "absolute",
@@ -360,18 +375,18 @@ const eye = {
 };
 
 /* =========================
-   BUTTON – HOT ACTION
+   BUTTON – PRIMARY ACTION
 ========================= */
 
 const button = {
   width: "100%",
-  padding: "14px",
-  borderRadius: "16px",
+  padding: "15px",
+  borderRadius: "18px",
   border: "none",
 
   background: `
     linear-gradient(135deg,
-      #f97316,
+      #fb923c,
       #f59e0b,
       #fde047
     )
@@ -381,16 +396,16 @@ const button = {
   fontWeight: "900",
   fontSize: "15px",
   cursor: "pointer",
-  marginTop: "12px",
+  marginTop: "14px",
 
   boxShadow: `
-    0 18px 45px rgba(249,115,22,0.6),
-    0 0 25px rgba(253,224,71,0.6)
+    0 22px 55px rgba(249,115,22,0.7),
+    0 0 30px rgba(253,224,71,0.7)
   `,
 };
 
 /* =========================
-   TEXT
+   MESSAGE TEXT
 ========================= */
 
 const message = {
@@ -400,15 +415,58 @@ const message = {
   color: "#fecaca",
 };
 
+/* =========================
+   SWITCH AREA – HIGH VISIBILITY
+========================= */
+
 const switchText = {
-  marginTop: "22px",
+  marginTop: "26px",
+  padding: "14px 18px",
+  borderRadius: "16px",
+
+  background: `
+    linear-gradient(135deg,
+      rgba(249,115,22,0.22),
+      rgba(250,204,21,0.22),
+      rgba(251,146,60,0.22)
+    )
+  `,
+
+  boxShadow: `
+    inset 0 0 0 1px rgba(253,224,71,0.45),
+    0 12px 35px rgba(249,115,22,0.45)
+  `,
+
   textAlign: "center",
-  fontSize: "14px",
-  color: "#fde68a",
+  fontSize: "14.5px",
+  fontWeight: "600",
+  color: "#fff7ed",
 };
 
+/* =========================
+   SWITCH LINK – SHOUTING CTA
+========================= */
+
 const link = {
-  color: "#fbbf24",
-  fontWeight: "800",
+  marginLeft: "6px",
+  padding: "4px 10px",
+  borderRadius: "10px",
+
+  background: `
+    linear-gradient(135deg,
+      #fde047,
+      #f59e0b,
+      #f97316
+    )
+  `,
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+
+  fontWeight: "900",
   cursor: "pointer",
+
+  textShadow: `
+    0 0 14px rgba(253,224,71,0.9),
+    0 0 28px rgba(249,115,22,0.8)
+  `,
 };
