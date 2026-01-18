@@ -2,45 +2,29 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../api/api";
 
-/* =========================
-   INLINE GLOBAL STYLES
-========================= */
-const GlobalStyles = () => (
-  <style>{`
-    @keyframes gradientMove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    @keyframes blobFloat {
-      0%,100% { transform: translate(0,0); }
-      50% { transform: translate(60px,-40px); }
-    }
-
-    .neon-btn:hover {
-      transform: translateY(-2px) scale(1.04);
-      box-shadow:
-        0 0 18px rgba(99,102,241,.9),
-        0 0 40px rgba(124,58,237,.8);
-    }
-  `}</style>
-);
-
 export default function Auth() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  /* =========================
+     MODE (REGISTER DEFAULT)
+  ========================= */
   const initialMode =
     searchParams.get("mode") === "login" ? "login" : "register";
 
   const [mode, setMode] = useState(initialMode);
   const [loading, setLoading] = useState(false);
 
+  /* =========================
+     PASSWORD VISIBILITY
+  ========================= */
   const [showRegPassword, setShowRegPassword] = useState(false);
   const [showRegConfirm, setShowRegConfirm] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
+  /* =========================
+     REGISTER STATE
+  ========================= */
   const [regData, setRegData] = useState({
     full_name: "",
     phone: "",
@@ -50,20 +34,37 @@ export default function Auth() {
   });
   const [regMessage, setRegMessage] = useState("");
 
+  /* =========================
+     LOGIN STATE
+  ========================= */
   const [loginData, setLoginData] = useState({
     phone: "",
     password: "",
   });
   const [loginMessage, setLoginMessage] = useState("");
 
+  /* =========================
+     🔥 WAKE BACKEND
+  ========================= */
   useEffect(() => {
-    api.get("/health").catch(() => {});
+    const wakeBackend = async () => {
+      try {
+        await api.get("/health");
+      } catch {}
+    };
+    wakeBackend();
   }, []);
 
+  /* =========================
+     URL SYNC
+  ========================= */
   useEffect(() => {
     navigate(`/auth?mode=${mode}`, { replace: true });
   }, [mode, navigate]);
 
+  /* =========================
+     REGISTER
+  ========================= */
   const handleRegister = async (e) => {
     e.preventDefault();
     setRegMessage("");
@@ -90,6 +91,9 @@ export default function Auth() {
     }
   };
 
+  /* =========================
+     LOGIN
+  ========================= */
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoginMessage("");
@@ -100,7 +104,9 @@ export default function Auth() {
       await api.get("/auth/me");
       navigate("/dashboard", { replace: true });
     } catch (err) {
-      setLoginMessage(err.response?.data?.message || "Login failed");
+      setLoginMessage(
+        err.response?.data?.message || "Login failed. Try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -108,19 +114,6 @@ export default function Auth() {
 
   return (
     <div style={page}>
-      <GlobalStyles />
-
-      {/* FLOATING BLOBS */}
-      <div style={{ ...blob, top: "-80px", left: "-80px" }} />
-      <div
-        style={{
-          ...blob,
-          bottom: "-100px",
-          right: "-80px",
-          animationDelay: "6s",
-        }}
-      />
-
       <div
         style={{
           ...card,
@@ -138,40 +131,102 @@ export default function Auth() {
 
         {mode === "register" && (
           <form onSubmit={handleRegister}>
-            <Input placeholder="Full Name" value={regData.full_name}
-              onChange={(e) => setRegData({ ...regData, full_name: e.target.value })} />
-            <Input placeholder="Phone Number" value={regData.phone}
-              onChange={(e) => setRegData({ ...regData, phone: e.target.value })} />
-            <Input type="email" required={false} placeholder="Email (optional)"
+            <Input
+              placeholder="Full Name"
+              value={regData.full_name}
+              onChange={(e) =>
+                setRegData({ ...regData, full_name: e.target.value })
+              }
+            />
+
+            <Input
+              placeholder="Phone Number"
+              value={regData.phone}
+              onChange={(e) =>
+                setRegData({ ...regData, phone: e.target.value })
+              }
+            />
+
+            <Input
+              type="email"
+              placeholder="Email (optional)"
+              required={false}
               value={regData.email}
-              onChange={(e) => setRegData({ ...regData, email: e.target.value })} />
-            <PasswordInput placeholder="Password" show={showRegPassword}
-              toggle={() => setShowRegPassword(!showRegPassword)}
+              onChange={(e) =>
+                setRegData({ ...regData, email: e.target.value })
+              }
+            />
+
+            <PasswordInput
+              placeholder="Password"
               value={regData.password}
-              onChange={(e) => setRegData({ ...regData, password: e.target.value })} />
-            <PasswordInput placeholder="Confirm Password" show={showRegConfirm}
-              toggle={() => setShowRegConfirm(!showRegConfirm)}
+              show={showRegPassword}
+              toggle={() => setShowRegPassword(!showRegPassword)}
+              onChange={(e) =>
+                setRegData({ ...regData, password: e.target.value })
+              }
+            />
+
+            <PasswordInput
+              placeholder="Confirm Password"
               value={regData.confirmPassword}
-              onChange={(e) => setRegData({ ...regData, confirmPassword: e.target.value })} />
-            <button className="neon-btn" style={button}>
+              show={showRegConfirm}
+              toggle={() => setShowRegConfirm(!showRegConfirm)}
+              onChange={(e) =>
+                setRegData({
+                  ...regData,
+                  confirmPassword: e.target.value,
+                })
+              }
+            />
+
+            <button style={button} type="submit">
               {loading ? "Creating..." : "Create Account"}
             </button>
+
             {regMessage && <p style={message}>{regMessage}</p>}
+
+            <p style={switchText}>
+              Already have an account?{" "}
+              <span style={link} onClick={() => setMode("login")}>
+                Login
+              </span>
+            </p>
           </form>
         )}
 
         {mode === "login" && (
           <form onSubmit={handleLogin}>
-            <Input placeholder="Phone Number" value={loginData.phone}
-              onChange={(e) => setLoginData({ ...loginData, phone: e.target.value })} />
-            <PasswordInput placeholder="Password" show={showLoginPassword}
-              toggle={() => setShowLoginPassword(!showLoginPassword)}
+            <Input
+              placeholder="Phone Number"
+              value={loginData.phone}
+              onChange={(e) =>
+                setLoginData({ ...loginData, phone: e.target.value })
+              }
+            />
+
+            <PasswordInput
+              placeholder="Password"
               value={loginData.password}
-              onChange={(e) => setLoginData({ ...loginData, password: e.target.value })} />
-            <button className="neon-btn" style={button}>
+              show={showLoginPassword}
+              toggle={() => setShowLoginPassword(!showLoginPassword)}
+              onChange={(e) =>
+                setLoginData({ ...loginData, password: e.target.value })
+              }
+            />
+
+            <button style={button} type="submit">
               {loading ? "Logging in..." : "Login"}
             </button>
+
             {loginMessage && <p style={message}>{loginMessage}</p>}
+
+            <p style={switchText}>
+              Don’t have an account?{" "}
+              <span style={link} onClick={() => setMode("register")}>
+                Create one
+              </span>
+            </p>
           </form>
         )}
       </div>
@@ -180,23 +235,28 @@ export default function Auth() {
 }
 
 /* =========================
-   REUSABLE INPUTS
+   INPUTS
 ========================= */
 function Input({ type = "text", required = true, ...props }) {
-  return <input type={type} style={input} required={required} {...props} />;
+  return <input type={type} required={required} style={input} {...props} />;
 }
 
 function PasswordInput({ show, toggle, ...props }) {
   return (
     <div style={passwordWrap}>
-      <input {...props} type={show ? "text" : "password"} style={input} required />
+      <input
+        {...props}
+        type={show ? "text" : "password"}
+        style={input}
+        required
+      />
       <span style={eye} onClick={toggle}>👁</span>
     </div>
   );
 }
 
 /* =========================
-   STYLES
+   COLOR-RICH STYLES (NO WHITE)
 ========================= */
 
 const page = {
@@ -205,22 +265,12 @@ const page = {
   alignItems: "center",
   justifyContent: "center",
   padding: "20px",
-  position: "relative",
-  overflow: "hidden",
-  background:
-    "linear-gradient(135deg,#020617,#1e1b4b,#020617)",
-  backgroundSize: "400% 400%",
-  animation: "gradientMove 18s ease infinite",
-};
-
-const blob = {
-  position: "absolute",
-  width: "260px",
-  height: "260px",
-  background:
-    "radial-gradient(circle, rgba(99,102,241,.6), transparent 60%)",
-  filter: "blur(60px)",
-  animation: "blobFloat 20s ease-in-out infinite",
+  background: `
+    radial-gradient(circle at 10% 10%, #2563eb55, transparent 40%),
+    radial-gradient(circle at 90% 20%, #7c3aed55, transparent 45%),
+    radial-gradient(circle at 30% 90%, #0ea5e955, transparent 45%),
+    linear-gradient(135deg, #020617, #020617)
+  `,
 };
 
 const card = {
@@ -229,12 +279,9 @@ const card = {
   padding: "32px 28px",
   borderRadius: "22px",
   background:
-    "linear-gradient(145deg, rgba(255,255,255,.9), rgba(224,231,255,.9))",
-  backdropFilter: "blur(18px)",
-  border: "1px solid rgba(255,255,255,.4)",
-  boxShadow: "0 40px 90px rgba(0,0,0,.45)",
-  position: "relative",
-  zIndex: 1,
+    "linear-gradient(160deg, #1e1b4b, #312e81, #1e293b)",
+  boxShadow: "0 40px 90px rgba(0,0,0,0.6)",
+  border: "1px solid rgba(255,255,255,0.12)",
 };
 
 const logo = {
@@ -243,7 +290,7 @@ const logo = {
   fontWeight: "800",
   marginBottom: "6px",
   background:
-    "linear-gradient(135deg,#2563eb,#7c3aed,#0ea5e9)",
+    "linear-gradient(135deg, #38bdf8, #a78bfa, #22d3ee)",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
 };
@@ -251,7 +298,7 @@ const logo = {
 const subtitle = {
   textAlign: "center",
   fontSize: "14px",
-  color: "#334155",
+  color: "#c7d2fe",
   marginBottom: "26px",
 };
 
@@ -260,8 +307,11 @@ const input = {
   padding: "14px 16px",
   marginBottom: "14px",
   borderRadius: "14px",
-  border: "1px solid rgba(148,163,184,.35)",
-  background: "#f8fafc",
+  border: "1px solid rgba(255,255,255,0.15)",
+  background: "rgba(255,255,255,0.08)",
+  color: "#ffffff",
+  fontSize: "15px",
+  outline: "none",
 };
 
 const passwordWrap = { position: "relative" };
@@ -272,6 +322,7 @@ const eye = {
   top: "50%",
   transform: "translateY(-50%)",
   cursor: "pointer",
+  color: "#c7d2fe",
 };
 
 const button = {
@@ -280,15 +331,31 @@ const button = {
   borderRadius: "16px",
   border: "none",
   background:
-    "linear-gradient(135deg,#2563eb,#4f46e5,#7c3aed)",
-  color: "#fff",
+    "linear-gradient(135deg, #2563eb, #7c3aed, #0ea5e9)",
+  color: "#ffffff",
   fontWeight: "800",
+  fontSize: "15px",
   cursor: "pointer",
   marginTop: "12px",
+  boxShadow: "0 20px 40px rgba(59,130,246,0.6)",
 };
 
 const message = {
   marginTop: "14px",
+  fontSize: "14px",
   textAlign: "center",
-  color: "#dc2626",
+  color: "#fca5a5",
+};
+
+const switchText = {
+  marginTop: "22px",
+  textAlign: "center",
+  fontSize: "14px",
+  color: "#c7d2fe",
+};
+
+const link = {
+  color: "#60a5fa",
+  fontWeight: "700",
+  cursor: "pointer",
 };
