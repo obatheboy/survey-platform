@@ -25,6 +25,19 @@
   --space-md: 18px;
   --space-lg: 28px;
   --space-xl: 42px;
+  /* BONUS – YELLOW ENERGY */
+  --bonus-gradient: linear-gradient(
+    135deg,
+    #fde047 0%,
+    #fbbf24 45%,
+    #f59e0b 100%
+  );
+
+  --bonus-glow-soft: 0 0 28px rgba(253, 224, 71, 0.75);
+  --bonus-glow-strong: 0 0 55px rgba(251, 191, 36, 1);
+
+
+
 }
 
 /* =========================================================
@@ -202,15 +215,7 @@ body {
   font-weight: 900;
 }
 
-/* =========================================================
-   WELCOME BONUS
-========================================================= */
-.welcome-bonus-card {
-  margin-bottom: var(--space-lg); /* 🔧 reduced */
-  background: linear-gradient(135deg, #2bff00, #ff3503);
-  color: #000000;
-  text-align: center;
-}
+
 
 /* =========================================================
    TABS
@@ -464,13 +469,18 @@ body {
 /* =========================================================
    WELCOME BONUS – ANIMATED GLOW
 ========================================================= */
+/* =========================================================
+   WELCOME BONUS – ANIMATED GLOW (YELLOW)
+========================================================= */
 .welcome-bonus-card {
   position: relative;
+  margin-bottom: var(--space-lg);
   background: var(--bonus-gradient);
   border-radius: var(--radius-lg);
   padding: 18px;
   box-shadow: var(--bonus-glow-soft);
   overflow: hidden;
+  text-align: center;
   animation: bonusThrob 1.6s ease-in-out infinite;
 }
 
@@ -546,6 +556,7 @@ body {
   font-weight: 900;
   font-size: 22px;
   letter-spacing: 0.3px;
+  color: #1f2937;
 }
 
 .welcome-bonus-card p {
@@ -553,6 +564,7 @@ body {
   font-size: 14px;
   line-height: 1.45;
   opacity: 0.95;
+  color: #374151;
 }
 
 /* =========================================================
@@ -639,17 +651,17 @@ body {
 /* =========================================================
    MOBILE ANIMATIONS (OPTIMIZED)
 ========================================================= */
-
 @keyframes bonusThrobMobile {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 0 30px rgba(255,152,0,.75);
+    box-shadow: 0 0 30px rgba(253,224,71,.8);
   }
   50% {
     transform: scale(1.05);
-    box-shadow: 0 0 60px rgba(255,152,0,1);
+    box-shadow: 0 0 65px rgba(251,191,36,1);
   }
 }
+
 
 @keyframes blowWaveMobile {
   0% {
