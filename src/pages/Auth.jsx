@@ -321,86 +321,106 @@ function PasswordInput({ show, toggle, ...props }) {
     </div>
   );
 }
-
 /* =========================
-   STYLES (UNCHANGED)
+   MODERN STYLES
 ========================= */
+
 const page = {
   minHeight: "100vh",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   background:
-    "linear-gradient(135deg, #0f2027, #203a43, #2c5364)",
+    "radial-gradient(circle at top, #0f172a, #020617)",
   padding: "20px",
 };
 
 const card = {
   width: "100%",
   maxWidth: "420px",
-  background: "#ddc911ff",
-  padding: "32px",
-  borderRadius: "16px",
-  boxShadow: "0 25px 60px rgba(0,0,0,0.25)",
+  background: "rgba(255,255,255,0.96)",
+  padding: "32px 28px",
+  borderRadius: "20px",
+  boxShadow:
+    "0 30px 80px rgba(0,0,0,0.35)",
+  backdropFilter: "blur(14px)",
 };
 
 const logo = {
   textAlign: "center",
   marginBottom: "6px",
-  color: "#2c5364",
+  color: "#020617",
+  fontSize: "26px",
+  fontWeight: "700",
+  letterSpacing: "-0.5px",
 };
 
 const subtitle = {
   textAlign: "center",
   fontSize: "14px",
-  color: "#ff0303",
-  marginBottom: "24px",
+  color: "#475569",
+  marginBottom: "26px",
 };
 
 const input = {
   width: "100%",
-  padding: "12px 14px",
+  padding: "14px 16px",
   marginBottom: "14px",
-  borderRadius: "8px",
-  border: "1px solid #ccc",
+  borderRadius: "12px",
+  border: "1px solid #e2e8f0",
+  background: "#f8fafc",
+  fontSize: "15px",
+  outline: "none",
+  transition: "all 0.25s ease",
 };
 
-const passwordWrap = { position: "relative" };
+const passwordWrap = {
+  position: "relative",
+};
 
 const eye = {
   position: "absolute",
-  right: "12px",
+  right: "14px",
   top: "50%",
   transform: "translateY(-50%)",
   cursor: "pointer",
+  color: "#64748b",
 };
 
 const button = {
   width: "100%",
-  padding: "12px",
-  borderRadius: "8px",
+  padding: "14px",
+  borderRadius: "14px",
   border: "none",
-  background: "#2c5364",
-  color: "#000000",
-  fontWeight: "bold",
+  background:
+    "linear-gradient(135deg, #2563eb, #4f46e5)",
+  color: "#ffffff",
+  fontWeight: "700",
+  fontSize: "15px",
   cursor: "pointer",
-  marginTop: "6px",
+  marginTop: "10px",
+  boxShadow:
+    "0 12px 30px rgba(79,70,229,0.45)",
+  transition: "transform 0.25s ease, box-shadow 0.25s ease",
 };
 
 const message = {
-  marginTop: "12px",
+  marginTop: "14px",
   fontSize: "14px",
   textAlign: "center",
+  color: "#dc2626",
 };
 
 const switchText = {
-  marginTop: "18px",
+  marginTop: "20px",
   textAlign: "center",
   fontSize: "14px",
+  color: "#475569",
 };
 
 const link = {
-  color: "#2c5364",
-  fontWeight: "bold",
+  color: "#2563eb",
+  fontWeight: "600",
   cursor: "pointer",
+  textDecoration: "none",
 };
