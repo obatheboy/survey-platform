@@ -454,9 +454,9 @@ const link = {
 
   background: `
     linear-gradient(135deg,
-      #fde047,
-      #f59e0b,
-      #f97316
+      #270081,
+      #000000,
+      #29aa09
     )
   `,
   WebkitBackgroundClip: "text",
@@ -466,7 +466,7 @@ const link = {
   cursor: "pointer",
 
   textShadow: `
-    0 0 14px rgba(253,224,71,0.9),
+    0 0 14px rgba(92, 80, 21, 0.9),
     0 0 28px rgba(249,115,22,0.8)
   `,
 };
