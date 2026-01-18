@@ -254,9 +254,8 @@ function PasswordInput({ show, toggle, ...props }) {
     </div>
   );
 }
-
 /* =========================
-   COLOR-RICH STYLES (NO WHITE)
+   COLOR-RICH STYLES (SHOUTING)
 ========================= */
 
 const page = {
@@ -266,31 +265,58 @@ const page = {
   justifyContent: "center",
   padding: "20px",
   background: `
-    radial-gradient(circle at 10% 10%, #2563eb55, transparent 40%),
-    radial-gradient(circle at 90% 20%, #7c3aed55, transparent 45%),
-    radial-gradient(circle at 30% 90%, #0ea5e955, transparent 45%),
+    radial-gradient(circle at 15% 15%, #2563eb66, transparent 40%),
+    radial-gradient(circle at 85% 25%, #7c3aed66, transparent 45%),
+    radial-gradient(circle at 35% 85%, #0ea5e966, transparent 45%),
     linear-gradient(135deg, #020617, #020617)
   `,
 };
+
+/* =========================
+   CARD – ORANGE / YELLOW ENERGY
+========================= */
 
 const card = {
   width: "100%",
   maxWidth: "420px",
   padding: "32px 28px",
   borderRadius: "22px",
-  background:
-    "linear-gradient(160deg, #e4fd00, #312e81, #eb640a)",
-  boxShadow: "0 40px 90px rgba(0,0,0,0.6)",
-  border: "1px solid rgba(255,255,255,0.12)",
+
+  /* Dark base + warm energy layers */
+  background: `
+    linear-gradient(160deg,
+      #1e1b4b 0%,
+      #312e81 35%,
+      #78350f 65%,
+      #f59e0b 100%
+    )
+  `,
+
+  boxShadow: `
+    0 40px 90px rgba(0,0,0,0.6),
+    0 0 45px rgba(245,158,11,0.35)
+  `,
+
+  border: "1px solid rgba(245,158,11,0.35)",
 };
+
+/* =========================
+   TYPOGRAPHY
+========================= */
 
 const logo = {
   textAlign: "center",
   fontSize: "26px",
-  fontWeight: "800",
+  fontWeight: "900",
   marginBottom: "6px",
-  background:
-    "linear-gradient(135deg, #38bdf8, #a78bfa, #22d3ee)",
+
+  background: `
+    linear-gradient(135deg,
+      #fde68a,
+      #f59e0b,
+      #fb923c
+    )
+  `,
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
 };
@@ -298,21 +324,29 @@ const logo = {
 const subtitle = {
   textAlign: "center",
   fontSize: "14px",
-  color: "#c7d2fe",
+  color: "#fde68a",
   marginBottom: "26px",
 };
+
+/* =========================
+   INPUTS
+========================= */
 
 const input = {
   width: "100%",
   padding: "14px 16px",
   marginBottom: "14px",
   borderRadius: "14px",
-  border: "1px solid rgba(255,255,255,0.15)",
+  border: "1px solid rgba(251,191,36,0.35)",
   background: "rgba(255,255,255,0.08)",
   color: "#ffffff",
   fontSize: "15px",
   outline: "none",
 };
+
+/* =========================
+   PASSWORD EYE
+========================= */
 
 const passwordWrap = { position: "relative" };
 
@@ -322,40 +356,59 @@ const eye = {
   top: "50%",
   transform: "translateY(-50%)",
   cursor: "pointer",
-  color: "#c7d2fe",
+  color: "#fde68a",
 };
+
+/* =========================
+   BUTTON – HOT ACTION
+========================= */
 
 const button = {
   width: "100%",
   padding: "14px",
   borderRadius: "16px",
   border: "none",
-  background:
-    "linear-gradient(135deg, #2563eb, #7c3aed, #0ea5e9)",
-  color: "#ffffff",
-  fontWeight: "800",
+
+  background: `
+    linear-gradient(135deg,
+      #f97316,
+      #f59e0b,
+      #fde047
+    )
+  `,
+
+  color: "#1f2937",
+  fontWeight: "900",
   fontSize: "15px",
   cursor: "pointer",
   marginTop: "12px",
-  boxShadow: "0 20px 40px rgba(59,130,246,0.6)",
+
+  boxShadow: `
+    0 18px 45px rgba(249,115,22,0.6),
+    0 0 25px rgba(253,224,71,0.6)
+  `,
 };
+
+/* =========================
+   TEXT
+========================= */
 
 const message = {
   marginTop: "14px",
   fontSize: "14px",
   textAlign: "center",
-  color: "#fca5a5",
+  color: "#fecaca",
 };
 
 const switchText = {
   marginTop: "22px",
   textAlign: "center",
   fontSize: "14px",
-  color: "#c7d2fe",
+  color: "#fde68a",
 };
 
 const link = {
-  color: "#60a5fa",
-  fontWeight: "700",
+  color: "#fbbf24",
+  fontWeight: "800",
   cursor: "pointer",
 };
