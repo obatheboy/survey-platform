@@ -142,6 +142,6 @@ const styles = {
   table: {
     width: "100%",
     borderCollapse: "collapse",
-    background: "#fff",
+    background: "#005307",
   },
 };

@@ -353,7 +353,7 @@ const logo = {
 const subtitle = {
   textAlign: "center",
   fontSize: "14px",
-  color: "#555",
+  color: "#ff0303",
   marginBottom: "24px",
 };
 
@@ -381,7 +381,7 @@ const button = {
   borderRadius: "8px",
   border: "none",
   background: "#2c5364",
-  color: "#fff",
+  color: "#000000",
   fontWeight: "bold",
   cursor: "pointer",
   marginTop: "6px",
