@@ -1,33 +1,46 @@
 import { useState, useEffect } from "react";
-import {
-  useNavigate,
-  useSearchParams
-} from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../api/api";
+
+/* =========================
+   INLINE GLOBAL STYLES
+========================= */
+const GlobalStyles = () => (
+  <style>{`
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes blobFloat {
+      0%,100% { transform: translate(0,0); }
+      50% { transform: translate(60px,-40px); }
+    }
+
+    .neon-btn:hover {
+      transform: translateY(-2px) scale(1.04);
+      box-shadow:
+        0 0 18px rgba(99,102,241,.9),
+        0 0 40px rgba(124,58,237,.8);
+    }
+  `}</style>
+);
 
 export default function Auth() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  /* =========================
-     MODE (REGISTER DEFAULT)
-  ========================= */
   const initialMode =
     searchParams.get("mode") === "login" ? "login" : "register";
 
   const [mode, setMode] = useState(initialMode);
   const [loading, setLoading] = useState(false);
 
-  /* =========================
-     PASSWORD VISIBILITY
-  ========================= */
   const [showRegPassword, setShowRegPassword] = useState(false);
   const [showRegConfirm, setShowRegConfirm] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-  /* =========================
-     REGISTER STATE
-  ========================= */
   const [regData, setRegData] = useState({
     full_name: "",
     phone: "",
@@ -37,45 +50,20 @@ export default function Auth() {
   });
   const [regMessage, setRegMessage] = useState("");
 
-  /* =========================
-     LOGIN STATE
-  ========================= */
   const [loginData, setLoginData] = useState({
     phone: "",
     password: "",
   });
   const [loginMessage, setLoginMessage] = useState("");
 
-  /* =========================
-     🔥 WAKE RENDER BACKEND
-  ========================= */
   useEffect(() => {
-    const wakeBackend = async () => {
-      const controller = new AbortController();
-      setTimeout(() => controller.abort(), 8000);
-
-      try {
-        await api.get("/health", {
-          signal: controller.signal,
-        });
-      } catch {
-        // Silent – backend is waking up
-      }
-    };
-
-    wakeBackend();
+    api.get("/health").catch(() => {});
   }, []);
 
-  /* =========================
-     KEEP URL IN SYNC
-  ========================= */
   useEffect(() => {
     navigate(`/auth?mode=${mode}`, { replace: true });
   }, [mode, navigate]);
 
-  /* =========================
-     REGISTER
-  ========================= */
   const handleRegister = async (e) => {
     e.preventDefault();
     setRegMessage("");
@@ -87,48 +75,32 @@ export default function Auth() {
 
     try {
       setLoading(true);
-
       await api.post("/auth/register", {
         full_name: regData.full_name,
         phone: regData.phone,
         email: regData.email || null,
         password: regData.password,
       });
-
       setRegMessage("✅ Account created. Please login.");
       setMode("login");
     } catch (err) {
-      setRegMessage(
-        err.response?.data?.message || "Registration failed"
-      );
+      setRegMessage(err.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
     }
   };
 
-  /* =========================
-     LOGIN
-  ========================= */
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoginMessage("");
 
     try {
       setLoading(true);
-
-      await api.post("/auth/login", {
-        phone: loginData.phone,
-        password: loginData.password,
-      });
-
+      await api.post("/auth/login", loginData);
       await api.get("/auth/me");
-
       navigate("/dashboard", { replace: true });
     } catch (err) {
-      setLoginMessage(
-        err.response?.data?.message ||
-          "Login failed. Try again."
-      );
+      setLoginMessage(err.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -136,6 +108,19 @@ export default function Auth() {
 
   return (
     <div style={page}>
+      <GlobalStyles />
+
+      {/* FLOATING BLOBS */}
+      <div style={{ ...blob, top: "-80px", left: "-80px" }} />
+      <div
+        style={{
+          ...blob,
+          bottom: "-100px",
+          right: "-80px",
+          animationDelay: "6s",
+        }}
+      />
+
       <div
         style={{
           ...card,
@@ -151,140 +136,42 @@ export default function Auth() {
             : "Welcome back, login to continue"}
         </p>
 
-        {/* ================= REGISTER ================= */}
         {mode === "register" && (
           <form onSubmit={handleRegister}>
-            <Input
-              placeholder="Full Name"
-              value={regData.full_name}
-              onChange={(e) =>
-                setRegData({
-                  ...regData,
-                  full_name: e.target.value,
-                })
-              }
-            />
-
-            <Input
-              placeholder="Phone Number"
-              value={regData.phone}
-              onChange={(e) =>
-                setRegData({
-                  ...regData,
-                  phone: e.target.value,
-                })
-              }
-            />
-
-            <Input
-              type="email"
-              placeholder="Email (optional)"
-              required={false}
+            <Input placeholder="Full Name" value={regData.full_name}
+              onChange={(e) => setRegData({ ...regData, full_name: e.target.value })} />
+            <Input placeholder="Phone Number" value={regData.phone}
+              onChange={(e) => setRegData({ ...regData, phone: e.target.value })} />
+            <Input type="email" required={false} placeholder="Email (optional)"
               value={regData.email}
-              onChange={(e) =>
-                setRegData({
-                  ...regData,
-                  email: e.target.value,
-                })
-              }
-            />
-
-            <PasswordInput
-              placeholder="Password"
+              onChange={(e) => setRegData({ ...regData, email: e.target.value })} />
+            <PasswordInput placeholder="Password" show={showRegPassword}
+              toggle={() => setShowRegPassword(!showRegPassword)}
               value={regData.password}
-              show={showRegPassword}
-              toggle={() =>
-                setShowRegPassword(!showRegPassword)
-              }
-              onChange={(e) =>
-                setRegData({
-                  ...regData,
-                  password: e.target.value,
-                })
-              }
-            />
-
-            <PasswordInput
-              placeholder="Confirm Password"
+              onChange={(e) => setRegData({ ...regData, password: e.target.value })} />
+            <PasswordInput placeholder="Confirm Password" show={showRegConfirm}
+              toggle={() => setShowRegConfirm(!showRegConfirm)}
               value={regData.confirmPassword}
-              show={showRegConfirm}
-              toggle={() =>
-                setShowRegConfirm(!showRegConfirm)
-              }
-              onChange={(e) =>
-                setRegData({
-                  ...regData,
-                  confirmPassword: e.target.value,
-                })
-              }
-            />
-
-            <button style={button} type="submit">
+              onChange={(e) => setRegData({ ...regData, confirmPassword: e.target.value })} />
+            <button className="neon-btn" style={button}>
               {loading ? "Creating..." : "Create Account"}
             </button>
-
-            {regMessage && (
-              <p style={message}>{regMessage}</p>
-            )}
-
-            <p style={switchText}>
-              Already have an account?{" "}
-              <span
-                style={link}
-                onClick={() => setMode("login")}
-              >
-                Login
-              </span>
-            </p>
+            {regMessage && <p style={message}>{regMessage}</p>}
           </form>
         )}
 
-        {/* ================= LOGIN ================= */}
         {mode === "login" && (
           <form onSubmit={handleLogin}>
-            <Input
-              placeholder="Phone Number"
-              value={loginData.phone}
-              onChange={(e) =>
-                setLoginData({
-                  ...loginData,
-                  phone: e.target.value,
-                })
-              }
-            />
-
-            <PasswordInput
-              placeholder="Password"
+            <Input placeholder="Phone Number" value={loginData.phone}
+              onChange={(e) => setLoginData({ ...loginData, phone: e.target.value })} />
+            <PasswordInput placeholder="Password" show={showLoginPassword}
+              toggle={() => setShowLoginPassword(!showLoginPassword)}
               value={loginData.password}
-              show={showLoginPassword}
-              toggle={() =>
-                setShowLoginPassword(!showLoginPassword)
-              }
-              onChange={(e) =>
-                setLoginData({
-                  ...loginData,
-                  password: e.target.value,
-                })
-              }
-            />
-
-            <button style={button} type="submit">
+              onChange={(e) => setLoginData({ ...loginData, password: e.target.value })} />
+            <button className="neon-btn" style={button}>
               {loading ? "Logging in..." : "Login"}
             </button>
-
-            {loginMessage && (
-              <p style={message}>{loginMessage}</p>
-            )}
-
-            <p style={switchText}>
-              Don’t have an account?{" "}
-              <span
-                style={link}
-                onClick={() => setMode("register")}
-              >
-                Create one
-              </span>
-            </p>
+            {loginMessage && <p style={message}>{loginMessage}</p>}
           </form>
         )}
       </div>
@@ -296,33 +183,20 @@ export default function Auth() {
    REUSABLE INPUTS
 ========================= */
 function Input({ type = "text", required = true, ...props }) {
-  return (
-    <input
-      type={type}
-      style={input}
-      required={required}
-      {...props}
-    />
-  );
+  return <input type={type} style={input} required={required} {...props} />;
 }
 
 function PasswordInput({ show, toggle, ...props }) {
   return (
     <div style={passwordWrap}>
-      <input
-        {...props}
-        required
-        type={show ? "text" : "password"}
-        style={input}
-      />
-      <span style={eye} onClick={toggle}>
-        👁
-      </span>
+      <input {...props} type={show ? "text" : "password"} style={input} required />
+      <span style={eye} onClick={toggle}>👁</span>
     </div>
   );
 }
+
 /* =========================
-   MODERN STYLES
+   STYLES
 ========================= */
 
 const page = {
@@ -330,35 +204,54 @@ const page = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  background:
-    "radial-gradient(circle at top, #0f172a, #020617)",
   padding: "20px",
+  position: "relative",
+  overflow: "hidden",
+  background:
+    "linear-gradient(135deg,#020617,#1e1b4b,#020617)",
+  backgroundSize: "400% 400%",
+  animation: "gradientMove 18s ease infinite",
+};
+
+const blob = {
+  position: "absolute",
+  width: "260px",
+  height: "260px",
+  background:
+    "radial-gradient(circle, rgba(99,102,241,.6), transparent 60%)",
+  filter: "blur(60px)",
+  animation: "blobFloat 20s ease-in-out infinite",
 };
 
 const card = {
   width: "100%",
   maxWidth: "420px",
-  background: "rgba(255,255,255,0.96)",
   padding: "32px 28px",
-  borderRadius: "20px",
-  boxShadow:
-    "0 30px 80px rgba(0,0,0,0.35)",
-  backdropFilter: "blur(14px)",
+  borderRadius: "22px",
+  background:
+    "linear-gradient(145deg, rgba(255,255,255,.9), rgba(224,231,255,.9))",
+  backdropFilter: "blur(18px)",
+  border: "1px solid rgba(255,255,255,.4)",
+  boxShadow: "0 40px 90px rgba(0,0,0,.45)",
+  position: "relative",
+  zIndex: 1,
 };
 
 const logo = {
   textAlign: "center",
-  marginBottom: "6px",
-  color: "#020617",
   fontSize: "26px",
-  fontWeight: "700",
-  letterSpacing: "-0.5px",
+  fontWeight: "800",
+  marginBottom: "6px",
+  background:
+    "linear-gradient(135deg,#2563eb,#7c3aed,#0ea5e9)",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
 };
 
 const subtitle = {
   textAlign: "center",
   fontSize: "14px",
-  color: "#475569",
+  color: "#334155",
   marginBottom: "26px",
 };
 
@@ -366,17 +259,12 @@ const input = {
   width: "100%",
   padding: "14px 16px",
   marginBottom: "14px",
-  borderRadius: "12px",
-  border: "1px solid #e2e8f0",
+  borderRadius: "14px",
+  border: "1px solid rgba(148,163,184,.35)",
   background: "#f8fafc",
-  fontSize: "15px",
-  outline: "none",
-  transition: "all 0.25s ease",
 };
 
-const passwordWrap = {
-  position: "relative",
-};
+const passwordWrap = { position: "relative" };
 
 const eye = {
   position: "absolute",
@@ -384,43 +272,23 @@ const eye = {
   top: "50%",
   transform: "translateY(-50%)",
   cursor: "pointer",
-  color: "#64748b",
 };
 
 const button = {
   width: "100%",
   padding: "14px",
-  borderRadius: "14px",
+  borderRadius: "16px",
   border: "none",
   background:
-    "linear-gradient(135deg, #2563eb, #4f46e5)",
-  color: "#ffffff",
-  fontWeight: "700",
-  fontSize: "15px",
+    "linear-gradient(135deg,#2563eb,#4f46e5,#7c3aed)",
+  color: "#fff",
+  fontWeight: "800",
   cursor: "pointer",
-  marginTop: "10px",
-  boxShadow:
-    "0 12px 30px rgba(79,70,229,0.45)",
-  transition: "transform 0.25s ease, box-shadow 0.25s ease",
+  marginTop: "12px",
 };
 
 const message = {
   marginTop: "14px",
-  fontSize: "14px",
   textAlign: "center",
   color: "#dc2626",
-};
-
-const switchText = {
-  marginTop: "20px",
-  textAlign: "center",
-  fontSize: "14px",
-  color: "#475569",
-};
-
-const link = {
-  color: "#2563eb",
-  fontWeight: "600",
-  cursor: "pointer",
-  textDecoration: "none",
 };
