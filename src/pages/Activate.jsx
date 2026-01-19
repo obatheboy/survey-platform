@@ -139,9 +139,13 @@ export default function Activate() {
               account with <b>KES 150</b> to withdraw all your earnings immediately.
             </p>
 
-            <button onClick={() => navigate("/vip")} style={vipBtn}>
-              👉 Go to VIP Survey Plan
-            </button>
+           <button
+  onClick={() => navigate("/dashboard", { replace: true })}
+  style={vipBtn}
+>
+  👉 Go to Dashboard
+</button>
+
           </div>
         </div>
       )}
