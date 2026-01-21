@@ -267,14 +267,14 @@ const card = {
   padding: "50px 30px",
   borderRadius: "30px",
   background: `
-    linear-gradient(135deg, #89f7fe, #66a6ff, #89f7fe)
+    linear-gradient(135deg, #15ff00, #ff00f7, #2bff00)
   `,
   boxShadow: `
-    0 4px 20px rgba(0,0,0,0.3),
-    inset 0 0 15px rgba(255,255,255,0.2)
+    0 4px 30px rgba(0, 255, 255, 0.6),
+    inset 0 0 20px rgba(255, 255, 255, 0.2)
   `,
-  border: "2px solid rgba(255,255,255,0.4)",
-  backdropFilter: "blur(10px)", // adds a frosted-glass effect
+  border: "2px solid rgba(255,255,255,0.6)",
+  backdropFilter: "blur(8px)", // gives a glassy, high-tech look
   transition: "all 0.4s ease",
 };
 /* TITLE with vibrant gradient and glow */
@@ -284,7 +284,7 @@ const logo = {
   fontWeight: "900",
   marginBottom: "10px",
   background: `
-    linear-gradient(135deg, #00c3ff, #ffe600, #ea00ff, #eeff00)
+    linear-gradient(135deg, #ff5100, #ffe600, #ea00ff, #eeff00)
   `,
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
