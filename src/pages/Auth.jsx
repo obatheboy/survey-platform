@@ -413,4 +413,4 @@ const link = {
   cursor: "pointer",
   textShadow: "0 0 10px rgb(251, 255, 4)",
   transition: "all 0.2s ease",
-};
+}; 
