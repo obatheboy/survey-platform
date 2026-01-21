@@ -230,9 +230,8 @@ function PasswordInput({ show, toggle, ...props }) {
     </div>
   );
 }
-
 /* =========================
-   STYLES: ENHANCED & COLORFUL
+   STYLES: NEW COLOR SCHEME
 ========================= */
 
 const page = {
@@ -242,10 +241,10 @@ const page = {
   justifyContent: "center",
   padding: "20px",
   background: `
-    radial-gradient(circle at 15% 15%, #89f7fe, transparent 50%),
-    radial-gradient(circle at 85% 20%, #66a6ff, transparent 55%),
-    radial-gradient(circle at 50% 85%, #fbc7d4, transparent 50%),
-    radial-gradient(circle at 20% 75%, #f6d365, transparent 55%),
+    radial-gradient(circle at 15% 15%, #fbc2eb, transparent 50%),
+    radial-gradient(circle at 85% 20%, #a1c4fd, transparent 55%),
+    radial-gradient(circle at 50% 85%, #ffd1ff, transparent 50%),
+    radial-gradient(circle at 20% 75%, #c2f0f7, transparent 55%),
     linear-gradient(135deg, #0f2027, #203a43, #2c5364)
   `,
 };
@@ -256,7 +255,7 @@ const card = {
   padding: "40px 30px",
   borderRadius: "30px",
   background: `
-    linear-gradient(160deg, #ffecd2, #fcb69f, #ff6f61)
+    linear-gradient(160deg, #ffe259, #ff7e5f, #f857a6)
   `,
   boxShadow: `
     0 4px 20px rgba(0,0,0,0.3),
@@ -273,11 +272,11 @@ const logo = {
   fontWeight: "900",
   marginBottom: "10px",
   background: `
-    linear-gradient(135deg, #ff6f61, #ffcc70, #6a82fb, #fc5c7d)
+    linear-gradient(135deg, #00c3ff, #ffff1c, #fa709a, #9f2d4f)
   `,
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
-  textShadow: "0 0 20px rgba(255, 255, 255, 0.8)",
+  textShadow: "0 0 20px rgba(255,255,255,0.8)",
   letterSpacing: "2px",
   transition: "all 0.3s ease",
 };
@@ -306,10 +305,12 @@ const input = {
   boxShadow: "0 0 10px rgba(255,255,255,0.2)",
 };
 
+/* Password eye icon wrapper */
 const passwordWrap = {
   position: "relative",
 };
 
+/* Eye icon style */
 const eye = {
   position: "absolute",
   right: "15px",
@@ -321,6 +322,7 @@ const eye = {
   transition: "transform 0.2s ease",
 };
 
+/* Buttons - keep original colors */
 const button = {
   width: "100%",
   padding: "16px",
@@ -341,6 +343,7 @@ const button = {
   transition: "all 0.2s ease",
 };
 
+/* Message for feedback */
 const message = {
   marginTop: "15px",
   fontSize: "14px",
@@ -349,6 +352,7 @@ const message = {
   fontWeight: "600",
 };
 
+/* Switch area with new color palette */
 const switchText = {
   marginTop: "30px",
   padding: "15px",
@@ -366,6 +370,7 @@ const switchText = {
   color: "#fff",
 };
 
+/* Link style with bright gradient and glow */
 const link = {
   marginLeft: "8px",
   padding: "6px 12px",
