@@ -262,7 +262,7 @@ const page = {
   alignItems: "center",
   justifyContent: "center",
   padding: "20px",
-  backgroundColor: "#f0f2f5",
+  backgroundColor: "#ffd000",
 };
 
 const card = {
