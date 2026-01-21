@@ -272,7 +272,7 @@ const logo = {
   fontWeight: "900",
   marginBottom: "10px",
   background: `
-    linear-gradient(135deg, #00c3ff, #ffff1c, #fa709a, #9f2d4f)
+    linear-gradient(135deg, #00c3ff, #ffe600, #ea00ff, #fa004b)
   `,
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
@@ -376,12 +376,12 @@ const link = {
   padding: "6px 12px",
   borderRadius: "12px",
   background: `
-    linear-gradient(135deg, #6a11cb, #2575fc)
+    linear-gradient(135deg, #ffd902, #ff0000)
   `,
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
   fontWeight: "900",
   cursor: "pointer",
-  textShadow: "0 0 10px rgba(37, 117, 252, 0.8)",
+  textShadow: "0 0 10px rgb(251, 255, 4)",
   transition: "all 0.2s ease",
 };
