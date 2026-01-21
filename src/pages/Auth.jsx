@@ -255,7 +255,7 @@ const card = {
   padding: "40px 30px",
   borderRadius: "30px",
   background: `
-    linear-gradient(160deg, #206b02, #0b1cbd, #0a311b)
+    linear-gradient(160deg, #ffffff, #d7d9e9, #ffffff)
   `,
   boxShadow: `
     0 4px 20px rgba(0,0,0,0.3),
@@ -272,7 +272,7 @@ const logo = {
   fontWeight: "900",
   marginBottom: "10px",
   background: `
-    linear-gradient(135deg, #00c3ff, #ffe600, #ea00ff, #fa004b)
+    linear-gradient(135deg, #00c3ff, #ffe600, #ea00ff, #e9fa00)
   `,
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
