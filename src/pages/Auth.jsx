@@ -110,7 +110,7 @@ export default function Auth() {
         <style>
           {`
             input::placeholder {
-              color: #ad773a; /* Bright orange, change to #ffff00 for yellow if preferred */
+              color: #9b8974; /* Bright orange, change to #ffff00 for yellow if preferred */
               font-weight: bold;
               opacity: 1;
             }
@@ -267,7 +267,7 @@ const card = {
   padding: "50px 30px",
   borderRadius: "30px",
   background: `
-    linear-gradient(135deg, #125e0c, #2f00ff, #18580b)
+    linear-gradient(135deg, #276822, #2f00ff, #2a6d1c)
   `,
   boxShadow: `
     0 4px 30px rgba(0, 255, 255, 0.6),
@@ -284,7 +284,7 @@ const logo = {
   fontWeight: "900",
   marginBottom: "10px",
   background: `
-    linear-gradient(135deg, #ff5100, #ffe600, #ea00ff, #eeff00)
+    linear-gradient(135deg, #fbff00, #ffe600, #ffae00, #eeff00)
   `,
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
