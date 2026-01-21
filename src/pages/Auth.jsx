@@ -264,19 +264,19 @@ const page = {
 const card = {
   width: "100%",
   maxWidth: "440px",
-  padding: "40px 30px",
+  padding: "50px 30px",
   borderRadius: "30px",
   background: `
-    linear-gradient(160deg, #3c8f0c, #1834af,  #3c8f0c)
+    linear-gradient(135deg, #89f7fe, #66a6ff, #89f7fe)
   `,
   boxShadow: `
-    0 4px 20px rgba(0,0,0,0.2),
-    inset 0 0 10px rgba(255,255,255,0.1)
+    0 4px 20px rgba(0,0,0,0.3),
+    inset 0 0 15px rgba(255,255,255,0.2)
   `,
-  border: "2px solid rgba(255,255,255,0.3)",
-  transition: "all 0.3s ease",
+  border: "2px solid rgba(255,255,255,0.4)",
+  backdropFilter: "blur(10px)", // adds a frosted-glass effect
+  transition: "all 0.4s ease",
 };
-
 /* TITLE with vibrant gradient and glow */
 const logo = {
   textAlign: "center",
