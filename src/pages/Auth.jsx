@@ -105,7 +105,10 @@ export default function Auth() {
             ? "Create your account to start earning"
             : "Welcome back, login to continue"}
         </p>
-
+        {/* Inject placeholder styles right after subtitle */}
+        <style>
+          {placeholderStyle}
+        </style>
         {mode === "register" && (
           <form onSubmit={handleRegister}>
             <Input
@@ -225,11 +228,32 @@ function PasswordInput({ show, toggle, ...props }) {
         type={show ? "text" : "password"}
         style={input}
         required
+        placeholder={props.placeholder}
+        className="custom-placeholder"
       />
       <span style={eye} onClick={toggle}>👁️</span>
     </div>
   );
 }
+/* =========================
+   PASSWORD INPUT COMPONENT
+========================= */
+function PasswordInput({ show, toggle, ...props }) {
+  return (
+    <div style={passwordWrap}>
+      <input
+        {...props}
+        type={show ? "text" : "password"}
+        style={input}
+        required
+        placeholder={props.placeholder}
+        className="custom-placeholder"
+      />
+      <span style={eye} onClick={toggle}>👁️</span>
+    </div>
+  );
+}
+
 /* =========================
    STYLES: NEW COLOR SCHEME
 ========================= */
@@ -265,7 +289,6 @@ const card = {
   transition: "all 0.3s ease",
 };
 
-/* TITLE with vibrant gradient and glow */
 const logo = {
   textAlign: "center",
   fontSize: "36px",
@@ -281,7 +304,6 @@ const logo = {
   transition: "all 0.3s ease",
 };
 
-/* Subtitle with soft glow */
 const subtitle = {
   textAlign: "center",
   fontSize: "16px",
@@ -290,7 +312,6 @@ const subtitle = {
   textShadow: "0 0 8px rgba(255,255,255,0.3)",
 };
 
-/* INPUTS styling with glow and smooth transition */
 const input = {
   width: "100%",
   padding: "16px",
@@ -305,12 +326,23 @@ const input = {
   boxShadow: "0 0 10px rgba(255,255,255,0.2)",
 };
 
+/* Placeholder styling for shouting colors (yellow, orange, bright) */
+const placeholderStyle = `
+  .custom-placeholder::placeholder {
+    font-weight: bold;
+    font-size: 15px;
+  }
+  .custom-placeholder::placeholder {
+    color: #ffdd00; /* Bright yellow for high visibility */
+  }
+  /* Add more specific styles if needed, e.g., for different placeholders */
+`;
+
 /* Password eye icon wrapper */
 const passwordWrap = {
   position: "relative",
 };
 
-/* Eye icon style */
 const eye = {
   position: "absolute",
   right: "15px",
@@ -343,7 +375,6 @@ const button = {
   transition: "all 0.2s ease",
 };
 
-/* Message for feedback */
 const message = {
   marginTop: "15px",
   fontSize: "14px",
@@ -352,7 +383,6 @@ const message = {
   fontWeight: "600",
 };
 
-/* Switch area with new color palette */
 const switchText = {
   marginTop: "30px",
   padding: "15px",
@@ -370,7 +400,6 @@ const switchText = {
   color: "#fff",
 };
 
-/* Link style with bright gradient and glow */
 const link = {
   marginLeft: "8px",
   padding: "6px 12px",
