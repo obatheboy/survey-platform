@@ -110,7 +110,7 @@ export default function Auth() {
         <style>
           {`
             input::placeholder {
-              color: #ff8800; /* Bright orange, change to #ffff00 for yellow if preferred */
+              color: #ad773a; /* Bright orange, change to #ffff00 for yellow if preferred */
               font-weight: bold;
               opacity: 1;
             }
