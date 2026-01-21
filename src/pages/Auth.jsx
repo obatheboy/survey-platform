@@ -6,25 +6,16 @@ export default function Auth() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  /* =========================
-     MODE (REGISTER DEFAULT)
-  ========================= */
   const initialMode =
     searchParams.get("mode") === "login" ? "login" : "register";
 
   const [mode, setMode] = useState(initialMode);
   const [loading, setLoading] = useState(false);
 
-  /* =========================
-     PASSWORD VISIBILITY
-  ========================= */
   const [showRegPassword, setShowRegPassword] = useState(false);
   const [showRegConfirm, setShowRegConfirm] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-  /* =========================
-     REGISTER STATE
-  ========================= */
   const [regData, setRegData] = useState({
     full_name: "",
     phone: "",
@@ -34,18 +25,12 @@ export default function Auth() {
   });
   const [regMessage, setRegMessage] = useState("");
 
-  /* =========================
-     LOGIN STATE
-  ========================= */
   const [loginData, setLoginData] = useState({
     phone: "",
     password: "",
   });
   const [loginMessage, setLoginMessage] = useState("");
 
-  /* =========================
-     🔥 WAKE BACKEND
-  ========================= */
   useEffect(() => {
     const wakeBackend = async () => {
       try {
@@ -55,16 +40,10 @@ export default function Auth() {
     wakeBackend();
   }, []);
 
-  /* =========================
-     URL SYNC
-  ========================= */
   useEffect(() => {
     navigate(`/auth?mode=${mode}`, { replace: true });
   }, [mode, navigate]);
 
-  /* =========================
-     REGISTER
-  ========================= */
   const handleRegister = async (e) => {
     e.preventDefault();
     setRegMessage("");
@@ -83,7 +62,7 @@ export default function Auth() {
         password: regData.password,
       });
       setRegMessage("✅ Account created. Please login.");
-      setTimeout(() => setMode("login"), 1500);
+      setMode("login");
     } catch (err) {
       setRegMessage(err.response?.data?.message || "Registration failed");
     } finally {
@@ -91,9 +70,6 @@ export default function Auth() {
     }
   };
 
-  /* =========================
-     LOGIN
-  ========================= */
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoginMessage("");
@@ -121,7 +97,9 @@ export default function Auth() {
           pointerEvents: loading ? "none" : "auto",
         }}
       >
+        {/* Title with vibrant gradient */}
         <h1 style={logo}>Survey Platform</h1>
+
         <p style={subtitle}>
           {mode === "register"
             ? "Create your account to start earning"
@@ -171,10 +149,7 @@ export default function Auth() {
               show={showRegConfirm}
               toggle={() => setShowRegConfirm(!showRegConfirm)}
               onChange={(e) =>
-                setRegData({
-                  ...regData,
-                  confirmPassword: e.target.value,
-                })
+                setRegData({ ...regData, confirmPassword: e.target.value })
               }
             />
 
@@ -235,10 +210,13 @@ export default function Auth() {
 /* =========================
    INPUT COMPONENT
 ========================= */
-function Input({ type = "text", ...props }) {
-  return <input style={input} type={type} {...props} />;
+function Input({ type = "text", required = true, ...props }) {
+  return <input type={type} required={required} style={input} {...props} />;
 }
 
+/* =========================
+   PASSWORD INPUT COMPONENT
+========================= */
 function PasswordInput({ show, toggle, ...props }) {
   return (
     <div style={passwordWrap}>
@@ -254,97 +232,151 @@ function PasswordInput({ show, toggle, ...props }) {
 }
 
 /* =========================
-   STYLES
+   STYLES: ENHANCED & COLORFUL
 ========================= */
+
 const page = {
   minHeight: "100vh",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   padding: "20px",
-  backgroundColor: "#b3ff00",
+  background: `
+    radial-gradient(circle at 15% 15%, #89f7fe, transparent 50%),
+    radial-gradient(circle at 85% 20%, #66a6ff, transparent 55%),
+    radial-gradient(circle at 50% 85%, #fbc7d4, transparent 50%),
+    radial-gradient(circle at 20% 75%, #f6d365, transparent 55%),
+    linear-gradient(135deg, #0f2027, #203a43, #2c5364)
+  `,
 };
 
 const card = {
   width: "100%",
-  maxWidth: "420px",
-  padding: "34px 30px",
-  borderRadius: "8px",
-  backgroundColor: "#4aeb58",
-  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+  maxWidth: "440px",
+  padding: "40px 30px",
+  borderRadius: "30px",
+  background: `
+    linear-gradient(160deg, #ffecd2, #fcb69f, #ff6f61)
+  `,
+  boxShadow: `
+    0 4px 20px rgba(0,0,0,0.3),
+    inset 0 0 10px rgba(255,255,255,0.2)
+  `,
+  border: "2px solid rgba(255,255,255,0.3)",
+  transition: "all 0.3s ease",
 };
 
+/* TITLE with vibrant gradient and glow */
 const logo = {
   textAlign: "center",
-  fontSize: "24px",
-  fontWeight: "700",
-  marginBottom: "16px",
-  color: "#333",
+  fontSize: "36px",
+  fontWeight: "900",
+  marginBottom: "10px",
+  background: `
+    linear-gradient(135deg, #ff6f61, #ffcc70, #6a82fb, #fc5c7d)
+  `,
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+  textShadow: "0 0 20px rgba(255, 255, 255, 0.8)",
+  letterSpacing: "2px",
+  transition: "all 0.3s ease",
 };
 
+/* Subtitle with soft glow */
 const subtitle = {
   textAlign: "center",
-  fontSize: "14px",
-  color: "#666",
-  marginBottom: "24px",
+  fontSize: "16px",
+  color: "#fff",
+  marginBottom: "30px",
+  textShadow: "0 0 8px rgba(255,255,255,0.3)",
 };
 
+/* INPUTS styling with glow and smooth transition */
 const input = {
   width: "100%",
-  padding: "12px 15px",
-  borderRadius: "4px",
-  border: "1px solid #ccc",
-  fontSize: "14px",
-  outline: "none",
+  padding: "16px",
   marginBottom: "16px",
+  borderRadius: "18px",
+  border: "2px solid rgba(255,255,255,0.2)",
+  background: "rgba(255,255,255,0.1)",
+  color: "#fff",
+  fontSize: "16px",
+  outline: "none",
+  transition: "all 0.2s ease",
+  boxShadow: "0 0 10px rgba(255,255,255,0.2)",
 };
 
 const passwordWrap = {
   position: "relative",
-  marginBottom: "16px",
 };
 
 const eye = {
   position: "absolute",
-  right: "10px",
+  right: "15px",
   top: "50%",
   transform: "translateY(-50%)",
   cursor: "pointer",
-  fontSize: "18px",
-  color: "#999",
+  fontSize: "20px",
+  color: "#ffd700",
+  transition: "transform 0.2s ease",
 };
 
 const button = {
   width: "100%",
-  padding: "12px",
-  backgroundColor: "#007bff",
-  color: "#fff",
+  padding: "16px",
+  borderRadius: "20px",
   border: "none",
-  borderRadius: "4px",
-  fontSize: "15px",
-  fontWeight: "600",
+  background: `
+    linear-gradient(135deg, #f7971e, #ffd200, #f7971e)
+  `,
+  color: "#1f2937",
+  fontWeight: "700",
+  fontSize: "16px",
   cursor: "pointer",
-  marginTop: "16px",
-  transition: "background-color 0.2s",
+  marginTop: "20px",
+  boxShadow: `
+    0 8px 15px rgba(247, 151, 28, 0.3),
+    inset 0 0 10px rgba(255,255,255,0.2)
+  `,
+  transition: "all 0.2s ease",
 };
 
 const message = {
-  marginTop: "12px",
+  marginTop: "15px",
   fontSize: "14px",
-  color: "red",
   textAlign: "center",
+  color: "#f87171",
+  fontWeight: "600",
 };
 
 const switchText = {
-  marginTop: "20px",
+  marginTop: "30px",
+  padding: "15px",
+  borderRadius: "20px",
+  background: `
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255,255,255,0.05))
+  `,
+  boxShadow: `
+    inset 0 0 10px rgba(255,255,255,0.2),
+    0 4px 20px rgba(0,0,0,0.2)
+  `,
   textAlign: "center",
-  fontSize: "14px",
-  color: "#555",
+  fontSize: "15px",
+  fontWeight: "600",
+  color: "#fff",
 };
 
 const link = {
-  fontWeight: "600",
-  color: "#007bff",
+  marginLeft: "8px",
+  padding: "6px 12px",
+  borderRadius: "12px",
+  background: `
+    linear-gradient(135deg, #6a11cb, #2575fc)
+  `,
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+  fontWeight: "900",
   cursor: "pointer",
-  textDecoration: "underline",
+  textShadow: "0 0 10px rgba(37, 117, 252, 0.8)",
+  transition: "all 0.2s ease",
 };
