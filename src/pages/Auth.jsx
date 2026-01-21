@@ -267,7 +267,7 @@ const card = {
   padding: "50px 30px",
   borderRadius: "30px",
   background: `
-    linear-gradient(135deg, #15ff00, #ff00f7, #2bff00)
+    linear-gradient(135deg, #125e0c, #2f00ff, #18580b)
   `,
   boxShadow: `
     0 4px 30px rgba(0, 255, 255, 0.6),
