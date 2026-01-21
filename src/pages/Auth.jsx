@@ -262,7 +262,7 @@ const page = {
   alignItems: "center",
   justifyContent: "center",
   padding: "20px",
-  backgroundColor: "#ffd000",
+  backgroundColor: "#b3ff00",
 };
 
 const card = {
@@ -270,7 +270,7 @@ const card = {
   maxWidth: "420px",
   padding: "34px 30px",
   borderRadius: "8px",
-  backgroundColor: "#2c9c00",
+  backgroundColor: "#4aeb58",
   boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
 };
 
