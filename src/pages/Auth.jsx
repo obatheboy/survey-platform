@@ -83,7 +83,7 @@ export default function Auth() {
         password: regData.password,
       });
       setRegMessage("✅ Account created. Please login.");
-      setMode("login");
+      setTimeout(() => setMode("login"), 1500);
     } catch (err) {
       setRegMessage(err.response?.data?.message || "Registration failed");
     } finally {
@@ -122,7 +122,6 @@ export default function Auth() {
         }}
       >
         <h1 style={logo}>Survey Platform</h1>
-
         <p style={subtitle}>
           {mode === "register"
             ? "Create your account to start earning"
@@ -150,7 +149,6 @@ export default function Auth() {
             <Input
               type="email"
               placeholder="Email (optional)"
-              required={false}
               value={regData.email}
               onChange={(e) =>
                 setRegData({ ...regData, email: e.target.value })
@@ -235,10 +233,10 @@ export default function Auth() {
 }
 
 /* =========================
-   INPUTS
+   INPUT COMPONENT
 ========================= */
-function Input({ type = "text", required = true, ...props }) {
-  return <input type={type} required={required} style={input} {...props} />;
+function Input({ type = "text", ...props }) {
+  return <input style={input} type={type} {...props} />;
 }
 
 function PasswordInput({ show, toggle, ...props }) {
@@ -250,223 +248,103 @@ function PasswordInput({ show, toggle, ...props }) {
         style={input}
         required
       />
-      <span style={eye} onClick={toggle}>👁</span>
+      <span style={eye} onClick={toggle}>👁️</span>
     </div>
   );
 }
-/* =========================
-   COLOR-RICH STYLES (SHOUTING v2)
-========================= */
 
 /* =========================
-   PAGE BACKGROUND
+   STYLES
 ========================= */
-
 const page = {
   minHeight: "100vh",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   padding: "20px",
-
-  background: `
-    radial-gradient(circle at 12% 12%, #2563eb77, transparent 42%),
-    radial-gradient(circle at 88% 22%, #7c3aed77, transparent 45%),
-    radial-gradient(circle at 40% 88%, #0ea5e977, transparent 45%),
-    radial-gradient(circle at 70% 70%, #f59e0b33, transparent 50%),
-    linear-gradient(135deg, #020617, #020617)
-  `,
+  backgroundColor: "#f0f2f5",
 };
-
-/* =========================
-   CARD – FIRE / SUN ENERGY
-========================= */
 
 const card = {
   width: "100%",
   maxWidth: "420px",
   padding: "34px 30px",
-  borderRadius: "24px",
-
-  background: `
-    linear-gradient(160deg,
-      #1e1b4b 0%,
-      #312e81 28%,
-      #78350f 55%,
-      #b45309 75%,
-      #f59e0b 100%
-    )
-  `,
-
-  boxShadow: `
-    0 45px 100px rgba(0,0,0,0.7),
-    0 0 55px rgba(245,158,11,0.45)
-  `,
-
-  border: "1px solid rgba(253,224,71,0.45)",
+  borderRadius: "8px",
+  backgroundColor: "#fff",
+  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
 };
-
-/* =========================
-   TYPOGRAPHY
-========================= */
 
 const logo = {
   textAlign: "center",
-  fontSize: "27px",
-  fontWeight: "900",
-  marginBottom: "6px",
-
-  background: `
-    linear-gradient(135deg,
-      #fff7cd,
-      #fde047,
-      #f59e0b,
-      #fb923c
-    )
-  `,
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-
-  textShadow: "0 0 22px rgba(253,224,71,0.45)",
+  fontSize: "24px",
+  fontWeight: "700",
+  marginBottom: "16px",
+  color: "#333",
 };
 
 const subtitle = {
   textAlign: "center",
   fontSize: "14px",
-  color: "#fde68a",
-  marginBottom: "28px",
+  color: "#666",
+  marginBottom: "24px",
 };
-
-/* =========================
-   INPUTS
-========================= */
 
 const input = {
   width: "100%",
-  padding: "14px 16px",
-  marginBottom: "14px",
-  borderRadius: "14px",
-
-  border: "1px solid rgba(251,191,36,0.4)",
-  background: "rgba(255,255,255,0.08)",
-
-  color: "#ffffff",
-  fontSize: "15px",
+  padding: "12px 15px",
+  borderRadius: "4px",
+  border: "1px solid #ccc",
+  fontSize: "14px",
   outline: "none",
-
-  boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.2)",
+  marginBottom: "16px",
 };
-
-/* =========================
-   PASSWORD EYE
-========================= */
 
 const passwordWrap = {
   position: "relative",
+  marginBottom: "16px",
 };
 
 const eye = {
   position: "absolute",
-  right: "14px",
+  right: "10px",
   top: "50%",
   transform: "translateY(-50%)",
   cursor: "pointer",
-  color: "#fde68a",
+  fontSize: "18px",
+  color: "#999",
 };
-
-/* =========================
-   BUTTON – PRIMARY ACTION
-========================= */
 
 const button = {
   width: "100%",
-  padding: "15px",
-  borderRadius: "18px",
+  padding: "12px",
+  backgroundColor: "#007bff",
+  color: "#fff",
   border: "none",
-
-  background: `
-    linear-gradient(135deg,
-      #fb923c,
-      #f59e0b,
-      #fde047
-    )
-  `,
-
-  color: "#1f2937",
-  fontWeight: "900",
+  borderRadius: "4px",
   fontSize: "15px",
+  fontWeight: "600",
   cursor: "pointer",
-  marginTop: "14px",
-
-  boxShadow: `
-    0 22px 55px rgba(249,115,22,0.7),
-    0 0 30px rgba(253,224,71,0.7)
-  `,
+  marginTop: "16px",
+  transition: "background-color 0.2s",
 };
-
-/* =========================
-   MESSAGE TEXT
-========================= */
 
 const message = {
-  marginTop: "14px",
+  marginTop: "12px",
   fontSize: "14px",
+  color: "red",
   textAlign: "center",
-  color: "#fecaca",
 };
-
-/* =========================
-   SWITCH AREA – HIGH VISIBILITY
-========================= */
 
 const switchText = {
-  marginTop: "26px",
-  padding: "14px 18px",
-  borderRadius: "16px",
-
-  background: `
-    linear-gradient(135deg,
-      rgba(249,115,22,0.22),
-      rgba(250,204,21,0.22),
-      rgba(251,146,60,0.22)
-    )
-  `,
-
-  boxShadow: `
-    inset 0 0 0 1px rgba(253,224,71,0.45),
-    0 12px 35px rgba(249,115,22,0.45)
-  `,
-
+  marginTop: "20px",
   textAlign: "center",
-  fontSize: "14.5px",
-  fontWeight: "600",
-  color: "#fff7ed",
+  fontSize: "14px",
+  color: "#555",
 };
 
-/* =========================
-   SWITCH LINK – SHOUTING CTA
-========================= */
-
 const link = {
-  marginLeft: "6px",
-  padding: "4px 10px",
-  borderRadius: "10px",
-
-  background: `
-    linear-gradient(135deg,
-      #270081,
-      #000000,
-      #29aa09
-    )
-  `,
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-
-  fontWeight: "900",
+  fontWeight: "600",
+  color: "#007bff",
   cursor: "pointer",
-
-  textShadow: `
-    0 0 14px rgba(92, 80, 21, 0.9),
-    0 0 28px rgba(249,115,22,0.8)
-  `,
+  textDecoration: "underline",
 };
