@@ -270,7 +270,7 @@ const card = {
   maxWidth: "420px",
   padding: "34px 30px",
   borderRadius: "8px",
-  backgroundColor: "#fff",
+  backgroundColor: "#2c9c00",
   boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
 };
 
