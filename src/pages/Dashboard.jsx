@@ -487,7 +487,7 @@ export default function Dashboard() {
                   e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
                 }}
               >
-                <span style={{fontSize: '1rem'}}>🚀</span> Start Earning
+                <span style={{fontSize: '1rem'}}>🚀</span> Start Sureys
               </button>
               
               <button 
@@ -519,7 +519,7 @@ export default function Dashboard() {
                   e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 180, 0, 0.25)';
                 }}
               >
-                <span style={{fontSize: '1rem'}}>🎁</span> View Bonus
+                <span style={{fontSize: '1rem'}}>🎁</span> Get Bonus
               </button>
             </div>
           </div>
