@@ -413,17 +413,7 @@ export default function Dashboard() {
             <p>Activate your account with <strong>KES 100</strong> to unlock your welcome bonus</p>
           </div>
 
-          <div className="roi-summary">
-            <div className="roi-item">
-              <span className="label">You Pay:</span>
-              <span className="value">KES 100</span>
-            </div>
-            <div className="roi-separator">→</div>
-            <div className="roi-item highlight">
-              <span className="label">You Get:</span>
-              <span className="value">KES 1,200</span>
-            </div>
-          </div>
+         
 
           <div className="bonus-actions">
             <button className="primary-btn full-width" onClick={handleWelcomeBonusWithdraw}>
