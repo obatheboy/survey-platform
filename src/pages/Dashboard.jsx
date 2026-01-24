@@ -162,11 +162,12 @@ export default function Dashboard() {
   }, [plans]);
 
   /* =========================
-     HELPERS
+     HELPERS - USING OLD LOGIC
   ========================= */
   const surveysDone = (plan) => plans[plan]?.surveys_completed || 0;
   const isCompleted = (plan) => surveysDone(plan) >= TOTAL_SURVEYS;
   const isActivated = (plan) => plans[plan]?.is_activated === true;
+  const activationSubmitted = (plan) => plans[plan]?.activation_status === "SUBMITTED";
   const earnedSoFar = (plan) => surveysDone(plan) * PLANS[plan].perSurvey;
   const progressPercentage = (plan) => (surveysDone(plan) / TOTAL_SURVEYS) * 100;
 
@@ -210,16 +211,9 @@ export default function Dashboard() {
   };
 
   /* =========================
-     SURVEY ACTION - GO TO ACTIVATION NOTICE IF NOT ACTIVATED
+     SURVEY ACTION - USING OLD LOGIC (DIRECT NAVIGATION)
   ========================= */
-  const handleSurveyClick = async (plan) => {
-    if (!isActivated(plan)) {
-      // Store the plan user wants to activate
-      localStorage.setItem("pending_activation_plan", plan);
-      navigate("/activation-notice", { state: { plan } });
-      return;
-    }
-    
+  const startSurvey = async (plan) => {
     try {
       localStorage.setItem("active_plan", plan);
       await api.post("/surveys/select-plan", { plan });
@@ -231,18 +225,11 @@ export default function Dashboard() {
   };
 
   /* =========================
-     WITHDRAW LOGIC - SIMPLIFIED
+     WITHDRAW LOGIC - USING OLD LOGIC
   ========================= */
   const handleWithdrawClick = (plan) => {
     setWithdrawError("");
     setWithdrawMessage("");
-
-    if (!isActivated(plan)) {
-      // Store the plan user wants to activate for withdrawal
-      localStorage.setItem("pending_activation_plan", plan);
-      navigate("/activation-notice", { state: { plan, forWithdrawal: true } });
-      return;
-    }
 
     if (!isCompleted(plan)) {
       setToast(`Complete ${TOTAL_SURVEYS - surveysDone(plan)} more surveys to withdraw`);
@@ -251,16 +238,18 @@ export default function Dashboard() {
       return;
     }
 
+    if (!isActivated(plan)) {
+      setFullScreenNotification({
+        message: activationSubmitted(plan)
+          ? "🎯 Activation submitted. Awaiting approval."
+          : "🔒 Account not activated. Activate now to withdraw your earnings.",
+        redirect: activationSubmitted(plan) ? null : "/activation-notice",
+      });
+      return;
+    }
+
     setActiveWithdrawPlan(plan);
     setWithdrawAmount(PLANS[plan].total.toString());
-  };
-
-  /* =========================
-     DIRECT ACTIVATION REDIRECT
-  ========================= */
-  const goToActivationNotice = (plan = "REGULAR") => {
-    localStorage.setItem("pending_activation_plan", plan);
-    navigate("/activation-notice", { state: { plan } });
   };
 
   const submitWithdraw = async () => {
@@ -588,7 +577,7 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* PLAN PROGRESS - WITH ACTIVATION BUTTONS */}
+          {/* PLAN PROGRESS - USING OLD LOGIC */}
           <section className="dashboard-section">
             <div className="section-heading">
               <h3>Plan Progress</h3>
@@ -597,7 +586,7 @@ export default function Dashboard() {
             <div className="progress-cards">
               {Object.entries(PLANS).map(([key, plan]) => {
                 const status = getPlanStatus(key);
-                const needsActivation = !isActivated(key);
+                
                 
                 return (
                   <div key={key} className="progress-card" style={{
@@ -625,12 +614,6 @@ export default function Dashboard() {
                           <span>Earned:</span>
                           <strong className="earned-amount">KES {earnedSoFar(key).toLocaleString()}</strong>
                         </div>
-                        {needsActivation && (
-                          <div className="progress-row activation-notice">
-                            <span style={{ color: plan.color, fontWeight: 'bold' }}>🔒 Activation Required</span>
-                            <span style={{ color: plan.color, fontSize: '12px' }}>Activate to start earning</span>
-                          </div>
-                        )}
                       </div>
                       <div className="progress-bar">
                         <div 
@@ -642,44 +625,28 @@ export default function Dashboard() {
                         ></div>
                       </div>
                       <div className="progress-card-actions">
-                        {needsActivation ? (
+                        <button 
+                          className="action-btn primary"
+                          onClick={() => startSurvey(key)}
+                          disabled={isCompleted(key)}
+                          style={{
+                            background: isCompleted(key) ? '#ccc' : plan.gradient,
+                            color: isCompleted(key) ? '#666' : 'white'
+                          }}
+                        >
+                          {isCompleted(key) ? 'Completed' : 'Start Survey'}
+                        </button>
+                        {isCompleted(key) && (
                           <button 
-                            className="action-btn activation-btn"
-                            onClick={() => goToActivationNotice(key)}
+                            className="action-btn secondary"
+                            onClick={() => handleWithdrawClick(key)}
                             style={{
-                              background: plan.gradient,
-                              color: 'white',
-                              fontWeight: 'bold'
+                              borderColor: plan.color,
+                              color: plan.color
                             }}
                           >
-                            🔓 Activate Plan
+                            Withdraw
                           </button>
-                        ) : (
-                          <>
-                            <button 
-                              className="action-btn primary"
-                              onClick={() => handleSurveyClick(key)}
-                              disabled={isCompleted(key)}
-                              style={{
-                                background: isCompleted(key) ? '#ccc' : plan.gradient,
-                                color: isCompleted(key) ? '#666' : 'white'
-                              }}
-                            >
-                              {isCompleted(key) ? 'Completed' : 'Start Survey'}
-                            </button>
-                            {isCompleted(key) && (
-                              <button 
-                                className="action-btn secondary"
-                                onClick={() => handleWithdrawClick(key)}
-                                style={{
-                                  borderColor: plan.color,
-                                  color: plan.color
-                                }}
-                              >
-                                Withdraw
-                              </button>
-                            )}
-                          </>
                         )}
                       </div>
                     </div>
@@ -794,7 +761,7 @@ export default function Dashboard() {
         </section>
       )}
 
-      {/* SURVEYS TAB - COLORED PLAN CARDS WITH ACTIVATION */}
+      {/* SURVEYS TAB - USING OLD LOGIC: "Start Survey" only when NOT completed */}
       {activeTab === "SURVEYS" && (
         <section ref={surveyRef} id="surveys-section" className="tab-section">
           <div className="section-heading">
@@ -806,7 +773,6 @@ export default function Dashboard() {
             {Object.entries(PLANS).map(([key, plan]) => {
               const status = getPlanStatus(key);
               const completed = isCompleted(key);
-              const needsActivation = !isActivated(key);
               
               return (
                 <div key={key} className={`plan-card ${key.toLowerCase()}`} style={{
@@ -819,23 +785,14 @@ export default function Dashboard() {
                       <span className="plan-icon">{plan.icon}</span>
                       <span className="plan-name" style={{ color: plan.color }}>{plan.name}</span>
                     </div>
-                    <span className={`plan-status ${status.status}`} style={{
-                      background: needsActivation ? plan.bgColor : '',
-                      borderColor: needsActivation ? plan.color : '',
-                      color: needsActivation ? plan.color : ''
-                    }}>
-                      {needsActivation ? '🔒 Activation Required' : `${status.icon} ${status.label}`}
+                    <span className={`plan-status ${status.status}`}>
+                      {status.icon} {status.label}
                     </span>
                   </div>
                   
                   <div className="plan-card-body">
                     <div className="plan-description">
                       <p>{plan.description}</p>
-                      {needsActivation && (
-                        <p className="activation-notice-text" style={{ color: plan.color, fontWeight: 'bold' }}>
-                          🔒 Activate this plan to start earning
-                        </p>
-                      )}
                     </div>
                     
                     <div className="plan-stats">
@@ -878,25 +835,10 @@ export default function Dashboard() {
                   </div>
                   
                   <div className="plan-card-footer">
-                    {needsActivation ? (
-                      <button 
-                        className="activation-notice-btn"
-                        onClick={() => goToActivationNotice(key)}
-                        style={{
-                          background: plan.gradient,
-                          color: 'white',
-                          fontWeight: 'bold',
-                          boxShadow: `0 5px 20px ${plan.color}40`
-                        }}
-                      >
-                        <span className="btn-icon">🔓</span>
-                        Activate to Start Earning
-                        <span className="btn-arrow">→</span>
-                      </button>
-                    ) : !completed ? (
+                    {!completed ? (
                       <button 
                         className="start-survey-btn"
-                        onClick={() => handleSurveyClick(key)}
+                        onClick={() => startSurvey(key)}
                         style={{
                           background: plan.gradient,
                           boxShadow: `0 5px 20px ${plan.color}40`
@@ -929,7 +871,7 @@ export default function Dashboard() {
         </section>
       )}
 
-      {/* WITHDRAW TAB - SIMPLIFIED WORKING VERSION */}
+      {/* WITHDRAW TAB - USING OLD LOGIC */}
       {activeTab === "WITHDRAW" && (
         <section ref={withdrawRef} id="withdraw-section" className="tab-section">
           <div className="section-heading">
@@ -941,7 +883,6 @@ export default function Dashboard() {
             {Object.entries(PLANS).map(([key, plan]) => {
               const completed = isCompleted(key);
               const activated = isActivated(key);
-              const needsActivation = !activated;
               
               return (
                 <div key={key} className={`withdraw-card ${completed ? 'completed' : ''}`} style={{
@@ -955,12 +896,8 @@ export default function Dashboard() {
                       <h4 style={{ color: plan.color }}>{plan.name} Plan</h4>
                       <p className="plan-earnings">KES {earnedSoFar(key)} earned</p>
                     </div>
-                    <span className={`status-indicator ${completed ? 'ready' : 'pending'}`} style={{
-                      background: needsActivation ? plan.bgColor : '',
-                      borderColor: needsActivation ? plan.color : '',
-                      color: needsActivation ? plan.color : ''
-                    }}>
-                      {needsActivation ? '🔒 Activation Required' : completed ? '✅ Ready' : '⏳ Pending'}
+                    <span className={`status-indicator ${completed ? 'ready' : 'pending'}`}>
+                      {completed ? '✅ Ready' : '⏳ Pending'}
                     </span>
                   </div>
                   
@@ -982,8 +919,8 @@ export default function Dashboard() {
                           📝 Complete {TOTAL_SURVEYS - surveysDone(key)} more surveys to withdraw
                         </p>
                       )}
-                      {needsActivation && (
-                        <p className="requirement" style={{ color: plan.color, fontWeight: 'bold' }}>
+                      {completed && !activated && (
+                        <p className="requirement">
                           🔓 Account activation required to withdraw
                         </p>
                       )}
@@ -996,16 +933,13 @@ export default function Dashboard() {
                       onClick={() => handleWithdrawClick(key)}
                       disabled={!completed || !activated}
                       style={{
-                        background: needsActivation ? plan.gradient : 
-                                  completed && activated ? plan.gradient : 'rgba(255, 255, 255, 0.1)',
-                        color: needsActivation ? 'white' : 
-                              completed && activated ? 'white' : 'rgba(255, 255, 255, 0.5)',
-                        boxShadow: needsActivation ? `0 5px 20px ${plan.color}40` : 
-                                 completed && activated ? `0 5px 20px ${plan.color}40` : 'none'
+                        background: completed && activated ? plan.gradient : 'rgba(255, 255, 255, 0.1)',
+                        color: completed && activated ? 'white' : 'rgba(255, 255, 255, 0.5)',
+                        boxShadow: completed && activated ? `0 5px 20px ${plan.color}40` : 'none'
                       }}
                     >
                       {!completed ? 'Complete Surveys First' :
-                       needsActivation ? '🔓 Activate Account' :
+                       !activated ? 'Activate Account' :
                        `Withdraw KES ${plan.total}`}
                     </button>
                     
