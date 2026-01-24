@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { Toaster } from "react-hot-toast";
 import api from "./api/api";
 
 /* ================= USER PAGES ================= */
@@ -9,6 +10,8 @@ import Surveys from "./pages/Surveys";
 import Activate from "./pages/Activate";
 import ActivationNotice from "./pages/ActivationNotice";
 import Withdraw from "./pages/Withdraw";
+import FAQ from "./pages/FAQ";
+import NotFound from "./pages/NotFound";
 
 /* ================= ADMIN ================= */
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -16,6 +19,9 @@ import AdminLayout from "./pages/admin/AdminLayout";
 import AdminActivations from "./pages/admin/AdminActivations";
 import AdminWithdrawals from "./pages/admin/AdminWithdrawals";
 import AdminUsers from "./pages/admin/AdminUsers";
+
+/* ================= COMPONENTS ================= */
+import PWAInstallPrompt from "./components/PWAInstallPrompt";
 
 /* ================= USER AUTH GUARD ================= */
 function ProtectedRoute({ children }) {
@@ -76,6 +82,8 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <Toaster position="top-center" reverseOrder={false} />
+      <PWAInstallPrompt />
       <Routes>
         {/* ENTRY */}
         <Route path="/" element={<Navigate to="/auth?mode=register" replace />} />
@@ -129,6 +137,9 @@ export default function App() {
           }
         />
 
+        {/* FAQ */}
+        <Route path="/faq" element={<FAQ />} />
+
         {/* ADMIN */}
         <Route path="/admin/login" element={<AdminLogin />} />
 
@@ -146,8 +157,8 @@ export default function App() {
           <Route path="users" element={<AdminUsers />} />
         </Route>
 
-        {/* FALLBACK */}
-        <Route path="*" element={<Navigate to="/auth?mode=register" replace />} />
+        {/* FALLBACK - 404 */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

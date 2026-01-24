@@ -1,0 +1,186 @@
+/* ================= SKELETON BASE ================= */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e0e0e0 50%,
+    #f0f0f0 75%
+  );
+  background-size: 200% 100%;
+  animation: loading 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Dark mode skeleton */
+@media (prefers-color-scheme: dark) {
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      #2a2a2a 25%,
+      #3a3a3a 50%,
+      #2a2a2a 75%
+    );
+    background-size: 200% 100%;
+  }
+}
+
+/* ================= SKELETON VARIANTS ================= */
+.skeleton-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.skeleton-title {
+  height: 24px;
+  width: 60%;
+  margin-bottom: 12px;
+}
+
+.skeleton-text {
+  height: 16px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.skeleton-text.short {
+  width: 70%;
+}
+
+.skeleton-button {
+  height: 40px;
+  width: 120px;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+
+.skeleton-input {
+  height: 48px;
+  width: 100%;
+  margin-bottom: 16px;
+  border-radius: 8px;
+}
+
+.skeleton-greeting {
+  height: 80px;
+  width: 100%;
+  margin-bottom: 16px;
+  border-radius: 12px;
+}
+
+.skeleton-earning-card {
+  height: 100px;
+  width: 100%;
+  border-radius: 12px;
+}
+
+.skeleton-tab {
+  height: 40px;
+  width: 100px;
+  border-radius: 8px;
+}
+
+.skeleton-table-header {
+  height: 50px;
+  width: 100%;
+  margin-bottom: 8px;
+  border-radius: 8px;
+}
+
+.skeleton-table-row {
+  height: 60px;
+  width: 100%;
+  margin-bottom: 8px;
+  border-radius: 8px;
+}
+
+/* ================= CARD SKELETON ================= */
+.skeleton-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+}
+
+/* ================= DASHBOARD SKELETON ================= */
+.dashboard-skeleton {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.skeleton-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+}
+
+.skeleton-hero {
+  margin-bottom: 24px;
+}
+
+.skeleton-earnings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.skeleton-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.skeleton-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* ================= TABLE SKELETON ================= */
+.table-skeleton {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ================= FORM SKELETON ================= */
+.form-skeleton {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .skeleton-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .skeleton-earnings {
+    grid-template-columns: 1fr;
+  }
+
+  .skeleton-title {
+    width: 80%;
+  }
+}
