@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../api/api";
+import TrustBadges from "../components/TrustBadges";
+import Testimonials from "../components/Testimonials";
 
 /* =========================
    CONSTANTS
@@ -151,9 +153,33 @@ export default function Activate() {
       )}
 
       {/* =========================
-         MAIN PAGE (UNCHANGED)
+         MAIN PAGE (ENHANCED)
       ========================== */}
       <div style={page}>
+        {/* ROI Calculator */}
+        <div style={roiCard}>
+          <h3 style={{ textAlign: 'center', color: '#667eea', marginBottom: 20 }}>
+            💰 Your Investment Breakdown
+          </h3>
+          <div style={roiRow}>
+            <span>Activation Fee:</span>
+            <span style={{ fontWeight: 700 }}>KES {plan.activationFee}</span>
+          </div>
+          <div style={roiRow}>
+            <span>Withdrawable Amount:</span>
+            <span style={{ color: '#10b981', fontWeight: 700 }}>+KES {plan.total}</span>
+          </div>
+          <div style={{ ...roiRow, borderTop: '2px solid #667eea', paddingTop: 15, marginTop: 15 }}>
+            <span style={{ fontSize: 18, fontWeight: 700 }}>Your Return:</span>
+            <span style={{ fontSize: 20, color: '#10b981', fontWeight: 900 }}>
+              {Math.round((plan.total / plan.activationFee) * 10) / 10}x ROI
+            </span>
+          </div>
+          <p style={{ textAlign: 'center', marginTop: 15, color: '#667eea', fontWeight: 600 }}>
+            That's {Math.round((plan.total / plan.activationFee) * 100)}% return on your investment!
+          </p>
+        </div>
+
         <div style={{ ...card, boxShadow: `0 0 40px ${plan.glow}` }}>
           <h2 style={{ textAlign: "center", color: plan.color }}>🔓 Account Activation</h2>
 
@@ -230,6 +256,16 @@ export default function Activate() {
             ⬅ Back to Dashboard
           </button>
         </div>
+
+        {/* Trust Badges */}
+        <div style={{ marginTop: 40 }}>
+          <TrustBadges variant="compact" />
+        </div>
+
+        {/* Testimonials */}
+        <div style={{ marginTop: 40 }}>
+          <Testimonials variant="carousel" />
+        </div>
       </div>
     </>
   );
@@ -272,9 +308,29 @@ const page = {
   minHeight: "100vh",
   background: "linear-gradient(270deg,#177e0d,#c20303,#20bb12)",
   display: "flex",
+  flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
   padding: 20,
+};
+
+const roiCard = {
+  maxWidth: 520,
+  width: "100%",
+  background: "white",
+  padding: 30,
+  borderRadius: 16,
+  color: "#333",
+  marginBottom: 20,
+  boxShadow: "0 10px 40px rgba(0,0,0,0.2)",
+};
+
+const roiRow = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  padding: "12px 0",
+  fontSize: 16,
 };
 
 const card = {

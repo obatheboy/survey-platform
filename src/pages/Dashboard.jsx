@@ -6,6 +6,7 @@ import MainMenuDrawer from "./components/MainMenuDrawer.jsx";
 import LiveWithdrawalFeed from "./components/LiveWithdrawalFeed.jsx";
 import Notifications from "./components/Notifications.jsx";
 import "./Dashboard.css";
+import "./Dashboard-Enhanced.css";
 
 /* =========================
    PLAN CONFIG
@@ -256,13 +257,53 @@ export default function Dashboard() {
 </section>
 
       {/* ================= WELCOME BONUS ================= */}
-      {showWelcomeBonus && (
-        <div className="card welcome-bonus-card">
-          <h3>🎉🎉🎉Welcome Bonus🎉🎉🎉</h3>
-          <p>🎉You’ve Successful received a welcome bonus of KES 1,200.  Withdraw it now!!!!</p>
-          <button className="primary-btn" onClick={handleWelcomeBonusWithdraw}>
-            Withdraw
+      {showWelcomeBonus && !user.is_activated && (
+        <div className="card welcome-bonus-card-enhanced">
+          <div className="bonus-header">
+            <span className="bonus-icon">🎁</span>
+            <h2>Welcome Bonus Unlocked!</h2>
+          </div>
+          
+          <div className="bonus-amount">
+            <span className="currency">KES</span>
+            <span className="amount">1,200</span>
+          </div>
+          
+          <div className="bonus-message">
+            <p className="main-text">
+              🎉 Congratulations! You've received a <strong>KES 1,200</strong> welcome bonus!
+            </p>
+            <p className="sub-text">
+              To withdraw this bonus, simply activate your account with just <strong>KES 100</strong>
+            </p>
+          </div>
+
+          <div className="roi-highlight">
+            <div className="roi-item">
+              <span className="label">You Pay:</span>
+              <span className="value">KES 100</span>
+            </div>
+            <div className="roi-arrow">→</div>
+            <div className="roi-item">
+              <span className="label">You Get:</span>
+              <span className="value green">KES 1,200</span>
+            </div>
+          </div>
+
+          <p className="roi-text">
+            That's <strong>12x</strong> return on your investment!
+          </p>
+
+          <button className="activate-cta-btn" onClick={handleWelcomeBonusWithdraw}>
+            <span className="btn-icon">🔓</span>
+            Activate Now & Withdraw KES 1,200
           </button>
+
+          <div className="trust-indicators">
+            <span>✓ Instant Activation</span>
+            <span>✓ Secure Payment</span>
+            <span>✓ 15,000+ Users</span>
+          </div>
         </div>
       )}
 
