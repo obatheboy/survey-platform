@@ -18,10 +18,8 @@ const PLANS = {
     icon: "⭐", 
     total: 1500, 
     perSurvey: 150,
-    color: "#4ade80",
-    gradient: "linear-gradient(135deg, #4ade80, #22c55e)",
-    borderColor: "rgba(74, 222, 128, 0.4)",
-    bgColor: "rgba(74, 222, 128, 0.1)",
+    color: "var(--regular-color)",
+    gradient: "var(--regular-gradient)",
     description: "Perfect for beginners"
   },
   VIP: { 
@@ -29,10 +27,8 @@ const PLANS = {
     icon: "💎", 
     total: 2000, 
     perSurvey: 200,
-    color: "#3b82f6",
-    gradient: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
-    borderColor: "rgba(59, 130, 246, 0.4)",
-    bgColor: "rgba(59, 130, 246, 0.1)",
+    color: "var(--vip-color)",
+    gradient: "var(--vip-gradient)",
     description: "For active earners"
   },
   VVIP: { 
@@ -40,10 +36,8 @@ const PLANS = {
     icon: "👑", 
     total: 3000, 
     perSurvey: 300,
-    color: "#f59e0b",
-    gradient: "linear-gradient(135deg, #f59e0b, #d97706)",
-    borderColor: "rgba(245, 158, 11, 0.4)",
-    bgColor: "rgba(245, 158, 11, 0.1)",
+    color: "var(--vvip-color)",
+    gradient: "var(--vvip-gradient)",
     description: "Maximum earnings"
   },
 };
@@ -167,6 +161,7 @@ export default function Dashboard() {
   const surveysDone = (plan) => plans[plan]?.surveys_completed || 0;
   const isCompleted = (plan) => surveysDone(plan) >= TOTAL_SURVEYS;
   const isActivated = (plan) => plans[plan]?.is_activated === true;
+  const activationSubmitted = (plan) => plans[plan]?.activation_status === "SUBMITTED";
   const earnedSoFar = (plan) => surveysDone(plan) * PLANS[plan].perSurvey;
   const progressPercentage = (plan) => (surveysDone(plan) / TOTAL_SURVEYS) * 100;
 
@@ -210,16 +205,9 @@ export default function Dashboard() {
   };
 
   /* =========================
-     SURVEY ACTION - GO TO ACTIVATION NOTICE IF NOT ACTIVATED
+     SURVEY ACTION
   ========================= */
-  const handleSurveyClick = async (plan) => {
-    if (!isActivated(plan)) {
-      // Store the plan user wants to activate
-      localStorage.setItem("pending_activation_plan", plan);
-      navigate("/activation-notice", { state: { plan } });
-      return;
-    }
-    
+  const startSurvey = async (plan) => {
     try {
       localStorage.setItem("active_plan", plan);
       await api.post("/surveys/select-plan", { plan });
@@ -231,18 +219,11 @@ export default function Dashboard() {
   };
 
   /* =========================
-     WITHDRAW LOGIC - SIMPLIFIED
+     WITHDRAW LOGIC
   ========================= */
   const handleWithdrawClick = (plan) => {
     setWithdrawError("");
     setWithdrawMessage("");
-
-    if (!isActivated(plan)) {
-      // Store the plan user wants to activate for withdrawal
-      localStorage.setItem("pending_activation_plan", plan);
-      navigate("/activation-notice", { state: { plan, forWithdrawal: true } });
-      return;
-    }
 
     if (!isCompleted(plan)) {
       setToast(`Complete ${TOTAL_SURVEYS - surveysDone(plan)} more surveys to withdraw`);
@@ -251,16 +232,18 @@ export default function Dashboard() {
       return;
     }
 
+    if (!isActivated(plan)) {
+      setFullScreenNotification({
+        message: activationSubmitted(plan)
+          ? "🎯 Activation submitted. Awaiting approval."
+          : "🔒 Account not activated. Activate now to withdraw your earnings.",
+        redirect: activationSubmitted(plan) ? null : "/activation-notice",
+      });
+      return;
+    }
+
     setActiveWithdrawPlan(plan);
     setWithdrawAmount(PLANS[plan].total.toString());
-  };
-
-  /* =========================
-     DIRECT ACTIVATION REDIRECT
-  ========================= */
-  const goToActivationNotice = (plan = "REGULAR") => {
-    localStorage.setItem("pending_activation_plan", plan);
-    navigate("/activation-notice", { state: { plan } });
   };
 
   const submitWithdraw = async () => {
@@ -379,15 +362,20 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* MAIN MENU HEADER WITH DASHBOARD TITLE */}
-      <header className="dashboard-main-header">
-        <div className="header-title-container">
-          <h1 className="dashboard-main-title">Dashboard</h1>
-          <button className="menu-btn" onClick={() => setMenuOpen(true)}>
-            <span className="menu-icon">☰</span>
-          </button>
+      {/* HEADER */}
+      <header className="dashboard-header">
+        <button className="menu-btn" onClick={() => setMenuOpen(true)}>
+          <span className="menu-icon">☰</span>
+          <span className="menu-label">Menu</span>
+        </button>
+        <div className="header-center">
+          <h2>Dashboard</h2>
+          <p className="header-subtitle">Welcome back, {user.full_name.split(' ')[0]}!</p>
         </div>
-        <p className="header-subtitle">Welcome back, {user.full_name.split(' ')[0]}!</p>
+        <div className="header-balance">
+          <span className="balance-label">Balance</span>
+          <span className="balance-amount">KES {stats.availableBalance.toLocaleString()}</span>
+        </div>
       </header>
 
       {/* MAIN MENU DRAWER */}
@@ -403,74 +391,6 @@ export default function Dashboard() {
 
       {/* LIVE WITHDRAWAL FEED */}
       <LiveWithdrawalFeed />
-
-      {/* WELCOME BONUS CARD - PROFESSIONAL VERSION */}
-      <section ref={welcomeRef} className="dashboard-section">
-        <div className="professional-bonus-card">
-          <div className="bonus-card-header">
-            <span className="bonus-icon">🎁</span>
-            <div className="bonus-header-text">
-              <h3>Welcome Bonus</h3>
-              <p className="bonus-subtitle">Activate to claim</p>
-            </div>
-          </div>
-          
-          <div className="bonus-amount-display">
-            <span className="currency">KES</span>
-            <span className="amount">1,200</span>
-          </div>
-          
-          <div className="bonus-description">
-            <p>Activate your account with <strong>KES 100</strong> to unlock your welcome bonus</p>
-          </div>
-
-          <div className="roi-summary">
-            <div className="roi-item">
-              <span className="label">You Pay:</span>
-              <span className="value">KES 100</span>
-            </div>
-            <div className="roi-separator">→</div>
-            <div className="roi-item highlight">
-              <span className="label">You Get:</span>
-              <span className="value">KES 1,200</span>
-            </div>
-          </div>
-
-          <div className="bonus-actions">
-            <button className="primary-btn full-width" onClick={handleWelcomeBonusWithdraw}>
-              <span className="btn-icon">🔓</span>
-              Activate & Claim Bonus
-            </button>
-            <button className="secondary-btn full-width" onClick={() => navigate("/faq#welcome-bonus")}>
-              Learn More
-            </button>
-          </div>
-
-          <div className="bonus-details-collapsible">
-            <details className="bonus-details">
-              <summary>View Bonus Details</summary>
-              <div className="details-content">
-                <div className="detail-item">
-                  <span className="detail-icon">✅</span>
-                  <span>Instant activation upon payment</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-icon">🔒</span>
-                  <span>Secure payment processing</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-icon">👥</span>
-                  <span>15,000+ satisfied users</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-icon">⏱️</span>
-                  <span>Limited time offer</span>
-                </div>
-              </div>
-            </details>
-          </div>
-        </div>
-      </section>
 
       {/* QUICK STATS BAR */}
       <div className="quick-stats-bar">
@@ -491,40 +411,42 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* DASHBOARD NAVIGATION - MOBILE OPTIMIZED */}
+      {/* TABS SECTION */}
       <section className="dashboard-section">
         <div className="section-heading">
-          <h3>Dashboard Navigation</h3>
-          <p>Switch between different sections</p>
+          <div>
+            <h3>Dashboard Navigation</h3>
+            <p>Switch between different sections to manage your earnings</p>
+          </div>
         </div>
-        <div className="dashboard-nav-mobile">
+        <div className="dashboard-tabs">
           <button 
-            className={`nav-btn ${activeTab === "OVERVIEW" ? "active" : ""}`}
+            className={`tab-btn ${activeTab === "OVERVIEW" ? "active" : ""}`}
             onClick={() => setActiveTab("OVERVIEW")}
           >
-            <span className="nav-icon">📊</span>
-            <span className="nav-label">Overview</span>
+            <span className="tab-icon">📊</span>
+            Overview
           </button>
           <button 
-            className={`nav-btn ${activeTab === "TESTIMONIALS" ? "active" : ""}`}
+            className={`tab-btn ${activeTab === "TESTIMONIALS" ? "active" : ""}`}
             onClick={() => setActiveTab("TESTIMONIALS")}
           >
-            <span className="nav-icon">🌟</span>
-            <span className="nav-label">Testimonials</span>
+            <span className="tab-icon">🌟</span>
+            Testimonials
           </button>
           <button 
-            className={`nav-btn ${activeTab === "SURVEYS" ? "active" : ""}`}
+            className={`tab-btn ${activeTab === "SURVEYS" ? "active" : ""}`}
             onClick={goToSurveys}
           >
-            <span className="nav-icon">📝</span>
-            <span className="nav-label">Surveys</span>
+            <span className="tab-icon">📝</span>
+            Surveys
           </button>
           <button 
-            className={`nav-btn ${activeTab === "WITHDRAW" ? "active" : ""}`}
+            className={`tab-btn ${activeTab === "WITHDRAW" ? "active" : ""}`}
             onClick={goToWithdraw}
           >
-            <span className="nav-icon">💸</span>
-            <span className="nav-label">Withdraw</span>
+            <span className="tab-icon">💸</span>
+            Withdraw
           </button>
         </div>
       </section>
@@ -532,11 +454,43 @@ export default function Dashboard() {
       {/* OVERVIEW TAB */}
       {activeTab === "OVERVIEW" && (
         <>
-          {/* EARNINGS DASHBOARD */}
+          {/* HERO SECTION */}
+          <section className="dashboard-hero">
+            <div className="hero-card">
+              <div className="hero-content">
+                <div className="hero-text">
+                  <h1>
+                    Welcome, <span className="user-highlight">{user.full_name.split(' ')[0]}</span>! 👋
+                  </h1>
+                  <p className="hero-subtitle">
+                    Complete surveys, earn instant rewards, and withdraw cash directly to your phone.
+                  </p>
+                  <div className="hero-actions">
+                    <button className="primary-btn" onClick={goToSurveys}>
+                      Start Earning →
+                    </button>
+                    <button className="secondary-btn" onClick={goToWelcome}>
+                      View Welcome Bonus
+                    </button>
+                  </div>
+                </div>
+                <div className="hero-stats">
+                  <div className="hero-stat">
+                    <span className="hero-stat-value">KES {stats.availableBalance.toLocaleString()}</span>
+                    <span className="hero-stat-label">Available Now</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* MAIN STATS */}
           <section className="dashboard-section">
             <div className="section-heading">
-              <h3>Your Earnings Dashboard</h3>
-              <p>Track your progress and earnings across all plans</p>
+              <div>
+                <h3>Your Earnings Dashboard</h3>
+                <p>Track your progress and earnings across all plans</p>
+              </div>
             </div>
             <div className="stats-grid">
               <div className="stats-card total-earnings">
@@ -588,22 +542,113 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* PLAN PROGRESS - WITH ACTIVATION BUTTONS */}
+          {/* WELCOME BONUS - ALWAYS SHOW */}
+          <section ref={welcomeRef} className="dashboard-section">
+            <div className="section-heading">
+              <div>
+                <h3>Special Welcome Offer</h3>
+                <p>Limited time bonus for all users</p>
+              </div>
+            </div>
+            <div className="card welcome-bonus-card-enhanced">
+              <div className="bonus-header">
+                <span className="bonus-icon">🎁</span>
+                <div>
+                  <h2>Welcome Bonus Unlocked!</h2>
+                  <p className="bonus-subtitle">Exclusive offer for you</p>
+                </div>
+              </div>
+              
+              <div className="bonus-amount">
+                <span className="currency">KES</span>
+                <span className="amount">1,200</span>
+              </div>
+              
+              <div className="bonus-message">
+                <p className="main-text">
+                  🎉 Congratulations! You've received a <strong>KES 1,200</strong> welcome bonus!
+                </p>
+                <p className="sub-text">
+                  To withdraw this bonus, simply activate your account with just <strong>KES 100</strong>
+                </p>
+              </div>
+
+              <div className="roi-highlight">
+                <div className="roi-item">
+                  <span className="label">You Pay:</span>
+                  <span className="value">KES 100</span>
+                </div>
+                <div className="roi-arrow">→</div>
+                <div className="roi-item">
+                  <span className="label">You Get:</span>
+                  <span className="value green">KES 1,200</span>
+                </div>
+              </div>
+
+              <p className="roi-text">
+                That's <strong>12x</strong> return on your investment!
+              </p>
+
+              <div className="bonus-actions">
+                <button className="activate-cta-btn" onClick={handleWelcomeBonusWithdraw}>
+                  <span className="btn-icon">🔓</span>
+                  Activate Now & Withdraw KES 1,200
+                </button>
+                <button className="learn-more-btn" onClick={() => navigate("/faq#welcome-bonus")}>
+                  Learn More
+                </button>
+              </div>
+
+              <div className="trust-indicators">
+                <span>✅ Instant Activation</span>
+                <span>🔒 Secure Payment</span>
+                <span>👥 15,000+ Users</span>
+                <span>⏱️ Limited Time</span>
+              </div>
+            </div>
+          </section>
+
+          {/* QUICK ACTIONS */}
           <section className="dashboard-section">
             <div className="section-heading">
-              <h3>Plan Progress</h3>
-              <p>Track your earnings across different plans</p>
+              <div>
+                <h3>Quick Actions</h3>
+                <p>Complete these tasks to earn bonus points</p>
+              </div>
+            </div>
+            <div className="quick-actions-grid">
+              {quickActions.map(action => (
+                <div key={action.id} className={`quick-action-card ${action.completed ? 'completed' : ''}`}>
+                  <span className="action-icon">{action.icon}</span>
+                  <div className="action-content">
+                    <h4>{action.label}</h4>
+                    <p>{action.completed ? 'Completed! +10 points' : 'Earn 10 bonus points'}</p>
+                  </div>
+                  <button 
+                    className={`action-btn ${action.completed ? 'completed' : ''}`}
+                    onClick={() => !action.completed && completeQuickAction(action.id)}
+                    disabled={action.completed}
+                  >
+                    {action.completed ? '✓' : 'Start'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* PLAN PROGRESS OVERVIEW */}
+          <section className="dashboard-section">
+            <div className="section-heading">
+              <div>
+                <h3>Your Plan Progress</h3>
+                <p>Track your earnings across different plans</p>
+              </div>
             </div>
             <div className="progress-cards">
               {Object.entries(PLANS).map(([key, plan]) => {
                 const status = getPlanStatus(key);
-                const needsActivation = !isActivated(key);
-                
                 return (
-                  <div key={key} className="progress-card" style={{
-                    borderColor: plan.borderColor,
-                    background: plan.bgColor,
-                  }}>
+                  <div key={key} className="progress-card">
                     <div className="progress-card-header">
                       <span className="plan-icon">{plan.icon}</span>
                       <h4>{plan.name}</h4>
@@ -625,61 +670,28 @@ export default function Dashboard() {
                           <span>Earned:</span>
                           <strong className="earned-amount">KES {earnedSoFar(key).toLocaleString()}</strong>
                         </div>
-                        {needsActivation && (
-                          <div className="progress-row activation-notice">
-                            <span style={{ color: plan.color, fontWeight: 'bold' }}>🔒 Activation Required</span>
-                            <span style={{ color: plan.color, fontSize: '12px' }}>Activate to start earning</span>
-                          </div>
-                        )}
                       </div>
                       <div className="progress-bar">
                         <div 
                           className="progress-bar-fill"
-                          style={{ 
-                            width: `${progressPercentage(key)}%`,
-                            background: plan.gradient
-                          }}
+                          style={{ width: `${progressPercentage(key)}%` }}
                         ></div>
                       </div>
                       <div className="progress-card-actions">
-                        {needsActivation ? (
+                        <button 
+                          className="action-btn primary"
+                          onClick={() => startSurvey(key)}
+                          disabled={isCompleted(key)}
+                        >
+                          {isCompleted(key) ? 'Completed' : 'Start Survey'}
+                        </button>
+                        {isCompleted(key) && (
                           <button 
-                            className="action-btn activation-btn"
-                            onClick={() => goToActivationNotice(key)}
-                            style={{
-                              background: plan.gradient,
-                              color: 'white',
-                              fontWeight: 'bold'
-                            }}
+                            className="action-btn secondary"
+                            onClick={() => handleWithdrawClick(key)}
                           >
-                            🔓 Activate Plan
+                            Withdraw
                           </button>
-                        ) : (
-                          <>
-                            <button 
-                              className="action-btn primary"
-                              onClick={() => handleSurveyClick(key)}
-                              disabled={isCompleted(key)}
-                              style={{
-                                background: isCompleted(key) ? '#ccc' : plan.gradient,
-                                color: isCompleted(key) ? '#666' : 'white'
-                              }}
-                            >
-                              {isCompleted(key) ? 'Completed' : 'Start Survey'}
-                            </button>
-                            {isCompleted(key) && (
-                              <button 
-                                className="action-btn secondary"
-                                onClick={() => handleWithdrawClick(key)}
-                                style={{
-                                  borderColor: plan.color,
-                                  color: plan.color
-                                }}
-                              >
-                                Withdraw
-                              </button>
-                            )}
-                          </>
                         )}
                       </div>
                     </div>
@@ -689,11 +701,13 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* WHY USERS LOVE OUR PLATFORM */}
+          {/* FEATURES */}
           <section className="dashboard-section">
             <div className="section-heading">
-              <h3>Why Users Love Our Platform</h3>
-              <p>Discover what makes us the best choice for earning online</p>
+              <div>
+                <h3>Why Users Love Our Platform</h3>
+                <p>Discover what makes us the best choice for earning online</p>
+              </div>
             </div>
             <div className="feature-grid">
               <div className="feature-card">
@@ -718,62 +732,6 @@ export default function Dashboard() {
               </div>
             </div>
           </section>
-
-          {/* QUICK ACTIONS */}
-          <section className="dashboard-section">
-            <div className="section-heading">
-              <h3>Quick Actions</h3>
-              <p>Complete these tasks to earn bonus points</p>
-            </div>
-            <div className="quick-actions-grid">
-              {quickActions.map(action => (
-                <div key={action.id} className={`quick-action-card ${action.completed ? 'completed' : ''}`}>
-                  <span className="action-icon">{action.icon}</span>
-                  <div className="action-content">
-                    <h4>{action.label}</h4>
-                    <p>{action.completed ? 'Completed! +10 points' : 'Earn 10 bonus points'}</p>
-                  </div>
-                  <button 
-                    className={`action-btn ${action.completed ? 'completed' : ''}`}
-                    onClick={() => !action.completed && completeQuickAction(action.id)}
-                    disabled={action.completed}
-                  >
-                    {action.completed ? '✓' : 'Start'}
-                  </button>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* HERO SECTION - MOVED DOWN */}
-          <section className="dashboard-hero">
-            <div className="hero-card">
-              <div className="hero-content">
-                <div className="hero-text">
-                  <h1>
-                    Welcome, <span className="user-highlight">{user.full_name.split(' ')[0]}</span>! 👋
-                  </h1>
-                  <p className="hero-subtitle">
-                    Complete surveys, earn instant rewards, and withdraw cash directly to your phone.
-                  </p>
-                  <div className="hero-actions">
-                    <button className="primary-btn" onClick={goToSurveys}>
-                      Start Earning →
-                    </button>
-                    <button className="secondary-btn" onClick={goToWelcome}>
-                      View Welcome Bonus
-                    </button>
-                  </div>
-                </div>
-                <div className="hero-stats">
-                  <div className="hero-stat">
-                    <span className="hero-stat-value">KES {stats.availableBalance.toLocaleString()}</span>
-                    <span className="hero-stat-label">Available Now</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
         </>
       )}
 
@@ -781,8 +739,10 @@ export default function Dashboard() {
       {activeTab === "TESTIMONIALS" && (
         <section className="dashboard-section">
           <div className="section-heading">
-            <h3>Real User Testimonials</h3>
-            <p>See what others are saying about their earnings experience</p>
+            <div>
+              <h3>Real User Testimonials</h3>
+              <p>See what others are saying about their earnings experience</p>
+            </div>
           </div>
           <Testimonials variant="grid" />
           <div className="testimonial-cta">
@@ -794,48 +754,36 @@ export default function Dashboard() {
         </section>
       )}
 
-      {/* SURVEYS TAB - COLORED PLAN CARDS WITH ACTIVATION */}
+      {/* SURVEYS TAB */}
       {activeTab === "SURVEYS" && (
         <section ref={surveyRef} id="surveys-section" className="tab-section">
           <div className="section-heading">
-            <h3>Available Survey Plans</h3>
-            <p>Choose a plan that matches your earning goals</p>
+            <div>
+              <h3>Available Survey Plans</h3>
+              <p>Choose a plan that matches your earning goals</p>
+            </div>
           </div>
           
           <div className="plan-cards-container">
             {Object.entries(PLANS).map(([key, plan]) => {
               const status = getPlanStatus(key);
               const completed = isCompleted(key);
-              const needsActivation = !isActivated(key);
               
               return (
-                <div key={key} className={`plan-card ${key.toLowerCase()}`} style={{
-                  borderColor: plan.borderColor,
-                  background: `linear-gradient(135deg, ${plan.bgColor}, rgba(255, 255, 255, 0.05))`,
-                  boxShadow: `0 10px 30px ${plan.color}20`
-                }}>
+                <div key={key} className={`plan-card ${key.toLowerCase()}`}>
                   <div className="plan-card-header">
                     <div className="plan-badge">
                       <span className="plan-icon">{plan.icon}</span>
-                      <span className="plan-name" style={{ color: plan.color }}>{plan.name}</span>
+                      <span className="plan-name">{plan.name}</span>
                     </div>
-                    <span className={`plan-status ${status.status}`} style={{
-                      background: needsActivation ? plan.bgColor : '',
-                      borderColor: needsActivation ? plan.color : '',
-                      color: needsActivation ? plan.color : ''
-                    }}>
-                      {needsActivation ? '🔒 Activation Required' : `${status.icon} ${status.label}`}
+                    <span className={`plan-status ${status.status}`}>
+                      {status.icon} {status.label}
                     </span>
                   </div>
                   
                   <div className="plan-card-body">
                     <div className="plan-description">
                       <p>{plan.description}</p>
-                      {needsActivation && (
-                        <p className="activation-notice-text" style={{ color: plan.color, fontWeight: 'bold' }}>
-                          🔒 Activate this plan to start earning
-                        </p>
-                      )}
                     </div>
                     
                     <div className="plan-stats">
@@ -853,10 +801,7 @@ export default function Dashboard() {
                           <div className="progress-bar">
                             <div 
                               className="progress-bar-fill"
-                              style={{ 
-                                width: `${progressPercentage(key)}%`,
-                                background: plan.gradient
-                              }}
+                              style={{ width: `${progressPercentage(key)}%` }}
                             ></div>
                           </div>
                           <span className="progress-text">
@@ -878,29 +823,10 @@ export default function Dashboard() {
                   </div>
                   
                   <div className="plan-card-footer">
-                    {needsActivation ? (
-                      <button 
-                        className="activation-notice-btn"
-                        onClick={() => goToActivationNotice(key)}
-                        style={{
-                          background: plan.gradient,
-                          color: 'white',
-                          fontWeight: 'bold',
-                          boxShadow: `0 5px 20px ${plan.color}40`
-                        }}
-                      >
-                        <span className="btn-icon">🔓</span>
-                        Activate to Start Earning
-                        <span className="btn-arrow">→</span>
-                      </button>
-                    ) : !completed ? (
+                    {!completed ? (
                       <button 
                         className="start-survey-btn"
-                        onClick={() => handleSurveyClick(key)}
-                        style={{
-                          background: plan.gradient,
-                          boxShadow: `0 5px 20px ${plan.color}40`
-                        }}
+                        onClick={() => startSurvey(key)}
                       >
                         <span className="btn-icon">🚀</span>
                         Start Survey
@@ -912,10 +838,6 @@ export default function Dashboard() {
                         <button 
                           className="withdraw-plan-btn"
                           onClick={() => handleWithdrawClick(key)}
-                          style={{
-                            background: plan.gradient,
-                            boxShadow: `0 5px 20px ${plan.color}40`
-                          }}
                         >
                           💸 Withdraw KES {plan.total}
                         </button>
@@ -929,88 +851,31 @@ export default function Dashboard() {
         </section>
       )}
 
-      {/* WITHDRAW TAB - COLORED WITHDRAW CARDS (FIXED VERSION) */}
+      {/* WITHDRAW TAB */}
       {activeTab === "WITHDRAW" && (
         <section ref={withdrawRef} id="withdraw-section" className="tab-section">
           <div className="section-heading">
-            <h3>Withdraw Your Earnings</h3>
-            <p>Get paid directly to your mobile money account</p>
+            <div>
+              <h3>Withdraw Your Earnings</h3>
+              <p>Get paid directly to your mobile money account</p>
+            </div>
           </div>
           
           <div className="withdraw-cards-container">
             {Object.entries(PLANS).map(([key, plan]) => {
               const completed = isCompleted(key);
               const activated = isActivated(key);
-              const needsActivation = !activated;
-              const surveysNeeded = TOTAL_SURVEYS - surveysDone(key);
-              
-              // Determine button text and action
-              const getButtonConfig = () => {
-                if (!activated && !completed) {
-                  // Not activated AND not completed → Activate to Start Surveys
-                  return {
-                    text: '🔓 Activate to Start Surveys',
-                    action: () => goToActivationNotice(key),
-                    type: 'activate',
-                    enabled: true
-                  };
-                }
-                if (!activated && completed) {
-                  // Not activated BUT completed → Activate to Withdraw
-                  return {
-                    text: '🔓 Activate to Withdraw',
-                    action: () => goToActivationNotice(key),
-                    type: 'activate',
-                    enabled: true
-                  };
-                }
-                if (activated && !completed) {
-                  // Activated but not completed → Start Survey
-                  return {
-                    text: `Start Survey (${surveysNeeded} left)`,
-                    action: () => handleSurveyClick(key),
-                    type: 'survey',
-                    enabled: true
-                  };
-                }
-                if (activated && completed) {
-                  // Activated AND completed → Withdraw
-                  return {
-                    text: `Withdraw KES ${plan.total}`,
-                    action: () => handleWithdrawClick(key),
-                    type: 'withdraw',
-                    enabled: true
-                  };
-                }
-                // Default fallback
-                return {
-                  text: 'Complete Surveys First',
-                  action: () => goToSurveys(),
-                  type: 'default',
-                  enabled: false
-                };
-              };
-
-              const buttonConfig = getButtonConfig();
               
               return (
-                <div key={key} className={`withdraw-card ${completed ? 'completed' : ''}`} style={{
-                  borderColor: plan.borderColor,
-                  background: `linear-gradient(135deg, ${plan.bgColor}, rgba(255, 255, 255, 0.03))`,
-                  boxShadow: `0 10px 30px ${plan.color}20`
-                }}>
+                <div key={key} className={`withdraw-card ${completed ? 'completed' : ''}`}>
                   <div className="withdraw-card-header">
                     <span className="plan-icon">{plan.icon}</span>
                     <div className="plan-info">
-                      <h4 style={{ color: plan.color }}>{plan.name} Plan</h4>
+                      <h4>{plan.name} Plan</h4>
                       <p className="plan-earnings">KES {earnedSoFar(key)} earned</p>
                     </div>
-                    <span className={`status-indicator ${completed ? 'ready' : 'pending'}`} style={{
-                      background: needsActivation ? plan.bgColor : '',
-                      borderColor: needsActivation ? plan.color : '',
-                      color: needsActivation ? plan.color : ''
-                    }}>
-                      {needsActivation ? '🔒 Activation Required' : completed ? '✅ Ready' : '⏳ Pending'}
+                    <span className={`status-indicator ${completed ? 'ready' : 'pending'}`}>
+                      {completed ? '✅ Ready' : '⏳ Pending'}
                     </span>
                   </div>
                   
@@ -1029,12 +894,12 @@ export default function Dashboard() {
                     <div className="withdraw-requirements">
                       {!completed && (
                         <p className="requirement">
-                          📝 Complete {surveysNeeded} more {surveysNeeded === 1 ? 'survey' : 'surveys'} to withdraw
+                          📝 Complete {TOTAL_SURVEYS - surveysDone(key)} more surveys to withdraw
                         </p>
                       )}
-                      {needsActivation && (
-                        <p className="requirement" style={{ color: plan.color, fontWeight: 'bold' }}>
-                          🔓 Account activation required
+                      {completed && !activated && (
+                        <p className="requirement">
+                          🔓 Account activation required to withdraw
                         </p>
                       )}
                     </div>
@@ -1042,35 +907,18 @@ export default function Dashboard() {
                   
                   <div className="withdraw-card-footer">
                     <button 
-                      className={`withdraw-btn ${buttonConfig.type === 'withdraw' ? 'ready' : ''}`}
-                      onClick={buttonConfig.action}
-                      disabled={!buttonConfig.enabled}
-                      style={{
-                        background: buttonConfig.type === 'activate' ? plan.gradient : 
-                                  buttonConfig.type === 'withdraw' ? plan.gradient :
-                                  buttonConfig.type === 'survey' ? plan.gradient : 
-                                  'rgba(255, 255, 255, 0.1)',
-                        color: buttonConfig.type === 'activate' || 
-                               buttonConfig.type === 'withdraw' || 
-                               buttonConfig.type === 'survey' ? 'white' : 'rgba(255, 255, 255, 0.5)',
-                        boxShadow: buttonConfig.type === 'activate' || 
-                                  buttonConfig.type === 'withdraw' || 
-                                  buttonConfig.type === 'survey' ? `0 5px 20px ${plan.color}40` : 'none'
-                      }}
+                      className={`withdraw-btn ${completed && activated ? 'ready' : 'disabled'}`}
+                      onClick={() => handleWithdrawClick(key)}
+                      disabled={!completed || !activated}
                     >
-                      {buttonConfig.text}
+                      {!completed ? 'Complete Surveys First' :
+                       !activated ? 'Activate Account' :
+                       `Withdraw KES ${plan.total}`}
                     </button>
                     
-                    {/* Show secondary action button for specific cases */}
-                    {buttonConfig.type === 'survey' && (
-                      <button className="complete-surveys-btn" onClick={() => handleSurveyClick(key)}>
-                        Start Survey Now →
-                      </button>
-                    )}
-                    
-                    {buttonConfig.type === 'default' && !completed && (
+                    {!completed && (
                       <button className="complete-surveys-btn" onClick={goToSurveys}>
-                        Go to Surveys →
+                        Complete Surveys →
                       </button>
                     )}
                   </div>
