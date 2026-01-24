@@ -231,23 +231,23 @@ export default function Dashboard() {
   };
 
   /* =========================
-     WITHDRAW LOGIC - GO TO ACTIVATION NOTICE IF NOT ACTIVATED
+     WITHDRAW LOGIC - SIMPLIFIED
   ========================= */
   const handleWithdrawClick = (plan) => {
     setWithdrawError("");
     setWithdrawMessage("");
 
-    if (!isCompleted(plan)) {
-      setToast(`Complete ${TOTAL_SURVEYS - surveysDone(plan)} more surveys to withdraw`);
-      goToSurveys();
-      setTimeout(() => setToast(""), 4000);
-      return;
-    }
-
     if (!isActivated(plan)) {
       // Store the plan user wants to activate for withdrawal
       localStorage.setItem("pending_activation_plan", plan);
       navigate("/activation-notice", { state: { plan, forWithdrawal: true } });
+      return;
+    }
+
+    if (!isCompleted(plan)) {
+      setToast(`Complete ${TOTAL_SURVEYS - surveysDone(plan)} more surveys to withdraw`);
+      goToSurveys();
+      setTimeout(() => setToast(""), 4000);
       return;
     }
 
@@ -929,7 +929,7 @@ export default function Dashboard() {
         </section>
       )}
 
-      {/* WITHDRAW TAB - COLORED WITHDRAW CARDS */}
+      {/* WITHDRAW TAB - COLORED WITHDRAW CARDS (FIXED VERSION) */}
       {activeTab === "WITHDRAW" && (
         <section ref={withdrawRef} id="withdraw-section" className="tab-section">
           <div className="section-heading">
@@ -942,6 +942,56 @@ export default function Dashboard() {
               const completed = isCompleted(key);
               const activated = isActivated(key);
               const needsActivation = !activated;
+              const surveysNeeded = TOTAL_SURVEYS - surveysDone(key);
+              
+              // Determine button text and action
+              const getButtonConfig = () => {
+                if (!activated && !completed) {
+                  // Not activated AND not completed → Activate to Start Surveys
+                  return {
+                    text: '🔓 Activate to Start Surveys',
+                    action: () => goToActivationNotice(key),
+                    type: 'activate',
+                    enabled: true
+                  };
+                }
+                if (!activated && completed) {
+                  // Not activated BUT completed → Activate to Withdraw
+                  return {
+                    text: '🔓 Activate to Withdraw',
+                    action: () => goToActivationNotice(key),
+                    type: 'activate',
+                    enabled: true
+                  };
+                }
+                if (activated && !completed) {
+                  // Activated but not completed → Start Survey
+                  return {
+                    text: `Start Survey (${surveysNeeded} left)`,
+                    action: () => handleSurveyClick(key),
+                    type: 'survey',
+                    enabled: true
+                  };
+                }
+                if (activated && completed) {
+                  // Activated AND completed → Withdraw
+                  return {
+                    text: `Withdraw KES ${plan.total}`,
+                    action: () => handleWithdrawClick(key),
+                    type: 'withdraw',
+                    enabled: true
+                  };
+                }
+                // Default fallback
+                return {
+                  text: 'Complete Surveys First',
+                  action: () => goToSurveys(),
+                  type: 'default',
+                  enabled: false
+                };
+              };
+
+              const buttonConfig = getButtonConfig();
               
               return (
                 <div key={key} className={`withdraw-card ${completed ? 'completed' : ''}`} style={{
@@ -979,12 +1029,12 @@ export default function Dashboard() {
                     <div className="withdraw-requirements">
                       {!completed && (
                         <p className="requirement">
-                          📝 Complete {TOTAL_SURVEYS - surveysDone(key)} more surveys to withdraw
+                          📝 Complete {surveysNeeded} more {surveysNeeded === 1 ? 'survey' : 'surveys'} to withdraw
                         </p>
                       )}
                       {needsActivation && (
                         <p className="requirement" style={{ color: plan.color, fontWeight: 'bold' }}>
-                          🔓 Account activation required to withdraw
+                          🔓 Account activation required
                         </p>
                       )}
                     </div>
@@ -992,41 +1042,35 @@ export default function Dashboard() {
                   
                   <div className="withdraw-card-footer">
                     <button 
-                      className={`withdraw-btn ${completed && activated ? 'ready' : 'disabled'}`}
-                      onClick={() => handleWithdrawClick(key)}
-                      disabled={!completed || !activated}
+                      className={`withdraw-btn ${buttonConfig.type === 'withdraw' ? 'ready' : ''}`}
+                      onClick={buttonConfig.action}
+                      disabled={!buttonConfig.enabled}
                       style={{
-                        background: needsActivation ? plan.gradient : 
-                                  completed && activated ? plan.gradient : 'rgba(255, 255, 255, 0.1)',
-                        color: needsActivation ? 'white' : 
-                              completed && activated ? 'white' : 'rgba(255, 255, 255, 0.5)',
-                        boxShadow: needsActivation ? `0 5px 20px ${plan.color}40` : 'none'
+                        background: buttonConfig.type === 'activate' ? plan.gradient : 
+                                  buttonConfig.type === 'withdraw' ? plan.gradient :
+                                  buttonConfig.type === 'survey' ? plan.gradient : 
+                                  'rgba(255, 255, 255, 0.1)',
+                        color: buttonConfig.type === 'activate' || 
+                               buttonConfig.type === 'withdraw' || 
+                               buttonConfig.type === 'survey' ? 'white' : 'rgba(255, 255, 255, 0.5)',
+                        boxShadow: buttonConfig.type === 'activate' || 
+                                  buttonConfig.type === 'withdraw' || 
+                                  buttonConfig.type === 'survey' ? `0 5px 20px ${plan.color}40` : 'none'
                       }}
                     >
-                      {!completed ? 'Complete Surveys First' :
-                       needsActivation ? '🔓 Activate to Withdraw' :
-                       `Withdraw KES ${plan.total}`}
+                      {buttonConfig.text}
                     </button>
                     
-                    {!completed && (
-                      <button className="complete-surveys-btn" onClick={goToSurveys}>
-                        Complete Surveys →
+                    {/* Show secondary action button for specific cases */}
+                    {buttonConfig.type === 'survey' && (
+                      <button className="complete-surveys-btn" onClick={() => handleSurveyClick(key)}>
+                        Start Survey Now →
                       </button>
                     )}
                     
-                    {needsActivation && completed && (
-                      <button 
-                        className="activate-withdraw-btn"
-                        onClick={() => goToActivationNotice(key)}
-                        style={{
-                          background: 'transparent',
-                          border: `2px solid ${plan.color}`,
-                          color: plan.color,
-                          fontWeight: 'bold',
-                          marginTop: '10px'
-                        }}
-                      >
-                        🔓 Activate Account Now
+                    {buttonConfig.type === 'default' && !completed && (
+                      <button className="complete-surveys-btn" onClick={goToSurveys}>
+                        Go to Surveys →
                       </button>
                     )}
                   </div>
