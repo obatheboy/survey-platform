@@ -13,9 +13,33 @@ import "./Dashboard-Enhanced.css";
    PLAN CONFIG
 ========================= */
 const PLANS = {
-  REGULAR: { name: "Regular", icon: "⭐", total: 1500, perSurvey: 150 },
-  VIP: { name: "VIP", icon: "💎", total: 2000, perSurvey: 200 },
-  VVIP: { name: "VVIP", icon: "👑", total: 3000, perSurvey: 300 },
+  REGULAR: { 
+    name: "Regular", 
+    icon: "⭐", 
+    total: 1500, 
+    perSurvey: 150,
+    color: "var(--regular-color)",
+    gradient: "var(--regular-gradient)",
+    description: "Perfect for beginners"
+  },
+  VIP: { 
+    name: "VIP", 
+    icon: "💎", 
+    total: 2000, 
+    perSurvey: 200,
+    color: "var(--vip-color)",
+    gradient: "var(--vip-gradient)",
+    description: "For active earners"
+  },
+  VVIP: { 
+    name: "VVIP", 
+    icon: "👑", 
+    total: 3000, 
+    perSurvey: 300,
+    color: "var(--vvip-color)",
+    gradient: "var(--vvip-gradient)",
+    description: "Maximum earnings"
+  },
 };
 
 const TOTAL_SURVEYS = 10;
@@ -25,6 +49,7 @@ export default function Dashboard() {
 
   const surveyRef = useRef(null);
   const withdrawRef = useRef(null);
+  const welcomeRef = useRef(null);
 
   /* =========================
      UI STATE
@@ -33,13 +58,23 @@ export default function Dashboard() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalEarned: 0,
+    availableBalance: 0,
+    totalSurveysCompleted: 0,
+    totalWithdrawals: 0
+  });
 
   /* =========================
      DATA STATE
   ========================= */
   const [user, setUser] = useState(null);
   const [plans, setPlans] = useState({});
-  const [showWelcomeBonus, setShowWelcomeBonus] = useState(false);
+  const [quickActions, setQuickActions] = useState([
+    { id: 1, label: "Complete Profile", icon: "👤", completed: false },
+    { id: 2, label: "Verify Email", icon: "📧", completed: false },
+    { id: 3, label: "Invite Friends", icon: "👥", completed: false },
+  ]);
 
   /* =========================
      WITHDRAW STATE
@@ -50,7 +85,6 @@ export default function Dashboard() {
   const [withdrawMessage, setWithdrawMessage] = useState("");
   const [withdrawError, setWithdrawError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-
   const [fullScreenNotification, setFullScreenNotification] = useState(null);
 
   /* =========================
@@ -66,8 +100,21 @@ export default function Dashboard() {
 
         setUser(resUser.data);
         setPlans(resUser.data.plans || {});
+        
+        // Calculate stats
+        const totalEarned = Number(resUser.data.total_earned || 0);
+        const totalSurveys = Object.values(resUser.data.plans || {}).reduce(
+          (sum, plan) => sum + (plan.surveys_completed || 0), 0
+        );
+        
+        setStats({
+          totalEarned,
+          availableBalance: totalEarned,
+          totalSurveysCompleted: totalSurveys,
+          totalWithdrawals: resUser.data.total_withdrawals || 0
+        });
+
         localStorage.setItem("cachedUser", JSON.stringify(resUser.data));
-        setShowWelcomeBonus(true);
       } catch (err) {
         console.error("Dashboard load failed:", err);
         if (!navigator.onLine) {
@@ -76,7 +123,6 @@ export default function Dashboard() {
             const parsedUser = JSON.parse(cachedUser);
             setUser(parsedUser);
             setPlans(parsedUser.plans || {});
-            setShowWelcomeBonus(true);
           }
         }
       } finally {
@@ -95,8 +141,19 @@ export default function Dashboard() {
     };
   }, []);
 
-  if (loading) return <p className="loading">Loading dashboard…</p>;
-  if (!user) return null;
+  /* =========================
+     PROGRESS BARS ANIMATION
+  ========================= */
+  useEffect(() => {
+    const progressBars = document.querySelectorAll('.progress-bar-fill');
+    progressBars.forEach(bar => {
+      const width = bar.style.width;
+      bar.style.width = '0';
+      setTimeout(() => {
+        bar.style.width = width;
+      }, 300);
+    });
+  }, [plans]);
 
   /* =========================
      HELPERS
@@ -105,9 +162,14 @@ export default function Dashboard() {
   const isCompleted = (plan) => surveysDone(plan) >= TOTAL_SURVEYS;
   const isActivated = (plan) => plans[plan]?.is_activated === true;
   const activationSubmitted = (plan) => plans[plan]?.activation_status === "SUBMITTED";
+  const earnedSoFar = (plan) => surveysDone(plan) * PLANS[plan].perSurvey;
+  const progressPercentage = (plan) => (surveysDone(plan) / TOTAL_SURVEYS) * 100;
 
-  const earnedSoFar = (plan) =>
-    surveysDone(plan) * PLANS[plan].perSurvey;
+  const getPlanStatus = (plan) => {
+    if (isCompleted(plan)) return { status: "completed", label: "Ready to Withdraw", icon: "✅" };
+    if (surveysDone(plan) > 0) return { status: "in-progress", label: "In Progress", icon: "⏳" };
+    return { status: "not-started", label: "Start Earning", icon: "🚀" };
+  };
 
   /* =========================
      TAB + SCROLL
@@ -115,14 +177,30 @@ export default function Dashboard() {
   const goToSurveys = () => {
     setActiveTab("SURVEYS");
     setTimeout(() => {
-      surveyRef.current?.scrollIntoView({ behavior: "smooth" });
+      surveyRef.current?.scrollIntoView({ 
+        behavior: "smooth",
+        block: "start"
+      });
     }, 50);
   };
 
   const goToWithdraw = () => {
     setActiveTab("WITHDRAW");
     setTimeout(() => {
-      withdrawRef.current?.scrollIntoView({ behavior: "smooth" });
+      withdrawRef.current?.scrollIntoView({ 
+        behavior: "smooth",
+        block: "start"
+      });
+    }, 50);
+  };
+
+  const goToWelcome = () => {
+    setActiveTab("OVERVIEW");
+    setTimeout(() => {
+      welcomeRef.current?.scrollIntoView({ 
+        behavior: "smooth",
+        block: "start"
+      });
     }, 50);
   };
 
@@ -135,7 +213,7 @@ export default function Dashboard() {
       await api.post("/surveys/select-plan", { plan });
       navigate("/surveys");
     } catch {
-      setToast("Failed to start survey");
+      setToast("Failed to start survey. Please try again.");
       setTimeout(() => setToast(""), 3000);
     }
   };
@@ -148,28 +226,35 @@ export default function Dashboard() {
     setWithdrawMessage("");
 
     if (!isCompleted(plan)) {
-      setToast("Complete all surveys to withdraw");
+      setToast(`Complete ${TOTAL_SURVEYS - surveysDone(plan)} more surveys to withdraw`);
       goToSurveys();
-      setTimeout(() => setToast(""), 3000);
+      setTimeout(() => setToast(""), 4000);
       return;
     }
 
     if (!isActivated(plan)) {
       setFullScreenNotification({
         message: activationSubmitted(plan)
-          ? "Activation submitted. Awaiting approval."
-          : "❌ Account not activated.",
+          ? "🎯 Activation submitted. Awaiting approval."
+          : "🔒 Account not activated. Activate now to withdraw your earnings.",
         redirect: activationSubmitted(plan) ? null : "/activation-notice",
       });
       return;
     }
 
     setActiveWithdrawPlan(plan);
+    setWithdrawAmount(PLANS[plan].total.toString());
   };
 
   const submitWithdraw = async () => {
     if (!withdrawAmount || !withdrawPhone) {
-      setWithdrawError("Enter amount and phone number");
+      setWithdrawError("Please enter amount and phone number");
+      return;
+    }
+
+    const amount = Number(withdrawAmount);
+    if (amount < 100) {
+      setWithdrawError("Minimum withdrawal amount is KES 100");
       return;
     }
 
@@ -177,20 +262,25 @@ export default function Dashboard() {
     try {
       await api.post("/withdraw/request", {
         phone_number: withdrawPhone,
-        amount: Number(withdrawAmount),
+        amount: amount,
         type: activeWithdrawPlan,
       });
 
-      setWithdrawMessage("🎉 Withdrawal submitted successfully");
+      setWithdrawMessage("🎉 Withdrawal submitted successfully! You'll receive payment within 24 hours.");
 
       const refreshed = await api.get("/auth/me");
       setUser(refreshed.data);
       setPlans(refreshed.data.plans || {});
+      
+      setTimeout(() => {
+        setActiveWithdrawPlan("");
+        setWithdrawAmount("");
+        setWithdrawPhone("");
+      }, 3000);
     } catch (err) {
-      setWithdrawError(err.response?.data?.message || "Withdraw failed");
+      setWithdrawError(err.response?.data?.message || "Withdrawal failed. Please try again.");
     } finally {
       setSubmitting(false);
-      setActiveWithdrawPlan("");
     }
   };
 
@@ -199,18 +289,57 @@ export default function Dashboard() {
   ========================= */
   const handleWelcomeBonusWithdraw = () => {
     setFullScreenNotification({
-      message: "Activate your account with KES 100 to withdraw your welcome bonus.",
+      message: "🎁 Activate your account with KES 100 to unlock your KES 1,200 welcome bonus!",
       redirect: "/activate?welcome_bonus=1",
     });
   };
 
   /* =========================
-     RENDER
+     QUICK ACTIONS
+  ========================= */
+  const completeQuickAction = (id) => {
+    setQuickActions(prev =>
+      prev.map(action =>
+        action.id === id ? { ...action, completed: true } : action
+      )
+    );
+    setToast("Action completed! +10 points awarded");
+    setTimeout(() => setToast(""), 3000);
+  };
+
+  /* =========================
+     RENDER LOADING & NO USER
+  ========================= */
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p className="loading-text">Loading your dashboard...</p>
+      </div>
+    );
+  }
+  
+  if (!user) {
+    return (
+      <div className="no-user-container">
+        <h2>Session Expired</h2>
+        <p>Please log in again to access your dashboard.</p>
+        <button className="primary-btn" onClick={() => navigate("/login")}>
+          Go to Login
+        </button>
+      </div>
+    );
+  }
+
+  /* =========================
+     MAIN RENDER
   ========================= */
   return (
     <div className="dashboard">
+      {/* TOAST NOTIFICATION */}
       {toast && <Notifications message={toast} />}
 
+      {/* FULL SCREEN NOTIFICATION */}
       {fullScreenNotification && (
         <div className="full-screen-notif">
           <div className="notif-content">
@@ -220,269 +349,687 @@ export default function Dashboard() {
                 className="primary-btn"
                 onClick={() => navigate(fullScreenNotification.redirect)}
               >
-                Activate
+                Activate Account
               </button>
             )}
+            <button
+              className="secondary-btn"
+              onClick={() => setFullScreenNotification(null)}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
 
+      {/* HEADER */}
       <header className="dashboard-header">
-        <button className="menu-btn" onClick={() => setMenuOpen(true)}>☰</button>
-        <h2>Dashboard</h2>
+        <button className="menu-btn" onClick={() => setMenuOpen(true)}>
+          <span className="menu-icon">☰</span>
+          <span className="menu-label">Menu</span>
+        </button>
+        <div className="header-center">
+          <h2>Dashboard</h2>
+          <p className="header-subtitle">Welcome back, {user.full_name.split(' ')[0]}!</p>
+        </div>
+        <div className="header-balance">
+          <span className="balance-label">Balance</span>
+          <span className="balance-amount">KES {stats.availableBalance.toLocaleString()}</span>
+        </div>
       </header>
 
-      <MainMenuDrawer open={menuOpen} onClose={() => setMenuOpen(false)} user={user} />
+      {/* MAIN MENU DRAWER */}
+      <MainMenuDrawer 
+        open={menuOpen} 
+        onClose={() => setMenuOpen(false)} 
+        user={user}
+        onNavigate={(path) => {
+          setMenuOpen(false);
+          navigate(path);
+        }}
+      />
+
+      {/* LIVE WITHDRAWAL FEED */}
       <LiveWithdrawalFeed />
 
-      {/* ================= TABS ================= */}
+      {/* QUICK STATS BAR */}
+      <div className="quick-stats-bar">
+        <div className="stat-item">
+          <span className="stat-icon">💰</span>
+          <span className="stat-value">KES {stats.totalEarned.toLocaleString()}</span>
+          <span className="stat-label">Earned</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-icon">📊</span>
+          <span className="stat-value">{stats.totalSurveysCompleted}</span>
+          <span className="stat-label">Surveys</span>
+        </div>
+        <div className="stat-item">
+          <span className="stat-icon">💳</span>
+          <span className="stat-value">{stats.totalWithdrawals}</span>
+          <span className="stat-label">Withdrawals</span>
+        </div>
+      </div>
+
+      {/* TABS SECTION */}
       <section className="dashboard-section">
         <div className="section-heading">
           <div>
-            <h3>Dashboard</h3>
-            <p>Switch between overview, testimonials, surveys, and withdrawals.</p>
+            <h3>Dashboard Navigation</h3>
+            <p>Switch between different sections to manage your earnings</p>
           </div>
         </div>
         <div className="dashboard-tabs">
-          <button className={activeTab === "OVERVIEW" ? "active" : ""} onClick={() => setActiveTab("OVERVIEW")}>
+          <button 
+            className={`tab-btn ${activeTab === "OVERVIEW" ? "active" : ""}`}
+            onClick={() => setActiveTab("OVERVIEW")}
+          >
+            <span className="tab-icon">📊</span>
             Overview
           </button>
-          <button className={activeTab === "TESTIMONIALS" ? "active" : ""} onClick={() => setActiveTab("TESTIMONIALS")}>
+          <button 
+            className={`tab-btn ${activeTab === "TESTIMONIALS" ? "active" : ""}`}
+            onClick={() => setActiveTab("TESTIMONIALS")}
+          >
+            <span className="tab-icon">🌟</span>
             Testimonials
           </button>
-          <button className={activeTab === "SURVEYS" ? "active" : ""} onClick={goToSurveys}>
+          <button 
+            className={`tab-btn ${activeTab === "SURVEYS" ? "active" : ""}`}
+            onClick={goToSurveys}
+          >
+            <span className="tab-icon">📝</span>
             Surveys
           </button>
-          <button className={activeTab === "WITHDRAW" ? "active" : ""} onClick={goToWithdraw}>
+          <button 
+            className={`tab-btn ${activeTab === "WITHDRAW" ? "active" : ""}`}
+            onClick={goToWithdraw}
+          >
+            <span className="tab-icon">💸</span>
             Withdraw
           </button>
         </div>
       </section>
 
-      {/* ================= OVERVIEW TAB ================= */}
+      {/* OVERVIEW TAB */}
       {activeTab === "OVERVIEW" && (
         <>
+          {/* HERO SECTION */}
           <section className="dashboard-hero">
-            <div className="card greeting">
-              <div className="greeting-header">
-                <div>
-                  <p className="kicker">Overview</p>
-                  <h3>
-                    Welcome back, <span className="user-name">{user.full_name}</span>
-                  </h3>
+            <div className="hero-card">
+              <div className="hero-content">
+                <div className="hero-text">
+                  <h1>
+                    Welcome, <span className="user-highlight">{user.full_name.split(' ')[0]}</span>! 👋
+                  </h1>
+                  <p className="hero-subtitle">
+                    Complete surveys, earn instant rewards, and withdraw cash directly to your phone.
+                  </p>
+                  <div className="hero-actions">
+                    <button className="primary-btn" onClick={goToSurveys}>
+                      Start Earning →
+                    </button>
+                    <button className="secondary-btn" onClick={goToWelcome}>
+                      View Welcome Bonus
+                    </button>
+                  </div>
                 </div>
-                <span className="greeting-icon">👋</span>
-              </div>
-              <p className="subtitle">
-                Complete surveys, earn rewards, and withdraw instantly.
-              </p>
-            </div>
-
-            <div className="stats-grid">
-              <div className="stats-card total">
-                <span className="label">Total Earnings</span>
-                <strong>
-                  KES {Number(user.total_earned || 0).toLocaleString()}
-                </strong>
-                <span className="meta">Lifetime</span>
-              </div>
-
-              <div className="stats-card balance">
-                <span className="label">Available Balance</span>
-                <strong>
-                  KES {Number(user.total_earned || 0).toLocaleString()}
-                </strong>
-                <span className="meta">Ready to withdraw</span>
+                <div className="hero-stats">
+                  <div className="hero-stat">
+                    <span className="hero-stat-value">KES {stats.availableBalance.toLocaleString()}</span>
+                    <span className="hero-stat-label">Available Now</span>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
 
-          {showWelcomeBonus && (
-            <section className="dashboard-section">
-              <div className="section-heading">
-                <div>
-                  <h3>Welcome Bonus</h3>
-                  <p>Activate once to unlock your bonus.</p>
-                </div>
-              </div>
-              <div className="card welcome-bonus-card-enhanced">
-          <div className="bonus-header">
-            <span className="bonus-icon">🎁</span>
-            <h2>Welcome Bonus Unlocked!</h2>
-          </div>
-          
-          <div className="bonus-amount">
-            <span className="currency">KES</span>
-            <span className="amount">1,200</span>
-          </div>
-          
-          <div className="bonus-message">
-            <p className="main-text">
-              🎉 Congratulations! You've received a <strong>KES 1,200</strong> welcome bonus!
-            </p>
-            <p className="sub-text">
-              To withdraw this bonus, simply activate your account with just <strong>KES 100</strong>
-            </p>
-          </div>
-
-          <div className="roi-highlight">
-            <div className="roi-item">
-              <span className="label">You Pay:</span>
-              <span className="value">KES 100</span>
-            </div>
-            <div className="roi-arrow">→</div>
-            <div className="roi-item">
-              <span className="label">You Get:</span>
-              <span className="value green">KES 1,200</span>
-            </div>
-          </div>
-
-          <p className="roi-text">
-            That's <strong>12x</strong> return on your investment!
-          </p>
-
-          <button className="activate-cta-btn" onClick={handleWelcomeBonusWithdraw}>
-            <span className="btn-icon">🔓</span>
-            Activate Now & Withdraw KES 1,200
-          </button>
-
-          <div className="trust-indicators">
-            <span>✓ Instant Activation</span>
-            <span>✓ Secure Payment</span>
-            <span>✓ 15,000+ Users</span>
-          </div>
-              </div>
-            </section>
-          )}
-
+          {/* MAIN STATS */}
           <section className="dashboard-section">
             <div className="section-heading">
               <div>
-                <h3>Why Users Love Us</h3>
-                <p>Fast payouts, verified surveys, and secure payments.</p>
+                <h3>Your Earnings Dashboard</h3>
+                <p>Track your progress and earnings across all plans</p>
+              </div>
+            </div>
+            <div className="stats-grid">
+              <div className="stats-card total-earnings">
+                <div className="stats-card-header">
+                  <span className="stats-icon">💰</span>
+                  <h4>Total Earnings</h4>
+                </div>
+                <div className="stats-card-body">
+                  <span className="stats-value">KES {stats.totalEarned.toLocaleString()}</span>
+                  <span className="stats-label">Lifetime earnings</span>
+                </div>
+              </div>
+
+              <div className="stats-card available-balance">
+                <div className="stats-card-header">
+                  <span className="stats-icon">💳</span>
+                  <h4>Available Balance</h4>
+                </div>
+                <div className="stats-card-body">
+                  <span className="stats-value">KES {stats.availableBalance.toLocaleString()}</span>
+                  <span className="stats-label">Ready to withdraw</span>
+                </div>
+                <button className="withdraw-quick-btn" onClick={goToWithdraw}>
+                  Withdraw Now
+                </button>
+              </div>
+
+              <div className="stats-card surveys-completed">
+                <div className="stats-card-header">
+                  <span className="stats-icon">📊</span>
+                  <h4>Surveys Completed</h4>
+                </div>
+                <div className="stats-card-body">
+                  <span className="stats-value">{stats.totalSurveysCompleted}</span>
+                  <span className="stats-label">Total surveys</span>
+                </div>
+              </div>
+
+              <div className="stats-card success-rate">
+                <div className="stats-card-header">
+                  <span className="stats-icon">📈</span>
+                  <h4>Success Rate</h4>
+                </div>
+                <div className="stats-card-body">
+                  <span className="stats-value">98%</span>
+                  <span className="stats-label">Survey completion</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* WELCOME BONUS - ALWAYS SHOW */}
+          <section ref={welcomeRef} className="dashboard-section">
+            <div className="section-heading">
+              <div>
+                <h3>Special Welcome Offer</h3>
+                <p>Limited time bonus for all users</p>
+              </div>
+            </div>
+            <div className="card welcome-bonus-card-enhanced">
+              <div className="bonus-header">
+                <span className="bonus-icon">🎁</span>
+                <div>
+                  <h2>Welcome Bonus Unlocked!</h2>
+                  <p className="bonus-subtitle">Exclusive offer for you</p>
+                </div>
+              </div>
+              
+              <div className="bonus-amount">
+                <span className="currency">KES</span>
+                <span className="amount">1,200</span>
+              </div>
+              
+              <div className="bonus-message">
+                <p className="main-text">
+                  🎉 Congratulations! You've received a <strong>KES 1,200</strong> welcome bonus!
+                </p>
+                <p className="sub-text">
+                  To withdraw this bonus, simply activate your account with just <strong>KES 100</strong>
+                </p>
+              </div>
+
+              <div className="roi-highlight">
+                <div className="roi-item">
+                  <span className="label">You Pay:</span>
+                  <span className="value">KES 100</span>
+                </div>
+                <div className="roi-arrow">→</div>
+                <div className="roi-item">
+                  <span className="label">You Get:</span>
+                  <span className="value green">KES 1,200</span>
+                </div>
+              </div>
+
+              <p className="roi-text">
+                That's <strong>12x</strong> return on your investment!
+              </p>
+
+              <div className="bonus-actions">
+                <button className="activate-cta-btn" onClick={handleWelcomeBonusWithdraw}>
+                  <span className="btn-icon">🔓</span>
+                  Activate Now & Withdraw KES 1,200
+                </button>
+                <button className="learn-more-btn" onClick={() => navigate("/faq#welcome-bonus")}>
+                  Learn More
+                </button>
+              </div>
+
+              <div className="trust-indicators">
+                <span>✅ Instant Activation</span>
+                <span>🔒 Secure Payment</span>
+                <span>👥 15,000+ Users</span>
+                <span>⏱️ Limited Time</span>
+              </div>
+            </div>
+          </section>
+
+          {/* QUICK ACTIONS */}
+          <section className="dashboard-section">
+            <div className="section-heading">
+              <div>
+                <h3>Quick Actions</h3>
+                <p>Complete these tasks to earn bonus points</p>
+              </div>
+            </div>
+            <div className="quick-actions-grid">
+              {quickActions.map(action => (
+                <div key={action.id} className={`quick-action-card ${action.completed ? 'completed' : ''}`}>
+                  <span className="action-icon">{action.icon}</span>
+                  <div className="action-content">
+                    <h4>{action.label}</h4>
+                    <p>{action.completed ? 'Completed! +10 points' : 'Earn 10 bonus points'}</p>
+                  </div>
+                  <button 
+                    className={`action-btn ${action.completed ? 'completed' : ''}`}
+                    onClick={() => !action.completed && completeQuickAction(action.id)}
+                    disabled={action.completed}
+                  >
+                    {action.completed ? '✓' : 'Start'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* PLAN PROGRESS OVERVIEW */}
+          <section className="dashboard-section">
+            <div className="section-heading">
+              <div>
+                <h3>Your Plan Progress</h3>
+                <p>Track your earnings across different plans</p>
+              </div>
+            </div>
+            <div className="progress-cards">
+              {Object.entries(PLANS).map(([key, plan]) => {
+                const status = getPlanStatus(key);
+                return (
+                  <div key={key} className="progress-card">
+                    <div className="progress-card-header">
+                      <span className="plan-icon">{plan.icon}</span>
+                      <h4>{plan.name}</h4>
+                      <span className={`status-badge ${status.status}`}>
+                        {status.icon} {status.label}
+                      </span>
+                    </div>
+                    <div className="progress-card-body">
+                      <div className="progress-info">
+                        <div className="progress-row">
+                          <span>Per Survey:</span>
+                          <strong>KES {plan.perSurvey}</strong>
+                        </div>
+                        <div className="progress-row">
+                          <span>Surveys:</span>
+                          <strong>{surveysDone(key)}/{TOTAL_SURVEYS}</strong>
+                        </div>
+                        <div className="progress-row">
+                          <span>Earned:</span>
+                          <strong className="earned-amount">KES {earnedSoFar(key).toLocaleString()}</strong>
+                        </div>
+                      </div>
+                      <div className="progress-bar">
+                        <div 
+                          className="progress-bar-fill"
+                          style={{ width: `${progressPercentage(key)}%` }}
+                        ></div>
+                      </div>
+                      <div className="progress-card-actions">
+                        <button 
+                          className="action-btn primary"
+                          onClick={() => startSurvey(key)}
+                          disabled={isCompleted(key)}
+                        >
+                          {isCompleted(key) ? 'Completed' : 'Start Survey'}
+                        </button>
+                        {isCompleted(key) && (
+                          <button 
+                            className="action-btn secondary"
+                            onClick={() => handleWithdrawClick(key)}
+                          >
+                            Withdraw
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* FEATURES */}
+          <section className="dashboard-section">
+            <div className="section-heading">
+              <div>
+                <h3>Why Users Love Our Platform</h3>
+                <p>Discover what makes us the best choice for earning online</p>
               </div>
             </div>
             <div className="feature-grid">
               <div className="feature-card">
+                <div className="feature-icon">⚡</div>
                 <h4>Instant Withdrawals</h4>
-                <p>Request cash anytime and get paid fast.</p>
+                <p>Request cash anytime and get paid within minutes. No waiting periods.</p>
               </div>
               <div className="feature-card">
+                <div className="feature-icon">✅</div>
                 <h4>Verified Surveys</h4>
-                <p>Only high-quality surveys that pay on time.</p>
+                <p>Only high-quality surveys that pay on time. No spam, no scams.</p>
               </div>
               <div className="feature-card">
+                <div className="feature-icon">🔒</div>
                 <h4>Secure Payments</h4>
-                <p>Protected transactions and trusted providers.</p>
+                <p>Bank-level security for all transactions. Your earnings are safe with us.</p>
               </div>
               <div className="feature-card">
+                <div className="feature-icon">💬</div>
                 <h4>24/7 Support</h4>
-                <p>We are always here to help you earn more.</p>
+                <p>Our team is always here to help you earn more. Quick response guaranteed.</p>
               </div>
             </div>
           </section>
         </>
       )}
 
-      {/* ================= TESTIMONIALS TAB ================= */}
+      {/* TESTIMONIALS TAB */}
       {activeTab === "TESTIMONIALS" && (
         <section className="dashboard-section">
           <div className="section-heading">
             <div>
-              <h3>User Testimonials</h3>
-              <p>Real earnings from real users.</p>
+              <h3>Real User Testimonials</h3>
+              <p>See what others are saying about their earnings experience</p>
             </div>
           </div>
           <Testimonials variant="grid" />
+          <div className="testimonial-cta">
+            <p>Ready to join thousands of happy earners?</p>
+            <button className="primary-btn" onClick={goToSurveys}>
+              Start Earning Today →
+            </button>
+          </div>
         </section>
       )}
-{/* ================= SURVEYS ================= */}
-{activeTab === "SURVEYS" && (
-  <section ref={surveyRef} id="surveys-section" className="tab-section">
-    {Object.entries(PLANS).map(([key, plan]) => {
-      const planClass =
-        key === "REGULAR"
-          ? "regular"
-          : key === "VIP"
-          ? "vip"
-          : "vvip";
 
-      return (
-        <div key={key} className={`card plan-card ${planClass}`}>
-          <h4>{plan.icon} {plan.name}</h4>
+      {/* SURVEYS TAB */}
+      {activeTab === "SURVEYS" && (
+        <section ref={surveyRef} id="surveys-section" className="tab-section">
+          <div className="section-heading">
+            <div>
+              <h3>Available Survey Plans</h3>
+              <p>Choose a plan that matches your earning goals</p>
+            </div>
+          </div>
+          
+          <div className="plan-cards-container">
+            {Object.entries(PLANS).map(([key, plan]) => {
+              const status = getPlanStatus(key);
+              const completed = isCompleted(key);
+              
+              return (
+                <div key={key} className={`plan-card ${key.toLowerCase()}`}>
+                  <div className="plan-card-header">
+                    <div className="plan-badge">
+                      <span className="plan-icon">{plan.icon}</span>
+                      <span className="plan-name">{plan.name}</span>
+                    </div>
+                    <span className={`plan-status ${status.status}`}>
+                      {status.icon} {status.label}
+                    </span>
+                  </div>
+                  
+                  <div className="plan-card-body">
+                    <div className="plan-description">
+                      <p>{plan.description}</p>
+                    </div>
+                    
+                    <div className="plan-stats">
+                      <div className="stat-row">
+                        <span className="stat-label">Per Survey</span>
+                        <span className="stat-value">KES {plan.perSurvey}</span>
+                      </div>
+                      <div className="stat-row">
+                        <span className="stat-label">Total Plan</span>
+                        <span className="stat-value">KES {plan.total}</span>
+                      </div>
+                      <div className="stat-row">
+                        <span className="stat-label">Progress</span>
+                        <div className="progress-container">
+                          <div className="progress-bar">
+                            <div 
+                              className="progress-bar-fill"
+                              style={{ width: `${progressPercentage(key)}%` }}
+                            ></div>
+                          </div>
+                          <span className="progress-text">
+                            {surveysDone(key)}/{TOTAL_SURVEYS}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="stat-row">
+                        <span className="stat-label">Earned So Far</span>
+                        <span className="stat-value earned">KES {earnedSoFar(key).toLocaleString()}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="plan-features">
+                      <span className="feature-tag">📱 Mobile-Friendly</span>
+                      <span className="feature-tag">⏱️ 5-10 Minutes</span>
+                      <span className="feature-tag">💯 Guaranteed Payment</span>
+                    </div>
+                  </div>
+                  
+                  <div className="plan-card-footer">
+                    {!completed ? (
+                      <button 
+                        className="start-survey-btn"
+                        onClick={() => startSurvey(key)}
+                      >
+                        <span className="btn-icon">🚀</span>
+                        Start Survey
+                        <span className="btn-arrow">→</span>
+                      </button>
+                    ) : (
+                      <div className="completed-actions">
+                        <span className="completed-badge">✅ All Surveys Completed</span>
+                        <button 
+                          className="withdraw-plan-btn"
+                          onClick={() => handleWithdrawClick(key)}
+                        >
+                          💸 Withdraw KES {plan.total}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
-          <p>
-            Per Survey: <strong>KES {plan.perSurvey.toLocaleString()}</strong>
-          </p>
-
-          <p>
-            Surveys Done: {surveysDone(key)} / {TOTAL_SURVEYS}
-          </p>
-
-          <p>
-            Earned So Far:{" "}
-            <strong>KES {earnedSoFar(key).toLocaleString()}</strong>
-          </p>
-
-          <p>
-            Total Plan Earnings:{" "}
-            <strong>KES {plan.total.toLocaleString()}</strong>
-          </p>
-
-          <button
-            className="primary-btn"
-            onClick={() => startSurvey(key)}
-          >
-            Start Survey
-          </button>
-        </div>
-      );
-    })}
-  </section>
-)}
-
-      {/* ================= WITHDRAW ================= */}
+      {/* WITHDRAW TAB */}
       {activeTab === "WITHDRAW" && (
         <section ref={withdrawRef} id="withdraw-section" className="tab-section">
-          {Object.entries(PLANS).map(([key, plan]) => (
-            <div key={key} className="card withdraw-card">
-              <div>
-                <h4>{plan.icon} {plan.name}</h4>
-                <p>Earned: KES {earnedSoFar(key)}</p>
-              </div>
-              <button className="withdraw-btn" onClick={() => handleWithdrawClick(key)}>
-                Withdraw
-              </button>
+          <div className="section-heading">
+            <div>
+              <h3>Withdraw Your Earnings</h3>
+              <p>Get paid directly to your mobile money account</p>
             </div>
-          ))}
+          </div>
+          
+          <div className="withdraw-cards-container">
+            {Object.entries(PLANS).map(([key, plan]) => {
+              const completed = isCompleted(key);
+              const activated = isActivated(key);
+              
+              return (
+                <div key={key} className={`withdraw-card ${completed ? 'completed' : ''}`}>
+                  <div className="withdraw-card-header">
+                    <span className="plan-icon">{plan.icon}</span>
+                    <div className="plan-info">
+                      <h4>{plan.name} Plan</h4>
+                      <p className="plan-earnings">KES {earnedSoFar(key)} earned</p>
+                    </div>
+                    <span className={`status-indicator ${completed ? 'ready' : 'pending'}`}>
+                      {completed ? '✅ Ready' : '⏳ Pending'}
+                    </span>
+                  </div>
+                  
+                  <div className="withdraw-card-body">
+                    <div className="progress-summary">
+                      <div className="progress-row">
+                        <span>Surveys Completed:</span>
+                        <strong>{surveysDone(key)}/{TOTAL_SURVEYS}</strong>
+                      </div>
+                      <div className="progress-row">
+                        <span>Available Amount:</span>
+                        <strong className="available-amount">KES {completed ? plan.total : earnedSoFar(key)}</strong>
+                      </div>
+                    </div>
+                    
+                    <div className="withdraw-requirements">
+                      {!completed && (
+                        <p className="requirement">
+                          📝 Complete {TOTAL_SURVEYS - surveysDone(key)} more surveys to withdraw
+                        </p>
+                      )}
+                      {completed && !activated && (
+                        <p className="requirement">
+                          🔓 Account activation required to withdraw
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="withdraw-card-footer">
+                    <button 
+                      className={`withdraw-btn ${completed && activated ? 'ready' : 'disabled'}`}
+                      onClick={() => handleWithdrawClick(key)}
+                      disabled={!completed || !activated}
+                    >
+                      {!completed ? 'Complete Surveys First' :
+                       !activated ? 'Activate Account' :
+                       `Withdraw KES ${plan.total}`}
+                    </button>
+                    
+                    {!completed && (
+                      <button className="complete-surveys-btn" onClick={goToSurveys}>
+                        Complete Surveys →
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
 
+          {/* WITHDRAW FORM */}
           {activeWithdrawPlan && (
-            <div className="card withdraw-form">
-              <h4>Withdraw {PLANS[activeWithdrawPlan].name}</h4>
+            <div className="withdraw-form-container">
+              <div className="card withdraw-form">
+                <div className="withdraw-form-header">
+                  <h4>Withdraw {PLANS[activeWithdrawPlan].name} Earnings</h4>
+                  <p>Enter your details to receive payment</p>
+                </div>
+                
+                {withdrawMessage && (
+                  <div className="success-message">
+                    <span className="success-icon">✅</span>
+                    <p>{withdrawMessage}</p>
+                  </div>
+                )}
+                
+                {withdrawError && (
+                  <div className="error-message">
+                    <span className="error-icon">⚠️</span>
+                    <p>{withdrawError}</p>
+                  </div>
+                )}
 
-              {withdrawMessage && <p className="success-msg">{withdrawMessage}</p>}
-              {withdrawError && <p className="error-msg">{withdrawError}</p>}
+                <div className="form-group">
+                  <label>Amount to Withdraw (KES)</label>
+                  <div className="amount-input-group">
+                    <span className="amount-prefix">KES</span>
+                    <input
+                      type="number"
+                      placeholder="Enter amount"
+                      value={withdrawAmount}
+                      onChange={(e) => setWithdrawAmount(e.target.value)}
+                      min="100"
+                      max={PLANS[activeWithdrawPlan].total}
+                    />
+                  </div>
+                  <div className="amount-helper">
+                    Available: KES {PLANS[activeWithdrawPlan].total}
+                    <button 
+                      type="button" 
+                      className="use-max-btn"
+                      onClick={() => setWithdrawAmount(PLANS[activeWithdrawPlan].total.toString())}
+                    >
+                      Use Max
+                    </button>
+                  </div>
+                </div>
 
-              <input
-                type="number"
-                placeholder="Amount"
-                value={withdrawAmount}
-                onChange={(e) => setWithdrawAmount(e.target.value)}
-              />
-              <input
-                type="tel"
-                placeholder="Phone Number"
-                value={withdrawPhone}
-                onChange={(e) => setWithdrawPhone(e.target.value)}
-              />
+                <div className="form-group">
+                  <label>Phone Number (M-Pesa)</label>
+                  <input
+                    type="tel"
+                    placeholder="07XX XXX XXX"
+                    value={withdrawPhone}
+                    onChange={(e) => setWithdrawPhone(e.target.value)}
+                  />
+                  <p className="input-helper">Enter your Safaricom M-Pesa number</p>
+                </div>
 
-              <button className="primary-btn" onClick={submitWithdraw} disabled={submitting}>
-                {submitting ? "Submitting..." : "Submit"}
-              </button>
+                <div className="withdrawal-info">
+                  <div className="info-item">
+                    <span className="info-icon">⏱️</span>
+                    <span>Processing Time: 5-30 minutes</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-icon">💳</span>
+                    <span>Minimum: KES 100</span>
+                  </div>
+                </div>
+
+                <div className="form-actions">
+                  <button 
+                    className="primary-btn" 
+                    onClick={submitWithdraw} 
+                    disabled={submitting}
+                  >
+                    {submitting ? (
+                      <>
+                        <span className="spinner"></span>
+                        Processing...
+                      </>
+                    ) : (
+                      'Confirm Withdrawal'
+                    )}
+                  </button>
+                  <button 
+                    className="secondary-btn" 
+                    onClick={() => setActiveWithdrawPlan("")}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </section>
       )}
+
+      {/* FOOTER */}
+      <footer className="dashboard-footer">
+        <p>Need help? <a href="/support">Contact Support</a> | <a href="/faq">FAQ</a></p>
+        <p className="footer-note">© {new Date().getFullYear()} SurveyEarn. All rights reserved.</p>
+      </footer>
     </div>
   );
 }
