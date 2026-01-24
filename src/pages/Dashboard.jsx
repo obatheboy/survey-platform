@@ -5,6 +5,7 @@ import api from "../api/api";
 import MainMenuDrawer from "./components/MainMenuDrawer.jsx";
 import LiveWithdrawalFeed from "./components/LiveWithdrawalFeed.jsx";
 import Notifications from "./components/Notifications.jsx";
+import Testimonials from "../components/Testimonials.jsx";
 import "./Dashboard.css";
 import "./Dashboard-Enhanced.css";
 
@@ -28,7 +29,7 @@ export default function Dashboard() {
   /* =========================
      UI STATE
   ========================= */
-  const [activeTab, setActiveTab] = useState("SURVEYS");
+  const [activeTab, setActiveTab] = useState("OVERVIEW");
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(true);
@@ -233,54 +234,78 @@ export default function Dashboard() {
 
       <MainMenuDrawer open={menuOpen} onClose={() => setMenuOpen(false)} user={user} />
       <LiveWithdrawalFeed />
-{/* ================= HERO ================= */}
-<section className="dashboard-hero">
-  {/* Greeting */}
-  <div className="card greeting">
-    <div className="greeting-header">
-      <div>
-        <p className="kicker">Overview</p>
-        <h3>
-          Welcome back, <span className="user-name">{user.full_name}</span>
-        </h3>
-      </div>
-      <span className="greeting-icon">👋</span>
-    </div>
-    <p className="subtitle">
-      Complete surveys, earn rewards, and withdraw instantly.
-    </p>
-  </div>
 
-  {/* Earnings Summary */}
-  <div className="stats-grid">
-    <div className="stats-card total">
-      <span className="label">Total Earnings</span>
-      <strong>
-        KES {Number(user.total_earned || 0).toLocaleString()}
-      </strong>
-      <span className="meta">Lifetime</span>
-    </div>
-
-    <div className="stats-card balance">
-      <span className="label">Available Balance</span>
-      <strong>
-        KES {Number(user.total_earned || 0).toLocaleString()}
-      </strong>
-      <span className="meta">Ready to withdraw</span>
-    </div>
-  </div>
-</section>
-
-      {/* ================= WELCOME BONUS ================= */}
-      {showWelcomeBonus && (
-        <section className="dashboard-section">
-          <div className="section-heading">
-            <div>
-              <h3>Welcome Bonus</h3>
-              <p>Activate once to unlock your bonus.</p>
-            </div>
+      {/* ================= TABS ================= */}
+      <section className="dashboard-section">
+        <div className="section-heading">
+          <div>
+            <h3>Dashboard</h3>
+            <p>Switch between overview, testimonials, surveys, and withdrawals.</p>
           </div>
-          <div className="card welcome-bonus-card-enhanced">
+        </div>
+        <div className="dashboard-tabs">
+          <button className={activeTab === "OVERVIEW" ? "active" : ""} onClick={() => setActiveTab("OVERVIEW")}>
+            Overview
+          </button>
+          <button className={activeTab === "TESTIMONIALS" ? "active" : ""} onClick={() => setActiveTab("TESTIMONIALS")}>
+            Testimonials
+          </button>
+          <button className={activeTab === "SURVEYS" ? "active" : ""} onClick={goToSurveys}>
+            Surveys
+          </button>
+          <button className={activeTab === "WITHDRAW" ? "active" : ""} onClick={goToWithdraw}>
+            Withdraw
+          </button>
+        </div>
+      </section>
+
+      {/* ================= OVERVIEW TAB ================= */}
+      {activeTab === "OVERVIEW" && (
+        <>
+          <section className="dashboard-hero">
+            <div className="card greeting">
+              <div className="greeting-header">
+                <div>
+                  <p className="kicker">Overview</p>
+                  <h3>
+                    Welcome back, <span className="user-name">{user.full_name}</span>
+                  </h3>
+                </div>
+                <span className="greeting-icon">👋</span>
+              </div>
+              <p className="subtitle">
+                Complete surveys, earn rewards, and withdraw instantly.
+              </p>
+            </div>
+
+            <div className="stats-grid">
+              <div className="stats-card total">
+                <span className="label">Total Earnings</span>
+                <strong>
+                  KES {Number(user.total_earned || 0).toLocaleString()}
+                </strong>
+                <span className="meta">Lifetime</span>
+              </div>
+
+              <div className="stats-card balance">
+                <span className="label">Available Balance</span>
+                <strong>
+                  KES {Number(user.total_earned || 0).toLocaleString()}
+                </strong>
+                <span className="meta">Ready to withdraw</span>
+              </div>
+            </div>
+          </section>
+
+          {showWelcomeBonus && (
+            <section className="dashboard-section">
+              <div className="section-heading">
+                <div>
+                  <h3>Welcome Bonus</h3>
+                  <p>Activate once to unlock your bonus.</p>
+                </div>
+              </div>
+              <div className="card welcome-bonus-card-enhanced">
           <div className="bonus-header">
             <span className="bonus-icon">🎁</span>
             <h2>Welcome Bonus Unlocked!</h2>
@@ -326,27 +351,51 @@ export default function Dashboard() {
             <span>✓ Secure Payment</span>
             <span>✓ 15,000+ Users</span>
           </div>
-          </div>
-        </section>
+              </div>
+            </section>
+          )}
+
+          <section className="dashboard-section">
+            <div className="section-heading">
+              <div>
+                <h3>Why Users Love Us</h3>
+                <p>Fast payouts, verified surveys, and secure payments.</p>
+              </div>
+            </div>
+            <div className="feature-grid">
+              <div className="feature-card">
+                <h4>Instant Withdrawals</h4>
+                <p>Request cash anytime and get paid fast.</p>
+              </div>
+              <div className="feature-card">
+                <h4>Verified Surveys</h4>
+                <p>Only high-quality surveys that pay on time.</p>
+              </div>
+              <div className="feature-card">
+                <h4>Secure Payments</h4>
+                <p>Protected transactions and trusted providers.</p>
+              </div>
+              <div className="feature-card">
+                <h4>24/7 Support</h4>
+                <p>We are always here to help you earn more.</p>
+              </div>
+            </div>
+          </section>
+        </>
       )}
 
-      {/* ================= TABS ================= */}
-      <section className="dashboard-section">
-        <div className="section-heading">
-          <div>
-            <h3>Your Activity</h3>
-            <p>Pick a plan or request a withdrawal.</p>
+      {/* ================= TESTIMONIALS TAB ================= */}
+      {activeTab === "TESTIMONIALS" && (
+        <section className="dashboard-section">
+          <div className="section-heading">
+            <div>
+              <h3>User Testimonials</h3>
+              <p>Real earnings from real users.</p>
+            </div>
           </div>
-        </div>
-        <div className="dashboard-tabs">
-          <button className={activeTab === "SURVEYS" ? "active" : ""} onClick={goToSurveys}>
-            Surveys
-          </button>
-          <button className={activeTab === "WITHDRAW" ? "active" : ""} onClick={goToWithdraw}>
-            Withdraw
-          </button>
-        </div>
-      </section>
+          <Testimonials variant="grid" />
+        </section>
+      )}
 {/* ================= SURVEYS ================= */}
 {activeTab === "SURVEYS" && (
   <section ref={surveyRef} id="surveys-section" className="tab-section">
