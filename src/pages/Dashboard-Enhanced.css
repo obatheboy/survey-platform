@@ -1572,3 +1572,1073 @@ input:focus-visible {
     color: black;
   }
 }
+
+/* =========================================================
+   ADD THESE STYLES TO YOUR EXISTING Dashboard-Enhanced.css
+   AT THE END OF THE FILE
+========================================================= */
+
+/* =========================================================
+   PROGRESS CARD BODY AND ACTIONS (FOR ACTIVATION BUTTONS)
+========================================================= */
+.progress-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.progress-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progress-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.progress-row strong {
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.earned-amount {
+  color: var(--primary) !important;
+}
+
+.activation-notice {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  margin-top: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.progress-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 8px 0;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  text-align: center;
+  min-height: 40px;
+  min-width: 40px;
+}
+
+.action-btn.primary {
+  background: var(--primary);
+  color: #1a1a1a;
+}
+
+.action-btn.secondary {
+  background: transparent;
+  border: 2px solid var(--border-medium);
+  color: var(--text-main);
+}
+
+.action-btn.activation-btn {
+  width: 100%;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.action-btn:active {
+  transform: translateY(0);
+}
+
+/* =========================================================
+   TAB SECTIONS
+========================================================= */
+.tab-section {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.tab-section .section-heading {
+  animation: slideInUp 0.5s ease-out;
+}
+
+/* =========================================================
+   PLAN CARDS (SURVEYS TAB) - COMPLETE STYLES
+========================================================= */
+.plan-cards-container {
+  display: grid;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.plan-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid var(--border-soft);
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+}
+
+.plan-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--regular-gradient);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.plan-card.regular::before {
+  background: var(--regular-gradient);
+  opacity: 1;
+}
+
+.plan-card.vip::before {
+  background: var(--vip-gradient);
+  opacity: 1;
+}
+
+.plan-card.vvip::before {
+  background: var(--vvip-gradient);
+  opacity: 1;
+}
+
+.plan-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.plan-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.plan-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.plan-icon {
+  font-size: 28px;
+  animation: gentleFloat 3s ease-in-out infinite;
+}
+
+.plan-name {
+  font-size: 20px;
+  font-weight: 900;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.plan-card.regular .plan-name {
+  color: var(--regular-color);
+}
+
+.plan-card.vip .plan-name {
+  color: var(--vip-color);
+}
+
+.plan-card.vvip .plan-name {
+  color: var(--vvip-color);
+}
+
+.plan-status {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.plan-card.regular .plan-status {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.plan-card.vip .plan-status {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.plan-card.vvip .plan-status {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.plan-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.plan-description {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.activation-notice-text {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  border-left: 3px solid currentColor;
+  font-size: 12px;
+  margin-top: 8px;
+  animation: pulse 2s infinite;
+}
+
+.plan-stats {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.stat-row:last-child {
+  margin-bottom: 0;
+}
+
+.stat-label {
+  color: var(--text-muted);
+}
+
+.stat-value {
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.stat-value.earned {
+  color: var(--primary);
+  font-size: 14px;
+}
+
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.progress-container .progress-bar {
+  flex: 1;
+  height: 6px;
+}
+
+.progress-text {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  min-width: 45px;
+  text-align: right;
+}
+
+.plan-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: var(--space-sm);
+}
+
+.feature-tag {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  color: var(--text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.plan-card-footer {
+  margin-top: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.start-survey-btn,
+.activation-notice-btn,
+.withdraw-plan-btn {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: var(--radius-lg);
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.start-survey-btn::before,
+.activation-notice-btn::before,
+.withdraw-plan-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.start-survey-btn:hover::before,
+.activation-notice-btn:hover::before,
+.withdraw-plan-btn:hover::before {
+  left: 100%;
+}
+
+.start-survey-btn:hover,
+.activation-notice-btn:hover,
+.withdraw-plan-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.start-survey-btn:active,
+.activation-notice-btn:active,
+.withdraw-plan-btn:active {
+  transform: translateY(-1px);
+}
+
+.btn-icon {
+  font-size: 18px;
+}
+
+.btn-arrow {
+  font-size: 16px;
+  opacity: 0.8;
+  transition: transform 0.3s ease;
+}
+
+.start-survey-btn:hover .btn-arrow,
+.activation-notice-btn:hover .btn-arrow,
+.withdraw-plan-btn:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+.completed-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.completed-badge {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 13px;
+  text-align: center;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+/* =========================================================
+   WITHDRAW CARDS - COMPLETE STYLES
+========================================================= */
+.withdraw-cards-container {
+  display: grid;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.withdraw-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid var(--border-soft);
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+}
+
+.withdraw-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--regular-gradient);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.withdraw-card.regular::before {
+  background: var(--regular-gradient);
+}
+
+.withdraw-card.vip::before {
+  background: var(--vip-gradient);
+}
+
+.withdraw-card.vvip::before {
+  background: var(--vvip-gradient);
+}
+
+.withdraw-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.withdraw-card.completed {
+  border-color: rgba(74, 222, 128, 0.4);
+  background: rgba(74, 222, 128, 0.05);
+}
+
+.withdraw-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.withdraw-card-header .plan-icon {
+  font-size: 32px;
+  animation: gentleFloat 3s ease-in-out infinite;
+}
+
+.plan-info {
+  flex: 1;
+}
+
+.plan-info h4 {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.plan-info h4[style*="color: var(--regular-color)"] {
+  color: var(--regular-color) !important;
+}
+
+.plan-info h4[style*="color: var(--vip-color)"] {
+  color: var(--vip-color) !important;
+}
+
+.plan-info h4[style*="color: var(--vvip-color)"] {
+  color: var(--vvip-color) !important;
+}
+
+.plan-earnings {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin: 0;
+}
+
+.status-indicator {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.status-indicator.ready {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.status-indicator.pending {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.withdraw-card-body {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.progress-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progress-summary .progress-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.progress-summary strong {
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.available-amount {
+  color: var(--primary) !important;
+  font-size: 14px;
+}
+
+.withdraw-requirements {
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.requirement {
+  color: var(--text-muted);
+  font-size: 12px;
+  margin: 0 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.withdraw-card-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.withdraw-btn,
+.activate-withdraw-btn,
+.complete-surveys-btn {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: var(--radius-lg);
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.withdraw-btn::before,
+.activate-withdraw-btn::before,
+.complete-surveys-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.withdraw-btn:hover::before,
+.activate-withdraw-btn:hover::before,
+.complete-surveys-btn:hover::before {
+  left: 100%;
+}
+
+.withdraw-btn.ready:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.withdraw-btn.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.withdraw-btn.disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.complete-surveys-btn {
+  background: transparent;
+  border: 2px solid var(--border-medium);
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.complete-surveys-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
+}
+
+.activate-withdraw-btn {
+  background: transparent;
+  border: 2px solid;
+  font-weight: 800;
+  animation: pulse 2s infinite;
+}
+
+/* =========================================================
+   WITHDRAW FORM STYLES
+========================================================= */
+.withdraw-form-container {
+  margin-top: var(--space-xl);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.withdraw-form {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  backdrop-filter: blur(20px);
+}
+
+.withdraw-form-header {
+  text-align: center;
+  margin-bottom: var(--space-lg);
+}
+
+.withdraw-form-header h4 {
+  color: var(--text-main);
+  font-size: 20px;
+  font-weight: 900;
+  margin: 0 0 8px;
+}
+
+.withdraw-form-header p {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin: 0;
+}
+
+.success-message,
+.error-message {
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  animation: slideIn 0.3s ease;
+}
+
+.success-message {
+  background: rgba(74, 222, 128, 0.15);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  color: #4ade80;
+}
+
+.error-message {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.success-icon,
+.error-icon {
+  font-size: 20px;
+}
+
+.form-group {
+  margin-bottom: var(--space-lg);
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: var(--text-main);
+  font-size: 14px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 2px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  color: var(--text-main);
+  font-size: 16px;
+  transition: var(--transition-normal);
+  font-family: inherit;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.amount-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.amount-prefix {
+  position: absolute;
+  left: 16px;
+  color: var(--text-muted);
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.amount-input-group input {
+  padding-left: 60px;
+}
+
+.amount-helper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.use-max-btn {
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-normal);
+}
+
+.use-max-btn:hover {
+  background: rgba(255, 107, 53, 0.1);
+}
+
+.input-helper {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.withdrawal-info {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+  flex: 1;
+  min-width: 120px;
+}
+
+.info-icon {
+  font-size: 16px;
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.form-actions .primary-btn,
+.form-actions .secondary-btn {
+  flex: 1;
+  min-height: 48px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+  display: inline-block;
+}
+
+/* =========================================================
+   TESTIMONIAL CTA
+========================================================= */
+.testimonial-cta {
+  text-align: center;
+  padding: var(--space-lg);
+  background: var(--bg-glass);
+  border-radius: var(--radius-xl);
+  margin-top: var(--space-lg);
+  border: 1px solid var(--border-soft);
+  backdrop-filter: blur(20px);
+}
+
+.testimonial-cta p {
+  margin: 0 0 var(--space-md);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* =========================================================
+   RESPONSIVE ADJUSTMENTS FOR NEW STYLES
+========================================================= */
+@media (max-width: 768px) {
+  /* Progress Cards */
+  .progress-card-actions {
+    flex-direction: column;
+  }
+  
+  .action-btn {
+    width: 100%;
+  }
+  
+  /* Plan Cards */
+  .plan-card {
+    padding: var(--space-md);
+    margin: 0 -12px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  
+  .plan-card:hover {
+    transform: none;
+  }
+  
+  .plan-name {
+    font-size: 18px;
+  }
+  
+  .plan-status {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+  
+  .start-survey-btn,
+  .activation-notice-btn,
+  .withdraw-plan-btn {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+  
+  /* Withdraw Cards */
+  .withdraw-card {
+    padding: var(--space-md);
+    margin: 0 -12px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  
+  .withdraw-card:hover {
+    transform: none;
+  }
+  
+  .withdraw-card-header .plan-icon {
+    font-size: 24px;
+  }
+  
+  .plan-info h4 {
+    font-size: 16px;
+  }
+  
+  .withdraw-btn,
+  .activate-withdraw-btn,
+  .complete-surveys-btn {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+  
+  /* Withdraw Form */
+  .withdraw-form {
+    padding: var(--space-lg);
+    margin: 0 -12px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  /* Plan Cards Container */
+  .plan-cards-container {
+    gap: var(--space-sm);
+  }
+  
+  .withdraw-cards-container {
+    gap: var(--space-sm);
+  }
+}
+
+/* Small phones */
+@media (max-width: 375px) {
+  .plan-name {
+    font-size: 16px;
+  }
+  
+  .plan-status {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+  
+  .withdraw-card-header .plan-icon {
+    font-size: 20px;
+  }
+  
+  .plan-info h4 {
+    font-size: 15px;
+  }
+  
+  .start-survey-btn,
+  .activation-notice-btn,
+  .withdraw-plan-btn,
+  .withdraw-btn,
+  .activate-withdraw-btn,
+  .complete-surveys-btn {
+    font-size: 12px;
+    padding: 10px 14px;
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .plan-cards-container {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+  
+  .withdraw-cards-container {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+/* Desktop optimizations */
+@media (min-width: 1025px) {
+  .plan-cards-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .withdraw-cards-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* =========================================================
+   FIX FOR EXISTING PLAN CARDS SECTION
+========================================================= */
+@media (min-width: 768px) {
+  .plan-cards-container {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+/* =========================================================
+   FIX FOR ANIMATION CONFLICTS
+========================================================= */
+@media (prefers-reduced-motion: reduce) {
+  .plan-card:hover,
+  .withdraw-card:hover,
+  .action-btn:hover,
+  .start-survey-btn:hover,
+  .activation-notice-btn:hover,
+  .withdraw-plan-btn:hover,
+  .withdraw-btn:hover,
+  .activate-withdraw-btn:hover,
+  .complete-surveys-btn:hover {
+    transform: none;
+    animation: none;
+  }
+  
+  .progress-bar-fill {
+    transition: none;
+  }
+}
