@@ -390,36 +390,73 @@ export default function Dashboard() {
         }}
       />
 
-      {/* HERO SECTION - MOVED TO TOP */}
-      <section className="dashboard-hero">
-        <div className="hero-card">
-          <div className="hero-content">
-            <div className="hero-text">
-              <h1>
-                Welcome, <span className="user-highlight">{user.full_name.split(' ')[0]}</span>! 👋
-              </h1>
-              <p className="hero-subtitle">
-                Complete surveys, earn instant rewards, and withdraw cash directly to your phone.
-              </p>
-              <div className="hero-actions">
-                <button className="primary-btn" onClick={goToSurveys}>
-                  Start Earning →
-                </button>
-                <button className="secondary-btn" onClick={goToWelcome}>
-                  View Welcome Bonus
-                </button>
-              </div>
+      {/* HERO SECTION - COMPACT WITH WELCOME BUTTON */}
+      <div className="dashboard-section" style={{
+        background: 'linear-gradient(135deg, rgba(255, 83, 3, 0.95), rgb(255, 40, 2))',
+        borderRadius: 'var(--radius-lg)',
+        padding: '1rem 1.25rem',
+        margin: '0 var(--space-sm) var(--space-md)',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+        boxShadow: '0 8px 20px rgba(0, 0, 0, 0.15)'
+      }}>
+        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1.5rem'}}>
+          <div style={{flex: 1}}>
+            <h3 style={{color: 'white', margin: '0 0 0.25rem', fontSize: '1.25rem', fontWeight: '700'}}>
+              Welcome, <span style={{color: '#ffef00', fontWeight: '800'}}>{user.full_name.split(' ')[0]}</span>! 👋
+            </h3>
+            <p style={{color: 'rgba(255, 255, 255, 0.9)', margin: '0 0 0.75rem', fontSize: '0.85rem'}}>
+              Start earning now with surveys
+            </p>
+            <div style={{display: 'flex', gap: '0.5rem'}}>
+              <button 
+                onClick={goToSurveys}
+                style={{
+                  background: 'white',
+                  color: '#0a5803',
+                  border: 'none',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '0.5rem 1rem',
+                  fontSize: '0.9rem',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                Start Earning →
+              </button>
+              <button 
+                onClick={goToWelcome}
+                style={{
+                  background: 'transparent',
+                  color: 'white',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '0.5rem 1rem',
+                  fontSize: '0.9rem',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                View Bonus
+              </button>
             </div>
-            <div className="hero-stats">
-              <div className="hero-stat">
-                <span className="hero-stat-value">KES {stats.availableBalance.toLocaleString()}</span>
-                <span className="hero-stat-label">Available Now</span>
-              </div>
+          </div>
+          <div style={{
+            background: 'rgb(252, 124, 5)',
+            borderRadius: 'var(--radius-md)',
+            padding: '0.75rem 1rem',
+            border: '1px solid rgb(0, 17, 255)',
+            minWidth: '110px',
+            textAlign: 'center'
+          }}>
+            <div style={{color: 'white', fontSize: '1.1rem', fontWeight: '800'}}>
+              KES {stats.availableBalance.toLocaleString()}
+            </div>
+            <div style={{color: 'rgba(255, 255, 255, 0.9)', fontSize: '0.75rem', marginTop: '0.25rem'}}>
+              Available
             </div>
           </div>
         </div>
-      </section>
-
+      </div>
       {/* LIVE WITHDRAWAL FEED */}
       <LiveWithdrawalFeed />
 

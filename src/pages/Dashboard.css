@@ -979,7 +979,7 @@ body {
    HERO SECTION (AT BOTTOM)
 ========================================================= */
 .dashboard-hero {
-  background: linear-gradient(135deg, rgba(122, 77, 255, 0.9), rgba(63, 140, 255, 0.9));
+  background: linear-gradient(135deg, rgba(255, 83, 3, 0.9), rgb(255, 40, 2));
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   margin-bottom: var(--space-md);
