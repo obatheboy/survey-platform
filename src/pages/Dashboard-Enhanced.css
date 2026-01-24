@@ -1,11 +1,11 @@
 /* =========================================================
-   CSS VARIABLES - FOUNDATION (MISSING!)
+   CSS VARIABLES - FOUNDATION
 ========================================================= */
 :root {
-  /* Primary Colors */
-  --primary: #ffb703;
-  --primary-dark: #ff9e00;
-  --primary-light: #ffd166;
+  /* Primary Colors - Enhanced */
+  --primary: #ff6b35;
+  --primary-dark: #ff5220;
+  --primary-light: #ff8e53;
   
   /* Plan Colors */
   --regular-color: #4ade80;
@@ -41,16 +41,18 @@
   --space-xxl: 48px;
   
   /* Border Radius */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
   --radius-xl: 20px;
   --radius-xxl: 30px;
   
-  /* Welcome Bonus Variables */
-  --bonus-gradient: linear-gradient(135deg, #fef3c7, #fde68a, #fcd34d, #fbbf24, #f59e0b);
-  --bonus-glow-soft: 0 25px 50px rgba(251, 191, 36, 0.2);
-  --bonus-glow-strong: 0 35px 60px rgba(251, 191, 36, 0.3);
+  /* Welcome Bonus Variables - Enhanced */
+  --bonus-gradient: linear-gradient(135deg, #FFD93D, #FF9A3D, #FF6B35);
+  --bonus-glow-soft: 0 10px 30px rgba(255, 107, 53, 0.3);
+  --bonus-glow-strong: 0 20px 50px rgba(255, 107, 53, 0.5);
+  --bonus-text: #1a1a1a;
+  --bonus-subtext: #4a4a4a;
   
   /* Danger/Success */
   --danger: #ef4444;
@@ -58,7 +60,7 @@
 }
 
 /* =========================================================
-   BASE STYLES (MISSING!)
+   BASE STYLES
 ========================================================= */
 * {
   margin: 0;
@@ -77,32 +79,33 @@ body {
 }
 
 /* =========================================================
-   BUTTONS (MISSING!)
+   BUTTONS
 ========================================================= */
 .primary-btn, .secondary-btn {
-  padding: 12px 24px;
+  padding: 14px 28px;
   border-radius: var(--radius-md);
-  font-weight: 700;
-  font-size: 14px;
+  font-weight: 800;
+  font-size: 15px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   border: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   text-decoration: none;
 }
 
 .primary-btn {
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: #1a1a1a;
-  box-shadow: 0 4px 15px rgba(255, 183, 3, 0.3);
+  color: white;
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .primary-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 183, 3, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.6);
 }
 
 .primary-btn:active {
@@ -118,6 +121,606 @@ body {
 .secondary-btn:hover {
   background: rgba(255, 255, 255, 0.1);
   border-color: var(--border-medium);
+}
+
+/* =========================================================
+   DASHBOARD LAYOUT - WELCOME BONUS MOVED UP
+========================================================= */
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-md);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  background: linear-gradient(135deg, var(--bg-dark), var(--bg-darker));
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* =========================================================
+   WELCOME BONUS - MOVED UP AND STYLED BETTER
+========================================================= */
+
+/* ENHANCED WELCOME BONUS CARD - NOW AT TOP */
+.welcome-bonus-top {
+  order: 1 !important; /* Moves to top position */
+  background: var(--bonus-gradient);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-lg);
+  box-shadow: var(--bonus-glow-strong);
+  color: var(--bonus-text);
+  position: relative;
+  overflow: hidden;
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  animation: gentlePulse 4s ease-in-out infinite;
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
+}
+
+@keyframes gentlePulse {
+  0%, 100% {
+    box-shadow: var(--bonus-glow-soft);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: var(--bonus-glow-strong),
+                0 0 60px rgba(255, 154, 61, 0.3);
+    transform: scale(1.01);
+  }
+}
+
+/* Shine effect */
+.welcome-bonus-top::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, 
+    transparent 30%, 
+    rgba(255, 255, 255, 0.3) 50%, 
+    transparent 70%);
+  animation: shine 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes shine {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(100%) skewX(-15deg); }
+}
+
+/* Sparkle particles */
+.welcome-bonus-top::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.8) 2px, transparent 3px),
+    radial-gradient(circle at 70% 20%, rgba(255, 255, 255, 0.7) 2px, transparent 3px),
+    radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.6) 2px, transparent 3px),
+    radial-gradient(circle at 80% 65%, rgba(255, 255, 255, 0.8) 2px, transparent 3px);
+  background-size: 100px 100px;
+  background-position: 0 0;
+  animation: sparkle 20s linear infinite;
+  pointer-events: none;
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+}
+
+@keyframes sparkle {
+  0% { background-position: 0 0; }
+  100% { background-position: 100px 100px; }
+}
+
+/* Bonus Header - Enhanced */
+.bonus-top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+  position: relative;
+  z-index: 2;
+}
+
+.bonus-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px 16px;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+}
+
+.bonus-badge-icon {
+  font-size: 24px;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.bonus-badge-text {
+  font-size: 14px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--primary-dark);
+}
+
+.bonus-time {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--bonus-subtext);
+  background: rgba(255, 255, 255, 0.8);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(10px);
+}
+
+/* Bonus Amount - Enhanced */
+.bonus-top-amount {
+  text-align: center;
+  margin: var(--space-xl) 0;
+  padding: var(--space-xl);
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-xl);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.bonus-top-amount::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, 
+    rgba(255, 255, 255, 0.1) 0%, 
+    rgba(255, 255, 255, 0) 50%, 
+    rgba(255, 255, 255, 0.1) 100%);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.bonus-currency {
+  font-size: 24px;
+  font-weight: 800;
+  display: block;
+  margin-bottom: 8px;
+  color: var(--bonus-subtext);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.bonus-top-number {
+  font-size: 72px;
+  font-weight: 900;
+  display: block;
+  color: var(--bonus-text);
+  line-height: 1;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(45deg, var(--bonus-text), #2a2a2a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin: 8px 0;
+}
+
+.bonus-sub-amount {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--bonus-subtext);
+  margin-top: 8px;
+}
+
+/* Bonus Message - Enhanced */
+.bonus-top-message {
+  text-align: center;
+  margin: var(--space-xl) 0;
+  position: relative;
+  z-index: 2;
+}
+
+.bonus-main-text {
+  font-size: 22px;
+  font-weight: 900;
+  margin-bottom: var(--space-sm);
+  line-height: 1.3;
+  color: var(--bonus-text);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.bonus-sub-text {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--bonus-subtext);
+  opacity: 0.9;
+  font-weight: 600;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Bonus Features - Enhanced */
+.bonus-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-md);
+  margin: var(--space-xl) 0;
+  position: relative;
+  z-index: 2;
+}
+
+.bonus-feature {
+  text-align: center;
+  padding: var(--space-md);
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.bonus-feature:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.feature-icon {
+  font-size: 32px;
+  margin-bottom: var(--space-sm);
+  display: block;
+}
+
+.feature-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--bonus-subtext);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.feature-value {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--bonus-text);
+}
+
+/* Bonus Actions - Enhanced */
+.bonus-top-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin: var(--space-xl) 0;
+  position: relative;
+  z-index: 2;
+}
+
+.claim-bonus-btn {
+  width: 100%;
+  padding: 20px;
+  background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+  border: none;
+  border-radius: var(--radius-lg);
+  color: white;
+  font-size: 20px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+  min-height: 60px;
+}
+
+.claim-bonus-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, 
+    transparent 30%, 
+    rgba(255, 255, 255, 0.1) 50%, 
+    transparent 70%);
+  animation: claimShine 2s infinite;
+  pointer-events: none;
+}
+
+@keyframes claimShine {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(100%) skewX(-15deg); }
+}
+
+.claim-bonus-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+  background: linear-gradient(135deg, #2a2a2a, #3a3a3a);
+}
+
+.claim-bonus-btn:active {
+  transform: translateY(-2px);
+}
+
+.btn-sparkle {
+  font-size: 24px;
+  animation: spin 4s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.learn-more-link {
+  text-align: center;
+  color: var(--bonus-subtext);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.learn-more-link:hover {
+  color: var(--bonus-text);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Trust Indicators - Enhanced */
+.bonus-trust-indicators {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+  padding-top: var(--space-lg);
+  border-top: 2px solid rgba(255, 255, 255, 0.2);
+  font-size: 12px;
+  font-weight: 700;
+  position: relative;
+  z-index: 2;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--bonus-subtext);
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.trust-item:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.trust-icon {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================================================
+   HEADER - MOVED BELOW WELCOME BONUS
+========================================================= */
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(90deg, #7a4dff, #3f8cff);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55);
+  margin-bottom: var(--space-md);
+  order: 2; /* After welcome bonus */
+}
+
+.header-center {
+  flex: 1;
+  text-align: center;
+}
+
+.header-center h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 900;
+  color: white;
+}
+
+.header-subtitle {
+  margin: 4px 0 0;
+  font-size: 12px;
+  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.header-balance {
+  text-align: right;
+  min-width: 100px;
+}
+
+.balance-label {
+  display: block;
+  font-size: 11px;
+  opacity: 0.8;
+  margin-bottom: 2px;
+}
+
+.balance-amount {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--primary);
+  text-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);
+}
+
+.menu-btn {
+  background: rgba(255, 255, 255, 0.22);
+  border: none;
+  color: #fff;
+  font-size: 22px;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.menu-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   WELCOME USER CARD - STYLED BETTER
+========================================================= */
+.welcome-user-card {
+  order: 3; /* After header */
+  background: linear-gradient(135deg, rgba(122, 77, 255, 0.9), rgba(63, 140, 255, 0.9));
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+  animation: slideInDown 0.5s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.welcome-user-card h2 {
+  font-size: 24px;
+  font-weight: 900;
+  margin: 0 0 var(--space-sm);
+  color: white;
+}
+
+.welcome-user-card p {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-bottom: var(--space-md);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* =========================================================
+   QUICK STATS BAR
+========================================================= */
+.quick-stats-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  order: 4; /* After welcome user card */
+}
+
+.stat-item {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--space-sm);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-icon {
+  font-size: 18px;
+  margin-bottom: 2px;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--primary);
+  text-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);
+}
+
+.stat-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.8;
+  color: var(--text-muted);
+}
+
+/* =========================================================
+   TABS
+========================================================= */
+.dashboard-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: var(--space-lg);
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: var(--radius-xl);
+  padding: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  order: 5; /* After quick stats */
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: var(--radius-lg);
+  transition: all 0.3s ease;
+  min-height: 44px;
+  min-width: 44px;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.tab-btn.active {
+  background: var(--primary);
+  color: #1a1a1a;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+}
+
+.tab-icon {
+  font-size: 16px;
 }
 
 /* =========================================================
@@ -137,6 +740,66 @@ body {
   .dashboard {
     padding: 12px;
     gap: 16px;
+  }
+  
+  /* Welcome Bonus - Mobile Optimized */
+  .welcome-bonus-top {
+    margin: 0 -12px;
+    border-radius: 0;
+    padding: 20px 16px;
+    animation: gentlePulseMobile 4s ease-in-out infinite;
+  }
+  
+  @keyframes gentlePulseMobile {
+    0%, 100% {
+      box-shadow: var(--bonus-glow-soft);
+      transform: scale(1);
+    }
+    50% {
+      box-shadow: var(--bonus-glow-strong);
+      transform: scale(1.005);
+    }
+  }
+  
+  .bonus-top-header {
+    flex-direction: column;
+    gap: var(--space-md);
+    text-align: center;
+  }
+  
+  .bonus-top-amount {
+    padding: var(--space-lg);
+  }
+  
+  .bonus-top-number {
+    font-size: 48px;
+  }
+  
+  .bonus-main-text {
+    font-size: 18px;
+  }
+  
+  .bonus-sub-text {
+    font-size: 14px;
+  }
+  
+  .bonus-features-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+  }
+  
+  .bonus-feature {
+    padding: var(--space-sm);
+  }
+  
+  .feature-value {
+    font-size: 16px;
+  }
+  
+  .claim-bonus-btn {
+    padding: 16px;
+    font-size: 18px;
+    min-height: 54px;
   }
   
   /* Header - mobile optimized */
@@ -321,37 +984,6 @@ body {
     width: 100%;
   }
   
-  /* Welcome bonus - mobile optimized */
-  .welcome-bonus-card-enhanced {
-    margin: 0 -12px;
-    border-radius: 0;
-    padding: 20px 16px;
-  }
-  
-  .bonus-amount .amount {
-    font-size: 42px;
-  }
-  
-  .roi-highlight {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .roi-arrow {
-    transform: rotate(90deg);
-    margin: 8px 0;
-  }
-  
-  .bonus-actions {
-    flex-direction: column;
-  }
-  
-  .activate-cta-btn,
-  .learn-more-btn {
-    width: 100%;
-    padding: 16px;
-  }
-  
   .trust-indicators {
     flex-wrap: wrap;
     justify-content: center;
@@ -368,6 +1000,18 @@ body {
 @media (max-width: 375px) {
   .dashboard {
     padding: 8px;
+  }
+  
+  .welcome-bonus-top {
+    padding: 16px 12px;
+  }
+  
+  .bonus-top-number {
+    font-size: 36px;
+  }
+  
+  .bonus-main-text {
+    font-size: 16px;
   }
   
   .quick-stats-bar {
@@ -399,8 +1043,8 @@ body {
     font-size: 18px;
   }
   
-  .bonus-amount .amount {
-    font-size: 36px;
+  .bonus-features-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -408,6 +1052,14 @@ body {
 @media (min-width: 769px) and (max-width: 1024px) {
   .dashboard {
     padding: 20px;
+  }
+  
+  .bonus-top-number {
+    font-size: 60px;
+  }
+  
+  .bonus-features-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
   
   .stats-grid {
@@ -420,10 +1072,6 @@ body {
   
   .plan-cards-container {
     grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .welcome-bonus-card-enhanced {
-    padding: 24px;
   }
 }
 
@@ -497,16 +1145,15 @@ p, span, div {
 /* Specific card text fixes */
 .stats-value,
 .balance-amount,
-.hero-stat-value,
-.bonus-amount .amount {
+.hero-stat-value {
   color: var(--primary);
-  text-shadow: 0 2px 4px rgba(255, 183, 3, 0.3);
+  text-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);
 }
 
 /* Progress bar visibility */
 .progress-bar-fill {
   background: linear-gradient(90deg, var(--primary), var(--primary-light));
-  box-shadow: 0 2px 8px rgba(255, 183, 3, 0.4);
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.4);
 }
 
 /* Plan-specific borders */
@@ -515,7 +1162,7 @@ p, span, div {
 .plan-card.vvip { border-color: rgba(245, 158, 11, 0.4); }
 
 /* =========================================================
-   FULL SCREEN NOTIFICATION (MISSING!)
+   FULL SCREEN NOTIFICATION
 ========================================================= */
 .full-screen-notif {
   position: fixed;
@@ -569,7 +1216,7 @@ p, span, div {
 }
 
 /* =========================================================
-   NOTIFICATIONS COMPONENT (MISSING!)
+   NOTIFICATIONS COMPONENT
 ========================================================= */
 .notifications {
   position: fixed;
@@ -583,7 +1230,7 @@ p, span, div {
   font-size: 14px;
   z-index: 1000;
   animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
-  box-shadow: 0 10px 30px rgba(255, 183, 3, 0.3);
+  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
   max-width: 300px;
 }
 
