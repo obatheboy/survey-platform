@@ -390,69 +390,165 @@ export default function Dashboard() {
         }}
       />
 
-      {/* HERO SECTION - COMPACT WITH WELCOME BUTTON */}
+      {/* HERO SECTION - IMPROVED COMPACT */}
       <div className="dashboard-section" style={{
-        background: 'linear-gradient(135deg, rgba(255, 83, 3, 0.95), rgb(255, 40, 2))',
-        borderRadius: 'var(--radius-lg)',
-        padding: '1rem 1.25rem',
-        margin: '0 var(--space-sm) var(--space-md)',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
-        boxShadow: '0 8px 20px rgba(0, 0, 0, 0.15)'
+        background: 'linear-gradient(135deg, rgba(255, 83, 3, 0.97), rgb(255, 40, 2))',
+        borderRadius: 'var(--radius-xl)',
+        padding: '1.25rem 1.5rem',
+        margin: '0 var(--space-sm) var(--space-lg)',
+        border: '1px solid rgba(255, 255, 255, 0.25)',
+        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+        position: 'relative',
+        overflow: 'hidden'
       }}>
-        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1.5rem'}}>
+        {/* Decorative element for visual interest */}
+        <div style={{
+          position: 'absolute',
+          top: '-20px',
+          right: '-20px',
+          width: '80px',
+          height: '80px',
+          background: 'rgba(255, 255, 255, 0.1)',
+          borderRadius: '50%',
+          zIndex: '0'
+        }}></div>
+        
+        <div style={{
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between', 
+          gap: '1.5rem',
+          position: 'relative',
+          zIndex: '1'
+        }}>
           <div style={{flex: 1}}>
-            <h3 style={{color: 'white', margin: '0 0 0.25rem', fontSize: '1.25rem', fontWeight: '700'}}>
-              Welcome, <span style={{color: '#ffef00', fontWeight: '800'}}>{user.full_name.split(' ')[0]}</span>! 👋
-            </h3>
-            <p style={{color: 'rgba(255, 255, 255, 0.9)', margin: '0 0 0.75rem', fontSize: '0.85rem'}}>
-              Start earning now with surveys
+            <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem'}}>
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.2)',
+                borderRadius: '50%',
+                width: '36px',
+                height: '36px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.2rem'
+              }}>
+                👋
+              </div>
+              <h3 style={{
+                color: 'white', 
+                margin: '0', 
+                fontSize: '1.4rem', 
+                fontWeight: '800',
+                textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+              }}>
+                Welcome, <span style={{color: '#ffef00'}}>{user.full_name.split(' ')[0]}</span>!
+              </h3>
+            </div>
+            
+            <p style={{
+              color: 'rgba(255, 255, 255, 0.95)', 
+              margin: '0 0 1rem', 
+              fontSize: '0.9rem',
+              fontWeight: '500',
+              lineHeight: '1.4'
+            }}>
+              Complete surveys and earn instant rewards directly to your phone
             </p>
-            <div style={{display: 'flex', gap: '0.5rem'}}>
+            
+            <div style={{display: 'flex', gap: '0.75rem', alignItems: 'center'}}>
               <button 
                 onClick={goToSurveys}
                 style={{
-                  background: 'white',
+                  background: 'linear-gradient(to right, #ffffff, #fff9e6)',
                   color: '#ff2802',
                   border: 'none',
                   borderRadius: 'var(--radius-md)',
-                  padding: '0.5rem 1rem',
-                  fontSize: '0.9rem',
-                  fontWeight: '600',
-                  cursor: 'pointer'
+                  padding: '0.65rem 1.25rem',
+                  fontSize: '0.95rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.2)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
                 }}
               >
-                Start Earning →
+                <span style={{fontSize: '1.1rem'}}>🚀</span> Start Earning
               </button>
+              
               <button 
                 onClick={goToWelcome}
                 style={{
-                  background: 'transparent',
-                  color: 'white',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  background: 'linear-gradient(to right, rgba(255, 215, 0, 0.9), rgba(255, 200, 0, 0.8))',
+                  color: '#b35a00',
+                  border: '2px solid rgba(255, 255, 255, 0.5)',
                   borderRadius: 'var(--radius-md)',
-                  padding: '0.5rem 1rem',
-                  fontSize: '0.9rem',
-                  fontWeight: '600',
-                  cursor: 'pointer'
+                  padding: '0.65rem 1.25rem',
+                  fontSize: '0.95rem',
+                  fontWeight: '800',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.background = 'linear-gradient(to right, #ffd700, #ffc800)';
+                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(255, 200, 0, 0.4)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.background = 'linear-gradient(to right, rgba(255, 215, 0, 0.9), rgba(255, 200, 0, 0.8))';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
                 }}
               >
-                View Bonus
+                <span style={{fontSize: '1.1rem'}}>🎁</span> VIEW BONUS
               </button>
             </div>
           </div>
+          
           <div style={{
-            background: 'rgba(255, 255, 255, 0.15)',
-            borderRadius: 'var(--radius-md)',
-            padding: '0.75rem 1rem',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            minWidth: '110px',
-            textAlign: 'center'
+            background: 'rgba(255, 255, 255, 0.2)',
+            backdropFilter: 'blur(10px)',
+            borderRadius: 'var(--radius-lg)',
+            padding: '1rem 1.25rem',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            minWidth: '130px',
+            textAlign: 'center',
+            boxShadow: '0 8px 20px rgba(0, 0, 0, 0.15)'
           }}>
-            <div style={{color: 'white', fontSize: '1.1rem', fontWeight: '800'}}>
+            <div style={{
+              color: 'white', 
+              fontSize: '1.4rem', 
+              fontWeight: '900',
+              lineHeight: '1.2',
+              textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+            }}>
               KES {stats.availableBalance.toLocaleString()}
             </div>
-            <div style={{color: 'rgba(255, 255, 255, 0.9)', fontSize: '0.75rem', marginTop: '0.25rem'}}>
-              Available
+            <div style={{
+              color: 'rgba(255, 255, 255, 0.95)', 
+              fontSize: '0.8rem', 
+              fontWeight: '600',
+              marginTop: '0.3rem',
+              letterSpacing: '0.5px',
+              textTransform: 'uppercase'
+            }}>
+              Available Balance
             </div>
           </div>
         </div>
