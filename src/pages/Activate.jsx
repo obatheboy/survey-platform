@@ -309,16 +309,19 @@ const page = {
   background: "linear-gradient(270deg,#177e0d,#c20303,#20bb12)",
   display: "flex",
   flexDirection: "column",
-  justifyContent: "center",
+  justifyContent: "flex-start",
   alignItems: "center",
-  padding: 20,
+  padding: "20px",
+  paddingTop: "40px",
+  paddingBottom: "40px",
+  overflowY: "auto",
 };
 
 const roiCard = {
   maxWidth: 520,
   width: "100%",
   background: "white",
-  padding: 30,
+  padding: "20px",
   borderRadius: 16,
   color: "#333",
   marginBottom: 20,
@@ -329,8 +332,8 @@ const roiRow = {
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  padding: "12px 0",
-  fontSize: 16,
+  padding: "10px 0",
+  fontSize: "14px",
 };
 
 const card = {
