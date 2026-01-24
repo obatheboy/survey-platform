@@ -65,12 +65,19 @@ export default function Dashboard() {
 
         setUser(resUser.data);
         setPlans(resUser.data.plans || {});
-
-        if (resUser.data.welcome_bonus_received) {
-          setShowWelcomeBonus(true);
-        }
+        localStorage.setItem("cachedUser", JSON.stringify(resUser.data));
+        setShowWelcomeBonus(true);
       } catch (err) {
         console.error("Dashboard load failed:", err);
+        if (!navigator.onLine) {
+          const cachedUser = localStorage.getItem("cachedUser");
+          if (cachedUser) {
+            const parsedUser = JSON.parse(cachedUser);
+            setUser(parsedUser);
+            setPlans(parsedUser.plans || {});
+            setShowWelcomeBonus(true);
+          }
+        }
       } finally {
         if (alive) setLoading(false);
       }
@@ -257,7 +264,7 @@ export default function Dashboard() {
 </section>
 
       {/* ================= WELCOME BONUS ================= */}
-      {showWelcomeBonus && !user.is_activated && (
+      {showWelcomeBonus && (
         <div className="card welcome-bonus-card-enhanced">
           <div className="bonus-header">
             <span className="bonus-icon">🎁</span>

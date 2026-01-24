@@ -93,9 +93,19 @@ export default function Auth() {
       await api.get("/auth/me");
       navigate("/dashboard", { replace: true });
     } catch (err) {
-      setLoginMessage(
-        err.response?.data?.message || "Login failed. Try again."
-      );
+      if (!navigator.onLine) {
+        const cachedUser = localStorage.getItem("cachedUser");
+        const token = localStorage.getItem("token");
+        if (cachedUser && token) {
+          setLoginMessage("Offline mode: using last saved session.");
+          navigate("/dashboard", { replace: true });
+          return;
+        }
+        setLoginMessage("Offline. Connect to the internet to log in.");
+        return;
+      }
+
+      setLoginMessage(err.response?.data?.message || "Login failed. Try again.");
     } finally {
       setLoading(false);
     }
