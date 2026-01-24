@@ -237,35 +237,50 @@ export default function Dashboard() {
 <section className="dashboard-hero">
   {/* Greeting */}
   <div className="card greeting">
-    <h3>
-      Welcome back, <span className="user-name">{user.full_name}</span> 👋
-    </h3>
+    <div className="greeting-header">
+      <div>
+        <p className="kicker">Overview</p>
+        <h3>
+          Welcome back, <span className="user-name">{user.full_name}</span>
+        </h3>
+      </div>
+      <span className="greeting-icon">👋</span>
+    </div>
     <p className="subtitle">
       Complete surveys, earn rewards, and withdraw instantly.
     </p>
   </div>
 
   {/* Earnings Summary */}
-  <div className="earnings">
-    <div className="earnings-card total">
-      <span>Total Earnings</span>
+  <div className="stats-grid">
+    <div className="stats-card total">
+      <span className="label">Total Earnings</span>
       <strong>
         KES {Number(user.total_earned || 0).toLocaleString()}
       </strong>
+      <span className="meta">Lifetime</span>
     </div>
 
-    <div className="earnings-card balance">
-      <span>Available Balance</span>
+    <div className="stats-card balance">
+      <span className="label">Available Balance</span>
       <strong>
         KES {Number(user.total_earned || 0).toLocaleString()}
       </strong>
+      <span className="meta">Ready to withdraw</span>
     </div>
   </div>
 </section>
 
       {/* ================= WELCOME BONUS ================= */}
       {showWelcomeBonus && (
-        <div className="card welcome-bonus-card-enhanced">
+        <section className="dashboard-section">
+          <div className="section-heading">
+            <div>
+              <h3>Welcome Bonus</h3>
+              <p>Activate once to unlock your bonus.</p>
+            </div>
+          </div>
+          <div className="card welcome-bonus-card-enhanced">
           <div className="bonus-header">
             <span className="bonus-icon">🎁</span>
             <h2>Welcome Bonus Unlocked!</h2>
@@ -311,18 +326,27 @@ export default function Dashboard() {
             <span>✓ Secure Payment</span>
             <span>✓ 15,000+ Users</span>
           </div>
-        </div>
+          </div>
+        </section>
       )}
 
       {/* ================= TABS ================= */}
-      <div className="dashboard-tabs">
-        <button className={activeTab === "SURVEYS" ? "active" : ""} onClick={goToSurveys}>
-          Surveys
-        </button>
-        <button className={activeTab === "WITHDRAW" ? "active" : ""} onClick={goToWithdraw}>
-          Withdraw
-        </button>
-      </div>
+      <section className="dashboard-section">
+        <div className="section-heading">
+          <div>
+            <h3>Your Activity</h3>
+            <p>Pick a plan or request a withdrawal.</p>
+          </div>
+        </div>
+        <div className="dashboard-tabs">
+          <button className={activeTab === "SURVEYS" ? "active" : ""} onClick={goToSurveys}>
+            Surveys
+          </button>
+          <button className={activeTab === "WITHDRAW" ? "active" : ""} onClick={goToWithdraw}>
+            Withdraw
+          </button>
+        </div>
+      </section>
 {/* ================= SURVEYS ================= */}
 {activeTab === "SURVEYS" && (
   <section ref={surveyRef} id="surveys-section" className="tab-section">
