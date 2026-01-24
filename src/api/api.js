@@ -14,13 +14,20 @@ const BASE_URL = RAW_BASE.endsWith("/api") ? RAW_BASE : `${RAW_BASE}/api`;
 ===================================================== */
 const api = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true, // ✅ required
+  withCredentials: true, // Keep for backward compatibility
 });
 
-/* 🔐 FORCE credentials on every request (prevents cookie drop) */
+/* 🔐 ADD TOKEN FROM LOCALSTORAGE (MOBILE FIX) */
 api.interceptors.request.use(
   (config) => {
     config.withCredentials = true;
+    
+    // Add token from localStorage for mobile compatibility
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    
     return config;
   },
   (error) => Promise.reject(error)

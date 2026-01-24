@@ -1,0 +1,129 @@
+/* ================= ACTIVATE PAGE ================= */
+.activate-page {
+  min-height: 100vh;
+  background: linear-gradient(270deg, #177e0d, #c20303, #20bb12);
+  padding: 20px;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.activate-roi-card {
+  max-width: 520px;
+  width: 100%;
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  color: #333;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.activate-roi-card h3 {
+  text-align: center;
+  color: #667eea;
+  margin-bottom: 20px;
+  font-size: 22px;
+}
+
+.activate-roi-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  font-size: 16px;
+}
+
+.activate-roi-row.total {
+  border-top: 2px solid #667eea;
+  padding-top: 15px;
+  margin-top: 15px;
+}
+
+.activate-roi-row .label {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.activate-roi-row .value {
+  font-size: 20px;
+  color: #10b981;
+  font-weight: 900;
+}
+
+.activate-roi-card .roi-footer {
+  text-align: center;
+  margin-top: 15px;
+  color: #667eea;
+  font-weight: 600;
+}
+
+.activate-main-card {
+  max-width: 520px;
+  width: 100%;
+  background: #0e3a38;
+  padding: 24px;
+  border-radius: 22px;
+  color: #fff;
+}
+
+.activate-trust-section,
+.activate-testimonials-section {
+  max-width: 520px;
+  width: 100%;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .activate-page {
+    padding: 15px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+
+  .activate-roi-card {
+    padding: 20px;
+  }
+
+  .activate-roi-card h3 {
+    font-size: 18px;
+  }
+
+  .activate-roi-row {
+    font-size: 14px;
+    padding: 10px 0;
+  }
+
+  .activate-roi-row .label {
+    font-size: 16px;
+  }
+
+  .activate-roi-row .value {
+    font-size: 18px;
+  }
+
+  .activate-main-card {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .activate-page {
+    padding: 10px;
+  }
+
+  .activate-roi-card {
+    padding: 15px;
+  }
+
+  .activate-roi-card h3 {
+    font-size: 16px;
+  }
+
+  .activate-roi-row {
+    font-size: 13px;
+  }
+}

@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../api/api";
 import TrustBadges from "../components/TrustBadges";
 import Testimonials from "../components/Testimonials";
+import "./Activate.css";
 
 /* =========================
    CONSTANTS
@@ -155,27 +156,25 @@ export default function Activate() {
       {/* =========================
          MAIN PAGE (ENHANCED)
       ========================== */}
-      <div style={page}>
+      <div className="activate-page">
         {/* ROI Calculator */}
-        <div style={roiCard}>
-          <h3 style={{ textAlign: 'center', color: '#667eea', marginBottom: 20 }}>
-            💰 Your Investment Breakdown
-          </h3>
-          <div style={roiRow}>
+        <div className="activate-roi-card">
+          <h3>💰 Your Investment Breakdown</h3>
+          <div className="activate-roi-row">
             <span>Activation Fee:</span>
             <span style={{ fontWeight: 700 }}>KES {plan.activationFee}</span>
           </div>
-          <div style={roiRow}>
+          <div className="activate-roi-row">
             <span>Withdrawable Amount:</span>
             <span style={{ color: '#10b981', fontWeight: 700 }}>+KES {plan.total}</span>
           </div>
-          <div style={{ ...roiRow, borderTop: '2px solid #667eea', paddingTop: 15, marginTop: 15 }}>
-            <span style={{ fontSize: 18, fontWeight: 700 }}>Your Return:</span>
-            <span style={{ fontSize: 20, color: '#10b981', fontWeight: 900 }}>
+          <div className="activate-roi-row total">
+            <span className="label">Your Return:</span>
+            <span className="value">
               {Math.round((plan.total / plan.activationFee) * 10) / 10}x ROI
             </span>
           </div>
-          <p style={{ textAlign: 'center', marginTop: 15, color: '#667eea', fontWeight: 600 }}>
+          <p className="roi-footer">
             That's {Math.round((plan.total / plan.activationFee) * 100)}% return on your investment!
           </p>
         </div>
@@ -258,12 +257,12 @@ export default function Activate() {
         </div>
 
         {/* Trust Badges */}
-        <div style={{ marginTop: 40 }}>
+        <div className="activate-trust-section">
           <TrustBadges variant="compact" />
         </div>
 
         {/* Testimonials */}
-        <div style={{ marginTop: 40 }}>
+        <div className="activate-testimonials-section">
           <Testimonials variant="carousel" />
         </div>
       </div>

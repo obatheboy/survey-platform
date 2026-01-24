@@ -90,6 +90,10 @@ export default function MainMenuDrawer({ open, onClose, user }) {
     try {
       await api.post("/auth/logout");
     } catch {}
+    
+    // Clear localStorage token for mobile compatibility
+    localStorage.removeItem("token");
+    
     navigate("/auth", { replace: true });
   };
 

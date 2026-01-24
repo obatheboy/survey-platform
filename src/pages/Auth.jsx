@@ -55,14 +55,21 @@ export default function Auth() {
 
     try {
       setLoading(true);
-      await api.post("/auth/register", {
+      const res = await api.post("/auth/register", {
         full_name: regData.full_name,
         phone: regData.phone,
         email: regData.email || null,
         password: regData.password,
       });
-      setRegMessage("✅ Account created. Please login.");
-      setMode("login");
+      
+      // Store token in localStorage for mobile compatibility
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
+      }
+      
+      setRegMessage("✅ Account created successfully!");
+      // Navigate directly to dashboard
+      setTimeout(() => navigate("/dashboard", { replace: true }), 1000);
     } catch (err) {
       setRegMessage(err.response?.data?.message || "Registration failed");
     } finally {
@@ -76,7 +83,13 @@ export default function Auth() {
 
     try {
       setLoading(true);
-      await api.post("/auth/login", loginData);
+      const res = await api.post("/auth/login", loginData);
+      
+      // Store token in localStorage for mobile compatibility
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
+      }
+      
       await api.get("/auth/me");
       navigate("/dashboard", { replace: true });
     } catch (err) {

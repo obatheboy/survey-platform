@@ -59,6 +59,7 @@ exports.register = async (req, res) => {
 
     res.status(201).json({
       message: "Registration successful",
+      token: token,  // ← Send token in response for mobile
       user,
     });
   } catch (error) {
@@ -109,7 +110,7 @@ try {
       [
         user.id,
         "🎉 Welcome Bonus Unlocked!",
-        "You’ve received KES 1,200 as a welcome bonus. Withdraw it now to M-Pesa!",
+        "You've received KES 1,200 as a welcome bonus. Withdraw it now to M-Pesa!",
         "/dashboard",
       ]
     );
@@ -121,6 +122,7 @@ try {
 
     res.json({
       message: "Login successful",
+      token: token,  // ← Send token in response for mobile
       user: {
         id: user.id,
         phone: user.phone,
