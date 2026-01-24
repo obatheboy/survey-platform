@@ -50,6 +50,7 @@ export default function Dashboard() {
   const surveyRef = useRef(null);
   const withdrawRef = useRef(null);
   const welcomeRef = useRef(null);
+  const dashboardContainerRef = useRef(null);
 
   /* =========================
      UI STATE
@@ -139,6 +140,27 @@ export default function Dashboard() {
       clearInterval(interval);
       window.removeEventListener("focus", load);
     };
+  }, []);
+
+  /* =========================
+     SMOOTH SCROLL ON MOBILE
+  ========================= */
+  useEffect(() => {
+    // Enable smooth scrolling for mobile
+    const enableSmoothScroll = () => {
+      const style = document.createElement('style');
+      style.textContent = `
+        @media (max-width: 768px) {
+          .dashboard {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    };
+
+    enableSmoothScroll();
   }, []);
 
   /* =========================
@@ -335,7 +357,7 @@ export default function Dashboard() {
      MAIN RENDER
   ========================= */
   return (
-    <div className="dashboard">
+    <div className="dashboard" ref={dashboardContainerRef}>
       {/* TOAST NOTIFICATION */}
       {toast && <Notifications message={toast} />}
 
@@ -388,6 +410,68 @@ export default function Dashboard() {
           navigate(path);
         }}
       />
+
+      {/* WELCOME BONUS - MOVED TO TOP */}
+      <section ref={welcomeRef} className="dashboard-section welcome-bonus-top">
+        <div className="card welcome-bonus-card-enhanced">
+          <div className="bonus-header">
+            <span className="bonus-icon">🎁</span>
+            <div className="bonus-title-container">
+              <h2 className="bonus-title">Welcome Bonus Unlocked!</h2>
+              <p className="bonus-subtitle">Exclusive offer for you</p>
+            </div>
+          </div>
+          
+          <div className="bonus-content">
+            <div className="bonus-amount-display">
+              <span className="currency">KES</span>
+              <span className="amount">1,200</span>
+            </div>
+            
+            <div className="bonus-message">
+              <p className="main-text">
+                🎉 Congratulations! You've received a <strong>KES 1,200</strong> welcome bonus!
+              </p>
+              <p className="sub-text">
+                To withdraw this bonus, simply activate your account with just <strong>KES 100</strong>
+              </p>
+            </div>
+
+            <div className="roi-highlight">
+              <div className="roi-item">
+                <span className="roi-label">You Pay:</span>
+                <span className="roi-value">KES 100</span>
+              </div>
+              <div className="roi-arrow">→</div>
+              <div className="roi-item roi-item-green">
+                <span className="roi-label">You Get:</span>
+                <span className="roi-value green">KES 1,200</span>
+              </div>
+            </div>
+
+            <p className="roi-text">
+              That's <strong>12x</strong> return on your investment!
+            </p>
+
+            <div className="bonus-actions">
+              <button className="activate-cta-btn" onClick={handleWelcomeBonusWithdraw}>
+                <span className="btn-icon">🔓</span>
+                Activate Now & Withdraw KES 1,200
+              </button>
+              <button className="learn-more-btn" onClick={() => navigate("/faq#welcome-bonus")}>
+                Learn More
+              </button>
+            </div>
+
+            <div className="trust-indicators">
+              <span className="trust-item">✅ Instant Activation</span>
+              <span className="trust-item">🔒 Secure Payment</span>
+              <span className="trust-item">👥 15,000+ Users</span>
+              <span className="trust-item">⏱️ Limited Time</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* LIVE WITHDRAWAL FEED */}
       <LiveWithdrawalFeed />
@@ -542,72 +626,6 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* WELCOME BONUS - ALWAYS SHOW */}
-          <section ref={welcomeRef} className="dashboard-section">
-            <div className="section-heading">
-              <div>
-                <h3>Special Welcome Offer</h3>
-                <p>Limited time bonus for all users</p>
-              </div>
-            </div>
-            <div className="card welcome-bonus-card-enhanced">
-              <div className="bonus-header">
-                <span className="bonus-icon">🎁</span>
-                <div>
-                  <h2>Welcome Bonus Unlocked!</h2>
-                  <p className="bonus-subtitle">Exclusive offer for you</p>
-                </div>
-              </div>
-              
-              <div className="bonus-amount">
-                <span className="currency">KES</span>
-                <span className="amount">1,200</span>
-              </div>
-              
-              <div className="bonus-message">
-                <p className="main-text">
-                  🎉 Congratulations! You've received a <strong>KES 1,200</strong> welcome bonus!
-                </p>
-                <p className="sub-text">
-                  To withdraw this bonus, simply activate your account with just <strong>KES 100</strong>
-                </p>
-              </div>
-
-              <div className="roi-highlight">
-                <div className="roi-item">
-                  <span className="label">You Pay:</span>
-                  <span className="value">KES 100</span>
-                </div>
-                <div className="roi-arrow">→</div>
-                <div className="roi-item">
-                  <span className="label">You Get:</span>
-                  <span className="value green">KES 1,200</span>
-                </div>
-              </div>
-
-              <p className="roi-text">
-                That's <strong>12x</strong> return on your investment!
-              </p>
-
-              <div className="bonus-actions">
-                <button className="activate-cta-btn" onClick={handleWelcomeBonusWithdraw}>
-                  <span className="btn-icon">🔓</span>
-                  Activate Now & Withdraw KES 1,200
-                </button>
-                <button className="learn-more-btn" onClick={() => navigate("/faq#welcome-bonus")}>
-                  Learn More
-                </button>
-              </div>
-
-              <div className="trust-indicators">
-                <span>✅ Instant Activation</span>
-                <span>🔒 Secure Payment</span>
-                <span>👥 15,000+ Users</span>
-                <span>⏱️ Limited Time</span>
-              </div>
-            </div>
-          </section>
-
           {/* QUICK ACTIONS */}
           <section className="dashboard-section">
             <div className="section-heading">
@@ -710,22 +728,22 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="feature-grid">
-              <div className="feature-card">
+              <div className="feature-card feature-1">
                 <div className="feature-icon">⚡</div>
                 <h4>Instant Withdrawals</h4>
                 <p>Request cash anytime and get paid within minutes. No waiting periods.</p>
               </div>
-              <div className="feature-card">
+              <div className="feature-card feature-2">
                 <div className="feature-icon">✅</div>
                 <h4>Verified Surveys</h4>
                 <p>Only high-quality surveys that pay on time. No spam, no scams.</p>
               </div>
-              <div className="feature-card">
+              <div className="feature-card feature-3">
                 <div className="feature-icon">🔒</div>
                 <h4>Secure Payments</h4>
                 <p>Bank-level security for all transactions. Your earnings are safe with us.</p>
               </div>
-              <div className="feature-card">
+              <div className="feature-card feature-4">
                 <div className="feature-icon">💬</div>
                 <h4>24/7 Support</h4>
                 <p>Our team is always here to help you earn more. Quick response guaranteed.</p>
