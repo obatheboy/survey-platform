@@ -412,7 +412,7 @@ export default function Dashboard() {
                 onClick={goToSurveys}
                 style={{
                   background: 'white',
-                  color: '#0a5803',
+                  color: '#ff2802',
                   border: 'none',
                   borderRadius: 'var(--radius-md)',
                   padding: '0.5rem 1rem',
@@ -441,10 +441,10 @@ export default function Dashboard() {
             </div>
           </div>
           <div style={{
-            background: 'rgb(252, 124, 5)',
+            background: 'rgba(255, 255, 255, 0.15)',
             borderRadius: 'var(--radius-md)',
             padding: '0.75rem 1rem',
-            border: '1px solid rgb(0, 17, 255)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
             minWidth: '110px',
             textAlign: 'center'
           }}>
