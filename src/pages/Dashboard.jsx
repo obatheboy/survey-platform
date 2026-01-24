@@ -390,300 +390,118 @@ export default function Dashboard() {
         }}
       />
 
-      {/* HERO SECTION - PREMIUM COMPACT */}
-      <div className="dashboard-section" style={{
-        background: 'linear-gradient(135deg, rgba(255, 83, 3, 0.97), rgb(255, 40, 2))',
-        borderRadius: 'var(--radius-xl)',
-        padding: '1.5rem 1.75rem',
-        margin: '0 var(--space-sm) var(--space-lg)',
-        border: '1px solid rgba(255, 255, 255, 0.25)',
-        boxShadow: '0 12px 30px rgba(0, 0, 0, 0.25)',
-        position: 'relative',
-        overflow: 'hidden'
+      {/* HERO SECTION - ULTRA COMPACT */}
+      <div style={{
+        background: 'linear-gradient(135deg, rgba(255, 83, 3, 0.98), rgb(255, 40, 2))',
+        borderRadius: 'var(--radius-lg)',
+        padding: '0.8rem 1rem',
+        margin: '0 var(--space-xs) var(--space-md)',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        position: 'relative'
       }}>
-        {/* Decorative gradient orb */}
-        <div style={{
-          position: 'absolute',
-          top: '-40px',
-          right: '-40px',
-          width: '120px',
-          height: '120px',
-          background: 'radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 70%)',
-          borderRadius: '50%',
-          zIndex: '0'
-        }}></div>
-        
         <div style={{
           display: 'flex', 
           alignItems: 'center', 
-          justifyContent: 'space-between', 
-          gap: '2rem',
-          position: 'relative',
-          zIndex: '1'
+          justifyContent: 'space-between',
+          gap: '0.75rem'
         }}>
-          <div style={{flex: 1}}>
-            <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem'}}>
-              <div style={{
-                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1))',
-                borderRadius: '50%',
-                width: '44px',
-                height: '44px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '1.4rem',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                border: '1px solid rgba(255, 255, 255, 0.2)'
+          {/* Left side - Welcome and buttons */}
+          <div style={{flex: 1, minWidth: 0}}>
+            {/* Compact header */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              marginBottom: '0.5rem'
+            }}>
+              <span style={{
+                color: 'white',
+                fontSize: '1.1rem',
+                fontWeight: '700'
               }}>
-                👋
-              </div>
-              <div>
-                <h3 style={{
-                  color: 'white', 
-                  margin: '0 0 0.15rem', 
-                  fontSize: '1.5rem', 
-                  fontWeight: '800',
-                  textShadow: '0 2px 6px rgba(0,0,0,0.3)',
-                  letterSpacing: '-0.2px'
-                }}>
-                  Welcome, <span style={{color: '#ffef00', fontWeight: '900'}}>{user.full_name.split(' ')[0]}</span>!
-                </h3>
-                <p style={{
-                  color: 'rgba(255, 255, 255, 0.9)', 
-                  margin: '0', 
-                  fontSize: '0.85rem',
-                  fontWeight: '500',
-                  letterSpacing: '0.2px'
-                }}>
-                  Ready to start earning?
-                </p>
-              </div>
+                👋 Hi, <span style={{color: '#ffef00'}}>{user.full_name.split(' ')[0]}</span>
+              </span>
             </div>
             
-            <p style={{
-              color: 'rgba(255, 255, 255, 0.95)', 
-              margin: '0 0 1.25rem', 
-              fontSize: '0.95rem',
-              fontWeight: '500',
-              lineHeight: '1.5',
-              maxWidth: '500px'
+            {/* Ultra compact buttons */}
+            <div style={{
+              display: 'flex',
+              gap: '0.5rem',
+              alignItems: 'center'
             }}>
-              Complete quick surveys and get paid instantly via M-Pesa
-            </p>
-            
-            <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
               <button 
                 onClick={goToSurveys}
                 style={{
-                  background: 'linear-gradient(to right, #ffffff, #fff5e6)',
+                  background: 'white',
                   color: '#ff2802',
-                  border: '2px solid rgba(255, 255, 255, 0.4)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: '0.75rem 1.5rem',
-                  fontSize: '1rem',
-                  fontWeight: '800',
+                  border: 'none',
+                  borderRadius: 'var(--radius-sm)',
+                  padding: '0.4rem 0.8rem',
+                  fontSize: '0.8rem',
+                  fontWeight: '700',
                   cursor: 'pointer',
-                  transition: 'all 0.25s ease',
-                  boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem'
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
-                  e.currentTarget.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.25)';
-                  e.currentTarget.style.background = 'linear-gradient(to right, #ffffff, #ffffe6)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.2)';
-                  e.currentTarget.style.background = 'linear-gradient(to right, #ffffff, #fff5e6)';
+                  flex: 1,
+                  minWidth: 0,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
                 }}
               >
-                <span style={{fontSize: '1.2rem'}}>🚀</span> Start Earning
+                🚀 Start
               </button>
               
               <button 
                 onClick={goToWelcome}
                 style={{
-                  background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.95), rgba(255, 180, 0, 0.9))',
+                  background: 'rgba(255, 215, 0, 0.9)',
                   color: '#8B4500',
-                  border: '2px solid rgba(255, 255, 255, 0.6)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: '0.75rem 1.5rem',
-                  fontSize: '1rem',
-                  fontWeight: '900',
+                  border: '1px solid rgba(255, 255, 255, 0.4)',
+                  borderRadius: 'var(--radius-sm)',
+                  padding: '0.4rem 0.8rem',
+                  fontSize: '0.8rem',
+                  fontWeight: '800',
                   cursor: 'pointer',
-                  transition: 'all 0.25s ease',
-                  boxShadow: '0 6px 20px rgba(255, 180, 0, 0.3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.8px'
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
-                  e.currentTarget.style.background = 'linear-gradient(135deg, #ffd700, #ffb400)';
-                  e.currentTarget.style.boxShadow = '0 12px 28px rgba(255, 180, 0, 0.5)';
-                  e.currentTarget.style.border = '2px solid rgba(255, 255, 255, 0.8)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                  e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255, 215, 0, 0.95), rgba(255, 180, 0, 0.9))';
-                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 180, 0, 0.3)';
-                  e.currentTarget.style.border = '2px solid rgba(255, 255, 255, 0.6)';
+                  flex: 1,
+                  minWidth: 0,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
                 }}
               >
-                <span style={{fontSize: '1.2rem'}}>🎁</span> VIEW BONUS
+                🎁 Bonus
               </button>
             </div>
           </div>
           
-          {/* IMPROVED BALANCE SECTION - PREMIUM STYLE */}
+          {/* Right side - Compact Balance */}
           <div style={{
-            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1))',
-            backdropFilter: 'blur(15px)',
-            borderRadius: 'var(--radius-xl)',
-            padding: '1.5rem 1.75rem',
-            border: '1.5px solid rgba(255, 255, 255, 0.35)',
-            minWidth: '160px',
-            textAlign: 'center',
-            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.25)',
-            position: 'relative',
-            overflow: 'hidden'
+            background: 'rgba(255, 255, 255, 0.15)',
+            borderRadius: 'var(--radius-md)',
+            padding: '0.5rem 0.75rem',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            minWidth: '90px',
+            textAlign: 'center'
           }}>
-            {/* Shine effect overlay */}
             <div style={{
-              position: 'absolute',
-              top: '0',
-              left: '-100%',
-              width: '100%',
-              height: '100%',
-              background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)',
-              animation: 'shine 3s infinite',
-              zIndex: '1'
-            }}></div>
-            
-            <div style={{position: 'relative', zIndex: '2'}}>
-              {/* Currency label */}
-              <div style={{
-                color: 'rgba(255, 255, 255, 0.85)',
-                fontSize: '0.75rem',
-                fontWeight: '700',
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-                marginBottom: '0.5rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.3rem'
-              }}>
-                <span>💰</span> AVAILABLE BALANCE
-              </div>
-              
-              {/* Amount - IMPROVED */}
-              <div style={{
-                display: 'flex',
-                alignItems: 'baseline',
-                justifyContent: 'center',
-                gap: '0.25rem',
-                marginBottom: '0.5rem'
-              }}>
-                <span style={{
-                  color: 'rgba(255, 255, 255, 0.9)',
-                  fontSize: '1rem',
-                  fontWeight: '700',
-                  marginRight: '0.1rem'
-                }}>
-                  KES
-                </span>
-                <div style={{
-                  color: '#ffef00',
-                  fontSize: '1.8rem',
-                  fontWeight: '900',
-                  lineHeight: '1',
-                  textShadow: '0 3px 8px rgba(0, 0, 0, 0.4)',
-                  letterSpacing: '-0.5px'
-                }}>
-                  {stats.availableBalance.toLocaleString()}
-                </div>
-              </div>
-              
-              {/* Status indicator */}
-              <div style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.3rem',
-                background: 'rgba(255, 255, 255, 0.15)',
-                borderRadius: '20px',
-                padding: '0.35rem 0.75rem',
-                marginTop: '0.5rem'
-              }}>
-                <div style={{
-                  width: '8px',
-                  height: '8px',
-                  background: '#4ade80',
-                  borderRadius: '50%',
-                  animation: 'pulse 2s infinite'
-                }}></div>
-                <span style={{
-                  color: 'rgba(255, 255, 255, 0.95)',
-                  fontSize: '0.75rem',
-                  fontWeight: '600'
-                }}>
-                  Ready to Withdraw
-                </span>
-              </div>
-              
-              {/* Quick action */}
-              <button 
-                onClick={goToWithdraw}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  color: 'white',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  borderRadius: 'var(--radius-md)',
-                  padding: '0.4rem 0.8rem',
-                  fontSize: '0.75rem',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  marginTop: '0.75rem',
-                  width: '100%',
-                  transition: 'all 0.2s ease',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.3rem'
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
-                  e.currentTarget.style.transform = 'translateY(-1px)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-              >
-                <span>💸</span> Withdraw Now
-              </button>
+              color: '#ffef00',
+              fontSize: '1rem',
+              fontWeight: '900',
+              lineHeight: '1.1',
+              marginBottom: '0.1rem'
+            }}>
+              KES {stats.availableBalance.toLocaleString()}
+            </div>
+            <div style={{
+              color: 'rgba(255, 255, 255, 0.9)',
+              fontSize: '0.65rem',
+              fontWeight: '600'
+            }}>
+              Available
             </div>
           </div>
         </div>
       </div>
-
-      {/* Add these animations to your CSS */}
-      <style>{`
-        @keyframes shine {
-          0% { left: -100%; }
-          20%, 100% { left: 100%; }
-        }
-        
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
-        }
-      `}</style>
       {/* LIVE WITHDRAWAL FEED */}
       <LiveWithdrawalFeed />
 
