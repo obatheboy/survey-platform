@@ -391,114 +391,213 @@ export default function Dashboard() {
       />
 
       {/* HERO SECTION - ULTRA COMPACT */}
-      <div style={{
-        background: 'linear-gradient(135deg, rgba(255, 83, 3, 0.98), rgb(255, 40, 2))',
+      <div className="dashboard-section" style={{
+        background: 'linear-gradient(135deg, rgba(255, 83, 3, 0.97), rgb(255, 40, 2))',
         borderRadius: 'var(--radius-lg)',
-        padding: '0.8rem 1rem',
-        margin: '0 var(--space-xs) var(--space-md)',
+        padding: '1rem 1.25rem',
+        margin: '0 var(--space-sm) var(--space-md)',
         border: '1px solid rgba(255, 255, 255, 0.2)',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-        position: 'relative'
+        boxShadow: '0 8px 20px rgba(0, 0, 0, 0.2)',
+        position: 'relative',
+        overflow: 'hidden'
       }}>
+        {/* Smaller decorative element */}
+        <div style={{
+          position: 'absolute',
+          top: '-20px',
+          right: '-20px',
+          width: '70px',
+          height: '70px',
+          background: 'radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 70%)',
+          borderRadius: '50%',
+          zIndex: '0'
+        }}></div>
+        
         <div style={{
           display: 'flex', 
           alignItems: 'center', 
-          justifyContent: 'space-between',
-          gap: '0.75rem'
+          justifyContent: 'space-between', 
+          gap: '1.25rem',
+          position: 'relative',
+          zIndex: '1'
         }}>
-          {/* Left side - Welcome and buttons */}
-          <div style={{flex: 1, minWidth: 0}}>
-            {/* Compact header */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              marginBottom: '0.5rem'
-            }}>
-              <span style={{
-                color: 'white',
-                fontSize: '1.1rem',
-                fontWeight: '700'
+          <div style={{flex: 1}}>
+            <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem'}}>
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08))',
+                borderRadius: '50%',
+                width: '36px',
+                height: '36px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.2rem',
+                boxShadow: '0 3px 8px rgba(0, 0, 0, 0.12)',
+                border: '1px solid rgba(255, 255, 255, 0.15)'
               }}>
-                👋 Hi, <span style={{color: '#ffef00'}}>{user.full_name.split(' ')[0]}</span>
-              </span>
+                👋
+              </div>
+              <div>
+                <h3 style={{
+                  color: 'white', 
+                  margin: '0 0 0.1rem', 
+                  fontSize: '1.25rem', 
+                  fontWeight: '800',
+                  textShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                  letterSpacing: '-0.1px'
+                }}>
+                  Hi, <span style={{color: '#ffef00', fontWeight: '900'}}>{user.full_name.split(' ')[0]}</span>!
+                </h3>
+                <p style={{
+                  color: 'rgba(255, 255, 255, 0.9)', 
+                  margin: '0', 
+                  fontSize: '0.8rem',
+                  fontWeight: '500'
+                }}>
+                  Start earning now
+                </p>
+              </div>
             </div>
             
-            {/* Ultra compact buttons */}
-            <div style={{
-              display: 'flex',
-              gap: '0.5rem',
-              alignItems: 'center'
-            }}>
+            <div style={{display: 'flex', gap: '0.75rem', alignItems: 'center', marginTop: '0.75rem'}}>
               <button 
                 onClick={goToSurveys}
                 style={{
-                  background: 'white',
+                  background: 'linear-gradient(to right, #ffffff, #fff5e6)',
                   color: '#ff2802',
-                  border: 'none',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '0.4rem 0.8rem',
-                  fontSize: '0.8rem',
+                  border: '1px solid rgba(255, 255, 255, 0.4)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '0.6rem 1rem',
+                  fontSize: '0.9rem',
                   fontWeight: '700',
                   cursor: 'pointer',
-                  flex: 1,
-                  minWidth: 0,
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  flex: 1
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.2)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
                 }}
               >
-                🚀 Start
+                <span style={{fontSize: '1rem'}}>🚀</span> Start Earning
               </button>
               
               <button 
                 onClick={goToWelcome}
                 style={{
-                  background: 'rgba(255, 215, 0, 0.9)',
+                  background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 180, 0, 0.85))',
                   color: '#8B4500',
-                  border: '1px solid rgba(255, 255, 255, 0.4)',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '0.4rem 0.8rem',
-                  fontSize: '0.8rem',
+                  border: '1px solid rgba(255, 255, 255, 0.5)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '0.6rem 1rem',
+                  fontSize: '0.9rem',
                   fontWeight: '800',
                   cursor: 'pointer',
-                  flex: 1,
-                  minWidth: 0,
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 12px rgba(255, 180, 0, 0.25)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  flex: 1
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.background = 'linear-gradient(135deg, #ffd700, #ffb400)';
+                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(255, 180, 0, 0.4)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 180, 0, 0.85))';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 180, 0, 0.25)';
                 }}
               >
-                🎁 Bonus
+                <span style={{fontSize: '1rem'}}>🎁</span> View Bonus
               </button>
             </div>
           </div>
           
-          {/* Right side - Compact Balance */}
+          {/* COMPACT BALANCE SECTION */}
           <div style={{
-            background: 'rgba(255, 255, 255, 0.15)',
-            borderRadius: 'var(--radius-md)',
-            padding: '0.5rem 0.75rem',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            minWidth: '90px',
-            textAlign: 'center'
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08))',
+            backdropFilter: 'blur(10px)',
+            borderRadius: 'var(--radius-lg)',
+            padding: '0.75rem 1rem',
+            border: '1px solid rgba(255, 255, 255, 0.25)',
+            minWidth: '100px',
+            textAlign: 'center',
+            boxShadow: '0 6px 16px rgba(0, 0, 0, 0.18)'
           }}>
             <div style={{
-              color: '#ffef00',
-              fontSize: '1rem',
-              fontWeight: '900',
-              lineHeight: '1.1',
-              marginBottom: '0.1rem'
+              color: 'rgba(255, 255, 255, 0.85)',
+              fontSize: '0.7rem',
+              fontWeight: '700',
+              textTransform: 'uppercase',
+              letterSpacing: '0.8px',
+              marginBottom: '0.3rem'
             }}>
-              KES {stats.availableBalance.toLocaleString()}
+              Balance
             </div>
+            
             <div style={{
-              color: 'rgba(255, 255, 255, 0.9)',
-              fontSize: '0.65rem',
-              fontWeight: '600'
+              display: 'flex',
+              alignItems: 'baseline',
+              justifyContent: 'center',
+              gap: '0.2rem'
             }}>
-              Available
+              <span style={{
+                color: 'rgba(255, 255, 255, 0.9)',
+                fontSize: '0.8rem',
+                fontWeight: '700',
+              }}>
+                KES
+              </span>
+              <div style={{
+                color: '#ffef00',
+                fontSize: '1.3rem',
+                fontWeight: '900',
+                lineHeight: '1',
+                textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'
+              }}>
+                {stats.availableBalance.toLocaleString()}
+              </div>
             </div>
+            
+            <button 
+              onClick={goToWithdraw}
+              style={{
+                background: 'rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                borderRadius: 'var(--radius-sm)',
+                padding: '0.3rem 0.6rem',
+                fontSize: '0.7rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                marginTop: '0.5rem',
+                width: '100%',
+                transition: 'all 0.15s ease',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.2rem'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+              }}
+            >
+              <span style={{fontSize: '0.8rem'}}>💸</span> Withdraw
+            </button>
           </div>
         </div>
       </div>
