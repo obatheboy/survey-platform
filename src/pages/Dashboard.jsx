@@ -362,20 +362,15 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* HEADER */}
-      <header className="dashboard-header">
-        <button className="menu-btn" onClick={() => setMenuOpen(true)}>
-          <span className="menu-icon">☰</span>
-          <span className="menu-label">Menu</span>
-        </button>
-        <div className="header-center">
-          <h2>Dashboard</h2>
-          <p className="header-subtitle">Welcome back, {user.full_name.split(' ')[0]}!</p>
+      {/* MAIN MENU HEADER WITH DASHBOARD TITLE */}
+      <header className="dashboard-main-header">
+        <div className="header-title-container">
+          <h1 className="dashboard-main-title">Dashboard</h1>
+          <button className="menu-btn" onClick={() => setMenuOpen(true)}>
+            <span className="menu-icon">☰</span>
+          </button>
         </div>
-        <div className="header-balance">
-          <span className="balance-label">Balance</span>
-          <span className="balance-amount">KES {stats.availableBalance.toLocaleString()}</span>
-        </div>
+        <p className="header-subtitle">Welcome back, {user.full_name.split(' ')[0]}!</p>
       </header>
 
       {/* MAIN MENU DRAWER */}
@@ -391,6 +386,74 @@ export default function Dashboard() {
 
       {/* LIVE WITHDRAWAL FEED */}
       <LiveWithdrawalFeed />
+
+      {/* WELCOME BONUS CARD - PROFESSIONAL VERSION */}
+      <section ref={welcomeRef} className="dashboard-section">
+        <div className="professional-bonus-card">
+          <div className="bonus-card-header">
+            <span className="bonus-icon">🎁</span>
+            <div className="bonus-header-text">
+              <h3>Welcome Bonus</h3>
+              <p className="bonus-subtitle">Activate to claim</p>
+            </div>
+          </div>
+          
+          <div className="bonus-amount-display">
+            <span className="currency">KES</span>
+            <span className="amount">1,200</span>
+          </div>
+          
+          <div className="bonus-description">
+            <p>Activate your account with <strong>KES 100</strong> to unlock your welcome bonus</p>
+          </div>
+
+          <div className="roi-summary">
+            <div className="roi-item">
+              <span className="label">You Pay:</span>
+              <span className="value">KES 100</span>
+            </div>
+            <div className="roi-separator">→</div>
+            <div className="roi-item highlight">
+              <span className="label">You Get:</span>
+              <span className="value">KES 1,200</span>
+            </div>
+          </div>
+
+          <div className="bonus-actions">
+            <button className="primary-btn full-width" onClick={handleWelcomeBonusWithdraw}>
+              <span className="btn-icon">🔓</span>
+              Activate & Claim Bonus
+            </button>
+            <button className="secondary-btn full-width" onClick={() => navigate("/faq#welcome-bonus")}>
+              Learn More
+            </button>
+          </div>
+
+          <div className="bonus-details-collapsible">
+            <details className="bonus-details">
+              <summary>View Bonus Details</summary>
+              <div className="details-content">
+                <div className="detail-item">
+                  <span className="detail-icon">✅</span>
+                  <span>Instant activation upon payment</span>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-icon">🔒</span>
+                  <span>Secure payment processing</span>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-icon">👥</span>
+                  <span>15,000+ satisfied users</span>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-icon">⏱️</span>
+                  <span>Limited time offer</span>
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
 
       {/* QUICK STATS BAR */}
       <div className="quick-stats-bar">
@@ -411,42 +474,40 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* TABS SECTION */}
+      {/* DASHBOARD NAVIGATION - MOBILE OPTIMIZED */}
       <section className="dashboard-section">
         <div className="section-heading">
-          <div>
-            <h3>Dashboard Navigation</h3>
-            <p>Switch between different sections to manage your earnings</p>
-          </div>
+          <h3>Dashboard Navigation</h3>
+          <p>Switch between different sections</p>
         </div>
-        <div className="dashboard-tabs">
+        <div className="dashboard-nav-mobile">
           <button 
-            className={`tab-btn ${activeTab === "OVERVIEW" ? "active" : ""}`}
+            className={`nav-btn ${activeTab === "OVERVIEW" ? "active" : ""}`}
             onClick={() => setActiveTab("OVERVIEW")}
           >
-            <span className="tab-icon">📊</span>
-            Overview
+            <span className="nav-icon">📊</span>
+            <span className="nav-label">Overview</span>
           </button>
           <button 
-            className={`tab-btn ${activeTab === "TESTIMONIALS" ? "active" : ""}`}
+            className={`nav-btn ${activeTab === "TESTIMONIALS" ? "active" : ""}`}
             onClick={() => setActiveTab("TESTIMONIALS")}
           >
-            <span className="tab-icon">🌟</span>
-            Testimonials
+            <span className="nav-icon">🌟</span>
+            <span className="nav-label">Testimonials</span>
           </button>
           <button 
-            className={`tab-btn ${activeTab === "SURVEYS" ? "active" : ""}`}
+            className={`nav-btn ${activeTab === "SURVEYS" ? "active" : ""}`}
             onClick={goToSurveys}
           >
-            <span className="tab-icon">📝</span>
-            Surveys
+            <span className="nav-icon">📝</span>
+            <span className="nav-label">Surveys</span>
           </button>
           <button 
-            className={`tab-btn ${activeTab === "WITHDRAW" ? "active" : ""}`}
+            className={`nav-btn ${activeTab === "WITHDRAW" ? "active" : ""}`}
             onClick={goToWithdraw}
           >
-            <span className="tab-icon">💸</span>
-            Withdraw
+            <span className="nav-icon">💸</span>
+            <span className="nav-label">Withdraw</span>
           </button>
         </div>
       </section>
@@ -454,43 +515,11 @@ export default function Dashboard() {
       {/* OVERVIEW TAB */}
       {activeTab === "OVERVIEW" && (
         <>
-          {/* HERO SECTION */}
-          <section className="dashboard-hero">
-            <div className="hero-card">
-              <div className="hero-content">
-                <div className="hero-text">
-                  <h1>
-                    Welcome, <span className="user-highlight">{user.full_name.split(' ')[0]}</span>! 👋
-                  </h1>
-                  <p className="hero-subtitle">
-                    Complete surveys, earn instant rewards, and withdraw cash directly to your phone.
-                  </p>
-                  <div className="hero-actions">
-                    <button className="primary-btn" onClick={goToSurveys}>
-                      Start Earning →
-                    </button>
-                    <button className="secondary-btn" onClick={goToWelcome}>
-                      View Welcome Bonus
-                    </button>
-                  </div>
-                </div>
-                <div className="hero-stats">
-                  <div className="hero-stat">
-                    <span className="hero-stat-value">KES {stats.availableBalance.toLocaleString()}</span>
-                    <span className="hero-stat-label">Available Now</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* MAIN STATS */}
+          {/* EARNINGS DASHBOARD */}
           <section className="dashboard-section">
             <div className="section-heading">
-              <div>
-                <h3>Your Earnings Dashboard</h3>
-                <p>Track your progress and earnings across all plans</p>
-              </div>
+              <h3>Your Earnings Dashboard</h3>
+              <p>Track your progress and earnings across all plans</p>
             </div>
             <div className="stats-grid">
               <div className="stats-card total-earnings">
@@ -542,107 +571,11 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* WELCOME BONUS - ALWAYS SHOW */}
-          <section ref={welcomeRef} className="dashboard-section">
-            <div className="section-heading">
-              <div>
-                <h3>Special Welcome Offer</h3>
-                <p>Limited time bonus for all users</p>
-              </div>
-            </div>
-            <div className="card welcome-bonus-card-enhanced">
-              <div className="bonus-header">
-                <span className="bonus-icon">🎁</span>
-                <div>
-                  <h2>Welcome Bonus Unlocked!</h2>
-                  <p className="bonus-subtitle">Exclusive offer for you</p>
-                </div>
-              </div>
-              
-              <div className="bonus-amount">
-                <span className="currency">KES</span>
-                <span className="amount">1,200</span>
-              </div>
-              
-              <div className="bonus-message">
-                <p className="main-text">
-                  🎉 Congratulations! You've received a <strong>KES 1,200</strong> welcome bonus!
-                </p>
-                <p className="sub-text">
-                  To withdraw this bonus, simply activate your account with just <strong>KES 100</strong>
-                </p>
-              </div>
-
-              <div className="roi-highlight">
-                <div className="roi-item">
-                  <span className="label">You Pay:</span>
-                  <span className="value">KES 100</span>
-                </div>
-                <div className="roi-arrow">→</div>
-                <div className="roi-item">
-                  <span className="label">You Get:</span>
-                  <span className="value green">KES 1,200</span>
-                </div>
-              </div>
-
-              <p className="roi-text">
-                That's <strong>12x</strong> return on your investment!
-              </p>
-
-              <div className="bonus-actions">
-                <button className="activate-cta-btn" onClick={handleWelcomeBonusWithdraw}>
-                  <span className="btn-icon">🔓</span>
-                  Activate Now & Withdraw KES 1,200
-                </button>
-                <button className="learn-more-btn" onClick={() => navigate("/faq#welcome-bonus")}>
-                  Learn More
-                </button>
-              </div>
-
-              <div className="trust-indicators">
-                <span>✅ Instant Activation</span>
-                <span>🔒 Secure Payment</span>
-                <span>👥 15,000+ Users</span>
-                <span>⏱️ Limited Time</span>
-              </div>
-            </div>
-          </section>
-
-          {/* QUICK ACTIONS */}
+          {/* PLAN PROGRESS */}
           <section className="dashboard-section">
             <div className="section-heading">
-              <div>
-                <h3>Quick Actions</h3>
-                <p>Complete these tasks to earn bonus points</p>
-              </div>
-            </div>
-            <div className="quick-actions-grid">
-              {quickActions.map(action => (
-                <div key={action.id} className={`quick-action-card ${action.completed ? 'completed' : ''}`}>
-                  <span className="action-icon">{action.icon}</span>
-                  <div className="action-content">
-                    <h4>{action.label}</h4>
-                    <p>{action.completed ? 'Completed! +10 points' : 'Earn 10 bonus points'}</p>
-                  </div>
-                  <button 
-                    className={`action-btn ${action.completed ? 'completed' : ''}`}
-                    onClick={() => !action.completed && completeQuickAction(action.id)}
-                    disabled={action.completed}
-                  >
-                    {action.completed ? '✓' : 'Start'}
-                  </button>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* PLAN PROGRESS OVERVIEW */}
-          <section className="dashboard-section">
-            <div className="section-heading">
-              <div>
-                <h3>Your Plan Progress</h3>
-                <p>Track your earnings across different plans</p>
-              </div>
+              <h3>Plan Progress</h3>
+              <p>Track your earnings across different plans</p>
             </div>
             <div className="progress-cards">
               {Object.entries(PLANS).map(([key, plan]) => {
@@ -701,13 +634,11 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* FEATURES */}
+          {/* WHY USERS LOVE OUR PLATFORM */}
           <section className="dashboard-section">
             <div className="section-heading">
-              <div>
-                <h3>Why Users Love Our Platform</h3>
-                <p>Discover what makes us the best choice for earning online</p>
-              </div>
+              <h3>Why Users Love Our Platform</h3>
+              <p>Discover what makes us the best choice for earning online</p>
             </div>
             <div className="feature-grid">
               <div className="feature-card">
@@ -732,6 +663,62 @@ export default function Dashboard() {
               </div>
             </div>
           </section>
+
+          {/* QUICK ACTIONS */}
+          <section className="dashboard-section">
+            <div className="section-heading">
+              <h3>Quick Actions</h3>
+              <p>Complete these tasks to earn bonus points</p>
+            </div>
+            <div className="quick-actions-grid">
+              {quickActions.map(action => (
+                <div key={action.id} className={`quick-action-card ${action.completed ? 'completed' : ''}`}>
+                  <span className="action-icon">{action.icon}</span>
+                  <div className="action-content">
+                    <h4>{action.label}</h4>
+                    <p>{action.completed ? 'Completed! +10 points' : 'Earn 10 bonus points'}</p>
+                  </div>
+                  <button 
+                    className={`action-btn ${action.completed ? 'completed' : ''}`}
+                    onClick={() => !action.completed && completeQuickAction(action.id)}
+                    disabled={action.completed}
+                  >
+                    {action.completed ? '✓' : 'Start'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* HERO SECTION - MOVED DOWN */}
+          <section className="dashboard-hero">
+            <div className="hero-card">
+              <div className="hero-content">
+                <div className="hero-text">
+                  <h1>
+                    Welcome, <span className="user-highlight">{user.full_name.split(' ')[0]}</span>! 👋
+                  </h1>
+                  <p className="hero-subtitle">
+                    Complete surveys, earn instant rewards, and withdraw cash directly to your phone.
+                  </p>
+                  <div className="hero-actions">
+                    <button className="primary-btn" onClick={goToSurveys}>
+                      Start Earning →
+                    </button>
+                    <button className="secondary-btn" onClick={goToWelcome}>
+                      View Welcome Bonus
+                    </button>
+                  </div>
+                </div>
+                <div className="hero-stats">
+                  <div className="hero-stat">
+                    <span className="hero-stat-value">KES {stats.availableBalance.toLocaleString()}</span>
+                    <span className="hero-stat-label">Available Now</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
         </>
       )}
 
@@ -739,10 +726,8 @@ export default function Dashboard() {
       {activeTab === "TESTIMONIALS" && (
         <section className="dashboard-section">
           <div className="section-heading">
-            <div>
-              <h3>Real User Testimonials</h3>
-              <p>See what others are saying about their earnings experience</p>
-            </div>
+            <h3>Real User Testimonials</h3>
+            <p>See what others are saying about their earnings experience</p>
           </div>
           <Testimonials variant="grid" />
           <div className="testimonial-cta">
@@ -758,10 +743,8 @@ export default function Dashboard() {
       {activeTab === "SURVEYS" && (
         <section ref={surveyRef} id="surveys-section" className="tab-section">
           <div className="section-heading">
-            <div>
-              <h3>Available Survey Plans</h3>
-              <p>Choose a plan that matches your earning goals</p>
-            </div>
+            <h3>Available Survey Plans</h3>
+            <p>Choose a plan that matches your earning goals</p>
           </div>
           
           <div className="plan-cards-container">
@@ -855,10 +838,8 @@ export default function Dashboard() {
       {activeTab === "WITHDRAW" && (
         <section ref={withdrawRef} id="withdraw-section" className="tab-section">
           <div className="section-heading">
-            <div>
-              <h3>Withdraw Your Earnings</h3>
-              <p>Get paid directly to your mobile money account</p>
-            </div>
+            <h3>Withdraw Your Earnings</h3>
+            <p>Get paid directly to your mobile money account</p>
           </div>
           
           <div className="withdraw-cards-container">
