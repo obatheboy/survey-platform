@@ -155,89 +155,90 @@ export default function LiveWithdrawalFeed() {
     </div>
   );
 }
-
 /* =========================
-   STYLES
+   STYLES - COMPACT VERSION
 ========================= */
 const container = {
-  margin: "16px 0",
+  margin: "12px 0",
 };
 
 const card = {
-  padding: "14px 16px",
-  borderRadius: 22,
+  padding: "10px 12px",
+  borderRadius: 18,
   display: "flex",
   alignItems: "center",
-  gap: 12,
+  gap: 8,
 };
 
 const liveBadge = {
   background: "#d32f2f",
   color: "#fff",
-  fontSize: 11,
+  fontSize: 10,
   fontWeight: 800,
-  padding: "4px 10px",
+  padding: "3px 8px",
   borderRadius: 999,
 };
 
 const flag = {
-  width: 26,
-  height: 18,
-  borderRadius: 4,
+  width: 22,
+  height: 16,
+  borderRadius: 3,
 };
 
 const avatar = {
-  width: 38,
-  height: 38,
+  width: 32,
+  height: 32,
   borderRadius: "50%",
   color: "#fff",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   fontWeight: 800,
+  fontSize: "13px",
 };
 
 const nameRow = {
   display: "flex",
-  gap: 6,
+  gap: 4,
   alignItems: "center",
 };
 
 const nameText = {
   color: "#0b1020",
   fontWeight: 900,
+  fontSize: "13px",
 };
 
 const phoneText = {
-  fontSize: 12,
+  fontSize: 11,
   color: "#455a64",
 };
 
 const amountRow = {
-  marginTop: 4,
+  marginTop: 2,
   display: "flex",
-  gap: 6,
+  gap: 4,
   alignItems: "center",
 };
 
 const verified = {
-  fontSize: 12,
+  fontSize: 11,
   color: "#2e7d32",
   fontWeight: 700,
 };
 
 const amountText = {
-  fontSize: 14,
+  fontSize: 13,
   fontWeight: 900,
   color: "#b91c1c",
 };
 
 const telcoBadge = {
   display: "inline-block",
-  marginTop: 6,
+  marginTop: 4,
   color: "#fff",
-  fontSize: 11,
+  fontSize: 10,
   fontWeight: 800,
-  padding: "3px 10px",
+  padding: "2px 8px",
   borderRadius: 999,
 };
