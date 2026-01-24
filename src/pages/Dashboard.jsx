@@ -454,7 +454,7 @@ export default function Dashboard() {
                   fontSize: '0.8rem',
                   fontWeight: '500'
                 }}>
-                  Start earning now
+                  🎉🎉Start earning now 🎉🎉
                 </p>
               </div>
             </div>
