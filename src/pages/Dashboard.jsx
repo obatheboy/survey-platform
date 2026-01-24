@@ -487,7 +487,7 @@ export default function Dashboard() {
                   e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
                 }}
               >
-                <span style={{fontSize: '1rem'}}>🚀</span> Start Sureys
+                <span style={{fontSize: '1rem'}}>🚀</span> Start Surveys
               </button>
               
               <button 
