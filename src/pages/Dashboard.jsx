@@ -390,6 +390,36 @@ export default function Dashboard() {
         }}
       />
 
+      {/* HERO SECTION - MOVED TO TOP */}
+      <section className="dashboard-hero">
+        <div className="hero-card">
+          <div className="hero-content">
+            <div className="hero-text">
+              <h1>
+                Welcome, <span className="user-highlight">{user.full_name.split(' ')[0]}</span>! 👋
+              </h1>
+              <p className="hero-subtitle">
+                Complete surveys, earn instant rewards, and withdraw cash directly to your phone.
+              </p>
+              <div className="hero-actions">
+                <button className="primary-btn" onClick={goToSurveys}>
+                  Start Earning →
+                </button>
+                <button className="secondary-btn" onClick={goToWelcome}>
+                  View Welcome Bonus
+                </button>
+              </div>
+            </div>
+            <div className="hero-stats">
+              <div className="hero-stat">
+                <span className="hero-stat-value">KES {stats.availableBalance.toLocaleString()}</span>
+                <span className="hero-stat-label">Available Now</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* LIVE WITHDRAWAL FEED */}
       <LiveWithdrawalFeed />
 
@@ -412,8 +442,6 @@ export default function Dashboard() {
           <div className="bonus-description">
             <p>Activate your account with <strong>KES 100</strong> to unlock your welcome bonus</p>
           </div>
-
-         
 
           <div className="bonus-actions">
             <button className="primary-btn full-width" onClick={handleWelcomeBonusWithdraw}>
@@ -577,7 +605,6 @@ export default function Dashboard() {
               {Object.entries(PLANS).map(([key, plan]) => {
                 const status = getPlanStatus(key);
                 
-                
                 return (
                   <div key={key} className="progress-card" style={{
                     borderColor: plan.borderColor,
@@ -699,36 +726,6 @@ export default function Dashboard() {
                   </button>
                 </div>
               ))}
-            </div>
-          </section>
-
-          {/* HERO SECTION - MOVED DOWN */}
-          <section className="dashboard-hero">
-            <div className="hero-card">
-              <div className="hero-content">
-                <div className="hero-text">
-                  <h1>
-                    Welcome, <span className="user-highlight">{user.full_name.split(' ')[0]}</span>! 👋
-                  </h1>
-                  <p className="hero-subtitle">
-                    Complete surveys, earn instant rewards, and withdraw cash directly to your phone.
-                  </p>
-                  <div className="hero-actions">
-                    <button className="primary-btn" onClick={goToSurveys}>
-                      Start Earning →
-                    </button>
-                    <button className="secondary-btn" onClick={goToWelcome}>
-                      View Welcome Bonus
-                    </button>
-                  </div>
-                </div>
-                <div className="hero-stats">
-                  <div className="hero-stat">
-                    <span className="hero-stat-value">KES {stats.availableBalance.toLocaleString()}</span>
-                    <span className="hero-stat-label">Available Now</span>
-                  </div>
-                </div>
-              </div>
             </div>
           </section>
         </>
