@@ -496,10 +496,10 @@ body {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--space-xs);
-  background: rgb(12, 146, 90);
+  background: rgb(11, 15, 255);
   border-radius: var(--radius-lg);
   padding: 6px;
-  border: 1px solid #ffffff;
+  border: 1px solid #ff0000;
 }
 
 .nav-btn {
