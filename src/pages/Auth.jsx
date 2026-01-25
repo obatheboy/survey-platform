@@ -1,6 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../api/api";
+
+// Move Input component outside to prevent recreation
+const Input = ({ type = "text", icon, ...props }) => (
+  <div style={styles.inputContainer}>
+    {icon && <span style={styles.inputIcon}>{icon}</span>}
+    <input
+      type={type}
+      style={{
+        ...styles.input,
+        paddingLeft: icon ? "45px" : "20px",
+      }}
+      {...props}
+    />
+  </div>
+);
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -45,7 +60,8 @@ export default function Auth() {
     navigate(`/auth?mode=${mode}`, { replace: true });
   }, [mode, navigate]);
 
-  const handleRegister = async (e) => {
+  // Use useCallback for handlers to prevent recreation
+  const handleRegister = useCallback(async (e) => {
     e.preventDefault();
     setRegMessage("");
     setShake(false);
@@ -86,9 +102,9 @@ export default function Auth() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [regData, navigate]);
 
-  const handleLogin = async (e) => {
+  const handleLogin = useCallback(async (e) => {
     e.preventDefault();
     setLoginMessage("");
     setShake(false);
@@ -122,21 +138,7 @@ export default function Auth() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const Input = ({ type = "text", icon, ...props }) => (
-    <div style={styles.inputContainer}>
-      {icon && <span style={styles.inputIcon}>{icon}</span>}
-      <input
-        type={type}
-        style={{
-          ...styles.input,
-          paddingLeft: icon ? "45px" : "20px",
-        }}
-        {...props}
-      />
-    </div>
-  );
+  }, [loginData, navigate]);
 
   return (
     <div style={styles.page}>
@@ -192,7 +194,7 @@ export default function Auth() {
                 placeholder="Your Full Name"
                 value={regData.full_name}
                 onChange={(e) =>
-                  setRegData({ ...regData, full_name: e.target.value })
+                  setRegData(prev => ({ ...prev, full_name: e.target.value }))
                 }
                 icon="👤"
                 required
@@ -205,7 +207,7 @@ export default function Auth() {
                 type="tel"
                 value={regData.phone}
                 onChange={(e) =>
-                  setRegData({ ...regData, phone: e.target.value })
+                  setRegData(prev => ({ ...prev, phone: e.target.value }))
                 }
                 icon="📱"
                 required
@@ -218,7 +220,7 @@ export default function Auth() {
                 placeholder="Email Address (optional)"
                 value={regData.email}
                 onChange={(e) =>
-                  setRegData({ ...regData, email: e.target.value })
+                  setRegData(prev => ({ ...prev, email: e.target.value }))
                 }
                 icon="✉️"
               />
@@ -232,7 +234,7 @@ export default function Auth() {
                   type={showRegPassword ? "text" : "password"}
                   value={regData.password}
                   onChange={(e) =>
-                    setRegData({ ...regData, password: e.target.value })
+                    setRegData(prev => ({ ...prev, password: e.target.value }))
                   }
                   icon="🔒"
                   required
@@ -254,7 +256,7 @@ export default function Auth() {
                   type={showRegConfirm ? "text" : "password"}
                   value={regData.confirmPassword}
                   onChange={(e) =>
-                    setRegData({ ...regData, confirmPassword: e.target.value })
+                    setRegData(prev => ({ ...prev, confirmPassword: e.target.value }))
                   }
                   icon="✅"
                   required
@@ -303,7 +305,7 @@ export default function Auth() {
                 type="tel"
                 value={loginData.phone}
                 onChange={(e) =>
-                  setLoginData({ ...loginData, phone: e.target.value })
+                  setLoginData(prev => ({ ...prev, phone: e.target.value }))
                 }
                 icon="📱"
                 required
@@ -317,7 +319,7 @@ export default function Auth() {
                   type={showLoginPassword ? "text" : "password"}
                   value={loginData.password}
                   onChange={(e) =>
-                    setLoginData({ ...loginData, password: e.target.value })
+                    setLoginData(prev => ({ ...prev, password: e.target.value }))
                   }
                   icon="🔒"
                   required
@@ -407,12 +409,9 @@ export default function Auth() {
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
           }
           
-          ${styles.primaryButton}:hover {
-            transform: scale(1.02);
-          }
-          
-          ${styles.primaryButton}:active {
-            transform: scale(0.98);
+          button:hover {
+            transform: translateY(-2px);
+            transition: transform 0.2s ease;
           }
         `}
       </style>
@@ -477,7 +476,6 @@ const styles = {
     border: "1px solid rgba(255, 255, 255, 0.3)",
     zIndex: 1,
     position: "relative",
-    transition: "all 0.3s ease",
   },
   logoContainer: {
     display: "flex",
@@ -557,7 +555,7 @@ const styles = {
     fontWeight: "500",
     color: "#333",
     outline: "none",
-    transition: "all 0.3s ease",
+    transition: "border-color 0.3s ease, box-shadow 0.3s ease",
     boxSizing: "border-box",
   },
   optionalHint: {
