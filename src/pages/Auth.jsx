@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-
-
 import api from "../api/api";
 
 export default function Auth() {
@@ -15,7 +13,7 @@ export default function Auth() {
   const [showRegPassword, setShowRegPassword] = useState(false);
   const [showRegConfirm, setShowRegConfirm] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
- 
+
   const [regData, setRegData] = useState({
     full_name: "",
     phone: "",
@@ -31,32 +29,18 @@ export default function Auth() {
   });
   const [loginMessage, setLoginMessage] = useState("");
 
-  const [particles, setParticles] = useState([]);
-
-  // Create floating particles for background
   useEffect(() => {
-    const newParticles = Array.from({ length: 30 }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 4 + 2,
-      duration: Math.random() * 10 + 10,
-    }));
-    setParticles(newParticles);
+    const wakeBackend = async () => {
+      try {
+        await api.get("/health");
+        console.log("Backend is awake");
+      } catch (error) {
+        console.warn("Backend health check failed:", error.message);
+      }
+    };
+    wakeBackend();
   }, []);
 
- useEffect(() => {
-  const wakeBackend = async () => {
-    try {
-      await api.get("/health");
-      console.log("Backend is awake");
-    } catch (error) {
-      console.warn("Backend health check failed:", error.message);
-      // You could set state here to show offline mode
-    }
-  };
-  wakeBackend();
-}, []);
   useEffect(() => {
     navigate(`/auth?mode=${mode}`, { replace: true });
   }, [mode, navigate]);
@@ -88,11 +72,11 @@ export default function Auth() {
         email: regData.email || null,
         password: regData.password,
       });
-      
+
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
       }
-      
+
       setRegMessage("Account created successfully! Redirecting...");
       setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
     } catch (err) {
@@ -112,11 +96,11 @@ export default function Auth() {
     try {
       setLoading(true);
       const res = await api.post("/auth/login", loginData);
-      
+
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
       }
-      
+
       await api.get("/auth/me");
       navigate("/dashboard", { replace: true });
     } catch (err) {
@@ -156,55 +140,25 @@ export default function Auth() {
 
   return (
     <div style={styles.page}>
-      {/* Animated background particles */}
-      {particles.map((particle) => (
-        <motion.div
-          key={particle.id}
-          style={{
-            ...styles.particle,
-            left: `${particle.x}vw`,
-            top: `${particle.y}vh`,
-            width: particle.size,
-            height: particle.size,
-          }}
-          animate={{
-            y: [0, -100, 0],
-            x: [0, Math.sin(particle.id) * 50, 0],
-          }}
-          transition={{
-            duration: particle.duration,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-        />
-      ))}
-
       {/* Decorative elements */}
       <div style={styles.decorativeCircle1}></div>
       <div style={styles.decorativeCircle2}></div>
       <div style={styles.decorativeCircle3}></div>
 
-      <motion.div
+      <div
         style={{
           ...styles.card,
           opacity: loading ? 0.7 : 1,
           pointerEvents: loading ? "none" : "auto",
+          animation: shake ? "shake 0.5s ease-in-out" : "none",
         }}
-        animate={shake ? { x: [0, -10, 10, -10, 10, 0] } : {}}
-        transition={{ duration: 0.5 }}
       >
         {/* Logo and greeting */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div style={styles.logoContainer}>
-            <div style={styles.logoIcon}>📊</div>
-            <h1 style={styles.logo}>SurveyEarn</h1>
-          </div>
-          <p style={styles.tagline}>Share Opinions • Earn Rewards</p>
-        </motion.div>
+        <div style={styles.logoContainer}>
+          <div style={styles.logoIcon}>📊</div>
+          <h1 style={styles.logo}>SurveyEarn</h1>
+        </div>
+        <p style={styles.tagline}>Share Opinions • Earn Rewards</p>
 
         {/* Mode selector */}
         <div style={styles.modeSelector}>
@@ -228,212 +182,204 @@ export default function Auth() {
           </button>
         </div>
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={mode}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            {mode === "register" ? (
-              <form onSubmit={handleRegister}>
-                <div style={styles.formGroup}>
+        <div style={{ opacity: mode === "register" ? 1 : 0, height: mode === "register" ? "auto" : 0, transition: "all 0.3s ease", overflow: "hidden" }}>
+          {mode === "register" && (
+            <form onSubmit={handleRegister}>
+              <div style={styles.formGroup}>
+                <Input
+                  placeholder="Your Full Name"
+                  value={regData.full_name}
+                  onChange={(e) =>
+                    setRegData({ ...regData, full_name: e.target.value })
+                  }
+                  icon="👤"
+                  required
+                />
+              </div>
+
+              <div style={styles.formGroup}>
+                <Input
+                  placeholder="Phone Number"
+                  type="tel"
+                  value={regData.phone}
+                  onChange={(e) =>
+                    setRegData({ ...regData, phone: e.target.value })
+                  }
+                  icon="📱"
+                  required
+                />
+              </div>
+
+              <div style={styles.formGroup}>
+                <Input
+                  type="email"
+                  placeholder="Email Address (optional)"
+                  value={regData.email}
+                  onChange={(e) =>
+                    setRegData({ ...regData, email: e.target.value })
+                  }
+                  icon="✉️"
+                />
+                <p style={styles.optionalHint}>Leave empty if you don't have an email</p>
+              </div>
+
+              <div style={styles.formGroup}>
+                <div style={styles.passwordContainer}>
                   <Input
-                    placeholder="Your Full Name"
-                    value={regData.full_name}
+                    placeholder="Create Password"
+                    type={showRegPassword ? "text" : "password"}
+                    value={regData.password}
                     onChange={(e) =>
-                      setRegData({ ...regData, full_name: e.target.value })
+                      setRegData({ ...regData, password: e.target.value })
                     }
-                    icon="👤"
+                    icon="🔒"
                     required
                   />
-                </div>
-
-                <div style={styles.formGroup}>
-                  <Input
-                    placeholder="Phone Number"
-                    type="tel"
-                    value={regData.phone}
-                    onChange={(e) =>
-                      setRegData({ ...regData, phone: e.target.value })
-                    }
-                    icon="📱"
-                    required
-                  />
-                </div>
-
-                <div style={styles.formGroup}>
-                  <Input
-                    type="email"
-                    placeholder="Email Address (optional)"
-                    value={regData.email}
-                    onChange={(e) =>
-                      setRegData({ ...regData, email: e.target.value })
-                    }
-                    icon="✉️"
-                  />
-                  <p style={styles.optionalHint}>Leave empty if you don't have an email</p>
-                </div>
-
-                <div style={styles.formGroup}>
-                  <div style={styles.passwordContainer}>
-                    <Input
-                      placeholder="Create Password"
-                      type={showRegPassword ? "text" : "password"}
-                      value={regData.password}
-                      onChange={(e) =>
-                        setRegData({ ...regData, password: e.target.value })
-                      }
-                      icon="🔒"
-                      required
-                    />
-                    <button
-                      type="button"
-                      style={styles.passwordToggle}
-                      onClick={() => setShowRegPassword(!showRegPassword)}
-                    >
-                      {showRegPassword ? "🙈" : "👁️"}
-                    </button>
-                  </div>
-                </div>
-
-                <div style={styles.formGroup}>
-                  <div style={styles.passwordContainer}>
-                    <Input
-                      placeholder="Confirm Password"
-                      type={showRegConfirm ? "text" : "password"}
-                      value={regData.confirmPassword}
-                      onChange={(e) =>
-                        setRegData({ ...regData, confirmPassword: e.target.value })
-                      }
-                      icon="✅"
-                      required
-                    />
-                    <button
-                      type="button"
-                      style={styles.passwordToggle}
-                      onClick={() => setShowRegConfirm(!showRegConfirm)}
-                    >
-                      {showRegConfirm ? "🙈" : "👁️"}
-                    </button>
-                  </div>
-                </div>
-
-                <motion.button
-                  style={styles.primaryButton}
-                  type="submit"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {loading ? (
-                    <div style={styles.loadingSpinner}></div>
-                  ) : (
-                    "Complete Registration🚀"
-                  )}
-                </motion.button>
-
-                {regMessage && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    style={styles.message}
-                  >
-                    {regMessage}
-                  </motion.p>
-                )}
-
-                <p style={styles.switchText}>
-                  Already have an account?{" "}
                   <button
-                    style={styles.switchButton}
-                    onClick={() => setMode("login")}
                     type="button"
+                    style={styles.passwordToggle}
+                    onClick={() => setShowRegPassword(!showRegPassword)}
                   >
-                    Sign In Here
+                    {showRegPassword ? "🙈" : "👁️"}
                   </button>
-                </p>
-              </form>
-            ) : (
-              <form onSubmit={handleLogin}>
-                <div style={styles.formGroup}>
+                </div>
+              </div>
+
+              <div style={styles.formGroup}>
+                <div style={styles.passwordContainer}>
                   <Input
-                    placeholder="Phone Number"
-                    type="tel"
-                    value={loginData.phone}
+                    placeholder="Confirm Password"
+                    type={showRegConfirm ? "text" : "password"}
+                    value={regData.confirmPassword}
                     onChange={(e) =>
-                      setLoginData({ ...loginData, phone: e.target.value })
+                      setRegData({ ...regData, confirmPassword: e.target.value })
                     }
-                    icon="📱"
+                    icon="✅"
                     required
                   />
-                </div>
-
-                <div style={styles.formGroup}>
-                  <div style={styles.passwordContainer}>
-                    <Input
-                      placeholder="Password"
-                      type={showLoginPassword ? "text" : "password"}
-                      value={loginData.password}
-                      onChange={(e) =>
-                        setLoginData({ ...loginData, password: e.target.value })
-                      }
-                      icon="🔒"
-                      required
-                    />
-                    <button
-                      type="button"
-                      style={styles.passwordToggle}
-                      onClick={() => setShowLoginPassword(!showLoginPassword)}
-                    >
-                      {showLoginPassword ? "🙈" : "👁️"}
-                    </button>
-                  </div>
-                </div>
-
-                <div style={styles.forgotPassword}>
-                  <button type="button" style={styles.forgotButton}>
-                    Forgot Password?
-                  </button>
-                </div>
-
-                <motion.button
-                  style={styles.primaryButton}
-                  type="submit"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {loading ? (
-                    <div style={styles.loadingSpinner}></div>
-                  ) : (
-                    "Go To Your Account 🔐"
-                  )}
-                </motion.button>
-
-                {loginMessage && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    style={styles.message}
-                  >
-                    {loginMessage}
-                  </motion.p>
-                )}
-
-                <p style={styles.switchText}>
-                  New to SurveyEarn?{" "}
                   <button
-                    style={styles.switchButton}
-                    onClick={() => setMode("register")}
                     type="button"
+                    style={styles.passwordToggle}
+                    onClick={() => setShowRegConfirm(!showRegConfirm)}
                   >
-                    Create Free Account
+                    {showRegConfirm ? "🙈" : "👁️"}
                   </button>
-                </p>
-              </form>
-            )}
-          </motion.div>
-        </AnimatePresence>
+                </div>
+              </div>
+
+              <button
+                style={styles.primaryButton}
+                type="submit"
+                onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.98)")}
+                onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
+              >
+                {loading ? (
+                  <div style={styles.loadingSpinner}></div>
+                ) : (
+                  "Complete Registration 🚀"
+                )}
+              </button>
+
+              {regMessage && (
+                <div style={{ animation: "fadeIn 0.3s ease" }}>
+                  <p style={styles.message}>{regMessage}</p>
+                </div>
+              )}
+
+              <p style={styles.switchText}>
+                Already have an account?{" "}
+                <button
+                  style={styles.switchButton}
+                  onClick={() => setMode("login")}
+                  type="button"
+                >
+                  Sign In Here
+                </button>
+              </p>
+            </form>
+          )}
+        </div>
+
+        <div style={{ opacity: mode === "login" ? 1 : 0, height: mode === "login" ? "auto" : 0, transition: "all 0.3s ease", overflow: "hidden" }}>
+          {mode === "login" && (
+            <form onSubmit={handleLogin}>
+              <div style={styles.formGroup}>
+                <Input
+                  placeholder="Phone Number"
+                  type="tel"
+                  value={loginData.phone}
+                  onChange={(e) =>
+                    setLoginData({ ...loginData, phone: e.target.value })
+                  }
+                  icon="📱"
+                  required
+                />
+              </div>
+
+              <div style={styles.formGroup}>
+                <div style={styles.passwordContainer}>
+                  <Input
+                    placeholder="Password"
+                    type={showLoginPassword ? "text" : "password"}
+                    value={loginData.password}
+                    onChange={(e) =>
+                      setLoginData({ ...loginData, password: e.target.value })
+                    }
+                    icon="🔒"
+                    required
+                  />
+                  <button
+                    type="button"
+                    style={styles.passwordToggle}
+                    onClick={() => setShowLoginPassword(!showLoginPassword)}
+                  >
+                    {showLoginPassword ? "🙈" : "👁️"}
+                  </button>
+                </div>
+              </div>
+
+              <div style={styles.forgotPassword}>
+                <button type="button" style={styles.forgotButton}>
+                  Forgot Password?
+                </button>
+              </div>
+
+              <button
+                style={styles.primaryButton}
+                type="submit"
+                onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.98)")}
+                onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
+              >
+                {loading ? (
+                  <div style={styles.loadingSpinner}></div>
+                ) : (
+                  "Go To Your Account 🔐"
+                )}
+              </button>
+
+              {loginMessage && (
+                <div style={{ animation: "fadeIn 0.3s ease" }}>
+                  <p style={styles.message}>{loginMessage}</p>
+                </div>
+              )}
+
+              <p style={styles.switchText}>
+                New to SurveyEarn?{" "}
+                <button
+                  style={styles.switchButton}
+                  onClick={() => setMode("register")}
+                  type="button"
+                >
+                  Create Free Account
+                </button>
+              </p>
+            </form>
+          )}
+        </div>
 
         {/* Benefits showcase */}
         <div style={styles.benefits}>
@@ -450,12 +396,64 @@ export default function Auth() {
             <span>Secure & Private</span>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Footer */}
       <div style={styles.footer}>
         <p>By continuing, you agree to our Terms and Privacy Policy</p>
       </div>
+
+      {/* Add CSS animations */}
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          
+          @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+          }
+          
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          
+          input:focus {
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+          }
+          
+          button:hover {
+            transform: translateY(-2px);
+          }
+          
+          .fade-enter {
+            opacity: 0;
+            transform: translateX(20px);
+          }
+          
+          .fade-enter-active {
+            opacity: 1;
+            transform: translateX(0);
+            transition: opacity 300ms, transform 300ms;
+          }
+          
+          .fade-exit {
+            opacity: 1;
+            transform: translateX(0);
+          }
+          
+          .fade-exit-active {
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: opacity 300ms, transform 300ms;
+          }
+        `}
+      </style>
     </div>
   );
 }
@@ -471,12 +469,6 @@ const styles = {
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
     position: "relative",
     overflow: "hidden",
-  },
-  particle: {
-    position: "absolute",
-    background: "rgba(255, 255, 255, 0.3)",
-    borderRadius: "50%",
-    zIndex: 0,
   },
   decorativeCircle1: {
     position: "absolute",
@@ -522,6 +514,7 @@ const styles = {
     border: "1px solid rgba(255, 255, 255, 0.3)",
     zIndex: 1,
     position: "relative",
+    transition: "all 0.3s ease",
   },
   logoContainer: {
     display: "flex",
@@ -603,10 +596,6 @@ const styles = {
     outline: "none",
     transition: "all 0.3s ease",
     boxSizing: "border-box",
-  },
-  inputFocus: {
-    borderColor: "#667eea",
-    boxShadow: "0 0 0 3px rgba(102, 126, 234, 0.1)",
   },
   optionalHint: {
     fontSize: "13px",
@@ -734,22 +723,3 @@ const styles = {
     zIndex: 1,
   },
 };
-
-// Add CSS animation for spinner
-const styleSheet = document.createElement("style");
-styleSheet.innerHTML = `
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  
-  input:focus {
-    border-color: #667eea !important;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
-  }
-  
-  button:hover {
-    transform: translateY(-2px);
-  }
-`;
-document.head.appendChild(styleSheet);
