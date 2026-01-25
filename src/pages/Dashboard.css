@@ -588,50 +588,58 @@ body {
   line-height: 1.4;
 }
 
+
 .dashboard-nav-mobile {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--space-xs);
-  background: rgba(0, 0, 0, 0.2);
+  background: rgb(11, 15, 255);
   border-radius: var(--radius-lg);
   padding: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid #ff0000;
 }
+
 .nav-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px; /* ← Increased gap */
-  padding: var(--space-lg) var(--space-md); /* ← More padding */
-  border: none;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 800; /* ← Bolder text */
+  gap: 6px;
+  padding: var(--space-lg) var(--space-md);
+  background: rgba(255, 255, 255, 0.08); /* Slight background for contrast */
+  color: rgba(255, 255, 255, 0.9); /* Brighter text */
+  font-weight: 800;
   font-size: 11px;
   cursor: pointer;
   border-radius: var(--radius-md);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  min-height: 72px; /* ← Slightly taller */
-  min-width: 60px; /* ← Ensures width on mobile */
+  min-height: 72px;
+  min-width: 60px;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   text-decoration: none;
   position: relative;
-  border: 1px solid transparent; /* ← Add border for hover */
+  border: 1px solid rgba(255, 255, 255, 0.25); /* VISIBLE BORDER - changed from transparent */
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.2); /* Added depth */
 }
 
 .nav-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px); /* ← Lift effect */
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
 }
 
 .nav-btn.active {
   background: var(--primary);
   color: #1a1a1a;
-  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4); /* ← Stronger shadow */
-  border: none;
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+  border: none; /* Remove border when active */
+  transform: translateY(-1px); /* Keep lifted when active */
 }
 
 .nav-btn.active::before {
@@ -640,40 +648,32 @@ body {
   bottom: 4px;
   left: 50%;
   transform: translateX(-50%);
-  width: 24px; /* ← Wider indicator */
-  height: 3px;
-  background: #1a1a1a;
-  border-radius: 2px;
-}
-.nav-btn.active {
-  background: var(--primary);
-  color: #1a1a1a;
-  box-shadow: 0 4px 12px rgba(255, 183, 3, 0.3);
-}
-
-.nav-btn.active::before {
-  content: '';
-  position: absolute;
-  bottom: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 20px;
+  width: 24px;
   height: 3px;
   background: #1a1a1a;
   border-radius: 2px;
 }
 
 .nav-icon {
-  font-size: 18px;
+  font-size: 20px; /* Slightly larger */
   margin-bottom: 2px;
+  transition: transform 0.3s ease;
+}
+
+.nav-btn:hover .nav-icon {
+  transform: scale(1.1); /* Slight icon animation */
 }
 
 .nav-label {
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  transition: transform 0.3s ease;
 }
 
+.nav-btn:hover .nav-label {
+  transform: translateY(-1px); /* Lift label on hover */
+}
 /* =========================================================
    5. YOUR EARNINGS DASHBOARD
 ========================================================= */
