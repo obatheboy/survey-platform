@@ -15,7 +15,7 @@ export default function Auth() {
   const [showRegPassword, setShowRegPassword] = useState(false);
   const [showRegConfirm, setShowRegConfirm] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
-
+ 
   const [regData, setRegData] = useState({
     full_name: "",
     phone: "",
