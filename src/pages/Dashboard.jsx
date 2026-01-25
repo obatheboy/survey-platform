@@ -660,25 +660,7 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* QUICK STATS BAR */}
-      <div className="quick-stats-bar">
-        <div className="stat-item">
-          <span className="stat-icon">💰</span>
-          <span className="stat-value">KES {stats.totalEarned.toLocaleString()}</span>
-          <span className="stat-label">Earned</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-icon">📊</span>
-          <span className="stat-value">{stats.totalSurveysCompleted}</span>
-          <span className="stat-label">Surveys</span>
-        </div>
-        <div className="stat-item">
-          <span className="stat-icon">💳</span>
-          <span className="stat-value">{stats.totalWithdrawals}</span>
-          <span className="stat-label">Withdrawals</span>
-        </div>
-      </div>
-
+   
       {/* DASHBOARD NAVIGATION - MOBILE OPTIMIZED */}
       <section className="dashboard-section">
         <div className="section-heading">
