@@ -73,12 +73,12 @@ export default function Auth() {
       return;
     }
 
-    if (regData.password.length < 6) {
-      setRegMessage("Password must be at least 6 characters");
-      setShake(true);
-      setTimeout(() => setShake(false), 500);
-      return;
-    }
+  if (regData.password.length < 4) {
+  setRegMessage("Password must be at least 4 characters");
+  setShake(true);
+  setTimeout(() => setShake(false), 500);
+  return;
+}
 
     try {
       setLoading(true);
