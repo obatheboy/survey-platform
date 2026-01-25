@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+
+import { motion, AnimatePresence } from "framer-motion"; // eslint-disable-line no-unused-vars
 import api from "../api/api";
 
 export default function Auth() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-
-  const initialMode =
-    searchParams.get("mode") === "login" ? "login" : "register";
-
+  const initialMode = searchParams.get("mode") === "login" ? "login" : "register";
   const [mode, setMode] = useState(initialMode);
   const [loading, setLoading] = useState(false);
+  const [shake, setShake] = useState(false);
 
   const [showRegPassword, setShowRegPassword] = useState(false);
   const [showRegConfirm, setShowRegConfirm] = useState(false);
@@ -31,15 +31,32 @@ export default function Auth() {
   });
   const [loginMessage, setLoginMessage] = useState("");
 
+  const [particles, setParticles] = useState([]);
+
+  // Create floating particles for background
   useEffect(() => {
-    const wakeBackend = async () => {
-      try {
-        await api.get("/health");
-      } catch {}
-    };
-    wakeBackend();
+    const newParticles = Array.from({ length: 30 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 4 + 2,
+      duration: Math.random() * 10 + 10,
+    }));
+    setParticles(newParticles);
   }, []);
 
+ useEffect(() => {
+  const wakeBackend = async () => {
+    try {
+      await api.get("/health");
+      console.log("Backend is awake");
+    } catch (error) {
+      console.warn("Backend health check failed:", error.message);
+      // You could set state here to show offline mode
+    }
+  };
+  wakeBackend();
+}, []);
   useEffect(() => {
     navigate(`/auth?mode=${mode}`, { replace: true });
   }, [mode, navigate]);
@@ -47,9 +64,19 @@ export default function Auth() {
   const handleRegister = async (e) => {
     e.preventDefault();
     setRegMessage("");
+    setShake(false);
 
     if (regData.password !== regData.confirmPassword) {
-      setRegMessage("❌ Passwords do not match");
+      setRegMessage("Passwords do not match");
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+      return;
+    }
+
+    if (regData.password.length < 6) {
+      setRegMessage("Password must be at least 6 characters");
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
       return;
     }
 
@@ -62,16 +89,16 @@ export default function Auth() {
         password: regData.password,
       });
       
-      // Store token in localStorage for mobile compatibility
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
       }
       
-      setRegMessage("✅ Account created successfully!");
-      // Navigate directly to dashboard
-      setTimeout(() => navigate("/dashboard", { replace: true }), 1000);
+      setRegMessage("Account created successfully! Redirecting...");
+      setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
     } catch (err) {
       setRegMessage(err.response?.data?.message || "Registration failed");
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
     } finally {
       setLoading(false);
     }
@@ -80,12 +107,12 @@ export default function Auth() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoginMessage("");
+    setShake(false);
 
     try {
       setLoading(true);
       const res = await api.post("/auth/login", loginData);
       
-      // Store token in localStorage for mobile compatibility
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
       }
@@ -106,317 +133,623 @@ export default function Auth() {
       }
 
       setLoginMessage(err.response?.data?.message || "Login failed. Try again.");
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <div style={page}>
-      <div
+  const Input = ({ type = "text", icon, ...props }) => (
+    <div style={styles.inputContainer}>
+      {icon && <span style={styles.inputIcon}>{icon}</span>}
+      <input
+        type={type}
         style={{
-          ...card,
+          ...styles.input,
+          paddingLeft: icon ? "45px" : "20px",
+        }}
+        {...props}
+      />
+    </div>
+  );
+
+  return (
+    <div style={styles.page}>
+      {/* Animated background particles */}
+      {particles.map((particle) => (
+        <motion.div
+          key={particle.id}
+          style={{
+            ...styles.particle,
+            left: `${particle.x}vw`,
+            top: `${particle.y}vh`,
+            width: particle.size,
+            height: particle.size,
+          }}
+          animate={{
+            y: [0, -100, 0],
+            x: [0, Math.sin(particle.id) * 50, 0],
+          }}
+          transition={{
+            duration: particle.duration,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
+      ))}
+
+      {/* Decorative elements */}
+      <div style={styles.decorativeCircle1}></div>
+      <div style={styles.decorativeCircle2}></div>
+      <div style={styles.decorativeCircle3}></div>
+
+      <motion.div
+        style={{
+          ...styles.card,
           opacity: loading ? 0.7 : 1,
           pointerEvents: loading ? "none" : "auto",
         }}
+        animate={shake ? { x: [0, -10, 10, -10, 10, 0] } : {}}
+        transition={{ duration: 0.5 }}
       >
-        {/* Title with vibrant gradient */}
-        <h1 style={logo}>Survey Platform</h1>
+        {/* Logo and greeting */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div style={styles.logoContainer}>
+            <div style={styles.logoIcon}>📊</div>
+            <h1 style={styles.logo}>SurveyEarn</h1>
+          </div>
+          <p style={styles.tagline}>Share Opinions • Earn Rewards</p>
+        </motion.div>
 
-        <p style={subtitle}>
-          {mode === "register"
-            ? "Create your account to start earning"
-            : "Welcome back, login to continue"}
-        </p>
+        {/* Mode selector */}
+        <div style={styles.modeSelector}>
+          <button
+            style={{
+              ...styles.modeButton,
+              ...(mode === "login" ? styles.modeButtonActive : {}),
+            }}
+            onClick={() => setMode("login")}
+          >
+            Sign In
+          </button>
+          <button
+            style={{
+              ...styles.modeButton,
+              ...(mode === "register" ? styles.modeButtonActive : {}),
+            }}
+            onClick={() => setMode("register")}
+          >
+            Sign Up
+          </button>
+        </div>
 
-        {/* Placeholder style for shouty colors */}
-        <style>
-          {`
-            input::placeholder {
-              color: #9b8974; /* Bright orange, change to #ffff00 for yellow if preferred */
-              font-weight: bold;
-              opacity: 1;
-            }
-          `}
-        </style>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={mode}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {mode === "register" ? (
+              <form onSubmit={handleRegister}>
+                <div style={styles.formGroup}>
+                  <Input
+                    placeholder="Your Full Name"
+                    value={regData.full_name}
+                    onChange={(e) =>
+                      setRegData({ ...regData, full_name: e.target.value })
+                    }
+                    icon="👤"
+                    required
+                  />
+                </div>
 
-        {mode === "register" && (
-          <form onSubmit={handleRegister}>
-            <Input
-              placeholder="Full Name"
-              value={regData.full_name}
-              onChange={(e) =>
-                setRegData({ ...regData, full_name: e.target.value })
-              }
-            />
+                <div style={styles.formGroup}>
+                  <Input
+                    placeholder="Phone Number"
+                    type="tel"
+                    value={regData.phone}
+                    onChange={(e) =>
+                      setRegData({ ...regData, phone: e.target.value })
+                    }
+                    icon="📱"
+                    required
+                  />
+                </div>
 
-            <Input
-              placeholder="Phone Number"
-              value={regData.phone}
-              onChange={(e) =>
-                setRegData({ ...regData, phone: e.target.value })
-              }
-            />
+                <div style={styles.formGroup}>
+                  <Input
+                    type="email"
+                    placeholder="Email Address (optional)"
+                    value={regData.email}
+                    onChange={(e) =>
+                      setRegData({ ...regData, email: e.target.value })
+                    }
+                    icon="✉️"
+                  />
+                  <p style={styles.optionalHint}>Leave empty if you don't have an email</p>
+                </div>
 
-            <Input
-              type="email"
-              placeholder="Email (optional)"
-              value={regData.email}
-              onChange={(e) =>
-                setRegData({ ...regData, email: e.target.value })
-              }
-            />
+                <div style={styles.formGroup}>
+                  <div style={styles.passwordContainer}>
+                    <Input
+                      placeholder="Create Password"
+                      type={showRegPassword ? "text" : "password"}
+                      value={regData.password}
+                      onChange={(e) =>
+                        setRegData({ ...regData, password: e.target.value })
+                      }
+                      icon="🔒"
+                      required
+                    />
+                    <button
+                      type="button"
+                      style={styles.passwordToggle}
+                      onClick={() => setShowRegPassword(!showRegPassword)}
+                    >
+                      {showRegPassword ? "🙈" : "👁️"}
+                    </button>
+                  </div>
+                </div>
 
-            <PasswordInput
-              placeholder="Password"
-              value={regData.password}
-              show={showRegPassword}
-              toggle={() => setShowRegPassword(!showRegPassword)}
-              onChange={(e) =>
-                setRegData({ ...regData, password: e.target.value })
-              }
-            />
+                <div style={styles.formGroup}>
+                  <div style={styles.passwordContainer}>
+                    <Input
+                      placeholder="Confirm Password"
+                      type={showRegConfirm ? "text" : "password"}
+                      value={regData.confirmPassword}
+                      onChange={(e) =>
+                        setRegData({ ...regData, confirmPassword: e.target.value })
+                      }
+                      icon="✅"
+                      required
+                    />
+                    <button
+                      type="button"
+                      style={styles.passwordToggle}
+                      onClick={() => setShowRegConfirm(!showRegConfirm)}
+                    >
+                      {showRegConfirm ? "🙈" : "👁️"}
+                    </button>
+                  </div>
+                </div>
 
-            <PasswordInput
-              placeholder="Confirm Password"
-              value={regData.confirmPassword}
-              show={showRegConfirm}
-              toggle={() => setShowRegConfirm(!showRegConfirm)}
-              onChange={(e) =>
-                setRegData({ ...regData, confirmPassword: e.target.value })
-              }
-            />
+                <motion.button
+                  style={styles.primaryButton}
+                  type="submit"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {loading ? (
+                    <div style={styles.loadingSpinner}></div>
+                  ) : (
+                    "Start Earning Now 🚀"
+                  )}
+                </motion.button>
 
-            <button style={button} type="submit">
-              {loading ? "Creating..." : "Create Account"}
-            </button>
+                {regMessage && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    style={styles.message}
+                  >
+                    {regMessage}
+                  </motion.p>
+                )}
 
-            {regMessage && <p style={message}>{regMessage}</p>}
+                <p style={styles.switchText}>
+                  Already have an account?{" "}
+                  <button
+                    style={styles.switchButton}
+                    onClick={() => setMode("login")}
+                    type="button"
+                  >
+                    Sign In Here
+                  </button>
+                </p>
+              </form>
+            ) : (
+              <form onSubmit={handleLogin}>
+                <div style={styles.formGroup}>
+                  <Input
+                    placeholder="Phone Number"
+                    type="tel"
+                    value={loginData.phone}
+                    onChange={(e) =>
+                      setLoginData({ ...loginData, phone: e.target.value })
+                    }
+                    icon="📱"
+                    required
+                  />
+                </div>
 
-            <p style={switchText}>
-              Already have an account?{" "}
-              <span style={link} onClick={() => setMode("login")}>
-                Login
-              </span>
-            </p>
-          </form>
-        )}
+                <div style={styles.formGroup}>
+                  <div style={styles.passwordContainer}>
+                    <Input
+                      placeholder="Password"
+                      type={showLoginPassword ? "text" : "password"}
+                      value={loginData.password}
+                      onChange={(e) =>
+                        setLoginData({ ...loginData, password: e.target.value })
+                      }
+                      icon="🔒"
+                      required
+                    />
+                    <button
+                      type="button"
+                      style={styles.passwordToggle}
+                      onClick={() => setShowLoginPassword(!showLoginPassword)}
+                    >
+                      {showLoginPassword ? "🙈" : "👁️"}
+                    </button>
+                  </div>
+                </div>
 
-        {mode === "login" && (
-          <form onSubmit={handleLogin}>
-            <Input
-              placeholder="Phone Number"
-              value={loginData.phone}
-              onChange={(e) =>
-                setLoginData({ ...loginData, phone: e.target.value })
-              }
-            />
+                <div style={styles.forgotPassword}>
+                  <button type="button" style={styles.forgotButton}>
+                    Forgot Password?
+                  </button>
+                </div>
 
-            <PasswordInput
-              placeholder="Password"
-              value={loginData.password}
-              show={showLoginPassword}
-              toggle={() => setShowLoginPassword(!showLoginPassword)}
-              onChange={(e) =>
-                setLoginData({ ...loginData, password: e.target.value })
-              }
-            />
+                <motion.button
+                  style={styles.primaryButton}
+                  type="submit"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {loading ? (
+                    <div style={styles.loadingSpinner}></div>
+                  ) : (
+                    "Access Your Account 🔐"
+                  )}
+                </motion.button>
 
-            <button style={button} type="submit">
-              {loading ? "Logging in..." : "Login"}
-            </button>
+                {loginMessage && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    style={styles.message}
+                  >
+                    {loginMessage}
+                  </motion.p>
+                )}
 
-            {loginMessage && <p style={message}>{loginMessage}</p>}
+                <p style={styles.switchText}>
+                  New to SurveyEarn?{" "}
+                  <button
+                    style={styles.switchButton}
+                    onClick={() => setMode("register")}
+                    type="button"
+                  >
+                    Create Free Account
+                  </button>
+                </p>
+              </form>
+            )}
+          </motion.div>
+        </AnimatePresence>
 
-            <p style={switchText}>
-              Don’t have an account?{" "}
-              <span style={link} onClick={() => setMode("register")}>
-                Create one
-              </span>
-            </p>
-          </form>
-        )}
+        {/* Benefits showcase */}
+        <div style={styles.benefits}>
+          <div style={styles.benefit}>
+            <span style={styles.benefitIcon}>💰</span>
+            <span>Earn Cash Rewards</span>
+          </div>
+          <div style={styles.benefit}>
+            <span style={styles.benefitIcon}>⚡</span>
+            <span>Quick Surveys</span>
+          </div>
+          <div style={styles.benefit}>
+            <span style={styles.benefitIcon}>🔒</span>
+            <span>Secure & Private</span>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Footer */}
+      <div style={styles.footer}>
+        <p>By continuing, you agree to our Terms and Privacy Policy</p>
       </div>
     </div>
   );
 }
 
-/* =========================
-   INPUT COMPONENT
-========================= */
-function Input({ type = "text", required = true, ...props }) {
-  return <input type={type} required={required} style={input} {...props} />;
-}
-
-/* =========================
-   PASSWORD INPUT COMPONENT
-========================= */
-function PasswordInput({ show, toggle, ...props }) {
-  return (
-    <div style={passwordWrap}>
-      <input
-        {...props}
-        type={show ? "text" : "password"}
-        style={input}
-        required
-      />
-      <span style={eye} onClick={toggle}>👁️</span>
-    </div>
-  );
-}
-
-/* =========================
-   STYLES: NEW COLOR SCHEME
-========================= */
-
-const page = {
-  minHeight: "100vh",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  padding: "20px",
-  background: `
-    radial-gradient(circle at 15% 15%, #fbc2eb, transparent 50%),
-    radial-gradient(circle at 85% 20%, #a1c4fd, transparent 55%),
-    radial-gradient(circle at 50% 85%, #ffd1ff, transparent 50%),
-    radial-gradient(circle at 20% 75%, #c2f0f7, transparent 55%),
-    linear-gradient(135deg, #0f2027, #203a43, #2c5364)
-  `,
+const styles = {
+  page: {
+    minHeight: "100vh",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "20px",
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    position: "relative",
+    overflow: "hidden",
+  },
+  particle: {
+    position: "absolute",
+    background: "rgba(255, 255, 255, 0.3)",
+    borderRadius: "50%",
+    zIndex: 0,
+  },
+  decorativeCircle1: {
+    position: "absolute",
+    width: "300px",
+    height: "300px",
+    borderRadius: "50%",
+    background: "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)",
+    top: "-100px",
+    left: "-100px",
+    zIndex: 0,
+  },
+  decorativeCircle2: {
+    position: "absolute",
+    width: "200px",
+    height: "200px",
+    borderRadius: "50%",
+    background: "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)",
+    bottom: "-50px",
+    right: "-50px",
+    zIndex: 0,
+  },
+  decorativeCircle3: {
+    position: "absolute",
+    width: "150px",
+    height: "150px",
+    borderRadius: "50%",
+    background: "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)",
+    top: "50%",
+    right: "20%",
+    zIndex: 0,
+  },
+  card: {
+    width: "100%",
+    maxWidth: "480px",
+    padding: "40px",
+    borderRadius: "24px",
+    background: "rgba(255, 255, 255, 0.95)",
+    backdropFilter: "blur(10px)",
+    boxShadow: `
+      0 20px 60px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6)
+    `,
+    border: "1px solid rgba(255, 255, 255, 0.3)",
+    zIndex: 1,
+    position: "relative",
+  },
+  logoContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "15px",
+    marginBottom: "10px",
+  },
+  logoIcon: {
+    fontSize: "40px",
+    background: "linear-gradient(135deg, #667eea, #764ba2)",
+    padding: "15px",
+    borderRadius: "20px",
+    boxShadow: "0 8px 20px rgba(102, 126, 234, 0.4)",
+  },
+  logo: {
+    fontSize: "42px",
+    fontWeight: "800",
+    background: "linear-gradient(135deg, #667eea, #764ba2)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    margin: 0,
+    letterSpacing: "-0.5px",
+  },
+  tagline: {
+    textAlign: "center",
+    color: "#666",
+    fontSize: "16px",
+    marginBottom: "30px",
+    fontWeight: "500",
+  },
+  modeSelector: {
+    display: "flex",
+    background: "rgba(102, 126, 234, 0.1)",
+    borderRadius: "16px",
+    padding: "6px",
+    marginBottom: "30px",
+  },
+  modeButton: {
+    flex: 1,
+    padding: "14px",
+    border: "none",
+    background: "transparent",
+    borderRadius: "12px",
+    fontSize: "16px",
+    fontWeight: "600",
+    color: "#667eea",
+    cursor: "pointer",
+    transition: "all 0.3s ease",
+  },
+  modeButtonActive: {
+    background: "#667eea",
+    color: "white",
+    boxShadow: "0 4px 12px rgba(102, 126, 234, 0.3)",
+  },
+  formGroup: {
+    marginBottom: "20px",
+  },
+  inputContainer: {
+    position: "relative",
+  },
+  inputIcon: {
+    position: "absolute",
+    left: "15px",
+    top: "50%",
+    transform: "translateY(-50%)",
+    fontSize: "18px",
+    color: "#667eea",
+  },
+  input: {
+    width: "100%",
+    padding: "18px 20px 18px 45px",
+    borderRadius: "16px",
+    border: "2px solid #e0e0e0",
+    background: "white",
+    fontSize: "16px",
+    fontWeight: "500",
+    color: "#333",
+    outline: "none",
+    transition: "all 0.3s ease",
+    boxSizing: "border-box",
+  },
+  inputFocus: {
+    borderColor: "#667eea",
+    boxShadow: "0 0 0 3px rgba(102, 126, 234, 0.1)",
+  },
+  optionalHint: {
+    fontSize: "13px",
+    color: "#888",
+    marginTop: "6px",
+    marginLeft: "10px",
+    fontStyle: "italic",
+  },
+  passwordContainer: {
+    position: "relative",
+  },
+  passwordToggle: {
+    position: "absolute",
+    right: "15px",
+    top: "50%",
+    transform: "translateY(-50%)",
+    background: "none",
+    border: "none",
+    fontSize: "20px",
+    cursor: "pointer",
+    color: "#667eea",
+    padding: "5px",
+    borderRadius: "8px",
+    transition: "all 0.2s ease",
+  },
+  forgotPassword: {
+    textAlign: "right",
+    marginBottom: "20px",
+  },
+  forgotButton: {
+    background: "none",
+    border: "none",
+    color: "#667eea",
+    fontSize: "14px",
+    fontWeight: "600",
+    cursor: "pointer",
+    padding: "5px",
+    borderRadius: "6px",
+    transition: "all 0.2s ease",
+  },
+  primaryButton: {
+    width: "100%",
+    padding: "18px",
+    borderRadius: "16px",
+    border: "none",
+    background: "linear-gradient(135deg, #667eea, #764ba2)",
+    color: "white",
+    fontSize: "18px",
+    fontWeight: "700",
+    cursor: "pointer",
+    marginTop: "10px",
+    boxShadow: "0 8px 20px rgba(102, 126, 234, 0.4)",
+    transition: "all 0.3s ease",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "10px",
+  },
+  loadingSpinner: {
+    width: "24px",
+    height: "24px",
+    border: "3px solid rgba(255,255,255,0.3)",
+    borderTop: "3px solid white",
+    borderRadius: "50%",
+    animation: "spin 1s linear infinite",
+  },
+  message: {
+    marginTop: "15px",
+    padding: "12px",
+    borderRadius: "12px",
+    textAlign: "center",
+    fontSize: "14px",
+    fontWeight: "600",
+    background: "rgba(255, 87, 87, 0.1)",
+    color: "#ff5757",
+    border: "1px solid rgba(255, 87, 87, 0.2)",
+  },
+  switchText: {
+    textAlign: "center",
+    marginTop: "25px",
+    color: "#666",
+    fontSize: "15px",
+  },
+  switchButton: {
+    background: "none",
+    border: "none",
+    color: "#667eea",
+    fontSize: "15px",
+    fontWeight: "700",
+    cursor: "pointer",
+    textDecoration: "underline",
+    padding: "4px 8px",
+    borderRadius: "6px",
+    transition: "all 0.2s ease",
+  },
+  benefits: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: "30px",
+    paddingTop: "25px",
+    borderTop: "1px solid rgba(0,0,0,0.1)",
+  },
+  benefit: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "8px",
+    fontSize: "12px",
+    color: "#666",
+    fontWeight: "500",
+  },
+  benefitIcon: {
+    fontSize: "24px",
+    background: "linear-gradient(135deg, #667eea, #764ba2)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+  },
+  footer: {
+    position: "absolute",
+    bottom: "20px",
+    width: "100%",
+    textAlign: "center",
+    color: "rgba(255, 255, 255, 0.8)",
+    fontSize: "14px",
+    zIndex: 1,
+  },
 };
 
-const card = {
-  width: "100%",
-  maxWidth: "440px",
-  padding: "50px 30px",
-  borderRadius: "30px",
-  background: `
-    linear-gradient(135deg, #276822, #2f00ff, #2a6d1c)
-  `,
-  boxShadow: `
-    0 4px 30px rgba(0, 255, 255, 0.6),
-    inset 0 0 20px rgba(255, 255, 255, 0.2)
-  `,
-  border: "2px solid rgba(255,255,255,0.6)",
-  backdropFilter: "blur(8px)", // gives a glassy, high-tech look
-  transition: "all 0.4s ease",
-};
-/* TITLE with vibrant gradient and glow */
-const logo = {
-  textAlign: "center",
-  fontSize: "36px",
-  fontWeight: "900",
-  marginBottom: "10px",
-  background: `
-    linear-gradient(135deg, #fbff00, #ffe600, #ffae00, #eeff00)
-  `,
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-  textShadow: "0 0 20px rgba(255,255,255,0.8)",
-  letterSpacing: "2px",
-  transition: "all 0.3s ease",
-};
-
-/* Subtitle with soft glow */
-const subtitle = {
-  textAlign: "center",
-  fontSize: "16px",
-  color: "#fff",
-  marginBottom: "30px",
-  textShadow: "0 0 8px rgba(255,255,255,0.3)",
-};
-
-/* INPUTS styling with glow and smooth transition */
-const input = {
-  width: "100%",
-  padding: "16px",
-  marginBottom: "16px",
-  borderRadius: "18px",
-  border: "2px solid rgba(255,255,255,0.2)",
-  background: "rgba(255,255,255,0.1)",
-  color: "#fff",
-  fontSize: "16px",
-  outline: "none",
-  transition: "all 0.2s ease",
-  boxShadow: "0 0 10px rgba(255,255,255,0.2)",
-};
-
-/* Password eye icon wrapper */
-const passwordWrap = {
-  position: "relative",
-};
-
-/* Eye icon style */
-const eye = {
-  position: "absolute",
-  right: "15px",
-  top: "50%",
-  transform: "translateY(-50%)",
-  cursor: "pointer",
-  fontSize: "20px",
-  color: "#ffd700",
-  transition: "transform 0.2s ease",
-};
-
-/* Buttons - keep original colors */
-const button = {
-  width: "100%",
-  padding: "16px",
-  borderRadius: "20px",
-  border: "none",
-  background: `
-    linear-gradient(135deg, #f7971e, #ffd200, #f7971e)
-  `,
-  color: "#1f2937",
-  fontWeight: "700",
-  fontSize: "16px",
-  cursor: "pointer",
-  marginTop: "20px",
-  boxShadow: `
-    0 8px 15px rgba(247, 151, 28, 0.3),
-    inset 0 0 10px rgba(255,255,255,0.2)
-  `,
-  transition: "all 0.2s ease",
-};
-
-/* Message for feedback */
-const message = {
-  marginTop: "15px",
-  fontSize: "14px",
-  textAlign: "center",
-  color: "#f87171",
-  fontWeight: "600",
-};
-
-/* Switch area with new color palette */
-const switchText = {
-  marginTop: "30px",
-  padding: "15px",
-  borderRadius: "20px",
-  background: `
-    linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255,255,255,0.05))
-  `,
-  boxShadow: `
-    inset 0 0 10px rgba(255,255,255,0.2),
-    0 4px 20px rgba(0,0,0,0.2)
-  `,
-  textAlign: "center",
-  fontSize: "15px",
-  fontWeight: "600",
-  color: "#fff",
-};
-
-/* Link style with bright gradient and glow */
-const link = {
-  marginLeft: "8px",
-  padding: "6px 12px",
-  borderRadius: "12px",
-  background: `
-    linear-gradient(135deg, #ffd902, #ff0000)
-  `,
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-  fontWeight: "900",
-  cursor: "pointer",
-  textShadow: "0 0 10px rgb(251, 255, 4)",
-  transition: "all 0.2s ease",
-};
+// Add CSS animation for spinner
+const styleSheet = document.createElement("style");
+styleSheet.innerHTML = `
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  input:focus {
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+  }
+  
+  button:hover {
+    transform: translateY(-2px);
+  }
+`;
+document.head.appendChild(styleSheet);

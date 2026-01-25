@@ -179,7 +179,7 @@ body {
    1. MAIN MENU HEADER WITH DASHBOARD TITLE (AT TOP)
 ========================================================= */
 .dashboard-main-header {
-  background: linear-gradient(135deg, rgb(255, 238, 0), rgb(0, 59, 252));
+  background: linear-gradient(135deg, rgb(255, 0, 0), rgb(2, 53, 219));
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   margin-bottom: var(--space-md);
