@@ -268,26 +268,30 @@ body {
     transform: translateY(0);
   }
 }
-
 /* =========================================================
-   3. PROFESSIONAL WELCOME BONUS CARD
+   3. PROFESSIONAL WELCOME BONUS CARD - MOBILE OPTIMIZED
 ========================================================= */
 .professional-bonus-card {
   background: var(--bonus-gradient);
   border-radius: var(--radius-xl);
-  padding: var(--space-xl);
+  padding: var(--space-lg);
   margin-bottom: var(--space-md);
   box-shadow: var(--bonus-glow);
   color: #1a1a1a;
   position: relative;
   overflow: hidden;
   border: 2px solid rgba(255, 255, 255, 0.25);
-  transition: var(--transition-normal);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transform: translateZ(0); /* Hardware acceleration */
+  backface-visibility: hidden; /* Standard property - prevents flickering */
 }
 
-.professional-bonus-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 40px rgba(255, 107, 53, 0.35);
+/* Remove hover transform on mobile to avoid jank */
+@media (hover: hover) and (pointer: fine) {
+  .professional-bonus-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(255, 107, 53, 0.35);
+  }
 }
 
 .bonus-card-header {
@@ -298,13 +302,25 @@ body {
 }
 
 .bonus-icon {
-  font-size: 32px;
+  font-size: 28px;
+  /* Optimized animation for mobile */
   animation: gentleFloat 3s ease-in-out infinite;
 }
 
 @keyframes gentleFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+  0%, 100% { 
+    transform: translateY(0); 
+  }
+  50% { 
+    transform: translateY(-5px); 
+  }
+}
+
+/* Reduce animation intensity on mobile */
+@media (prefers-reduced-motion: reduce) {
+  .bonus-icon {
+    animation: none;
+  }
 }
 
 .bonus-header-text h3 {
@@ -312,6 +328,7 @@ body {
   font-weight: 800;
   color: #1f2937;
   margin: 0 0 2px;
+  line-height: 1.2; /* Better line height for mobile */
 }
 
 .bonus-subtitle {
@@ -319,16 +336,25 @@ body {
   color: #6b7280;
   margin: 0;
   font-weight: 600;
+  line-height: 1.3;
 }
 
 .bonus-amount-display {
   text-align: center;
   margin: var(--space-lg) 0;
-  padding: var(--space-lg);
+  padding: var(--space-md);
   background: rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-lg);
-  backdrop-filter: blur(8px);
+  /* Remove backdrop-filter on mobile for better performance */
+  backdrop-filter: none;
   border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Enable backdrop-filter only on desktop */
+@media (min-width: 769px) {
+  .bonus-amount-display {
+    backdrop-filter: blur(8px);
+  }
 }
 
 .bonus-amount-display .currency {
@@ -341,12 +367,13 @@ body {
 }
 
 .bonus-amount-display .amount {
-  font-size: 48px;
+  font-size: clamp(36px, 8vw, 48px); /* Responsive font size */
   font-weight: 900;
   color: #1f2937;
   display: block;
   line-height: 1;
   text-shadow: 0 2px 8px rgba(31, 41, 55, 0.2);
+  word-break: break-word; /* Prevent overflow */
 }
 
 .bonus-description {
@@ -355,11 +382,12 @@ body {
 }
 
 .bonus-description p {
-  font-size: 14px;
+  font-size: clamp(13px, 3.5vw, 14px); /* Responsive font size */
   color: #374151;
   line-height: 1.5;
   margin: 0;
   font-weight: 500;
+  hyphens: auto; /* Better text wrapping */
 }
 
 .bonus-description strong {
@@ -367,7 +395,52 @@ body {
   font-weight: 800;
 }
 
+.roi-summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  background: rgba(255, 255, 255, 0.15);
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap; /* Wrap on small screens */
+}
 
+.roi-item {
+  text-align: center;
+  flex: 1;
+  min-width: 70px; /* Prevent too small items */
+}
+
+.roi-item .label {
+  display: block;
+  font-size: 11px;
+  color: #4b5563;
+  margin-bottom: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.roi-item .value {
+  display: block;
+  font-size: clamp(16px, 4vw, 18px); /* Responsive font size */
+  font-weight: 800;
+  color: #1f2937;
+}
+
+.roi-item.highlight .value {
+  color: #059669;
+}
+
+.roi-separator {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1f2937;
+  opacity: 0.7;
+}
 
 .bonus-actions {
   display: flex;
@@ -405,7 +478,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: var(--transition-normal);
+  transition: background-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent; /* Remove tap highlight */
+  user-select: none;
 }
 
 .bonus-details summary::-webkit-details-marker {
@@ -415,7 +490,7 @@ body {
 .bonus-details summary::after {
   content: '▼';
   font-size: 10px;
-  transition: var(--transition-normal);
+  transition: transform 0.2s ease;
 }
 
 .bonus-details[open] summary::after {
@@ -429,13 +504,13 @@ body {
 .details-content {
   padding: var(--space-md);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  animation: slideDown 0.3s ease;
+  animation: slideDown 0.2s ease;
 }
 
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-8px);
   }
   to {
     opacity: 1;
@@ -450,6 +525,7 @@ body {
   margin-bottom: 10px;
   font-size: 13px;
   color: #4b5563;
+  line-height: 1.4;
 }
 
 .detail-item:last-child {
@@ -461,6 +537,93 @@ body {
   min-width: 20px;
 }
 
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  .professional-bonus-card {
+    margin: 0 -12px var(--space-md);
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    padding: var(--space-lg) 16px;
+  }
+  
+  .bonus-card-header {
+    gap: 12px;
+    margin-bottom: var(--space-md);
+  }
+  
+  .bonus-amount-display {
+    margin: var(--space-md) 0;
+    padding: 16px;
+  }
+  
+  .bonus-amount-display .amount {
+    font-size: 42px; /* Slightly smaller on mobile */
+  }
+  
+  .roi-summary {
+    gap: 12px;
+    padding: 12px;
+  }
+  
+  .roi-item {
+    min-width: 65px;
+  }
+  
+  .roi-item .value {
+    font-size: 16px;
+  }
+  
+  .bonus-actions {
+    gap: 10px;
+  }
+}
+
+/* Small phones */
+@media (max-width: 375px) {
+  .professional-bonus-card {
+    padding: 14px 12px;
+  }
+  
+  .bonus-icon {
+    font-size: 24px;
+  }
+  
+  .bonus-header-text h3 {
+    font-size: 16px;
+  }
+  
+  .bonus-amount-display .amount {
+    font-size: 36px;
+  }
+  
+  .roi-summary {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .roi-item {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .roi-separator {
+    display: none; /* Hide separator on very small screens */
+  }
+}
+
+/* Performance optimizations */
+@media (prefers-reduced-motion: reduce) {
+  .professional-bonus-card,
+  .bonus-details summary,
+  .bonus-details summary::after {
+    transition: none;
+  }
+  
+  .bonus-details[open] .details-content {
+    animation: none;
+  }
+}
 /* =========================================================
    4. DASHBOARD NAVIGATION - MOBILE OPTIMIZED
 ========================================================= */
