@@ -376,7 +376,7 @@ export default function Dashboard() {
             <span className="menu-icon">☰</span>
           </button>
         </div>
-        <p className="header-subtitle">Welcome back, {user.full_name.split(' ')[0]}!👋👋Earn With Survey Today💸💸💸</p>
+        <p className="header-subtitle">Welcome back, {user.full_name.split(' ')[0]}!👋Start Earning Today💸💸</p>
       </header>
 
       {/* MAIN MENU DRAWER */}
