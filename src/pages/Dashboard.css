@@ -607,7 +607,7 @@ body {
   gap: 6px;
   padding: var(--space-lg) var(--space-md);
   background: rgba(255, 255, 255, 0.08); /* Slight background for contrast */
-  color: rgba(255, 255, 255, 0.9); /* Brighter text */
+  color: rgb(255, 166, 0); /* Brighter text */
   font-weight: 800;
   font-size: 11px;
   cursor: pointer;
@@ -627,13 +627,12 @@ body {
 
 .nav-btn:hover {
   background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.35);
+  border-color: rgb(255, 217, 0);
   transform: translateY(-2px);
   box-shadow: 
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     0 4px 12px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
 }
-
 .nav-btn.active {
   background: var(--primary);
   color: #1a1a1a;
@@ -675,7 +674,7 @@ body {
   transform: translateY(-1px); /* Lift label on hover */
 }
 /* =========================================================
-   5. YOUR EARNINGS DASHBOARD
+   5. YOUR EARNINGS DASHBOARD - ENHANCED COLORFUL CARDS
 ========================================================= */
 .stats-grid {
   display: grid;
@@ -699,12 +698,74 @@ body {
   overflow: hidden;
   backdrop-filter: blur(20px);
   transition: var(--transition-normal);
+  border-top: 4px solid transparent; /* Colorful top border */
 }
 
-.stats-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+/* Different color for each card */
+.stats-card:nth-child(1) {
+  border-top-color: #FF6B35; /* Orange */
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 107, 53, 0.05));
+}
+
+.stats-card:nth-child(2) {
+  border-top-color: #3B82F6; /* Blue */
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+}
+
+.stats-card:nth-child(3) {
+  border-top-color: #10B981; /* Green */
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+}
+
+.stats-card:nth-child(4) {
+  border-top-color: #8B5CF6; /* Purple */
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
+}
+
+/* Hover effects with matching colors */
+.stats-card:nth-child(1):hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 107, 53, 0.4);
+  box-shadow: 0 12px 30px rgba(255, 107, 53, 0.25);
+}
+
+.stats-card:nth-child(2):hover {
+  transform: translateY(-4px);
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.25);
+}
+
+.stats-card:nth-child(3):hover {
+  transform: translateY(-4px);
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 12px 30px rgba(16, 185, 129, 0.25);
+}
+
+.stats-card:nth-child(4):hover {
+  transform: translateY(-4px);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 12px 30px rgba(139, 92, 246, 0.25);
+}
+
+/* Colorful icons */
+.stats-card:nth-child(1) .stats-icon {
+  color: #FF6B35; /* Orange */
+  text-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+}
+
+.stats-card:nth-child(2) .stats-icon {
+  color: #3B82F6; /* Blue */
+  text-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.stats-card:nth-child(3) .stats-icon {
+  color: #10B981; /* Green */
+  text-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.stats-card:nth-child(4) .stats-icon {
+  color: #8B5CF6; /* Purple */
+  text-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
 }
 
 .stats-card-header {
@@ -715,55 +776,137 @@ body {
 }
 
 .stats-icon {
-  font-size: 20px;
+  font-size: 22px; /* Slightly larger */
+  transition: transform 0.3s ease;
+}
+
+.stats-card:hover .stats-icon {
+  transform: scale(1.2) rotate(5deg); /* Fun animation */
 }
 
 .stats-card h4 {
   margin: 0;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800; /* Bolder */
   color: var(--text-main);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .stats-card-body {
   margin-bottom: var(--space-sm);
 }
 
+/* Colorful values matching the card theme */
+.stats-card:nth-child(1) .stats-value {
+  color: #FF6B35; /* Orange */
+  text-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+}
+
+.stats-card:nth-child(2) .stats-value {
+  color: #3B82F6; /* Blue */
+  text-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.stats-card:nth-child(3) .stats-value {
+  color: #10B981; /* Green */
+  text-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.stats-card:nth-child(4) .stats-value {
+  color: #8B5CF6; /* Purple */
+  text-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
 .stats-value {
   display: block;
-  font-size: 22px;
+  font-size: 24px; /* Slightly larger */
   font-weight: 900;
-  color: var(--primary);
   margin-bottom: 4px;
-  text-shadow: 0 2px 4px rgba(255, 183, 3, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.stats-card:hover .stats-value {
+  transform: scale(1.05); /* Grow on hover */
 }
 
 .stats-label {
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  opacity: 0.8;
+  font-weight: 700;
   color: var(--text-muted);
+  opacity: 0.9;
 }
 
+/* Colorful gradient button */
 .withdraw-quick-btn {
   width: 100%;
-  padding: 8px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  padding: 10px;
+  background: linear-gradient(135deg, #FF6B35, #FF8E53, #FFBB33);
   border: none;
   border-radius: var(--radius-md);
   color: #1a1a1a;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 12px;
   cursor: pointer;
-  transition: var(--transition-normal);
-  min-height: 44px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 46px;
   min-width: 44px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+}
+
+.withdraw-quick-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.withdraw-quick-btn:hover::before {
+  left: 100%;
 }
 
 .withdraw-quick-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 183, 3, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.5);
+  background: linear-gradient(135deg, #FF8E53, #FFBB33, #FF6B35);
+}
+
+.withdraw-quick-btn:active {
+  transform: translateY(-1px);
+}
+
+/* Optional: Add subtle animated background lines */
+.stats-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
+  transition: 0.5s;
+  z-index: 1;
+}
+
+.stats-card:hover::after {
+  left: 100%;
 }
 
 /* =========================================================
