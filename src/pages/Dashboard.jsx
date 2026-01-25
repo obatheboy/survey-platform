@@ -608,9 +608,9 @@ export default function Dashboard() {
       <section ref={welcomeRef} className="dashboard-section">
         <div className="professional-bonus-card">
           <div className="bonus-card-header">
-      
+            <span className="bonus-icon">🎁</span>
             <div className="bonus-header-text">
-              <h3>🎁Welcome Bonus</h3>
+              <h3>Welcome Bonus</h3>
               <p className="bonus-subtitle">Activate to claim</p>
             </div>
           </div>
