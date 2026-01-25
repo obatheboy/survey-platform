@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { motion, AnimatePresence } from "framer-motion"; // eslint-disable-line no-unused-vars
+
 import api from "../api/api";
 
 export default function Auth() {
@@ -215,7 +215,7 @@ export default function Auth() {
             }}
             onClick={() => setMode("login")}
           >
-            Sign In
+            Log In
           </button>
           <button
             style={{
@@ -329,7 +329,7 @@ export default function Auth() {
                   {loading ? (
                     <div style={styles.loadingSpinner}></div>
                   ) : (
-                    "Start Earning Now 🚀"
+                    "Complete Registration🚀"
                   )}
                 </motion.button>
 
@@ -406,7 +406,7 @@ export default function Auth() {
                   {loading ? (
                     <div style={styles.loadingSpinner}></div>
                   ) : (
-                    "Access Your Account 🔐"
+                    "Go To Your Account 🔐"
                   )}
                 </motion.button>
 
