@@ -1048,7 +1048,7 @@ body {
 }
 
 /* =========================================================
-   7. WHY USERS LOVE OUR PLATFORM
+   7. WHY USERS LOVE OUR PLATFORM - COLORFUL VERSION
 ========================================================= */
 .feature-grid {
   display: grid;
@@ -1060,41 +1060,146 @@ body {
   background: var(--bg-glass);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
-  padding: var(--space-md);
+  padding: var(--space-lg);
   text-align: center;
-  transition: var(--transition-normal);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+  border-top: 3px solid transparent;
+}
+
+/* Different colors for each card */
+.feature-card:nth-child(1) {
+  border-top-color: #FF6B35; /* Orange - Instant Withdrawals */
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 107, 53, 0.05));
+}
+
+.feature-card:nth-child(2) {
+  border-top-color: #3B82F6; /* Blue - Verified Surveys */
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+}
+
+.feature-card:nth-child(3) {
+  border-top-color: #10B981; /* Green - Secure Payments */
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+}
+
+.feature-card:nth-child(4) {
+  border-top-color: #8B5CF6; /* Purple - 24/7 Support */
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
 }
 
 .feature-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
   border-color: rgba(255, 255, 255, 0.3);
 }
 
+/* Colorful hover shadows */
+.feature-card:nth-child(1):hover {
+  box-shadow: 0 20px 40px rgba(255, 107, 53, 0.25);
+}
+
+.feature-card:nth-child(2):hover {
+  box-shadow: 0 20px 40px rgba(59, 130, 246, 0.25);
+}
+
+.feature-card:nth-child(3):hover {
+  box-shadow: 0 20px 40px rgba(16, 185, 129, 0.25);
+}
+
+.feature-card:nth-child(4):hover {
+  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.25);
+}
+
 .feature-icon {
-  font-size: 32px;
+  font-size: 36px;
   margin-bottom: var(--space-sm);
   display: inline-block;
-  transition: var(--transition-normal);
+  transition: all 0.4s ease;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .feature-card:hover .feature-icon {
-  transform: scale(1.1);
+  transform: scale(1.2) rotate(5deg);
+}
+
+/* Colorful icons */
+.feature-card:nth-child(1) .feature-icon {
+  color: #FF6B35;
+  text-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+.feature-card:nth-child(2) .feature-icon {
+  color: #3B82F6;
+  text-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.feature-card:nth-child(3) .feature-icon {
+  color: #10B981;
+  text-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.feature-card:nth-child(4) .feature-icon {
+  color: #8B5CF6;
+  text-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
 .feature-card h4 {
-  margin: 0 0 8px;
-  font-size: 16px;
-  font-weight: 800;
+  margin: 0 0 12px;
+  font-size: 17px;
+  font-weight: 900;
   color: var(--text-main);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .feature-card p {
   margin: 0;
   font-size: 13px;
-  line-height: 1.5;
+  line-height: 1.6;
   color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .feature-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: var(--space-md);
+  }
+  
+  .feature-card {
+    padding: 20px;
+  }
+  
+  .feature-icon {
+    font-size: 32px;
+  }
+  
+  .feature-card h4 {
+    font-size: 16px;
+  }
+  
+  .feature-card p {
+    font-size: 13px;
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop optimizations */
+@media (min-width: 1025px) {
+  .feature-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 /* =========================================================
