@@ -597,29 +597,54 @@ body {
   padding: 6px;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
-
 .nav-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: var(--space-sm);
+  gap: 6px; /* ← Increased gap */
+  padding: var(--space-lg) var(--space-md); /* ← More padding */
   border: none;
   background: transparent;
   color: rgba(255, 255, 255, 0.7);
-  font-weight: 700;
+  font-weight: 800; /* ← Bolder text */
   font-size: 11px;
   cursor: pointer;
   border-radius: var(--radius-md);
-  transition: var(--transition-normal);
-  min-height: 64px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 72px; /* ← Slightly taller */
+  min-width: 60px; /* ← Ensures width on mobile */
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   text-decoration: none;
   position: relative;
+  border: 1px solid transparent; /* ← Add border for hover */
 }
 
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px); /* ← Lift effect */
+}
+
+.nav-btn.active {
+  background: var(--primary);
+  color: #1a1a1a;
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4); /* ← Stronger shadow */
+  border: none;
+}
+
+.nav-btn.active::before {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px; /* ← Wider indicator */
+  height: 3px;
+  background: #1a1a1a;
+  border-radius: 2px;
+}
 .nav-btn.active {
   background: var(--primary);
   color: #1a1a1a;
