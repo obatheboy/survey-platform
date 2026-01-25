@@ -124,7 +124,6 @@ export default function Auth() {
     }
   };
 
-  // Define Input component outside of render to prevent recreation
   const Input = ({ type = "text", icon, ...props }) => (
     <div style={styles.inputContainer}>
       {icon && <span style={styles.inputIcon}>{icon}</span>}
@@ -185,9 +184,9 @@ export default function Auth() {
           </button>
         </div>
 
-        {/* SIMPLIFIED FORM SWITCHING - No dynamic height/opacity */}
+        {/* SIMPLIFIED: Remove the problematic wrapper divs */}
         {mode === "register" ? (
-          <form onSubmit={handleRegister} key="register-form">
+          <form onSubmit={handleRegister} key="register">
             <div style={styles.formGroup}>
               <Input
                 placeholder="Your Full Name"
@@ -282,9 +281,7 @@ export default function Auth() {
             </button>
 
             {regMessage && (
-              <div>
-                <p style={styles.message}>{regMessage}</p>
-              </div>
+              <p style={styles.message}>{regMessage}</p>
             )}
 
             <p style={styles.switchText}>
@@ -299,7 +296,7 @@ export default function Auth() {
             </p>
           </form>
         ) : (
-          <form onSubmit={handleLogin} key="login-form">
+          <form onSubmit={handleLogin} key="login">
             <div style={styles.formGroup}>
               <Input
                 placeholder="Phone Number"
@@ -353,9 +350,7 @@ export default function Auth() {
             </button>
 
             {loginMessage && (
-              <div>
-                <p style={styles.message}>{loginMessage}</p>
-              </div>
+              <p style={styles.message}>{loginMessage}</p>
             )}
 
             <p style={styles.switchText}>
