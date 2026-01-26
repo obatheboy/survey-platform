@@ -56,6 +56,7 @@ export default function Dashboard() {
   const surveyRef = useRef(null);
   const withdrawRef = useRef(null);
   const welcomeRef = useRef(null);
+  const dashboardRef = useRef(null);
 
   /* =========================
      UI STATE
@@ -70,6 +71,12 @@ export default function Dashboard() {
     totalSurveysCompleted: 0,
     totalWithdrawals: 0
   });
+
+   /* =========================
+     AUTO-SCROLL & WHATSAPP STATE
+  ========================= */
+  const [showCaption, setShowCaption] = useState(true);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
 
   /* =========================
      DATA STATE
@@ -161,6 +168,94 @@ export default function Dashboard() {
     });
   }, [plans]);
 
+  /* =========================
+     WHATSAPP CAPTION BLINKING EFFECT
+  ========================= */
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShowCaption(prev => !prev);
+    }, 2000); // Blink every 2 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  /* =========================
+     AUTO-SCROLL FEATURE
+  ========================= */
+  useEffect(() => {
+    let inactivityTimer;
+    let scrollInterval;
+    let scrollPosition = 0;
+    const scrollStep = 2; // Pixels per step
+    const scrollDelay = 30; // Milliseconds between steps
+    const maxScroll = 1500; // Maximum scroll depth in pixels
+
+    const resetInactivityTimer = () => {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => {
+        startAutoScroll();
+      }, 1000); // 1 second of inactivity
+    };
+
+    const startAutoScroll = () => {
+      if (isAutoScrolling) return;
+      
+      setIsAutoScrolling(true);
+      scrollPosition = window.scrollY || document.documentElement.scrollTop;
+      
+      // Scroll down slowly
+      scrollInterval = setInterval(() => {
+        if (scrollPosition >= maxScroll) {
+          // Reached bottom, scroll back to top
+          clearInterval(scrollInterval);
+          setTimeout(() => {
+            // Scroll back to top smoothly
+            window.scrollTo({
+              top: 0,
+              behavior: 'smooth'
+            });
+            setTimeout(() => {
+              setIsAutoScrolling(false);
+            }, 2000);
+          }, 1000);
+          return;
+        }
+        
+        scrollPosition += scrollStep;
+        window.scrollTo(0, scrollPosition);
+      }, scrollDelay);
+    };
+
+    const stopAutoScroll = () => {
+      clearInterval(scrollInterval);
+      setIsAutoScrolling(false);
+    };
+
+    // Set up event listeners for user activity
+    const events = ['mousedown', 'mousemove', 'keydown', 'touchstart', 'scroll'];
+    
+    const handleUserActivity = () => {
+      resetInactivityTimer();
+      if (isAutoScrolling) {
+        stopAutoScroll();
+      }
+    };
+
+    events.forEach(event => {
+      window.addEventListener(event, handleUserActivity);
+    });
+
+    // Start the inactivity timer
+    resetInactivityTimer();
+
+    return () => {
+      clearTimeout(inactivityTimer);
+      clearInterval(scrollInterval);
+      events.forEach(event => {
+        window.removeEventListener(event, handleUserActivity);
+      });
+    };
+  }, [isAutoScrolling]);
   /* =========================
      HELPERS - USING OLD LOGIC
   ========================= */
@@ -330,7 +425,6 @@ export default function Dashboard() {
   const openWhatsAppSupport = () => {
     const message = encodeURIComponent("Hello SurveyEarn Support, I need help with my survey account.");
     const whatsappUrl = `https://wa.me/254794101450?text=${message}`;
-    // Use window.location for better mobile app compatibility
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
 
@@ -362,7 +456,30 @@ export default function Dashboard() {
      MAIN RENDER
   ========================= */
   return (
-    <div className="dashboard">
+    <div className="dashboard" ref={dashboardRef}>
+      {/* AUTO-SCROLL INDICATOR (only visible when auto-scrolling) */}
+      {isAutoScrolling && (
+        <div style={{
+          position: 'fixed',
+          top: '10px',
+          right: '10px',
+          background: 'rgba(59, 130, 246, 0.9)',
+          color: 'white',
+          padding: '6px 12px',
+          borderRadius: '20px',
+          fontSize: '12px',
+          fontWeight: '600',
+          zIndex: 9999,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px'
+        }}>
+          <span>🔍</span>
+          Exploring features for you...
+        </div>
+      )}
+
       {/* TOAST NOTIFICATION */}
       {toast && <Notifications message={toast} />}
 
@@ -653,7 +770,8 @@ export default function Dashboard() {
       
       {/* LIVE WITHDRAWAL FEED */}
       <LiveWithdrawalFeed />
-      {/* COMPACT FLOATING WHATSAPP SUPPORT BUTTON WITH CAPTION */}
+
+      {/* COMPACT FLOATING WHATSAPP SUPPORT BUTTON WITH BLINKING CAPTION */}
       <div style={{
         position: 'fixed',
         bottom: '20px',
@@ -664,21 +782,24 @@ export default function Dashboard() {
         alignItems: 'flex-end',
         gap: '5px'
       }}>
-        {/* Caption */}
-        <div style={{
-          background: 'rgba(37, 211, 102, 0.9)',
-          color: 'white',
-          padding: '4px 10px',
-          borderRadius: '12px',
-          fontSize: '12px',
-          fontWeight: '600',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
-          whiteSpace: 'nowrap',
-          backdropFilter: 'blur(4px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
-        }}>
-          Need help? Chat us
-        </div>
+        {/* Caption with blinking effect */}
+        {showCaption && (
+          <div style={{
+            background: 'rgba(37, 211, 102, 0.9)',
+            color: 'white',
+            padding: '4px 10px',
+            borderRadius: '12px',
+            fontSize: '12px',
+            fontWeight: '600',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+            whiteSpace: 'nowrap',
+            backdropFilter: 'blur(4px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            animation: 'fadeIn 0.5s ease'
+          }}>
+            Need help? Chat us
+          </div>
+        )}
         
         {/* Button */}
         <button
@@ -713,6 +834,7 @@ export default function Dashboard() {
           💬
         </button>
       </div>
+
       {/* WELCOME BONUS CARD - PROFESSIONAL VERSION */}
       <section ref={welcomeRef} className="dashboard-section">
         <div className="professional-bonus-card">
@@ -1341,6 +1463,37 @@ export default function Dashboard() {
         </p>
         <p className="footer-note">© {new Date().getFullYear()} SurveyEarn. All rights reserved.</p>
       </footer>
+
+      {/* Add CSS animations */}
+      <style>
+        {`
+          @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(5px); }
+            100% { opacity: 1; transform: translateY(0); }
+          }
+          
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          
+          @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+          }
+          
+          input:focus {
+            border-color: #667eea !important;
+            boxShadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+          }
+          
+          button:hover {
+            transform: translateY(-2px);
+            transition: transform 0.2s ease;
+          }
+        `}
+      </style>
     </div>
   );
 }
