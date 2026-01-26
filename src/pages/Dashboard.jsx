@@ -77,6 +77,7 @@ export default function Dashboard() {
   ========================= */
   const [showCaption, setShowCaption] = useState(true);
   const [showScrollReminder, setShowScrollReminder] = useState(false);
+  const [reminderShown, setReminderShown] = useState(false);
 
   /* =========================
      DATA STATE
@@ -178,77 +179,46 @@ export default function Dashboard() {
 
     return () => clearInterval(interval);
   }, []);
-/* =========================
-     SCROLL REMINDER NOTIFICATION - FIXED
+
+  /* =========================
+     SCROLL REMINDER NOTIFICATION - FIXED VERSION
   ========================= */
   useEffect(() => {
-    let inactivityTimer;
-    let reminderTimeout;
-    const reminderDelay = 5000; // Show reminder after 5 seconds of inactivity
-    const scrollThreshold = 100; // Don't show reminder if user has scrolled past 100px
-    let hasShownReminder = false; // Track if reminder has been shown
-
-    const resetInactivityTimer = () => {
-      clearTimeout(inactivityTimer);
-      clearTimeout(reminderTimeout);
-      
-      // Only hide if it's currently showing
-      if (showScrollReminder) {
-        setShowScrollReminder(false);
-      }
-      
-      // Don't restart the timer if we've already shown the reminder
-      if (hasShownReminder) return;
-      
-      inactivityTimer = setTimeout(() => {
-        // Check if user hasn't scrolled much
-        const currentScroll = window.scrollY || document.documentElement.scrollTop;
-        if (currentScroll < scrollThreshold) {
-          reminderTimeout = setTimeout(() => {
-            setShowScrollReminder(true);
-            hasShownReminder = true; // Mark that we've shown the reminder
-          }, reminderDelay);
-        }
-      }, 2000); // Start checking after 2 seconds of inactivity
-    };
-
-    const handleUserActivity = () => {
-      resetInactivityTimer();
-    };
-
-    const handleScroll = () => {
-      // Only hide reminder when user starts scrolling if it's currently showing
-      if (showScrollReminder) {
-        setShowScrollReminder(false);
-      }
-      resetInactivityTimer();
-    };
-
-    // Set up event listeners for user activity
-    const activityEvents = ['mousedown', 'mousemove', 'keydown', 'touchstart'];
+    // Don't show reminder if already shown or if user has scrolled
+    if (reminderShown) return;
     
-    activityEvents.forEach(event => {
-      window.addEventListener(event, handleUserActivity);
-    });
-
-    // Add separate scroll listener
-    window.addEventListener('scroll', handleScroll);
-
-    // Start the inactivity timer
-    resetInactivityTimer();
-
-    return () => {
-      clearTimeout(inactivityTimer);
-      clearTimeout(reminderTimeout);
-      activityEvents.forEach(event => {
-        window.removeEventListener(event, handleUserActivity);
-      });
-      window.removeEventListener('scroll', handleScroll);
+    const checkScrollPosition = () => {
+      const currentScroll = window.scrollY || document.documentElement.scrollTop;
+      return currentScroll < 100; // Only show if near top
     };
+
+    // Check immediately on load
+    if (checkScrollPosition()) {
+      const timer = setTimeout(() => {
+        setShowScrollReminder(true);
+        setReminderShown(true);
+      }, 3000); // Show after 3 seconds
+      
+      return () => clearTimeout(timer);
+    }
+  }, [reminderShown]);
+
+  // Hide reminder on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (showScrollReminder) {
+        setShowScrollReminder(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [showScrollReminder]);
+
   // Function to dismiss the scroll reminder
   const dismissScrollReminder = () => {
     setShowScrollReminder(false);
+    setReminderShown(true);
   };
 
   /* =========================
