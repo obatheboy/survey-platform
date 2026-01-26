@@ -26,8 +26,6 @@ const PLAN_CONFIG = {
   },
 };
 
-const TOTAL_SURVEYS = 10;
-
 export default function ActivationNotice() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -68,7 +66,7 @@ export default function ActivationNotice() {
           if (!alive) return;
           setLoading(false);
           
-          // THEN verify with backend in background
+          // THEN verify with backend in background (BUT DON'T SHOW ERRORS)
           try {
             const res = await api.get("/auth/me");
             if (!alive) return;
@@ -78,32 +76,25 @@ export default function ActivationNotice() {
 
             if (!activePlan || !backendPlan) {
               console.warn("No active plan found in backend");
-              return;
-            }
-
-            if (backendPlan.surveys_completed < TOTAL_SURVEYS) {
-              console.warn("Surveys not completed in backend");
-              // Don't redirect immediately - let user see the page first
-              setError("Please complete all surveys first");
+              // Don't show error - just use passed state
               return;
             }
 
             if (backendPlan.is_activated) {
               console.log("Plan already activated in backend");
-              // Navigate without replace for better mobile UX
+              // If already activated, redirect to dashboard
               setTimeout(() => {
                 navigate("/dashboard?activated=true");
               }, 1500);
               return;
             }
 
-            // Update with accurate backend data
+            // Update with accurate backend data silently
             setPlanKey(activePlan);
             setTotalEarned(res.data.total_earned);
           } catch (apiError) {
             console.error("Backend verification failed:", apiError);
-            // Keep showing the passed state if backend fails
-            setError("Unable to verify with server. Please check your connection.");
+            // Don't show error - just use passed state
           }
           
           return;
@@ -120,7 +111,8 @@ export default function ActivationNotice() {
           return;
         }
 
-        if (plan.surveys_completed < TOTAL_SURVEYS) {
+        // Only check surveys completed if NO state was passed
+        if (plan.surveys_completed < 10) { // Using hardcoded 10 instead of TOTAL_SURVEYS
           navigate("/dashboard");
           return;
         }
@@ -136,7 +128,10 @@ export default function ActivationNotice() {
         setTotalEarned(res.data.total_earned);
       } catch (err) {
         console.error("ActivationNotice error:", err);
-        setError("Failed to load activation details. Please try again.");
+        // Only show error if we have NO state data
+        if (!location.state?.plan && !location.state?.planType) {
+          setError("Failed to load activation details. Please try again.");
+        }
       } finally {
         if (alive) setLoading(false);
       }
