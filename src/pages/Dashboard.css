@@ -166,13 +166,22 @@ body {
 .dashboard {
   max-width: 1200px;
   margin: 0 auto;
-  padding: var(--space-md);
+  padding: var(--space-sm);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-sm);
   width: 100%;
   position: relative;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 768px) {
+  .dashboard {
+    padding: var(--space-md);
+    gap: var(--space-md);
+  }
 }
 
 /* =========================================================
@@ -181,12 +190,19 @@ body {
 .dashboard-main-header {
   background: linear-gradient(135deg, rgb(255, 0, 0), rgb(2, 53, 219));
   border-radius: var(--radius-xl);
-  padding: var(--space-lg);
-  margin-bottom: var(--space-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-sm);
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   position: relative;
   overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .dashboard-main-header {
+    padding: var(--space-lg);
+    margin-bottom: var(--space-md);
+  }
 }
 
 .dashboard-main-header::before {
@@ -271,13 +287,15 @@ body {
     #0f3460 100%     /* Deep blue */
   );
   border-radius: var(--radius-xl);
-  padding: var(--space-xl);
+  padding: var(--space-lg);
   margin-bottom: var(--space-md);
   box-shadow: 
     0 20px 40px rgba(0, 0, 0, 0.4),
     0 8px 16px rgba(23, 92, 230, 0.2),
     0 0 0 1px rgba(59, 130, 246, 0.3) inset;
   color: white;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
   position: relative;
   overflow: hidden;
   border: 2px solid rgba(59, 130, 246, 0.4);
@@ -327,6 +345,12 @@ body {
   background-size: 20px 20px;
   z-index: 2;
   opacity: 0.4;
+}
+
+@media (min-width: 768px) {
+  .professional-bonus-card {
+    padding: var(--space-xl);
+  }
 }
 
 /* Remove hover transform on mobile to avoid jank */
@@ -411,8 +435,8 @@ body {
 
 .bonus-amount-display {
   text-align: center;
-  margin: var(--space-xl) 0;
-  padding: var(--space-xl);
+  margin: var(--space-lg) 0;
+  padding: var(--space-lg);
   background: linear-gradient(135deg, 
     rgba(59, 130, 246, 0.2),
     rgba(30, 64, 175, 0.1)
@@ -427,6 +451,13 @@ body {
     0 8px 32px rgba(0, 0, 0, 0.3),
     0 0 0 1px rgba(96, 165, 250, 0.2) inset;
   overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .bonus-amount-display {
+    margin: var(--space-xl) 0;
+    padding: var(--space-xl);
+  }
 }
 
 .bonus-amount-display::before {
@@ -509,14 +540,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-lg);
+  gap: var(--space-md);
   background: linear-gradient(135deg, 
     rgba(59, 130, 246, 0.15),
     rgba(30, 64, 175, 0.08)
   );
-  padding: var(--space-lg);
+  padding: var(--space-md);
   border-radius: var(--radius-lg);
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-lg);
   border: 1px solid rgba(96, 165, 250, 0.3);
   flex-wrap: wrap;
   position: relative;
@@ -527,20 +558,41 @@ body {
     0 0 0 1px rgba(96, 165, 250, 0.15) inset;
 }
 
+@media (min-width: 768px) {
+  .roi-summary {
+    gap: var(--space-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-xl);
+  }
+}
+
 .roi-item {
   text-align: center;
   flex: 1;
-  min-width: 75px;
+  min-width: 60px;
+}
+
+@media (min-width: 768px) {
+  .roi-item {
+    min-width: 75px;
+  }
 }
 
 .roi-item .label {
   display: block;
-  font-size: 12px;
+  font-size: 11px;
   color: #94a3b8;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.8px;
+}
+
+@media (min-width: 768px) {
+  .roi-item .label {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
 }
 
 .roi-item .value {
@@ -566,10 +618,17 @@ body {
 .bonus-actions {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
-  margin-bottom: var(--space-lg);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
   position: relative;
   z-index: 3;
+}
+
+@media (min-width: 768px) {
+  .bonus-actions {
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
 }
 
 .full-width {
@@ -577,14 +636,27 @@ body {
 }
 
 .btn-icon {
-  font-size: 20px;
-  margin-right: 10px;
+  font-size: 18px;
+  margin-right: 8px;
+}
+
+@media (min-width: 768px) {
+  .btn-icon {
+    font-size: 20px;
+    margin-right: 10px;
+  }
 }
 
 .bonus-details-collapsible {
-  margin-top: var(--space-lg);
+  margin-top: var(--space-md);
   position: relative;
   z-index: 3;
+}
+
+@media (min-width: 768px) {
+  .bonus-details-collapsible {
+    margin-top: var(--space-lg);
+  }
 }
 
 .bonus-details {
@@ -1685,13 +1757,16 @@ body {
 ========================================================= */
 .plan-cards-container {
   display: grid;
-  gap: var(--space-md);
+  gap: var(--space-sm);
   margin-bottom: var(--space-lg);
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 @media (min-width: 768px) {
   .plan-cards-container {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-md);
   }
 }
 
@@ -1699,11 +1774,17 @@ body {
   background: var(--bg-glass);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-xl);
-  padding: var(--space-md);
+  padding: var(--space-sm);
   display: flex;
   flex-direction: column;
   transition: var(--transition-normal);
   backdrop-filter: blur(20px);
+}
+
+@media (min-width: 768px) {
+  .plan-card {
+    padding: var(--space-md);
+  }
 }
 
 .plan-card:hover {
@@ -1727,32 +1808,51 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-sm);
 }
 
 .plan-badge {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .plan-icon {
-  font-size: 24px;
+  font-size: 20px;
+}
+
+@media (min-width: 768px) {
+  .plan-icon {
+    font-size: 24px;
+  }
 }
 
 .plan-name {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 900;
   color: var(--text-main);
 }
 
+@media (min-width: 768px) {
+  .plan-name {
+    font-size: 18px;
+  }
+}
+
 .plan-status {
-  padding: 4px 12px;
+  padding: 3px 10px;
   border-radius: 20px;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+@media (min-width: 768px) {
+  .plan-status {
+    padding: 4px 12px;
+    font-size: 11px;
+  }
 }
 
 .plan-status.completed {
@@ -1775,17 +1875,31 @@ body {
 ========================================================= */
 .withdraw-cards-container {
   display: grid;
-  gap: var(--space-md);
+  gap: var(--space-sm);
   margin-bottom: var(--space-lg);
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 768px) {
+  .withdraw-cards-container {
+    gap: var(--space-md);
+  }
 }
 
 .withdraw-card {
   background: var(--bg-glass);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
-  padding: var(--space-md);
+  padding: var(--space-sm);
   transition: var(--transition-normal);
   backdrop-filter: blur(20px);
+}
+
+@media (min-width: 768px) {
+  .withdraw-card {
+    padding: var(--space-md);
+  }
 }
 
 .withdraw-card.completed {
@@ -1797,11 +1911,23 @@ body {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+@media (min-width: 768px) {
+  .withdraw-card-header {
+    margin-bottom: var(--space-md);
+  }
 }
 
 .withdraw-card-header .plan-icon {
-  font-size: 24px;
+  font-size: 20px;
+}
+
+@media (min-width: 768px) {
+  .withdraw-card-header .plan-icon {
+    font-size: 24px;
+  }
 }
 
 /* =========================================================
@@ -2273,38 +2399,38 @@ input:focus-visible {
 ========================================================= */
 .scroll-reminder-notification {
   position: fixed;
-  bottom: 30px; /* Changed from top: 90px to bottom */
+  bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
   background: linear-gradient(
     135deg,
-    #2563EB 0%,     /* Vibrant Blue */
-    #3B82F6 25%,    /* Medium Blue */
-    #60A5FA 50%,    /* Light Blue */
-    #3B82F6 75%,    /* Medium Blue */
-    #2563EB 100%    /* Vibrant Blue */
+    #FF6B35 0%,     /* Vibrant Orange */
+    #F76C22 25%,    /* Deep Orange */
+    #FF8C42 50%,    /* Bright Orange */
+    #F76C22 75%,    /* Deep Orange */
+    #FF6B35 100%    /* Vibrant Orange */
   );
-  color: #FFFFFF;   /* White text for maximum contrast */
+  color: #FFFFFF;
   padding: 18px 25px;
   border-radius: 18px;
   box-shadow: 
-    0 15px 40px rgba(37, 99, 235, 0.4),
+    0 15px 40px rgba(255, 107, 53, 0.5),
     0 0 0 2px rgba(255, 255, 255, 0.9),
-    0 0 0 4px rgba(96, 165, 250, 0.6),
-    0 0 30px rgba(147, 197, 253, 0.5); /* Blue glow effect */
+    0 0 0 4px rgba(255, 140, 66, 0.6),
+    0 0 30px rgba(255, 140, 66, 0.6); /* Orange glow effect */
   z-index: 9999;
   max-width: 450px;
   width: 92%;
   animation: 
-    slideInUp 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55), /* Changed to slideInUp */
+    slideInUp 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55),
     pulseGlow 2s ease-in-out infinite 1s,
-    bounceUpDown 3s ease-in-out infinite 2s; /* New bounce animation */
+    bounceUpDown 3s ease-in-out infinite 2s;
   backdrop-filter: blur(20px);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   border: 2px solid rgba(255, 255, 255, 0.95);
   overflow: hidden;
   position: relative;
-  cursor: pointer; /* Make it look clickable */
+  cursor: pointer;
 }
 
 /* Add a subtle upward arrow animation */
@@ -2353,7 +2479,7 @@ input:focus-visible {
   animation: 
     bounce 1.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite,
     spin 4s linear infinite;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.7));
+  background: linear-gradient(135deg, #FFD89B 0%, #FFCE7B 100%);
   border-radius: 50%;
   padding: 12px;
   display: flex;
@@ -2363,7 +2489,7 @@ input:focus-visible {
   min-height: 50px;
   box-shadow: 
     0 4px 15px rgba(0, 0, 0, 0.2),
-    0 0 0 2px rgba(37, 99, 235, 0.8),
+    0 0 0 2px rgba(255, 107, 53, 0.8),
     inset 0 2px 4px rgba(255, 255, 255, 0.9);
   position: relative;
   overflow: hidden;
@@ -2391,10 +2517,10 @@ input:focus-visible {
   display: block;
   width: 22px;
   height: 22px;
-  stroke-width: 3; /* Thicker stroke */
-  stroke: #2563EB;
+  stroke-width: 3;
+  stroke: #FF6B35;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
-  transform: rotate(180deg); /* Rotate to point downward if it's an arrow */
+  transform: rotate(180deg);
 }
 
 .scroll-reminder-text {
@@ -2429,9 +2555,9 @@ input:focus-visible {
 }
 
 .scroll-reminder-dismiss {
-  background: linear-gradient(135deg, #FFFFFF, #EFF6FF);
-  border: 3px solid rgba(37, 99, 235, 0.9);
-  color: #2563EB;
+  background: linear-gradient(135deg, #FFFFFF, #FFE8D6);
+  border: 3px solid rgba(255, 107, 53, 0.9);
+  color: #FF6B35;
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -2451,11 +2577,11 @@ input:focus-visible {
 }
 
 .scroll-reminder-dismiss:hover {
-  background: linear-gradient(135deg, #EFF6FF, #FFFFFF);
+  background: linear-gradient(135deg, #FFE8D6, #FFFFFF);
   transform: scale(1.15) rotate(90deg);
   box-shadow: 
     0 6px 20px rgba(0, 0, 0, 0.4),
-    0 0 0 2px rgba(255, 255, 255, 1);
+    0 0 0 2px rgba(255, 107, 53, 1);
 }
 
 .scroll-reminder-dismiss:active {
