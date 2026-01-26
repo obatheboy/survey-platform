@@ -73,12 +73,12 @@ export default function Auth() {
       return;
     }
 
-  if (regData.password.length < 4) {
-  setRegMessage("Password must be at least 4 characters");
-  setShake(true);
-  setTimeout(() => setShake(false), 500);
-  return;
-}
+    if (regData.password.length < 4) {
+      setRegMessage("Password must be at least 4 characters");
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+      return;
+    }
 
     try {
       setLoading(true);
@@ -142,10 +142,9 @@ export default function Auth() {
 
   return (
     <div style={styles.page}>
-      {/* Decorative elements */}
+      {/* Decorative elements - reduced size */}
       <div style={styles.decorativeCircle1}></div>
       <div style={styles.decorativeCircle2}></div>
-      <div style={styles.decorativeCircle3}></div>
 
       <div
         style={{
@@ -155,14 +154,14 @@ export default function Auth() {
           animation: shake ? "shake 0.5s ease-in-out" : "none",
         }}
       >
-        {/* Logo and greeting */}
+        {/* Logo and greeting - more compact */}
         <div style={styles.logoContainer}>
           <div style={styles.logoIcon}>📊</div>
           <h1 style={styles.logo}>SurveyEarn</h1>
         </div>
         <p style={styles.tagline}>Share Opinions • Earn Rewards</p>
 
-        {/* Mode selector */}
+        {/* Mode selector - compact */}
         <div style={styles.modeSelector}>
           <button
             style={{
@@ -191,7 +190,7 @@ export default function Auth() {
           <form onSubmit={handleRegister} key="register">
             <div style={styles.formGroup}>
               <Input
-                placeholder="Your Full Name"
+                placeholder="Full Name"
                 value={regData.full_name}
                 onChange={(e) =>
                   setRegData(prev => ({ ...prev, full_name: e.target.value }))
@@ -217,20 +216,19 @@ export default function Auth() {
             <div style={styles.formGroup}>
               <Input
                 type="email"
-                placeholder="Email Address (optional)"
+                placeholder="Email (optional)"
                 value={regData.email}
                 onChange={(e) =>
                   setRegData(prev => ({ ...prev, email: e.target.value }))
                 }
                 icon="✉️"
               />
-              <p style={styles.optionalHint}>Leave empty if you don't have an email</p>
             </div>
 
             <div style={styles.formGroup}>
               <div style={styles.passwordContainer}>
                 <Input
-                  placeholder="Create Password"
+                  placeholder="Password"
                   type={showRegPassword ? "text" : "password"}
                   value={regData.password}
                   onChange={(e) =>
@@ -278,7 +276,7 @@ export default function Auth() {
               {loading ? (
                 <div style={styles.loadingSpinner}></div>
               ) : (
-                "Complete Registration 🚀"
+                "Create Account 🚀"
               )}
             </button>
 
@@ -287,13 +285,13 @@ export default function Auth() {
             )}
 
             <p style={styles.switchText}>
-              Already have an account?{" "}
+              Have an account?{" "}
               <button
                 style={styles.switchButton}
                 onClick={() => setMode("login")}
                 type="button"
               >
-                Sign In Here
+                Sign In
               </button>
             </p>
           </form>
@@ -347,7 +345,7 @@ export default function Auth() {
               {loading ? (
                 <div style={styles.loadingSpinner}></div>
               ) : (
-                "Go To Your Account 🔐"
+                "Sign In 🔐"
               )}
             </button>
 
@@ -356,36 +354,36 @@ export default function Auth() {
             )}
 
             <p style={styles.switchText}>
-              New to SurveyEarn?{" "}
+              New user?{" "}
               <button
                 style={styles.switchButton}
                 onClick={() => setMode("register")}
                 type="button"
               >
-                Create Free Account
+                Create Account
               </button>
             </p>
           </form>
         )}
 
-        {/* Benefits showcase */}
+        {/* Benefits showcase - more compact */}
         <div style={styles.benefits}>
           <div style={styles.benefit}>
             <span style={styles.benefitIcon}>💰</span>
-            <span>Earn Cash Rewards</span>
+            <span>Earn Cash</span>
           </div>
           <div style={styles.benefit}>
             <span style={styles.benefitIcon}>⚡</span>
-            <span>Quick Surveys</span>
+            <span>Quick</span>
           </div>
           <div style={styles.benefit}>
             <span style={styles.benefitIcon}>🔒</span>
-            <span>Secure & Private</span>
+            <span>Secure</span>
           </div>
         </div>
       </div>
 
-      {/* Footer */}
+      {/* Footer - compact */}
       <div style={styles.footer}>
         <p>By continuing, you agree to our Terms and Privacy Policy</p>
       </div>
@@ -413,20 +411,31 @@ export default function Auth() {
             transform: translateY(-2px);
             transition: transform 0.2s ease;
           }
+
+          @media (max-height: 700px) {
+            .compact-mode {
+              padding-top: 10px !important;
+              padding-bottom: 10px !important;
+            }
+            
+            .compact-form {
+              margin-top: 10px !important;
+            }
+          }
         `}
       </style>
     </div>
   );
 }
 
-// Keep the styles object exactly the same as before
+// COMPACT STYLES FOR MOBILE
 const styles = {
   page: {
     minHeight: "100vh",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: "20px",
+    padding: "15px",
     background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
     position: "relative",
@@ -434,43 +443,33 @@ const styles = {
   },
   decorativeCircle1: {
     position: "absolute",
-    width: "300px",
-    height: "300px",
+    width: "200px",
+    height: "200px",
     borderRadius: "50%",
     background: "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)",
-    top: "-100px",
-    left: "-100px",
+    top: "-80px",
+    left: "-80px",
     zIndex: 0,
   },
   decorativeCircle2: {
     position: "absolute",
-    width: "200px",
-    height: "200px",
+    width: "150px",
+    height: "150px",
     borderRadius: "50%",
     background: "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)",
     bottom: "-50px",
     right: "-50px",
     zIndex: 0,
   },
-  decorativeCircle3: {
-    position: "absolute",
-    width: "150px",
-    height: "150px",
-    borderRadius: "50%",
-    background: "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)",
-    top: "50%",
-    right: "20%",
-    zIndex: 0,
-  },
   card: {
     width: "100%",
-    maxWidth: "480px",
-    padding: "40px",
-    borderRadius: "24px",
-    background: "rgba(255, 255, 255, 0.95)",
-    backdropFilter: "blur(10px)",
+    maxWidth: "420px",
+    padding: "25px 20px",
+    borderRadius: "20px",
+    background: "rgba(255, 255, 255, 0.97)",
+    backdropFilter: "blur(8px)",
     boxShadow: `
-      0 20px 60px rgba(0, 0, 0, 0.3),
+      0 15px 40px rgba(0, 0, 0, 0.2),
       inset 0 1px 0 rgba(255, 255, 255, 0.6)
     `,
     border: "1px solid rgba(255, 255, 255, 0.3)",
@@ -481,18 +480,18 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "15px",
-    marginBottom: "10px",
+    gap: "12px",
+    marginBottom: "8px",
   },
   logoIcon: {
-    fontSize: "40px",
+    fontSize: "32px",
     background: "linear-gradient(135deg, #667eea, #764ba2)",
-    padding: "15px",
-    borderRadius: "20px",
-    boxShadow: "0 8px 20px rgba(102, 126, 234, 0.4)",
+    padding: "12px",
+    borderRadius: "16px",
+    boxShadow: "0 6px 15px rgba(102, 126, 234, 0.3)",
   },
   logo: {
-    fontSize: "42px",
+    fontSize: "32px",
     fontWeight: "800",
     background: "linear-gradient(135deg, #667eea, #764ba2)",
     WebkitBackgroundClip: "text",
@@ -503,24 +502,24 @@ const styles = {
   tagline: {
     textAlign: "center",
     color: "#666",
-    fontSize: "16px",
-    marginBottom: "30px",
+    fontSize: "14px",
+    marginBottom: "20px",
     fontWeight: "500",
   },
   modeSelector: {
     display: "flex",
     background: "rgba(102, 126, 234, 0.1)",
-    borderRadius: "16px",
-    padding: "6px",
-    marginBottom: "30px",
+    borderRadius: "14px",
+    padding: "5px",
+    marginBottom: "20px",
   },
   modeButton: {
     flex: 1,
-    padding: "14px",
+    padding: "12px",
     border: "none",
     background: "transparent",
-    borderRadius: "12px",
-    fontSize: "16px",
+    borderRadius: "10px",
+    fontSize: "15px",
     fontWeight: "600",
     color: "#667eea",
     cursor: "pointer",
@@ -529,10 +528,10 @@ const styles = {
   modeButtonActive: {
     background: "#667eea",
     color: "white",
-    boxShadow: "0 4px 12px rgba(102, 126, 234, 0.3)",
+    boxShadow: "0 3px 8px rgba(102, 126, 234, 0.3)",
   },
   formGroup: {
-    marginBottom: "20px",
+    marginBottom: "15px",
   },
   inputContainer: {
     position: "relative",
@@ -542,93 +541,86 @@ const styles = {
     left: "15px",
     top: "50%",
     transform: "translateY(-50%)",
-    fontSize: "18px",
+    fontSize: "16px",
     color: "#667eea",
   },
   input: {
     width: "100%",
-    padding: "18px 20px 18px 45px",
-    borderRadius: "16px",
+    padding: "15px 15px 15px 40px",
+    borderRadius: "14px",
     border: "2px solid #e0e0e0",
     background: "white",
-    fontSize: "16px",
+    fontSize: "15px",
     fontWeight: "500",
     color: "#333",
     outline: "none",
     transition: "border-color 0.3s ease, box-shadow 0.3s ease",
     boxSizing: "border-box",
   },
-  optionalHint: {
-    fontSize: "13px",
-    color: "#888",
-    marginTop: "6px",
-    marginLeft: "10px",
-    fontStyle: "italic",
-  },
   passwordContainer: {
     position: "relative",
   },
   passwordToggle: {
     position: "absolute",
-    right: "15px",
+    right: "12px",
     top: "50%",
     transform: "translateY(-50%)",
     background: "none",
     border: "none",
-    fontSize: "20px",
+    fontSize: "18px",
     cursor: "pointer",
     color: "#667eea",
-    padding: "5px",
-    borderRadius: "8px",
+    padding: "4px",
+    borderRadius: "6px",
     transition: "all 0.2s ease",
   },
   forgotPassword: {
     textAlign: "right",
-    marginBottom: "20px",
+    marginBottom: "15px",
   },
   forgotButton: {
     background: "none",
     border: "none",
     color: "#667eea",
-    fontSize: "14px",
+    fontSize: "13px",
     fontWeight: "600",
     cursor: "pointer",
-    padding: "5px",
-    borderRadius: "6px",
+    padding: "4px",
+    borderRadius: "5px",
     transition: "all 0.2s ease",
   },
   primaryButton: {
     width: "100%",
-    padding: "18px",
-    borderRadius: "16px",
+    padding: "16px",
+    borderRadius: "14px",
     border: "none",
     background: "linear-gradient(135deg, #667eea, #764ba2)",
     color: "white",
-    fontSize: "18px",
+    fontSize: "16px",
     fontWeight: "700",
     cursor: "pointer",
-    marginTop: "10px",
-    boxShadow: "0 8px 20px rgba(102, 126, 234, 0.4)",
+    marginTop: "8px",
+    boxShadow: "0 6px 15px rgba(102, 126, 234, 0.3)",
     transition: "all 0.3s ease",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "10px",
+    gap: "8px",
   },
   loadingSpinner: {
-    width: "24px",
-    height: "24px",
+    width: "20px",
+    height: "20px",
     border: "3px solid rgba(255,255,255,0.3)",
     borderTop: "3px solid white",
     borderRadius: "50%",
     animation: "spin 1s linear infinite",
   },
   message: {
-    marginTop: "15px",
-    padding: "12px",
-    borderRadius: "12px",
+    marginTop: "12px",
+    padding: "10px",
+    borderRadius: "10px",
     textAlign: "center",
-    fontSize: "14px",
+    fontSize: "13px",
     fontWeight: "600",
     background: "rgba(255, 87, 87, 0.1)",
     color: "#ff5757",
@@ -636,51 +628,52 @@ const styles = {
   },
   switchText: {
     textAlign: "center",
-    marginTop: "25px",
+    marginTop: "18px",
     color: "#666",
-    fontSize: "15px",
+    fontSize: "14px",
   },
   switchButton: {
     background: "none",
     border: "none",
     color: "#667eea",
-    fontSize: "15px",
+    fontSize: "14px",
     fontWeight: "700",
     cursor: "pointer",
     textDecoration: "underline",
-    padding: "4px 8px",
-    borderRadius: "6px",
+    padding: "3px 6px",
+    borderRadius: "5px",
     transition: "all 0.2s ease",
   },
   benefits: {
     display: "flex",
     justifyContent: "space-between",
-    marginTop: "30px",
-    paddingTop: "25px",
+    marginTop: "22px",
+    paddingTop: "18px",
     borderTop: "1px solid rgba(0,0,0,0.1)",
   },
   benefit: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: "8px",
-    fontSize: "12px",
+    gap: "6px",
+    fontSize: "11px",
     color: "#666",
     fontWeight: "500",
   },
   benefitIcon: {
-    fontSize: "24px",
+    fontSize: "20px",
     background: "linear-gradient(135deg, #667eea, #764ba2)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
   },
   footer: {
     position: "absolute",
-    bottom: "20px",
+    bottom: "15px",
     width: "100%",
     textAlign: "center",
     color: "rgba(255, 255, 255, 0.8)",
-    fontSize: "14px",
+    fontSize: "12px",
+    padding: "0 15px",
     zIndex: 1,
   },
 };

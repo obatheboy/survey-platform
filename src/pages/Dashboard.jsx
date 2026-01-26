@@ -1220,11 +1220,33 @@ const handleWithdrawClick = async (plan) => {
         </section>
       )}
 
-      {/* FOOTER */}
-      <footer className="dashboard-footer">
-        <p>Need help? <a href="/support">Contact Support</a> | <a href="/faq">FAQ</a></p>
-        <p className="footer-note">© {new Date().getFullYear()} SurveyEarn. All rights reserved.</p>
-      </footer>
+   {/* FOOTER */}
+<footer className="dashboard-footer">
+  <p>Need help? 
+    <button 
+      style={{
+        background: 'none',
+        border: 'none',
+        color: '#3b82f6',
+        textDecoration: 'underline',
+        cursor: 'pointer',
+        fontSize: 'inherit',
+        fontFamily: 'inherit',
+        padding: '0',
+        margin: '0 5px'
+      }}
+      onClick={() => {
+        const message = encodeURIComponent("Hello SurveyEarn Support, I need help with my survey account.");
+        const whatsappUrl = `https://wa.me/254794101450?text=${message}`;
+        window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+      }}
+    >
+      Contact Support
+    </button> 
+    | <a href="/faq">FAQ</a>
+  </p>
+  <p className="footer-note">© {new Date().getFullYear()} SurveyEarn. All rights reserved.</p>
+</footer>
     </div>
   );
 }
