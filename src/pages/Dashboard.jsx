@@ -72,7 +72,7 @@ export default function Dashboard() {
     totalWithdrawals: 0
   });
 
-   /* =========================
+ /* =========================
      AUTO-SCROLL & WHATSAPP STATE
   ========================= */
   const [showCaption, setShowCaption] = useState(true);
@@ -169,32 +169,32 @@ export default function Dashboard() {
   }, [plans]);
 
   /* =========================
-     WHATSAPP CAPTION BLINKING EFFECT
+     WHATSAPP CAPTION BLINKING EFFECT - FASTER
   ========================= */
   useEffect(() => {
     const interval = setInterval(() => {
       setShowCaption(prev => !prev);
-    }, 2000); // Blink every 2 seconds
+    }, 800); // Faster blink: Changed from 2000ms to 800ms
 
     return () => clearInterval(interval);
   }, []);
 
   /* =========================
-     AUTO-SCROLL FEATURE
+     AUTO-SCROLL FEATURE - FASTER
   ========================= */
   useEffect(() => {
     let inactivityTimer;
     let scrollInterval;
     let scrollPosition = 0;
-    const scrollStep = 2; // Pixels per step
-    const scrollDelay = 30; // Milliseconds between steps
+    const scrollStep = 6; // FASTER: Increased from 2 to 6 pixels per step
+    const scrollDelay = 15; // FASTER: Reduced from 30ms to 15ms between steps
     const maxScroll = 1500; // Maximum scroll depth in pixels
 
     const resetInactivityTimer = () => {
       clearTimeout(inactivityTimer);
       inactivityTimer = setTimeout(() => {
         startAutoScroll();
-      }, 1000); // 1 second of inactivity
+      }, 1100); // FASTER: Reduced from 2000ms to 1100ms of inactivity
     };
 
     const startAutoScroll = () => {
@@ -203,21 +203,23 @@ export default function Dashboard() {
       setIsAutoScrolling(true);
       scrollPosition = window.scrollY || document.documentElement.scrollTop;
       
-      // Scroll down slowly
+      // Scroll down faster
       scrollInterval = setInterval(() => {
         if (scrollPosition >= maxScroll) {
           // Reached bottom, scroll back to top
           clearInterval(scrollInterval);
           setTimeout(() => {
-            // Scroll back to top smoothly
+            // Scroll back to top smoothly but faster
             window.scrollTo({
               top: 0,
               behavior: 'smooth'
             });
             setTimeout(() => {
               setIsAutoScrolling(false);
-            }, 2000);
-          }, 1000);
+              // Reset position for next auto-scroll
+              scrollPosition = 0;
+            }, 1500); // Reduced from 2000ms
+          }, 800); // Reduced from 1000ms
           return;
         }
         
