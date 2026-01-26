@@ -72,11 +72,11 @@ export default function Dashboard() {
     totalWithdrawals: 0
   });
 
- /* =========================
-     AUTO-SCROLL & WHATSAPP STATE
+  /* =========================
+     WHATSAPP CAPTION BLINKING EFFECT - FASTER
   ========================= */
   const [showCaption, setShowCaption] = useState(true);
-  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
+  const [showScrollReminder, setShowScrollReminder] = useState(false);
 
   /* =========================
      DATA STATE
@@ -180,84 +180,70 @@ export default function Dashboard() {
   }, []);
 
   /* =========================
-     AUTO-SCROLL FEATURE - FASTER
+     SCROLL REMINDER NOTIFICATION
   ========================= */
   useEffect(() => {
     let inactivityTimer;
-    let scrollInterval;
-    let scrollPosition = 0;
-    const scrollStep = 6; // FASTER: Increased from 2 to 6 pixels per step
-    const scrollDelay = 15; // FASTER: Reduced from 30ms to 15ms between steps
-    const maxScroll = 1500; // Maximum scroll depth in pixels
+    let reminderTimeout;
+    const reminderDelay = 2000; // Show reminder after 2 seconds of inactivity
+    const scrollThreshold = 100; // Don't show reminder if user has scrolled past 100px
 
     const resetInactivityTimer = () => {
       clearTimeout(inactivityTimer);
+      clearTimeout(reminderTimeout);
+      setShowScrollReminder(false);
+      
       inactivityTimer = setTimeout(() => {
-        startAutoScroll();
-      }, 1100); // FASTER: Reduced from 2000ms to 1100ms of inactivity
-    };
-
-    const startAutoScroll = () => {
-      if (isAutoScrolling) return;
-      
-      setIsAutoScrolling(true);
-      scrollPosition = window.scrollY || document.documentElement.scrollTop;
-      
-      // Scroll down faster
-      scrollInterval = setInterval(() => {
-        if (scrollPosition >= maxScroll) {
-          // Reached bottom, scroll back to top
-          clearInterval(scrollInterval);
-          setTimeout(() => {
-            // Scroll back to top smoothly but faster
-            window.scrollTo({
-              top: 0,
-              behavior: 'smooth'
-            });
-            setTimeout(() => {
-              setIsAutoScrolling(false);
-              // Reset position for next auto-scroll
-              scrollPosition = 0;
-            }, 1500); // Reduced from 2000ms
-          }, 800); // Reduced from 1000ms
-          return;
+        // Check if user hasn't scrolled much
+        const currentScroll = window.scrollY || document.documentElement.scrollTop;
+        if (currentScroll < scrollThreshold) {
+          reminderTimeout = setTimeout(() => {
+            setShowScrollReminder(true);
+          }, reminderDelay);
         }
-        
-        scrollPosition += scrollStep;
-        window.scrollTo(0, scrollPosition);
-      }, scrollDelay);
+      }, 2000); // Start checking after 2 seconds of inactivity
     };
 
-    const stopAutoScroll = () => {
-      clearInterval(scrollInterval);
-      setIsAutoScrolling(false);
+    const handleUserActivity = () => {
+      resetInactivityTimer();
+    };
+
+    const handleScroll = () => {
+      // Hide reminder when user starts scrolling
+      if (showScrollReminder) {
+        setShowScrollReminder(false);
+      }
+      resetInactivityTimer();
     };
 
     // Set up event listeners for user activity
-    const events = ['mousedown', 'mousemove', 'keydown', 'touchstart', 'scroll'];
+    const activityEvents = ['mousedown', 'mousemove', 'keydown', 'touchstart'];
     
-    const handleUserActivity = () => {
-      resetInactivityTimer();
-      if (isAutoScrolling) {
-        stopAutoScroll();
-      }
-    };
-
-    events.forEach(event => {
+    activityEvents.forEach(event => {
       window.addEventListener(event, handleUserActivity);
     });
+
+    // Add separate scroll listener
+    window.addEventListener('scroll', handleScroll);
 
     // Start the inactivity timer
     resetInactivityTimer();
 
     return () => {
       clearTimeout(inactivityTimer);
-      clearInterval(scrollInterval);
-      events.forEach(event => {
+      clearTimeout(reminderTimeout);
+      activityEvents.forEach(event => {
         window.removeEventListener(event, handleUserActivity);
       });
+      window.removeEventListener('scroll', handleScroll);
     };
-  }, [isAutoScrolling]);
+  }, [showScrollReminder]);
+
+  // Function to dismiss the scroll reminder
+  const dismissScrollReminder = () => {
+    setShowScrollReminder(false);
+  };
+
   /* =========================
      HELPERS - USING OLD LOGIC
   ========================= */
@@ -459,26 +445,27 @@ export default function Dashboard() {
   ========================= */
   return (
     <div className="dashboard" ref={dashboardRef}>
-      {/* AUTO-SCROLL INDICATOR (only visible when auto-scrolling) */}
-      {isAutoScrolling && (
-        <div style={{
-          position: 'fixed',
-          top: '10px',
-          right: '10px',
-          background: 'rgba(59, 130, 246, 0.9)',
-          color: 'white',
-          padding: '6px 12px',
-          borderRadius: '20px',
-          fontSize: '12px',
-          fontWeight: '600',
-          zIndex: 9999,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px'
-        }}>
-          <span>🔍</span>
-          Exploring features for you...
+      {/* SCROLL REMINDER NOTIFICATION */}
+      {showScrollReminder && (
+        <div className="scroll-reminder-notification">
+          <div className="scroll-reminder-content">
+            <div className="scroll-reminder-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 5v14M5 12l7 7 7-7"/>
+              </svg>
+            </div>
+            <div className="scroll-reminder-text">
+              <strong>More content below! ✨</strong>
+              <p>Scroll down to see your surveys, earnings, and more!</p>
+            </div>
+            <button 
+              className="scroll-reminder-dismiss"
+              onClick={dismissScrollReminder}
+              aria-label="Dismiss reminder"
+            >
+              ×
+            </button>
+          </div>
         </div>
       )}
 
@@ -1466,9 +1453,115 @@ export default function Dashboard() {
         <p className="footer-note">© {new Date().getFullYear()} SurveyEarn. All rights reserved.</p>
       </footer>
 
-      {/* Add CSS animations */}
+      {/* Add CSS styles for scroll reminder */}
       <style>
         {`
+          /* Scroll Reminder Notification Styles */
+          .scroll-reminder-notification {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-width: 400px;
+            width: 90%;
+            animation: slideInDown 0.5s ease-out;
+            backdrop-filter: blur(10px);
+          }
+
+          .scroll-reminder-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+          }
+
+          .scroll-reminder-icon {
+            animation: bounce 2s infinite;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .scroll-reminder-text {
+            flex: 1;
+          }
+
+          .scroll-reminder-text strong {
+            font-size: 14px;
+            display: block;
+            margin-bottom: 3px;
+          }
+
+          .scroll-reminder-text p {
+            font-size: 12px;
+            margin: 0;
+            opacity: 0.9;
+          }
+
+          .scroll-reminder-dismiss {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+          }
+
+          .scroll-reminder-dismiss:hover {
+            background: rgba(255, 255, 255, 0.3);
+          }
+
+          @keyframes slideInDown {
+            from {
+              transform: translate(-50%, -20px);
+              opacity: 0;
+            }
+            to {
+              transform: translate(-50%, 0);
+              opacity: 1;
+            }
+          }
+
+          @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+              transform: translateY(0);
+            }
+            40% {
+              transform: translateY(-5px);
+            }
+            60% {
+              transform: translateY(-3px);
+            }
+          }
+
+          /* Responsive adjustments */
+          @media (max-width: 768px) {
+            .scroll-reminder-notification {
+              top: 70px;
+              width: 95%;
+              padding: 10px 15px;
+            }
+            
+            .scroll-reminder-content {
+              gap: 10px;
+            }
+          }
+
+          /* Existing animations */
           @keyframes fadeIn {
             0% { opacity: 0; transform: translateY(5px); }
             100% { opacity: 1; transform: translateY(0); }
