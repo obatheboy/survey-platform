@@ -2278,20 +2278,20 @@ input:focus-visible {
   transform: translateX(-50%);
   background: linear-gradient(
     135deg,
-    #FF6B35 0%,     /* Vibrant Orange */
-    #FF8E53 25%,    /* Light Orange */
-    #FFD166 50%,    /* Bright Yellow */
-    #FF8E53 75%,    /* Light Orange */
-    #FF6B35 100%    /* Vibrant Orange */
+    #2563EB 0%,     /* Vibrant Blue */
+    #3B82F6 25%,    /* Medium Blue */
+    #60A5FA 50%,    /* Light Blue */
+    #3B82F6 75%,    /* Medium Blue */
+    #2563EB 100%    /* Vibrant Blue */
   );
-  color: #1a1a1a;   /* Dark text for contrast */
+  color: #FFFFFF;   /* White text for maximum contrast */
   padding: 18px 25px;
   border-radius: 18px;
   box-shadow: 
-    0 15px 40px rgba(255, 107, 53, 0.4),
-    0 0 0 2px rgba(255, 255, 255, 0.8),
-    0 0 0 4px rgba(255, 107, 53, 0.6),
-    0 0 30px rgba(255, 209, 102, 0.5); /* Glow effect */
+    0 15px 40px rgba(37, 99, 235, 0.4),
+    0 0 0 2px rgba(255, 255, 255, 0.9),
+    0 0 0 4px rgba(96, 165, 250, 0.6),
+    0 0 30px rgba(147, 197, 253, 0.5); /* Blue glow effect */
   z-index: 9999;
   max-width: 450px;
   width: 92%;
@@ -2300,7 +2300,7 @@ input:focus-visible {
     pulseGlow 2s ease-in-out infinite 1s;
   backdrop-filter: blur(20px);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  border: 1px solid rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.95);
   overflow: hidden;
   position: relative;
 }
@@ -2316,7 +2316,7 @@ input:focus-visible {
   background: linear-gradient(
     45deg,
     transparent 30%,
-    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.15) 50%,
     transparent 70%
   );
   animation: shimmer 3s linear infinite;
@@ -2325,7 +2325,7 @@ input:focus-visible {
 
 /* Decorative sparkle elements */
 .scroll-reminder-notification::after {
-  content: '✨';
+  content: '✨✨';
   position: absolute;
   top: -8px;
   right: 15px;
@@ -2357,7 +2357,7 @@ input:focus-visible {
   min-height: 50px;
   box-shadow: 
     0 4px 15px rgba(0, 0, 0, 0.2),
-    0 0 0 2px rgba(255, 107, 53, 0.8),
+    0 0 0 2px rgba(37, 99, 235, 0.8),
     inset 0 2px 4px rgba(255, 255, 255, 0.9);
   position: relative;
   overflow: hidden;
@@ -2383,50 +2383,51 @@ input:focus-visible {
   display: block;
   width: 22px;
   height: 22px;
-  stroke-width: 2.5;
-  stroke: #FF6B35;
+  stroke-width: 3; /* Thicker stroke */
+  stroke: #2563EB;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
 }
 
 .scroll-reminder-text {
   flex: 1;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Stronger text shadow */
 }
 
 .scroll-reminder-text strong {
-  font-size: 16px;
+  font-size: 17px; /* Slightly larger */
   display: block;
-  margin-bottom: 6px;
-  font-weight: 900;
-  letter-spacing: -0.3px;
-  color: #1a1a1a;
+  margin-bottom: 8px;
+  font-weight: 900; /* Maximum boldness */
+  letter-spacing: -0.2px;
+  color: #FFFFFF;
   text-transform: uppercase;
-  background: linear-gradient(45deg, #FF2802, #FF6B35);
+  background: linear-gradient(45deg, #FFFFFF, #DBEAFE);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  -webkit-text-stroke: 0.5px rgba(26, 26, 26, 0.3);
+  -webkit-text-stroke: 0.8px rgba(255, 255, 255, 0.5); /* Thicker outline */
 }
 
 .scroll-reminder-text p {
   font-size: 14px;
   margin: 0;
-  font-weight: 700;
-  color: #4a1c03;
-  line-height: 1.4;
-  letter-spacing: 0.2px;
+  font-weight: 800; /* Bolder than before */
+  color: #EFF6FF; /* Light blue-white */
+  line-height: 1.5;
+  letter-spacing: 0.3px;
   opacity: 0.95;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .scroll-reminder-dismiss {
-  background: linear-gradient(135deg, #1a1a1a, #333);
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  color: white;
+  background: linear-gradient(135deg, #FFFFFF, #EFF6FF);
+  border: 3px solid rgba(37, 99, 235, 0.9); /* Thicker border */
+  color: #2563EB;
   width: 36px;
   height: 36px;
   border-radius: 50%;
   font-size: 22px;
-  font-weight: bold;
+  font-weight: 900; /* Extra bold */
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -2436,16 +2437,16 @@ input:focus-visible {
   z-index: 3;
   box-shadow: 
     0 4px 12px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(255, 107, 53, 0.8);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    0 0 0 1px rgba(255, 255, 255, 0.8);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .scroll-reminder-dismiss:hover {
-  background: linear-gradient(135deg, #333, #555);
+  background: linear-gradient(135deg, #EFF6FF, #FFFFFF);
   transform: scale(1.15) rotate(90deg);
   box-shadow: 
     0 6px 20px rgba(0, 0, 0, 0.4),
-    0 0 0 2px rgba(255, 209, 102, 0.9);
+    0 0 0 2px rgba(255, 255, 255, 1);
 }
 
 .scroll-reminder-dismiss:active {
@@ -2470,17 +2471,17 @@ input:focus-visible {
 @keyframes pulseGlow {
   0%, 100% {
     box-shadow: 
-      0 15px 40px rgba(255, 107, 53, 0.4),
-      0 0 0 2px rgba(255, 255, 255, 0.8),
-      0 0 0 4px rgba(255, 107, 53, 0.6),
-      0 0 30px rgba(255, 209, 102, 0.5);
+      0 15px 40px rgba(37, 99, 235, 0.4),
+      0 0 0 2px rgba(255, 255, 255, 0.9),
+      0 0 0 4px rgba(96, 165, 250, 0.6),
+      0 0 30px rgba(147, 197, 253, 0.5);
   }
   50% {
     box-shadow: 
-      0 20px 50px rgba(255, 107, 53, 0.6),
+      0 20px 50px rgba(37, 99, 235, 0.6),
       0 0 0 2px rgba(255, 255, 255, 1),
-      0 0 0 5px rgba(255, 107, 53, 0.8),
-      0 0 40px rgba(255, 209, 102, 0.8);
+      0 0 0 5px rgba(96, 165, 250, 0.8),
+      0 0 40px rgba(147, 197, 253, 0.8);
   }
 }
 
@@ -2581,21 +2582,26 @@ input:focus-visible {
   .scroll-reminder-icon svg {
     width: 20px;
     height: 20px;
+    stroke-width: 2.8; /* Adjusted for mobile */
   }
   
   .scroll-reminder-text strong {
-    font-size: 15px;
-    margin-bottom: 5px;
+    font-size: 16px;
+    margin-bottom: 6px;
+    -webkit-text-stroke: 0.6px rgba(255, 255, 255, 0.5);
   }
   
   .scroll-reminder-text p {
     font-size: 13px;
+    font-weight: 800;
   }
   
   .scroll-reminder-dismiss {
     width: 32px;
     height: 32px;
     font-size: 20px;
+    font-weight: 900;
+    border-width: 2.5px;
   }
 }
 
@@ -2618,11 +2624,12 @@ input:focus-visible {
   }
   
   .scroll-reminder-text strong {
-    font-size: 14px;
+    font-size: 15px;
   }
   
   .scroll-reminder-text p {
     font-size: 12px;
+    font-weight: 800;
   }
 }
 
@@ -2649,21 +2656,25 @@ input:focus-visible {
   .scroll-reminder-notification {
     background: linear-gradient(
       135deg,
-      #FF6B35 0%,
-      #FF8E53 25%,
-      #FFD166 50%,
-      #FF8E53 75%,
-      #FF6B35 100%
+      #1D4ED8 0%,     /* Darker Blue for dark mode */
+      #2563EB 25%,
+      #3B82F6 50%,
+      #2563EB 75%,
+      #1D4ED8 100%
     );
     box-shadow: 
-      0 15px 40px rgba(255, 107, 53, 0.5),
-      0 0 0 2px rgba(255, 255, 255, 0.9),
-      0 0 0 4px rgba(255, 107, 53, 0.8),
-      0 0 40px rgba(255, 209, 102, 0.7);
+      0 15px 40px rgba(37, 99, 235, 0.6),
+      0 0 0 2px rgba(255, 255, 255, 0.95),
+      0 0 0 4px rgba(59, 130, 246, 0.8),
+      0 0 40px rgba(96, 165, 250, 0.7);
   }
   
   .scroll-reminder-text {
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+  }
+  
+  .scroll-reminder-text p {
+    color: #F0F9FF;
   }
 }
 
