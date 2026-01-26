@@ -226,42 +226,42 @@ export default function Dashboard() {
   /* =========================
      WITHDRAW LOGIC - MODIFIED TO REDIRECT TO ACTIVATION NOTICE
   ========================= */
-const handleWithdrawClick = async (plan) => {
-  setWithdrawError("");
-  setWithdrawMessage("");
+  const handleWithdrawClick = async (plan) => {
+    setWithdrawError("");
+    setWithdrawMessage("");
 
-  if (!isCompleted(plan)) {
-    setToast(`Complete ${TOTAL_SURVEYS - surveysDone(plan)} more surveys to withdraw`);
-    goToSurveys();
-    setTimeout(() => setToast(""), 4000);
-    return;
-  }
-
-  // Check if account is activated
-  if (!isActivated(plan)) {
-    // Set the active plan first via API so ActivationNotice can read it
-    try {
-      await api.post("/surveys/select-plan", { plan });
-    } catch (error) {
-      console.error("Failed to set active plan:", error);
-      // Even if API fails, still allow navigation with local data
+    if (!isCompleted(plan)) {
+      setToast(`Complete ${TOTAL_SURVEYS - surveysDone(plan)} more surveys to withdraw`);
+      goToSurveys();
+      setTimeout(() => setToast(""), 4000);
+      return;
     }
-    
-    // IMPORTANT: Pass plan data in state for the ActivationNotice page
-    navigate("/activation-notice", { 
-      state: { 
-        plan: plans[plan], // Pass the specific plan data
-        planType: plan, // Pass the plan key (REGULAR, VIP, VVIP)
-        amount: PLANS[plan].total // Pass the amount
-      }
-    });
-    return;
-  }
 
-  // Only show withdraw form if account is activated
-  setActiveWithdrawPlan(plan);
-  setWithdrawAmount(PLANS[plan].total.toString());
-};
+    // Check if account is activated
+    if (!isActivated(plan)) {
+      // Set the active plan first via API so ActivationNotice can read it
+      try {
+        await api.post("/surveys/select-plan", { plan });
+      } catch (error) {
+        console.error("Failed to set active plan:", error);
+        // Even if API fails, still allow navigation with local data
+      }
+      
+      // IMPORTANT: Pass plan data in state for the ActivationNotice page
+      navigate("/activation-notice", { 
+        state: { 
+          plan: plans[plan], // Pass the specific plan data
+          planType: plan, // Pass the plan key (REGULAR, VIP, VVIP)
+          amount: PLANS[plan].total // Pass the amount
+        }
+      });
+      return;
+    }
+
+    // Only show withdraw form if account is activated
+    setActiveWithdrawPlan(plan);
+    setWithdrawAmount(PLANS[plan].total.toString());
+  };
 
   const submitWithdraw = async () => {
     if (!withdrawAmount || !withdrawPhone) {
@@ -325,6 +325,16 @@ const handleWithdrawClick = async (plan) => {
   };
 
   /* =========================
+     WHATSAPP SUPPORT FUNCTION
+  ========================= */
+  const openWhatsAppSupport = () => {
+    const message = encodeURIComponent("Hello SurveyEarn Support, I need help with my survey account.");
+    const whatsappUrl = `https://wa.me/254794101450?text=${message}`;
+    // Use window.location for better mobile app compatibility
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  /* =========================
      RENDER LOADING & NO USER
   ========================= */
   if (loading) {
@@ -383,9 +393,37 @@ const handleWithdrawClick = async (plan) => {
       <header className="dashboard-main-header">
         <div className="header-title-container">
           <h1 className="dashboard-main-title">Dashboard</h1>
-          <button className="menu-btn" onClick={() => setMenuOpen(true)}>
-            <span className="menu-icon">☰</span>
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {/* WhatsApp Support Button in Header */}
+            <button
+              onClick={openWhatsAppSupport}
+              style={{
+                background: '#25D366',
+                color: 'white',
+                border: 'none',
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                fontSize: '20px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 3px 8px rgba(37, 211, 102, 0.3)',
+                padding: 0
+              }}
+              onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+              onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+              title="Contact Support on WhatsApp"
+            >
+              💬
+            </button>
+            
+            <button className="menu-btn" onClick={() => setMenuOpen(true)}>
+              <span className="menu-icon">☰</span>
+            </button>
+          </div>
         </div>
         <p className="header-subtitle">Welcome back, {user.full_name.split(' ')[0]}!👋Start Earning Today💸💸</p>
       </header>
@@ -612,8 +650,49 @@ const handleWithdrawClick = async (plan) => {
           </div>
         </div>
       </div>
+      
       {/* LIVE WITHDRAWAL FEED */}
       <LiveWithdrawalFeed />
+
+      {/* COMPACT FLOATING WHATSAPP SUPPORT BUTTON */}
+      <div style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        zIndex: 1000
+      }}>
+        <button
+          onClick={openWhatsAppSupport}
+          style={{
+            background: '#25D366',
+            color: 'white',
+            border: 'none',
+            borderRadius: '50%',
+            width: '50px',
+            height: '50px',
+            fontSize: '26px',
+            boxShadow: '0 4px 12px rgba(37, 211, 102, 0.4)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.3s ease',
+            padding: '0',
+            margin: '0'
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.transform = 'scale(1.1)';
+            e.currentTarget.style.boxShadow = '0 6px 16px rgba(37, 211, 102, 0.6)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(37, 211, 102, 0.4)';
+          }}
+          title="Contact Support on WhatsApp"
+        >
+          💬
+        </button>
+      </div>
 
       {/* WELCOME BONUS CARD - PROFESSIONAL VERSION */}
       <section ref={welcomeRef} className="dashboard-section">
@@ -1220,33 +1299,29 @@ const handleWithdrawClick = async (plan) => {
         </section>
       )}
 
-   {/* FOOTER */}
-<footer className="dashboard-footer">
-  <p>Need help? 
-    <button 
-      style={{
-        background: 'none',
-        border: 'none',
-        color: '#3b82f6',
-        textDecoration: 'underline',
-        cursor: 'pointer',
-        fontSize: 'inherit',
-        fontFamily: 'inherit',
-        padding: '0',
-        margin: '0 5px'
-      }}
-      onClick={() => {
-        const message = encodeURIComponent("Hello SurveyEarn Support, I need help with my survey account.");
-        const whatsappUrl = `https://wa.me/254794101450?text=${message}`;
-        window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-      }}
-    >
-      Contact Support
-    </button> 
-    | <a href="/faq">FAQ</a>
-  </p>
-  <p className="footer-note">© {new Date().getFullYear()} SurveyEarn. All rights reserved.</p>
-</footer>
+      {/* FOOTER */}
+      <footer className="dashboard-footer">
+        <p>Need help? 
+          <button 
+            onClick={openWhatsAppSupport}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#3b82f6',
+              textDecoration: 'underline',
+              cursor: 'pointer',
+              fontSize: 'inherit',
+              fontFamily: 'inherit',
+              padding: '0',
+              margin: '0 5px'
+            }}
+          >
+            Contact Support
+          </button> 
+          | <a href="/faq">FAQ</a>
+        </p>
+        <p className="footer-note">© {new Date().getFullYear()} SurveyEarn. All rights reserved.</p>
+      </footer>
     </div>
   );
 }
