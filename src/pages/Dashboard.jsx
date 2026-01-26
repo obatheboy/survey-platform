@@ -167,7 +167,6 @@ export default function Dashboard() {
   const surveysDone = (plan) => plans[plan]?.surveys_completed || 0;
   const isCompleted = (plan) => surveysDone(plan) >= TOTAL_SURVEYS;
   const isActivated = (plan) => plans[plan]?.is_activated === true;
-  const activationSubmitted = (plan) => plans[plan]?.activation_status === "SUBMITTED";
   const earnedSoFar = (plan) => surveysDone(plan) * PLANS[plan].perSurvey;
   const progressPercentage = (plan) => (surveysDone(plan) / TOTAL_SURVEYS) * 100;
 
@@ -225,9 +224,9 @@ export default function Dashboard() {
   };
 
   /* =========================
-     WITHDRAW LOGIC - USING OLD LOGIC
+     WITHDRAW LOGIC - MODIFIED TO REDIRECT TO ACTIVATION NOTICE
   ========================= */
-  const handleWithdrawClick = (plan) => {
+  const handleWithdrawClick = async (plan) => {
     setWithdrawError("");
     setWithdrawMessage("");
 
@@ -238,16 +237,21 @@ export default function Dashboard() {
       return;
     }
 
+    // Check if account is activated
     if (!isActivated(plan)) {
-      setFullScreenNotification({
-        message: activationSubmitted(plan)
-          ? "🎯 Activation submitted. Awaiting approval."
-          : "🔒 Account not activated. Activate now to withdraw your earnings.",
-        redirect: activationSubmitted(plan) ? null : "/activation-notice",
-      });
+      // Set the active plan first via API so ActivationNotice can read it
+      try {
+        await api.post("/surveys/select-plan", { plan });
+      } catch (error) {
+        console.error("Failed to set active plan:", error);
+      }
+      
+      // Redirect to activation notice page
+      navigate("/activation-notice");
       return;
     }
 
+    // Only show withdraw form if account is activated
     setActiveWithdrawPlan(plan);
     setWithdrawAmount(PLANS[plan].total.toString());
   };
@@ -767,6 +771,7 @@ export default function Dashboard() {
             <div className="progress-cards">
               {Object.entries(PLANS).map(([key, plan]) => {
                 const status = getPlanStatus(key);
+                const activated = isActivated(key);
                 
                 return (
                   <div key={key} className="progress-card" style={{
@@ -822,10 +827,12 @@ export default function Dashboard() {
                             onClick={() => handleWithdrawClick(key)}
                             style={{
                               borderColor: plan.color,
-                              color: plan.color
+                              color: plan.color,
+                              background: !activated ? 'rgba(245, 158, 11, 0.1)' : 'transparent',
+                              cursor: 'pointer'
                             }}
                           >
-                            Withdraw
+                            {!activated ? '🔓 Activate & Withdraw' : 'Withdraw'}
                           </button>
                         )}
                       </div>
@@ -922,7 +929,7 @@ export default function Dashboard() {
           <div className="plan-cards-container">
             {Object.entries(PLANS).map(([key, plan]) => {
               const status = getPlanStatus(key);
-              const completed = isCompleted(key);
+              const activated = isActivated(key);
               
               return (
                 <div key={key} className={`plan-card ${key.toLowerCase()}`} style={{
@@ -985,7 +992,7 @@ export default function Dashboard() {
                   </div>
                   
                   <div className="plan-card-footer">
-                    {!completed ? (
+                    {!isCompleted(key) ? (
                       <button 
                         className="start-survey-btn"
                         onClick={() => startSurvey(key)}
@@ -1005,11 +1012,13 @@ export default function Dashboard() {
                           className="withdraw-plan-btn"
                           onClick={() => handleWithdrawClick(key)}
                           style={{
-                            background: plan.gradient,
+                            background: !activated ? 
+                              'linear-gradient(135deg, #f59e0b, #d97706)' : // Orange for activation needed
+                              plan.gradient,
                             boxShadow: `0 5px 20px ${plan.color}40`
                           }}
                         >
-                          💸 Withdraw KES {plan.total}
+                          {!activated ? '🔓 Activate & Withdraw' : '💸 Withdraw KES'} {plan.total}
                         </button>
                       </div>
                     )}
@@ -1031,11 +1040,10 @@ export default function Dashboard() {
           
           <div className="withdraw-cards-container">
             {Object.entries(PLANS).map(([key, plan]) => {
-              const completed = isCompleted(key);
               const activated = isActivated(key);
               
               return (
-                <div key={key} className={`withdraw-card ${completed ? 'completed' : ''}`} style={{
+                <div key={key} className={`withdraw-card ${isCompleted(key) ? 'completed' : ''}`} style={{
                   borderColor: plan.borderColor,
                   background: `linear-gradient(135deg, ${plan.bgColor}, rgba(255, 255, 255, 0.03))`,
                   boxShadow: `0 10px 30px ${plan.color}20`
@@ -1046,8 +1054,8 @@ export default function Dashboard() {
                       <h4 style={{ color: plan.color }}>{plan.name} Plan</h4>
                       <p className="plan-earnings">KES {earnedSoFar(key)} earned</p>
                     </div>
-                    <span className={`status-indicator ${completed ? 'ready' : 'pending'}`}>
-                      {completed ? '✅ Ready' : '⏳ Pending'}
+                    <span className={`status-indicator ${isCompleted(key) ? 'ready' : 'pending'}`}>
+                      {isCompleted(key) ? '✅ Ready' : '⏳ Pending'}
                     </span>
                   </div>
                   
@@ -1059,17 +1067,17 @@ export default function Dashboard() {
                       </div>
                       <div className="progress-row">
                         <span>Available Amount:</span>
-                        <strong className="available-amount">KES {completed ? plan.total : earnedSoFar(key)}</strong>
+                        <strong className="available-amount">KES {isCompleted(key) ? plan.total : earnedSoFar(key)}</strong>
                       </div>
                     </div>
                     
                     <div className="withdraw-requirements">
-                      {!completed && (
+                      {!isCompleted(key) && (
                         <p className="requirement">
                           📝 Complete {TOTAL_SURVEYS - surveysDone(key)} more surveys to withdraw
                         </p>
                       )}
-                      {completed && !activated && (
+                      {isCompleted(key) && !activated && (
                         <p className="requirement">
                           🔓 Account activation required to withdraw
                         </p>
@@ -1079,21 +1087,24 @@ export default function Dashboard() {
                   
                   <div className="withdraw-card-footer">
                     <button 
-                      className={`withdraw-btn ${completed && activated ? 'ready' : 'disabled'}`}
+                      className={`withdraw-btn ${isCompleted(key) ? 'ready' : 'disabled'}`}
                       onClick={() => handleWithdrawClick(key)}
-                      disabled={!completed || !activated}
+                      disabled={!isCompleted(key)}
                       style={{
-                        background: completed && activated ? plan.gradient : 'rgba(255, 255, 255, 0.1)',
-                        color: completed && activated ? 'white' : 'rgba(255, 255, 255, 0.5)',
-                        boxShadow: completed && activated ? `0 5px 20px ${plan.color}40` : 'none'
+                        background: isCompleted(key) && activated ? plan.gradient : 
+                                   isCompleted(key) ? 'linear-gradient(135deg, #f59e0b, #d97706)' : // Orange gradient for non-activated
+                                   'rgba(255, 255, 255, 0.1)',
+                        color: isCompleted(key) ? 'white' : 'rgba(255, 255, 255, 0.5)',
+                        boxShadow: isCompleted(key) ? `0 5px 20px ${plan.color}40` : 'none',
+                        cursor: isCompleted(key) ? 'pointer' : 'not-allowed'
                       }}
                     >
-                      {!completed ? 'Complete Surveys First' :
-                       !activated ? 'Activate Account' :
+                      {!isCompleted(key) ? 'Complete Surveys First' :
+                       !activated ? '🔓 Activate to Withdraw' :
                        `Withdraw KES ${plan.total}`}
                     </button>
                     
-                    {!completed && (
+                    {!isCompleted(key) && (
                       <button className="complete-surveys-btn" onClick={goToSurveys}>
                         Complete Surveys →
                       </button>
