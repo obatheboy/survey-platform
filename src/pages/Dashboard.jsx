@@ -178,20 +178,27 @@ export default function Dashboard() {
 
     return () => clearInterval(interval);
   }, []);
-
-  /* =========================
-     SCROLL REMINDER NOTIFICATION
+/* =========================
+     SCROLL REMINDER NOTIFICATION - FIXED
   ========================= */
   useEffect(() => {
     let inactivityTimer;
     let reminderTimeout;
-    const reminderDelay = 2000; // Show reminder after 2 seconds of inactivity
+    const reminderDelay = 5000; // Show reminder after 5 seconds of inactivity
     const scrollThreshold = 100; // Don't show reminder if user has scrolled past 100px
+    let hasShownReminder = false; // Track if reminder has been shown
 
     const resetInactivityTimer = () => {
       clearTimeout(inactivityTimer);
       clearTimeout(reminderTimeout);
-      setShowScrollReminder(false);
+      
+      // Only hide if it's currently showing
+      if (showScrollReminder) {
+        setShowScrollReminder(false);
+      }
+      
+      // Don't restart the timer if we've already shown the reminder
+      if (hasShownReminder) return;
       
       inactivityTimer = setTimeout(() => {
         // Check if user hasn't scrolled much
@@ -199,6 +206,7 @@ export default function Dashboard() {
         if (currentScroll < scrollThreshold) {
           reminderTimeout = setTimeout(() => {
             setShowScrollReminder(true);
+            hasShownReminder = true; // Mark that we've shown the reminder
           }, reminderDelay);
         }
       }, 2000); // Start checking after 2 seconds of inactivity
@@ -209,7 +217,7 @@ export default function Dashboard() {
     };
 
     const handleScroll = () => {
-      // Hide reminder when user starts scrolling
+      // Only hide reminder when user starts scrolling if it's currently showing
       if (showScrollReminder) {
         setShowScrollReminder(false);
       }
@@ -238,7 +246,6 @@ export default function Dashboard() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, [showScrollReminder]);
-
   // Function to dismiss the scroll reminder
   const dismissScrollReminder = () => {
     setShowScrollReminder(false);
