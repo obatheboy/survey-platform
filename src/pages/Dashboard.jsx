@@ -653,14 +653,34 @@ export default function Dashboard() {
       
       {/* LIVE WITHDRAWAL FEED */}
       <LiveWithdrawalFeed />
-
-      {/* COMPACT FLOATING WHATSAPP SUPPORT BUTTON */}
+      {/* COMPACT FLOATING WHATSAPP SUPPORT BUTTON WITH CAPTION */}
       <div style={{
         position: 'fixed',
         bottom: '20px',
         right: '20px',
-        zIndex: 1000
+        zIndex: 1000,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+        gap: '5px'
       }}>
+        {/* Caption */}
+        <div style={{
+          background: 'rgba(37, 211, 102, 0.9)',
+          color: 'white',
+          padding: '4px 10px',
+          borderRadius: '12px',
+          fontSize: '12px',
+          fontWeight: '600',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+          whiteSpace: 'nowrap',
+          backdropFilter: 'blur(4px)',
+          border: '1px solid rgba(255, 255, 255, 0.2)'
+        }}>
+          Need help? Chat us
+        </div>
+        
+        {/* Button */}
         <button
           onClick={openWhatsAppSupport}
           style={{
@@ -693,7 +713,6 @@ export default function Dashboard() {
           💬
         </button>
       </div>
-
       {/* WELCOME BONUS CARD - PROFESSIONAL VERSION */}
       <section ref={welcomeRef} className="dashboard-section">
         <div className="professional-bonus-card">
