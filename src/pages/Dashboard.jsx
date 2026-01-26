@@ -226,35 +226,42 @@ export default function Dashboard() {
   /* =========================
      WITHDRAW LOGIC - MODIFIED TO REDIRECT TO ACTIVATION NOTICE
   ========================= */
-  const handleWithdrawClick = async (plan) => {
-    setWithdrawError("");
-    setWithdrawMessage("");
+const handleWithdrawClick = async (plan) => {
+  setWithdrawError("");
+  setWithdrawMessage("");
 
-    if (!isCompleted(plan)) {
-      setToast(`Complete ${TOTAL_SURVEYS - surveysDone(plan)} more surveys to withdraw`);
-      goToSurveys();
-      setTimeout(() => setToast(""), 4000);
-      return;
+  if (!isCompleted(plan)) {
+    setToast(`Complete ${TOTAL_SURVEYS - surveysDone(plan)} more surveys to withdraw`);
+    goToSurveys();
+    setTimeout(() => setToast(""), 4000);
+    return;
+  }
+
+  // Check if account is activated
+  if (!isActivated(plan)) {
+    // Set the active plan first via API so ActivationNotice can read it
+    try {
+      await api.post("/surveys/select-plan", { plan });
+    } catch (error) {
+      console.error("Failed to set active plan:", error);
+      // Even if API fails, still allow navigation with local data
     }
-
-    // Check if account is activated
-    if (!isActivated(plan)) {
-      // Set the active plan first via API so ActivationNotice can read it
-      try {
-        await api.post("/surveys/select-plan", { plan });
-      } catch (error) {
-        console.error("Failed to set active plan:", error);
+    
+    // IMPORTANT: Pass plan data in state for the ActivationNotice page
+    navigate("/activation-notice", { 
+      state: { 
+        plan: plans[plan], // Pass the specific plan data
+        planType: plan, // Pass the plan key (REGULAR, VIP, VVIP)
+        amount: PLANS[plan].total // Pass the amount
       }
-      
-      // Redirect to activation notice page
-      navigate("/activation-notice");
-      return;
-    }
+    });
+    return;
+  }
 
-    // Only show withdraw form if account is activated
-    setActiveWithdrawPlan(plan);
-    setWithdrawAmount(PLANS[plan].total.toString());
-  };
+  // Only show withdraw form if account is activated
+  setActiveWithdrawPlan(plan);
+  setWithdrawAmount(PLANS[plan].total.toString());
+};
 
   const submitWithdraw = async () => {
     if (!withdrawAmount || !withdrawPhone) {

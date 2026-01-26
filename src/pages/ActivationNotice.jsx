@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/api";
 
 /* =========================
@@ -30,47 +30,113 @@ const TOTAL_SURVEYS = 10;
 
 export default function ActivationNotice() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [planKey, setPlanKey] = useState(null);
-  const [planState, setPlanState] = useState(null);
   const [totalEarned, setTotalEarned] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   /* =========================
-     LOAD STATE (BACKEND = LAW)
+     LOAD STATE (PRIORITIZE PASSED STATE, THEN BACKEND)
   ========================= */
   useEffect(() => {
     let alive = true;
 
     const load = async () => {
       try {
+        // FIRST: Check if plan data was passed via state/navigation
+        if (location.state?.plan || location.state?.planType) {
+          const { plan, amount, planType } = location.state;
+          
+          console.log("Received state from navigation:", { plan, amount, planType });
+          
+          // Use the passed state immediately for instant display
+          if (planType) {
+            setPlanKey(planType);
+          } else if (plan?.type) {
+            setPlanKey(plan.type);
+          }
+          
+          if (amount) {
+            setTotalEarned(amount);
+          } else if (plan?.amount) {
+            setTotalEarned(plan.amount);
+          }
+          
+          // Show the UI with passed data first
+          if (!alive) return;
+          setLoading(false);
+          
+          // THEN verify with backend in background
+          try {
+            const res = await api.get("/auth/me");
+            if (!alive) return;
+            
+            const activePlan = res.data.active_plan;
+            const backendPlan = res.data.plans?.[activePlan];
+
+            if (!activePlan || !backendPlan) {
+              console.warn("No active plan found in backend");
+              return;
+            }
+
+            if (backendPlan.surveys_completed < TOTAL_SURVEYS) {
+              console.warn("Surveys not completed in backend");
+              // Don't redirect immediately - let user see the page first
+              setError("Please complete all surveys first");
+              return;
+            }
+
+            if (backendPlan.is_activated) {
+              console.log("Plan already activated in backend");
+              // Navigate without replace for better mobile UX
+              setTimeout(() => {
+                navigate("/dashboard?activated=true");
+              }, 1500);
+              return;
+            }
+
+            // Update with accurate backend data
+            setPlanKey(activePlan);
+            setTotalEarned(res.data.total_earned);
+          } catch (apiError) {
+            console.error("Backend verification failed:", apiError);
+            // Keep showing the passed state if backend fails
+            setError("Unable to verify with server. Please check your connection.");
+          }
+          
+          return;
+        }
+
+        // SECOND: If no state was passed, rely entirely on backend
         const res = await api.get("/auth/me");
 
         const activePlan = res.data.active_plan;
         const plan = res.data.plans?.[activePlan];
 
         if (!activePlan || !plan) {
-          navigate("/dashboard", { replace: true });
+          navigate("/dashboard");
           return;
         }
 
         if (plan.surveys_completed < TOTAL_SURVEYS) {
-          navigate("/dashboard", { replace: true });
+          navigate("/dashboard");
           return;
         }
 
         if (plan.is_activated) {
-          navigate("/dashboard?activated=true", { replace: true });
+          navigate("/dashboard?activated=true");
           return;
         }
 
         if (!alive) return;
 
         setPlanKey(activePlan);
-        setPlanState(plan);
         setTotalEarned(res.data.total_earned);
-      } catch {
-        // handled globally
+      } catch (err) {
+        console.error("ActivationNotice error:", err);
+        setError("Failed to load activation details. Please try again.");
       } finally {
         if (alive) setLoading(false);
       }
@@ -78,20 +144,76 @@ export default function ActivationNotice() {
 
     load();
     return () => (alive = false);
-  }, [navigate]);
-
-  if (loading) {
-    return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
-  }
-
-  if (!planKey || !planState) return null;
-
-  const plan = PLAN_CONFIG[planKey];
-  if (!plan) return null; // safety guard
+  }, [navigate, location.state]);
 
   const handleActivate = () => {
-    navigate("/activate");
+    // Pass along any plan data to the activation page
+    navigate("/activate", { 
+      state: { 
+        planKey,
+        amount: totalEarned 
+      }
+    });
   };
+
+  if (loading) {
+    return (
+      <div style={page}>
+        <div style={{ ...card, boxShadow: "0 0 60px rgba(0,230,118,0.3)" }}>
+          <p style={{ textAlign: "center", padding: "40px 0", color: "#fff" }}>
+            Loading activation details...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={page}>
+        <div style={{ ...card, boxShadow: "0 0 60px rgba(255,82,82,0.3)" }}>
+          <h2 style={{ color: "#ff5252", textAlign: "center" }}>⚠️ Error</h2>
+          <p style={{ ...text, textAlign: "center", color: "#ff5252" }}>{error}</p>
+          <button
+            style={{
+              ...activateBtn,
+              background: "linear-gradient(135deg, #f59e0b, #d97706)",
+              marginTop: "20px",
+            }}
+            onClick={() => navigate("/dashboard")}
+          >
+            Return to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!planKey) {
+    return (
+      <div style={page}>
+        <div style={{ ...card, boxShadow: "0 0 60px rgba(255,82,82,0.3)" }}>
+          <h2 style={{ color: "#ff5252", textAlign: "center" }}>No Plan Selected</h2>
+          <p style={{ ...text, textAlign: "center" }}>
+            Please select a plan from the dashboard first.
+          </p>
+          <button
+            style={{
+              ...activateBtn,
+              background: "linear-gradient(135deg, #f59e0b, #d97706)",
+              marginTop: "20px",
+            }}
+            onClick={() => navigate("/dashboard")}
+          >
+            Go to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const plan = PLAN_CONFIG[planKey];
+  if (!plan) return null;
 
   return (
     <div style={page}>
@@ -121,7 +243,7 @@ export default function ActivationNotice() {
           Your total confirmed earnings are:
           <br />
           <b style={{ color: plan.color, fontSize: 18 }}>
-            KES {totalEarned}
+            KES {totalEarned.toLocaleString()}
           </b>
           <br />
           <br />
@@ -143,7 +265,7 @@ export default function ActivationNotice() {
           <p>
             💰 <b>Earnings Available:</b>{" "}
             <span style={{ color: plan.color }}>
-              KES {totalEarned}
+              KES {totalEarned.toLocaleString()}
             </span>
           </p>
 
