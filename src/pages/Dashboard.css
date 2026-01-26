@@ -2406,20 +2406,20 @@ input:focus-visible {
   transform: translateX(-50%);
   background: linear-gradient(
     135deg,
-    #FF6B35 0%,     /* Vibrant Orange */
-    #F76C22 25%,    /* Deep Orange */
-    #FF8C42 50%,    /* Bright Orange */
-    #F76C22 75%,    /* Deep Orange */
-    #FF6B35 100%    /* Vibrant Orange */
+    #FF3333 0%,     /* Vivid Red */
+    #FF1744 25%,    /* Deep Red */
+    #FF5722 50%,    /* Red-Orange */
+    #FF1744 75%,    /* Deep Red */
+    #FF3333 100%    /* Vivid Red */
   );
   color: #FFFFFF;
   padding: 18px 25px;
   border-radius: 18px;
   box-shadow: 
-    0 15px 40px rgba(255, 107, 53, 0.5),
-    0 0 0 2px rgba(255, 255, 255, 0.9),
-    0 0 0 4px rgba(255, 140, 66, 0.6),
-    0 0 30px rgba(255, 140, 66, 0.6); /* Orange glow effect */
+    0 15px 40px rgba(255, 23, 68, 0.8),
+    0 0 0 2px rgba(255, 255, 255, 0.95),
+    0 0 0 4px rgba(255, 87, 34, 0.8),
+    0 0 40px rgba(255, 51, 51, 0.9); /* Red glow effect */
   z-index: 9999;
   max-width: 450px;
   width: 92%;
@@ -2452,20 +2452,20 @@ input:focus-visible {
   z-index: 1;
 }
 
-/* Enhanced sparkle elements with upward direction */
+/* Enhanced sparkle elements with downward direction */
 .scroll-reminder-notification::after {
-  content: '↑↑'; /* Changed from sparkles to upward arrows */
+  content: '↓↓'; /* Downward arrows */
   position: absolute;
-  top: -15px; /* Position above the notification */
+  bottom: -15px; /* Position below the notification */
   left: 50%;
   transform: translateX(-50%);
   font-size: 24px;
-  animation: floatUp 2s ease-in-out infinite;
+  animation: floatDown 2s ease-in-out infinite;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
   z-index: 2;
   color: #FFFFFF;
   font-weight: bold;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
 }
 
 .scroll-reminder-content {
@@ -2480,7 +2480,7 @@ input:focus-visible {
   animation: 
     bounce 1.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite,
     spin 4s linear infinite;
-  background: linear-gradient(135deg, #FFD89B 0%, #FFCE7B 100%);
+  background: linear-gradient(135deg, #FFE082 0%, #FFD54F 100%);
   border-radius: 50%;
   padding: 12px;
   display: flex;
@@ -2489,9 +2489,9 @@ input:focus-visible {
   min-width: 50px;
   min-height: 50px;
   box-shadow: 
-    0 4px 15px rgba(0, 0, 0, 0.2),
-    0 0 0 2px rgba(255, 107, 53, 0.8),
-    inset 0 2px 4px rgba(255, 255, 255, 0.9);
+    0 4px 15px rgba(0, 0, 0, 0.3),
+    0 0 0 2px rgba(255, 23, 68, 1),
+    inset 0 2px 4px rgba(255, 255, 255, 0.95);
   position: relative;
   overflow: hidden;
 }
