@@ -14,7 +14,7 @@ export default function TermsAndConditions() {
 
   const handleDecline = () => {
     navigate("/auth?mode=register");
-  };
+  }; 
 
   return (
     <div style={styles.page}>

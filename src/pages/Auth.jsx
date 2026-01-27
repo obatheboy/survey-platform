@@ -661,7 +661,7 @@ const styles = {
     borderTop: "3px solid white",
     borderRadius: "50%",
     animation: "spin 1s linear infinite",
-  },
+  }, 
   message: {
     marginTop: "12px",
     padding: "10px",

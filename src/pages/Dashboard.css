@@ -2411,7 +2411,7 @@ input:focus-visible {
     #FF5722 50%,    /* Red-Orange */
     #FF1744 75%,    /* Deep Red */
     #FF3333 100%    /* Vivid Red */
-  );
+  ); 
   color: #FFFFFF;
   padding: 18px 25px;
   border-radius: 18px;
