@@ -35,6 +35,7 @@ export default function Auth() {
     email: "",
     password: "",
     confirmPassword: "",
+    termsAccepted: false,
   });
   const [regMessage, setRegMessage] = useState("");
 
@@ -65,6 +66,13 @@ export default function Auth() {
     e.preventDefault();
     setRegMessage("");
     setShake(false);
+
+    if (!regData.termsAccepted) {
+      setRegMessage("You must accept the Terms and Conditions to register");
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+      return;
+    }
 
     if (regData.password !== regData.confirmPassword) {
       setRegMessage("Passwords do not match");
@@ -269,6 +277,28 @@ export default function Auth() {
               </div>
             </div>
 
+            <div style={styles.termsContainer}>
+              <input
+                type="checkbox"
+                id="termsAccepted"
+                checked={regData.termsAccepted}
+                onChange={(e) =>
+                  setRegData(prev => ({ ...prev, termsAccepted: e.target.checked }))
+                }
+                style={styles.termsCheckbox}
+              />
+              <label htmlFor="termsAccepted" style={styles.termsLabel}>
+                I agree to the{" "}
+                <button
+                  type="button"
+                  style={styles.termsLink}
+                  onClick={() => navigate("/terms")}
+                >
+                  Terms and Conditions
+                </button>
+              </label>
+            </div>
+
             <button
               style={styles.primaryButton}
               type="submit"
@@ -385,7 +415,16 @@ export default function Auth() {
 
       {/* Footer - compact */}
       <div style={styles.footer}>
-        <p>By continuing, you agree to our Terms and Privacy Policy</p>
+        <p>
+          By continuing, you agree to our{" "}
+          <button
+            style={styles.footerLink}
+            onClick={() => navigate("/terms")}
+            type="button"
+          >
+            Terms and Privacy Policy
+          </button>
+        </p>
       </div>
 
       {/* Add CSS animations */}
@@ -675,5 +714,52 @@ const styles = {
     fontSize: "12px",
     padding: "0 15px",
     zIndex: 1,
+  },
+  termsContainer: {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: "8px",
+    marginBottom: "15px",
+    padding: "12px",
+    backgroundColor: "rgba(102, 126, 234, 0.05)",
+    borderRadius: "10px",
+    border: "1px solid rgba(102, 126, 234, 0.2)",
+  },
+  termsCheckbox: {
+    width: "18px",
+    height: "18px",
+    minWidth: "18px",
+    marginTop: "2px",
+    cursor: "pointer",
+    accentColor: "#667eea",
+  },
+  termsLabel: {
+    fontSize: "13px",
+    color: "#555",
+    fontWeight: "500",
+    cursor: "pointer",
+    lineHeight: "1.4",
+  },
+  termsLink: {
+    background: "none",
+    border: "none",
+    color: "#667eea",
+    fontSize: "13px",
+    fontWeight: "700",
+    cursor: "pointer",
+    padding: "0",
+    textDecoration: "underline",
+    transition: "color 0.2s ease",
+  },
+  footerLink: {
+    background: "none",
+    border: "none",
+    color: "rgba(255, 255, 255, 0.9)",
+    fontSize: "12px",
+    fontWeight: "700",
+    cursor: "pointer",
+    padding: "0",
+    textDecoration: "underline",
+    transition: "opacity 0.2s ease",
   },
 };

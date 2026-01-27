@@ -11,6 +11,7 @@ import Activate from "./pages/Activate";
 import ActivationNotice from "./pages/ActivationNotice";
 import Withdraw from "./pages/Withdraw";
 import FAQ from "./pages/FAQ";
+import TermsAndConditions from "./pages/TermsAndConditions";
 import NotFound from "./pages/NotFound";
 
 /* ================= ADMIN ================= */
@@ -90,6 +91,9 @@ export default function App() {
 
         {/* USER AUTH */}
         <Route path="/auth" element={<Auth />} />
+
+        {/* TERMS AND CONDITIONS */}
+        <Route path="/terms" element={<TermsAndConditions />} />
 
         {/* USER APP */}
         <Route
