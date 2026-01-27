@@ -35,7 +35,7 @@ export default function Auth() {
     email: "",
     password: "",
     confirmPassword: "",
-    termsAccepted: false,
+    termsAccepted: true,
   });
   const [regMessage, setRegMessage] = useState("");
 
@@ -231,6 +231,7 @@ export default function Auth() {
                 }
                 icon="✉️"
               />
+              <p style={styles.emailCaption}>You can skip this if you don't have an email address</p>
             </div>
 
             <div style={styles.formGroup}>
@@ -571,6 +572,13 @@ const styles = {
   },
   formGroup: {
     marginBottom: "15px",
+  },
+  emailCaption: {
+    fontSize: "12px",
+    color: "#999",
+    marginTop: "6px",
+    marginBottom: 0,
+    fontStyle: "italic",
   },
   inputContainer: {
     position: "relative",
