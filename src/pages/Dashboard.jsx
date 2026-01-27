@@ -90,7 +90,7 @@ export default function Dashboard() {
     { id: 3, label: "Invite Friends", icon: "👥", completed: false },
   ]);
 
-  /* =========================
+ /* =========================
      WITHDRAW STATE - ENHANCED
   ========================= */
   const [activeWithdrawPlan, setActiveWithdrawPlan] = useState("");
@@ -103,8 +103,7 @@ export default function Dashboard() {
   
   // Enhanced withdrawal tracking per plan
   const [pendingWithdrawals, setPendingWithdrawals] = useState({});
-  const [withdrawalHistory, setWithdrawalHistory] = useState([]);
-
+  const [withdrawalHistory, setWithdrawalHistory] = useState[];
   /* =========================
      LOAD DASHBOARD + WITHDRAWAL STATUS
   ========================= */
@@ -1471,50 +1470,12 @@ const submitWithdraw = async () => {
         </section>
       )}
 
-      {/* WITHDRAW TAB - ENHANCED */}
+      {/* WITHDRAW TAB - PROFESSIONAL LAYOUT */}
       {activeTab === "WITHDRAW" && (
         <section ref={withdrawRef} id="withdraw-section" className="tab-section">
           <div className="section-heading">
             <h3>Withdraw Your Earnings</h3>
             <p>Get paid directly to your mobile money account</p>
-          </div>
-          
-          {/* ADDED: Go to Dashboard Button */}
-          <div style={{
-            marginBottom: '20px',
-            textAlign: 'center'
-          }}>
-            <button 
-              onClick={() => {
-                setActiveTab("OVERVIEW");
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              style={{
-                background: 'linear-gradient(135deg, #667eea, #764ba2)',
-                color: 'white',
-                border: 'none',
-                borderRadius: 'var(--radius-md)',
-                padding: '0.8rem 1.5rem',
-                fontSize: '1rem',
-                fontWeight: '700',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)'
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 6px 16px rgba(102, 126, 234, 0.6)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.4)';
-              }}
-            >
-              <span>📊</span> Go to Dashboard
-            </button>
           </div>
           
           <div className="withdraw-cards-container">
@@ -1604,7 +1565,7 @@ const submitWithdraw = async () => {
                     >
                       {!isCompleted(key) ? 'Complete Surveys First' :
                        !activated ? '🔓 Activate to Withdraw' :
-                       pending ? '📤 Manage Withdrawal' :
+                       pending ? '📤 View Withdrawal' :
                        `Withdraw KES ${plan.total}`}
                     </button>
                     
@@ -1619,108 +1580,192 @@ const submitWithdraw = async () => {
             })}
           </div>
 
-          {/* ✅ CRITICAL FIX: ALWAYS SHOW REFERRAL FLOW WHEN THERE'S A PENDING WITHDRAWAL */}
-          {/* This section should ALWAYS be visible when there's a pending withdrawal */}
-          {Object.keys(pendingWithdrawals).map(plan => {
-            const withdrawal = pendingWithdrawals[plan];
-            if (!withdrawal || (withdrawal.status === "APPROVED" || withdrawal.status === "REJECTED")) return null;
-            
-            return (
-              <div key={plan} className="withdraw-sharing-container" style={{ 
-                marginTop: '30px',
-                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05))',
-                border: '2px solid rgba(16, 185, 129, 0.3)',
-                borderRadius: '16px',
-                padding: '24px',
-                boxShadow: '0 10px 30px rgba(16, 185, 129, 0.15)'
+          {/* SHARING INTERFACE - ONLY SHOW IF THERE ARE PENDING WITHDRAWALS */}
+          {Object.keys(pendingWithdrawals).length > 0 && (
+            <div style={{ 
+              marginTop: '40px',
+              padding: '25px',
+              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05))',
+              border: '2px solid rgba(16, 185, 129, 0.3)',
+              borderRadius: '20px',
+              boxShadow: '0 10px 30px rgba(16, 185, 129, 0.15)',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              {/* Go to Dashboard Button - Inside the sharing container */}
+              <div style={{
+                position: 'absolute',
+                top: '15px',
+                right: '15px',
+                zIndex: 2
               }}>
-                <div className="sharing-header">
+                <button 
+                  onClick={() => {
+                    setActiveTab("OVERVIEW");
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  style={{
+                    background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '30px',
+                    padding: '8px 16px',
+                    fontSize: '0.9rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: '0 3px 10px rgba(102, 126, 234, 0.4)'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 5px 15px rgba(102, 126, 234, 0.6)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 3px 10px rgba(102, 126, 234, 0.4)';
+                  }}
+                >
+                  <span>📊</span> Dashboard
+                </button>
+              </div>
+
+              {/* Decorative background elements */}
+              <div style={{
+                position: 'absolute',
+                top: '-50px',
+                right: '-50px',
+                width: '150px',
+                height: '150px',
+                background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0) 70%)',
+                borderRadius: '50%',
+                zIndex: '1'
+              }}></div>
+              <div style={{
+                position: 'absolute',
+                bottom: '-30px',
+                left: '-30px',
+                width: '100px',
+                height: '100px',
+                background: 'radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0) 70%)',
+                borderRadius: '50%',
+                zIndex: '1'
+              }}></div>
+
+              <div style={{ position: 'relative', zIndex: 2 }}>
+                <div className="sharing-header" style={{ textAlign: 'center', marginBottom: '25px' }}>
                   <div style={{
                     fontSize: '48px',
-                    textAlign: 'center',
-                    marginBottom: '16px',
+                    marginBottom: '10px',
                     animation: 'pulse 2s infinite'
                   }}>
                     🎉
                   </div>
-                  <h3 style={{ textAlign: 'center', color: '#10b981', marginBottom: '8px' }}>
+                  <h3 style={{ 
+                    color: '#10b981', 
+                    marginBottom: '8px',
+                    fontSize: '1.8rem',
+                    fontWeight: '800'
+                  }}>
                     Withdrawal Submitted!
                   </h3>
                   <p style={{ 
-                    textAlign: 'center', 
-                    fontSize: '15px',
+                    fontSize: '16px',
                     lineHeight: '1.6',
-                    marginBottom: '20px',
-                    fontWeight: '600'
+                    color: '#374151',
+                    maxWidth: '600px',
+                    margin: '0 auto',
+                    fontWeight: '500'
                   }}>
                     Your withdrawal is being processed. <strong style={{ color: '#f59e0b' }}>Share your referral link to 3+ members</strong> to get priority processing and faster payment!
                   </p>
                 </div>
 
+                {/* Referral Code Display */}
                 <div style={{
-                  background: 'rgba(255, 255, 255, 0.9)',
-                  borderRadius: '12px',
-                  padding: '16px',
-                  marginBottom: '20px',
-                  border: '1px solid rgba(0, 0, 0, 0.1)',
-                  textAlign: 'center'
+                  background: 'rgba(255, 255, 255, 0.95)',
+                  borderRadius: '15px',
+                  padding: '20px',
+                  marginBottom: '25px',
+                  border: '1px solid rgba(0, 0, 0, 0.08)',
+                  textAlign: 'center',
+                  boxShadow: '0 5px 15px rgba(0, 0, 0, 0.05)'
                 }}>
                   <div style={{ 
-                    fontSize: '14px',
+                    fontSize: '15px',
                     fontWeight: '600',
                     color: '#666',
-                    marginBottom: '8px'
+                    marginBottom: '10px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
                   }}>
-                    Your Referral Code:
+                    Your Referral Code
                   </div>
                   <div style={{
-                    fontSize: '24px',
-                    fontWeight: '800',
+                    fontSize: '32px',
+                    fontWeight: '900',
                     color: '#10b981',
-                    letterSpacing: '2px',
-                    background: 'rgba(16, 185, 129, 0.1)',
-                    padding: '12px',
-                    borderRadius: '8px',
-                    border: '2px dashed rgba(16, 185, 129, 0.3)'
+                    letterSpacing: '3px',
+                    background: 'rgba(16, 185, 129, 0.08)',
+                    padding: '15px',
+                    borderRadius: '12px',
+                    border: '2px dashed rgba(16, 185, 129, 0.3)',
+                    display: 'inline-block',
+                    minWidth: '200px'
                   }}>
-                    {withdrawal.referral_code}
+                    {Object.values(pendingWithdrawals)[0].referral_code}
                   </div>
                 </div>
 
-                <div className="share-progress" style={{
-                  background: 'rgba(255, 255, 255, 0.9)',
-                  borderRadius: '12px',
-                  padding: '16px',
-                  marginBottom: '20px',
-                  border: '1px solid rgba(0, 0, 0, 0.1)'
+                {/* Progress Bar */}
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.95)',
+                  borderRadius: '15px',
+                  padding: '20px',
+                  marginBottom: '25px',
+                  border: '1px solid rgba(0, 0, 0, 0.08)',
+                  boxShadow: '0 5px 15px rgba(0, 0, 0, 0.05)'
                 }}>
                   <div style={{ 
                     display: 'flex', 
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    marginBottom: '12px'
+                    marginBottom: '15px'
                   }}>
-                    <span style={{ fontWeight: '600', color: '#333' }}>Shares: {withdrawal.share_count || 0}/3</span>
+                    <div>
+                      <span style={{ fontWeight: '600', color: '#333', fontSize: '16px' }}>
+                        Shares Completed
+                      </span>
+                      <div style={{ fontSize: '14px', color: '#666', marginTop: '4px' }}>
+                        {Object.values(pendingWithdrawals)[0].share_count || 0} out of 3 required
+                      </div>
+                    </div>
                     <span style={{ 
-                      fontSize: '14px',
-                      color: (withdrawal.share_count || 0) >= 3 ? '#10b981' : '#f59e0b',
-                      fontWeight: '700'
+                      fontSize: '15px',
+                      color: (Object.values(pendingWithdrawals)[0].share_count || 0) >= 3 ? '#10b981' : '#f59e0b',
+                      fontWeight: '700',
+                      padding: '6px 12px',
+                      background: (Object.values(pendingWithdrawals)[0].share_count || 0) >= 3 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)',
+                      borderRadius: '20px'
                     }}>
-                      {(withdrawal.share_count || 0) >= 3 ? 
+                      {(Object.values(pendingWithdrawals)[0].share_count || 0) >= 3 ? 
                         '✅ Target Reached!' : 
-                        `${3 - (withdrawal.share_count || 0)} more needed`}
+                        `${3 - (Object.values(pendingWithdrawals)[0].share_count || 0)} more needed`}
                     </span>
                   </div>
                   <div style={{
                     height: '12px',
-                    background: 'rgba(0, 0, 0, 0.1)',
+                    background: 'rgba(0, 0, 0, 0.08)',
                     borderRadius: '6px',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    marginBottom: '10px'
                   }}>
                     <div 
                       style={{ 
                         height: '100%',
-                        width: `${Math.min(((withdrawal.share_count || 0) / 3) * 100, 100)}%`,
+                        width: `${Math.min(((Object.values(pendingWithdrawals)[0].share_count || 0) / 3) * 100, 100)}%`,
                         background: 'linear-gradient(90deg, #f59e0b, #fbbf24)',
                         transition: 'width 0.5s ease',
                         borderRadius: '6px'
@@ -1729,351 +1774,279 @@ const submitWithdraw = async () => {
                   </div>
                 </div>
 
+                {/* Benefits Section */}
                 <div style={{
-                  background: 'rgba(251, 191, 36, 0.1)',
-                  border: '2px solid rgba(251, 191, 36, 0.3)',
-                  borderRadius: '12px',
-                  padding: '16px',
-                  marginTop: '20px',
-                  marginBottom: '20px'
+                  background: 'rgba(251, 191, 36, 0.12)',
+                  border: '2px solid rgba(251, 191, 36, 0.25)',
+                  borderRadius: '15px',
+                  padding: '20px',
+                  marginBottom: '30px'
                 }}>
                   <h4 style={{ 
-                    margin: '0 0 12px', 
-                    fontSize: '16px',
+                    margin: '0 0 15px', 
+                    fontSize: '18px',
                     fontWeight: '800',
-                    color: '#f59e0b',
+                    color: '#d97706',
                     textAlign: 'center'
                   }}>
                     🚀 Why Share Your Referral?
                   </h4>
-                  <ul style={{ 
-                    margin: '0',
-                    padding: '0 0 0 20px',
-                    fontSize: '14px',
-                    lineHeight: '1.8'
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                    gap: '15px'
                   }}>
-                    <li><strong>Priority Processing:</strong> Get your payment faster</li>
-                    <li><strong>Help Others Earn:</strong> Share the opportunity</li>
-                    <li><strong>Build Your Network:</strong> Earn from referrals</li>
-                    <li><strong>Instant Activation:</strong> 3+ shares = instant approval</li>
-                  </ul>
+                    <div style={{
+                      background: 'rgba(255, 255, 255, 0.9)',
+                      borderRadius: '10px',
+                      padding: '15px',
+                      textAlign: 'center'
+                    }}>
+                      <div style={{ fontSize: '24px', marginBottom: '8px' }}>⚡</div>
+                      <div style={{ fontWeight: '700', color: '#333', marginBottom: '5px' }}>Priority Processing</div>
+                      <div style={{ fontSize: '14px', color: '#666' }}>Get your payment faster</div>
+                    </div>
+                    <div style={{
+                      background: 'rgba(255, 255, 255, 0.9)',
+                      borderRadius: '10px',
+                      padding: '15px',
+                      textAlign: 'center'
+                    }}>
+                      <div style={{ fontSize: '24px', marginBottom: '8px' }}>🤝</div>
+                      <div style={{ fontWeight: '700', color: '#333', marginBottom: '5px' }}>Help Others Earn</div>
+                      <div style={{ fontSize: '14px', color: '#666' }}>Share the opportunity</div>
+                    </div>
+                    <div style={{
+                      background: 'rgba(255, 255, 255, 0.9)',
+                      borderRadius: '10px',
+                      padding: '15px',
+                      textAlign: 'center'
+                    }}>
+                      <div style={{ fontSize: '24px', marginBottom: '8px' }}>🌐</div>
+                      <div style={{ fontWeight: '700', color: '#333', marginBottom: '5px' }}>Build Network</div>
+                      <div style={{ fontSize: '14px', color: '#666' }}>Earn from referrals</div>
+                    </div>
+                    <div style={{
+                      background: 'rgba(255, 255, 255, 0.9)',
+                      borderRadius: '10px',
+                      padding: '15px',
+                      textAlign: 'center'
+                    }}>
+                      <div style={{ fontSize: '24px', marginBottom: '8px' }}>✅</div>
+                      <div style={{ fontWeight: '700', color: '#333', marginBottom: '5px' }}>Instant Activation</div>
+                      <div style={{ fontSize: '14px', color: '#666' }}>3+ shares = instant approval</div>
+                    </div>
+                  </div>
                 </div>
 
-                {/* FIXED: Made this caption bold */}
-                <p style={{ 
-                  fontSize: '18px',
-                  fontWeight: 'bold',
-                  textAlign: 'center',
-                  marginBottom: '16px',
-                  color: '#333'
-                }}>
-                  <strong>Share via:</strong>
-                </p>
-
-                <div className="share-buttons-grid" style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(2, 1fr)',
-                  gap: '12px',
-                  marginBottom: '20px'
-                }}>
-                  <button 
-                    style={{
-                      background: '#25D366',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '10px',
-                      padding: '14px',
-                      fontSize: '16px',
-                      fontWeight: '700',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px',
-                      transition: 'all 0.3s ease'
-                    }}
-                    onClick={() => shareToWhatsApp(plan)}
-                    title="Share on WhatsApp"
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 6px 16px rgba(37, 211, 102, 0.4)';
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = 'none';
-                    }}
-                  >
-                    <span style={{ fontSize: '20px' }}>💬</span> WhatsApp
-                  </button>
-                  <button 
-                    style={{
-                      background: '#EA4335',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '10px',
-                      padding: '14px',
-                      fontSize: '16px',
-                      fontWeight: '700',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px',
-                      transition: 'all 0.3s ease'
-                    }}
-                    onClick={() => shareToEmail(plan)}
-                    title="Share via Email"
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 6px 16px rgba(234, 67, 53, 0.4)';
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = 'none';
-                    }}
-                  >
-                    <span style={{ fontSize: '20px' }}>📧</span> Email
-                  </button>
-                  <button 
-                    style={{
-                      background: '#34B7F1',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '10px',
-                      padding: '14px',
-                      fontSize: '16px',
-                      fontWeight: '700',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px',
-                      transition: 'all 0.3s ease'
-                    }}
-                    onClick={() => shareToSMS(plan)}
-                    title="Share via SMS"
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 6px 16px rgba(52, 183, 241, 0.4)';
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = 'none';
-                    }}
-                  >
-                    <span style={{ fontSize: '20px' }}>📱</span> SMS
-                  </button>
-                  <button 
-                    style={{
-                      background: '#6B7280',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '10px',
-                      padding: '14px',
-                      fontSize: '16px',
-                      fontWeight: '700',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px',
-                      transition: 'all 0.3s ease'
-                    }}
-                    onClick={() => copyLink(plan)}
-                    title="Copy link"
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 6px 16px rgba(107, 114, 128, 0.4)';
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = 'none';
-                    }}
-                  >
-                    <span style={{ fontSize: '20px' }}>📋</span> Copy
-                  </button>
-                </div>
-
-                <div className="withdrawal-status" style={{ 
-                  marginTop: '20px', 
-                  textAlign: 'center',
-                  padding: '12px',
-                  background: 'rgba(255, 255, 255, 0.9)',
-                  borderRadius: '10px',
-                  border: '1px solid rgba(0, 0, 0, 0.1)'
-                }}>
-                  <span style={{ fontWeight: '600', color: '#333' }}>Status:</span>
-                  <span style={{ 
-                    marginLeft: '10px',
-                    padding: '6px 12px',
-                    borderRadius: '20px',
-                    fontWeight: '700',
-                    background: withdrawal.status === "PENDING" ? 'rgba(251, 191, 36, 0.2)' : 'rgba(59, 130, 246, 0.2)',
-                    color: withdrawal.status === "PENDING" ? '#d97706' : '#1d4ed8',
-                    border: `1px solid ${withdrawal.status === "PENDING" ? 'rgba(245, 158, 11, 0.3)' : 'rgba(59, 130, 246, 0.3)'}`
+                {/* Share Buttons */}
+                <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+                  <p style={{ 
+                    fontSize: '18px',
+                    fontWeight: 'bold',
+                    marginBottom: '20px',
+                    color: '#333'
                   }}>
-                    {withdrawal.status === "APPROVED" ? "✅ APPROVED" :
-                     withdrawal.status === "PENDING" ? "⏳ PENDING" :
-                     "🔄 PROCESSING"}
-                  </span>
-                </div>
-
-                <p style={{ 
-                  fontSize: '12px',
-                  color: '#666',
-                  textAlign: 'center',
-                  marginTop: '15px',
-                  fontStyle: 'italic'
-                }}>
-                  ⚠️ Note: Sharing helps speed up your withdrawal processing time.
-                </p>
-              </div>
-            );
-          })}
-
-          {/* WITHDRAW FORM FOR NEW WITHDRAWALS */}
-          {activeWithdrawPlan && !pendingWithdrawals[activeWithdrawPlan] && (
-            <div 
-              className="withdraw-form-container"
-              onClick={(e) => {
-                if (e.target.className === 'withdraw-form-container') {
-                  setActiveWithdrawPlan("");
-                }
-              }}
-            >
-              <div className="card withdraw-form">
-                <button 
-                  onClick={() => setActiveWithdrawPlan("")}
-                  style={{
-                    position: 'absolute',
-                    top: '16px',
-                    right: '16px',
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    color: 'white',
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '50%',
-                    fontSize: '20px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all 0.2s ease',
-                    zIndex: 10
-                  }}
-                  onMouseOver={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                  }}
-                  aria-label="Close"
-                >
-                  ×
-                </button>
-                <div className="withdraw-form-header">
-                  <h4>Withdraw {PLANS[activeWithdrawPlan].name} Earnings</h4>
-                  <p>Enter your details to receive payment</p>
-                </div>
-                
-                {withdrawMessage && (
-                  <div className="success-message">
-                    <span className="success-icon">✅</span>
-                    <p>{withdrawMessage}</p>
-                  </div>
-                )}
-                
-                {withdrawError && (
-                  <div className="error-message">
-                    <span className="error-icon">⚠️</span>
-                    <p>{withdrawError}</p>
-                  </div>
-                )}
-
-                <div className="form-group">
-                  <label>Amount to Withdraw (KES)</label>
-                  <div className="amount-input-group">
-                    <span className="amount-prefix">KES</span>
-                    <input
-                      type="number"
-                      placeholder="Enter amount"
-                      value={withdrawAmount}
-                      onChange={(e) => setWithdrawAmount(e.target.value)}
-                      min="100"
-                      max={PLANS[activeWithdrawPlan].total}
-                    />
-                  </div>
-                  <div className="amount-helper">
-                    Available: KES {PLANS[activeWithdrawPlan].total}
+                    <strong>Share via:</strong>
+                  </p>
+                  
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+                    gap: '15px',
+                    maxWidth: '500px',
+                    margin: '0 auto'
+                  }}>
                     <button 
-                      type="button" 
-                      className="use-max-btn"
-                      onClick={() => setWithdrawAmount(PLANS[activeWithdrawPlan].total.toString())}
+                      style={{
+                        background: '#25D366',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '12px',
+                        padding: '15px',
+                        fontSize: '16px',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '8px',
+                        transition: 'all 0.3s ease',
+                        boxShadow: '0 4px 12px rgba(37, 211, 102, 0.3)'
+                      }}
+                      onClick={() => shareToWhatsApp(Object.keys(pendingWithdrawals)[0])}
+                      title="Share on WhatsApp"
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-3px)';
+                        e.currentTarget.style.boxShadow = '0 8px 20px rgba(37, 211, 102, 0.4)';
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(37, 211, 102, 0.3)';
+                      }}
                     >
-                      Use Max
+                      <span style={{ fontSize: '24px' }}>💬</span>
+                      <span>WhatsApp</span>
+                    </button>
+                    <button 
+                      style={{
+                        background: '#EA4335',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '12px',
+                        padding: '15px',
+                        fontSize: '16px',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '8px',
+                        transition: 'all 0.3s ease',
+                        boxShadow: '0 4px 12px rgba(234, 67, 53, 0.3)'
+                      }}
+                      onClick={() => shareToEmail(Object.keys(pendingWithdrawals)[0])}
+                      title="Share via Email"
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-3px)';
+                        e.currentTarget.style.boxShadow = '0 8px 20px rgba(234, 67, 53, 0.4)';
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(234, 67, 53, 0.3)';
+                      }}
+                    >
+                      <span style={{ fontSize: '24px' }}>📧</span>
+                      <span>Email</span>
+                    </button>
+                    <button 
+                      style={{
+                        background: '#34B7F1',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '12px',
+                        padding: '15px',
+                        fontSize: '16px',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '8px',
+                        transition: 'all 0.3s ease',
+                        boxShadow: '0 4px 12px rgba(52, 183, 241, 0.3)'
+                      }}
+                      onClick={() => shareToSMS(Object.keys(pendingWithdrawals)[0])}
+                      title="Share via SMS"
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-3px)';
+                        e.currentTarget.style.boxShadow = '0 8px 20px rgba(52, 183, 241, 0.4)';
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(52, 183, 241, 0.3)';
+                      }}
+                    >
+                      <span style={{ fontSize: '24px' }}>📱</span>
+                      <span>SMS</span>
+                    </button>
+                    <button 
+                      style={{
+                        background: '#6B7280',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '12px',
+                        padding: '15px',
+                        fontSize: '16px',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '8px',
+                        transition: 'all 0.3s ease',
+                        boxShadow: '0 4px 12px rgba(107, 114, 128, 0.3)'
+                      }}
+                      onClick={() => copyLink(Object.keys(pendingWithdrawals)[0])}
+                      title="Copy link"
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-3px)';
+                        e.currentTarget.style.boxShadow = '0 8px 20px rgba(107, 114, 128, 0.4)';
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(107, 114, 128, 0.3)';
+                      }}
+                    >
+                      <span style={{ fontSize: '24px' }}>📋</span>
+                      <span>Copy Link</span>
                     </button>
                   </div>
                 </div>
 
-                <div className="form-group">
-                  <label>Phone Number (M-Pesa)</label>
-                  <input
-                    type="tel"
-                    placeholder="07XX XXX XXX"
-                    value={withdrawPhone}
-                    onChange={(e) => setWithdrawPhone(e.target.value)}
-                  />
-                  <p className="input-helper">Enter your Safaricom M-Pesa number</p>
-                </div>
-
-                <div className="withdrawal-info">
-                  <div className="info-item">
-                    <span className="info-icon">⏱️</span>
-                    <span>Processing Time: 5-30 minutes</span>
+                {/* Status Display */}
+                <div style={{ 
+                  textAlign: 'center',
+                  padding: '20px',
+                  background: 'rgba(255, 255, 255, 0.95)',
+                  borderRadius: '15px',
+                  border: '1px solid rgba(0, 0, 0, 0.08)',
+                  boxShadow: '0 5px 15px rgba(0, 0, 0, 0.05)'
+                }}>
+                  <div style={{ fontWeight: '600', color: '#333', marginBottom: '10px', fontSize: '16px' }}>
+                    Withdrawal Status
                   </div>
-                  <div className="info-item">
-                    <span className="info-icon">💳</span>
-                    <span>Minimum: KES 100</span>
+                  <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    padding: '10px 20px',
+                    background: Object.values(pendingWithdrawals)[0].status === "PENDING" ? 'rgba(251, 191, 36, 0.15)' : 'rgba(59, 130, 246, 0.15)',
+                    borderRadius: '25px',
+                    border: `2px solid ${Object.values(pendingWithdrawals)[0].status === "PENDING" ? 'rgba(245, 158, 11, 0.3)' : 'rgba(59, 130, 246, 0.3)'}`
+                  }}>
+                    <span style={{ 
+                      fontSize: '20px',
+                      color: Object.values(pendingWithdrawals)[0].status === "PENDING" ? '#d97706' : '#1d4ed8'
+                    }}>
+                      {Object.values(pendingWithdrawals)[0].status === "APPROVED" ? "✅" :
+                       Object.values(pendingWithdrawals)[0].status === "PENDING" ? "⏳" :
+                       "🔄"}
+                    </span>
+                    <span style={{ 
+                      fontWeight: '700',
+                      color: Object.values(pendingWithdrawals)[0].status === "PENDING" ? '#d97706' : '#1d4ed8'
+                    }}>
+                      {Object.values(pendingWithdrawals)[0].status === "APPROVED" ? "APPROVED" :
+                       Object.values(pendingWithdrawals)[0].status === "PENDING" ? "PENDING" :
+                       "PROCESSING"}
+                    </span>
                   </div>
-                </div>
-
-                <div className="form-actions">
-                  <button 
-                    className="primary-btn" 
-                    onClick={submitWithdraw} 
-                    disabled={submitting}
-                  >
-                    {submitting ? (
-                      <>
-                        <span className="spinner"></span>
-                        Processing...
-                      </>
-                    ) : (
-                      'Confirm Withdrawal'
-                    )}
-                  </button>
-                  <button 
-                    className="secondary-btn" 
-                    onClick={() => setActiveWithdrawPlan("")}
-                  >
-                    Cancel
-                  </button>
+                  <p style={{ 
+                    fontSize: '14px',
+                    color: '#666',
+                    marginTop: '15px',
+                    fontStyle: 'italic',
+                    maxWidth: '500px',
+                    margin: '15px auto 0'
+                  }}>
+                    ⚠️ Sharing helps speed up your withdrawal processing time. Keep sharing until you reach 3+ shares!
+                  </p>
                 </div>
               </div>
             </div>
           )}
 
-          {/* WITHDRAWAL HISTORY */}
+          {/* Withdrawal History */}
           {withdrawalHistory.length > 0 && (
-            <div style={{ marginTop: '32px' }}>
+            <div style={{ marginTop: '40px' }}>
               <div className="section-heading">
                 <h3>Withdrawal History</h3>
                 <p>Track all your withdrawal requests</p>
               </div>
               
               <div className="withdrawal-history-list">
-                {withdrawalHistory.map((withdrawal, index) => (
+                {withdrawalHistory.slice(0, 5).map((withdrawal, index) => (
                   <div key={index} className="withdrawal-history-item" style={{
                     background: 'rgba(255, 255, 255, 0.05)',
                     borderRadius: '12px',
@@ -2089,7 +2062,7 @@ const submitWithdraw = async () => {
                     }}>
                       <span style={{ fontWeight: '700', fontSize: '16px' }}>
                         {PLANS[withdrawal.type]?.name || withdrawal.type} Plan
-                    </span>
+                      </span>
                       <span className={`status-badge ${withdrawal.status.toLowerCase()}`}>
                         {withdrawal.status === "APPROVED" ? "✅ PAID" :
                          withdrawal.status === "REJECTED" ? "❌ REJECTED" :
@@ -2136,7 +2109,7 @@ const submitWithdraw = async () => {
       <style jsx>{`
         @keyframes pulse {
           0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.1); }
+          50% { transform: scale(1.05); }
         }
       `}</style>
     </div>
