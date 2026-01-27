@@ -42,6 +42,9 @@ export default function WithdrawForm() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+  window.scrollTo(0, 0);
+}, []);
   // Moved loadUser inside useEffect
   useEffect(() => {
     const loadUser = async () => {
@@ -218,6 +221,8 @@ export default function WithdrawForm() {
         )}
 
         {/* Withdrawal Form */}
+
+        
         {plan && (
           <form className="withdrawal-form" onSubmit={handleSubmit}>
             <div className="form-header">

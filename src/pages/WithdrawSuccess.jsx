@@ -17,6 +17,11 @@ export default function WithdrawSuccess() {
   const [shareCount, setShareCount] = useState(withdrawal?.share_count || 0);
   const [copied, setCopied] = useState(false);
 
+  // 🔥 FIX: Scroll to top when page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   useEffect(() => {
     if (!withdrawal) {
       navigate("/dashboard");
@@ -29,15 +34,16 @@ export default function WithdrawSuccess() {
     incrementShareCount();
   };
 
-const shareToSMS = () => {
-  const text = `Hi! Join me on Survey App and earn money. Code: ${withdrawal.referral_code} ${window.location.origin}`;
-  const smsUrl = `sms:?body=${encodeURIComponent(text)}`;
-  
-  // Use window.open instead of modifying window.location.href
-  window.open(smsUrl, '_blank');
-  
-  incrementShareCount();
-};
+  const shareToSMS = () => {
+    const text = `Hi! Join me on Survey App and earn money. Code: ${withdrawal.referral_code} ${window.location.origin}`;
+    const smsUrl = `sms:?body=${encodeURIComponent(text)}`;
+    
+    // Use window.open instead of modifying window.location.href
+    window.open(smsUrl, '_blank');
+    
+    incrementShareCount();
+  };
+
   const copyLink = () => {
     const text = `Survey App Referral - Code: ${withdrawal.referral_code} - ${window.location.origin}`;
     navigator.clipboard.writeText(text);
