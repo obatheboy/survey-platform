@@ -16,6 +16,7 @@ export default function Withdraw() {
   const [withdrawalCode, setWithdrawalCode] = useState("");
   const [shared, setShared] = useState(false);
   const [shareCount, setShareCount] = useState(0);
+  const [withdrawalStatus, setWithdrawalStatus] = useState("PROCESSING");
 
   useEffect(() => {
     const load = async () => {
@@ -48,6 +49,26 @@ export default function Withdraw() {
 
     load();
   }, [navigate]);
+
+  // Fetch withdrawal status every 5 seconds when withdrawal is submitted
+  useEffect(() => {
+    if (!submitted || !user) return;
+
+    const checkStatus = async () => {
+      try {
+        const res = await api.get("/auth/me");
+        const latestUser = res.data;
+        // Get the most recent withdrawal request status (could be stored in user object)
+        const withdrawalData = latestUser.withdrawal_status || "PROCESSING";
+        setWithdrawalStatus(withdrawalData);
+      } catch (err) {
+        console.error("Failed to check withdrawal status:", err);
+      }
+    };
+
+    const interval = setInterval(checkStatus, 5000);
+    return () => clearInterval(interval);
+  }, [submitted, user]);
 
   if (loading) {
     return <p style={styles.loadingText}>Loading withdrawal…</p>;
@@ -237,11 +258,31 @@ export default function Withdraw() {
                 <span style={styles.statusLabel}>Withdrawal Status:</span>
                 <span style={{
                   ...styles.statusBadge,
-                  ...(shared ? styles.statusProcessing : styles.statusPending),
+                  ...(withdrawalStatus === "APPROVED" ? styles.statusApproved :
+                    withdrawalStatus === "REJECTED" ? styles.statusRejected :
+                      styles.statusProcessing),
                 }}>
-                  {shared ? "⏳ Processing" : "⏸ Pending"}
+                  {withdrawalStatus === "APPROVED" ? "✅ APPROVED" :
+                    withdrawalStatus === "REJECTED" ? "❌ REJECTED" :
+                      "⏳ PROCESSING"}
                 </span>
               </div>
+
+              {withdrawalStatus === "REJECTED" && (
+                <div style={styles.rejectedBox}>
+                  <p style={styles.rejectedText}>
+                    ❌ Your withdrawal has been rejected. Please contact admin for details.
+                  </p>
+                </div>
+              )}
+
+              {withdrawalStatus === "APPROVED" && (
+                <div style={styles.approvedBox}>
+                  <p style={styles.approvedText}>
+                    ✅ Withdrawal approved! Your payment will be transferred to your M-Pesa account within 24 hours.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -535,6 +576,48 @@ const styles = {
   statusProcessing: {
     background: "#d1ecf1",
     color: "#0c5460",
+  },
+
+  statusApproved: {
+    background: "#d4edda",
+    color: "#155724",
+  },
+
+  statusRejected: {
+    background: "#f8d7da",
+    color: "#721c24",
+  },
+
+  rejectedBox: {
+    background: "#f8d7da",
+    borderRadius: 10,
+    padding: 12,
+    marginTop: 12,
+    border: "1px solid #f5c6cb",
+  },
+
+  rejectedText: {
+    color: "#721c24",
+    fontSize: 13,
+    fontWeight: 700,
+    margin: 0,
+    textAlign: "center",
+  },
+
+  approvedBox: {
+    background: "#d4edda",
+    borderRadius: 10,
+    padding: 12,
+    marginTop: 12,
+    border: "1px solid #c3e6cb",
+  },
+
+  approvedText: {
+    color: "#155724",
+    fontSize: 13,
+    fontWeight: 700,
+    margin: 0,
+    textAlign: "center",
   },
 
   messageBox: {

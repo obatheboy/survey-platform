@@ -1,32 +1,27 @@
 import { useEffect, useState } from "react";
-
-// ✅ FIX: import adminApi instead of api
 import { adminApi } from "../../api/adminApi";
 
 export default function AdminActivations() {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  const [view, setView] = useState("PENDING"); // PENDING | ALL
   const [processingId, setProcessingId] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [failureMessage, setFailureMessage] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [showRoleModal, setShowRoleModal] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [roleMessage, setRoleMessage] = useState("");
 
   /* =========================
-     FETCH PAYMENTS
+     FETCH ACTIVATIONS
   ========================= */
   const fetchActivations = async () => {
     try {
       setError("");
       setLoading(true);
-
-      const endpoint =
-        view === "PENDING"
-          ? "/admin/activations/pending"
-          : "/admin/activations";
-
-      const res = await adminApi.get(endpoint); // ✅ now works
+      const res = await adminApi.get("/admin/activations");
       setPayments(res.data);
     } catch (err) {
       console.error("Fetch activations error:", err);
@@ -38,11 +33,10 @@ export default function AdminActivations() {
 
   useEffect(() => {
     fetchActivations();
-    // eslint-disable-next-line
-  }, [view]);
+  }, []);
 
   /* =========================
-     ACTIONS (OPTIMISTIC)
+     APPROVE ACTIVATION
   ========================= */
   const approve = async (id) => {
     if (!window.confirm("Approve this activation?")) return;
@@ -53,17 +47,40 @@ export default function AdminActivations() {
 
     try {
       await adminApi.patch(`/admin/activations/${id}/approve`);
-
       setPayments((prev) =>
         prev.map((p) =>
           p.id === id ? { ...p, status: "APPROVED" } : p
         )
       );
-      setSuccessMessage("Activation successfully approved.");
+      setSuccessMessage("✅ Activation approved! User can now withdraw.");
+      // Auto-open role modal after approval
+      const payment = payments.find(p => p.id === id);
+      if (payment) {
+        setSelectedPayment(payment);
+        setShowRoleModal(true);
+      }
     } catch (err) {
       setFailureMessage(err.response?.data?.message || "Approval failed");
     } finally {
       setProcessingId(null);
+    }
+  };
+
+  /* =========================
+     UPDATE USER ROLE
+  ========================= */
+  const updateUserRole = async (userId, newRole) => {
+    try {
+      setRoleMessage("Updating role...");
+      await adminApi.patch(`/admin/users/${userId}/role`, { role: newRole });
+      setRoleMessage(`✅ Role updated to ${newRole.toUpperCase()}`);
+      setTimeout(() => {
+        setShowRoleModal(false);
+        setSelectedPayment(null);
+        setRoleMessage("");
+      }, 1500);
+    } catch (err) {
+      setRoleMessage("❌ Failed to update role");
     }
   };
 
@@ -76,13 +93,12 @@ export default function AdminActivations() {
 
     try {
       await adminApi.patch(`/admin/activations/${id}/reject`);
-
       setPayments((prev) =>
         prev.map((p) =>
           p.id === id ? { ...p, status: "REJECTED" } : p
         )
       );
-      setSuccessMessage("Activation successfully rejected.");
+      setSuccessMessage("❌ Activation rejected.");
     } catch (err) {
       setFailureMessage(err.response?.data?.message || "Rejection failed");
     } finally {
@@ -91,121 +107,478 @@ export default function AdminActivations() {
   };
 
   /* =========================
-     SAFE GUARDS
+     FILTER & SEARCH
   ========================= */
-  if (loading) return <p>Loading activation payments...</p>;
+  const filteredPayments = payments.filter((p) => {
+    const searchLower = searchTerm.toLowerCase();
+    const matchesSearch =
+      p.full_name?.toLowerCase().includes(searchLower) ||
+      p.phone?.includes(searchTerm) ||
+      p.email?.toLowerCase().includes(searchLower) ||
+      p.mpesa_code?.includes(searchTerm);
+
+    const matchesStatus =
+      filterStatus === "all" ||
+      (filterStatus === "pending" && p.status === "SUBMITTED") ||
+      (filterStatus === "approved" && p.status === "APPROVED") ||
+      (filterStatus === "rejected" && p.status === "REJECTED");
+
+    return matchesSearch && matchesStatus;
+  });
+
+  if (loading) return <p style={styles.loadingText}>Loading activation payments...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
-  /* =========================
-     UI
-  ========================= */
   return (
-    <div>
-      <h2>Activation Payments</h2>
-
-      {/* SUCCESS / FAILURE MESSAGE */}
-      {successMessage && <p style={{ color: "green", fontWeight: "bold" }}>{successMessage}</p>}
-      {failureMessage && <p style={{ color: "red", fontWeight: "bold" }}>{failureMessage}</p>}
-
-      {/* FILTER */}
-      <div style={{ marginBottom: 15 }}>
-        <button
-          onClick={() => setView("PENDING")}
-          disabled={view === "PENDING"}
-        >
-          Pending
-        </button>
-
-        <button
-          onClick={() => setView("ALL")}
-          disabled={view === "ALL"}
-          style={{ marginLeft: 10 }}
-        >
-          All
-        </button>
+    <div style={styles.container}>
+      <div style={styles.header}>
+        <h2>💳 Activation Payments Dashboard</h2>
+        <p style={styles.subheader}>
+          Total: {payments.length} | Pending: {payments.filter(p => p.status === "SUBMITTED").length} | Approved: {payments.filter(p => p.status === "APPROVED").length}
+        </p>
       </div>
 
-      {payments.length === 0 ? (
-        <p>No activation payments found.</p>
+      {/* MESSAGES */}
+      {successMessage && <div style={styles.successMessage}>{successMessage}</div>}
+      {failureMessage && <div style={styles.errorMessage}>{failureMessage}</div>}
+
+      {/* SEARCH & FILTER SECTION */}
+      <div style={styles.searchSection}>
+        <div style={styles.searchContainer}>
+          <input
+            type="text"
+            placeholder="🔍 Search by name, phone, email, or M-Pesa code..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={styles.searchInput}
+          />
+        </div>
+
+        <div style={styles.filterContainer}>
+          <button
+            style={{
+              ...styles.filterBtn,
+              ...(filterStatus === "all" ? styles.filterBtnActive : {}),
+            }}
+            onClick={() => setFilterStatus("all")}
+          >
+            All
+          </button>
+          <button
+            style={{
+              ...styles.filterBtn,
+              ...(filterStatus === "pending" ? styles.filterBtnActive : {}),
+            }}
+            onClick={() => setFilterStatus("pending")}
+          >
+            Pending
+          </button>
+          <button
+            style={{
+              ...styles.filterBtn,
+              ...(filterStatus === "approved" ? styles.filterBtnActive : {}),
+            }}
+            onClick={() => setFilterStatus("approved")}
+          >
+            Approved
+          </button>
+          <button
+            style={{
+              ...styles.filterBtn,
+              ...(filterStatus === "rejected" ? styles.filterBtnActive : {}),
+            }}
+            onClick={() => setFilterStatus("rejected")}
+          >
+            Rejected
+          </button>
+        </div>
+      </div>
+
+      {filteredPayments.length === 0 ? (
+        <p style={styles.noResults}>No activation payments found.</p>
       ) : (
-        <table style={styles.table} border="1" cellPadding="8">
-          <thead>
-            <tr>
-              <th>User</th>
-              <th>Email</th>
-              <th>Mpesa Code</th>
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Submitted</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {payments.map((p) => (
-              <tr key={p.id}>
-                <td>{p.username || p.full_name}</td>
-                <td>{p.email}</td>
-                <td>{p.mpesa_code}</td>
-                <td>Ksh {p.amount}</td>
-                <td>
-                  <span style={statusStyle(p.status)}>{p.status}</span>
-                </td>
-                <td>
-                  {new Date(p.created_at).toLocaleString()}
-                </td>
-                <td>
-                  {p.status === "SUBMITTED" ? (
-                    <>
-                      <button
-                        onClick={() => approve(p.id)}
-                        disabled={processingId === p.id}
-                      >
-                        {processingId === p.id
-                          ? "Processing..."
-                          : "Approve"}
-                      </button>
-
-                      <button
-                        onClick={() => reject(p.id)}
-                        disabled={processingId === p.id}
-                        style={{ marginLeft: 8, color: "red" }}
-                      >
-                        Reject
-                      </button>
-                    </>
-                  ) : (
-                    <em>—</em>
-                  )}
-                </td>
+        <div style={styles.tableWrapper}>
+          <table style={styles.table}>
+            <thead>
+              <tr style={styles.headerRow}>
+                <th style={styles.th}>User Name</th>
+                <th style={styles.th}>Phone</th>
+                <th style={styles.th}>Email</th>
+                <th style={styles.th}>M-Pesa Code</th>
+                <th style={styles.th}>Amount (KES)</th>
+                <th style={styles.th}>Status</th>
+                <th style={styles.th}>Submitted</th>
+                <th style={styles.th}>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredPayments.map((p) => (
+                <tr key={p.id} style={styles.row}>
+                  <td style={styles.td}>{p.full_name || "—"}</td>
+                  <td style={styles.td}>{p.phone || "—"}</td>
+                  <td style={styles.td}>{p.email || "—"}</td>
+                  <td style={styles.td}>
+                    <strong style={{ fontFamily: "monospace" }}>{p.mpesa_code}</strong>
+                  </td>
+                  <td style={styles.td}>
+                    <strong style={{ color: "#0a7c4a", fontSize: "16px" }}>
+                      {Number(p.amount).toLocaleString()}
+                    </strong>
+                  </td>
+                  <td style={styles.td}>
+                    <span style={{
+                      ...styles.statusBadge,
+                      ...(p.status === "SUBMITTED" ? styles.pendingBadge :
+                        p.status === "APPROVED" ? styles.approvedBadge :
+                          styles.rejectedBadge)
+                    }}>
+                      {p.status === "SUBMITTED" ? "⏳ PENDING" :
+                        p.status === "APPROVED" ? "✅ APPROVED" :
+                          "❌ REJECTED"}
+                    </span>
+                  </td>p.status === "APPROVED" ? (
+                        <button
+                          onClick={() => {
+                            setSelectedPayment(p);
+                            setShowRoleModal(true);
+                          }}
+                          style={styles.roleBtn}
+                        >
+                          👤 Set Role
+                        </button>
+                      ) : 
+                  <td style={styles.td}>
+                    {new Date(p.created_at).toLocaleDateString()} <br />
+
+      {/* ROLE MODAL */}
+      {showRoleModal && selectedPayment && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <h3 style={styles.modalTitle}>👤 Set User Role</h3>
+            <p style={styles.modalSubtext}>
+              User: <strong>{selectedPayment.full_name}</strong>
+            </p>
+
+            {roleMessage && (
+              <div style={{
+                ...styles.modalMessage,
+                ...(roleMessage.startsWith("✅") ? { background: "#d4edda", color: "#155724" } : { background: "#f8d7da", color: "#721c24" })
+              }}>
+                {roleMessage}
+              </div>
+            )}
+
+            <div style={styles.roleButtons}>
+              <button
+                onClick={() => updateUserRole(selectedPayment.user_id, "user")}
+                style={styles.roleOptionBtn}
+              >
+                👤 Regular User
+              </button>
+              <button
+                onClick={() => updateUserRole(selectedPayment.user_id, "admin")}
+                style={styles.roleOptionBtnAdmin}
+              >
+                👨‍💼 Admin User
+              </button>
+            </div>
+
+            <button
+              onClick={() => {
+                setShowRoleModal(false);
+                setSelectedPayment(null);
+                setRoleMessage("");
+              }}
+              style={styles.modalCloseBtn}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+                    <small>{new Date(p.created_at).toLocaleTimeString()}</small>
+                  </td>
+                  <td style={styles.td}>
+                    <div style={styles.actionButtons}>
+                      {p.status === "SUBMITTED" ? (
+                        <>
+                          <button
+                            onClick={() => approve(p.id)}
+                            disabled={processingId === p.id}
+                            style={styles.approveBtn}
+                          >
+                            {processingId === p.id ? "..." : "✓ Approve"}
+                          </button>
+                          <button
+                            onClick={() => reject(p.id)}
+                            disabled={processingId === p.id}
+                            style={styles.rejectBtn}
+                          >
+                            ✕ Reject
+                          </button>
+                        </>
+                      ) : (
+                        <span style={styles.doneText}>
+                          {p.status === "APPROVED" ? "✓ Done" : "✕ Done"}
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
 }
 
-/* ───────── styles ───────── */
-
+/* ===========================
+   STYLES
+=========================== */
 const styles = {
+  container: {
+    padding: "24px",
+    background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+    minHeight: "100vh",
+  },
+  header: {
+    marginBottom: "24px",
+  },
+  subheader: {
+    color: "#666",
+    fontSize: "14px",
+    marginTop: "6px",
+  },
+  searchSection: {
+    marginBottom: "24px",
+    background: "#fff",
+    padding: "20px",
+    borderRadius: "12px",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+  },
+  searchContainer: {
+    marginBottom: "16px",
+  },
+  searchInput: {
+    width: "100%",
+    padding: "12px 16px",
+    borderRadius: "10px",
+    border: "2px solid #e0e0e0",
+    fontSize: "14px",
+    fontWeight: "500",
+    boxSizing: "border-box",
+  },
+  filterContainer: {
+    display: "flex",
+    gap: "10px",
+    flexWrap: "wrap",
+  },
+  filterBtn: {
+    padding: "8px 16px",
+    borderRadius: "8px",
+    border: "2px solid #ddd",
+    background: "#f9f9f9",
+    cursor: "pointer",
+    fontWeight: "600",
+    transition: "all 0.3s ease",
+  },
+  filterBtnActive: {
+    background: "#0a7c4a",
+    color: "#fff",
+    border: "2px solid #0a7c4a",
+  },
+  tableWrapper: {
+    background: "#fff",
+    borderRadius: "12px",
+    overflow: "hidden",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+  },
   table: {
     width: "100%",
     borderCollapse: "collapse",
-    background: "#218109",
+  },
+  headerRow: {
+    background: "linear-gradient(135deg, #0a7c4a, #1a9c5c)",
+    color: "#fff",
+  },
+  th: {
+    padding: "16px",
+    textAlign: "left",
+    fontWeight: "700",
+    fontSize: "14px",
+  },
+  row: {
+    borderBottom: "1px solid #eee",
+  },
+  td: {
+  roleBtn: {
+    padding: "6px 12px",
+    borderRadius: "6px",
+    border: "none",
+    background: "#007bff",
+    color: "#fff",
+    cursor: "pointer",
+    fontWeight: "600",
+    fontSize: "12px",
+  },
+  modalOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: "rgba(0,0,0,0.5)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1000,
+  },
+  modalContent: {
+    background: "#fff",
+    borderRadius: "12px",
+    padding: "32px",
+    maxWidth: "400px",
+    width: "90%",
+    boxShadow: "0 10px 40px rgba(0,0,0,0.2)",
+  },
+  modalTitle: {
+    fontSize: "20px",
+    fontWeight: "700",
+    marginBottom: "8px",
+    color: "#333",
+  },
+  modalSubtext: {
+    fontSize: "14px",
+    color: "#666",
+    marginBottom: "16px",
+  },
+  modalMessage: {
+    padding: "12px",
+    borderRadius: "8px",
+    marginBottom: "16px",
+    fontSize: "14px",
+    fontWeight: "600",
+  },
+  roleButtons: {
+    display: "flex",
+    gap: "10px",
+    marginBottom: "16px",
+  },
+  roleOptionBtn: {
+    flex: 1,
+    padding: "12px",
+    borderRadius: "8px",
+    border: "2px solid #ddd",
+    background: "#f9f9f9",
+    cursor: "pointer",
+    fontWeight: "600",
+    fontSize: "14px",
+    transition: "all 0.3s ease",
+  },
+  roleOptionBtnAdmin: {
+    flex: 1,
+    padding: "12px",
+    borderRadius: "8px",
+    border: "2px solid #ddd",
+    background: "#fff3cd",
+    cursor: "pointer",
+    fontWeight: "600",
+    fontSize: "14px",
+    transition: "all 0.3s ease",
+    color: "#856404",
+  },
+  modalCloseBtn: {
+    width: "100%",
+    padding: "10px",
+    borderRadius: "8px",
+    border: "none",
+    background: "#6c757d",
+    color: "#fff",
+    cursor: "pointer",
+    fontWeight: "600",
+    fontSize: "14px",
+  },
+    padding: "14px 16px",
+    fontSize: "14px",
+    color: "#333",
+  },
+  statusBadge: {
+    padding: "6px 12px",
+    borderRadius: "20px",
+    fontSize: "12px",
+    fontWeight: "700",
+  },
+  pendingBadge: {
+    background: "#fff3cd",
+    color: "#856404",
+  },
+  approvedBadge: {
+    background: "#d4edda",
+    color: "#155724",
+  },
+  rejectedBadge: {
+    background: "#f8d7da",
+    color: "#721c24",
+  },
+  actionButtons: {
+    display: "flex",
+    gap: "8px",
+    flexWrap: "wrap",
+  },
+  approveBtn: {
+    padding: "6px 12px",
+    borderRadius: "6px",
+    border: "none",
+    background: "#28a745",
+    color: "#fff",
+    cursor: "pointer",
+    fontWeight: "600",
+    fontSize: "12px",
+  },
+  rejectBtn: {
+    padding: "6px 12px",
+    borderRadius: "6px",
+    border: "none",
+    background: "#dc3545",
+    color: "#fff",
+    cursor: "pointer",
+    fontWeight: "600",
+    fontSize: "12px",
+  },
+  doneText: {
+    fontWeight: "600",
+    fontSize: "12px",
+    color: "#666",
+  },
+  successMessage: {
+    padding: "14px",
+    marginBottom: "16px",
+    borderRadius: "10px",
+    background: "#d4edda",
+    color: "#155724",
+    fontWeight: "600",
+    border: "1px solid #c3e6cb",
+  },
+  errorMessage: {
+    padding: "14px",
+    marginBottom: "16px",
+    borderRadius: "10px",
+    background: "#f8d7da",
+    color: "#721c24",
+    fontWeight: "600",
+    border: "1px solid #f5c6cb",
+  },
+  loadingText: {
+    textAlign: "center",
+    padding: "40px",
+    fontSize: "16px",
+  },
+  noResults: {
+    textAlign: "center",
+    padding: "40px",
+    fontSize: "16px",
+    color: "#999",
   },
 };
-
-const statusStyle = (status) => ({
-  padding: "4px 8px",
-  borderRadius: 4,
-  color: "#fff",
-  fontWeight: "bold",
-  background:
-    status === "APPROVED"
-      ? "green"
-      : status === "REJECTED"
-      ? "red"
-      : "orange",
-});
