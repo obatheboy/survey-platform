@@ -24,6 +24,7 @@ export default function Auth() {
   const [mode, setMode] = useState(initialMode);
   const [loading, setLoading] = useState(false);
   const [shake, setShake] = useState(false);
+  const [termsChecked, setTermsChecked] = useState(false);
 
   const [showRegPassword, setShowRegPassword] = useState(false);
   const [showRegConfirm, setShowRegConfirm] = useState(false);
@@ -65,6 +66,7 @@ export default function Auth() {
     e.preventDefault();
     setRegMessage("");
     setShake(false);
+    setTermsChecked(true);
 
     if (regData.password !== regData.confirmPassword) {
       setRegMessage("Passwords do not match");
@@ -157,9 +159,9 @@ export default function Auth() {
         {/* Logo and greeting - more compact */}
         <div style={styles.logoContainer}>
           <div style={styles.logoIcon}>📊</div>
-          <h1 style={styles.logo}>SURVEY APP</h1>
+          <h1 style={styles.logo}>OFFICIAL SURVEY APP</h1>
         </div>
-        <p style={styles.tagline}>Share Your Opinions • Unlock Rewards</p>
+        <p style={styles.tagline}>Share Your Opinions • Earn to Mpesa</p>
 
         {/* Mode selector - compact */}
         <div style={styles.modeSelector}>
@@ -388,7 +390,7 @@ export default function Auth() {
           <input
             type="checkbox"
             id="termsAccepted"
-            checked={true}
+            checked={termsChecked}
             readOnly
             style={styles.termsCheckbox}
           />
@@ -431,6 +433,24 @@ export default function Auth() {
             0%, 100% { transform: translateX(0); }
             10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
             20%, 40%, 60%, 80% { transform: translateX(5px); }
+          }
+
+          @keyframes checkmark {
+            0% {
+              transform: scale(0.5);
+              opacity: 0;
+            }
+            50% {
+              transform: scale(1.2);
+            }
+            100% {
+              transform: scale(1);
+              opacity: 1;
+            }
+          }
+          
+          input[type="checkbox"]:checked {
+            animation: checkmark 0.4s ease-out;
           }
           
           input:focus {
@@ -513,24 +533,26 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "12px",
-    marginBottom: "8px",
+    gap: "14px",
+    marginBottom: "12px",
+    paddingBottom: "10px",
   },
   logoIcon: {
-    fontSize: "32px",
+    fontSize: "36px",
     background: "linear-gradient(135deg, #667eea, #764ba2)",
-    padding: "12px",
-    borderRadius: "16px",
-    boxShadow: "0 6px 15px rgba(102, 126, 234, 0.3)",
+    padding: "14px",
+    borderRadius: "18px",
+    boxShadow: "0 8px 20px rgba(102, 126, 234, 0.35)",
   },
   logo: {
-    fontSize: "28px",
+    fontSize: "32px",
     fontWeight: "900",
-    background: "linear-gradient(135deg, #667eea, #764ba2)",
+    background: "linear-gradient(135deg, #5e7fe6, #7b4db8)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     margin: 0,
-    letterSpacing: "0.5px",
+    letterSpacing: "1.2px",
+    textShadow: "0 2px 10px rgba(102, 126, 234, 0.1)",
   },
   tagline: {
     textAlign: "center",
