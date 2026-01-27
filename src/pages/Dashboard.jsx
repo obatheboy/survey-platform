@@ -1479,6 +1479,44 @@ const submitWithdraw = async () => {
             <p>Get paid directly to your mobile money account</p>
           </div>
           
+          {/* ADDED: Go to Dashboard Button */}
+          <div style={{
+            marginBottom: '20px',
+            textAlign: 'center'
+          }}>
+            <button 
+              onClick={() => {
+                setActiveTab("OVERVIEW");
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              style={{
+                background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                color: 'white',
+                border: 'none',
+                borderRadius: 'var(--radius-md)',
+                padding: '0.8rem 1.5rem',
+                fontSize: '1rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 16px rgba(102, 126, 234, 0.6)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.4)';
+              }}
+            >
+              <span>📊</span> Go to Dashboard
+            </button>
+          </div>
+          
           <div className="withdraw-cards-container">
             {Object.entries(PLANS).map(([key, plan]) => {
               const activated = isActivated(key);
@@ -1677,14 +1715,15 @@ const submitWithdraw = async () => {
                     </ul>
                   </div>
 
+                  {/* FIXED: Made this caption bold */}
                   <p style={{ 
                     fontSize: '16px',
-                    fontWeight: '700',
+                    fontWeight: 'bold', // CHANGED FROM 700 TO BOLD
                     textAlign: 'center',
                     marginBottom: '12px',
                     color: '#333'
                   }}>
-                    Share via:
+                    <strong>Share via:</strong> {/* ADDED <strong> TAG */}
                   </p>
 
                   <div className="share-buttons-grid">
@@ -1734,7 +1773,7 @@ const submitWithdraw = async () => {
                     marginTop: '15px',
                     fontStyle: 'italic'
                   }}>
-                    ⚠️ This referral flow will remain visible until your withdrawal is approved by admin.
+                    ⚠️ 
                   </p>
                 </div>
               </div>
@@ -1801,7 +1840,7 @@ const submitWithdraw = async () => {
                     marginBottom: '20px',
                     fontWeight: '600'
                   }}>
-                    Your withdrawal is being processed. <strong style={{ color: '#f59e0b' }}>Share your referral link to 3+ members</strong> to get priority processing and faster payment!
+                    Your withdrawal is being processed. <strong style={{ color: '#f59e0b' }}>Share your referral link to 5 or more  members</strong> to get priority processing and faster payment!
                   </p>
                 </div>
 
@@ -1853,7 +1892,7 @@ const submitWithdraw = async () => {
                     fontWeight: '800',
                     color: '#f59e0b',
                     textAlign: 'center'
-                  }}>
+                    }}>
                     🚀 Why Share Your Referral?
                   </h4>
                   <ul style={{ 
@@ -1865,18 +1904,19 @@ const submitWithdraw = async () => {
                     <li><strong>Priority Processing:</strong> Get your payment faster</li>
                     <li><strong>Help Others Earn:</strong> Share the opportunity</li>
                     <li><strong>Build Your Network:</strong> Earn from referrals</li>
-                    <li><strong>Instant Activation:</strong> 3+ shares = instant approval</li>
+                    <li><strong>Instant Activation:</strong> 5+ shares = instant approval</li>
                   </ul>
                 </div>
 
+                {/* FIXED: Made this caption bold */}
                 <p style={{ 
                   fontSize: '16px',
-                  fontWeight: '700',
+                  fontWeight: 'bold', // CHANGED FROM 700 TO BOLD
                   textAlign: 'center',
                   marginBottom: '12px',
                   color: '#333'
                 }}>
-                  Share via:
+                  <strong>Share via:</strong> {/* ADDED <strong> TAG */}
                 </p>
 
                 <div className="share-buttons-grid">
