@@ -314,7 +314,7 @@ export default function Dashboard() {
   };
 
   /* =========================
-     WITHDRAW LOGIC - ENHANCED TO CHECK PENDING WITHDRAWALS
+     WITHDRAW LOGIC - ENHANCED TO ALWAYS SHOW REFERRAL FLOW FOR PENDING WITHDRAWALS
   ========================= */
   const handleWithdrawClick = async (plan) => {
     setWithdrawError("");
@@ -345,13 +345,14 @@ export default function Dashboard() {
       return;
     }
 
-    // ✅ NEW: Check if there's already a pending withdrawal for this plan
+    // ✅ CRITICAL FIX: ALWAYS show sharing interface if there's a pending withdrawal
+    // This will trigger every time, no matter how many times user clicks
     if (pendingWithdrawals[plan]) {
       // Show the sharing interface with existing withdrawal
       setActiveWithdrawPlan(plan);
       setWithdrawAmount(PLANS[plan].total.toString());
       
-      // Auto-scroll to withdraw section
+      // Auto-scroll to withdraw section and show sharing interface
       goToWithdraw();
       setTimeout(() => {
         withdrawRef.current?.scrollIntoView({ 
@@ -369,9 +370,18 @@ export default function Dashboard() {
   };
 
   const submitWithdraw = async () => {
-    // Check if there's already a pending withdrawal
+    // ✅ CRITICAL FIX: Instead of showing error, show the sharing interface
+    // This ensures the referral flow always shows, even if there's already a pending withdrawal
     if (pendingWithdrawals[activeWithdrawPlan]) {
-      setWithdrawError("You already have a pending withdrawal for this plan. Share your referral link to speed up processing!");
+      // Instead of showing error, just show the sharing interface
+      setWithdrawMessage("Your withdrawal is already pending. Share your referral link to speed up processing!");
+      
+      // Auto-scroll to show the sharing interface
+      setTimeout(() => {
+        if (withdrawRef.current) {
+          withdrawRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 100);
       return;
     }
 
@@ -422,7 +432,7 @@ export default function Dashboard() {
       
       setWithdrawMessage("✅ Withdrawal submitted! Share to speed up processing.");
       
-      // Clear form inputs
+      // Clear form inputs (except amount)
       setWithdrawPhone("");
       
       // Auto-scroll to show the sharing interface
@@ -1149,7 +1159,7 @@ export default function Dashboard() {
                           fontWeight: '600',
                           textAlign: 'center'
                         }}>
-                          ⏳ Withdrawal Pending - Share to speed up!
+                          ⏳ Withdrawal Pending - Click to Share & Speed Up!
                         </div>
                       )}
                       <div className="progress-card-actions">
@@ -1342,7 +1352,7 @@ export default function Dashboard() {
                         fontWeight: '700',
                         textAlign: 'center'
                       }}>
-                        ⏳ Withdrawal Pending - Click to share & speed up!
+                        ⏳ Withdrawal Pending - Click "View Withdrawal" to Share!
                       </div>
                     )}
                     
@@ -1506,7 +1516,167 @@ export default function Dashboard() {
             })}
           </div>
 
-          {/* WITHDRAWAL SHARING INTERFACE */}
+          {/* ✅ CRITICAL FIX: ALWAYS SHOW REFERRAL FLOW WHEN THERE'S A PENDING WITHDRAWAL */}
+          {/* This section should ALWAYS be visible when there's a pending withdrawal */}
+          {Object.keys(pendingWithdrawals).map(plan => {
+            const withdrawal = pendingWithdrawals[plan];
+            if (!withdrawal || (withdrawal.status === "APPROVED" || withdrawal.status === "REJECTED")) return null;
+            
+            return (
+              <div key={plan} className="withdraw-form-container" style={{ display: 'block', marginTop: '20px' }}>
+                <div className="card withdraw-sharing-card">
+                  <div className="sharing-header">
+                    <div style={{
+                      fontSize: '48px',
+                      textAlign: 'center',
+                      marginBottom: '16px',
+                      animation: 'pulse 2s infinite'
+                    }}>
+                      🎉
+                    </div>
+                    <h3 style={{ textAlign: 'center', color: '#10b981', marginBottom: '8px' }}>
+                      Withdrawal Submitted!
+                    </h3>
+                    <p style={{ 
+                      textAlign: 'center', 
+                      fontSize: '15px',
+                      lineHeight: '1.6',
+                      marginBottom: '20px',
+                      fontWeight: '600'
+                    }}>
+                      Your withdrawal is being processed. <strong style={{ color: '#f59e0b' }}>Share your referral link to 3+ members</strong> to get priority processing and faster payment!
+                    </p>
+                  </div>
+
+                  <div className="referral-code-box">
+                    <span className="code-label">Your Referral Code:</span>
+                    <span className="code-value">{withdrawal.referral_code}</span>
+                  </div>
+
+                  <div className="share-progress">
+                    <div style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '8px'
+                    }}>
+                      <span>Shares: {withdrawal.share_count || 0}/3</span>
+                      <span style={{ 
+                        fontSize: '12px',
+                        color: (withdrawal.share_count || 0) >= 3 ? '#10b981' : '#f59e0b',
+                        fontWeight: '700'
+                      }}>
+                        {(withdrawal.share_count || 0) >= 3 ? 
+                          '✅ Target Reached!' : 
+                          `${3 - (withdrawal.share_count || 0)} more needed`}
+                      </span>
+                    </div>
+                    <div className="progress-bar-share">
+                      <div 
+                        className="progress-fill"
+                        style={{ 
+                          width: `${Math.min(((withdrawal.share_count || 0) / 3) * 100, 100)}%`,
+                          transition: 'width 0.5s ease'
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  <div style={{
+                    background: 'rgba(251, 191, 36, 0.1)',
+                    border: '2px solid rgba(251, 191, 36, 0.3)',
+                    borderRadius: '12px',
+                    padding: '16px',
+                    marginTop: '20px',
+                    marginBottom: '20px'
+                  }}>
+                    <h4 style={{ 
+                      margin: '0 0 12px', 
+                      fontSize: '16px',
+                      fontWeight: '800',
+                      color: '#f59e0b',
+                      textAlign: 'center'
+                    }}>
+                      🚀 Why Share Your Referral?
+                    </h4>
+                    <ul style={{ 
+                      margin: '0',
+                      padding: '0 0 0 20px',
+                      fontSize: '14px',
+                      lineHeight: '1.8'
+                    }}>
+                      <li><strong>Priority Processing:</strong> Get your payment faster</li>
+                      <li><strong>Help Others Earn:</strong> Share the opportunity</li>
+                      <li><strong>Build Your Network:</strong> Earn from referrals</li>
+                      <li><strong>Instant Activation:</strong> 3+ shares = instant approval</li>
+                    </ul>
+                  </div>
+
+                  <p style={{ 
+                    fontSize: '16px',
+                    fontWeight: '700',
+                    textAlign: 'center',
+                    marginBottom: '12px',
+                    color: '#333'
+                  }}>
+                    Share via:
+                  </p>
+
+                  <div className="share-buttons-grid">
+                    <button 
+                      className="share-btn whatsapp-btn"
+                      onClick={() => shareToWhatsApp(plan)}
+                      title="Share on WhatsApp"
+                    >
+                      💬 WhatsApp
+                    </button>
+                    <button 
+                      className="share-btn email-btn"
+                      onClick={() => shareToEmail(plan)}
+                      title="Share via Email"
+                    >
+                      📧 Email
+                    </button>
+                    <button 
+                      className="share-btn sms-btn"
+                      onClick={() => shareToSMS(plan)}
+                      title="Share via SMS"
+                    >
+                      📱 SMS
+                    </button>
+                    <button 
+                      className="share-btn copy-btn"
+                      onClick={() => copyLink(plan)}
+                      title="Copy link"
+                    >
+                      📋 Copy
+                    </button>
+                  </div>
+
+                  <div className="withdrawal-status" style={{ marginTop: '20px', textAlign: 'center' }}>
+                    <span className="status-label">Status:</span>
+                    <span className={`status-badge ${withdrawal.status.toLowerCase()}`} style={{ marginLeft: '10px' }}>
+                      {withdrawal.status === "APPROVED" ? "✅ APPROVED" :
+                       withdrawal.status === "PENDING" ? "⏳ PENDING" :
+                       "🔄 PROCESSING"}
+                    </span>
+                  </div>
+
+                  <p style={{ 
+                    fontSize: '12px',
+                    color: '#666',
+                    textAlign: 'center',
+                    marginTop: '15px',
+                    fontStyle: 'italic'
+                  }}>
+                    ⚠️ This referral flow will remain visible until your withdrawal is approved by admin.
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* WITHDRAWAL SHARING INTERFACE (FOR MODAL VIEW) */}
           {activeWithdrawPlan && pendingWithdrawals[activeWithdrawPlan] && (
             <div 
               className="withdraw-form-container"
@@ -1859,7 +2029,7 @@ export default function Dashboard() {
                     }}>
                       <span style={{ fontWeight: '700', fontSize: '16px' }}>
                         {PLANS[withdrawal.type]?.name || withdrawal.type} Plan
-                      </span>
+                    </span>
                       <span className={`status-badge ${withdrawal.status.toLowerCase()}`}>
                         {withdrawal.status === "APPROVED" ? "✅ PAID" :
                          withdrawal.status === "REJECTED" ? "❌ REJECTED" :
