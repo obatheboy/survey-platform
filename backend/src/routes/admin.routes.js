@@ -18,9 +18,9 @@ router.use(adminProtect);
  */
 router.get("/me", (req, res) => {
   res.json({
-    id: req.admin.id,
-    full_name: req.admin.full_name,
-    role: "admin",
+    id: req.user.id,
+    full_name: req.user.full_name,
+    role: req.user.role,
   });
 });
 
