@@ -98,7 +98,12 @@ export default function Withdraw() {
       const code = Math.random().toString(36).substring(2, 8).toUpperCase();
       setWithdrawalCode(code);
       setSubmitted(true);
-      setMessage("✓ Withdrawal request submitted successfully!");
+      setMessage("✓ Your withdrawal is being processed. Share the link to 3+ members to speed up your payment!");
+      
+      // Auto-scroll to top to show the processing message
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 100);
     } catch (err) {
       setMessage(
         err.response?.data?.message || "❌ Withdrawal request failed"

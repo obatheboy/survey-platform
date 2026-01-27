@@ -1,5 +1,6 @@
 const pool = require("../config/db");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 /* ======================================================
    🔐 ADMIN LOGIN CONTROLLER
@@ -34,12 +35,10 @@ exports.adminLogin = async (req, res) => {
 
     const user = result.rows[0];
 
-    // Verify password (assuming bcrypt or similar)
-    // For now, we'll do a simple comparison - in production use bcrypt
-    const crypto = require("crypto");
-    const isValidPassword = user.password_hash === crypto.createHash("sha256").update(password).digest("hex");
+    // Verify password using bcrypt (same as regular user login)
+    const match = await bcrypt.compare(password, user.password_hash);
 
-    if (!isValidPassword) {
+    if (!match) {
       return res.status(401).json({
         message: "Invalid admin credentials",
       });
