@@ -406,18 +406,6 @@ export default function Dashboard() {
       setWithdrawalStatus("PENDING");
     }
   };
-      
-      setTimeout(() => {
-        setActiveWithdrawPlan("");
-        setWithdrawAmount("");
-        setWithdrawPhone("");
-      }, 3000);
-    } catch (err) {
-      setWithdrawError(err.response?.data?.message || "Withdrawal failed. Please try again.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   /* =========================
      WELCOME BONUS
@@ -915,7 +903,6 @@ export default function Dashboard() {
         </div>
       </section>
 
-   
       {/* DASHBOARD NAVIGATION - MOBILE OPTIMIZED */}
       <section className="dashboard-section">
         <div className="section-heading">
@@ -1368,7 +1355,7 @@ export default function Dashboard() {
 
           {/* WITHDRAW FORM */}
           {activeWithdrawPlan && (
-            <div className="withdraw-form-container" ref={withdrawRef}>
+            <div className="withdraw-form-container">
               <div className="card withdraw-form">
                 {!withdrawalSubmitted ? (
                   <>
@@ -1547,9 +1534,6 @@ export default function Dashboard() {
                     </button>
                   </div>
                 )}
-              </div>
-            </div>
-          )}
               </div>
             </div>
           )}
