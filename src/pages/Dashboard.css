@@ -2939,3 +2939,20 @@ input:focus-visible {
   }
 }
 
+/* Add to Dashboard.css */
+.dashboard-section,
+.plan-card,
+.progress-card,
+.withdraw-card,
+.stats-card {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Force GPU acceleration */
+.dashboard * {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
