@@ -51,7 +51,7 @@ exports.requestWithdraw = async (req, res) => {
     // Fetch user with all relevant fields
     const userRes = await client.query(
       `
-      SELECT is_activated, surveys_completed, plan, total_earned, welcome_bonus, welcome_bonus_withdrawn
+      SELECT id, is_activated, total_earned, welcome_bonus, welcome_bonus_withdrawn, plan
       FROM users
       WHERE id = $1
       FOR UPDATE
@@ -65,6 +65,21 @@ exports.requestWithdraw = async (req, res) => {
     }
 
     const user = userRes.rows[0];
+
+    // Fetch surveys completed for this user (from user_surveys table)
+    const surveysRes = await client.query(
+      `
+      SELECT COALESCE(SUM(surveys_completed), 0) as total_surveys
+      FROM user_surveys
+      WHERE user_id = $1
+      `,
+      [userId]
+    );
+
+    const totalSurveysCompleted = surveysRes.rows[0]?.total_surveys || 0;
+
+    // Add surveys to user object
+    user.surveys_completed = totalSurveysCompleted;
 
     // -------------------------------
     // 🌟 SPECIAL LOGIC FOR WELCOME BONUS
