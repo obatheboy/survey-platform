@@ -91,7 +91,7 @@ export default function Dashboard() {
   ]);
 
   /* =========================
-     WITHDRAW STATE
+     WITHDRAW STATE - ENHANCED
   ========================= */
   const [activeWithdrawPlan, setActiveWithdrawPlan] = useState("");
   const [withdrawAmount, setWithdrawAmount] = useState("");
@@ -100,13 +100,13 @@ export default function Dashboard() {
   const [withdrawError, setWithdrawError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [fullScreenNotification, setFullScreenNotification] = useState(null);
-  const [withdrawalSubmitted, setWithdrawalSubmitted] = useState(false);
-  const [withdrawalCode, setWithdrawalCode] = useState("");
-  const [shareCount, setShareCount] = useState(0);
-  const [withdrawalStatus, setWithdrawalStatus] = useState("PROCESSING");
+  
+  // Enhanced withdrawal tracking per plan
+  const [pendingWithdrawals, setPendingWithdrawals] = useState({});
+  const [withdrawalHistory, setWithdrawalHistory] = useState([]);
 
   /* =========================
-     LOAD DASHBOARD
+     LOAD DASHBOARD + WITHDRAWAL STATUS
   ========================= */
   useEffect(() => {
     let alive = true;
@@ -131,6 +131,9 @@ export default function Dashboard() {
           totalSurveysCompleted: totalSurveys,
           totalWithdrawals: resUser.data.total_withdrawals || 0
         });
+
+        // Load withdrawal history
+        loadWithdrawalHistory();
 
         localStorage.setItem("cachedUser", JSON.stringify(resUser.data));
       } catch (err) {
@@ -160,6 +163,27 @@ export default function Dashboard() {
   }, []);
 
   /* =========================
+     LOAD WITHDRAWAL HISTORY
+  ========================= */
+  const loadWithdrawalHistory = async () => {
+    try {
+      const res = await api.get("/withdraw/history");
+      setWithdrawalHistory(res.data || []);
+      
+      // Track pending withdrawals per plan
+      const pending = {};
+      (res.data || []).forEach(w => {
+        if (w.status === "PENDING" || w.status === "PROCESSING") {
+          pending[w.type] = w;
+        }
+      });
+      setPendingWithdrawals(pending);
+    } catch (err) {
+      console.error("Failed to load withdrawal history:", err);
+    }
+  };
+
+  /* =========================
      PROGRESS BARS ANIMATION
   ========================= */
   useEffect(() => {
@@ -179,7 +203,7 @@ export default function Dashboard() {
   useEffect(() => {
     const interval = setInterval(() => {
       setShowCaption(prev => !prev);
-    }, 800); // Faster blink: Changed from 2000ms to 800ms
+    }, 800);
 
     return () => clearInterval(interval);
   }, []);
@@ -188,26 +212,23 @@ export default function Dashboard() {
      SCROLL REMINDER NOTIFICATION - FIXED VERSION
   ========================= */
   useEffect(() => {
-    // Don't show reminder if already shown or if user has scrolled
     if (reminderShown) return;
     
     const checkScrollPosition = () => {
       const currentScroll = window.scrollY || document.documentElement.scrollTop;
-      return currentScroll < 100; // Only show if near top
+      return currentScroll < 100;
     };
 
-    // Check immediately on load
     if (checkScrollPosition()) {
       const timer = setTimeout(() => {
         setShowScrollReminder(true);
         setReminderShown(true);
-      }, 3000); // Show after 3 seconds
+      }, 3000);
       
       return () => clearTimeout(timer);
     }
   }, [reminderShown]);
 
-  // Hide reminder on scroll
   useEffect(() => {
     const handleScroll = () => {
       if (showScrollReminder) {
@@ -219,7 +240,6 @@ export default function Dashboard() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [showScrollReminder]);
 
-  // Function to dismiss the scroll reminder
   const dismissScrollReminder = () => {
     setShowScrollReminder(false);
     setReminderShown(true);
@@ -288,7 +308,7 @@ export default function Dashboard() {
   };
 
   /* =========================
-     WITHDRAW LOGIC - MODIFIED TO REDIRECT TO ACTIVATION NOTICE
+     WITHDRAW LOGIC - ENHANCED TO CHECK PENDING WITHDRAWALS
   ========================= */
   const handleWithdrawClick = async (plan) => {
     setWithdrawError("");
@@ -303,28 +323,43 @@ export default function Dashboard() {
 
     // Check if account is activated
     if (!isActivated(plan)) {
-      // Set the active plan first via API so ActivationNotice can read it
       try {
         await api.post("/surveys/select-plan", { plan });
       } catch (error) {
         console.error("Failed to set active plan:", error);
-        // Even if API fails, still allow navigation with local data
       }
       
-      // IMPORTANT: Pass plan data in state for the ActivationNotice page
       navigate("/activation-notice", { 
         state: { 
-          plan: plans[plan], // Pass the specific plan data
-          planType: plan, // Pass the plan key (REGULAR, VIP, VVIP)
-          amount: PLANS[plan].total // Pass the amount
+          plan: plans[plan],
+          planType: plan,
+          amount: PLANS[plan].total
         }
       });
       return;
     }
 
-    // Only show withdraw form if account is activated
+    // ✅ NEW: Check if there's already a pending withdrawal for this plan
+    if (pendingWithdrawals[plan]) {
+      // Show the sharing interface with existing withdrawal
+      setActiveWithdrawPlan(plan);
+      setWithdrawAmount(PLANS[plan].total.toString());
+      
+      // Auto-scroll to withdraw section
+      goToWithdraw();
+      setTimeout(() => {
+        withdrawRef.current?.scrollIntoView({ 
+          behavior: "smooth", 
+          block: "start" 
+        });
+      }, 100);
+      return;
+    }
+
+    // Only show withdraw form if account is activated and no pending withdrawal
     setActiveWithdrawPlan(plan);
     setWithdrawAmount(PLANS[plan].total.toString());
+    goToWithdraw();
   };
 
   const submitWithdraw = async () => {
@@ -344,18 +379,36 @@ export default function Dashboard() {
     setWithdrawMessage("");
     
     try {
-      await api.post("/withdraw/request", {
+      const res = await api.post("/withdraw/request", {
         phone_number: withdrawPhone,
         amount: amount,
         type: activeWithdrawPlan,
       });
 
-      // ✅ Generate referral code
+      // Generate referral code
       const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-      setWithdrawalCode(code);
-      setWithdrawalSubmitted(true);
-      setShareCount(0);
-      setWithdrawalStatus("PROCESSING");
+      
+      // Update pending withdrawals
+      const newWithdrawal = {
+        id: res.data.id,
+        type: activeWithdrawPlan,
+        amount: amount,
+        phone_number: withdrawPhone,
+        referral_code: code,
+        share_count: 0,
+        status: "PROCESSING",
+        created_at: new Date().toISOString()
+      };
+      
+      setPendingWithdrawals(prev => ({
+        ...prev,
+        [activeWithdrawPlan]: newWithdrawal
+      }));
+      
+      // Reload withdrawal history
+      await loadWithdrawalHistory();
+      
+      setWithdrawMessage("✅ Withdrawal submitted! Share to speed up processing.");
       
       // Auto-scroll to show the sharing interface
       setTimeout(() => {
@@ -363,8 +416,6 @@ export default function Dashboard() {
           withdrawRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
         }
       }, 100);
-
-      setWithdrawMessage("✅ Your withdrawal is being processed!");
     } catch (err) {
       setWithdrawError(err.response?.data?.message || "Withdrawal failed. Please try again.");
     } finally {
@@ -373,38 +424,65 @@ export default function Dashboard() {
   };
 
   // Sharing functions
-  const shareToWhatsApp = () => {
-    const text = `Hey! I'm earning money on the Survey App. Join me and complete surveys to earn cash! 🎉\n\nDownload now: ${window.location.origin}\n\nCode: ${withdrawalCode}`;
+  const shareToWhatsApp = (plan) => {
+    const withdrawal = pendingWithdrawals[plan];
+    if (!withdrawal) return;
+    
+    const text = `Hey! I'm earning money on the Survey App. Join me and complete surveys to earn cash! 🎉\n\nDownload now: ${window.location.origin}\n\nCode: ${withdrawal.referral_code}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
-    incrementShareCount();
+    incrementShareCount(plan);
   };
 
-  const shareToEmail = () => {
-    const text = `Hey! I'm earning money on the Survey App. Join me and complete surveys to earn cash! You can use my referral code: ${withdrawalCode}`;
+  const shareToEmail = (plan) => {
+    const withdrawal = pendingWithdrawals[plan];
+    if (!withdrawal) return;
+    
+    const text = `Hey! I'm earning money on the Survey App. Join me and complete surveys to earn cash! You can use my referral code: ${withdrawal.referral_code}`;
     window.location.href = `mailto:?subject=Join Survey App&body=${encodeURIComponent(text)}`;
-    incrementShareCount();
+    incrementShareCount(plan);
   };
 
-  const shareToSMS = () => {
-    const text = `Hi! Join me on Survey App and earn money. Code: ${withdrawalCode} ${window.location.origin}`;
+  const shareToSMS = (plan) => {
+    const withdrawal = pendingWithdrawals[plan];
+    if (!withdrawal) return;
+    
+    const text = `Hi! Join me on Survey App and earn money. Code: ${withdrawal.referral_code} ${window.location.origin}`;
     window.location.href = `sms:?body=${encodeURIComponent(text)}`;
-    incrementShareCount();
+    incrementShareCount(plan);
   };
 
-  const copyLink = () => {
-    const text = `Survey App Referral - Code: ${withdrawalCode} - ${window.location.origin}`;
+  const copyLink = (plan) => {
+    const withdrawal = pendingWithdrawals[plan];
+    if (!withdrawal) return;
+    
+    const text = `Survey App Referral - Code: ${withdrawal.referral_code} - ${window.location.origin}`;
     navigator.clipboard.writeText(text);
     setWithdrawMessage("✓ Referral link copied!");
-    incrementShareCount();
+    setTimeout(() => setWithdrawMessage(""), 3000);
+    incrementShareCount(plan);
   };
 
-  const incrementShareCount = () => {
-    const newCount = shareCount + 1;
-    setShareCount(newCount);
-    if (newCount >= 3) {
-      setWithdrawMessage("✓ Shared to 3+ members! Your payment will be processed soon.");
-      setWithdrawalStatus("PENDING");
-    }
+  const incrementShareCount = (plan) => {
+    setPendingWithdrawals(prev => {
+      const withdrawal = prev[plan];
+      if (!withdrawal) return prev;
+      
+      const newCount = (withdrawal.share_count || 0) + 1;
+      const updatedWithdrawal = {
+        ...withdrawal,
+        share_count: newCount,
+        status: newCount >= 3 ? "PENDING" : "PROCESSING"
+      };
+      
+      if (newCount >= 3) {
+        setWithdrawMessage("✓ Shared to 3+ members! Your payment will be processed soon.");
+      }
+      
+      return {
+        ...prev,
+        [plan]: updatedWithdrawal
+      };
+    });
   };
 
   /* =========================
@@ -523,7 +601,6 @@ export default function Dashboard() {
         <div className="header-title-container">
           <h1 className="dashboard-main-title">Dashboard</h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            {/* WhatsApp Support Button in Header */}
             <button
               onClick={openWhatsAppSupport}
               style={{
@@ -579,7 +656,6 @@ export default function Dashboard() {
         position: 'relative',
         overflow: 'hidden'
       }}>
-        {/* Smaller decorative element */}
         <div style={{
           position: 'absolute',
           top: '-20px',
@@ -794,7 +870,6 @@ export default function Dashboard() {
         alignItems: 'flex-end',
         gap: '5px'
       }}>
-        {/* Caption with blinking effect */}
         {showCaption && (
           <div style={{
             background: 'rgba(37, 211, 102, 0.9)',
@@ -813,7 +888,6 @@ export default function Dashboard() {
           </div>
         )}
         
-        {/* Button */}
         <button
           onClick={openWhatsAppSupport}
           style={{
@@ -847,7 +921,7 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* WELCOME BONUS CARD - PROFESSIONAL VERSION */}
+      {/* WELCOME BONUS CARD */}
       <section ref={welcomeRef} className="dashboard-section">
         <div className="professional-bonus-card">
           <div className="bonus-card-header">
@@ -1000,7 +1074,7 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* PLAN PROGRESS - USING OLD LOGIC */}
+          {/* PLAN PROGRESS */}
           <section className="dashboard-section">
             <div className="section-heading">
               <h3>Plan Progress</h3>
@@ -1010,6 +1084,7 @@ export default function Dashboard() {
               {Object.entries(PLANS).map(([key, plan]) => {
                 const status = getPlanStatus(key);
                 const activated = isActivated(key);
+                const hasPending = !!pendingWithdrawals[key];
                 
                 return (
                   <div key={key} className="progress-card" style={{
@@ -1047,6 +1122,21 @@ export default function Dashboard() {
                           }}
                         ></div>
                       </div>
+                      {hasPending && (
+                        <div style={{
+                          marginTop: '8px',
+                          padding: '8px',
+                          background: 'rgba(251, 191, 36, 0.1)',
+                          border: '1px solid rgba(251, 191, 36, 0.3)',
+                          borderRadius: '8px',
+                          fontSize: '12px',
+                          color: '#f59e0b',
+                          fontWeight: '600',
+                          textAlign: 'center'
+                        }}>
+                          ⏳ Withdrawal Pending - Share to speed up!
+                        </div>
+                      )}
                       <div className="progress-card-actions">
                         <button 
                           className="action-btn primary"
@@ -1066,11 +1156,13 @@ export default function Dashboard() {
                             style={{
                               borderColor: plan.color,
                               color: plan.color,
-                              background: !activated ? 'rgba(245, 158, 11, 0.1)' : 'transparent',
+                              background: !activated ? 'rgba(245, 158, 11, 0.1)' : 
+                                          hasPending ? 'rgba(251, 191, 36, 0.1)' : 'transparent',
                               cursor: 'pointer'
                             }}
                           >
-                            {!activated ? '🔓 Activate & Withdraw' : 'Withdraw'}
+                            {!activated ? '🔓 Activate & Withdraw' : 
+                             hasPending ? '📤 View Withdrawal' : 'Withdraw'}
                           </button>
                         )}
                       </div>
@@ -1156,7 +1248,7 @@ export default function Dashboard() {
         </section>
       )}
 
-      {/* SURVEYS TAB - USING OLD LOGIC: "Start Survey" only when NOT completed */}
+      {/* SURVEYS TAB */}
       {activeTab === "SURVEYS" && (
         <section ref={surveyRef} id="surveys-section" className="tab-section">
           <div className="section-heading">
@@ -1168,6 +1260,7 @@ export default function Dashboard() {
             {Object.entries(PLANS).map(([key, plan]) => {
               const status = getPlanStatus(key);
               const activated = isActivated(key);
+              const hasPending = !!pendingWithdrawals[key];
               
               return (
                 <div key={key} className={`plan-card ${key.toLowerCase()}`} style={{
@@ -1222,6 +1315,22 @@ export default function Dashboard() {
                       </div>
                     </div>
                     
+                    {hasPending && (
+                      <div style={{
+                        marginTop: '12px',
+                        padding: '10px',
+                        background: 'rgba(251, 191, 36, 0.15)',
+                        border: '1px solid rgba(251, 191, 36, 0.3)',
+                        borderRadius: '10px',
+                        fontSize: '13px',
+                        color: '#f59e0b',
+                        fontWeight: '700',
+                        textAlign: 'center'
+                      }}>
+                        ⏳ Withdrawal Pending - Click to share & speed up!
+                      </div>
+                    )}
+                    
                     <div className="plan-features">
                       <span className="feature-tag">📱 Mobile-Friendly</span>
                       <span className="feature-tag">⏱️ 5-10 Minutes</span>
@@ -1251,12 +1360,16 @@ export default function Dashboard() {
                           onClick={() => handleWithdrawClick(key)}
                           style={{
                             background: !activated ? 
-                              'linear-gradient(135deg, #f59e0b, #d97706)' : // Orange for activation needed
+                              'linear-gradient(135deg, #f59e0b, #d97706)' :
+                              hasPending ?
+                              'linear-gradient(135deg, #fbbf24, #f59e0b)' :
                               plan.gradient,
                             boxShadow: `0 5px 20px ${plan.color}40`
                           }}
                         >
-                          {!activated ? '🔓 Activate & Withdraw' : '💸 Withdraw KES'} {plan.total}
+                          {!activated ? '🔓 Activate & Withdraw' : 
+                           hasPending ? '📤 View Withdrawal Status' :
+                           '💸 Withdraw KES'} {!hasPending && plan.total}
                         </button>
                       </div>
                     )}
@@ -1268,7 +1381,7 @@ export default function Dashboard() {
         </section>
       )}
 
-      {/* WITHDRAW TAB - USING OLD LOGIC */}
+      {/* WITHDRAW TAB - ENHANCED */}
       {activeTab === "WITHDRAW" && (
         <section ref={withdrawRef} id="withdraw-section" className="tab-section">
           <div className="section-heading">
@@ -1279,6 +1392,7 @@ export default function Dashboard() {
           <div className="withdraw-cards-container">
             {Object.entries(PLANS).map(([key, plan]) => {
               const activated = isActivated(key);
+              const pending = pendingWithdrawals[key];
               
               return (
                 <div key={key} className={`withdraw-card ${isCompleted(key) ? 'completed' : ''}`} style={{
@@ -1292,8 +1406,10 @@ export default function Dashboard() {
                       <h4 style={{ color: plan.color }}>{plan.name} Plan</h4>
                       <p className="plan-earnings">KES {earnedSoFar(key)} earned</p>
                     </div>
-                    <span className={`status-indicator ${isCompleted(key) ? 'ready' : 'pending'}`}>
-                      {isCompleted(key) ? '✅ Ready' : '⏳ Pending'}
+                    <span className={`status-indicator ${
+                      pending ? 'pending' : isCompleted(key) ? 'ready' : 'not-ready'
+                    }`}>
+                      {pending ? '⏳ Pending' : isCompleted(key) ? '✅ Ready' : '🔒 Locked'}
                     </span>
                   </div>
                   
@@ -1307,6 +1423,12 @@ export default function Dashboard() {
                         <span>Available Amount:</span>
                         <strong className="available-amount">KES {isCompleted(key) ? plan.total : earnedSoFar(key)}</strong>
                       </div>
+                      {pending && (
+                        <div className="progress-row">
+                          <span>Status:</span>
+                          <strong style={{ color: '#f59e0b' }}>{pending.status}</strong>
+                        </div>
+                      )}
                     </div>
                     
                     <div className="withdraw-requirements">
@@ -1315,10 +1437,25 @@ export default function Dashboard() {
                           📝 Complete {TOTAL_SURVEYS - surveysDone(key)} more surveys to withdraw
                         </p>
                       )}
-                      {isCompleted(key) && !activated && (
+                      {isCompleted(key) && !activated && !pending && (
                         <p className="requirement">
                           🔓 Account activation required to withdraw
                         </p>
+                      )}
+                      {pending && (
+                        <div style={{
+                          marginTop: '12px',
+                          padding: '12px',
+                          background: 'rgba(251, 191, 36, 0.15)',
+                          border: '2px solid rgba(251, 191, 36, 0.3)',
+                          borderRadius: '12px',
+                          fontSize: '14px',
+                          fontWeight: '700',
+                          color: '#f59e0b',
+                          textAlign: 'center'
+                        }}>
+                          🚀 Share your referral link to 3+ people to speed up withdrawal!
+                        </div>
                       )}
                     </div>
                   </div>
@@ -1330,7 +1467,7 @@ export default function Dashboard() {
                       disabled={!isCompleted(key)}
                       style={{
                         background: isCompleted(key) && activated ? plan.gradient : 
-                                   isCompleted(key) ? 'linear-gradient(135deg, #f59e0b, #d97706)' : // Orange gradient for non-activated
+                                   isCompleted(key) ? 'linear-gradient(135deg, #f59e0b, #d97706)' :
                                    'rgba(255, 255, 255, 0.1)',
                         color: isCompleted(key) ? 'white' : 'rgba(255, 255, 255, 0.5)',
                         boxShadow: isCompleted(key) ? `0 5px 20px ${plan.color}40` : 'none',
@@ -1339,6 +1476,7 @@ export default function Dashboard() {
                     >
                       {!isCompleted(key) ? 'Complete Surveys First' :
                        !activated ? '🔓 Activate to Withdraw' :
+                       pending ? '📤 Manage Withdrawal' :
                        `Withdraw KES ${plan.total}`}
                     </button>
                     
@@ -1353,187 +1491,299 @@ export default function Dashboard() {
             })}
           </div>
 
-          {/* WITHDRAW FORM */}
-          {activeWithdrawPlan && (
-            <div className="withdraw-form-container">
-              <div className="card withdraw-form">
-                {!withdrawalSubmitted ? (
-                  <>
-                    <div className="withdraw-form-header">
-                      <h4>Withdraw {PLANS[activeWithdrawPlan].name} Earnings</h4>
-                      <p>Enter your details to receive payment</p>
-                    </div>
-                    
-                    {withdrawMessage && (
-                      <div className="success-message">
-                        <span className="success-icon">✅</span>
-                        <p>{withdrawMessage}</p>
-                      </div>
-                    )}
-                    
-                    {withdrawError && (
-                      <div className="error-message">
-                        <span className="error-icon">⚠️</span>
-                        <p>{withdrawError}</p>
-                      </div>
-                    )}
+          {/* WITHDRAWAL SHARING INTERFACE */}
+          {activeWithdrawPlan && pendingWithdrawals[activeWithdrawPlan] && (
+            <div className="withdraw-form-container" style={{ marginTop: '24px' }}>
+              <div className="card withdraw-sharing-card">
+                <div className="sharing-header">
+                  <div style={{
+                    fontSize: '48px',
+                    textAlign: 'center',
+                    marginBottom: '16px',
+                    animation: 'pulse 2s infinite'
+                  }}>
+                    🎉
+                  </div>
+                  <h3 style={{ textAlign: 'center', color: '#10b981', marginBottom: '8px' }}>
+                    Withdrawal Submitted!
+                  </h3>
+                  <p style={{ 
+                    textAlign: 'center', 
+                    fontSize: '15px',
+                    lineHeight: '1.6',
+                    marginBottom: '20px',
+                    fontWeight: '600'
+                  }}>
+                    Your withdrawal is being processed. <strong style={{ color: '#f59e0b' }}>Share your referral link to 3+ members</strong> to get priority processing and faster payment!
+                  </p>
+                </div>
 
-                    <div className="form-group">
-                      <label>Amount to Withdraw (KES)</label>
-                      <div className="amount-input-group">
-                        <span className="amount-prefix">KES</span>
-                        <input
-                          type="number"
-                          placeholder="Enter amount"
-                          value={withdrawAmount}
-                          onChange={(e) => setWithdrawAmount(e.target.value)}
-                          min="100"
-                          max={PLANS[activeWithdrawPlan].total}
-                        />
-                      </div>
-                      <div className="amount-helper">
-                        Available: KES {PLANS[activeWithdrawPlan].total}
-                        <button 
-                          type="button" 
-                          className="use-max-btn"
-                          onClick={() => setWithdrawAmount(PLANS[activeWithdrawPlan].total.toString())}
-                        >
-                          Use Max
-                        </button>
-                      </div>
-                    </div>
+                <div className="referral-code-box">
+                  <span className="code-label">Your Referral Code:</span>
+                  <span className="code-value">{pendingWithdrawals[activeWithdrawPlan].referral_code}</span>
+                </div>
 
-                    <div className="form-group">
-                      <label>Phone Number (M-Pesa)</label>
-                      <input
-                        type="tel"
-                        placeholder="07XX XXX XXX"
-                        value={withdrawPhone}
-                        onChange={(e) => setWithdrawPhone(e.target.value)}
-                      />
-                      <p className="input-helper">Enter your Safaricom M-Pesa number</p>
-                    </div>
-
-                    <div className="withdrawal-info">
-                      <div className="info-item">
-                        <span className="info-icon">⏱️</span>
-                        <span>Processing Time: 5-30 minutes</span>
-                      </div>
-                      <div className="info-item">
-                        <span className="info-icon">💳</span>
-                        <span>Minimum: KES 100</span>
-                      </div>
-                    </div>
-
-                    <div className="form-actions">
-                      <button 
-                        className="primary-btn" 
-                        onClick={submitWithdraw} 
-                        disabled={submitting}
-                      >
-                        {submitting ? (
-                          <>
-                            <span className="spinner"></span>
-                            Processing...
-                          </>
-                        ) : (
-                          'Confirm Withdrawal'
-                        )}
-                      </button>
-                      <button 
-                        className="secondary-btn" 
-                        onClick={() => setActiveWithdrawPlan("")}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <div className="withdrawal-processing">
-                    <div className="processing-header">
-                      <h3>🎉 Withdrawal Processing!</h3>
-                      <p>Your withdrawal is being processed. To speed up your payment, share this link to 3 or more members!</p>
-                    </div>
-
-                    <div className="referral-code-box">
-                      <span className="code-label">Your Referral Code:</span>
-                      <span className="code-value">{withdrawalCode}</span>
-                    </div>
-
-                    <div className="share-progress">
-                      <span>Shares: {shareCount}/3</span>
-                      <div className="progress-bar-share">
-                        <div 
-                          className="progress-fill"
-                          style={{ width: `${Math.min((shareCount / 3) * 100, 100)}%` }}
-                        ></div>
-                      </div>
-                    </div>
-
-                    <p className="share-instruction">Share via:</p>
-
-                    <div className="share-buttons-grid">
-                      <button 
-                        className="share-btn whatsapp-btn"
-                        onClick={shareToWhatsApp}
-                        title="Share on WhatsApp"
-                      >
-                        💬 WhatsApp
-                      </button>
-                      <button 
-                        className="share-btn email-btn"
-                        onClick={shareToEmail}
-                        title="Share via Email"
-                      >
-                        📧 Email
-                      </button>
-                      <button 
-                        className="share-btn sms-btn"
-                        onClick={shareToSMS}
-                        title="Share via SMS"
-                      >
-                        📱 SMS
-                      </button>
-                      <button 
-                        className="share-btn copy-btn"
-                        onClick={copyLink}
-                        title="Copy link"
-                      >
-                        📋 Copy
-                      </button>
-                    </div>
-
-                    {withdrawMessage && (
-                      <div className="success-message">
-                        <p>{withdrawMessage}</p>
-                      </div>
-                    )}
-
-                    <div className="withdrawal-status">
-                      <span className="status-label">Status:</span>
-                      <span className={`status-badge ${withdrawalStatus.toLowerCase()}`}>
-                        {withdrawalStatus === "APPROVED" ? "✅ APPROVED" :
-                         withdrawalStatus === "PENDING" ? "⏳ PENDING" :
-                         "🔄 PROCESSING"}
-                      </span>
-                    </div>
-
-                    <button 
-                      className="secondary-btn"
-                      onClick={() => {
-                        setActiveWithdrawPlan("");
-                        setWithdrawalSubmitted(false);
-                        setWithdrawalCode("");
-                        setShareCount(0);
-                        setWithdrawAmount("");
-                        setWithdrawPhone("");
-                        setWithdrawMessage("");
+                <div className="share-progress">
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '8px'
+                  }}>
+                    <span>Shares: {pendingWithdrawals[activeWithdrawPlan].share_count || 0}/3</span>
+                    <span style={{ 
+                      fontSize: '12px',
+                      color: (pendingWithdrawals[activeWithdrawPlan].share_count || 0) >= 3 ? '#10b981' : '#f59e0b',
+                      fontWeight: '700'
+                    }}>
+                      {(pendingWithdrawals[activeWithdrawPlan].share_count || 0) >= 3 ? 
+                        '✅ Target Reached!' : 
+                        `${3 - (pendingWithdrawals[activeWithdrawPlan].share_count || 0)} more needed`}
+                    </span>
+                  </div>
+                  <div className="progress-bar-share">
+                    <div 
+                      className="progress-fill"
+                      style={{ 
+                        width: `${Math.min(((pendingWithdrawals[activeWithdrawPlan].share_count || 0) / 3) * 100, 100)}%`,
+                        transition: 'width 0.5s ease'
                       }}
-                    >
-                      Done
-                    </button>
+                    ></div>
+                  </div>
+                </div>
+
+                <div style={{
+                  background: 'rgba(251, 191, 36, 0.1)',
+                  border: '2px solid rgba(251, 191, 36, 0.3)',
+                  borderRadius: '12px',
+                  padding: '16px',
+                  marginTop: '20px',
+                  marginBottom: '20px'
+                }}>
+                  <h4 style={{ 
+                    margin: '0 0 12px', 
+                    fontSize: '16px',
+                    fontWeight: '800',
+                    color: '#f59e0b',
+                    textAlign: 'center'
+                  }}>
+                    🚀 Why Share Your Referral?
+                  </h4>
+                  <ul style={{ 
+                    margin: '0',
+                    padding: '0 0 0 20px',
+                    fontSize: '14px',
+                    lineHeight: '1.8'
+                  }}>
+                    <li><strong>Priority Processing:</strong> Get your payment faster</li>
+                    <li><strong>Help Others Earn:</strong> Share the opportunity</li>
+                    <li><strong>Build Your Network:</strong> Earn from referrals</li>
+                    <li><strong>Instant Activation:</strong> 3+ shares = instant approval</li>
+                  </ul>
+                </div>
+
+                <p style={{ 
+                  fontSize: '16px',
+                  fontWeight: '700',
+                  textAlign: 'center',
+                  marginBottom: '12px',
+                  color: '#333'
+                }}>
+                  Share via:
+                </p>
+
+                <div className="share-buttons-grid">
+                  <button 
+                    className="share-btn whatsapp-btn"
+                    onClick={() => shareToWhatsApp(activeWithdrawPlan)}
+                    title="Share on WhatsApp"
+                  >
+                    💬 WhatsApp
+                  </button>
+                  <button 
+                    className="share-btn email-btn"
+                    onClick={() => shareToEmail(activeWithdrawPlan)}
+                    title="Share via Email"
+                  >
+                    📧 Email
+                  </button>
+                  <button 
+                    className="share-btn sms-btn"
+                    onClick={() => shareToSMS(activeWithdrawPlan)}
+                    title="Share via SMS"
+                  >
+                    📱 SMS
+                  </button>
+                  <button 
+                    className="share-btn copy-btn"
+                    onClick={() => copyLink(activeWithdrawPlan)}
+                    title="Copy link"
+                  >
+                    📋 Copy
+                  </button>
+                </div>
+
+                {withdrawMessage && (
+                  <div className="success-message" style={{ marginTop: '16px' }}>
+                    <p>{withdrawMessage}</p>
                   </div>
                 )}
+
+                <div className="withdrawal-status" style={{ marginTop: '20px' }}>
+                  <span className="status-label">Status:</span>
+                  <span className={`status-badge ${pendingWithdrawals[activeWithdrawPlan].status.toLowerCase()}`}>
+                    {pendingWithdrawals[activeWithdrawPlan].status === "APPROVED" ? "✅ APPROVED" :
+                     pendingWithdrawals[activeWithdrawPlan].status === "PENDING" ? "⏳ PENDING" :
+                     "🔄 PROCESSING"}
+                  </span>
+                </div>
+
+                <button 
+                  className="secondary-btn"
+                  style={{ marginTop: '16px' }}
+                  onClick={() => setActiveWithdrawPlan("")}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* WITHDRAW FORM FOR NEW WITHDRAWALS */}
+          {activeWithdrawPlan && !pendingWithdrawals[activeWithdrawPlan] && (
+            <div className="withdraw-form-container">
+              <div className="card withdraw-form">
+                <div className="withdraw-form-header">
+                  <h4>Withdraw {PLANS[activeWithdrawPlan].name} Earnings</h4>
+                  <p>Enter your details to receive payment</p>
+                </div>
+                
+                {withdrawMessage && (
+                  <div className="success-message">
+                    <span className="success-icon">✅</span>
+                    <p>{withdrawMessage}</p>
+                  </div>
+                )}
+                
+                {withdrawError && (
+                  <div className="error-message">
+                    <span className="error-icon">⚠️</span>
+                    <p>{withdrawError}</p>
+                  </div>
+                )}
+
+                <div className="form-group">
+                  <label>Amount to Withdraw (KES)</label>
+                  <div className="amount-input-group">
+                    <span className="amount-prefix">KES</span>
+                    <input
+                      type="number"
+                      placeholder="Enter amount"
+                      value={withdrawAmount}
+                      onChange={(e) => setWithdrawAmount(e.target.value)}
+                      min="100"
+                      max={PLANS[activeWithdrawPlan].total}
+                    />
+                  </div>
+                  <div className="amount-helper">
+                    Available: KES {PLANS[activeWithdrawPlan].total}
+                    <button 
+                      type="button" 
+                      className="use-max-btn"
+                      onClick={() => setWithdrawAmount(PLANS[activeWithdrawPlan].total.toString())}
+                    >
+                      Use Max
+                    </button>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>Phone Number (M-Pesa)</label>
+                  <input
+                    type="tel"
+                    placeholder="07XX XXX XXX"
+                    value={withdrawPhone}
+                    onChange={(e) => setWithdrawPhone(e.target.value)}
+                  />
+                  <p className="input-helper">Enter your Safaricom M-Pesa number</p>
+                </div>
+
+                <div className="withdrawal-info">
+                  <div className="info-item">
+                    <span className="info-icon">⏱️</span>
+                    <span>Processing Time: 5-30 minutes</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-icon">💳</span>
+                    <span>Minimum: KES 100</span>
+                  </div>
+                </div>
+
+                <div className="form-actions">
+                  <button 
+                    className="primary-btn" 
+                    onClick={submitWithdraw} 
+                    disabled={submitting}
+                  >
+                    {submitting ? (
+                      <>
+                        <span className="spinner"></span>
+                        Processing...
+                      </>
+                    ) : (
+                      'Confirm Withdrawal'
+                    )}
+                  </button>
+                  <button 
+                    className="secondary-btn" 
+                    onClick={() => setActiveWithdrawPlan("")}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* WITHDRAWAL HISTORY */}
+          {withdrawalHistory.length > 0 && (
+            <div style={{ marginTop: '32px' }}>
+              <div className="section-heading">
+                <h3>Withdrawal History</h3>
+                <p>Track all your withdrawal requests</p>
+              </div>
+              
+              <div className="withdrawal-history-list">
+                {withdrawalHistory.map((withdrawal, index) => (
+                  <div key={index} className="withdrawal-history-item" style={{
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    borderRadius: '12px',
+                    padding: '16px',
+                    marginBottom: '12px',
+                    border: '1px solid rgba(255, 255, 255, 0.1)'
+                  }}>
+                    <div style={{ 
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '8px'
+                    }}>
+                      <span style={{ fontWeight: '700', fontSize: '16px' }}>
+                        {PLANS[withdrawal.type]?.name || withdrawal.type} Plan
+                      </span>
+                      <span className={`status-badge ${withdrawal.status.toLowerCase()}`}>
+                        {withdrawal.status === "APPROVED" ? "✅ PAID" :
+                         withdrawal.status === "REJECTED" ? "❌ REJECTED" :
+                         "⏳ PENDING"}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '14px', color: 'rgba(255, 255, 255, 0.7)' }}>
+                      <p>Amount: <strong>KES {withdrawal.amount}</strong></p>
+                      <p>Phone: {withdrawal.phone_number}</p>
+                      <p>Date: {new Date(withdrawal.created_at).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}
@@ -1564,6 +1814,12 @@ export default function Dashboard() {
         <p className="footer-note">© {new Date().getFullYear()} SurveyEarn. All rights reserved.</p>
       </footer>
 
+      <style jsx>{`
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.1); }
+        }
+      `}</style>
     </div>
   );
 }

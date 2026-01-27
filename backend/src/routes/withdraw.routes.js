@@ -5,6 +5,7 @@ const { protect, adminProtect } = require("../middlewares/auth.middleware");
 
 const {
   requestWithdraw,
+  getUserWithdrawalHistory,
   getPendingWithdrawals,
   getAllWithdrawals,
   approveWithdraw,
@@ -18,6 +19,12 @@ const {
    type can be 'normal' or 'welcome_bonus'
 ===================================== */
 router.post("/request", protect, requestWithdraw);
+
+/* =====================================
+   USER — GET WITHDRAWAL HISTORY
+   GET /api/withdraw/history
+===================================== */
+router.get("/history", protect, getUserWithdrawalHistory);
 
 /* =====================================
    ADMIN — WITHDRAWALS

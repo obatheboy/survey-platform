@@ -239,6 +239,31 @@ For faster approval, complete your surveys and share your referral link with at 
 };
 
 /* =====================================
+   USER — GET WITHDRAWAL HISTORY
+===================================== */
+exports.getUserWithdrawalHistory = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    
+    const { rows } = await pool.query(
+      `
+      SELECT id, phone_number, amount, fee, net_amount, status, type, created_at
+      FROM withdraw_requests
+      WHERE user_id = $1
+      ORDER BY created_at DESC
+      LIMIT 20
+      `,
+      [userId]
+    );
+    
+    res.json(rows);
+  } catch (error) {
+    console.error("❌ Get withdrawal history error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+/* =====================================
    ADMIN — GET PENDING WITHDRAWALS
 ===================================== */
 exports.getPendingWithdrawals = async (req, res) => {
