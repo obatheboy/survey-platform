@@ -2766,244 +2766,217 @@ input:focus-visible {
   font-weight: 800;
   animation: pulse 2s infinite;
 }
-
 /* =========================================================
-   WITHDRAW FORM STYLES - FULL SCREEN MODAL
+   WITHDRAWAL PROCESSING / SHARING INTERFACE (ENHANCED)
+   Note: Main modal styles are in Dashboard.css
 ========================================================= */
-.withdraw-form-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.92);
-  backdrop-filter: blur(10px);
-  z-index: var(--z-modal, 9999);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-md);
-  overflow-y: auto;
-  animation: fadeIn 0.3s ease-out;
+
+.withdrawal-processing {
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
+  border-radius: 12px;
 }
 
-.withdraw-form {
-  background: linear-gradient(135deg, rgba(15, 15, 25, 0.98), rgba(10, 10, 18, 0.98));
-  border: 2px solid var(--border-medium);
-  border-radius: var(--radius-xl);
-  padding: var(--space-xl);
-  backdrop-filter: blur(30px);
-  width: 100%;
-  max-width: 500px;
-  max-height: 95vh;
-  overflow-y: auto;
-  box-shadow: 
-    0 25px 50px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-  animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  position: relative;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.withdraw-form-header {
+.processing-header {
   text-align: center;
-  margin-bottom: var(--space-lg);
+  margin-bottom: 24px;
 }
 
-.withdraw-form-header h4 {
-  color: var(--text-main);
+.processing-header h3 {
   font-size: 20px;
-  font-weight: 900;
-  margin: 0 0 8px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 8px 0;
 }
 
-.withdraw-form-header p {
-  color: var(--text-muted);
+.processing-header p {
+  color: rgba(255, 255, 255, 0.8);
   font-size: 14px;
+  line-height: 1.6;
   margin: 0;
 }
 
-.success-message,
-.error-message {
-  padding: var(--space-md);
-  border-radius: var(--radius-lg);
-  margin-bottom: var(--space-md);
+.referral-code-box {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  margin: 16px 0;
   display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  animation: slideIn 0.3s ease;
+  flex-direction: column;
+  gap: 8px;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
-.success-message {
-  background: rgba(74, 222, 128, 0.15);
-  border: 1px solid rgba(74, 222, 128, 0.3);
-  color: #4ade80;
+.code-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.error-message {
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #ef4444;
+.code-value {
+  font-size: 28px;
+  font-weight: 900;
+  color: #3b82f6;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 2px;
 }
 
-.success-icon,
-.error-icon {
-  font-size: 20px;
+.share-progress {
+  margin: 20px 0;
 }
 
-.form-group {
-  margin-bottom: var(--space-lg);
-}
-
-.form-group label {
+.share-progress span {
   display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
   margin-bottom: 8px;
-  font-weight: 700;
-  color: var(--text-main);
-  font-size: 14px;
 }
 
-.form-group input {
+.progress-bar-share {
   width: 100%;
-  padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 2px solid var(--border-soft);
-  border-radius: var(--radius-lg);
-  color: var(--text-main);
-  font-size: 16px;
-  transition: var(--transition-normal);
-  font-family: inherit;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: var(--primary);
+  height: 8px;
   background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
-.amount-input-group {
-  position: relative;
-  display: flex;
-  align-items: center;
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ade80, #22c55e);
+  border-radius: 10px;
+  transition: width 0.3s ease;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
-.amount-prefix {
-  position: absolute;
-  left: 16px;
-  color: var(--text-muted);
+.share-instruction {
+  font-size: 13px;
   font-weight: 700;
-  pointer-events: none;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  margin: 16px 0 12px 0;
 }
 
-.amount-input-group input {
-  padding-left: 60px;
+.share-buttons-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 16px 0;
 }
 
-.amount-helper {
+.share-btn {
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+.whatsapp-btn {
+  background: #25D366;
+  color: white;
+}
+
+.whatsapp-btn:hover {
+  transform: translateY(-2px) translateZ(0);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+}
+
+.email-btn {
+  background: #EA4335;
+  color: white;
+}
+
+.email-btn:hover {
+  transform: translateY(-2px) translateZ(0);
+  box-shadow: 0 6px 20px rgba(234, 67, 53, 0.4);
+}
+
+.sms-btn {
+  background: #007AFF;
+  color: white;
+}
+
+.sms-btn:hover {
+  transform: translateY(-2px) translateZ(0);
+  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
+}
+
+.copy-btn {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+  border: 2px solid rgba(59, 130, 246, 0.5);
+}
+
+.copy-btn:hover {
+  background: rgba(59, 130, 246, 0.3);
+  transform: translateY(-2px) translateZ(0);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+}
+
+.withdrawal-status {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 8px;
-  font-size: 12px;
-  color: var(--text-muted);
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  margin: 16px 0;
+  border-top: 2px solid rgba(255, 255, 255, 0.1);
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
-.use-max-btn {
-  background: transparent;
-  border: none;
-  color: var(--primary);
-  font-weight: 700;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
-  transition: var(--transition-normal);
-}
-
-.use-max-btn:hover {
-  background: rgba(255, 107, 53, 0.1);
-}
-
-.input-helper {
-  margin-top: 8px;
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.withdrawal-info {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: var(--radius-lg);
-  padding: var(--space-md);
-  margin-bottom: var(--space-lg);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-md);
-}
-
-.info-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.status-label {
   font-size: 13px;
-  color: var(--text-muted);
-  flex: 1;
-  min-width: 120px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
 }
 
-.info-icon {
-  font-size: 16px;
+.status-badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 800;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
-.form-actions {
-  display: flex;
-  gap: var(--space-md);
+.status-badge.processing {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
 }
 
-.form-actions .primary-btn,
-.form-actions .secondary-btn {
-  flex: 1;
-  min-height: 48px;
+.status-badge.pending {
+  background: rgba(250, 204, 21, 0.2);
+  color: #fcd34d;
 }
 
-.spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-right: 8px;
-  display: inline-block;
+.status-badge.approved {
+  background: rgba(74, 222, 128, 0.2);
+  color: #86efac;
 }
 
-/* =========================================================
-   WITHDRAW SHARING CARD - FULL SCREEN MODAL
-========================================================= */
-.withdraw-sharing-card {
-  background: linear-gradient(135deg, rgba(15, 15, 25, 0.98), rgba(10, 10, 18, 0.98));
-  border: 2px solid var(--border-medium);
-  border-radius: var(--radius-xl);
-  padding: var(--space-xl);
-  backdrop-filter: blur(30px);
-  width: 100%;
-  max-width: 500px;
-  max-height: 95vh;
-  overflow-y: auto;
-  box-shadow: 
-    0 25px 50px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-  animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  position: relative;
+@media (max-width: 640px) {
+  .share-buttons-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .code-value {
+    font-size: 24px;
+  }
 }
 
 /* =========================================================
@@ -3042,10 +3015,6 @@ input:focus-visible {
   /* Plan Cards */
   .plan-card {
     padding: var(--space-md);
-    margin: 0 -12px;
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
   }
   
   .plan-card:hover {
@@ -3071,10 +3040,6 @@ input:focus-visible {
   /* Withdraw Cards */
   .withdraw-card {
     padding: var(--space-md);
-    margin: 0 -12px;
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
   }
   
   .withdraw-card:hover {
@@ -3094,19 +3059,6 @@ input:focus-visible {
   .complete-surveys-btn {
     padding: 12px 16px;
     font-size: 13px;
-  }
-  
-  /* Withdraw Form */
-  .withdraw-form {
-    padding: var(--space-lg);
-    margin: 0 -12px;
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-  }
-  
-  .form-actions {
-    flex-direction: column;
   }
   
   /* Plan Cards Container */
@@ -3201,6 +3153,7 @@ input:focus-visible {
     transition: none;
   }
 }
+
 /* Add to Dashboard.css */
 .dashboard-section,
 .plan-card,
@@ -3217,39 +3170,4 @@ input:focus-visible {
 .dashboard * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-
-/* =========================================================
-   FIX FOR DUPLICATE WITHDRAWAL INTERFACES
-========================================================= */
-
-/* Hide the inline withdrawal interface when modal is active */
-.withdraw-form-container:has(.card) ~ .withdrawal-submitted-section {
-  display: none !important;
-}
-
-/* Make sure only one withdrawal interface shows at a time */
-.withdrawal-submitted-section + .withdrawal-submitted-section {
-  display: none;
-}
-
-/* Fix dark overlay - make it less intrusive */
-.withdraw-form-container {
-  background: rgba(0, 0, 0, 0.7) !important; /* Lighter overlay */
-  backdrop-filter: blur(5px) !important;
-}
-
-/* Make the modal card stand out more */
-.withdraw-form,
-.withdraw-sharing-card {
-  border: 2px solid var(--primary) !important;
-  box-shadow: 
-    0 25px 50px rgba(0, 0, 0, 0.8),
-    0 0 0 1px rgba(255, 107, 53, 0.3) inset !important;
-}
-
-/* Hide the old ugly withdrawal interfaces */
-.withdraw-form-container:empty {
-  display: none !important;
 }

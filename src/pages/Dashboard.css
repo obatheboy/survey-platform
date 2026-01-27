@@ -2958,7 +2958,7 @@ input:focus-visible {
 }
 
 /* =========================================================
-   WITHDRAWAL FORM MODAL CONTAINER - MISSING STYLES
+   WITHDRAWAL FORM MODAL CONTAINER - FIXED STYLES
 ========================================================= */
 
 .withdraw-form-container {
@@ -2967,51 +2967,63 @@ input:focus-visible {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(15px);
+  background: rgba(0, 0, 0, 0.7); /* Lighter overlay */
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: var(--z-modal);
+  z-index: 10000;
   padding: 20px;
   overflow-y: auto;
   animation: fadeIn 0.3s ease;
 }
 
-/* FIX: Remove dark overlay by changing to transparent overlay */
-.withdraw-form-container {
-  background: rgba(0, 0, 0, 0); /* Make it transparent */
-  backdrop-filter: none; /* Remove blur */
+.withdraw-form-container:empty {
+  display: none !important;
 }
 
-/* FIX: Make the modal card stand out properly */
 .card {
-  background: linear-gradient(135deg, rgba(30, 30, 46, 0.95), rgba(20, 20, 36, 0.95));
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: linear-gradient(135deg, 
+    rgba(20, 20, 30, 0.98), 
+    rgba(15, 15, 25, 0.95)
+  );
+  border: 2px solid rgba(255, 107, 53, 0.4);
   border-radius: 20px;
   padding: 24px;
   max-width: 480px;
   width: 100%;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(255, 107, 53, 0.3) inset,
+    0 0 40px rgba(255, 107, 53, 0.1);
   animation: slideUp 0.4s ease;
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
+  backdrop-filter: blur(20px);
 }
 
 .withdraw-sharing-card {
   background: linear-gradient(135deg, 
-    rgba(16, 185, 129, 0.1),
+    rgba(16, 185, 129, 0.15),
     rgba(59, 130, 246, 0.1)
   );
-  border: 2px solid rgba(96, 165, 250, 0.3);
+  border: 2px solid rgba(16, 185, 129, 0.4);
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(16, 185, 129, 0.3) inset,
+    0 0 40px rgba(16, 185, 129, 0.1);
 }
 
 .withdraw-form {
   background: linear-gradient(135deg, 
-    rgba(59, 130, 246, 0.1),
+    rgba(59, 130, 246, 0.15),
     rgba(30, 64, 175, 0.1)
   );
-  border: 2px solid rgba(96, 165, 250, 0.3);
+  border: 2px solid rgba(59, 130, 246, 0.4);
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(59, 130, 246, 0.3) inset,
+    0 0 40px rgba(59, 130, 246, 0.1);
 }
 
 .withdrawal-submitted-card {
@@ -3023,11 +3035,12 @@ input:focus-visible {
   max-width: 1000px;
 }
 
-@media (max-width: 768px) {
-  .withdrawal-submitted-card {
-    padding: 20px;
-    margin: 0 16px;
-  }
+.withdrawal-submitted-section + .withdrawal-submitted-section {
+  display: none;
+}
+
+.withdraw-form-container:has(.card) ~ .withdrawal-submitted-section {
+  display: none !important;
 }
 
 @keyframes slideUp {
@@ -3059,7 +3072,6 @@ input:focus-visible {
   margin: 0;
 }
 
-/* Form styles */
 .form-group {
   margin-bottom: 20px;
 }
@@ -3198,7 +3210,6 @@ input:focus-visible {
   -webkit-transform: translateZ(0);
 }
 
-/* Success and Error Messages */
 .success-message,
 .error-message {
   padding: 16px;
@@ -3244,20 +3255,6 @@ input:focus-visible {
   color: #fca5a5;
 }
 
-/* FIX: Make sure only one withdrawal interface shows at a time */
-.withdraw-form-container:not(:has(.withdrawal-submitted-card)) {
-  display: none; /* Hide empty modal containers */
-}
-
-/* Show only when there's active content */
-.withdraw-form-container:has(.card) {
-  display: flex;
-}
-
-/* =========================================================
-   RESPONSIVE ADJUSTMENTS
-========================================================= */
-
 @media (max-width: 768px) {
   .withdraw-form-container {
     padding: 16px;
@@ -3268,6 +3265,12 @@ input:focus-visible {
   .card {
     padding: 20px;
     border-radius: 16px;
+    max-width: 100%;
+  }
+  
+  .withdrawal-submitted-card {
+    padding: 20px;
+    margin: 0 16px;
   }
   
   .withdraw-form-header h4 {
@@ -3304,57 +3307,11 @@ input:focus-visible {
   }
 }
 
-/* Add these animations if not already present */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-/* =========================================================
-   FIX FOR DUPLICATE WITHDRAWAL INTERFACES
-========================================================= */
-
-/* Hide the inline withdrawal interface when modal is active */
-.withdraw-form-container:has(.card) ~ .withdrawal-submitted-section {
-  display: none !important;
-}
-
-/* Make sure only one withdrawal interface shows at a time */
-.withdrawal-submitted-section + .withdrawal-submitted-section {
-  display: none;
-}
-
-/* Fix dark overlay - make it less intrusive */
-.withdraw-form-container {
-  background: rgba(0, 0, 0, 0.7) !important; /* Lighter overlay */
-  backdrop-filter: blur(5px) !important;
-}
-
-/* Make the modal card stand out more */
-.withdraw-form,
-.withdraw-sharing-card {
-  border: 2px solid var(--primary) !important;
-  box-shadow: 
-    0 25px 50px rgba(0, 0, 0, 0.8),
-    0 0 0 1px rgba(255, 107, 53, 0.3) inset !important;
-}
-
-/* Hide the old ugly withdrawal interfaces */
-.withdraw-form-container:empty {
-  display: none !important;
 }
