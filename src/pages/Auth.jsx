@@ -35,7 +35,7 @@ export default function Auth() {
     email: "",
     password: "",
     confirmPassword: "",
-    termsAccepted: true,
+    termsAccepted: false,
   });
   const [regMessage, setRegMessage] = useState("");
 
@@ -165,9 +165,9 @@ export default function Auth() {
         {/* Logo and greeting - more compact */}
         <div style={styles.logoContainer}>
           <div style={styles.logoIcon}>📊</div>
-          <h1 style={styles.logo}>SurveyEarn</h1>
+          <h1 style={styles.logo}>SURVEY APP</h1>
         </div>
-        <p style={styles.tagline}>Share Opinions • Earn Rewards</p>
+        <p style={styles.tagline}>Share Your Opinions • Unlock Rewards</p>
 
         {/* Mode selector - compact */}
         <div style={styles.modeSelector}>
@@ -231,7 +231,7 @@ export default function Auth() {
                 }
                 icon="✉️"
               />
-              <p style={styles.emailCaption}>You can skip this if you don't have an email address</p>
+              <p style={styles.emailCaption}>💡 Skip this if you don't have an email address</p>
             </div>
 
             <div style={styles.formGroup}>
@@ -278,28 +278,6 @@ export default function Auth() {
               </div>
             </div>
 
-            <div style={styles.termsContainer}>
-              <input
-                type="checkbox"
-                id="termsAccepted"
-                checked={regData.termsAccepted}
-                onChange={(e) =>
-                  setRegData(prev => ({ ...prev, termsAccepted: e.target.checked }))
-                }
-                style={styles.termsCheckbox}
-              />
-              <label htmlFor="termsAccepted" style={styles.termsLabel}>
-                I agree to the{" "}
-                <button
-                  type="button"
-                  style={styles.termsLink}
-                  onClick={() => navigate("/terms")}
-                >
-                  Terms and Conditions
-                </button>
-              </label>
-            </div>
-
             <button
               style={styles.primaryButton}
               type="submit"
@@ -325,6 +303,28 @@ export default function Auth() {
                 Sign In
               </button>
             </p>
+
+            <div style={styles.termsContainer}>
+              <input
+                type="checkbox"
+                id="termsAccepted"
+                checked={regData.termsAccepted}
+                onChange={(e) =>
+                  setRegData(prev => ({ ...prev, termsAccepted: e.target.checked }))
+                }
+                style={styles.termsCheckbox}
+              />
+              <label htmlFor="termsAccepted" style={styles.termsLabel}>
+                I've read and agree to the{" "}
+                <button
+                  type="button"
+                  style={styles.termsLink}
+                  onClick={() => navigate("/terms")}
+                >
+                  Terms and Conditions
+                </button>
+              </label>
+            </div>
           </form>
         ) : (
           <form onSubmit={handleLogin} key="login">
@@ -504,7 +504,7 @@ const styles = {
   card: {
     width: "100%",
     maxWidth: "420px",
-    padding: "25px 20px",
+    padding: "20px 18px",
     borderRadius: "20px",
     background: "rgba(255, 255, 255, 0.97)",
     backdropFilter: "blur(8px)",
@@ -515,6 +515,8 @@ const styles = {
     border: "1px solid rgba(255, 255, 255, 0.3)",
     zIndex: 1,
     position: "relative",
+    display: "flex",
+    flexDirection: "column",
   },
   logoContainer: {
     display: "flex",
@@ -531,13 +533,13 @@ const styles = {
     boxShadow: "0 6px 15px rgba(102, 126, 234, 0.3)",
   },
   logo: {
-    fontSize: "32px",
-    fontWeight: "800",
+    fontSize: "28px",
+    fontWeight: "900",
     background: "linear-gradient(135deg, #667eea, #764ba2)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     margin: 0,
-    letterSpacing: "-0.5px",
+    letterSpacing: "0.5px",
   },
   tagline: {
     textAlign: "center",
@@ -548,37 +550,31 @@ const styles = {
   },
   modeSelector: {
     display: "flex",
-    background: "rgba(102, 126, 234, 0.1)",
-    borderRadius: "14px",
-    padding: "5px",
+    background: "rgba(102, 126, 234, 0.08)",
+    borderRadius: "12px",
+    padding: "4px",
     marginBottom: "20px",
+    gap: "2px",
   },
   modeButton: {
     flex: 1,
-    padding: "12px",
+    padding: "11px",
     border: "none",
     background: "transparent",
     borderRadius: "10px",
-    fontSize: "15px",
+    fontSize: "14px",
     fontWeight: "600",
-    color: "#667eea",
+    color: "#888",
     cursor: "pointer",
     transition: "all 0.3s ease",
   },
   modeButtonActive: {
-    background: "#667eea",
+    background: "linear-gradient(135deg, #667eea, #764ba2)",
     color: "white",
-    boxShadow: "0 3px 8px rgba(102, 126, 234, 0.3)",
+    boxShadow: "0 3px 10px rgba(102, 126, 234, 0.3)",
   },
   formGroup: {
-    marginBottom: "15px",
-  },
-  emailCaption: {
-    fontSize: "12px",
-    color: "#999",
-    marginTop: "6px",
-    marginBottom: 0,
-    fontStyle: "italic",
+    marginBottom: "12px",
   },
   inputContainer: {
     position: "relative",
@@ -593,11 +589,11 @@ const styles = {
   },
   input: {
     width: "100%",
-    padding: "15px 15px 15px 40px",
-    borderRadius: "14px",
-    border: "2px solid #e0e0e0",
+    padding: "14px 15px 14px 40px",
+    borderRadius: "12px",
+    border: "1.5px solid #e5e5e5",
     background: "white",
-    fontSize: "15px",
+    fontSize: "14px",
     fontWeight: "500",
     color: "#333",
     outline: "none",
@@ -638,21 +634,22 @@ const styles = {
   },
   primaryButton: {
     width: "100%",
-    padding: "16px",
+    padding: "15px",
     borderRadius: "14px",
     border: "none",
-    background: "linear-gradient(135deg, #667eea, #764ba2)",
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
     color: "white",
-    fontSize: "16px",
+    fontSize: "15px",
     fontWeight: "700",
     cursor: "pointer",
     marginTop: "8px",
-    boxShadow: "0 6px 15px rgba(102, 126, 234, 0.3)",
+    boxShadow: "0 6px 15px rgba(102, 126, 234, 0.35)",
     transition: "all 0.3s ease",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     gap: "8px",
+    letterSpacing: "0.3px",
   },
   loadingSpinner: {
     width: "20px",
@@ -661,51 +658,53 @@ const styles = {
     borderTop: "3px solid white",
     borderRadius: "50%",
     animation: "spin 1s linear infinite",
-  }, 
+  },
   message: {
-    marginTop: "12px",
+    marginTop: "10px",
     padding: "10px",
     borderRadius: "10px",
     textAlign: "center",
-    fontSize: "13px",
+    fontSize: "12px",
     fontWeight: "600",
-    background: "rgba(255, 87, 87, 0.1)",
-    color: "#ff5757",
-    border: "1px solid rgba(255, 87, 87, 0.2)",
+    background: "rgba(255, 87, 87, 0.08)",
+    color: "#d32f2f",
+    border: "1px solid rgba(255, 87, 87, 0.15)",
   },
   switchText: {
     textAlign: "center",
-    marginTop: "18px",
-    color: "#666",
-    fontSize: "14px",
+    marginTop: "14px",
+    color: "#888",
+    fontSize: "13px",
+    fontWeight: "500",
   },
   switchButton: {
     background: "none",
     border: "none",
     color: "#667eea",
-    fontSize: "14px",
+    fontSize: "13px",
     fontWeight: "700",
     cursor: "pointer",
-    textDecoration: "underline",
-    padding: "3px 6px",
-    borderRadius: "5px",
+    textDecoration: "none",
+    padding: "2px 4px",
+    borderRadius: "4px",
     transition: "all 0.2s ease",
   },
   benefits: {
     display: "flex",
     justifyContent: "space-between",
-    marginTop: "22px",
-    paddingTop: "18px",
-    borderTop: "1px solid rgba(0,0,0,0.1)",
+    marginTop: "18px",
+    paddingTop: "16px",
+    borderTop: "1px solid rgba(0,0,0,0.08)",
   },
   benefit: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     gap: "6px",
-    fontSize: "11px",
-    color: "#666",
+    fontSize: "10px",
+    color: "#888",
     fontWeight: "500",
+    letterSpacing: "0.3px",
   },
   benefitIcon: {
     fontSize: "20px",
@@ -727,24 +726,25 @@ const styles = {
     display: "flex",
     alignItems: "flex-start",
     gap: "8px",
-    marginBottom: "15px",
-    padding: "12px",
-    backgroundColor: "rgba(102, 126, 234, 0.05)",
-    borderRadius: "10px",
-    border: "1px solid rgba(102, 126, 234, 0.2)",
+    marginBottom: "0px",
+    marginTop: "12px",
+    padding: "8px 0px",
+    backgroundColor: "transparent",
+    borderRadius: "0px",
+    border: "none",
   },
   termsCheckbox: {
-    width: "18px",
-    height: "18px",
-    minWidth: "18px",
-    marginTop: "2px",
+    width: "16px",
+    height: "16px",
+    minWidth: "16px",
+    marginTop: "3px",
     cursor: "pointer",
     accentColor: "#667eea",
   },
   termsLabel: {
-    fontSize: "13px",
-    color: "#555",
-    fontWeight: "500",
+    fontSize: "12px",
+    color: "#888",
+    fontWeight: "400",
     cursor: "pointer",
     lineHeight: "1.4",
   },
@@ -752,12 +752,20 @@ const styles = {
     background: "none",
     border: "none",
     color: "#667eea",
-    fontSize: "13px",
-    fontWeight: "700",
+    fontSize: "12px",
+    fontWeight: "600",
     cursor: "pointer",
     padding: "0",
     textDecoration: "underline",
     transition: "color 0.2s ease",
+  },
+  emailCaption: {
+    fontSize: "11px",
+    color: "#999",
+    marginTop: "6px",
+    marginBottom: "0",
+    fontWeight: "400",
+    fontStyle: "italic",
   },
   footerLink: {
     background: "none",

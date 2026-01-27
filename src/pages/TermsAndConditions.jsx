@@ -14,61 +14,20 @@ export default function TermsAndConditions() {
 
   const handleDecline = () => {
     navigate("/auth?mode=register");
-  }; 
+  };
 
   return (
     <div style={styles.page}>
       <div style={styles.container}>
-        <div style={styles.content}>
-          <section style={styles.section}>
-            <p style={styles.paragraph}>
-              Welcome to SurveyEarn, an innovative platform designed to connect individuals with market research opportunities that reward their valuable time and opinions. By registering for and using SurveyEarn, you agree to be bound by the terms and conditions outlined in this agreement. We encourage you to read this document carefully, as it contains important information regarding your rights, responsibilities, and the financial commitments associated with your participation on our platform.
-            </p>
-
-            <p style={styles.paragraph}>
-              SurveyEarn operates as a legitimate survey compensation platform where members earn rewards by completing market research surveys. Our mission is to create a transparent, fair, and secure environment for both survey participants and our research partners. However, to maintain the integrity of our platform and ensure that all participants meet their obligations, we have established a set of clear and binding terms that govern the use of our services. These terms are designed to protect both your interests and the interests of our research partners while establishing clear expectations for all parties involved.
-            </p>
-
-            <p style={styles.paragraph}>
-              One of the most critical policies you must understand before participating on SurveyEarn is our non-refundable funds policy. Any monetary compensation that you receive through our platform for completing surveys is absolutely non-refundable under any circumstances. Once funds are credited to your account as compensation for survey completion, they represent your earned rewards and cannot be returned, reversed, or refunded. This is a binding financial commitment that you acknowledge by registering with our platform. This policy exists to ensure fairness across all users and to maintain the integrity of our compensation system. Therefore, it is essential that you only pursue survey opportunities that you are genuinely interested in completing and that you fully understand the nature of the work involved before you begin.
-            </p>
-
-            <p style={styles.paragraph}>
-              Participation on SurveyEarn requires a commitment to completing all surveys assigned to your account. We assign surveys to members based on their profile information, preferences, and suitability for specific research projects. When a survey is assigned to you, we expect you to complete it in its entirety. Failure to complete assigned surveys will result in serious consequences for your account, including potential suspension, removal from future survey opportunities, and the forfeiture of any earnings associated with incomplete surveys. We take survey completion very seriously because our research partners depend on high-quality data and reliable participants. By registering with SurveyEarn, you are committing to honor your obligations and complete the work you undertake.
-            </p>
-
-            <p style={styles.paragraph}>
-              A fundamental requirement for all SurveyEarn members is the payment of an activation fee. This fee is mandatory and must be paid for your account to be activated and for you to become eligible to withdraw any earnings you accumulate through survey completion. The activation fee serves several important purposes: it verifies your commitment to the platform, helps us maintain a high-quality user base, and covers the costs associated with account verification and fraud prevention. Depending on your selected survey plan, additional activation fees may apply for premium survey tiers that offer higher-paying opportunities. These activation fees are non-refundable and are collected upfront before you can access certain survey opportunities or process any withdrawals. Without paying the required activation fee for your account or chosen survey plan, you will not be able to withdraw your earnings, regardless of how many surveys you complete or how much you have earned.
-            </p>
-
-            <p style={styles.paragraph}>
-              The withdrawal of earnings on SurveyEarn is subject to strict conditions that you must meet before you can access your funds. To be eligible for withdrawal, you must have successfully completed all surveys assigned to your account, maintained good standing on the platform, paid all required activation fees, achieved the minimum balance threshold specified for your particular survey plan, and provided verified payment information for fund transfer. These requirements exist to ensure that we work only with committed and reliable participants who have demonstrated their ability to fulfill their obligations. Withdrawal requests are processed according to our established timelines, and all payments are made through verified banking channels to protect both you and our organization.
-            </p>
-
-            <p style={styles.paragraph}>
-              As a member of SurveyEarn, you bear full responsibility for maintaining the confidentiality of your account credentials, including your username, password, and any authentication codes. You are responsible for all activities that occur under your account, whether they are authorized by you or not. SurveyEarn is not responsible for any unauthorized access to your account, data breaches resulting from your negligence, or any losses incurred due to compromised account security. We strongly recommend that you use a strong, unique password, enable any available security features, and immediately notify us of any suspicious account activity. By maintaining the security of your account, you protect your earnings and your personal information.
-            </p>
-
-            <p style={styles.paragraph}>
-              By registering for SurveyEarn, you confirm and warrant that you are at least eighteen years of age, that you will provide accurate and truthful information in all fields of your registration, that you have the legal authority to enter into this agreement, and that you commit to complying with all terms and conditions outlined in this agreement. You further acknowledge that you understand the financial commitments involved in participation, including the non-refundable nature of payments and the necessity of activation fees, and that you have read and comprehend all the terms presented herein.
-            </p>
-
-            <p style={styles.paragraph}>
-              SurveyEarn reserves the absolute right to modify, update, or amend these terms and conditions at any time and without prior notice. Your continued use of the SurveyEarn platform following any changes to these terms constitutes your acceptance of those changes. We therefore encourage you to periodically review this page to remain informed of any updates that may affect your participation on our platform. If you do not agree with any changes we make, your only recourse is to discontinue your use of our services.
-            </p>
-
-            <p style={styles.paragraph}>
-              By clicking the "Accept & Continue" button and proceeding with your registration on SurveyEarn, you acknowledge that you have read this entire Terms and Conditions agreement, that you fully understand all of its provisions, and that you voluntarily agree to be bound by all of its terms. You understand that this is a binding legal agreement and that you are making a serious commitment to fulfill all obligations associated with your participation on our platform. Thank you for choosing SurveyEarn, and we look forward to working with you on rewarding survey opportunities.
-            </p>
-          </section>
+        <div style={styles.header}>
+          <h1 style={styles.title}>SURVEY APP</h1>
+          <p style={styles.subtitle}>Terms and Conditions Agreement</p>
         </div>
 
-        <div style={styles.headerCard}>
-          <div style={styles.headerContent}>
-            <h1 style={styles.title}>✨ SURVEY APP ✨</h1>
-            <p style={styles.subtitle}>Terms of Service & User Agreement</p>
-            <p style={styles.description}>Earn real money by sharing your valuable opinions on products and services</p>
-          </div>
+        <div style={styles.content}>
+          <p style={styles.paragraph}>
+            By registering and using the Survey App platform, you acknowledge and agree to the following comprehensive terms and conditions that govern your participation and use of our services. These terms constitute a legally binding agreement between you and the Survey App platform, and your continued use of our services signifies your complete acceptance of all terms outlined herein. You understand and accept that any money credited to your account for completing surveys is non-refundable under any circumstances whatsoever, and once funds are transferred to your account as compensation for survey participation, you forfeit any right to request a refund or reversal of these transactions. Furthermore, you acknowledge the mandatory requirement to complete all surveys assigned to you in order to maintain your account in good standing, and failure to complete assigned surveys may result in account suspension, reduction in future survey opportunities, and forfeiture of pending earnings from any incomplete surveys. It is expressly understood and agreed that you must pay the activation fee required for your chosen survey plan in order to be eligible to withdraw any earnings from your account, and this activation fee is non-refundable and must be paid upfront before you can access withdrawal privileges or premium features. The activation fee requirement applies to all survey plans offered through our platform, and additional activation fees may apply for access to premium or exclusive survey categories. To successfully withdraw your earned funds from the Survey App platform, you must satisfy all conditions including but not limited to completing all assigned surveys within the specified timeframes, paying all required activation fees for your selected survey plan, maintaining a minimum account balance as specified in your particular plan tier, and providing verified and accurate payment information for the withdrawal transaction. You are solely responsible for maintaining the confidentiality and security of your account credentials, passwords, and personal information, and the Survey App platform assumes no responsibility for unauthorized access to your account resulting from your negligence in protecting your login information. By registering for an account with Survey App, you confirm that you are at least eighteen years of age, that all information provided during registration is accurate and truthful, that you will comply with all stated terms and conditions throughout your participation, and that you have read and fully understand all obligations and restrictions outlined in this agreement. The Survey App platform reserves the right to modify, update, or amend these terms and conditions at any time without prior notice, and your continued use of the platform following any such modifications constitutes your automatic acceptance of the revised terms. Additionally, Survey App maintains the right to suspend or terminate your account if you are found to be in violation of any of these terms, engaging in fraudulent activities, providing false information, or attempting to manipulate survey responses or the earnings calculation system. You agree to indemnify and hold Survey App harmless from any claims, damages, or liabilities arising from your use of the platform or your violation of these terms and conditions.
+          </p>
         </div>
 
         <div style={styles.footer}>
@@ -81,7 +40,7 @@ export default function TermsAndConditions() {
               style={styles.checkbox}
             />
             <label htmlFor="termsAccepted" style={styles.checkboxLabel}>
-              I have read and agree to all terms
+              I have read and agree to the Terms and Conditions
             </label>
           </div>
 
@@ -97,7 +56,7 @@ export default function TermsAndConditions() {
               style={styles.declineButton}
               onClick={handleDecline}
             >
-              Go Back
+              Decline
             </button>
           </div>
         </div>
@@ -124,6 +83,23 @@ const styles = {
     flexDirection: "column",
     minHeight: "100vh",
   },
+  header: {
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    color: "white",
+    padding: "30px 20px",
+    textAlign: "center",
+  },
+  title: {
+    fontSize: "32px",
+    fontWeight: "800",
+    margin: 0,
+    marginBottom: "10px",
+  },
+  subtitle: {
+    fontSize: "14px",
+    margin: 0,
+    opacity: 0.9,
+  },
   content: {
     flex: 1,
     padding: "30px 20px",
@@ -133,64 +109,53 @@ const styles = {
   section: {
     marginBottom: "25px",
   },
+  sectionTitle: {
+    fontSize: "18px",
+    fontWeight: "700",
+    color: "#333",
+    marginBottom: "12px",
+    marginTop: 0,
+  },
+  sectionContent: {
+    marginLeft: "10px",
+  },
   paragraph: {
-    fontSize: "15px",
+    fontSize: "14px",
+    lineHeight: "1.6",
+    color: "#555",
+    margin: "0 0 12px 0",
+  },
+  bulletList: {
+    fontSize: "14px",
     lineHeight: "1.8",
-    color: "#444",
-    margin: "0 0 18px 0",
-    textAlign: "justify",
-  },
-  headerCard: {
-    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-    padding: "20px",
-    borderTop: "1px solid rgba(255, 255, 255, 0.2)",
-  },
-  headerContent: {
-    textAlign: "center",
-    color: "white",
-  },
-  title: {
-    fontSize: "28px",
-    fontWeight: "800",
-    margin: "0 0 8px 0",
-    letterSpacing: "1px",
-  },
-  subtitle: {
-    fontSize: "13px",
-    margin: "0 0 6px 0",
-    opacity: 0.95,
-    fontWeight: "600",
-  },
-  description: {
-    fontSize: "12px",
-    margin: 0,
-    opacity: 0.85,
-    fontStyle: "italic",
+    color: "#555",
+    marginLeft: "20px",
+    marginTop: "10px",
+    marginBottom: "10px",
   },
   footer: {
-    padding: "16px 18px",
+    padding: "20px",
     borderTop: "1px solid #e0e0e0",
     backgroundColor: "#f9f9f9",
   },
   checkboxContainer: {
     display: "flex",
     alignItems: "center",
-    gap: "10px",
-    marginBottom: "14px",
-    padding: "10px 12px",
-    backgroundColor: "rgba(102, 126, 234, 0.05)",
-    borderRadius: "8px",
-    border: "1px solid rgba(102, 126, 234, 0.15)",
+    gap: "12px",
+    marginBottom: "20px",
+    padding: "15px",
+    backgroundColor: "#f0f3ff",
+    borderRadius: "12px",
+    border: "1px solid #e0e0e0",
   },
   checkbox: {
-    width: "18px",
-    height: "18px",
-    minWidth: "18px",
+    width: "20px",
+    height: "20px",
     cursor: "pointer",
     accentColor: "#667eea",
   },
   checkboxLabel: {
-    fontSize: "13px",
+    fontSize: "14px",
     fontWeight: "500",
     color: "#333",
     cursor: "pointer",
@@ -198,29 +163,29 @@ const styles = {
   },
   buttonContainer: {
     display: "flex",
-    gap: "10px",
+    gap: "12px",
   },
   acceptButton: {
     flex: 1,
-    padding: "12px 16px",
+    padding: "14px 20px",
     backgroundColor: "#667eea",
     color: "white",
     border: "none",
-    borderRadius: "8px",
-    fontSize: "14px",
+    borderRadius: "10px",
+    fontSize: "15px",
     fontWeight: "600",
     cursor: "pointer",
     transition: "all 0.3s ease",
-    boxShadow: "0 3px 10px rgba(102, 126, 234, 0.3)",
+    boxShadow: "0 4px 12px rgba(102, 126, 234, 0.3)",
   },
   declineButton: {
     flex: 1,
-    padding: "12px 16px",
+    padding: "14px 20px",
     backgroundColor: "white",
     color: "#667eea",
     border: "2px solid #667eea",
-    borderRadius: "8px",
-    fontSize: "14px",
+    borderRadius: "10px",
+    fontSize: "15px",
     fontWeight: "600",
     cursor: "pointer",
     transition: "all 0.3s ease",
