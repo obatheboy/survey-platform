@@ -35,7 +35,6 @@ export default function Auth() {
     email: "",
     password: "",
     confirmPassword: "",
-    termsAccepted: false,
   });
   const [regMessage, setRegMessage] = useState("");
 
@@ -66,13 +65,6 @@ export default function Auth() {
     e.preventDefault();
     setRegMessage("");
     setShake(false);
-
-    if (!regData.termsAccepted) {
-      setRegMessage("You must accept the Terms and Conditions to register");
-      setShake(true);
-      setTimeout(() => setShake(false), 500);
-      return;
-    }
 
     if (regData.password !== regData.confirmPassword) {
       setRegMessage("Passwords do not match");
@@ -303,28 +295,6 @@ export default function Auth() {
                 Sign In
               </button>
             </p>
-
-            <div style={styles.termsContainer}>
-              <input
-                type="checkbox"
-                id="termsAccepted"
-                checked={regData.termsAccepted}
-                onChange={(e) =>
-                  setRegData(prev => ({ ...prev, termsAccepted: e.target.checked }))
-                }
-                style={styles.termsCheckbox}
-              />
-              <label htmlFor="termsAccepted" style={styles.termsLabel}>
-                I've read and agree to the{" "}
-                <button
-                  type="button"
-                  style={styles.termsLink}
-                  onClick={() => navigate("/terms")}
-                >
-                  Terms and Conditions
-                </button>
-              </label>
-            </div>
           </form>
         ) : (
           <form onSubmit={handleLogin} key="login">
@@ -411,6 +381,27 @@ export default function Auth() {
             <span style={styles.benefitIcon}>🔒</span>
             <span>Secure</span>
           </div>
+        </div>
+
+        {/* Terms and Conditions - Auto Accepted */}
+        <div style={styles.termsContainer}>
+          <input
+            type="checkbox"
+            id="termsAccepted"
+            checked={true}
+            readOnly
+            style={styles.termsCheckbox}
+          />
+          <label htmlFor="termsAccepted" style={styles.termsLabel}>
+            I accept the{" "}
+            <button
+              type="button"
+              style={styles.termsLink}
+              onClick={() => navigate("/terms")}
+            >
+              Terms and Conditions
+            </button>
+          </label>
         </div>
       </div>
 
