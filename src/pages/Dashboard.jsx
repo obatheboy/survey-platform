@@ -8,7 +8,7 @@ import Notifications from "./components/Notifications.jsx";
 import Testimonials from "../components/Testimonials.jsx";
 import "./Dashboard.css";
 import "./Dashboard-Enhanced.css";
-
+import OptimizedCard from './OptimizedCard';
 /* =========================
    PLAN CONFIG
 ========================= */
@@ -258,6 +258,50 @@ export default function Dashboard() {
     setShowScrollReminder(false);
     setReminderShown(true);
   };
+
+  /* =========================
+   SCROLL VELOCITY TRACKING (for OptimizedCard)
+========================= */
+const [scrollVelocity, setScrollVelocity] = useState(0);
+const lastScrollYRef = useRef(0);
+const lastScrollTimeRef = useRef(Date.now());
+const velocityTimeoutRef = useRef(null);
+
+useEffect(() => {
+  const handleScroll = () => {
+    const currentTime = Date.now();
+    const timeDiff = currentTime - lastScrollTimeRef.current;
+    
+    if (timeDiff > 0) {
+      const currentScrollY = window.scrollY;
+      const scrollDiff = Math.abs(currentScrollY - lastScrollYRef.current);
+      const velocity = scrollDiff / timeDiff; // pixels per millisecond
+      
+      setScrollVelocity(velocity);
+      
+      lastScrollYRef.current = currentScrollY;
+      lastScrollTimeRef.current = currentTime;
+    }
+    
+    // Reset velocity after scrolling stops
+    if (velocityTimeoutRef.current) {
+      clearTimeout(velocityTimeoutRef.current);
+    }
+    
+    velocityTimeoutRef.current = setTimeout(() => {
+      setScrollVelocity(0);
+    }, 100);
+  };
+
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  
+  return () => {
+    window.removeEventListener('scroll', handleScroll);
+    if (velocityTimeoutRef.current) {
+      clearTimeout(velocityTimeoutRef.current);
+    }
+  };
+}, []);
 
   /* =========================
      HELPERS - USING OLD LOGIC
@@ -1164,105 +1208,110 @@ const submitWithdraw = async () => {
             </div>
           </section>
 
-          {/* PLAN PROGRESS */}
-          <section className="dashboard-section">
-            <div className="section-heading">
-              <h3>Plan Progress</h3>
-              <p>Track your earnings across different plans</p>
+{/* PLAN PROGRESS */}
+<section className="dashboard-section">
+  <div className="section-heading">
+    <h3>Plan Progress</h3>
+    <p>Track your earnings across different plans</p>
+  </div>
+  <div className="progress-cards">
+    {Object.entries(PLANS).map(([key, plan], index) => {
+      const status = getPlanStatus(key);
+      const activated = isActivated(key);
+      const hasPending = !!pendingWithdrawals[key];
+      
+      return (
+        <OptimizedCard
+          key={key}
+          index={index}
+          cardType="progress"
+          scrollVelocity={scrollVelocity} // <-- ADDED THIS PROP
+          style={{
+            borderColor: plan.borderColor,
+            background: plan.bgColor,
+          }}
+        >
+          <div className="progress-card-header">
+            <span className="plan-icon">{plan.icon}</span>
+            <h4>{plan.name}</h4>
+            <span className={`status-badge ${status.status}`}>
+              {status.icon} {status.label}
+            </span>
+          </div>
+          <div className="progress-card-body">
+            <div className="progress-info">
+              <div className="progress-row">
+                <span>Per Survey:</span>
+                <strong>KES {plan.perSurvey}</strong>
+              </div>
+              <div className="progress-row">
+                <span>Surveys:</span>
+                <strong>{surveysDone(key)}/{TOTAL_SURVEYS}</strong>
+              </div>
+              <div className="progress-row">
+                <span>Earned:</span>
+                <strong className="earned-amount">KES {earnedSoFar(key).toLocaleString()}</strong>
+              </div>
             </div>
-            <div className="progress-cards">
-              {Object.entries(PLANS).map(([key, plan]) => {
-                const status = getPlanStatus(key);
-                const activated = isActivated(key);
-                const hasPending = !!pendingWithdrawals[key];
-                
-                return (
-                  <div key={key} className="progress-card" style={{
-                    borderColor: plan.borderColor,
-                    background: plan.bgColor,
-                  }}>
-                    <div className="progress-card-header">
-                      <span className="plan-icon">{plan.icon}</span>
-                      <h4>{plan.name}</h4>
-                      <span className={`status-badge ${status.status}`}>
-                        {status.icon} {status.label}
-                      </span>
-                    </div>
-                    <div className="progress-card-body">
-                      <div className="progress-info">
-                        <div className="progress-row">
-                          <span>Per Survey:</span>
-                          <strong>KES {plan.perSurvey}</strong>
-                        </div>
-                        <div className="progress-row">
-                          <span>Surveys:</span>
-                          <strong>{surveysDone(key)}/{TOTAL_SURVEYS}</strong>
-                        </div>
-                        <div className="progress-row">
-                          <span>Earned:</span>
-                          <strong className="earned-amount">KES {earnedSoFar(key).toLocaleString()}</strong>
-                        </div>
-                      </div>
-                      <div className="progress-bar">
-                        <div 
-                          className="progress-bar-fill"
-                          style={{ 
-                            width: `${progressPercentage(key)}%`,
-                            background: plan.gradient
-                          }}
-                        ></div>
-                      </div>
-                      {hasPending && (
-                        <div style={{
-                          marginTop: '8px',
-                          padding: '8px',
-                          background: 'rgba(251, 191, 36, 0.1)',
-                          border: '1px solid rgba(251, 191, 36, 0.3)',
-                          borderRadius: '8px',
-                          fontSize: '12px',
-                          color: '#f59e0b',
-                          fontWeight: '600',
-                          textAlign: 'center'
-                        }}>
-                          ⏳ Withdrawal Pending - Click to Share & Speed Up!
-                        </div>
-                      )}
-                      <div className="progress-card-actions">
-                        <button 
-                          className="action-btn primary"
-                          onClick={() => startSurvey(key)}
-                          disabled={isCompleted(key)}
-                          style={{
-                            background: isCompleted(key) ? '#ccc' : plan.gradient,
-                            color: isCompleted(key) ? '#666' : 'white'
-                          }}
-                        >
-                          {isCompleted(key) ? 'Completed' : 'Start Survey'}
-                        </button>
-                        {isCompleted(key) && (
-                          <button 
-                            className="action-btn secondary"
-                            onClick={() => handleWithdrawClick(key)}
-                            style={{
-                              borderColor: plan.color,
-                              color: plan.color,
-                              background: !activated ? 'rgba(245, 158, 11, 0.1)' : 
-                                          hasPending ? 'rgba(251, 191, 36, 0.1)' : 'transparent',
-                              cursor: 'pointer'
-                            }}
-                          >
-                            {!activated ? '🔓 Activate & Withdraw' : 
-                             hasPending ? '📤 View Withdrawal' : 'Withdraw'}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="progress-bar">
+              <div 
+                className="progress-bar-fill"
+                style={{ 
+                  width: `${progressPercentage(key)}%`,
+                  background: plan.gradient
+                }}
+              ></div>
             </div>
-          </section>
-
+            {hasPending && (
+              <div style={{
+                marginTop: '8px',
+                padding: '8px',
+                background: 'rgba(251, 191, 36, 0.1)',
+                border: '1px solid rgba(251, 191, 36, 0.3)',
+                borderRadius: '8px',
+                fontSize: '12px',
+                color: '#f59e0b',
+                fontWeight: '600',
+                textAlign: 'center'
+              }}>
+                ⏳ Withdrawal Pending - Click to Share & Speed Up!
+              </div>
+            )}
+            <div className="progress-card-actions">
+              <button 
+                className="action-btn primary"
+                onClick={() => startSurvey(key)}
+                disabled={isCompleted(key)}
+                style={{
+                  background: isCompleted(key) ? '#ccc' : plan.gradient,
+                  color: isCompleted(key) ? '#666' : 'white'
+                }}
+              >
+                {isCompleted(key) ? 'Completed' : 'Start Survey'}
+              </button>
+              {isCompleted(key) && (
+                <button 
+                  className="action-btn secondary"
+                  onClick={() => handleWithdrawClick(key)}
+                  style={{
+                    borderColor: plan.color,
+                    color: plan.color,
+                    background: !activated ? 'rgba(245, 158, 11, 0.1)' : 
+                                hasPending ? 'rgba(251, 191, 36, 0.1)' : 'transparent',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {!activated ? '🔓 Activate & Withdraw' : 
+                  hasPending ? '📤 View Withdrawal' : 'Withdraw'}
+                </button>
+              )}
+            </div>
+          </div>
+        </OptimizedCard>
+      );
+    })}
+  </div>
+</section>
           {/* WHY USERS LOVE OUR PLATFORM */}
           <section className="dashboard-section">
             <div className="section-heading">
@@ -1346,128 +1395,135 @@ const submitWithdraw = async () => {
             <p>Choose a plan that matches your earning goals</p>
           </div>
           
-          <div className="plan-cards-container">
-            {Object.entries(PLANS).map(([key, plan]) => {
-              const status = getPlanStatus(key);
-              const activated = isActivated(key);
-              const hasPending = !!pendingWithdrawals[key];
-              
-              return (
-                <div key={key} className={`plan-card ${key.toLowerCase()}`} style={{
-                  borderColor: plan.borderColor,
-                  background: `linear-gradient(135deg, ${plan.bgColor}, rgba(255, 255, 255, 0.05))`,
-                  boxShadow: `0 10px 30px ${plan.color}20`
-                }}>
-                  <div className="plan-card-header">
-                    <div className="plan-badge">
-                      <span className="plan-icon">{plan.icon}</span>
-                      <span className="plan-name" style={{ color: plan.color }}>{plan.name}</span>
-                    </div>
-                    <span className={`plan-status ${status.status}`}>
-                      {status.icon} {status.label}
-                    </span>
-                  </div>
-                  
-                  <div className="plan-card-body">
-                    <div className="plan-description">
-                      <p>{plan.description}</p>
-                    </div>
-                    
-                    <div className="plan-stats">
-                      <div className="stat-row">
-                        <span className="stat-label">Per Survey</span>
-                        <span className="stat-value">KES {plan.perSurvey}</span>
-                      </div>
-                      <div className="stat-row">
-                        <span className="stat-label">Total Plan</span>
-                        <span className="stat-value">KES {plan.total}</span>
-                      </div>
-                      <div className="stat-row">
-                        <span className="stat-label">Progress</span>
-                        <div className="progress-container">
-                          <div className="progress-bar">
-                            <div 
-                              className="progress-bar-fill"
-                              style={{ 
-                                width: `${progressPercentage(key)}%`,
-                                background: plan.gradient
-                              }}
-                            ></div>
-                          </div>
-                          <span className="progress-text">
-                            {surveysDone(key)}/{TOTAL_SURVEYS}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="stat-row">
-                        <span className="stat-label">Earned So Far</span>
-                        <span className="stat-value earned">KES {earnedSoFar(key).toLocaleString()}</span>
-                      </div>
-                    </div>
-                    
-                    {hasPending && (
-                      <div style={{
-                        marginTop: '12px',
-                        padding: '10px',
-                        background: 'rgba(251, 191, 36, 0.15)',
-                        border: '1px solid rgba(251, 191, 36, 0.3)',
-                        borderRadius: '10px',
-                        fontSize: '13px',
-                        color: '#f59e0b',
-                        fontWeight: '700',
-                        textAlign: 'center'
-                      }}>
-                        ⏳ Withdrawal Pending - Click "View Withdrawal" to Share!
-                      </div>
-                    )}
-                    
-                    <div className="plan-features">
-                      <span className="feature-tag">📱 Mobile-Friendly</span>
-                      <span className="feature-tag">⏱️ 5-10 Minutes</span>
-                      <span className="feature-tag">💯 Guaranteed Payment</span>
-                    </div>
-                  </div>
-                  
-                  <div className="plan-card-footer">
-                    {!isCompleted(key) ? (
-                      <button 
-                        className="start-survey-btn"
-                        onClick={() => startSurvey(key)}
-                        style={{
-                          background: plan.gradient,
-                          boxShadow: `0 5px 20px ${plan.color}40`
-                        }}
-                      >
-                        <span className="btn-icon">🚀</span>
-                        Start Survey
-                        <span className="btn-arrow">→</span>
-                      </button>
-                    ) : (
-                      <div className="completed-actions">
-                        <span className="completed-badge">✅ All Surveys Completed</span>
-                        <button 
-                          className="withdraw-plan-btn"
-                          onClick={() => handleWithdrawClick(key)}
-                          style={{
-                            background: !activated ? 
-                              'linear-gradient(135deg, #f59e0b, #d97706)' :
-                              hasPending ?
-                              'linear-gradient(135deg, #fbbf24, #f59e0b)' :
-                              plan.gradient,
-                            boxShadow: `0 5px 20px ${plan.color}40`
-                          }}
-                        >
-                          {!activated ? '🔓 Activate & Withdraw' : 
-                           hasPending ? '📤 View Withdrawal Status' :
-                           '💸 Withdraw KES'} {!hasPending && plan.total}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+<div className="plan-cards-container">
+  {Object.entries(PLANS).map(([key, plan], index) => {
+    const status = getPlanStatus(key);
+    const activated = isActivated(key);
+    const hasPending = !!pendingWithdrawals[key];
+    
+    return (
+      <OptimizedCard
+        key={key}
+        index={index}
+        cardType="plan"
+        className={key.toLowerCase()}
+        scrollVelocity={scrollVelocity} // <-- ADDED THIS PROP
+        style={{
+          borderColor: plan.borderColor,
+          background: `linear-gradient(135deg, ${plan.bgColor}, rgba(255, 255, 255, 0.05))`,
+          boxShadow: `0 10px 30px ${plan.color}20`
+        }}
+      >
+        <div className="plan-card-header">
+          <div className="plan-badge">
+            <span className="plan-icon">{plan.icon}</span>
+            <span className="plan-name" style={{ color: plan.color }}>{plan.name}</span>
           </div>
+          <span className={`plan-status ${status.status}`}>
+            {status.icon} {status.label}
+          </span>
+        </div>
+        
+        <div className="plan-card-body">
+          <div className="plan-description">
+            <p>{plan.description}</p>
+          </div>
+          
+          <div className="plan-stats">
+            <div className="stat-row">
+              <span className="stat-label">Per Survey</span>
+              <span className="stat-value">KES {plan.perSurvey}</span>
+            </div>
+            <div className="stat-row">
+              <span className="stat-label">Total Plan</span>
+              <span className="stat-value">KES {plan.total}</span>
+            </div>
+            <div className="stat-row">
+              <span className="stat-label">Progress</span>
+              <div className="progress-container">
+                <div className="progress-bar">
+                  <div 
+                    className="progress-bar-fill"
+                    style={{ 
+                      width: `${progressPercentage(key)}%`,
+                      background: plan.gradient
+                    }}
+                  ></div>
+                </div>
+                <span className="progress-text">
+                  {surveysDone(key)}/{TOTAL_SURVEYS}
+                </span>
+              </div>
+            </div>
+            <div className="stat-row">
+              <span className="stat-label">Earned So Far</span>
+              <span className="stat-value earned">KES {earnedSoFar(key).toLocaleString()}</span>
+            </div>
+          </div>
+          
+          {hasPending && (
+            <div style={{
+              marginTop: '12px',
+              padding: '10px',
+              background: 'rgba(251, 191, 36, 0.15)',
+              border: '1px solid rgba(251, 191, 36, 0.3)',
+              borderRadius: '10px',
+              fontSize: '13px',
+              color: '#f59e0b',
+              fontWeight: '700',
+              textAlign: 'center'
+            }}>
+              ⏳ Withdrawal Pending - Click "View Withdrawal" to Share!
+            </div>
+          )}
+          
+          <div className="plan-features">
+            <span className="feature-tag">📱 Mobile-Friendly</span>
+            <span className="feature-tag">⏱️ 5-10 Minutes</span>
+            <span className="feature-tag">💯 Guaranteed Payment</span>
+          </div>
+        </div>
+        
+        <div className="plan-card-footer">
+          {!isCompleted(key) ? (
+            <button 
+              className="start-survey-btn"
+              onClick={() => startSurvey(key)}
+              style={{
+                background: plan.gradient,
+                boxShadow: `0 5px 20px ${plan.color}40`
+              }}
+            >
+              <span className="btn-icon">🚀</span>
+              Start Survey
+              <span className="btn-arrow">→</span>
+            </button>
+          ) : (
+            <div className="completed-actions">
+              <span className="completed-badge">✅ All Surveys Completed</span>
+              <button 
+                className="withdraw-plan-btn"
+                onClick={() => handleWithdrawClick(key)}
+                style={{
+                  background: !activated ? 
+                    'linear-gradient(135deg, #f59e0b, #d97706)' :
+                    hasPending ?
+                    'linear-gradient(135deg, #fbbf24, #f59e0b)' :
+                    plan.gradient,
+                  boxShadow: `0 5px 20px ${plan.color}40`
+                }}
+              >
+                {!activated ? '🔓 Activate & Withdraw' : 
+                hasPending ? '📤 View Withdrawal Status' :
+                '💸 Withdraw KES'} {!hasPending && plan.total}
+              </button>
+            </div>
+          )}
+        </div>
+      </OptimizedCard>
+    );
+  })}
+</div>
         </section>
       )}
 
@@ -1517,107 +1573,114 @@ const submitWithdraw = async () => {
             </button>
           </div>
           
-          <div className="withdraw-cards-container">
-            {Object.entries(PLANS).map(([key, plan]) => {
-              const activated = isActivated(key);
-              const pending = pendingWithdrawals[key];
-              
-              return (
-                <div key={key} className={`withdraw-card ${isCompleted(key) ? 'completed' : ''}`} style={{
-                  borderColor: plan.borderColor,
-                  background: `linear-gradient(135deg, ${plan.bgColor}, rgba(255, 255, 255, 0.03))`,
-                  boxShadow: `0 10px 30px ${plan.color}20`
-                }}>
-                  <div className="withdraw-card-header">
-                    <span className="plan-icon">{plan.icon}</span>
-                    <div className="plan-info">
-                      <h4 style={{ color: plan.color }}>{plan.name} Plan</h4>
-                      <p className="plan-earnings">KES {earnedSoFar(key)} earned</p>
-                    </div>
-                    <span className={`status-indicator ${
-                      pending ? 'pending' : isCompleted(key) ? 'ready' : 'not-ready'
-                    }`}>
-                      {pending ? '⏳ Pending' : isCompleted(key) ? '✅ Ready' : '🔒 Locked'}
-                    </span>
-                  </div>
-                  
-                  <div className="withdraw-card-body">
-                    <div className="progress-summary">
-                      <div className="progress-row">
-                        <span>Surveys Completed:</span>
-                        <strong>{surveysDone(key)}/{TOTAL_SURVEYS}</strong>
-                      </div>
-                      <div className="progress-row">
-                        <span>Available Amount:</span>
-                        <strong className="available-amount">KES {isCompleted(key) ? plan.total : earnedSoFar(key)}</strong>
-                      </div>
-                      {pending && (
-                        <div className="progress-row">
-                          <span>Status:</span>
-                          <strong style={{ color: '#f59e0b' }}>{pending.status}</strong>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="withdraw-requirements">
-                      {!isCompleted(key) && (
-                        <p className="requirement">
-                          📝 Complete {TOTAL_SURVEYS - surveysDone(key)} more surveys to withdraw
-                        </p>
-                      )}
-                      {isCompleted(key) && !activated && !pending && (
-                        <p className="requirement">
-                          🔓 Account activation required to withdraw
-                        </p>
-                      )}
-                      {pending && (
-                        <div style={{
-                          marginTop: '12px',
-                          padding: '12px',
-                          background: 'rgba(251, 191, 36, 0.15)',
-                          border: '2px solid rgba(251, 191, 36, 0.3)',
-                          borderRadius: '12px',
-                          fontSize: '14px',
-                          fontWeight: '700',
-                          color: '#f59e0b',
-                          textAlign: 'center'
-                        }}>
-                          🚀 Share your referral link to 3+ people to speed up withdrawal!
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="withdraw-card-footer">
-                    <button 
-                      className={`withdraw-btn ${isCompleted(key) ? 'ready' : 'disabled'}`}
-                      onClick={() => handleWithdrawClick(key)}
-                      disabled={!isCompleted(key)}
-                      style={{
-                        background: isCompleted(key) && activated ? plan.gradient : 
-                                   isCompleted(key) ? 'linear-gradient(135deg, #f59e0b, #d97706)' :
-                                   'rgba(255, 255, 255, 0.1)',
-                        color: isCompleted(key) ? 'white' : 'rgba(255, 255, 255, 0.5)',
-                        boxShadow: isCompleted(key) ? `0 5px 20px ${plan.color}40` : 'none',
-                        cursor: isCompleted(key) ? 'pointer' : 'not-allowed'
-                      }}
-                    >
-                      {!isCompleted(key) ? 'Complete Surveys First' :
-                       !activated ? '🔓 Activate to Withdraw' :
-                       pending ? '📤 Manage Withdrawal' :
-                       `Withdraw KES ${plan.total}`}
-                    </button>
-                    
-                    {!isCompleted(key) && (
-                      <button className="complete-surveys-btn" onClick={goToSurveys}>
-                        Complete Surveys →
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+        <div className="withdraw-cards-container">
+  {Object.entries(PLANS).map(([key, plan], index) => {
+    const activated = isActivated(key);
+    const pending = pendingWithdrawals[key];
+    
+    return (
+      <OptimizedCard
+        key={key}
+        index={index}
+        cardType="withdraw"
+        className={isCompleted(key) ? 'completed' : ''}
+        scrollVelocity={scrollVelocity} // <-- ADDED THIS PROP
+        style={{
+          borderColor: plan.borderColor,
+          background: `linear-gradient(135deg, ${plan.bgColor}, rgba(255, 255, 255, 0.03))`,
+          boxShadow: `0 10px 30px ${plan.color}20`
+        }}
+      >
+        <div className="withdraw-card-header">
+          <span className="plan-icon">{plan.icon}</span>
+          <div className="plan-info">
+            <h4 style={{ color: plan.color }}>{plan.name} Plan</h4>
+            <p className="plan-earnings">KES {earnedSoFar(key)} earned</p>
           </div>
+          <span className={`status-indicator ${
+            pending ? 'pending' : isCompleted(key) ? 'ready' : 'not-ready'
+          }`}>
+            {pending ? '⏳ Pending' : isCompleted(key) ? '✅ Ready' : '🔒 Locked'}
+          </span>
+        </div>
+        
+        <div className="withdraw-card-body">
+          <div className="progress-summary">
+            <div className="progress-row">
+              <span>Surveys Completed:</span>
+              <strong>{surveysDone(key)}/{TOTAL_SURVEYS}</strong>
+            </div>
+            <div className="progress-row">
+              <span>Available Amount:</span>
+              <strong className="available-amount">KES {isCompleted(key) ? plan.total : earnedSoFar(key)}</strong>
+            </div>
+            {pending && (
+              <div className="progress-row">
+                <span>Status:</span>
+                <strong style={{ color: '#f59e0b' }}>{pending.status}</strong>
+              </div>
+            )}
+          </div>
+          
+          <div className="withdraw-requirements">
+            {!isCompleted(key) && (
+              <p className="requirement">
+                📝 Complete {TOTAL_SURVEYS - surveysDone(key)} more surveys to withdraw
+              </p>
+            )}
+            {isCompleted(key) && !activated && !pending && (
+              <p className="requirement">
+                🔓 Account activation required to withdraw
+              </p>
+            )}
+            {pending && (
+              <div style={{
+                marginTop: '12px',
+                padding: '12px',
+                background: 'rgba(251, 191, 36, 0.15)',
+                border: '2px solid rgba(251, 191, 36, 0.3)',
+                borderRadius: '12px',
+                fontSize: '14px',
+                fontWeight: '700',
+                color: '#f59e0b',
+                textAlign: 'center'
+              }}>
+                🚀 Share your referral link to 3+ people to speed up withdrawal!
+              </div>
+            )}
+          </div>
+        </div>
+        
+        <div className="withdraw-card-footer">
+          <button 
+            className={`withdraw-btn ${isCompleted(key) ? 'ready' : 'disabled'}`}
+            onClick={() => handleWithdrawClick(key)}
+            disabled={!isCompleted(key)}
+            style={{
+              background: isCompleted(key) && activated ? plan.gradient : 
+                        isCompleted(key) ? 'linear-gradient(135deg, #f59e0b, #d97706)' :
+                        'rgba(255, 255, 255, 0.1)',
+              color: isCompleted(key) ? 'white' : 'rgba(255, 255, 255, 0.5)',
+              boxShadow: isCompleted(key) ? `0 5px 20px ${plan.color}40` : 'none',
+              cursor: isCompleted(key) ? 'pointer' : 'not-allowed'
+            }}
+          >
+            {!isCompleted(key) ? 'Complete Surveys First' :
+              !activated ? '🔓 Activate to Withdraw' :
+              pending ? '📤 Manage Withdrawal' :
+              `Withdraw KES ${plan.total}`}
+          </button>
+          
+          {!isCompleted(key) && (
+            <button className="complete-surveys-btn" onClick={goToSurveys}>
+              Complete Surveys →
+            </button>
+          )}
+        </div>
+      </OptimizedCard>
+    );
+  })}
+</div>
 
           {/* ✅ CRITICAL FIX: ALWAYS SHOW REFERRAL FLOW WHEN THERE'S A PENDING WITHDRAWAL */}
           {/* This section should ALWAYS be visible when there's a pending withdrawal */}

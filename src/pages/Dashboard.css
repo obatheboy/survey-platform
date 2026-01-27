@@ -1,3 +1,11 @@
+
+
+
+
+
+
+
+
 /* =========================================================
    DASHBOARD-ENHANCED.CSS - COMPLETE FIXED VERSION
 ========================================================= */
@@ -3043,5 +3051,187 @@ input:focus-visible {
   
   .code-value {
     font-size: 24px;
+  }
+}
+
+/* ========================
+   DASHBOARD PERFORMANCE FIXES
+   ======================== */
+
+/* Force GPU acceleration and prevent white flashes */
+.dashboard {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  contain: content;
+  will-change: scroll-position;
+  /* Use GPU compositing */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  /* Enable hardware acceleration */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Apply hardware acceleration to all cards and sections */
+.dashboard-section,
+.plan-card,
+.progress-card,
+.withdraw-card,
+.stats-card,
+.feature-card,
+.quick-action-card,
+.bonus-card,
+.withdraw-form,
+.withdraw-sharing-card {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform, opacity;
+  contain: layout style paint;
+  /* Prevent paint thrashing */
+  isolation: isolate;
+}
+
+/* Optimized FOUC prevention */
+.dashboard-section[data-loaded="true"] {
+  opacity: 0;
+  animation: fadeInUp 0.5s ease forwards;
+  -webkit-animation: fadeInUp 0.5s ease forwards;
+  animation-delay: calc(var(--section-index, 0) * 0.05s);
+}
+
+/* Remove conflicting animations from OptimizedCard */
+.plan-card[data-visible="true"],
+.progress-card[data-visible="true"],
+.withdraw-card[data-visible="true"],
+.stats-card[data-visible="true"] {
+  animation: none;
+  -webkit-animation: none;
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+    -webkit-transform: translate3d(0, 20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fadeIn {
+  from { 
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+    -webkit-transform: translate3d(0, 10px, 0);
+  }
+  to { 
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Optimized card styles */
+.optimized-card {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  min-height: 1px;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Optimize scroll performance - FIXED HERE */
+.dashboard-container,
+.tab-section,
+.withdraw-cards-container,
+.plan-cards-container,
+.progress-cards {
+  -webkit-overflow-scrolling: touch; /* Correct property */
+  overflow: auto; /* Standard overflow */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  contain: content;
+}
+
+/* Fix for mobile scrolling */
+@media (max-width: 768px) {
+  .dashboard {
+    -webkit-overflow-scrolling: touch; /* Correct property */
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+  }
+}
+
+/* Optimize images and icons */
+.plan-icon,
+.stats-icon,
+.feature-icon,
+.action-icon {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Reduce paint areas */
+.progress-bar-fill,
+.progress-fill {
+  will-change: width;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Loading spinner */
+.loading-spinner {
+  animation: spin 0.8s linear infinite;
+  -webkit-animation: spin 0.8s linear infinite;
+  transform-origin: center;
+  -webkit-transform-origin: center;
+  will-change: transform;
+}
+
+@keyframes spin {
+  from { 
+    transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+  }
+  to { 
+    transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+/* Button optimizations */
+button,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Webkit-specific fixes */
+@supports (-webkit-touch-callout: none) {
+  .dashboard {
+    -webkit-overflow-scrolling: touch;
   }
 }
