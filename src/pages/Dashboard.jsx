@@ -100,6 +100,10 @@ export default function Dashboard() {
   const [withdrawError, setWithdrawError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [fullScreenNotification, setFullScreenNotification] = useState(null);
+  const [withdrawalSubmitted, setWithdrawalSubmitted] = useState(false);
+  const [withdrawalCode, setWithdrawalCode] = useState("");
+  const [shareCount, setShareCount] = useState(0);
+  const [withdrawalStatus, setWithdrawalStatus] = useState("PROCESSING");
 
   /* =========================
      LOAD DASHBOARD
@@ -336,6 +340,9 @@ export default function Dashboard() {
     }
 
     setSubmitting(true);
+    setWithdrawError("");
+    setWithdrawMessage("");
+    
     try {
       await api.post("/withdraw/request", {
         phone_number: withdrawPhone,
@@ -343,11 +350,62 @@ export default function Dashboard() {
         type: activeWithdrawPlan,
       });
 
-      setWithdrawMessage("🎉 Withdrawal submitted successfully! You'll receive payment within 24 hours.");
+      // ✅ Generate referral code
+      const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+      setWithdrawalCode(code);
+      setWithdrawalSubmitted(true);
+      setShareCount(0);
+      setWithdrawalStatus("PROCESSING");
+      
+      // Auto-scroll to show the sharing interface
+      setTimeout(() => {
+        if (withdrawRef.current) {
+          withdrawRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 100);
 
-      const refreshed = await api.get("/auth/me");
-      setUser(refreshed.data);
-      setPlans(refreshed.data.plans || {});
+      setWithdrawMessage("✅ Your withdrawal is being processed!");
+    } catch (err) {
+      setWithdrawError(err.response?.data?.message || "Withdrawal failed. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Sharing functions
+  const shareToWhatsApp = () => {
+    const text = `Hey! I'm earning money on the Survey App. Join me and complete surveys to earn cash! 🎉\n\nDownload now: ${window.location.origin}\n\nCode: ${withdrawalCode}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+    incrementShareCount();
+  };
+
+  const shareToEmail = () => {
+    const text = `Hey! I'm earning money on the Survey App. Join me and complete surveys to earn cash! You can use my referral code: ${withdrawalCode}`;
+    window.location.href = `mailto:?subject=Join Survey App&body=${encodeURIComponent(text)}`;
+    incrementShareCount();
+  };
+
+  const shareToSMS = () => {
+    const text = `Hi! Join me on Survey App and earn money. Code: ${withdrawalCode} ${window.location.origin}`;
+    window.location.href = `sms:?body=${encodeURIComponent(text)}`;
+    incrementShareCount();
+  };
+
+  const copyLink = () => {
+    const text = `Survey App Referral - Code: ${withdrawalCode} - ${window.location.origin}`;
+    navigator.clipboard.writeText(text);
+    setWithdrawMessage("✓ Referral link copied!");
+    incrementShareCount();
+  };
+
+  const incrementShareCount = () => {
+    const newCount = shareCount + 1;
+    setShareCount(newCount);
+    if (newCount >= 3) {
+      setWithdrawMessage("✓ Shared to 3+ members! Your payment will be processed soon.");
+      setWithdrawalStatus("PENDING");
+    }
+  };
       
       setTimeout(() => {
         setActiveWithdrawPlan("");
@@ -1310,96 +1368,188 @@ export default function Dashboard() {
 
           {/* WITHDRAW FORM */}
           {activeWithdrawPlan && (
-            <div className="withdraw-form-container">
+            <div className="withdraw-form-container" ref={withdrawRef}>
               <div className="card withdraw-form">
-                <div className="withdraw-form-header">
-                  <h4>Withdraw {PLANS[activeWithdrawPlan].name} Earnings</h4>
-                  <p>Enter your details to receive payment</p>
-                </div>
-                
-                {withdrawMessage && (
-                  <div className="success-message">
-                    <span className="success-icon">✅</span>
-                    <p>{withdrawMessage}</p>
-                  </div>
-                )}
-                
-                {withdrawError && (
-                  <div className="error-message">
-                    <span className="error-icon">⚠️</span>
-                    <p>{withdrawError}</p>
-                  </div>
-                )}
+                {!withdrawalSubmitted ? (
+                  <>
+                    <div className="withdraw-form-header">
+                      <h4>Withdraw {PLANS[activeWithdrawPlan].name} Earnings</h4>
+                      <p>Enter your details to receive payment</p>
+                    </div>
+                    
+                    {withdrawMessage && (
+                      <div className="success-message">
+                        <span className="success-icon">✅</span>
+                        <p>{withdrawMessage}</p>
+                      </div>
+                    )}
+                    
+                    {withdrawError && (
+                      <div className="error-message">
+                        <span className="error-icon">⚠️</span>
+                        <p>{withdrawError}</p>
+                      </div>
+                    )}
 
-                <div className="form-group">
-                  <label>Amount to Withdraw (KES)</label>
-                  <div className="amount-input-group">
-                    <span className="amount-prefix">KES</span>
-                    <input
-                      type="number"
-                      placeholder="Enter amount"
-                      value={withdrawAmount}
-                      onChange={(e) => setWithdrawAmount(e.target.value)}
-                      min="100"
-                      max={PLANS[activeWithdrawPlan].total}
-                    />
-                  </div>
-                  <div className="amount-helper">
-                    Available: KES {PLANS[activeWithdrawPlan].total}
+                    <div className="form-group">
+                      <label>Amount to Withdraw (KES)</label>
+                      <div className="amount-input-group">
+                        <span className="amount-prefix">KES</span>
+                        <input
+                          type="number"
+                          placeholder="Enter amount"
+                          value={withdrawAmount}
+                          onChange={(e) => setWithdrawAmount(e.target.value)}
+                          min="100"
+                          max={PLANS[activeWithdrawPlan].total}
+                        />
+                      </div>
+                      <div className="amount-helper">
+                        Available: KES {PLANS[activeWithdrawPlan].total}
+                        <button 
+                          type="button" 
+                          className="use-max-btn"
+                          onClick={() => setWithdrawAmount(PLANS[activeWithdrawPlan].total.toString())}
+                        >
+                          Use Max
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Phone Number (M-Pesa)</label>
+                      <input
+                        type="tel"
+                        placeholder="07XX XXX XXX"
+                        value={withdrawPhone}
+                        onChange={(e) => setWithdrawPhone(e.target.value)}
+                      />
+                      <p className="input-helper">Enter your Safaricom M-Pesa number</p>
+                    </div>
+
+                    <div className="withdrawal-info">
+                      <div className="info-item">
+                        <span className="info-icon">⏱️</span>
+                        <span>Processing Time: 5-30 minutes</span>
+                      </div>
+                      <div className="info-item">
+                        <span className="info-icon">💳</span>
+                        <span>Minimum: KES 100</span>
+                      </div>
+                    </div>
+
+                    <div className="form-actions">
+                      <button 
+                        className="primary-btn" 
+                        onClick={submitWithdraw} 
+                        disabled={submitting}
+                      >
+                        {submitting ? (
+                          <>
+                            <span className="spinner"></span>
+                            Processing...
+                          </>
+                        ) : (
+                          'Confirm Withdrawal'
+                        )}
+                      </button>
+                      <button 
+                        className="secondary-btn" 
+                        onClick={() => setActiveWithdrawPlan("")}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="withdrawal-processing">
+                    <div className="processing-header">
+                      <h3>🎉 Withdrawal Processing!</h3>
+                      <p>Your withdrawal is being processed. To speed up your payment, share this link to 3 or more members!</p>
+                    </div>
+
+                    <div className="referral-code-box">
+                      <span className="code-label">Your Referral Code:</span>
+                      <span className="code-value">{withdrawalCode}</span>
+                    </div>
+
+                    <div className="share-progress">
+                      <span>Shares: {shareCount}/3</span>
+                      <div className="progress-bar-share">
+                        <div 
+                          className="progress-fill"
+                          style={{ width: `${Math.min((shareCount / 3) * 100, 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+
+                    <p className="share-instruction">Share via:</p>
+
+                    <div className="share-buttons-grid">
+                      <button 
+                        className="share-btn whatsapp-btn"
+                        onClick={shareToWhatsApp}
+                        title="Share on WhatsApp"
+                      >
+                        💬 WhatsApp
+                      </button>
+                      <button 
+                        className="share-btn email-btn"
+                        onClick={shareToEmail}
+                        title="Share via Email"
+                      >
+                        📧 Email
+                      </button>
+                      <button 
+                        className="share-btn sms-btn"
+                        onClick={shareToSMS}
+                        title="Share via SMS"
+                      >
+                        📱 SMS
+                      </button>
+                      <button 
+                        className="share-btn copy-btn"
+                        onClick={copyLink}
+                        title="Copy link"
+                      >
+                        📋 Copy
+                      </button>
+                    </div>
+
+                    {withdrawMessage && (
+                      <div className="success-message">
+                        <p>{withdrawMessage}</p>
+                      </div>
+                    )}
+
+                    <div className="withdrawal-status">
+                      <span className="status-label">Status:</span>
+                      <span className={`status-badge ${withdrawalStatus.toLowerCase()}`}>
+                        {withdrawalStatus === "APPROVED" ? "✅ APPROVED" :
+                         withdrawalStatus === "PENDING" ? "⏳ PENDING" :
+                         "🔄 PROCESSING"}
+                      </span>
+                    </div>
+
                     <button 
-                      type="button" 
-                      className="use-max-btn"
-                      onClick={() => setWithdrawAmount(PLANS[activeWithdrawPlan].total.toString())}
+                      className="secondary-btn"
+                      onClick={() => {
+                        setActiveWithdrawPlan("");
+                        setWithdrawalSubmitted(false);
+                        setWithdrawalCode("");
+                        setShareCount(0);
+                        setWithdrawAmount("");
+                        setWithdrawPhone("");
+                        setWithdrawMessage("");
+                      }}
                     >
-                      Use Max
+                      Done
                     </button>
                   </div>
-                </div>
-
-                <div className="form-group">
-                  <label>Phone Number (M-Pesa)</label>
-                  <input
-                    type="tel"
-                    placeholder="07XX XXX XXX"
-                    value={withdrawPhone}
-                    onChange={(e) => setWithdrawPhone(e.target.value)}
-                  />
-                  <p className="input-helper">Enter your Safaricom M-Pesa number</p>
-                </div>
-
-                <div className="withdrawal-info">
-                  <div className="info-item">
-                    <span className="info-icon">⏱️</span>
-                    <span>Processing Time: 5-30 minutes</span>
-                  </div>
-                  <div className="info-item">
-                    <span className="info-icon">💳</span>
-                    <span>Minimum: KES 100</span>
-                  </div>
-                </div>
-
-                <div className="form-actions">
-                  <button 
-                    className="primary-btn" 
-                    onClick={submitWithdraw} 
-                    disabled={submitting}
-                  >
-                    {submitting ? (
-                      <>
-                        <span className="spinner"></span>
-                        Processing...
-                      </>
-                    ) : (
-                      'Confirm Withdrawal'
-                    )}
-                  </button>
-                  <button 
-                    className="secondary-btn" 
-                    onClick={() => setActiveWithdrawPlan("")}
-                  >
-                    Cancel
-                  </button>
-                </div>
+                )}
+              </div>
+            </div>
+          )}
               </div>
             </div>
           )}

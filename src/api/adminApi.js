@@ -35,9 +35,10 @@ adminApi.interceptors.response.use(
     if (error.response?.status === 401 || error.response?.status === 403) {
       console.error("❌ Admin authentication failed:", error.response?.data?.message);
       localStorage.removeItem("adminToken");
-      // Optionally redirect to login
-      window.location.href = "/admin/login";
+      // Don't redirect immediately - let component handle it
+      // window.location.href = "/admin/login";
     }
     return Promise.reject(error);
   }
 );
+

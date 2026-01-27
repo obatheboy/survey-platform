@@ -22,13 +22,21 @@ export default function AdminLogin() {
       });
 
       // ✅ STORE ADMIN TOKEN
-      localStorage.setItem("adminToken", res.data.token);
-
-      // ✅ REDIRECT TO ADMIN DASHBOARD
-      navigate("/admin", { replace: true });
+      if (res.data.token) {
+        localStorage.setItem("adminToken", res.data.token);
+        console.log("✅ Admin token stored successfully");
+        
+        // ✅ REDIRECT TO ADMIN DASHBOARD (with a small delay to ensure token is set)
+        setTimeout(() => {
+          navigate("/admin", { replace: true });
+        }, 100);
+      } else {
+        setError("No token received from server");
+      }
     } catch (err) {
+      console.error("Admin login error:", err);
       setError(
-        err.response?.data?.message || "Admin login failed"
+        err.response?.data?.message || "Admin login failed. Please check credentials."
       );
     } finally {
       setLoading(false);

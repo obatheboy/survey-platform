@@ -13,19 +13,33 @@ export default function AdminLayout() {
   useEffect(() => {
     const checkAdminSession = async () => {
       try {
+        // ✅ CHECK IF TOKEN EXISTS FIRST - BEFORE MAKING ANY API CALLS
+        const token = localStorage.getItem("adminToken");
+        if (!token) {
+          console.warn("⚠️ No admin token found in localStorage");
+          setLoading(false);
+          navigate("/admin/login", { replace: true });
+          return;
+        }
+
+        console.log("✅ Admin token found, verifying session...");
+        
+        // Now make the API call with the token
         const res = await adminApi.get("/admin/me");
 
         if (res.data.role !== "admin") {
           throw new Error("Not admin");
         }
 
+        console.log("✅ Admin session verified:", res.data);
         setAdmin(res.data);
-      } catch (err) {
-        setError(err.message || "An error occurred. Please try again.");
-        localStorage.removeItem("adminToken");
-        navigate("/admin/login", { replace: true });
-      } finally {
         setLoading(false);
+      } catch (err) {
+        console.error("❌ Admin session check failed:", err.response?.data || err.message);
+        setError(err.response?.data?.message || err.message || "Session verification failed");
+        localStorage.removeItem("adminToken");
+        setLoading(false);
+        navigate("/admin/login", { replace: true });
       }
     };
 
