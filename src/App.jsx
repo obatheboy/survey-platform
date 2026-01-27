@@ -10,6 +10,8 @@ import Surveys from "./pages/Surveys";
 import Activate from "./pages/Activate";
 import ActivationNotice from "./pages/ActivationNotice";
 import Withdraw from "./pages/Withdraw";
+import WithdrawForm from "./pages/WithdrawForm"; // Add this import
+import WithdrawSuccess from "./pages/WithdrawSuccess"; // Add this import
 import FAQ from "./pages/FAQ";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import NotFound from "./pages/NotFound";
@@ -132,11 +134,31 @@ export default function App() {
           }
         />
 
+        {/* OLD WITHDRAW PAGE - You might want to keep or remove this */}
         <Route
           path="/withdraw"
           element={
             <ProtectedRoute>
               <Withdraw />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* NEW WITHDRAW PAGES - Add these routes */}
+        <Route
+          path="/withdraw-form"
+          element={
+            <ProtectedRoute>
+              <WithdrawForm />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/withdraw-success"
+          element={
+            <ProtectedRoute>
+              <WithdrawSuccess />
             </ProtectedRoute>
           }
         />
