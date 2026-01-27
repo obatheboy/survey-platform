@@ -174,7 +174,13 @@ export default function Dashboard() {
       const pending = {};
       (res.data || []).forEach(w => {
         if (w.status === "PENDING" || w.status === "PROCESSING") {
-          pending[w.type] = w;
+          // Generate a consistent referral code for this withdrawal
+          const code = w.referral_code || Math.random().toString(36).substring(2, 8).toUpperCase();
+          pending[w.type] = {
+            ...w,
+            referral_code: code,
+            share_count: w.share_count || 0
+          };
         }
       });
       setPendingWithdrawals(pending);
@@ -363,6 +369,12 @@ export default function Dashboard() {
   };
 
   const submitWithdraw = async () => {
+    // Check if there's already a pending withdrawal
+    if (pendingWithdrawals[activeWithdrawPlan]) {
+      setWithdrawError("You already have a pending withdrawal for this plan. Share your referral link to speed up processing!");
+      return;
+    }
+
     if (!withdrawAmount || !withdrawPhone) {
       setWithdrawError("Please enter amount and phone number");
       return;
@@ -385,7 +397,7 @@ export default function Dashboard() {
         type: activeWithdrawPlan,
       });
 
-      // Generate referral code
+      // Generate referral code (this should ideally come from backend)
       const code = Math.random().toString(36).substring(2, 8).toUpperCase();
       
       // Update pending withdrawals
@@ -409,6 +421,9 @@ export default function Dashboard() {
       await loadWithdrawalHistory();
       
       setWithdrawMessage("✅ Withdrawal submitted! Share to speed up processing.");
+      
+      // Clear form inputs
+      setWithdrawPhone("");
       
       // Auto-scroll to show the sharing interface
       setTimeout(() => {
@@ -1493,8 +1508,45 @@ export default function Dashboard() {
 
           {/* WITHDRAWAL SHARING INTERFACE */}
           {activeWithdrawPlan && pendingWithdrawals[activeWithdrawPlan] && (
-            <div className="withdraw-form-container" style={{ marginTop: '24px' }}>
+            <div 
+              className="withdraw-form-container"
+              onClick={(e) => {
+                if (e.target.className === 'withdraw-form-container') {
+                  setActiveWithdrawPlan("");
+                }
+              }}
+            >
               <div className="card withdraw-sharing-card">
+                <button 
+                  onClick={() => setActiveWithdrawPlan("")}
+                  style={{
+                    position: 'absolute',
+                    top: '16px',
+                    right: '16px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    color: 'white',
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '50%',
+                    fontSize: '20px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s ease',
+                    zIndex: 10
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                  }}
+                  aria-label="Close"
+                >
+                  ×
+                </button>
                 <div className="sharing-header">
                   <div style={{
                     fontSize: '48px',
@@ -1651,8 +1703,45 @@ export default function Dashboard() {
 
           {/* WITHDRAW FORM FOR NEW WITHDRAWALS */}
           {activeWithdrawPlan && !pendingWithdrawals[activeWithdrawPlan] && (
-            <div className="withdraw-form-container">
+            <div 
+              className="withdraw-form-container"
+              onClick={(e) => {
+                if (e.target.className === 'withdraw-form-container') {
+                  setActiveWithdrawPlan("");
+                }
+              }}
+            >
               <div className="card withdraw-form">
+                <button 
+                  onClick={() => setActiveWithdrawPlan("")}
+                  style={{
+                    position: 'absolute',
+                    top: '16px',
+                    right: '16px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    color: 'white',
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '50%',
+                    fontSize: '20px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s ease',
+                    zIndex: 10
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                  }}
+                  aria-label="Close"
+                >
+                  ×
+                </button>
                 <div className="withdraw-form-header">
                   <h4>Withdraw {PLANS[activeWithdrawPlan].name} Earnings</h4>
                   <p>Enter your details to receive payment</p>

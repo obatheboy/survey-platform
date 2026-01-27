@@ -2768,19 +2768,51 @@ input:focus-visible {
 }
 
 /* =========================================================
-   WITHDRAW FORM STYLES
+   WITHDRAW FORM STYLES - FULL SCREEN MODAL
 ========================================================= */
 .withdraw-form-container {
-  margin-top: var(--space-xl);
-  animation: fadeIn 0.5s ease-out;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(10px);
+  z-index: var(--z-modal, 9999);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  overflow-y: auto;
+  animation: fadeIn 0.3s ease-out;
 }
 
 .withdraw-form {
-  background: var(--bg-glass);
-  border: 1px solid var(--border-soft);
+  background: linear-gradient(135deg, rgba(15, 15, 25, 0.98), rgba(10, 10, 18, 0.98));
+  border: 2px solid var(--border-medium);
   border-radius: var(--radius-xl);
   padding: var(--space-xl);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(30px);
+  width: 100%;
+  max-width: 500px;
+  max-height: 95vh;
+  overflow-y: auto;
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .withdraw-form-header {
@@ -2952,6 +2984,26 @@ input:focus-visible {
   animation: spin 1s linear infinite;
   margin-right: 8px;
   display: inline-block;
+}
+
+/* =========================================================
+   WITHDRAW SHARING CARD - FULL SCREEN MODAL
+========================================================= */
+.withdraw-sharing-card {
+  background: linear-gradient(135deg, rgba(15, 15, 25, 0.98), rgba(10, 10, 18, 0.98));
+  border: 2px solid var(--border-medium);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  backdrop-filter: blur(30px);
+  width: 100%;
+  max-width: 500px;
+  max-height: 95vh;
+  overflow-y: auto;
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
 }
 
 /* =========================================================
