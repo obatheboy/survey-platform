@@ -153,6 +153,9 @@ export default function Withdraw() {
           <span style={styles.balanceAmount}>
             KES {Number(user.total_earned).toLocaleString()}
           </span>
+          <div style={styles.surveyStatus}>
+            <span>Surveys Completed: {user.surveys_completed || 0}/10</span>
+          </div>
         </div>
 
         {!submitted ? (
@@ -346,6 +349,15 @@ const styles = {
     fontSize: 32,
     fontWeight: 900,
     color: "#667eea",
+  },
+
+  surveyStatus: {
+    fontSize: 12,
+    color: "#666",
+    marginTop: 12,
+    paddingTop: 12,
+    borderTop: "1px solid #ddd",
+    fontWeight: 600,
   },
 
   formGroup: {

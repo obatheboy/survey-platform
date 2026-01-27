@@ -169,6 +169,7 @@ exports.getMe = async (req, res) => {
 
     const plans = {};
     let activePlan = null;
+    let totalSurveysCompleted = 0;
 
     for (const row of plansRes.rows) {
       plans[row.plan] = {
@@ -177,6 +178,9 @@ exports.getMe = async (req, res) => {
         is_activated: row.is_activated,
         total_surveys: TOTAL_SURVEYS,
       };
+
+      // Accumulate total surveys completed across all plans
+      totalSurveysCompleted += row.surveys_completed;
 
       if (!row.is_activated && !activePlan) activePlan = row.plan;
     }
@@ -187,6 +191,7 @@ exports.getMe = async (req, res) => {
       ...userRes.rows[0],
       active_plan: activePlan,
       surveys_completed: activePlanData?.surveys_completed || 0,
+      total_surveys_completed: totalSurveysCompleted, // ← NEW: Total across all plans
       surveys_locked: activePlanData?.completed === true,
       plans,
     });

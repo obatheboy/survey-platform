@@ -53,39 +53,42 @@ exports.protect = async (req, res, next) => {
 ================================ */
 exports.adminProtect = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
+    // 1️⃣ Try to get token from Authorization header first, then from cookies
+    let token = req.headers.authorization?.split(" ")[1] || req.cookies?.adminToken || req.cookies?.token;
 
-    if (!authHeader?.startsWith("Bearer ")) {
+    if (!token) {
       return res.status(401).json({ message: "Admin not authenticated" });
     }
 
-    const token = authHeader.split(" ")[1];
+    // 2️⃣ Verify token
     let decoded;
-
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch {
       return res.status(401).json({ message: "Invalid or expired admin token" });
     }
 
+    // 3️⃣ Check if user has admin role
     if (decoded.role !== "admin") {
       return res.status(403).json({ message: "Forbidden: Admins only" });
     }
 
+    // 4️⃣ Verify admin exists in users table (not admins table)
     const result = await pool.query(
       `
-      SELECT id, username
-      FROM admins
-      WHERE id = $1
+      SELECT id, full_name, email, role
+      FROM users
+      WHERE id = $1 AND role = 'admin'
       `,
       [decoded.id]
     );
 
     if (result.rowCount === 0) {
-      return res.status(401).json({ message: "Admin no longer exists" });
+      return res.status(403).json({ message: "Admin role not found" });
     }
 
-    req.admin = result.rows[0];
+    req.user = result.rows[0];
+    req.user.id = decoded.id;
     next();
   } catch (error) {
     console.error("❌ Admin auth error:", error.message);

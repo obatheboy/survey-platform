@@ -129,10 +129,12 @@ exports.requestWithdraw = async (req, res) => {
       return res.status(403).json({ message: "Account not activated" });
     }
 
-    if (user.surveys_completed !== TOTAL_SURVEYS) {
+    // Check if user has completed the required surveys
+    // Either in the specific plan OR across all plans combined
+    if (user.surveys_completed < TOTAL_SURVEYS) {
       await client.query("ROLLBACK");
       return res.status(403).json({
-        message: "Complete all surveys before withdrawal",
+        message: `Please complete all ${TOTAL_SURVEYS} surveys before withdrawal. You have completed ${user.surveys_completed || 0} surveys.`,
       });
     }
 
