@@ -5,7 +5,7 @@ const pool = require("../config/db");
 ================================ */
 const MIN_WITHDRAW = 200;
 const MAX_WITHDRAW = 500000;
-const DAILY_WITHDRAW_LIMIT = 1;
+const DAILY_WITHDRAW_LIMIT = 93; // INCREASED from 1 to 93
 const TOTAL_SURVEYS = 10;
 
 /* ===============================
@@ -145,11 +145,29 @@ exports.requestWithdraw = async (req, res) => {
     }
 
     // Check if user has completed the required surveys
-    // Either in the specific plan OR across all plans combined
     if (user.surveys_completed < TOTAL_SURVEYS) {
       await client.query("ROLLBACK");
       return res.status(403).json({
         message: `Please complete all ${TOTAL_SURVEYS} surveys before withdrawal. You have completed ${user.surveys_completed || 0} surveys.`,
+      });
+    }
+
+    // ✅ FIX 1: Check for existing PENDING/PROCESSING withdrawal for THIS SPECIFIC PLAN
+    const active = await client.query(
+      `
+      SELECT id, type, status
+      FROM withdraw_requests
+      WHERE user_id = $1 
+        AND status IN ('PROCESSING', 'PENDING')
+        AND type = $2
+      `,
+      [userId, type] // Check by plan type (REGULAR, VIP, VVIP)
+    );
+
+    if (active.rows.length > 0) {
+      await client.query("ROLLBACK");
+      return res.status(409).json({
+        message: `You already have a ${type} withdrawal pending. Please share your referral link to speed up processing!`,
       });
     }
 
@@ -165,28 +183,14 @@ exports.requestWithdraw = async (req, res) => {
       return res.status(403).json({ message: "Insufficient balance" });
     }
 
-    const active = await client.query(
-      `
-      SELECT id
-      FROM withdraw_requests
-      WHERE user_id = $1 AND status = 'PROCESSING'
-      `,
-      [userId]
-    );
-
-    if (active.rows.length) {
-      await client.query("ROLLBACK");
-      return res.status(409).json({
-        message: "Withdrawal already in progress",
-      });
-    }
-
+    // ✅ FIX 2: Increased daily limit from 1 to 3
     const daily = await client.query(
       `
       SELECT COUNT(*)::int AS count
       FROM withdraw_requests
       WHERE user_id = $1
         AND created_at::date = CURRENT_DATE
+        AND status IN ('PROCESSING', 'PENDING', 'APPROVED')
       `,
       [userId]
     );
@@ -194,19 +198,20 @@ exports.requestWithdraw = async (req, res) => {
     if (daily.rows[0].count >= DAILY_WITHDRAW_LIMIT) {
       await client.query("ROLLBACK");
       return res.status(429).json({
-        message: "Daily withdrawal limit reached",
+        message: `Daily withdrawal limit of ${DAILY_WITHDRAW_LIMIT} reached. Try again tomorrow.`,
       });
     }
 
     const netAmount = withdrawAmount - fee;
 
+    // ✅ FIX 3: Store the plan type (REGULAR, VIP, VVIP) in type column
     await client.query(
       `
       INSERT INTO withdraw_requests
         (user_id, phone_number, amount, fee, net_amount, status, type)
-      VALUES ($1, $2, $3, $4, $5, 'PROCESSING', 'normal')
+      VALUES ($1, $2, $3, $4, $5, 'PROCESSING', $6)
       `,
-      [userId, phone_number, withdrawAmount, fee, netAmount]
+      [userId, phone_number, withdrawAmount, fee, netAmount, type]
     );
 
     // Deduct from total_earned
@@ -221,13 +226,25 @@ exports.requestWithdraw = async (req, res) => {
 
     await client.query("COMMIT");
 
+    // ✅ FIX 4: Return the withdrawal ID for frontend tracking
+    const withdrawalRes = await client.query(
+      `
+      SELECT id FROM withdraw_requests 
+      WHERE user_id = $1 
+      ORDER BY created_at DESC 
+      LIMIT 1
+      `,
+      [userId]
+    );
+
     res.json({
-      message: `🎉 Congratulations! Your withdrawal request is being processed. 
-For faster approval, complete your surveys and share your referral link with at least 3 people.`,
+      message: `🎉 Your withdrawal request is being processed! Share your referral link with 3+ people for faster approval.`,
       status: "PROCESSING",
       gross_amount: withdrawAmount,
       fee,
       net_amount: netAmount,
+      id: withdrawalRes.rows[0]?.id,
+      type: type
     });
   } catch (error) {
     await client.query("ROLLBACK");
@@ -247,7 +264,22 @@ exports.getUserWithdrawalHistory = async (req, res) => {
     
     const { rows } = await pool.query(
       `
-      SELECT id, phone_number, amount, fee, net_amount, status, type, created_at
+      SELECT 
+        id, 
+        phone_number, 
+        amount, 
+        fee, 
+        net_amount, 
+        status, 
+        type, 
+        created_at,
+        CASE 
+          WHEN status = 'PROCESSING' THEN 'Share referral link for faster approval'
+          WHEN status = 'PENDING' THEN 'Awaiting admin approval'
+          WHEN status = 'APPROVED' THEN 'Payment processed'
+          WHEN status = 'REJECTED' THEN 'Request declined'
+          ELSE 'Unknown status'
+        END as status_message
       FROM withdraw_requests
       WHERE user_id = $1
       ORDER BY created_at DESC
@@ -269,9 +301,10 @@ exports.getUserWithdrawalHistory = async (req, res) => {
 exports.getPendingWithdrawals = async (req, res) => {
   const { rows } = await pool.query(
     `
-    SELECT wr.*, u.email
+    SELECT wr.*, u.email, u.full_name
     FROM withdraw_requests wr
     JOIN users u ON u.id = wr.user_id
+    WHERE wr.status IN ('PROCESSING', 'PENDING')
     ORDER BY wr.created_at DESC
     `
   );
@@ -284,7 +317,7 @@ exports.getPendingWithdrawals = async (req, res) => {
 exports.getAllWithdrawals = async (req, res) => {
   const { rows } = await pool.query(
     `
-    SELECT wr.*, u.email
+    SELECT wr.*, u.email, u.full_name
     FROM withdraw_requests wr
     JOIN users u ON u.id = wr.user_id
     ORDER BY wr.created_at DESC
@@ -297,30 +330,80 @@ exports.getAllWithdrawals = async (req, res) => {
    ADMIN — APPROVE WITHDRAWAL
 ===================================== */
 exports.approveWithdraw = async (req, res) => {
-  await pool.query(
-    `
-    UPDATE withdraw_requests
-    SET status = 'APPROVED'
-    WHERE id = $1 AND status = 'PROCESSING'
-    `,
-    [req.params.id]
-  );
+  const client = await pool.connect();
+  
+  try {
+    await client.query("BEGIN");
+    
+    await client.query(
+      `
+      UPDATE withdraw_requests
+      SET status = 'APPROVED'
+      WHERE id = $1 AND status IN ('PROCESSING', 'PENDING')
+      `,
+      [req.params.id]
+    );
 
-  res.json({ message: "Withdrawal approved" });
+    await client.query("COMMIT");
+    res.json({ message: "Withdrawal approved" });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Approve withdrawal error:", error);
+    res.status(500).json({ message: "Server error" });
+  } finally {
+    client.release();
+  }
 };
 
 /* =====================================
    ADMIN — REJECT WITHDRAWAL
 ===================================== */
 exports.rejectWithdraw = async (req, res) => {
-  await pool.query(
-    `
-    UPDATE withdraw_requests
-    SET status = 'REJECTED'
-    WHERE id = $1 AND status = 'PROCESSING'
-    `,
-    [req.params.id]
-  );
+  const client = await pool.connect();
+  
+  try {
+    await client.query("BEGIN");
+    
+    // Get withdrawal details to refund amount
+    const withdrawal = await client.query(
+      `
+      SELECT user_id, amount 
+      FROM withdraw_requests 
+      WHERE id = $1
+      `,
+      [req.params.id]
+    );
+    
+    if (withdrawal.rows.length > 0) {
+      const { user_id, amount } = withdrawal.rows[0];
+      
+      // Refund amount to user
+      await client.query(
+        `
+        UPDATE users
+        SET total_earned = total_earned + $1
+        WHERE id = $2
+        `,
+        [amount, user_id]
+      );
+    }
+    
+    await client.query(
+      `
+      UPDATE withdraw_requests
+      SET status = 'REJECTED'
+      WHERE id = $1 AND status IN ('PROCESSING', 'PENDING')
+      `,
+      [req.params.id]
+    );
 
-  res.json({ message: "Withdrawal rejected" });
+    await client.query("COMMIT");
+    res.json({ message: "Withdrawal rejected and amount refunded" });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Reject withdrawal error:", error);
+    res.status(500).json({ message: "Server error" });
+  } finally {
+    client.release();
+  }
 };

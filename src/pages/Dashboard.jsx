@@ -1,7 +1,7 @@
 // ========================= Dashboard.jsx =========================
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/api";
+import api, { queueWithdrawRequest, canMakeRequest } from "../api/api";
 import MainMenuDrawer from "./components/MainMenuDrawer.jsx";
 import LiveWithdrawalFeed from "./components/LiveWithdrawalFeed.jsx";
 import Notifications from "./components/Notifications.jsx";
@@ -163,6 +163,14 @@ export default function Dashboard() {
   }, []);
 
   /* =========================
+     RESET SUBMITTING STATE ON MOUNT
+  ========================= */
+  useEffect(() => {
+    // Reset submitting state on component mount to prevent stuck states
+    setSubmitting(false);
+  }, []);
+
+  /* =========================
      LOAD WITHDRAWAL HISTORY
   ========================= */
   const loadWithdrawalHistory = async () => {
@@ -317,6 +325,16 @@ export default function Dashboard() {
      WITHDRAW LOGIC - ENHANCED TO ALWAYS SHOW REFERRAL FLOW FOR PENDING WITHDRAWALS
   ========================= */
   const handleWithdrawClick = async (plan) => {
+    // ✅ ADDED: Debounce protection
+    const now = Date.now();
+    const lastClickTime = localStorage.getItem(`lastWithdrawClick_${plan}`);
+    if (lastClickTime && (now - parseInt(lastClickTime)) < 2000) { // 2 seconds cooldown
+      setToast("Please wait before clicking again");
+      setTimeout(() => setToast(""), 3000);
+      return;
+    }
+    localStorage.setItem(`lastWithdrawClick_${plan}`, now.toString());
+
     setWithdrawError("");
     setWithdrawMessage("");
 
@@ -346,13 +364,10 @@ export default function Dashboard() {
     }
 
     // ✅ CRITICAL FIX: ALWAYS show sharing interface if there's a pending withdrawal
-    // This will trigger every time, no matter how many times user clicks
     if (pendingWithdrawals[plan]) {
-      // Show the sharing interface with existing withdrawal
       setActiveWithdrawPlan(plan);
       setWithdrawAmount(PLANS[plan].total.toString());
       
-      // Auto-scroll to withdraw section and show sharing interface
       goToWithdraw();
       setTimeout(() => {
         withdrawRef.current?.scrollIntoView({ 
@@ -369,85 +384,135 @@ export default function Dashboard() {
     goToWithdraw();
   };
 
-  const submitWithdraw = async () => {
-    // ✅ CRITICAL FIX: Instead of showing error, show the sharing interface
-    // This ensures the referral flow always shows, even if there's already a pending withdrawal
-    if (pendingWithdrawals[activeWithdrawPlan]) {
-      // Instead of showing error, just show the sharing interface
-      setWithdrawMessage("Your withdrawal is already pending. Share your referral link to speed up processing!");
-      
-      // Auto-scroll to show the sharing interface
-      setTimeout(() => {
-        if (withdrawRef.current) {
-          withdrawRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      }, 100);
-      return;
-    }
+const submitWithdraw = async () => {
+  // ✅ ADDED: Prevent multiple submissions
+  if (submitting) {
+    setWithdrawError("Please wait, processing your previous request...");
+    return;
+  }
 
-    if (!withdrawAmount || !withdrawPhone) {
-      setWithdrawError("Please enter amount and phone number");
-      return;
-    }
+  // ✅ ADDED: Rate limiting protection using utility from api.js
+  if (!canMakeRequest('withdraw', 10000)) { // 10 seconds cooldown
+    setWithdrawError("Please wait 10 seconds before making another withdrawal request.");
+    return;
+  }
 
-    const amount = Number(withdrawAmount);
-    if (amount < 100) {
-      setWithdrawError("Minimum withdrawal amount is KES 100");
-      return;
-    }
-
-    setSubmitting(true);
-    setWithdrawError("");
-    setWithdrawMessage("");
+  // ✅ CRITICAL FIX: Instead of showing error, show the sharing interface
+  if (pendingWithdrawals[activeWithdrawPlan]) {
+    setWithdrawMessage("Your withdrawal is already pending. Share your referral link to speed up processing!");
     
-    try {
-      const res = await api.post("/withdraw/request", {
-        phone_number: withdrawPhone,
-        amount: amount,
-        type: activeWithdrawPlan,
-      });
+    setTimeout(() => {
+      if (withdrawRef.current) {
+        withdrawRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 100);
+    return;
+  }
 
-      // Generate referral code (this should ideally come from backend)
-      const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-      
-      // Update pending withdrawals
-      const newWithdrawal = {
-        id: res.data.id,
-        type: activeWithdrawPlan,
-        amount: amount,
+  if (!withdrawAmount || !withdrawPhone) {
+    setWithdrawError("Please enter amount and phone number");
+    return;
+  }
+
+  const amount = Number(withdrawAmount);
+  if (amount < 100) {
+    setWithdrawError("Minimum withdrawal amount is KES 100");
+    return;
+  }
+
+  setSubmitting(true);
+  setWithdrawError("");
+  setWithdrawMessage("");
+  
+  try {
+    // ✅ FIXED: Use queued request to prevent simultaneous calls
+    const res = await queueWithdrawRequest(() => 
+      api.post("/withdraw/request", {
         phone_number: withdrawPhone,
-        referral_code: code,
-        share_count: 0,
-        status: "PROCESSING",
-        created_at: new Date().toISOString()
-      };
+        amount: amount,
+        type: activeWithdrawPlan, // This should match REGULAR, VIP, VVIP
+      })
+    );
+
+    // ✅ FIXED: Use the ID from backend response (with fallback)
+    const withdrawalId = res.data?.id || `temp_${Date.now()}`;
+    
+    // ✅ FIXED: Use referral code from backend if available, otherwise generate
+    const code = res.data?.referral_code || Math.random().toString(36).substring(2, 8).toUpperCase();
+    
+    // ✅ FIXED: Update pending withdrawals with correct data from backend
+    const newWithdrawal = {
+      id: withdrawalId,
+      type: activeWithdrawPlan,
+      amount: amount,
+      phone_number: withdrawPhone,
+      referral_code: code,
+      share_count: 0,
+      status: res.data?.status || "PROCESSING",
+      created_at: new Date().toISOString(),
+      fee: res.data?.fee || 0,
+      net_amount: res.data?.net_amount || amount
+    };
+    
+    setPendingWithdrawals(prev => ({
+      ...prev,
+      [activeWithdrawPlan]: newWithdrawal
+    }));
+    
+    // ✅ FIXED: Delay history reload to prevent rate limiting
+    setTimeout(async () => {
+      try {
+        await loadWithdrawalHistory();
+      } catch (historyErr) {
+        console.warn("Failed to load withdrawal history:", historyErr);
+        // Don't show error to user - this is a background refresh
+      }
+    }, 1500); // 1.5 second delay
+    
+    setWithdrawMessage("✅ Withdrawal submitted! Share your referral link with 3+ people to speed up processing.");
+    
+    // Clear form inputs
+    setWithdrawPhone("");
+    
+    // Auto-scroll to show the sharing interface
+    setTimeout(() => {
+      if (withdrawRef.current) {
+        withdrawRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 100);
+  } catch (err) {
+    // ✅ FIXED: Enhanced error handling with better messages
+    if (err.isRateLimit) {
+      setWithdrawError(`⏳ Too many requests! Please wait ${err.retryAfter || 60} seconds before trying again.`);
+    } else if (err.response?.status === 429) {
+      if (err.response?.data?.message?.includes("Daily withdrawal limit")) {
+        setWithdrawError("📅 Daily withdrawal limit reached. Please try again tomorrow.");
+      } else {
+        setWithdrawError("⏳ Too many withdrawal requests. Please wait 2 minutes before trying again.");
+      }
+    } else if (err.response?.status === 409) {
+      // Conflict error - already has pending withdrawal
+      setWithdrawError(err.response?.data?.message || "You already have a withdrawal pending for this plan.");
       
-      setPendingWithdrawals(prev => ({
-        ...prev,
-        [activeWithdrawPlan]: newWithdrawal
-      }));
-      
-      // Reload withdrawal history
-      await loadWithdrawalHistory();
-      
-      setWithdrawMessage("✅ Withdrawal submitted! Share to speed up processing.");
-      
-      // Clear form inputs (except amount)
-      setWithdrawPhone("");
-      
-      // Auto-scroll to show the sharing interface
+      // Even though error, still show the sharing interface
       setTimeout(() => {
         if (withdrawRef.current) {
           withdrawRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
         }
       }, 100);
-    } catch (err) {
+    } else if (err.response?.status === 403) {
+      setWithdrawError(err.response?.data?.message || "Account not activated or insufficient surveys completed.");
+    } else if (err.response?.status === 400) {
+      setWithdrawError(err.response?.data?.message || "Invalid request. Please check your inputs.");
+    } else {
       setWithdrawError(err.response?.data?.message || "Withdrawal failed. Please try again.");
-    } finally {
-      setSubmitting(false);
     }
-  };
-
+    
+    console.error("Withdrawal error:", err.response?.data || err.message);
+  } finally {
+    setSubmitting(false);
+  }
+};
   // Sharing functions
   const shareToWhatsApp = (plan) => {
     const withdrawal = pendingWithdrawals[plan];
