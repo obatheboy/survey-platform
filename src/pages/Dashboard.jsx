@@ -645,7 +645,6 @@ return (
       <div className="dashboard-section hero-section" style={{
         borderRadius: 'var(--radius-xl)',
         padding: '1.25rem',
-        margin: '0 var(--space-sm) var(--space-md)',
         border: '1px solid rgba(255, 0, 0, 0.5)',
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
         position: 'relative',
@@ -934,7 +933,7 @@ return (
   </button>
 </div>
       {/* WELCOME BONUS CARD */}
-      <section ref={welcomeRef} className="dashboard-section">
+      <section ref={welcomeRef}>
         <div className="professional-bonus-card">
           <div className="bonus-card-header">
             <span className="bonus-icon">🎁</span>

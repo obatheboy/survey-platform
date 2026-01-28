@@ -197,8 +197,8 @@ export default function LiveWithdrawalFeed() {
   // Memoized styles for better performance
   const styles = useMemo(() => ({
     container: {
-      margin: "8px 0",
-      padding: "0 8px",
+      margin: "4px 0",
+      padding: "0 4px",
       willChange: "transform",
       backfaceVisibility: "hidden",
     },
@@ -207,7 +207,7 @@ export default function LiveWithdrawalFeed() {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      marginBottom: "8px",
+      marginBottom: "4px",
     },
     
     liveIndicator: {
@@ -237,13 +237,13 @@ export default function LiveWithdrawalFeed() {
     },
     
     card: {
-      padding: isMobile ? "10px 12px" : "12px 14px",
+      padding: "8px 10px",
       borderRadius: 14,
       display: "flex",
       alignItems: "center",
-      gap: isMobile ? "8px" : "10px",
+      gap: "8px",
       position: "relative",
-      marginBottom: "8px",
+      marginBottom: "4px",
       willChange: "transform",
       transform: "translateZ(0)",
       WebkitFontSmoothing: "antialiased",
@@ -264,23 +264,23 @@ export default function LiveWithdrawalFeed() {
     },
     
     flag: {
-      width: isMobile ? "20px" : "22px",
-      height: isMobile ? "15px" : "16px",
+      width: "18px",
+      height: "14px",
       borderRadius: 2,
       border: "1px solid rgba(0,0,0,0.1)",
       flexShrink: 0,
     },
     
     avatar: {
-      width: isMobile ? "32px" : "34px",
-      height: isMobile ? "32px" : "34px",
+      width: "28px",
+      height: "28px",
       borderRadius: "50%",
       color: "#fff",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       fontWeight: 800,
-      fontSize: isMobile ? "12px" : "13px",
+      fontSize: "11px",
       boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
       flexShrink: 0,
     },
@@ -296,19 +296,19 @@ export default function LiveWithdrawalFeed() {
     nameText: {
       color: "#1a237e",
       fontWeight: 900,
-      fontSize: isMobile ? "13px" : "14px",
+      fontSize: "12px",
       lineHeight: 1.2,
     },
     
     locationText: {
-      fontSize: isMobile ? "11px" : "12px",
+      fontSize: "10px",
       color: "#546e7a",
       fontWeight: 600,
       lineHeight: 1.2,
     },
     
     timeText: {
-      fontSize: isMobile ? "10px" : "11px",
+      fontSize: "9px",
       color: "#78909c",
       marginLeft: "auto",
       flexShrink: 0,
@@ -324,7 +324,7 @@ export default function LiveWithdrawalFeed() {
     },
     
     statusText: {
-      fontSize: isMobile ? "11px" : "12px",
+      fontSize: "10px",
       fontWeight: 700,
       display: "flex",
       alignItems: "center",
@@ -333,7 +333,7 @@ export default function LiveWithdrawalFeed() {
     },
     
     amountText: {
-      fontSize: isMobile ? "14px" : "15px",
+      fontSize: "13px",
       fontWeight: 900,
       color: "#b71c1c",
       marginLeft: "auto",
@@ -351,7 +351,7 @@ export default function LiveWithdrawalFeed() {
     
     telcoBadge: {
       color: "#fff",
-      fontSize: isMobile ? "10px" : "11px",
+      fontSize: "9px",
       fontWeight: 800,
       padding: "2px 8px",
       borderRadius: 999,
@@ -360,7 +360,7 @@ export default function LiveWithdrawalFeed() {
     },
     
     phoneText: {
-      fontSize: isMobile ? "11px" : "12px",
+      fontSize: "10px",
       color: "#455a64",
       fontWeight: 600,
       lineHeight: 1.2,
