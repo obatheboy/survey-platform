@@ -695,7 +695,7 @@ return (
                   textShadow: '0 1px 3px rgba(0,0,0,0.2)',
                   letterSpacing: '-0.1px'
                 }}>
-                  Hi, <span style={{color: '#ffef00', fontWeight: '900'}}>{user.full_name.split(' ')[0]}</span>!
+                  Hi, <span style={{color: 'red', fontWeight: '900'}}>{user.full_name.split(' ')[0]}</span>!
                 </h3>
                 <p style={{
                   color: 'var(--text-muted)', 
@@ -793,7 +793,7 @@ return (
               letterSpacing: '1px',
               marginBottom: '0.2rem'
             }}>
-              Wallet
+              Balance
             </div>
 
             
@@ -934,55 +934,55 @@ return (
 </div>
       {/* WELCOME BONUS CARD */}
       <section ref={welcomeRef}>
-        <div className="professional-bonus-card">
-          <div className="bonus-card-header">
-            <span className="bonus-icon">🎁</span>
-            <div className="bonus-header-text">
-              <h3>Welcome Bonus</h3>
-              <p className="bonus-subtitle">Activate to claim</p>
+        <div className="plan-card welcome-bonus" style={{
+          borderColor: 'red',
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02))',
+          boxShadow: '0 10px 30px rgba(255, 0, 0, 0.1)'
+        }}>
+          <div className="plan-card-header">
+            <div className="plan-badge">
+              <span className="plan-icon">🎁</span>
+              <span className="plan-name" style={{ color: '#ef4444' }}>Welcome Bonus</span>
+            </div>
+            <span className="plan-status" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+              🔓 Activate
+            </span>
+          </div>
+          
+          <div className="plan-card-body">
+            <div className="plan-description">
+              <p>Activate your account with <strong>KES 100</strong> to unlock your welcome bonus.</p>
+            </div>
+            
+            <div className="plan-stats">
+              <div className="stat-row">
+                <span className="stat-label">Bonus Amount</span>
+                <span className="stat-value earned" style={{color: '#ef4444', fontSize: '18px'}}>KES 1,200</span>
+              </div>
+              <div className="stat-row">
+                <span className="stat-label">Status</span>
+                <span className="stat-value">Pending Activation</span>
+              </div>
+            </div>
+            
+            <div className="plan-features">
+              <span className="feature-tag">⚡ Instant</span>
+              <span className="feature-tag">🔒 Secure</span>
             </div>
           </div>
           
-          <div className="bonus-amount-display">
-            <span className="currency">KES</span>
-            <span className="amount">1,200</span>
-          </div>
-          
-          <div className="bonus-description">
-            <p>Activate your account with <strong>KES 100</strong> to unlock your welcome bonus</p>
-          </div>
-
-       <div className="bonus-actions">
-  <button className="activate-bonus-btn full-width" onClick={handleWelcomeBonusWithdraw}>
-    <span className="btn-icon">🔓</span>
-    Activate & Claim Bonus
-  </button>
-  <button className="secondary-btn full-width" onClick={() => navigate("/faq#welcome-bonus")}>
-    Learn More
-  </button>
-</div>
-          <div className="bonus-details-collapsible">
-            <details className="bonus-details">
-              <summary>View Bonus Details</summary>
-              <div className="details-content">
-                <div className="detail-item">
-                  <span className="detail-icon">✅</span>
-                  <span>Instant activation upon payment</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-icon">🔒</span>
-                  <span>Secure payment processing</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-icon">👥</span>
-                  <span>15,000+ satisfied users</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-icon">⏱️</span>
-                  <span>Limited time offer</span>
-                </div>
-              </div>
-            </details>
+          <div className="plan-card-footer">
+            <button 
+              className="start-survey-btn"
+              onClick={handleWelcomeBonusWithdraw}
+              style={{
+                background: 'linear-gradient(135deg, #ef4444, #b91c1c)',
+                boxShadow: '0 5px 20px rgba(239, 68, 68, 0.4)'
+              }}
+            >
+              <span className="btn-icon">🔓</span>
+              Activate & Claim
+            </button>
           </div>
         </div>
       </section>
@@ -1274,7 +1274,7 @@ return (
               
               return (
                 <div key={key} className={`plan-card ${key.toLowerCase()}`} style={{
-                  borderColor: plan.borderColor,
+                  borderColor: 'red',
                   background: `linear-gradient(135deg, ${plan.bgColor}, rgba(255, 255, 255, 0.05))`,
                   boxShadow: `0 10px 30px ${plan.color}20`
                 }}>

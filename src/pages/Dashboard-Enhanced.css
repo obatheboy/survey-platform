@@ -1983,7 +1983,7 @@ input:focus-visible {
 
 .plan-card {
   background: var(--bg-surface);
-  border: 1px solid rgba(255, 0, 0, 0.5);
+  border: 1px solid red;
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   display: flex;
