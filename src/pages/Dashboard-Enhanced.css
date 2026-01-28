@@ -2107,7 +2107,7 @@ input:focus-visible {
 
 /* Special button for activating welcome bonus */
 .activate-bonus-btn {
-  background: linear-gradient(135deg, #9D50BB, #6E48AA) !important;
+  background: linear-gradient(135deg, #ffe600, #ff9100) !important;
   color: white !important;
   border: none !important;
   border-radius: 12px !important;
