@@ -645,7 +645,7 @@ return (
       <div className="dashboard-section hero-section" style={{
         borderRadius: 'var(--radius-xl)',
         padding: '1.25rem',
-        border: '1px solid rgba(255, 0, 0, 0.5)',
+        border: '2px solid red',
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
         position: 'relative',
         overflow: 'hidden'
@@ -777,7 +777,7 @@ return (
             backdropFilter: 'none',
             borderRadius: 'var(--radius-xl)',
             padding: '0.75rem 1rem',
-            border: '1px solid rgba(255, 0, 0, 0.5)',
+            border: '2px solid red',
             minWidth: '110px',
             textAlign: 'center',
             boxShadow: 'var(--card-shadow)',
@@ -935,7 +935,7 @@ return (
       {/* WELCOME BONUS CARD */}
       <section ref={welcomeRef}>
         <div className="plan-card welcome-bonus" style={{
-          borderColor: 'red',
+          border: '2px solid red',
           background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02))',
           boxShadow: '0 10px 30px rgba(255, 0, 0, 0.1)'
         }}>
@@ -1274,7 +1274,7 @@ return (
               
               return (
                 <div key={key} className={`plan-card ${key.toLowerCase()}`} style={{
-                  borderColor: 'red',
+                  border: '2px solid red',
                   background: `linear-gradient(135deg, ${plan.bgColor}, rgba(255, 255, 255, 0.05))`,
                   boxShadow: `0 10px 30px ${plan.color}20`
                 }}>

@@ -273,7 +273,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0;
+  margin-bottom: var(--space-xs);
   position: relative;
   z-index: 5;
 }
@@ -343,7 +343,7 @@ body {
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   margin-bottom: var(--space-md);
-  border: 1px solid rgba(255, 0, 0, 0.5);
+  border: 2px solid red;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
@@ -353,20 +353,18 @@ body {
 .professional-bonus-card {
   background: var(--bg-surface); /* Dark theme update */
   border-radius: var(--radius-xl);
-  padding: 12px;
+  padding: 16px;
   margin-bottom: var(--space-md);
   box-shadow: 
     0 10px 15px -3px rgba(0, 0, 0, 0.1),
-
     0 4px 6px -2px rgba(0, 0, 0, 0.05),
-    0 0 0 1px rgba(255, 0, 0, 0.5) inset;
+    0 0 0 1px red inset;
   color: var(--text-main);
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 0, 0, 0.5);
+  border: 2px solid red;
   transition: all 0.3s ease;
   backface-visibility: hidden;
-
 }
 
 /* Light grid pattern overlay */
@@ -396,18 +394,18 @@ body {
 .bonus-card-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 4px;
+  gap: var(--space-md);
+  margin-bottom: 12px;
   position: relative;
   z-index: 3;
 }
 
 .bonus-icon {
-  font-size: 24px;
+  font-size: 32px;
   color: var(--primary);
   background: rgba(37, 99, 235, 0.1);
-  width: 40px;
-  height: 40px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -417,48 +415,44 @@ body {
 }
 
 .bonus-header-text h3 {
-  font-size: 16px;
+  font-size: 22px;
   font-weight: 800;
   color: var(--text-main);
-  margin: 0 0 0px;
+  margin: 0 0 4px;
   line-height: 1.2;
 }
 
 .bonus-subtitle {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--text-muted);
   margin: 0;
   font-weight: 600;
 }
 
 .bonus-amount-display {
-  margin: 6px 0;
   text-align: center;
-  padding: 6px;
+  margin: 12px 0;
+  padding: 12px;
   background: var(--bg-main);
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-soft);
   position: relative;
   z-index: 3;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 6px;
 }
 
 .bonus-amount-display .currency {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text-muted);
   display: block;
-  margin-bottom: 0;
+  margin-bottom: 8px;
   letter-spacing: 1px;
   text-transform: uppercase;
 }
 
 .bonus-amount-display .amount {
-  font-size: 20px;
+  font-size: 32px;
   font-weight: 900;
   color: var(--primary);
   display: block;
@@ -466,7 +460,7 @@ body {
 }
 
 .bonus-description p {
-  font-size: 12px;
+  font-size: 15px;
   color: var(--text-muted);
   line-height: 1.6;
   font-weight: 500;
@@ -482,8 +476,8 @@ body {
 .bonus-actions {
   display: flex;
   gap: var(--space-sm);
-  margin-top: 8px;
-  margin-bottom: 4px;
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-md);
   position: relative;
   z-index: 3;
 }
@@ -540,8 +534,8 @@ body {
 }
 
 .bonus-details summary {
-  padding: 8px;
-  font-size: 12px;
+  padding: var(--space-md) var(--space-lg);
+  font-size: 14px;
   font-weight: 700;
   color: var(--text-main);
   background: var(--bg-surface);
@@ -679,8 +673,7 @@ body {
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   margin-bottom: var(--space-md);
-
-  border: 1px solid rgba(255, 0, 0, 0.5);
+  border: 2px solid red;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
@@ -709,7 +702,7 @@ body {
   background: var(--bg-main);
   border-radius: var(--radius-lg);
   padding: 6px;
-  border: 1px solid rgba(255, 0, 0, 0.5);
+  border: 2px solid red;
 }
 
 .nav-btn {
@@ -732,7 +725,7 @@ body {
   user-select: none;
   text-decoration: none;
   position: relative;
-  border: 1px solid rgba(255, 0, 0, 0.5);
+  border: 2px solid red;
   box-shadow: 
     inset 0 1px 0 var(--border-soft),
     0 2px 8px rgba(0, 0, 0, 0.2);
@@ -798,7 +791,7 @@ body {
 
 .stats-card {
   background: var(--bg-surface);
-  border: 1px solid rgba(255, 0, 0, 0.5);
+  border: 2px solid red;
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   position: relative;
@@ -970,7 +963,7 @@ body {
 
 .progress-card {
   background: var(--bg-surface);
-  border: 1px solid rgba(255, 0, 0, 0.5);
+  border: 2px solid red;
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   transition: all var(--transition-normal);
@@ -1059,7 +1052,7 @@ body {
 
 .feature-card {
   background: var(--bg-surface);
-  border: 1px solid rgba(255, 0, 0, 0.5);
+  border: 2px solid red;
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   text-align: center;
@@ -1202,7 +1195,7 @@ body {
   gap: var(--space-md);
   padding: var(--space-md);
   background: var(--bg-surface);
-  border: 1px solid rgba(255, 0, 0, 0.5);
+  border: 2px solid red;
   border-radius: var(--radius-xl);
   transition: all var(--transition-normal);
   backdrop-filter: blur(10px);
@@ -1291,7 +1284,7 @@ body {
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   margin-bottom: var(--space-md);
-  border: 1px solid rgba(255, 0, 0, 0.5);
+  border: 2px solid red;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
 }
 
@@ -1843,7 +1836,6 @@ input:focus-visible {
   gap: 10px !important;
   width: 100% !important;
   box-shadow: 0 6px 20px rgba(157, 80, 187, 0.4) !important;
-  min-height: 36px !important;
 }
 
 .activate-bonus-btn:hover {
@@ -1983,7 +1975,7 @@ input:focus-visible {
 
 .plan-card {
   background: var(--bg-surface);
-  border: 1px solid red;
+  border: 2px solid red;
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   display: flex;
@@ -2257,7 +2249,7 @@ input:focus-visible {
 
 .withdraw-card {
   background: var(--bg-surface);
-  border: 1px solid rgba(255, 0, 0, 0.5);
+  border: 2px solid red;
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   transition: none;
