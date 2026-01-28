@@ -646,7 +646,7 @@ return (
         borderRadius: 'var(--radius-xl)',
         padding: '1.25rem',
         margin: '0 var(--space-sm) var(--space-md)',
-        border: '1px solid var(--border-soft)',
+        border: '1px solid rgba(255, 0, 0, 0.5)',
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
         position: 'relative',
         overflow: 'hidden'
@@ -778,7 +778,7 @@ return (
             backdropFilter: 'none',
             borderRadius: 'var(--radius-xl)',
             padding: '0.75rem 1rem',
-            border: '1px solid var(--border-soft)',
+            border: '1px solid rgba(255, 0, 0, 0.5)',
             minWidth: '110px',
             textAlign: 'center',
             boxShadow: 'var(--card-shadow)',

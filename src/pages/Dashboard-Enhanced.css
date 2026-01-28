@@ -10,7 +10,7 @@ html, body {
   width: 100%;
   height: 100%;
   overflow-x: hidden;
-  background-color: var(--bg-main); /* Ensure solid color matches body */
+  background: var(--bg-main); /* Standardized light background */
   -webkit-tap-highlight-color: transparent;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
@@ -27,11 +27,20 @@ html, body {
   }
 }
 
-/* FIX 2: Ensure Drawer is always on top */
-.drawer-overlay, .drawer-content {
-  z-index: 2147483647 !important; /* Max Z-Index */
-  transform: none !important;
-  will-change: auto !important;
+/* FIX 2: Remove unnecessary animations and hardware acceleration */
+.dashboard > div[style*="position: fixed"] {
+  position: fixed !important;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Remove unnecessary hardware acceleration for better performance */
+.dashboard > div[style*="position: fixed"] * {
+  transform: none; /* REMOVED: translateZ(0) */
+  -webkit-transform: none; /* REMOVED: translateZ(0) */
+  backface-visibility: visible; /* REMOVED: hidden */
+  -webkit-backface-visibility: visible; /* REMOVED: hidden */
 }
 
 /* =========================================================
@@ -334,7 +343,7 @@ body {
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   margin-bottom: var(--space-md);
-  border: 1px solid var(--border-soft);
+  border: 1px solid rgba(255, 0, 0, 0.5);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
@@ -349,11 +358,11 @@ body {
   box-shadow: 
     0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05),
-    0 0 0 1px var(--border-soft) inset;
+    0 0 0 1px rgba(255, 0, 0, 0.5) inset;
   color: var(--text-main);
   position: relative;
   overflow: hidden;
-  border: 1px solid var(--border-soft);
+  border: 1px solid rgba(255, 0, 0, 0.5);
   transition: all 0.3s ease;
   backface-visibility: hidden;
 }
@@ -664,7 +673,7 @@ body {
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   margin-bottom: var(--space-md);
-  border: 1px solid var(--border-soft);
+  border: 1px solid rgba(255, 0, 0, 0.5);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
@@ -693,7 +702,7 @@ body {
   background: var(--bg-main);
   border-radius: var(--radius-lg);
   padding: 6px;
-  border: 1px solid var(--border-soft);
+  border: 1px solid rgba(255, 0, 0, 0.5);
 }
 
 .nav-btn {
@@ -716,7 +725,7 @@ body {
   user-select: none;
   text-decoration: none;
   position: relative;
-  border: 1px solid var(--border-soft);
+  border: 1px solid rgba(255, 0, 0, 0.5);
   box-shadow: 
     inset 0 1px 0 var(--border-soft),
     0 2px 8px rgba(0, 0, 0, 0.2);
@@ -782,7 +791,7 @@ body {
 
 .stats-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-soft);
+  border: 1px solid rgba(255, 0, 0, 0.5);
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   position: relative;
@@ -954,7 +963,7 @@ body {
 
 .progress-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-soft);
+  border: 1px solid rgba(255, 0, 0, 0.5);
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   transition: all var(--transition-normal);
@@ -1043,7 +1052,7 @@ body {
 
 .feature-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-soft);
+  border: 1px solid rgba(255, 0, 0, 0.5);
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   text-align: center;
@@ -1186,7 +1195,7 @@ body {
   gap: var(--space-md);
   padding: var(--space-md);
   background: var(--bg-surface);
-  border: 1px solid var(--border-soft);
+  border: 1px solid rgba(255, 0, 0, 0.5);
   border-radius: var(--radius-xl);
   transition: all var(--transition-normal);
   backdrop-filter: blur(10px);
@@ -1275,7 +1284,7 @@ body {
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   margin-bottom: var(--space-md);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 0, 0, 0.5);
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
 }
 
@@ -1966,7 +1975,7 @@ input:focus-visible {
 
 .plan-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-soft);
+  border: 1px solid rgba(255, 0, 0, 0.5);
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   display: flex;
@@ -2240,7 +2249,7 @@ input:focus-visible {
 
 .withdraw-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-soft);
+  border: 1px solid rgba(255, 0, 0, 0.5);
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   transition: none;
