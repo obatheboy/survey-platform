@@ -39,7 +39,7 @@ export default function WithdrawForm() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [user, setUser] = useState(null);
+  const [, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -287,26 +287,7 @@ export default function WithdrawForm() {
               <p className="input-helper">Enter your Safaricom M-Pesa number (e.g., 0712345678)</p>
             </div>
 
-            {/* User Info */}
-            <div className="user-info-section">
-              <div className="info-card">
-                <div className="info-item">
-                  <span className="info-label">Name:</span>
-                  <span className="info-value">{user?.full_name || "N/A"}</span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">Plan:</span>
-                  <span className="info-value" style={{ color: PLANS[plan].color }}>
-                    {PLANS[plan].icon} {PLANS[plan].name}
-                  </span>
-                </div>
-                <div className="info-item">
-                  <span className="info-label">Max Amount:</span>
-                  <span className="info-value">KES {PLANS[plan].total.toLocaleString()}</span>
-                </div>
-              </div>
-            </div>
-
+     
             {/* Processing Info */}
             <div className="processing-info">
               <div className="info-item">

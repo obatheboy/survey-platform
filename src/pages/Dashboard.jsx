@@ -79,6 +79,11 @@ export default function Dashboard() {
   const [reminderShown, setReminderShown] = useState(false);
 
   /* =========================
+     WELCOME BONUS MODAL STATE
+  ========================= */
+  const [showWelcomeBonusModal, setShowWelcomeBonusModal] = useState(false);
+
+  /* =========================
      DATA STATE
   ========================= */
   const [user, setUser] = useState(null);
@@ -150,6 +155,18 @@ export default function Dashboard() {
       clearInterval(interval);
       window.removeEventListener("focus", load);
     };
+  }, []);
+
+  /* =========================
+     SHOW WELCOME BONUS MODAL ON MOUNT
+  ========================= */
+  useEffect(() => {
+    // Show modal on component mount
+    const timer = setTimeout(() => {
+      setShowWelcomeBonusModal(true);
+    }, 1000); // Slight delay for better UX
+
+    return () => clearTimeout(timer);
   }, []);
 
   /* =========================
@@ -347,6 +364,9 @@ export default function Dashboard() {
      WELCOME BONUS
   ========================= */
   const handleWelcomeBonusWithdraw = () => {
+    // Close the modal first
+    setShowWelcomeBonusModal(false);
+    // Then show the notification
     setFullScreenNotification({
       message: "🎁 Activate your account with KES 100 to unlock your KES 1,200 welcome bonus!",
       redirect: "/activate?welcome_bonus=1",
@@ -404,6 +424,73 @@ export default function Dashboard() {
   ========================= */
   return (
     <div className="dashboard" ref={dashboardRef}>
+      {/* WELCOME BONUS MODAL - FULL SCREEN CENTERED */}
+      {showWelcomeBonusModal && (
+        <div className="welcome-bonus-modal-overlay">
+          <div className="welcome-bonus-modal-container">
+            <div className="welcome-bonus-modal-card">
+              <button className="modal-close-btn" onClick={() => setShowWelcomeBonusModal(false)}>
+                ✕
+              </button>
+              
+              <div className="modal-bonus-card-header">
+                <span className="modal-bonus-icon">🎁</span>
+                <div className="modal-bonus-header-text">
+                  <h3>Welcome Bonus</h3>
+                  <p className="modal-bonus-subtitle">Activate to claim</p>
+                </div>
+              </div>
+              
+              <div className="modal-bonus-amount-display">
+                <span className="currency">KES</span>
+                <span className="amount">1,200</span>
+              </div>
+              
+              <div className="modal-bonus-description">
+                <p>Activate your account with <strong>KES 100</strong> to unlock your welcome bonus</p>
+              </div>
+
+              <div className="modal-bonus-actions">
+                <button className="modal-primary-btn full-width" onClick={handleWelcomeBonusWithdraw}>
+                  <span className="btn-icon">🔓</span>
+                  Activate & Claim Bonus
+                </button>
+                <button className="modal-secondary-btn full-width" onClick={() => {
+                  setShowWelcomeBonusModal(false);
+                  navigate("/faq#welcome-bonus");
+                }}>
+                  Learn More
+                </button>
+              </div>
+
+              <div className="modal-bonus-details-collapsible">
+                <details className="modal-bonus-details">
+                  <summary>View Bonus Details</summary>
+                  <div className="modal-details-content">
+                    <div className="modal-detail-item">
+                      <span className="modal-detail-icon">✅</span>
+                      <span>Instant activation upon payment</span>
+                    </div>
+                    <div className="modal-detail-item">
+                      <span className="modal-detail-icon">🔒</span>
+                      <span>Secure payment processing</span>
+                    </div>
+                    <div className="modal-detail-item">
+                      <span className="modal-detail-icon">👥</span>
+                      <span>15,000+ satisfied users</span>
+                    </div>
+                    <div className="modal-detail-item">
+                      <span className="modal-detail-icon">⏱️</span>
+                      <span>Limited time offer</span>
+                    </div>
+                  </div>
+                </details>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* SCROLL REMINDER NOTIFICATION */}
       {showScrollReminder && (
         <div className="scroll-reminder-notification">
@@ -717,6 +804,64 @@ export default function Dashboard() {
       {/* LIVE WITHDRAWAL FEED */}
       <LiveWithdrawalFeed />
 
+      {/* REGULAR WELCOME BONUS CARD (Hidden when modal is shown) */}
+      {!showWelcomeBonusModal && (
+        <section ref={welcomeRef} className="dashboard-section">
+          <div className="professional-bonus-card">
+            <div className="bonus-card-header">
+              <span className="bonus-icon">🎁</span>
+              <div className="bonus-header-text">
+                <h3>Welcome Bonus</h3>
+                <p className="bonus-subtitle">Activate to claim</p>
+              </div>
+            </div>
+            
+            <div className="bonus-amount-display">
+              <span className="currency">KES</span>
+              <span className="amount">1,200</span>
+            </div>
+            
+            <div className="bonus-description">
+              <p>Activate your account with <strong>KES 100</strong> to unlock your welcome bonus</p>
+            </div>
+
+            <div className="bonus-actions">
+              <button className="primary-btn full-width" onClick={handleWelcomeBonusWithdraw}>
+                <span className="btn-icon">🔓</span>
+                Activate & Claim Bonus
+              </button>
+              <button className="secondary-btn full-width" onClick={() => navigate("/faq#welcome-bonus")}>
+                Learn More
+              </button>
+            </div>
+
+            <div className="bonus-details-collapsible">
+              <details className="bonus-details">
+                <summary>View Bonus Details</summary>
+                <div className="details-content">
+                  <div className="detail-item">
+                    <span className="detail-icon">✅</span>
+                    <span>Instant activation upon payment</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-icon">🔒</span>
+                    <span>Secure payment processing</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-icon">👥</span>
+                    <span>15,000+ satisfied users</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-icon">⏱️</span>
+                    <span>Limited time offer</span>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* COMPACT FLOATING WHATSAPP SUPPORT BUTTON WITH BLINKING CAPTION */}
       <div style={{
         position: 'fixed',
@@ -778,62 +923,6 @@ export default function Dashboard() {
           💬
         </button>
       </div>
-
-      {/* WELCOME BONUS CARD */}
-      <section ref={welcomeRef} className="dashboard-section">
-        <div className="professional-bonus-card">
-          <div className="bonus-card-header">
-            <span className="bonus-icon">🎁</span>
-            <div className="bonus-header-text">
-              <h3>Welcome Bonus</h3>
-              <p className="bonus-subtitle">Activate to claim</p>
-            </div>
-          </div>
-          
-          <div className="bonus-amount-display">
-            <span className="currency">KES</span>
-            <span className="amount">1,200</span>
-          </div>
-          
-          <div className="bonus-description">
-            <p>Activate your account with <strong>KES 100</strong> to unlock your welcome bonus</p>
-          </div>
-
-          <div className="bonus-actions">
-            <button className="primary-btn full-width" onClick={handleWelcomeBonusWithdraw}>
-              <span className="btn-icon">🔓</span>
-              Activate & Claim Bonus
-            </button>
-            <button className="secondary-btn full-width" onClick={() => navigate("/faq#welcome-bonus")}>
-              Learn More
-            </button>
-          </div>
-
-          <div className="bonus-details-collapsible">
-            <details className="bonus-details">
-              <summary>View Bonus Details</summary>
-              <div className="details-content">
-                <div className="detail-item">
-                  <span className="detail-icon">✅</span>
-                  <span>Instant activation upon payment</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-icon">🔒</span>
-                  <span>Secure payment processing</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-icon">👥</span>
-                  <span>15,000+ satisfied users</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-icon">⏱️</span>
-                  <span>Limited time offer</span>
-                </div>
-              </div>
-            </details>
-          </div>
-        </div>
-      </section>
 
       {/* DASHBOARD NAVIGATION - MOBILE OPTIMIZED */}
       <section className="dashboard-section">

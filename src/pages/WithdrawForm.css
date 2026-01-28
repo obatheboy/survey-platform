@@ -352,41 +352,8 @@
   margin-bottom: 0;
 }
 
-/* User Info */
-.user-info-section {
-  margin: 24px 0;
-}
 
-.info-card {
-  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 20px;
-}
 
-.info-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.info-item:last-child {
-  border-bottom: none;
-}
-
-.info-label {
-  color: #64748b;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.info-value {
-  color: #1e293b;
-  font-size: 14px;
-  font-weight: 600;
-}
 
 /* Processing Info */
 .processing-info {
