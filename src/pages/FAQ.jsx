@@ -115,6 +115,7 @@ function FAQItem({ question, answer }) {
       <button 
         className="faq-question" 
         onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
       >
         <span>{question}</span>
         <span className="faq-icon">{isOpen ? '−' : '+'}</span>
