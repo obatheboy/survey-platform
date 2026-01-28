@@ -854,7 +854,9 @@ return (
       </div>
       
       {/* LIVE WITHDRAWAL FEED */}
-      <LiveWithdrawalFeed />
+      <div className="live-withdrawal-feed">
+        <LiveWithdrawalFeed />
+      </div>
 
     {/* FLOATING WHATSAPP SUPPORT BUTTON - NOW FIXED POSITION */}
 <div style={{
@@ -1098,7 +1100,7 @@ return (
                 
                 return (
                   <div key={key} className="progress-card" style={{
-                    borderColor: plan.borderColor,
+                    border: '2px solid red',
                     background: plan.bgColor,
                   }}>
                     <div className="progress-card-header">

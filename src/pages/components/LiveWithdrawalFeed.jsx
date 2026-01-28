@@ -370,7 +370,7 @@ export default function LiveWithdrawalFeed() {
       background: "#f8f9fa",
       borderRadius: 10,
       padding: "10px",
-      border: "1px solid #e0e0e0",
+      border: "2px solid red",
       transform: "translateZ(0)",
     },
     
@@ -579,7 +579,7 @@ export default function LiveWithdrawalFeed() {
         style={{
           ...styles.card,
           background: item.telco.light,
-          border: `1px solid ${item.telco.border}`,
+          border: '2px solid red',
           animation: `${item.telco.pulse} 2s infinite`,
         }}
       >
