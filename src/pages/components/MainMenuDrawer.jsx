@@ -106,10 +106,10 @@ export default function MainMenuDrawer({ open, onClose, user }) {
       )}
 
       {/* OVERLAY */}
-      <div style={overlay} onClick={onClose} />
+      <div className="drawer-overlay" style={overlay} onClick={onClose} />
 
       {/* DRAWER */}
-      <div style={drawer}>
+      <div className="drawer-content" style={drawer}>
         {/* PROFILE */}
         <div style={profileCard}>
           <div style={avatar}>
@@ -246,9 +246,8 @@ function MenuItem({ label, onClick, danger, icon }) {
 const overlay = {
   position: "fixed",
   inset: 0,
-  background: "rgba(0, 0, 0, 0.7)",
-  backdropFilter: "blur(4px)",
-  zIndex: 999,
+  background: "rgba(0, 0, 0, 0.85)",
+  zIndex: 99998,
 };
 
 const drawer = {
@@ -258,8 +257,8 @@ const drawer = {
   height: "100%",
   width: "85vw",
   maxWidth: 320,
-  background: "#0f172a",
-  zIndex: 1000,
+  background: "#1e293b",
+  zIndex: 99999,
   padding: "24px 20px",
   boxShadow: "10px 0 30px rgba(0, 0, 0, 0.5)",
   overflowY: "auto",
@@ -368,8 +367,7 @@ const toastStyle = {
   color: "#fff",
   padding: "12px 24px",
   borderRadius: "12px",
-  zIndex: 2000,
+  zIndex: 100000,
   fontWeight: 800,
   boxShadow: "0 10px 25px rgba(16, 185, 129, 0.3)",
-  animation: "fadeInDown 0.3s ease-out"
 };

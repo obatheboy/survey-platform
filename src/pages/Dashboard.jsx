@@ -18,10 +18,10 @@ const PLANS = {
     icon: "⭐", 
     total: 1500, 
     perSurvey: 150,
-    color: "#10b981",
-    gradient: "linear-gradient(135deg, #10b981, #059669)",
-    borderColor: "rgba(16, 185, 129, 0.2)",
-    bgColor: "rgba(16, 185, 129, 0.05)",
+    color: "#38bdf8",
+    gradient: "linear-gradient(135deg, #38bdf8, #0ea5e9)",
+    borderColor: "rgba(56, 189, 248, 0.2)",
+    bgColor: "rgba(56, 189, 248, 0.05)",
     description: "Perfect for beginners"
   },
   VIP: { 
@@ -29,10 +29,10 @@ const PLANS = {
     icon: "💎", 
     total: 2000, 
     perSurvey: 200,
-    color: "#6366f1",
-    gradient: "linear-gradient(135deg, #6366f1, #4f46e5)",
-    borderColor: "rgba(99, 102, 241, 0.2)",
-    bgColor: "rgba(99, 102, 241, 0.05)",
+    color: "#818cf8",
+    gradient: "linear-gradient(135deg, #818cf8, #6366f1)",
+    borderColor: "rgba(129, 140, 248, 0.2)",
+    bgColor: "rgba(129, 140, 248, 0.05)",
     description: "For active earners"
   },
   VVIP: { 
@@ -40,10 +40,10 @@ const PLANS = {
     icon: "👑", 
     total: 3000, 
     perSurvey: 300,
-    color: "#f59e0b",
-    gradient: "linear-gradient(135deg, #f59e0b, #d97706)",
-    borderColor: "rgba(245, 158, 11, 0.2)",
-    bgColor: "rgba(245, 158, 11, 0.05)",
+    color: "#fbbf24",
+    gradient: "linear-gradient(135deg, #fbbf24, #f59e0b)",
+    borderColor: "rgba(251, 191, 36, 0.2)",
+    bgColor: "rgba(251, 191, 36, 0.05)",
     description: "Maximum earnings"
   },
 };
@@ -623,12 +623,12 @@ return (
 
       {/* HERO SECTION - ULTRA COMPACT */}
       <div className="dashboard-section hero-section" style={{
-        background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+        background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)',
         borderRadius: 'var(--radius-xl)',
         padding: '1.25rem',
         margin: '0 var(--space-sm) var(--space-md)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        boxShadow: 'var(--card-shadow)',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
         position: 'relative',
         overflow: 'hidden'
       }}>
@@ -755,11 +755,11 @@ return (
           
           {/* COMPACT BALANCE SECTION */}
           <div style={{
-            background: 'rgba(255, 255, 255, 0.05)',
-            backdropFilter: 'blur(12px)',
+            background: 'rgba(0, 0, 0, 0.2)',
+            backdropFilter: 'none',
             borderRadius: 'var(--radius-xl)',
             padding: '0.75rem 1rem',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
             minWidth: '110px',
             textAlign: 'center',
             boxShadow: 'var(--card-shadow)',
@@ -768,7 +768,7 @@ return (
             justifyContent: 'center'
           }}>
             <div style={{
-              color: 'rgba(255, 255, 255, 0.6)',
+              color: '#94a3b8',
               fontSize: '0.65rem',
               fontWeight: '800',
               textTransform: 'uppercase',
@@ -786,7 +786,7 @@ return (
               gap: '0.2rem'
             }}>
               <span style={{
-                color: 'rgba(255, 255, 255, 0.9)',
+                color: '#e2e8f0',
                 fontSize: '0.8rem',
                 fontWeight: '700',
               }}>
@@ -806,9 +806,9 @@ return (
             <button 
               onClick={() => navigate("/withdraw-form")}
               style={{
-                background: 'rgba(255, 255, 255, 0.2)',
+                background: 'rgba(255, 255, 255, 0.1)',
                 color: 'white',
-                border: '1px solid rgba(255, 255, 255, 0.25)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
                 borderRadius: 'var(--radius-sm)',
                 padding: '0.3rem 0.6rem',
                 fontSize: '0.7rem',
@@ -823,10 +823,10 @@ return (
                 gap: '0.2rem'
               }}
               onMouseOver={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
               }}
               onMouseOut={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
               }}
             >
               <span style={{fontSize: '0.8rem'}}>💸</span> Withdraw
