@@ -224,6 +224,8 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--space-xs);
+  position: relative;
+  z-index: 5;
 }
 
 .dashboard-main-title {
@@ -285,7 +287,7 @@ body {
 .professional-bonus-card {
   background: linear-gradient(145deg, #1e293b, #0f172a); /* Dark theme update */
   border-radius: var(--radius-xl);
-  padding: var(--space-xl);
+  padding: 16px;
   margin-bottom: var(--space-md);
   box-shadow: 
     0 10px 15px -3px rgba(0, 0, 0, 0.1),
@@ -327,7 +329,7 @@ body {
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  margin-bottom: var(--space-lg);
+  margin-bottom: 12px;
   position: relative;
   z-index: 3;
 }
@@ -363,8 +365,8 @@ body {
 
 .bonus-amount-display {
   text-align: center;
-  margin: var(--space-xl) 0;
-  padding: var(--space-xl);
+  margin: 12px 0;
+  padding: 12px;
   background: rgba(0, 0, 0, 0.2);
   border-radius: var(--radius-lg);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -384,7 +386,7 @@ body {
 }
 
 .bonus-amount-display .amount {
-  font-size: clamp(40px, 9vw, 52px);
+  font-size: 32px;
   font-weight: 900;
   color: #fbbf24;
   display: block;
@@ -396,11 +398,26 @@ body {
   color: #cbd5e1;
   line-height: 1.6;
   font-weight: 500;
+  position: relative;
+  z-index: 3;
 }
 
 .bonus-description strong {
   color: #ffffff;
   font-weight: 700;
+}
+
+.bonus-actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-md);
+  position: relative;
+  z-index: 3;
+}
+
+.bonus-actions button {
+  flex: 1;
 }
 
 .roi-summary {
@@ -446,6 +463,8 @@ body {
   border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+  z-index: 3;
 }
 
 .bonus-details summary {

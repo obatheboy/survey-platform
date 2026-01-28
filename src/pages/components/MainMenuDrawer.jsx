@@ -118,7 +118,7 @@ export default function MainMenuDrawer({ open, onClose, user }) {
           <div style={{ flex: 1 }}>
             <strong style={{ color: "#fff" }}>{user.full_name}</strong>
           </div>
-          <button style={profileBtnDisabled} disabled>
+          <button style={profileBtn} onClick={() => setToast("👤 Profile settings coming soon!")}>
             Profile
           </button>
         </div>
@@ -141,7 +141,7 @@ export default function MainMenuDrawer({ open, onClose, user }) {
               style={{
                 ...withdrawCard,
                 borderColor: plan.color,
-                opacity: completed ? 1 : 0.4,
+                opacity: 1,
               }}
             >
               <div>
@@ -177,9 +177,8 @@ export default function MainMenuDrawer({ open, onClose, user }) {
                   ...withdrawBtn,
                   borderColor: plan.color,
                   color: plan.color,
-                  cursor: canWithdraw ? "pointer" : "not-allowed",
+                  cursor: "pointer",
                 }}
-                disabled={!completed}
                 onClick={() => handleWithdraw(key)}
               >
                 Withdraw
@@ -290,14 +289,16 @@ const avatar = {
   boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)",
 };
 
-const profileBtnDisabled = {
-  border: "1px solid rgba(255, 255, 255, 0.1)",
-  background: "transparent",
-  color: "#94a3b8",
+const profileBtn = {
+  border: "1px solid rgba(255, 255, 255, 0.2)",
+  background: "rgba(255, 255, 255, 0.1)",
+  color: "#fff",
   padding: "6px 14px",
   borderRadius: 10,
   fontSize: "12px",
-  fontWeight: "700"
+  fontWeight: "700",
+  cursor: "pointer",
+  transition: "all 0.2s ease"
 };
 
 const divider = { margin: "24px 0", border: "none", borderTop: "1px solid rgba(255, 255, 255, 0.1)" };
