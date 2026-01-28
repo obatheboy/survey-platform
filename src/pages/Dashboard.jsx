@@ -347,6 +347,12 @@ export default function Dashboard() {
      WELCOME BONUS
   ========================= */
   const handleWelcomeBonusWithdraw = () => {
+    // Prevent body scrolling
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    document.body.style.height = '100%';
+    
     setFullScreenNotification({
       message: "🎁 Activate your account with KES 100 to unlock your KES 1,200 welcome bonus!",
       redirect: "/activate?welcome_bonus=1",
@@ -431,25 +437,166 @@ export default function Dashboard() {
       {/* TOAST NOTIFICATION */}
       {toast && <Notifications message={toast} />}
 
-      {/* FULL SCREEN NOTIFICATION */}
+      {/* FULL SCREEN NOTIFICATION - FIXED CENTER */}
       {fullScreenNotification && (
-        <div className="full-screen-notif">
-          <div className="notif-content">
-            <p>{fullScreenNotification.message}</p>
-            {fullScreenNotification.redirect && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(0, 0, 0, 0.95)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          backdropFilter: 'blur(10px)',
+          overflow: 'hidden',
+          margin: 0,
+          padding: '20px',
+          boxSizing: 'border-box'
+        }}>
+          <div style={{
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            borderRadius: '20px',
+            padding: '30px 25px',
+            maxWidth: '420px',
+            width: '100%',
+            textAlign: 'center',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            position: 'relative'
+          }}>
+            <div style={{
+              fontSize: '50px',
+              marginBottom: '15px',
+              animation: 'pulse 2s infinite'
+            }}>
+              🎁
+            </div>
+            
+            <h3 style={{
+              color: 'white',
+              margin: '0 0 10px 0',
+              fontSize: '22px',
+              fontWeight: '700'
+            }}>
+              Welcome Bonus!
+            </h3>
+            
+            <p style={{
+              color: 'rgba(255, 255, 255, 0.95)',
+              fontSize: '16px',
+              lineHeight: '1.4',
+              marginBottom: '25px',
+              padding: '0 10px'
+            }}>
+              {fullScreenNotification.message}
+            </p>
+            
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              width: '100%'
+            }}>
+              {fullScreenNotification.redirect && (
+                <button
+                  onClick={() => {
+                    // Restore body scrolling
+                    document.body.style.overflow = '';
+                    document.body.style.position = '';
+                    document.body.style.width = '';
+                    document.body.style.height = '';
+                    
+                    setFullScreenNotification(null);
+                    navigate(fullScreenNotification.redirect);
+                  }}
+                  style={{
+                    background: 'linear-gradient(to right, #ff8a00, #da1b60)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '12px',
+                    padding: '16px 20px',
+                    fontSize: '17px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    width: '100%',
+                    boxShadow: '0 8px 25px rgba(255, 138, 0, 0.4)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 12px 30px rgba(255, 138, 0, 0.6)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(255, 138, 0, 0.4)';
+                  }}
+                >
+                  <span style={{ fontSize: '20px' }}>🔓</span>
+                  Activate Account Now
+                </button>
+              )}
+              
               <button
-                className="primary-btn"
-                onClick={() => navigate(fullScreenNotification.redirect)}
+                onClick={() => {
+                  // Restore body scrolling
+                  document.body.style.overflow = '';
+                  document.body.style.position = '';
+                  document.body.style.width = '';
+                  document.body.style.height = '';
+                  
+                  setFullScreenNotification(null);
+                }}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  color: 'white',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '12px',
+                  padding: '14px 20px',
+                  fontSize: '15px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  width: '100%',
+                  backdropFilter: 'blur(10px)'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                }}
               >
-                Activate Account
+                Maybe Later
               </button>
-            )}
-            <button
-              className="secondary-btn"
-              onClick={() => setFullScreenNotification(null)}
-            >
-              Close
-            </button>
+            </div>
+            
+            <div style={{
+              marginTop: '20px',
+              padding: '12px',
+              background: 'rgba(255, 255, 255, 0.08)',
+              borderRadius: '10px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              fontSize: '13px',
+              color: 'rgba(255, 255, 255, 0.8)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', justifyContent: 'center' }}>
+                <span>✅</span>
+                <span>Instant activation upon payment</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+                <span>🔒</span>
+                <span>Secure M-Pesa payment</span>
+              </div>
+            </div>
           </div>
         </div>
       )}
