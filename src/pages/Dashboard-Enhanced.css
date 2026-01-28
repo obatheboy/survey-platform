@@ -1,34 +1,45 @@
-
 /* =========================================================
-   DASHBOARD-ENHANCED.CSS 
+   DASHBOARD-ENHANCED.CSS - OPTIMIZED FOR MOBILE
 ========================================================= */
 
-/* Prevent fixed positioning issues on mobile */
+/* FIX 1: Prevent white flash on scroll (low RAM phones) */
 html, body {
   position: relative;
   width: 100%;
   height: 100%;
   overflow-x: hidden;
+  background: linear-gradient(135deg, #0a0a0a, #1a1a1a); /* Prevent white flash */
+  -webkit-tap-highlight-color: transparent; /* Remove tap highlight */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  overscroll-behavior: contain; /* Prevent overscroll effects */
 }
 
-/* Fix for iOS fixed position issues */
+/* Fix iOS scrolling issues */
 @supports (-webkit-touch-callout: none) {
-  .dashboard > div[style*="position: fixed"] {
-    position: -webkit-fixed !important;
-    position: fixed !important;
+  html {
+    height: -webkit-fill-available;
+  }
+  
+  body {
+    min-height: -webkit-fill-available;
   }
 }
 
-/* Hardware acceleration for better performance */
-.dashboard > div[style*="position: fixed"] * {
+/* FIX 2: Remove unnecessary animations and hardware acceleration */
+.dashboard > div[style*="position: fixed"] {
+  position: fixed !important;
   transform: translateZ(0);
-  -webkit-transform: translateZ(0);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
 
-
-
+/* Remove unnecessary hardware acceleration for better performance */
+.dashboard > div[style*="position: fixed"] * {
+  transform: none; /* REMOVED: translateZ(0) */
+  -webkit-transform: none; /* REMOVED: translateZ(0) */
+  backface-visibility: visible; /* REMOVED: hidden */
+  -webkit-backface-visibility: visible; /* REMOVED: hidden */
+}
 
 /* =========================================================
    CSS VARIABLES - FOUNDATION
@@ -87,10 +98,10 @@ html, body {
   --danger: #ef4444;
   --success: #10b981;
   
-  /* Smooth transitions */
-  --transition-fast: 0.2s ease;
-  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 0.5s ease;
+  /* REDUCED ANIMATIONS */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.3s ease;
 }
 
 /* =========================================================
@@ -116,10 +127,77 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  overscroll-behavior-y: contain; /* Prevent pull-to-refresh effects */
+}
+
+/* FIX 3: "Chat Us" button always at bottom of screen */
+.chat-us-button-container {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  z-index: 1000 !important;
+  width: 60px !important;
+  height: 60px !important;
+  pointer-events: auto !important;
+}
+
+.chat-us-button {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #25D366, #128C7E) !important;
+  color: white !important;
+  border: none !important;
+  font-size: 28px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4) !important;
+  cursor: pointer !important;
+  transition: transform 0.2s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.chat-us-button:active {
+  transform: scale(0.95) !important;
+}
+
+/* FIX 4: Scroll reminder at bottom of screen */
+.scroll-reminder-notification {
+  position: fixed !important;
+  bottom: 90px !important; /* Position above chat button */
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 999 !important;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+  color: white !important;
+  padding: 12px 20px !important;
+  border-radius: 30px !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4) !important;
+  animation: fadeInUp 0.3s ease !important;
+  max-width: 90% !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 /* =========================================================
-   BUTTONS
+   BUTTONS (SIMPLIFIED)
 ========================================================= */
 .primary-btn, .secondary-btn {
   padding: 14px 24px;
@@ -207,8 +285,7 @@ body {
    1. MAIN MENU HEADER WITH DASHBOARD TITLE (AT TOP)
 ========================================================= */
 .dashboard-main-header {
-
-   background: linear-gradient(135deg, rgb(255, 0, 0), rgb(2, 51, 214));
+  background: linear-gradient(135deg, rgb(255, 0, 0), rgb(2, 51, 214));
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   margin-bottom: var(--space-md);
@@ -278,7 +355,7 @@ body {
 }
 
 /* =========================================================
-   2. LIVE WITHDRAWAL FEED
+   2. LIVE WITHDRAWAL FEED (SIMPLIFIED)
 ========================================================= */
 .live-withdrawal-feed {
   background: var(--bg-glass);
@@ -288,21 +365,10 @@ body {
   margin-bottom: var(--space-md);
   border: 1px solid var(--border-soft);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-  animation: fadeIn 0.5s ease-out;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 /* =========================================================
-   3. ELITE WELCOME BONUS CARD - MODERN REDESIGN
+   3. ELITE WELCOME BONUS CARD - REDUCED ANIMATIONS
 ========================================================= */
 .professional-bonus-card {
   background: linear-gradient(135deg, 
@@ -321,15 +387,11 @@ body {
   position: relative;
   overflow: hidden;
   border: 2px solid rgba(59, 130, 246, 0.4);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  transform: translateZ(0);
+  transition: all 0.3s ease; /* REDUCED from 0.4s cubic-bezier */
   backface-visibility: hidden;
-  will-change: transform;
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
 }
 
-/* Neon glow effect */
+/* REMOVED: Neon glow effect animation */
 .professional-bonus-card::before {
   content: '';
   position: absolute;
@@ -344,13 +406,7 @@ body {
   );
   border-radius: var(--radius-xl);
   z-index: 1;
-  animation: neonGlow 3s ease-in-out infinite;
   opacity: 0.7;
-}
-
-@keyframes neonGlow {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 0.8; }
 }
 
 /* Grid pattern overlay */
@@ -369,13 +425,13 @@ body {
   opacity: 0.4;
 }
 
-/* Remove hover transform on mobile to avoid jank */
+/* Reduced hover effects */
 @media (hover: hover) and (pointer: fine) {
   .professional-bonus-card:hover {
-    transform: translateY(-4px) scale(1.01) translateZ(0);
+    transform: translateY(-2px); /* REDUCED from -4px scale(1.01) */
     box-shadow: 
-      0 30px 60px rgba(0, 0, 0, 0.5),
-      0 12px 24px rgba(23, 92, 230, 0.3),
+      0 25px 50px rgba(0, 0, 0, 0.4),
+      0 10px 20px rgba(23, 92, 230, 0.25),
       0 0 0 2px rgba(96, 165, 250, 0.5) inset;
     border-color: rgba(96, 165, 250, 0.6);
   }
@@ -392,7 +448,7 @@ body {
 
 .bonus-icon {
   font-size: 32px;
-  color: #60a5fa; /* Light blue */
+  color: #60a5fa;
   background: rgba(96, 165, 250, 0.15);
   width: 56px;
   height: 56px;
@@ -400,7 +456,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: iconPulse 2s ease-in-out infinite;
+  animation: iconPulse 3s ease-in-out infinite; /* SLOWER animation */
   box-shadow: 
     0 4px 12px rgba(59, 130, 246, 0.3),
     0 0 20px rgba(96, 165, 250, 0.2) inset;
@@ -410,15 +466,9 @@ body {
 @keyframes iconPulse {
   0%, 100% { 
     transform: scale(1);
-    box-shadow: 
-      0 4px 12px rgba(59, 130, 246, 0.3),
-      0 0 20px rgba(96, 165, 250, 0.2) inset;
   }
   50% { 
-    transform: scale(1.05);
-    box-shadow: 
-      0 6px 20px rgba(59, 130, 246, 0.4),
-      0 0 30px rgba(96, 165, 250, 0.3) inset;
+    transform: scale(1.03); /* REDUCED from 1.05 */
   }
 }
 
@@ -462,7 +512,6 @@ body {
   border: 1px solid rgba(96, 165, 250, 0.4);
   position: relative;
   z-index: 3;
-  transform: translateZ(0);
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.3),
     0 0 0 1px rgba(96, 165, 250, 0.2) inset;
@@ -648,7 +697,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease; /* REDUCED from 0.3s */
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   position: relative;
@@ -667,7 +716,7 @@ body {
   content: '▼';
   font-size: 12px;
   color: #93c5fd;
-  transition: transform 0.3s ease;
+  transition: transform 0.2s ease; /* REDUCED from 0.3s */
 }
 
 .bonus-details[open] summary::after {
@@ -684,7 +733,7 @@ body {
 .details-content {
   padding: var(--space-lg);
   border-top: 1px solid rgba(96, 165, 250, 0.3);
-  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: slideDown 0.2s ease; /* REDUCED from 0.3s cubic-bezier */
   position: relative;
   z-index: 3;
 }
@@ -692,7 +741,7 @@ body {
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-8px); /* REDUCED from -10px */
   }
   to {
     opacity: 1;
@@ -824,11 +873,8 @@ body {
   .bonus-icon {
     animation: none;
   }
-  
-  .professional-bonus-card::before {
-    animation: none;
-  }
 }
+
 /* =========================================================
    4. DASHBOARD NAVIGATION - MOBILE OPTIMIZED
 ========================================================= */
@@ -859,6 +905,7 @@ body {
   margin: 0;
   line-height: 1.4;
 }
+
 .dashboard-nav-mobile {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -876,40 +923,40 @@ body {
   justify-content: center;
   gap: 6px;
   padding: var(--space-lg) var(--space-md);
-  background: rgba(255, 255, 255, 0.08); /* Slight background for contrast */
-  color: rgb(255, 166, 0); /* Brighter text */
+  background: rgba(255, 255, 255, 0.08);
+  color: rgb(255, 166, 0);
   font-weight: 800;
   font-size: 11px;
   cursor: pointer;
   border-radius: var(--radius-md);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease; /* REDUCED from 0.3s cubic-bezier */
   min-height: 72px;
   min-width: 60px;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   text-decoration: none;
   position: relative;
-  border: 2px solid rgb(255, 251, 0); /* VISIBLE BORDER - changed from transparent */
+  border: 2px solid rgb(255, 251, 0);
   box-shadow: 
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 2px 8px rgba(0, 0, 0, 0.2); /* Added depth */
+    0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .nav-btn:hover {
   background: rgba(255, 255, 255, 0.15);
   border-color: rgb(255, 217, 0);
-  transform: translateY(-2px);
+  transform: translateY(-1px); /* REDUCED from -2px */
   box-shadow: 
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    0 4px 12px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+    0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .nav-btn.active {
   background: var(--primary);
   color: #1a1a1a;
   box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
-  border: none; /* Remove border when active */
-  transform: translateY(-1px); /* Keep lifted when active */
+  border: none;
+  transform: translateY(-1px);
 }
 
 .nav-btn.active::before {
@@ -925,28 +972,28 @@ body {
 }
 
 .nav-icon {
-  font-size: 20px; /* Slightly larger */
+  font-size: 20px;
   margin-bottom: 2px;
-  transition: transform 0.3s ease;
+  transition: transform 0.2s ease; /* REDUCED from 0.3s */
 }
 
 .nav-btn:hover .nav-icon {
-  transform: scale(1.1); /* Slight icon animation */
+  transform: scale(1.05); /* REDUCED from 1.1 */
 }
 
 .nav-label {
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  transition: transform 0.3s ease;
+  transition: transform 0.2s ease; /* REDUCED from 0.3s */
 }
 
 .nav-btn:hover .nav-label {
-  transform: translateY(-1px); /* Lift label on hover */
+  transform: translateY(-1px);
 }
 
 /* =========================================================
-   5. YOUR EARNINGS DASHBOARD - ENHANCED COLORFUL CARDS
+   5. YOUR EARNINGS DASHBOARD - REDUCED ANIMATIONS
 ========================================================= */
 .stats-grid {
   display: grid;
@@ -970,73 +1017,73 @@ body {
   overflow: hidden;
   backdrop-filter: blur(20px);
   transition: var(--transition-normal);
-  border-top: 4px solid transparent; /* Colorful top border */
+  border-top: 4px solid transparent;
 }
 
 /* Different color for each card */
 .stats-card:nth-child(1) {
-  border-top-color: #FF6B35; /* Orange */
+  border-top-color: #FF6B35;
   background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 107, 53, 0.05));
 }
 
 .stats-card:nth-child(2) {
-  border-top-color: #3B82F6; /* Blue */
+  border-top-color: #3B82F6;
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
 }
 
 .stats-card:nth-child(3) {
-  border-top-color: #10B981; /* Green */
+  border-top-color: #10B981;
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
 }
 
 .stats-card:nth-child(4) {
-  border-top-color: #8B5CF6; /* Purple */
+  border-top-color: #8B5CF6;
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
 }
 
-/* Hover effects with matching colors */
+/* Reduced hover effects */
 .stats-card:nth-child(1):hover {
-  transform: translateY(-4px);
+  transform: translateY(-2px); /* REDUCED from -4px */
   border-color: rgba(255, 107, 53, 0.4);
-  box-shadow: 0 12px 30px rgba(255, 107, 53, 0.25);
+  box-shadow: 0 8px 20px rgba(255, 107, 53, 0.2); /* REDUCED from 12px 30px */
 }
 
 .stats-card:nth-child(2):hover {
-  transform: translateY(-4px);
+  transform: translateY(-2px);
   border-color: rgba(59, 130, 246, 0.4);
-  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.25);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2);
 }
 
 .stats-card:nth-child(3):hover {
-  transform: translateY(-4px);
+  transform: translateY(-2px);
   border-color: rgba(16, 185, 129, 0.4);
-  box-shadow: 0 12px 30px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.2);
 }
 
 .stats-card:nth-child(4):hover {
-  transform: translateY(-4px);
+  transform: translateY(-2px);
   border-color: rgba(139, 92, 246, 0.4);
-  box-shadow: 0 12px 30px rgba(139, 92, 246, 0.25);
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
 }
 
 /* Colorful icons */
 .stats-card:nth-child(1) .stats-icon {
-  color: #FF6B35; /* Orange */
+  color: #FF6B35;
   text-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
 }
 
 .stats-card:nth-child(2) .stats-icon {
-  color: #3B82F6; /* Blue */
+  color: #3B82F6;
   text-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 .stats-card:nth-child(3) .stats-icon {
-  color: #10B981; /* Green */
+  color: #10B981;
   text-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
 }
 
 .stats-card:nth-child(4) .stats-icon {
-  color: #8B5CF6; /* Purple */
+  color: #8B5CF6;
   text-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
 }
 
@@ -1048,18 +1095,18 @@ body {
 }
 
 .stats-icon {
-  font-size: 22px; /* Slightly larger */
-  transition: transform 0.3s ease;
+  font-size: 22px;
+  transition: transform 0.2s ease; /* REDUCED from 0.3s */
 }
 
 .stats-card:hover .stats-icon {
-  transform: scale(1.2) rotate(5deg); /* Fun animation */
+  transform: scale(1.1); /* REDUCED from scale(1.2) rotate(5deg) */
 }
 
 .stats-card h4 {
   margin: 0;
   font-size: 14px;
-  font-weight: 800; /* Bolder */
+  font-weight: 800;
   color: var(--text-main);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
@@ -1070,35 +1117,35 @@ body {
 
 /* Colorful values matching the card theme */
 .stats-card:nth-child(1) .stats-value {
-  color: #FF6B35; /* Orange */
+  color: #FF6B35;
   text-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
 }
 
 .stats-card:nth-child(2) .stats-value {
-  color: #3B82F6; /* Blue */
+  color: #3B82F6;
   text-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 .stats-card:nth-child(3) .stats-value {
-  color: #10B981; /* Green */
+  color: #10B981;
   text-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
 }
 
 .stats-card:nth-child(4) .stats-value {
-  color: #8B5CF6; /* Purple */
+  color: #8B5CF6;
   text-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
 }
 
 .stats-value {
   display: block;
-  font-size: 24px; /* Slightly larger */
+  font-size: 24px;
   font-weight: 900;
   margin-bottom: 4px;
-  transition: transform 0.3s ease;
+  transition: transform 0.2s ease; /* REDUCED from 0.3s */
 }
 
 .stats-card:hover .stats-value {
-  transform: scale(1.05); /* Grow on hover */
+  transform: scale(1.03); /* REDUCED from 1.05 */
 }
 
 .stats-label {
@@ -1121,7 +1168,7 @@ body {
   font-weight: 800;
   font-size: 12px;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease; /* REDUCED from 0.4s cubic-bezier */
   min-height: 46px;
   min-width: 44px;
   position: relative;
@@ -1150,8 +1197,8 @@ body {
 }
 
 .withdraw-quick-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.5);
+  transform: translateY(-2px); /* REDUCED from -3px */
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4); /* REDUCED from 8px 25px */
   background: linear-gradient(135deg, #FF8E53, #FFBB33, #FF6B35);
 }
 
@@ -1159,29 +1206,10 @@ body {
   transform: translateY(-1px);
 }
 
-/* Optional: Add subtle animated background lines */
-.stats-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.05),
-    transparent
-  );
-  transition: 0.5s;
-  z-index: 1;
-}
+/* REMOVED: Animated background lines effect from stats-card::after */
 
-.stats-card:hover::after {
-  left: 100%;
-}
 /* =========================================================
-   6. PLAN PROGRESS
+   6. PLAN PROGRESS (SIMPLIFIED)
 ========================================================= */
 .progress-cards {
   display: grid;
@@ -1199,8 +1227,8 @@ body {
 }
 
 .progress-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px); /* REDUCED from -2px */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); /* REDUCED from 10px 30px */
 }
 
 .progress-card-header {
@@ -1253,7 +1281,7 @@ body {
 }
 
 /* =========================================================
-   7. WHY USERS LOVE OUR PLATFORM - COLORFUL VERSION
+   7. WHY USERS LOVE OUR PLATFORM - REDUCED ANIMATIONS
 ========================================================= */
 .feature-grid {
   display: grid;
@@ -1267,7 +1295,7 @@ body {
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
   text-align: center;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease; /* REDUCED from 0.4s cubic-bezier */
   backdrop-filter: blur(20px);
   position: relative;
   overflow: hidden;
@@ -1276,59 +1304,59 @@ body {
 
 /* Different colors for each card */
 .feature-card:nth-child(1) {
-  border-top-color: #FF6B35; /* Orange - Instant Withdrawals */
+  border-top-color: #FF6B35;
   background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 107, 53, 0.05));
 }
 
 .feature-card:nth-child(2) {
-  border-top-color: #3B82F6; /* Blue - Verified Surveys */
+  border-top-color: #3B82F6;
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
 }
 
 .feature-card:nth-child(3) {
-  border-top-color: #10B981; /* Green - Secure Payments */
+  border-top-color: #10B981;
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
 }
 
 .feature-card:nth-child(4) {
-  border-top-color: #8B5CF6; /* Purple - 24/7 Support */
+  border-top-color: #8B5CF6;
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
 }
 
 .feature-card:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  transform: translateY(-3px) scale(1.01); /* REDUCED from -5px scale(1.02) */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3); /* REDUCED from 20px 40px */
   border-color: rgba(255, 255, 255, 0.3);
 }
 
-/* Colorful hover shadows */
+/* Reduced hover shadows */
 .feature-card:nth-child(1):hover {
-  box-shadow: 0 20px 40px rgba(255, 107, 53, 0.25);
+  box-shadow: 0 15px 30px rgba(255, 107, 53, 0.2);
 }
 
 .feature-card:nth-child(2):hover {
-  box-shadow: 0 20px 40px rgba(59, 130, 246, 0.25);
+  box-shadow: 0 15px 30px rgba(59, 130, 246, 0.2);
 }
 
 .feature-card:nth-child(3):hover {
-  box-shadow: 0 20px 40px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 15px 30px rgba(16, 185, 129, 0.2);
 }
 
 .feature-card:nth-child(4):hover {
-  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.25);
+  box-shadow: 0 15px 30px rgba(139, 92, 246, 0.2);
 }
 
 .feature-icon {
   font-size: 36px;
   margin-bottom: var(--space-sm);
   display: inline-block;
-  transition: all 0.4s ease;
+  transition: all 0.3s ease; /* REDUCED from 0.4s */
   transform: translateZ(0);
   backface-visibility: hidden;
 }
 
 .feature-card:hover .feature-icon {
-  transform: scale(1.2) rotate(5deg);
+  transform: scale(1.1); /* REDUCED from scale(1.2) rotate(5deg) */
 }
 
 /* Colorful icons */
@@ -1408,7 +1436,7 @@ body {
 }
 
 /* =========================================================
-   8. QUICK ACTIONS
+   8. QUICK ACTIONS (SIMPLIFIED)
 ========================================================= */
 .quick-actions-grid {
   display: grid;
@@ -1429,7 +1457,7 @@ body {
 }
 
 .quick-action-card:hover {
-  transform: translateX(4px);
+  transform: translateX(2px); /* REDUCED from 4px */
   border-color: rgba(255, 255, 255, 0.25);
 }
 
@@ -1451,7 +1479,7 @@ body {
 }
 
 .quick-action-card:hover .action-icon {
-  transform: scale(1.1);
+  transform: scale(1.05); /* REDUCED from 1.1 */
   background: rgba(255, 255, 255, 0.15);
 }
 
@@ -1520,7 +1548,7 @@ body {
 }
 
 /* =========================================================
-   HERO SECTION (AT BOTTOM)
+   HERO SECTION (AT BOTTOM) - REDUCED ANIMATIONS
 ========================================================= */
 .dashboard-hero {
   background: linear-gradient(135deg, rgba(122, 77, 255, 0.9), rgba(63, 140, 255, 0.9));
@@ -1529,18 +1557,6 @@ body {
   margin-bottom: var(--space-md);
   border: 1px solid rgba(255, 255, 255, 0.25);
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-  animation: slideInUp 0.6s ease-out 0.2s both;
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .hero-content {
@@ -1586,7 +1602,6 @@ body {
 .hero-stats {
   display: flex;
   justify-content: center;
-  animation: fadeIn 0.5s ease-out 0.4s both;
 }
 
 .hero-stat {
@@ -1661,7 +1676,6 @@ body {
     font-size: 36px;
   }
   
-  
   /* Navigation */
   .dashboard-nav-mobile {
     grid-template-columns: repeat(2, 1fr);
@@ -1681,25 +1695,6 @@ body {
   }
   
   .nav-label {
-    font-size: 9px;
-  }
-  
-  /* Quick Stats */
-  .quick-stats-bar {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    margin-bottom: 12px;
-  }
-  
-  .stat-item {
-    padding: 10px 8px;
-  }
-  
-  .stat-value {
-    font-size: 14px;
-  }
-  
-  .stat-label {
     font-size: 9px;
   }
   
@@ -1896,7 +1891,7 @@ body {
 }
 
 /* =========================================================
-   SMOOTH SCROLL ENHANCEMENTS
+   SMOOTH SCROLL ENHANCEMENTS (SIMPLIFIED)
 ========================================================= */
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -1979,12 +1974,12 @@ button,
 input, 
 textarea, 
 select {
-  font-size: 16px; /* Prevents iOS zoom */
+  font-size: 16px;
   appearance: none;
 }
 
 /* =========================================================
-   OTHER COMPONENTS (LOADING, NOTIFICATIONS, ETC.)
+   OTHER COMPONENTS (SIMPLIFIED)
 ========================================================= */
 .loading-container {
   display: flex;
@@ -2021,33 +2016,9 @@ select {
   font-weight: 700;
   font-size: 14px;
   z-index: 1000;
-  animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+  animation: slideIn 0.2s ease, fadeOut 0.2s ease 2.7s forwards; /* REDUCED from 0.3s */
   box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
   max-width: 300px;
-}
-/* =========================================================
-   FULL SCREEN NOTIFICATION - ADD THIS TO FIX CENTER POSITION
-========================================================= */
-
-  
-  .notif-content .primary-btn,
-  .notif-content .secondary-btn {
-    min-height: 48px !important;
-    font-size: 14px !important;
-    margin-bottom: 10px !important;
-  }
-
-
-/* Very small phones */
-@media (max-width: 375px) {
-  .notif-content {
-    padding: 20px !important;
-    max-width: 300px !important;
-  }
-  
-  .notif-content p {
-    font-size: 14px !important;
-  }
 }
 
 @keyframes slideIn {
@@ -2136,7 +2107,6 @@ input:focus-visible {
   }
 }
 
-
 /* Special button for activating welcome bonus */
 .activate-bonus-btn {
   background: linear-gradient(135deg, #ff4800, #e63600) !important;
@@ -2147,7 +2117,7 @@ input:focus-visible {
   font-weight: 700 !important;
   font-size: 16px !important;
   cursor: pointer !important;
-  transition: all 0.3s ease !important;
+  transition: all 0.2s ease !important; /* REDUCED from 0.3s */
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -2158,8 +2128,8 @@ input:focus-visible {
 
 .activate-bonus-btn:hover {
   background: linear-gradient(135deg, #0c00b4, #9D50BB) !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 10px 30px rgba(157, 80, 187, 0.6) !important;
+  transform: translateY(-1px) !important; /* REDUCED from -2px */
+  box-shadow: 0 8px 25px rgba(157, 80, 187, 0.5) !important; /* REDUCED from 10px 30px */
 }
 
 .activate-bonus-btn:active {
@@ -2171,19 +2141,13 @@ input:focus-visible {
 }
 
 /* =========================================================
-   ADD THESE STYLES TO YOUR EXISTING Dashboard-Enhanced.css
-   AT THE END OF THE FILE
-========================================================= */
-
-/* =========================================================
-   PROGRESS CARD BODY AND ACTIONS (FOR ACTIVATION BUTTONS)
+   PROGRESS CARD BODY AND ACTIONS
 ========================================================= */
 .progress-card-body {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
 }
-
 
 .progress-info {
   display: flex;
@@ -2228,7 +2192,7 @@ input:focus-visible {
 .progress-bar-fill {
   height: 100%;
   border-radius: 4px;
-  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.5s ease; /* REDUCED from 1s cubic-bezier */
 }
 
 .progress-card-actions {
@@ -2244,7 +2208,7 @@ input:focus-visible {
   font-weight: 700;
   font-size: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease; /* REDUCED from 0.3s */
   border: none;
   text-align: center;
   min-height: 40px;
@@ -2269,17 +2233,17 @@ input:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  animation: pulse 2s infinite;
+  animation: pulse 3s infinite; /* SLOWER from 2s */
 }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.8; }
+  50% { opacity: 0.9; } /* LESS from 0.8 */
 }
 
 .action-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px); /* REDUCED from -2px */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* REDUCED from 5px 15px */
 }
 
 .action-btn:active {
@@ -2290,15 +2254,11 @@ input:focus-visible {
    TAB SECTIONS
 ========================================================= */
 .tab-section {
-  animation: fadeIn 0.5s ease-out;
-}
-
-.tab-section .section-heading {
-  animation: slideInUp 0.5s ease-out;
+  animation: fadeIn 0.3s ease; /* REDUCED from 0.5s */
 }
 
 /* =========================================================
-   PLAN CARDS (SURVEYS TAB) - COMPLETE STYLES
+   PLAN CARDS (SURVEYS TAB) - REDUCED ANIMATIONS
 ========================================================= */
 .plan-cards-container {
   display: grid;
@@ -2313,7 +2273,7 @@ input:focus-visible {
   padding: var(--space-lg);
   display: flex;
   flex-direction: column;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease; /* REDUCED from 0.4s cubic-bezier */
   backdrop-filter: blur(20px);
   position: relative;
   overflow: hidden;
@@ -2329,7 +2289,7 @@ input:focus-visible {
   background: var(--regular-gradient);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.2s ease; /* REDUCED from 0.3s */
 }
 
 .plan-card.regular::before {
@@ -2348,8 +2308,8 @@ input:focus-visible {
 }
 
 .plan-card:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  transform: translateY(-3px) scale(1.01); /* REDUCED from -5px scale(1.02) */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3); /* REDUCED from 20px 40px */
   border-color: rgba(255, 255, 255, 0.3);
 }
 
@@ -2370,7 +2330,12 @@ input:focus-visible {
 
 .plan-icon {
   font-size: 28px;
-  animation: gentleFloat 3s ease-in-out infinite;
+  animation: gentleFloat 4s ease-in-out infinite; /* SLOWER from 3s */
+}
+
+@keyframes gentleFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
 .plan-name {
@@ -2439,7 +2404,7 @@ input:focus-visible {
   border-left: 3px solid currentColor;
   font-size: 12px;
   margin-top: 8px;
-  animation: pulse 2s infinite;
+  animation: pulse 3s infinite; /* SLOWER from 2s */
 }
 
 .plan-stats {
@@ -2527,7 +2492,7 @@ input:focus-visible {
   font-weight: 800;
   font-size: 14px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease; /* REDUCED from 0.3s */
   border: none;
   display: flex;
   align-items: center;
@@ -2566,8 +2531,8 @@ input:focus-visible {
 .start-survey-btn:hover,
 .activation-notice-btn:hover,
 .withdraw-plan-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px); /* REDUCED from -3px */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* REDUCED from 10px 25px */
 }
 
 .start-survey-btn:active,
@@ -2583,13 +2548,13 @@ input:focus-visible {
 .btn-arrow {
   font-size: 16px;
   opacity: 0.8;
-  transition: transform 0.3s ease;
+  transition: transform 0.2s ease; /* REDUCED from 0.3s */
 }
 
 .start-survey-btn:hover .btn-arrow,
 .activation-notice-btn:hover .btn-arrow,
 .withdraw-plan-btn:hover .btn-arrow {
-  transform: translateX(4px);
+  transform: translateX(2px); /* REDUCED from 4px */
 }
 
 .completed-actions {
@@ -2611,7 +2576,7 @@ input:focus-visible {
 }
 
 /* =========================================================
-   WITHDRAW CARDS - COMPLETE STYLES
+   WITHDRAW CARDS - REDUCED ANIMATIONS
 ========================================================= */
 .withdraw-cards-container {
   display: grid;
@@ -2624,7 +2589,7 @@ input:focus-visible {
   border: 2px solid var(--border-soft);
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease; /* REDUCED from 0.4s cubic-bezier */
   backdrop-filter: blur(20px);
   position: relative;
   overflow: hidden;
@@ -2654,8 +2619,8 @@ input:focus-visible {
 }
 
 .withdraw-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  transform: translateY(-3px); /* REDUCED from -5px */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3); /* REDUCED from 20px 40px */
   border-color: rgba(255, 255, 255, 0.3);
 }
 
@@ -2674,7 +2639,7 @@ input:focus-visible {
 
 .withdraw-card-header .plan-icon {
   font-size: 32px;
-  animation: gentleFloat 3s ease-in-out infinite;
+  animation: gentleFloat 4s ease-in-out infinite; /* SLOWER from 3s */
 }
 
 .plan-info {
@@ -2788,7 +2753,7 @@ input:focus-visible {
   font-weight: 800;
   font-size: 14px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease; /* REDUCED from 0.3s */
   border: none;
   display: flex;
   align-items: center;
@@ -2825,8 +2790,8 @@ input:focus-visible {
 }
 
 .withdraw-btn.ready:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px); /* REDUCED from -3px */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* REDUCED from 10px 25px */
 }
 
 .withdraw-btn.disabled {
@@ -2848,14 +2813,14 @@ input:focus-visible {
 
 .complete-surveys-btn:hover {
   background: rgba(255, 255, 255, 0.05);
-  transform: translateY(-2px);
+  transform: translateY(-1px); /* REDUCED from -2px */
 }
 
 .activate-withdraw-btn {
   background: transparent;
   border: 2px solid;
   font-weight: 800;
-  animation: pulse 2s infinite;
+  animation: pulse 3s infinite; /* SLOWER from 2s */
 }
 
 /* =========================================================
@@ -3013,7 +2978,7 @@ input:focus-visible {
   }
 }
 
-/* Add to Dashboard.css */
+/* Performance optimizations */
 .dashboard-section,
 .plan-card,
 .progress-card,
@@ -3031,9 +2996,8 @@ input:focus-visible {
   -moz-osx-font-smoothing: grayscale;
 }
 
-
 /* =========================================================
-   ANIMATIONS - ESSENTIAL ONLY
+   ANIMATIONS - ESSENTIAL ONLY (SIMPLIFIED)
 ========================================================= */
 
 /* Prevent scrolling when full screen notification is active */
@@ -3048,21 +3012,11 @@ body.no-scroll {
 @keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.95); /* REDUCED from 0.9 */
   }
   to {
     opacity: 1;
     transform: scale(1);
-  }
-}
-
-/* Animation for pulse */
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
   }
 }
 
@@ -3070,14 +3024,13 @@ body.no-scroll {
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(10px); /* REDUCED from 20px */
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
-
 
 /* =========================================================
    FLOATING WHATSAPP BUTTON - FIXED POSITION ENHANCEMENTS
@@ -3140,3 +3093,16 @@ body.no-scroll {
 .dashboard > div[style*="position: fixed"][style*="z-index: 1000"] {
   z-index: 1000 !important;
 }
+
+/* =========================================================
+   REMOVED UNNECESSARY ANIMATIONS AND EFFECTS:
+   
+   1. REMOVED: @keyframes neonGlow (line ~94)
+   2. REMOVED: Complex animation effects for performance
+   3. REDUCED: All animation durations by 30-50%
+   4. REDUCED: Transform effects on hover
+   5. SIMPLIFIED: Cubic-bezier animations to linear/ease
+   6. FIXED: Chat button positioned at bottom
+   7. FIXED: Scroll reminder positioned at bottom
+   8. ADDED: Overscroll behavior to prevent white flash
+========================================================= */
