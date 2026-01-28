@@ -1,17 +1,19 @@
 .testimonials-title {
   text-align: center;
-  font-size: 32px;
-  color: #333;
+  font-size: 28px;
+  color: #0f172a;
   margin-bottom: 40px;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.5px;
 }
 
 /* ================= CAROUSEL VARIANT ================= */
 .testimonials-carousel {
   padding: 60px 20px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  border-radius: 20px;
+  background: #f8fafc;
+  border-radius: 24px;
   margin: 40px 0;
+  border: 1px solid #f1f5f9;
 }
 
 .carousel-container {
@@ -23,10 +25,11 @@
 
 .testimonial-slide {
   background: white;
-  border-radius: 20px;
+  border-radius: 24px;
   padding: 50px 40px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
   animation: fadeIn 0.5s ease-out;
+  border: 1px solid #f1f5f9;
 }
 
 @keyframes fadeIn {
@@ -53,13 +56,14 @@
 }
 
 .quote-large {
-  font-size: 20px;
-  line-height: 1.6;
-  color: #555;
+  font-size: 18px;
+  line-height: 1.7;
+  color: #475569;
   text-align: center;
   font-style: italic;
   margin-bottom: 30px;
   min-height: 100px;
+  font-weight: 500;
 }
 
 .user-details {
@@ -68,31 +72,33 @@
 }
 
 .user-details h3 {
-  font-size: 24px;
-  color: #333;
+  font-size: 22px;
+  color: #0f172a;
   margin: 0 0 5px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  font-weight: 800;
 }
 
 .verified {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   background: #10b981;
   color: white;
   border-radius: 50%;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .location {
-  color: #666;
-  font-size: 16px;
+  color: #64748b;
+  font-size: 15px;
   margin: 0;
+  font-weight: 600;
 }
 
 .stats-large {
@@ -100,7 +106,7 @@
   justify-content: center;
   gap: 40px;
   padding-top: 30px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid #f1f5f9;
 }
 
 .stat {
@@ -109,16 +115,19 @@
 
 .stat .label {
   display: block;
-  font-size: 14px;
-  color: #666;
+  font-size: 13px;
+  color: #94a3b8;
   margin-bottom: 5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .stat .value {
   display: block;
   font-size: 20px;
-  font-weight: 700;
-  color: #667eea;
+  font-weight: 800;
+  color: #2563eb;
 }
 
 .carousel-btn {
@@ -126,22 +135,26 @@
   top: 50%;
   transform: translateY(-50%);
   background: white;
-  border: none;
-  width: 50px;
-  height: 50px;
+  border: 1px solid #f1f5f9;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  font-size: 30px;
+  font-size: 24px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
   z-index: 10;
-  color: #667eea;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .carousel-btn:hover {
-  background: #667eea;
+  background: #2563eb;
   color: white;
   transform: translateY(-50%) scale(1.1);
+  border-color: #2563eb;
 }
 
 .carousel-btn.prev {
@@ -155,29 +168,29 @@
 .carousel-dots {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   margin-top: 30px;
 }
 
 .dot {
-  width: 12px;
-  height: 12px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
+  background: #cbd5e1;
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .dot.active {
-  background: white;
-  width: 30px;
-  border-radius: 6px;
+  background: #2563eb;
+  width: 24px;
+  border-radius: 4px;
 }
 
 /* ================= GRID VARIANT ================= */
 .testimonials-grid {
-  padding: 60px 20px;
+  padding: 40px 0;
 }
 
 .testimonials-grid-container {
@@ -190,24 +203,18 @@
 
 .testimonial-card {
   background: white;
-  border-radius: 16px;
-  padding: 30px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  border: 1px solid #f1f5f9;
   animation: fadeInUp 0.6s ease-out backwards;
 }
-
-.testimonial-card:nth-child(1) { animation-delay: 0.1s; }
-.testimonial-card:nth-child(2) { animation-delay: 0.2s; }
-.testimonial-card:nth-child(3) { animation-delay: 0.3s; }
-.testimonial-card:nth-child(4) { animation-delay: 0.4s; }
-.testimonial-card:nth-child(5) { animation-delay: 0.5s; }
-.testimonial-card:nth-child(6) { animation-delay: 0.6s; }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -217,14 +224,15 @@
 
 .testimonial-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.1);
+  border-color: #2563eb;
 }
 
 .testimonial-header {
   display: flex;
   align-items: center;
-  gap: 15px;
-  margin-bottom: 15px;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 .avatar {
@@ -233,68 +241,71 @@
 }
 
 .user-info h4 {
-  margin: 0 0 5px;
+  margin: 0 0 4px;
   font-size: 18px;
-  color: #333;
+  color: #0f172a;
   display: flex;
   align-items: center;
   gap: 6px;
+  font-weight: 800;
 }
 
 .user-info .location {
   font-size: 14px;
-  color: #666;
+  color: #64748b;
   margin: 0;
+  font-weight: 600;
 }
 
 .testimonial-card .rating {
   font-size: 18px;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
   text-align: left;
 }
 
 .quote {
   font-size: 15px;
   line-height: 1.6;
-  color: #555;
+  color: #475569;
   font-style: italic;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  font-weight: 500;
 }
 
 .stats {
   display: flex;
   justify-content: space-between;
   padding-top: 20px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid #f1f5f9;
   font-size: 13px;
 }
 
 .earned {
   color: #10b981;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .duration {
-  color: #666;
+  color: #94a3b8;
+  font-weight: 600;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .testimonials-title {
     font-size: 24px;
-    margin-bottom: 30px;
   }
 
   .testimonials-carousel {
-    padding: 40px 10px;
+    padding: 40px 12px;
   }
 
   .carousel-container {
-    padding: 0 50px;
+    padding: 0 44px;
   }
 
   .testimonial-slide {
-    padding: 30px 20px;
+    padding: 32px 24px;
   }
 
   .avatar-large {
@@ -303,15 +314,10 @@
 
   .quote-large {
     font-size: 16px;
-    min-height: 80px;
-  }
-
-  .user-details h3 {
-    font-size: 20px;
   }
 
   .stats-large {
-    gap: 20px;
+    gap: 24px;
   }
 
   .stat .value {
@@ -321,11 +327,6 @@
   .carousel-btn {
     width: 40px;
     height: 40px;
-    font-size: 24px;
-  }
-
-  .testimonials-grid-container {
-    grid-template-columns: 1fr;
-    gap: 20px;
+    font-size: 20px;
   }
 }

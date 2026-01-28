@@ -20,22 +20,22 @@ const PLAN_CONFIG = {
     label: "Regular", 
     total: 1500, 
     activationFee: 100, 
-    color: "#ffd000", 
-    glow: "rgba(91, 247, 0, 0.6)" 
+    color: "#10b981", 
+    glow: "rgba(16, 185, 129, 0.2)" 
   },
   VIP: { 
     label: "VIP", 
     total: 2000, 
     activationFee: 150, 
-    color: "#ffe600", 
-    glow: "rgba(121, 250, 0, 1)" 
+    color: "#6366f1", 
+    glow: "rgba(99, 102, 241, 0.2)" 
   },
   VVIP: { 
     label: "VVIP", 
     total: 3000, 
     activationFee: 200, 
-    color: "#ffee00", 
-    glow: "rgba(51, 240, 4, 1)" 
+    color: "#f59e0b", 
+    glow: "rgba(245, 158, 11, 0.2)" 
   },
 };
 
@@ -49,179 +49,194 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    background: "rgba(0,0,0,0.95)",
+    background: "rgba(15, 23, 42, 0.9)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     zIndex: 99999,
-    padding: "20px",
+    padding: "var(--space-xl)",
+    backdropFilter: "blur(8px)",
   },
   overlayCard: {
-    maxWidth: "520px",
+    maxWidth: "480px",
     width: "100%",
-    background: "#062f2a",
-    padding: "28px",
-    borderRadius: "22px",
-    color: "#fff",
+    background: "var(--bg-surface)",
+    padding: "40px 32px",
+    borderRadius: "var(--radius-xl)",
+    color: "var(--text-main)",
     textAlign: "center",
-    border: "2px solid #00ff99",
-    boxShadow: "0 20px 60px rgba(0, 255, 153, 0.3)",
+    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+    border: "1px solid var(--border-soft)",
   },
   vipBtn: {
-    marginTop: "22px",
+    marginTop: "var(--space-xl)",
     width: "100%",
     padding: "16px",
-    borderRadius: "50px",
+    borderRadius: "var(--radius-lg)",
     border: "none",
-    background: "linear-gradient(135deg, #00ff99, #00cc66)",
-    color: "#000",
-    fontWeight: 900,
+    background: "var(--primary)",
+    color: "#ffffff",
+    fontWeight: 700,
     fontSize: "16px",
     cursor: "pointer",
-    transition: "all 0.3s ease",
+    transition: "all var(--transition-fast)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     gap: "8px",
+    boxShadow: "0 10px 15px -3px rgba(37, 99, 235, 0.3)",
   },
   page: {
     minHeight: "100vh",
-    background: "linear-gradient(135deg, #0a0a0a, #1a1a1a)",
+    background: "var(--bg-main)",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: "20px",
-    paddingTop: "40px",
-    paddingBottom: "40px",
+    padding: "var(--space-xl)",
+    paddingTop: "60px",
+    paddingBottom: "60px",
+    fontFamily: "'Inter', sans-serif",
   },
   card: {
     maxWidth: "520px",
     width: "100%",
-    background: "rgba(14, 58, 56, 0.9)",
-    padding: "24px",
-    borderRadius: "22px",
-    color: "#fff",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-    backdropFilter: "blur(10px)",
+    background: "var(--bg-surface)",
+    padding: "32px",
+    borderRadius: "var(--radius-xl)",
+    color: "var(--text-main)",
+    border: "1px solid var(--border-soft)",
+    boxShadow: "var(--card-shadow)",
   },
   section: {
-    marginTop: "20px",
-    padding: "16px",
-    borderRadius: "14px",
-    background: "rgba(255, 255, 255, 0.05)",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
+    marginTop: "var(--space-xl)",
+    padding: "20px",
+    borderRadius: "var(--radius-lg)",
+    background: "var(--bg-main)",
+    border: "1px solid var(--border-soft)",
   },
   sectionHighlight: {
-    marginTop: "20px",
-    padding: "16px",
-    borderRadius: "14px",
-    background: "rgba(0, 255, 128, 0.08)",
-    border: "1px solid rgba(0, 255, 128, 0.2)",
+    marginTop: "var(--space-xl)",
+    padding: "20px",
+    borderRadius: "var(--radius-lg)",
+    background: "rgba(37, 99, 235, 0.05)",
+    border: "1px solid rgba(37, 99, 235, 0.1)",
   },
   caption: {
-    fontSize: "13px",
-    color: "#ffe600",
+    fontSize: "14px",
+    color: "var(--primary)",
     fontWeight: 700,
-    marginBottom: "10px",
+    marginBottom: "12px",
     lineHeight: "1.5",
   },
   noteBox: {
-    marginTop: "16px",
-    padding: "14px",
-    borderRadius: "12px",
-    background: "rgba(0, 29, 190, 0.2)",
-    fontSize: "13px",
+    marginTop: "var(--space-xl)",
+    padding: "16px",
+    borderRadius: "var(--radius-md)",
+    background: "var(--bg-surface)",
+    fontSize: "14px",
     fontWeight: 600,
-    border: "1px solid rgba(0, 29, 190, 0.3)",
+    border: "1px solid var(--border-medium)",
+    color: "var(--text-muted)",
+    lineHeight: "1.5",
   },
   notificationBox: {
-    marginTop: "16px",
+    marginTop: "var(--space-xl)",
     padding: "16px",
-    borderRadius: "14px",
-    background: "rgba(0, 255, 128, 0.15)",
-    color: "#00ffcc",
+    borderRadius: "var(--radius-md)",
+    background: "rgba(16, 185, 129, 0.1)",
+    color: "var(--regular-color)",
     fontWeight: 700,
-    border: "1px solid rgba(0, 255, 128, 0.3)",
+    border: "1px solid var(--regular-color)",
+    fontSize: "14px",
   },
   activationFee: {
-    color: "#ff2d2d",
-    fontWeight: 900,
+    color: "#dc2626",
+    fontWeight: 800,
     fontSize: "16px",
   },
   copiedNote: {
-    color: "#00ff99",
-    fontWeight: 800,
+    color: "var(--regular-color)",
+    fontWeight: 700,
     fontSize: "13px",
-    marginTop: "8px",
+    marginTop: "var(--space-sm)",
   },
   input: {
     width: "100%",
     padding: "16px",
-    marginTop: "16px",
-    borderRadius: "10px",
-    border: "2px solid rgba(255, 255, 255, 0.1)",
-    background: "rgba(255, 255, 255, 0.08)",
-    color: "#fff",
-    fontSize: "14px",
+    marginTop: "var(--space-xl)",
+    borderRadius: "var(--radius-md)",
+    border: "2px solid var(--border-medium)",
+    background: "var(--bg-surface)",
+    color: "var(--text-main)",
+    fontSize: "15px",
     fontFamily: "inherit",
     resize: "vertical",
-    minHeight: "120px",
+    minHeight: "140px",
+    transition: "all var(--transition-fast)",
+    boxSizing: "border-box",
   },
   button: {
     width: "100%",
-    marginTop: "16px",
+    marginTop: "var(--space-xl)",
     padding: "16px",
-    borderRadius: "50px",
-    fontWeight: 800,
+    borderRadius: "var(--radius-lg)",
+    fontWeight: 700,
     fontSize: "16px",
     cursor: "pointer",
     border: "none",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "8px",
-    transition: "all 0.3s ease",
-    minHeight: "44px",
+    gap: "10px",
+    transition: "all var(--transition-fast)",
+    minHeight: "54px",
+    background: "var(--primary)",
+    color: "#ffffff",
+    boxShadow: "0 10px 15px -3px rgba(37, 99, 235, 0.3)",
   },
   copyBtn: {
-    marginLeft: "10px",
-    padding: "8px 16px",
-    borderRadius: "8px",
+    marginLeft: "12px",
+    padding: "10px 18px",
+    borderRadius: "var(--radius-sm)",
     border: "none",
-    background: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
+    background: "var(--primary)",
     color: "white",
     fontWeight: 700,
-    fontSize: "12px",
+    fontSize: "13px",
     cursor: "pointer",
-    transition: "all 0.2s ease",
+    transition: "all var(--transition-fast)",
+    boxShadow: "0 4px 6px -1px rgba(37, 99, 235, 0.2)",
   },
   roiCard: {
     maxWidth: "520px",
     width: "100%",
-    background: "rgba(255, 255, 255, 0.95)",
-    padding: "20px",
-    borderRadius: "16px",
-    color: "#333",
-    marginBottom: "20px",
-    boxShadow: "0 10px 40px rgba(0, 0, 0, 0.2)",
-    border: "2px solid #00ff99",
+    background: "var(--bg-surface)",
+    padding: "24px",
+    borderRadius: "var(--radius-xl)",
+    color: "var(--text-main)",
+    marginBottom: "var(--space-xl)",
+    boxShadow: "var(--card-shadow)",
+    border: "1px solid var(--border-soft)",
   },
   roiRow: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "10px 0",
+    padding: "12px 0",
     fontSize: "14px",
-    borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
+    fontWeight: "500",
+    borderBottom: "1px solid var(--border-soft)",
+    color: "var(--text-muted)",
   },
   loadingContainer: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    minHeight: "80vh",
+    minHeight: "100vh",
     fontSize: "16px",
     fontWeight: 600,
-    color: "rgba(255, 255, 255, 0.8)",
+    color: "var(--text-muted)",
+    background: "var(--bg-main)",
   },
 };
 
@@ -364,8 +379,8 @@ export default function Activate() {
           label: "Welcome Bonus", 
           total: user.welcome_bonus || 1200, 
           activationFee: 100, 
-          color: "#00ffcc", 
-          glow: "rgba(0, 255, 204, 0.5)" 
+          color: "#10b981", 
+          glow: "rgba(16, 185, 129, 0.2)" 
         }
       : PLAN_CONFIG[planKey] || PLAN_CONFIG.REGULAR;
 
@@ -379,20 +394,21 @@ export default function Activate() {
         <div style={styles.overlay}>
           <div style={styles.overlayCard}>
             <div style={{
-              fontSize: "48px",
-              marginBottom: "16px",
+              fontSize: "64px",
+              marginBottom: "24px",
               animation: "bounce 1s infinite"
             }}>
-              🎉
+              ✅
             </div>
             
             <h2 style={{ 
-              color: "#00ff99", 
+              color: "#10b981", 
               textAlign: "center",
-              fontSize: "24px",
+              fontSize: "26px",
+              fontWeight: 800,
               marginBottom: "16px"
             }}>
-              PAYMENT SUBMITTED SUCCESSFULLY
+              PAYMENT SUBMITTED
             </h2>
 
             <p style={{ 
@@ -400,11 +416,11 @@ export default function Activate() {
               lineHeight: "1.7", 
               fontWeight: 600,
               fontSize: "15px",
-              color: "rgba(255, 255, 255, 0.9)"
+              color: "#475569"
             }}>
               Your payment has been submitted for approval.
               <br /><br />
-              The management will verify your payment and activate your account.
+              Our team will verify your transaction and activate your account shortly.
               <br /><br />
               <strong>Next Steps:</strong>
               <br />
@@ -412,32 +428,37 @@ export default function Activate() {
               <br />
               {planKey === "WELCOME" ? (
                 <>
-                  2. Complete VIP SURVEY PLAN and pay activation fee of 150 
+                  2. Complete VIP SURVEY PLAN
                   <br />
-                  3. Then Withdraw your earnings after verification
+                  3. Pay the activation fee to withdraw
                 </>
               ) : (
                 <>
-                  2. Start completing surveys immediately
+                  2. Start completing surveys
                   <br />
-                  3. Withdraw your earnings after completing {plan.label} plan!
+                  3. Withdraw after completing {plan.label} plan!
                 </>
               )}
             </p>
 
             <button
               onClick={() => navigate("/dashboard", { replace: true })}
-              style={styles.vipBtn}
+              style={{
+                ...styles.vipBtn,
+                marginTop: "32px",
+                background: "#2563eb",
+                boxShadow: "0 10px 20px -5px rgba(37, 99, 235, 0.4)"
+              }}
               onMouseEnter={(e) => {
                 e.target.style.transform = "translateY(-2px)";
-                e.target.style.boxShadow = "0 10px 30px rgba(0, 255, 153, 0.4)";
+                e.target.style.background = "#1d4ed8";
               }}
               onMouseLeave={(e) => {
                 e.target.style.transform = "translateY(0)";
-                e.target.style.boxShadow = "none";
+                e.target.style.background = "#2563eb";
               }}
             >
-              👉 Go to Dashboard
+              Go to Dashboard
             </button>
           </div>
         </div>
@@ -470,7 +491,7 @@ export default function Activate() {
             borderBottom: "none",
             paddingTop: "16px",
             marginTop: "8px",
-            borderTop: "2px solid #00ff99"
+            borderTop: "2px solid #10b981"
           }}>
             <span style={{ fontWeight: 800, fontSize: "16px" }}>Your Return:</span>
             <span style={{ 
@@ -518,7 +539,7 @@ export default function Activate() {
           <div style={styles.sectionHighlight}>
             <p style={{ 
               fontWeight: 900, 
-              color: "#ff3b3b",
+              color: "#ef4444",
               fontSize: "16px",
               marginBottom: "12px"
             }}>
@@ -614,8 +635,8 @@ export default function Activate() {
             style={{
               ...styles.button,
               background: submitting
-                ? "#555"
-                : `linear-gradient(135deg, ${plan.color}, #0a7c4a)`,
+                ? "#94a3b8"
+                : `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)`,
               opacity: submitting ? 0.7 : 1,
               cursor: submitting ? "not-allowed" : "pointer",
             }}
@@ -662,11 +683,11 @@ export default function Activate() {
             style={{
               ...styles.button,
               background: "transparent",
-              border: "2px solid #00ffcc",
-              color: "#00ffcc",
+              border: "2px solid #2563eb",
+              color: "#2563eb",
             }}
             onMouseEnter={(e) => {
-              e.target.style.background = "rgba(0, 255, 204, 0.1)";
+              e.target.style.background = "rgba(37, 99, 235, 0.05)";
               e.target.style.transform = "translateY(-2px)";
             }}
             onMouseLeave={(e) => {

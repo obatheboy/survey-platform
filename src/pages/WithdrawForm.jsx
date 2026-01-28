@@ -9,15 +9,15 @@ const PLANS = {
     name: "Regular", 
     icon: "⭐", 
     total: 1500, 
-    color: "#4ade80",
-    gradient: "linear-gradient(135deg, #4ade80, #22c55e)"
+    color: "#10b981",
+    gradient: "linear-gradient(135deg, #10b981, #059669)"
   },
   VIP: { 
     name: "VIP", 
     icon: "💎", 
     total: 2000, 
-    color: "#3b82f6",
-    gradient: "linear-gradient(135deg, #3b82f6, #1d4ed8)"
+    color: "#6366f1",
+    gradient: "linear-gradient(135deg, #6366f1, #4f46e5)"
   },
   VVIP: { 
     name: "VVIP", 

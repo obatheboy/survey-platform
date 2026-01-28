@@ -4,8 +4,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "./WithdrawSuccess.css";
 
 const PLANS = {
-  REGULAR: { name: "Regular", color: "#4ade80", icon: "⭐", gradient: "linear-gradient(135deg, #4ade80, #22c55e)" },
-  VIP: { name: "VIP", color: "#3b82f6", icon: "💎", gradient: "linear-gradient(135deg, #3b82f6, #1d4ed8)" },
+  REGULAR: { name: "Regular", color: "#10b981", icon: "⭐", gradient: "linear-gradient(135deg, #10b981, #059669)" },
+  VIP: { name: "VIP", color: "#6366f1", icon: "💎", gradient: "linear-gradient(135deg, #6366f1, #4f46e5)" },
   VVIP: { name: "VVIP", color: "#f59e0b", icon: "👑", gradient: "linear-gradient(135deg, #f59e0b, #d97706)" },
 };
 

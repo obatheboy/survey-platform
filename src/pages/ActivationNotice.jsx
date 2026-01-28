@@ -9,20 +9,20 @@ const PLAN_CONFIG = {
   REGULAR: {
     label: "Regular",
     activationFee: 100,
-    color: "#00e676",
-    glow: "rgba(0,230,118,0.7)",
+    color: "#10b981",
+    glow: "rgba(16, 185, 129, 0.2)",
   },
   VIP: {
     label: "VIP",
     activationFee: 150,
-    color: "#ffd600",
-    glow: "rgba(255,214,0,0.8)",
+    color: "#6366f1",
+    glow: "rgba(99, 102, 241, 0.2)",
   },
   VVIP: {
     label: "VVIP",
     activationFee: 200,
-    color: "#ff5252",
-    glow: "rgba(255,82,82,0.8)",
+    color: "#f59e0b",
+    glow: "rgba(245, 158, 11, 0.2)",
   },
 };
 
@@ -154,10 +154,11 @@ export default function ActivationNotice() {
   if (loading) {
     return (
       <div style={page}>
-        <div style={{ ...card, boxShadow: "0 0 60px rgba(0,230,118,0.3)" }}>
-          <p style={{ textAlign: "center", padding: "40px 0", color: "#fff" }}>
-            Loading activation details...
-          </p>
+        <div style={{ ...card, boxShadow: "0 10px 30px rgba(0,0,0,0.05)" }}>
+          <div style={{ padding: "40px 0", color: "#64748b" }}>
+            <div style={spinnerStyle}></div>
+            <p>Loading activation details...</p>
+          </div>
         </div>
       </div>
     );
@@ -166,13 +167,14 @@ export default function ActivationNotice() {
   if (error) {
     return (
       <div style={page}>
-        <div style={{ ...card, boxShadow: "0 0 60px rgba(255,82,82,0.3)" }}>
-          <h2 style={{ color: "#ff5252", textAlign: "center" }}>⚠️ Error</h2>
-          <p style={{ ...text, textAlign: "center", color: "#ff5252" }}>{error}</p>
+        <div style={{ ...card, boxShadow: "0 10px 30px rgba(239, 68, 68, 0.1)" }}>
+          <h2 style={{ color: "#ef4444", textAlign: "center" }}>⚠️ Error</h2>
+          <p style={{ ...text, textAlign: "center", color: "#ef4444" }}>{error}</p>
           <button
             style={{
               ...activateBtn,
-              background: "linear-gradient(135deg, #f59e0b, #d97706)",
+              background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+              color: "#fff",
               marginTop: "20px",
             }}
             onClick={() => navigate("/dashboard")}
@@ -187,15 +189,16 @@ export default function ActivationNotice() {
   if (!planKey) {
     return (
       <div style={page}>
-        <div style={{ ...card, boxShadow: "0 0 60px rgba(255,82,82,0.3)" }}>
-          <h2 style={{ color: "#ff5252", textAlign: "center" }}>No Plan Selected</h2>
-          <p style={{ ...text, textAlign: "center" }}>
+        <div style={{ ...card, boxShadow: "0 10px 30px rgba(0,0,0,0.05)" }}>
+          <h2 style={{ color: "#1e293b", textAlign: "center" }}>No Plan Selected</h2>
+          <p style={{ ...text, textAlign: "center", color: "#64748b" }}>
             Please select a plan from the dashboard first.
           </p>
           <button
             style={{
               ...activateBtn,
-              background: "linear-gradient(135deg, #f59e0b, #d97706)",
+              background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+              color: "#fff",
               marginTop: "20px",
             }}
             onClick={() => navigate("/dashboard")}
@@ -212,7 +215,7 @@ export default function ActivationNotice() {
 
   return (
     <div style={page}>
-      <div style={{ ...card, boxShadow: `0 0 60px ${plan.glow}` }}>
+      <div style={{ ...card, boxShadow: `0 20px 40px ${plan.glow}` }}>
         <div style={flagWrap}>
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/4/49/Flag_of_Kenya.svg"
@@ -223,65 +226,70 @@ export default function ActivationNotice() {
 
         <h2
           style={{
-            color: plan.color,
-            textShadow: `0 0 20px ${plan.glow}`,
+            color: "#1e293b",
+            fontSize: "28px",
+            fontWeight: "800",
+            margin: "20px 0 10px",
           }}
         >
-          🎉🎉 Congratulations! 🎉🎉
+          🎉 Congratulations! 🎉
         </h2>
 
-        <p style={text}>
+        <p style={{ ...text, color: "#475569" }}>
           You have successfully completed all required surveys under the{" "}
-          <b>{plan.label}</b> plan.
+          <b style={{ color: plan.color }}>{plan.label}</b> plan.
           <br />
           <br />
           Your total confirmed earnings are:
           <br />
-          <b style={{ color: plan.color, fontSize: 18 }}>
+          <b style={{ color: "#1e293b", fontSize: 28, fontWeight: "900" }}>
             KES {totalEarned.toLocaleString()}
           </b>
           <br />
           <br />
           Activate your account now to unlock withdrawals directly to
-          <b style={{ color: "#00e676" }}> M-Pesa</b>.
+          <b style={{ color: "#10b981" }}> M-Pesa</b>.
         </p>
 
         <div style={urgencyBox}>
           ⏳ Action Required: Activate your account to secure and withdraw your
-          earnings now !!
+          earnings now!
         </div>
 
         <div style={highlightBox}>
-          <p>
+          <p style={highlightItem}>
             💼 <b>Account Status:</b>{" "}
-            <span style={{ color: "#ffd600" }}>Pending Activation</span>
+            <span style={{ color: "#f59e0b", fontWeight: "700" }}>Pending Activation</span>
           </p>
 
-          <p>
+          <p style={highlightItem}>
             💰 <b>Earnings Available:</b>{" "}
-            <span style={{ color: plan.color }}>
+            <span style={{ color: plan.color, fontWeight: "700" }}>
               KES {totalEarned.toLocaleString()}
             </span>
           </p>
 
-          <p>
+          <p style={highlightItem}>
             🔐 <b>One-Time Activation Fee:</b>{" "}
-            <span style={{ color: "#ff5252" }}>
+            <span style={{ color: "#ef4444", fontWeight: "700" }}>
               KES {plan.activationFee}
             </span>
           </p>
 
-          <p>✅ Instant withdrawals after activation</p>
-          <p>🛡️ Your earnings are secured and protected</p>
-          <p>📲 Withdraw to M-Pesa anytime after activation</p>
+          <div style={benefitsList}>
+            <p style={benefitItem}>✅ Instant withdrawals after activation</p>
+            <p style={benefitItem}>🛡️ Your earnings are secured and protected</p>
+            <p style={benefitItem}>📲 Withdraw to M-Pesa anytime after activation</p>
+          </div>
         </div>
 
         {/* PRIMARY ACTION */}
         <button
           style={{
             ...activateBtn,
-            background: "linear-gradient(135deg, #e60000, #ffeb3b)",
-            boxShadow: "0 0 40px rgba(255,235,59,0.9)",
+            background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+            boxShadow: "0 10px 20px rgba(37, 99, 235, 0.3)",
+            color: "#fff",
           }}
           onClick={handleActivate}
         >
@@ -296,6 +304,15 @@ export default function ActivationNotice() {
           Return to Dashboard
         </button>
       </div>
+
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
     </div>
   );
 }
@@ -305,70 +322,109 @@ export default function ActivationNotice() {
 ========================= */
 const page = {
   minHeight: "100vh",
-  background: "linear-gradient(135deg, #000, #0b3d2e, #000)",
+  background: "#f8fafc",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
   padding: 20,
+  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
 };
 
 const card = {
-  maxWidth: 520,
+  maxWidth: 500,
   width: "100%",
-  background: "rgba(0,0,0,0.92)",
-  padding: 28,
-  borderRadius: 28,
+  background: "#ffffff",
+  padding: "40px 32px",
+  borderRadius: 24,
   textAlign: "center",
-  color: "#fff",
-  border: "2px solid rgba(0,230,118,0.3)",
+  color: "#1e293b",
+  border: "1px solid #f1f5f9",
 };
 
 const flagWrap = { display: "flex", justifyContent: "center" };
 
 const flag = {
-  width: 64,
-  height: 64,
+  width: 70,
+  height: 70,
   borderRadius: "50%",
-  boxShadow: "0 0 20px rgba(255,255,255,0.6)",
+  boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
+  border: "3px solid #fff",
 };
 
-const text = { marginTop: 14, fontSize: 15, lineHeight: 1.6 };
+const text = { marginTop: 14, fontSize: 16, lineHeight: 1.6 };
 
 const urgencyBox = {
-  marginTop: 16,
-  padding: 14,
-  borderRadius: 14,
-  background: "rgba(255,0,0,0.2)",
-  color: "#ff5252",
-  fontWeight: 900,
+  marginTop: 20,
+  padding: 16,
+  borderRadius: 16,
+  background: "rgba(239, 68, 68, 0.05)",
+  color: "#ef4444",
+  fontWeight: "700",
+  fontSize: "14px",
+  border: "1px solid rgba(239, 68, 68, 0.1)",
 };
 
 const highlightBox = {
-  marginTop: 22,
-  padding: 18,
-  borderRadius: 18,
-  background: "rgba(0,230,118,0.1)",
+  marginTop: 24,
+  padding: 24,
+  borderRadius: 16,
+  background: "#f8fafc",
   textAlign: "left",
-  border: "1px solid rgba(0,230,118,0.4)",
+  border: "1px solid #e2e8f0",
+};
+
+const highlightItem = {
+  margin: "0 0 12px 0",
+  fontSize: "15px",
+  display: "flex",
+  justifyContent: "space-between",
+};
+
+const benefitsList = {
+  marginTop: 20,
+  paddingTop: 20,
+  borderTop: "1px solid #e2e8f0",
+};
+
+const benefitItem = {
+  margin: "0 0 8px 0",
+  fontSize: "14px",
+  color: "#64748b",
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
 };
 
 const activateBtn = {
   width: "100%",
-  marginTop: 26,
-  padding: 18,
-  color: "#000",
+  marginTop: 30,
+  padding: "20px",
+  color: "#fff",
   border: "none",
-  borderRadius: 999,
-  fontWeight: 900,
+  borderRadius: 16,
+  fontWeight: "800",
   cursor: "pointer",
-  fontSize: 16,
+  fontSize: "16px",
+  transition: "all 0.3s ease",
 };
 
 const linkBtn = {
-  marginTop: 14,
+  marginTop: 20,
   background: "transparent",
-  color: "#bbb",
+  color: "#94a3b8",
   border: "none",
   cursor: "pointer",
-  textDecoration: "underline",
+  fontSize: "14px",
+  fontWeight: "600",
+  textDecoration: "none",
+};
+
+const spinnerStyle = {
+  width: "40px",
+  height: "40px",
+  border: "4px solid #f3f3f3",
+  borderTop: "4px solid #2563eb",
+  borderRadius: "50%",
+  margin: "0 auto 20px",
+  animation: "spin 1s linear infinite",
 };

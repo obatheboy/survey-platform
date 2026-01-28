@@ -36,7 +36,7 @@ export default function NotFound() {
           <p>Quick Links:</p>
           <div className="quick-links">
             <button onClick={() => navigate('/surveys')}>Surveys</button>
-            <button onClick={() => navigate('/withdraw')}>Withdraw</button>
+            <button onClick={() => navigate('/withdraw-form')}>Withdraw</button>
             <button onClick={() => navigate('/activate')}>Activate</button>
           </div>
         </div>

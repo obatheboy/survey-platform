@@ -192,34 +192,34 @@ const page = {
   justifyContent: "center",
   alignItems: "center",
   padding: 16,
-  background:
-    "linear-gradient(135deg, #0f172a, #1e293b)",
+  background: "#f8fafc", // Professional light background
 };
 
 const card = {
   width: "100%",
   maxWidth: 480,
-  background: "linear-gradient(180deg, #ffffff, #f8fafc)",
-  borderRadius: 20,
-  padding: 24,
-  boxShadow: "0 25px 60px rgba(0,0,0,0.25)",
-  border: "1px solid rgba(0,0,0,0.06)",
+  background: "#ffffff",
+  borderRadius: 24,
+  padding: 32,
+  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)",
+  border: "1px solid #f1f5f9",
 };
 
 const title = {
   textAlign: "center",
-  marginBottom: 14,
-  fontSize: 20,
-  fontWeight: 900,
+  marginBottom: 20,
+  fontSize: 22,
+  fontWeight: 800,
   color: "#0f172a",
+  letterSpacing: "-0.5px",
 };
 
 const meta = {
   display: "flex",
   justifyContent: "space-between",
-  fontSize: 13,
+  fontSize: 14,
   fontWeight: 600,
-  color: "#475569",
+  color: "#64748b",
   marginBottom: 12,
 };
 
@@ -227,53 +227,56 @@ const meta = {
    PROGRESS BAR
 ================================ */
 const progressBar = {
-  height: 8,
-  background: "#e5e7eb",
-  borderRadius: 8,
+  height: 10,
+  background: "#f1f5f9",
+  borderRadius: 10,
   overflow: "hidden",
-  marginBottom: 22,
+  marginBottom: 28,
+  border: "1px solid #e2e8f0",
 };
 
 const progressFill = {
   height: "100%",
-  background: "linear-gradient(90deg, #7c3aed, #a855f7)",
-  borderRadius: 8,
-  transition: "width 0.3s ease",
+  background: "linear-gradient(90deg, #2563eb, #3b82f6)",
+  borderRadius: 10,
+  transition: "width 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
 };
 
 /* ===============================
    QUESTION
 ================================ */
 const question = {
-  marginBottom: 18,
-  fontSize: 16,
+  marginBottom: 20,
+  fontSize: 18,
   fontWeight: 700,
   color: "#1e293b",
+  lineHeight: "1.4",
 };
 
 /* ===============================
    OPTION CARDS
 ================================ */
 const optionCard = {
-  padding: 16,
-  borderRadius: 14,
-  border: "1px solid #e5e7eb",
+  padding: "16px 20px",
+  borderRadius: 16,
+  border: "1.5px solid #e2e8f0",
   marginBottom: 12,
   cursor: "pointer",
   background: "#ffffff",
-  fontSize: 15,
-  fontWeight: 600,
-  color: "#334155",
+  fontSize: 16,
+  fontWeight: 500,
+  color: "#475569",
   transition: "all 0.2s ease",
-  boxShadow: "0 4px 12px rgba(0,0,0,0.04)",
+  display: "flex",
+  alignItems: "center",
 };
 
 const optionActive = {
-  borderColor: "#7c3aed",
-  background:
-    "linear-gradient(135deg, #ede9fe, #f5f3ff)",
-  color: "#4c1d95",
-  boxShadow: "0 10px 25px rgba(124,58,237,0.25)",
+  borderColor: "#2563eb",
+  background: "#eff6ff",
+  color: "#1e40af",
+  fontWeight: "600",
+  boxShadow: "0 4px 12px rgba(37, 99, 235, 0.1)",
 };
 
 /* ===============================
@@ -281,18 +284,17 @@ const optionActive = {
 ================================ */
 const button = {
   width: "100%",
-  padding: 15,
-  marginTop: 22,
-  borderRadius: 50,
+  padding: "16px",
+  marginTop: 24,
+  borderRadius: 16,
   border: "none",
-  background:
-    "linear-gradient(135deg, #7c3aed, #a855f7)",
+  background: "linear-gradient(135deg, #2563eb, #1e40af)",
   color: "#ffffff",
   fontSize: 16,
-  fontWeight: 900,
-  letterSpacing: "0.3px",
+  fontWeight: 700,
   cursor: "pointer",
-  boxShadow: "0 15px 40px rgba(124,58,237,0.45)",
+  transition: "all 0.2s ease",
+  boxShadow: "0 10px 15px -3px rgba(37, 99, 235, 0.3)",
 };
 
 /* ===============================

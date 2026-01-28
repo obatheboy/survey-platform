@@ -6,9 +6,9 @@ import api from "../../api/api";
    PLAN CONFIG (MATCH DASHBOARD)
 ========================= */
 const PLANS = {
-  REGULAR: { name: "Regular", color: "#29b6f6", total: 1500 },
-  VIP: { name: "VIP", color: "#ab47bc", total: 2000 },
-  VVIP: { name: "VVIP", color: "#ffb300", total: 3000 },
+  REGULAR: { name: "Regular", color: "#10b981", total: 1500 },
+  VIP: { name: "VIP", color: "#6366f1", total: 2000 },
+  VVIP: { name: "VVIP", color: "#f59e0b", total: 3000 },
 };
 
 export default function MainMenuDrawer({ open, onClose, user }) {
@@ -190,13 +190,13 @@ export default function MainMenuDrawer({ open, onClose, user }) {
 
         <hr style={divider} />
 
-        <MenuItem label="🔗 Share Referral Link" onClick={shareLink} />
+        <MenuItem label="🔗 Share Referral Link" icon="🔗" onClick={shareLink} />
         <p style={referralCaption}>
           Earn <strong>KES 250</strong> for every successful signup.
         </p>
 
-        <MenuItem label="⬅ Back to Dashboard" onClick={onClose} />
-        <MenuItem label="🚪 Logout" danger onClick={logout} />
+        <MenuItem label="📊 Back to Dashboard" icon="📊" onClick={onClose} />
+        <MenuItem label="🚪 Logout" icon="🚪" danger onClick={logout} />
       </div>
     </>
   );
@@ -205,23 +205,36 @@ export default function MainMenuDrawer({ open, onClose, user }) {
 /* =========================
    MENU ITEM
 ========================= */
-function MenuItem({ label, onClick, danger }) {
+function MenuItem({ label, onClick, danger, icon }) {
   return (
     <div
       onClick={onClick}
       style={{
-        padding: "12px",
-        marginBottom: 8,
-        borderRadius: 12,
+        padding: "14px 16px",
+        marginBottom: 10,
+        borderRadius: 14,
         cursor: "pointer",
         fontWeight: 700,
-        textAlign: "center",
+        display: "flex",
+        alignItems: "center",
+        gap: "12px",
         background: danger
-          ? "rgba(211,47,47,0.15)"
-          : "rgba(255,255,255,0.08)",
-        color: danger ? "#ff5252" : "#e3f2fd",
+          ? "rgba(239, 68, 68, 0.1)"
+          : "rgba(255, 255, 255, 0.05)",
+        color: danger ? "#ef4444" : "#f8fafc",
+        border: `1px solid ${danger ? "rgba(239, 68, 68, 0.2)" : "rgba(255, 255, 255, 0.1)"}`,
+        transition: "all 0.2s ease",
+      }}
+      onMouseOver={(e) => {
+        e.currentTarget.style.background = danger ? "rgba(239, 68, 68, 0.2)" : "rgba(255, 255, 255, 0.1)";
+        e.currentTarget.style.transform = "translateX(4px)";
+      }}
+      onMouseOut={(e) => {
+        e.currentTarget.style.background = danger ? "rgba(239, 68, 68, 0.1)" : "rgba(255, 255, 255, 0.05)";
+        e.currentTarget.style.transform = "translateX(0)";
       }}
     >
+      <span style={{ fontSize: "18px" }}>{icon}</span>
       {label}
     </div>
   );
@@ -233,8 +246,9 @@ function MenuItem({ label, onClick, danger }) {
 const overlay = {
   position: "fixed",
   inset: 0,
-  background: "rgba(0,0,0,0.55)",
-  zIndex: 99,
+  background: "rgba(0, 0, 0, 0.7)",
+  backdropFilter: "blur(4px)",
+  zIndex: 999,
 };
 
 const drawer = {
@@ -242,77 +256,120 @@ const drawer = {
   top: 0,
   left: 0,
   height: "100%",
-  width: "80vw",
+  width: "85vw",
   maxWidth: 320,
-  minWidth: 260,
-  background: "linear-gradient(180deg, #0b1020, #1a237e)",
-  zIndex: 100,
-  padding: 20,
-  animation: "slideIn 0.3s ease-out",
+  background: "#0f172a",
+  zIndex: 1000,
+  padding: "24px 20px",
+  boxShadow: "10px 0 30px rgba(0, 0, 0, 0.5)",
+  overflowY: "auto",
+  borderRight: "1px solid rgba(255, 255, 255, 0.1)",
 };
 
-const profileCard = { display: "flex", alignItems: "center", gap: 12 };
+const profileCard = { 
+  display: "flex", 
+  alignItems: "center", 
+  gap: 14,
+  background: "rgba(255, 255, 255, 0.05)",
+  padding: "16px",
+  borderRadius: "16px",
+  border: "1px solid rgba(255, 255, 255, 0.1)",
+  marginBottom: "24px"
+};
+
 const avatar = {
-  width: 44,
-  height: 44,
-  borderRadius: "50%",
-  background: "linear-gradient(135deg,#8e24aa,#d81b60)",
+  width: 50,
+  height: 50,
+  borderRadius: "14px",
+  background: "linear-gradient(135deg, #3b82f6, #2563eb)",
   color: "#fff",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
+  fontSize: "20px",
   fontWeight: 800,
+  boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)",
 };
+
 const profileBtnDisabled = {
-  border: "none",
-  background: "rgba(255,255,255,0.08)",
-  color: "#aaa",
-  padding: "6px 12px",
+  border: "1px solid rgba(255, 255, 255, 0.1)",
+  background: "transparent",
+  color: "#94a3b8",
+  padding: "6px 14px",
   borderRadius: 10,
-  fontSize: 12,
+  fontSize: "12px",
+  fontWeight: "700"
 };
-const divider = { margin: "16px 0", opacity: 0.15 };
-const withdrawTitle = { marginBottom: 12, color: "#ce93d8" };
-const withdrawCard = {
-  background: "rgba(255,255,255,0.08)",
-  padding: 12,
-  borderRadius: 14,
-  marginBottom: 10,
+
+const divider = { margin: "24px 0", border: "none", borderTop: "1px solid rgba(255, 255, 255, 0.1)" };
+
+const withdrawTitle = { 
+  marginBottom: 16, 
+  color: "#f8fafc", 
+  fontSize: "16px", 
+  fontWeight: "800",
   display: "flex",
-  justifyContent: "space-between",
   alignItems: "center",
-  border: "1px solid",
+  gap: "8px"
 };
-const withdrawAmount = { margin: "4px 0", fontSize: 13, color: "#e3f2fd" };
+
+const withdrawCard = {
+  background: "rgba(255, 255, 255, 0.03)",
+  padding: "16px",
+  borderRadius: "16px",
+  marginBottom: 12,
+  border: "1px solid rgba(255, 255, 255, 0.08)",
+  transition: "all 0.2s ease"
+};
+
+const withdrawAmount = { margin: "4px 0", fontSize: "14px", color: "#f8fafc", fontWeight: "700" };
+
 const withdrawBtn = {
   background: "transparent",
-  border: "1px solid",
-  padding: "6px 16px",
-  borderRadius: 999,
-  fontWeight: 700,
+  border: "1.5px solid",
+  padding: "8px 20px",
+  borderRadius: "12px",
+  fontWeight: 800,
+  fontSize: "13px",
+  transition: "all 0.2s ease",
+  marginTop: "12px",
+  width: "100%"
 };
+
 const inputStyle = {
   width: "100%",
-  margin: "4px 0",
-  padding: "4px 8px",
-  borderRadius: 6,
-  border: "1px solid #ccc",
+  marginTop: "10px",
+  padding: "10px 12px",
+  borderRadius: "10px",
+  border: "1px solid rgba(255, 255, 255, 0.1)",
+  background: "rgba(255, 255, 255, 0.05)",
+  color: "#fff",
+  fontSize: "14px",
+  outline: "none"
 };
+
 const referralCaption = {
-  fontSize: 12,
-  color: "#80deea",
+  fontSize: "13px",
+  color: "#94a3b8",
   textAlign: "center",
-  marginBottom: 16,
+  margin: "12px 0 24px",
+  padding: "12px",
+  background: "rgba(59, 130, 246, 0.05)",
+  borderRadius: "12px",
+  border: "1px solid rgba(59, 130, 246, 0.1)"
 };
+
 const toastStyle = {
   position: "fixed",
-  top: 20,
+  top: 24,
   left: "50%",
   transform: "translateX(-50%)",
-  background: "#4caf50",
+  background: "#10b981",
   color: "#fff",
-  padding: "8px 16px",
-  borderRadius: 8,
-  zIndex: 200,
-  fontWeight: 700,
+  padding: "12px 24px",
+  borderRadius: "12px",
+  zIndex: 2000,
+  fontWeight: 800,
+  boxShadow: "0 10px 25px rgba(16, 185, 129, 0.3)",
+  animation: "fadeInDown 0.3s ease-out"
 };

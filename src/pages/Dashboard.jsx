@@ -18,10 +18,10 @@ const PLANS = {
     icon: "⭐", 
     total: 1500, 
     perSurvey: 150,
-    color: "#4ade80",
-    gradient: "linear-gradient(135deg, #4ade80, #22c55e)",
-    borderColor: "rgba(74, 222, 128, 0.4)",
-    bgColor: "rgba(74, 222, 128, 0.1)",
+    color: "#10b981",
+    gradient: "linear-gradient(135deg, #10b981, #059669)",
+    borderColor: "rgba(16, 185, 129, 0.2)",
+    bgColor: "rgba(16, 185, 129, 0.05)",
     description: "Perfect for beginners"
   },
   VIP: { 
@@ -29,10 +29,10 @@ const PLANS = {
     icon: "💎", 
     total: 2000, 
     perSurvey: 200,
-    color: "#3b82f6",
-    gradient: "linear-gradient(135deg, #3b82f6, #1d4ed8)",
-    borderColor: "rgba(59, 130, 246, 0.4)",
-    bgColor: "rgba(59, 130, 246, 0.1)",
+    color: "#6366f1",
+    gradient: "linear-gradient(135deg, #6366f1, #4f46e5)",
+    borderColor: "rgba(99, 102, 241, 0.2)",
+    bgColor: "rgba(99, 102, 241, 0.05)",
     description: "For active earners"
   },
   VVIP: { 
@@ -42,8 +42,8 @@ const PLANS = {
     perSurvey: 300,
     color: "#f59e0b",
     gradient: "linear-gradient(135deg, #f59e0b, #d97706)",
-    borderColor: "rgba(245, 158, 11, 0.4)",
-    bgColor: "rgba(245, 158, 11, 0.1)",
+    borderColor: "rgba(245, 158, 11, 0.2)",
+    bgColor: "rgba(245, 158, 11, 0.05)",
     description: "Maximum earnings"
   },
 };
@@ -486,7 +486,7 @@ return (
                   navigate(fullScreenNotification.redirect);
                 }}
                 style={{
-                  background: 'linear-gradient(to right, #ff8a00, #da1b60)',
+                  background: 'linear-gradient(135deg, #2563eb, #1e40af)',
                   color: 'white',
                   border: 'none',
                   borderRadius: '12px',
@@ -496,7 +496,7 @@ return (
                   cursor: 'pointer',
                   transition: 'all 0.3s ease',
                   width: '100%',
-                  boxShadow: '0 8px 25px rgba(255, 138, 0, 0.4)',
+                  boxShadow: '0 8px 25px rgba(37, 99, 235, 0.4)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -504,11 +504,11 @@ return (
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 12px 30px rgba(255, 138, 0, 0.6)';
+                  e.currentTarget.style.boxShadow = '0 12px 30px rgba(37, 99, 235, 0.6)';
                 }}
                 onMouseOut={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(255, 138, 0, 0.4)';
+                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(37, 99, 235, 0.4)';
                 }}
               >
                 <span style={{ fontSize: '20px' }}>🔓</span>
