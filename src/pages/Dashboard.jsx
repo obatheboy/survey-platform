@@ -231,10 +231,6 @@ export default function Dashboard() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [showScrollReminder]);
 
-  const dismissScrollReminder = () => {
-    setShowScrollReminder(false);
-    setReminderShown(true);
-  };
 
   /* =========================
      HELPERS
@@ -404,147 +400,80 @@ export default function Dashboard() {
       </div>
     );
   }
+/* =========================
+   MAIN RENDER
+========================= */
+return (
+  <div className="dashboard" ref={dashboardRef}>
+    {/* TOAST NOTIFICATION */}
+    {toast && <Notifications message={toast} />}
 
-  /* =========================
-     MAIN RENDER
-  ========================= */
-  return (
-    <div className="dashboard" ref={dashboardRef}>
-      {/* SCROLL REMINDER NOTIFICATION */}
-      {showScrollReminder && (
-        <div className="scroll-reminder-notification">
-          <div className="scroll-reminder-content">
-            <div className="scroll-reminder-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 5v14M5 12l7 7 7-7"/>
-              </svg>
-            </div>
-            <div className="scroll-reminder-text">
-              <strong>More content below! ✨</strong>
-              <p>Scroll down to see your surveys, earnings, and more!</p>
-            </div>
-            <button 
-              className="scroll-reminder-dismiss"
-              onClick={dismissScrollReminder}
-              aria-label="Dismiss reminder"
-            >
-              ×
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* TOAST NOTIFICATION */}
-      {toast && <Notifications message={toast} />}
-
-      {/* FULL SCREEN NOTIFICATION - FIXED CENTER */}
-      {fullScreenNotification && (
+    {/* FULL SCREEN NOTIFICATION - FIXED CENTER */}
+    {fullScreenNotification && (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: 'rgba(0, 0, 0, 0.95)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 9999,
+        backdropFilter: 'blur(10px)',
+        overflow: 'hidden',
+        margin: 0,
+        padding: '20px',
+        boxSizing: 'border-box'
+      }}>
         <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          height: '100vh',
-          backgroundColor: 'rgba(0, 0, 0, 0.95)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 9999,
-          backdropFilter: 'blur(10px)',
-          overflow: 'hidden',
-          margin: 0,
-          padding: '20px',
-          boxSizing: 'border-box'
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          borderRadius: '20px',
+          padding: '30px 25px',
+          maxWidth: '420px',
+          width: '100%',
+          textAlign: 'center',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          position: 'relative'
         }}>
           <div style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            borderRadius: '20px',
-            padding: '30px 25px',
-            maxWidth: '420px',
-            width: '100%',
-            textAlign: 'center',
-            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            position: 'relative'
+            fontSize: '50px',
+            marginBottom: '15px',
+            animation: 'pulse 2s infinite'
           }}>
-            <div style={{
-              fontSize: '50px',
-              marginBottom: '15px',
-              animation: 'pulse 2s infinite'
-            }}>
-              🎁
-            </div>
-            
-            <h3 style={{
-              color: 'white',
-              margin: '0 0 10px 0',
-              fontSize: '22px',
-              fontWeight: '700'
-            }}>
-              Welcome Bonus!
-            </h3>
-            
-            <p style={{
-              color: 'rgba(255, 255, 255, 0.95)',
-              fontSize: '16px',
-              lineHeight: '1.4',
-              marginBottom: '25px',
-              padding: '0 10px'
-            }}>
-              {fullScreenNotification.message}
-            </p>
-            
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-              width: '100%'
-            }}>
-              {fullScreenNotification.redirect && (
-                <button
-                  onClick={() => {
-                    // Restore body scrolling
-                    document.body.style.overflow = '';
-                    document.body.style.position = '';
-                    document.body.style.width = '';
-                    document.body.style.height = '';
-                    
-                    setFullScreenNotification(null);
-                    navigate(fullScreenNotification.redirect);
-                  }}
-                  style={{
-                    background: 'linear-gradient(to right, #ff8a00, #da1b60)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '12px',
-                    padding: '16px 20px',
-                    fontSize: '17px',
-                    fontWeight: '700',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    width: '100%',
-                    boxShadow: '0 8px 25px rgba(255, 138, 0, 0.4)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '10px'
-                  }}
-                  onMouseOver={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 12px 30px rgba(255, 138, 0, 0.6)';
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(255, 138, 0, 0.4)';
-                  }}
-                >
-                  <span style={{ fontSize: '20px' }}>🔓</span>
-                  Activate Account Now
-                </button>
-              )}
-              
+            🎁
+          </div>
+          
+          <h3 style={{
+            color: 'white',
+            margin: '0 0 10px 0',
+            fontSize: '22px',
+            fontWeight: '700'
+          }}>
+            Welcome Bonus!
+          </h3>
+          
+          <p style={{
+            color: 'rgba(255, 255, 255, 0.95)',
+            fontSize: '16px',
+            lineHeight: '1.4',
+            marginBottom: '25px',
+            padding: '0 10px'
+          }}>
+            {fullScreenNotification.message}
+          </p>
+          
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+            width: '100%'
+          }}>
+            {fullScreenNotification.redirect && (
               <button
                 onClick={() => {
                   // Restore body scrolling
@@ -554,52 +483,94 @@ export default function Dashboard() {
                   document.body.style.height = '';
                   
                   setFullScreenNotification(null);
+                  navigate(fullScreenNotification.redirect);
                 }}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.1)',
+                  background: 'linear-gradient(to right, #ff8a00, #da1b60)',
                   color: 'white',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  border: 'none',
                   borderRadius: '12px',
-                  padding: '14px 20px',
-                  fontSize: '15px',
-                  fontWeight: '600',
+                  padding: '16px 20px',
+                  fontSize: '17px',
+                  fontWeight: '700',
                   cursor: 'pointer',
                   transition: 'all 0.3s ease',
                   width: '100%',
-                  backdropFilter: 'blur(10px)'
+                  boxShadow: '0 8px 25px rgba(255, 138, 0, 0.4)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px'
                 }}
                 onMouseOver={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 12px 30px rgba(255, 138, 0, 0.6)';
                 }}
                 onMouseOut={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(255, 138, 0, 0.4)';
                 }}
               >
-                Maybe Later
+                <span style={{ fontSize: '20px' }}>🔓</span>
+                Activate Account Now
               </button>
-            </div>
+            )}
             
-            <div style={{
-              marginTop: '20px',
-              padding: '12px',
-              background: 'rgba(255, 255, 255, 0.08)',
-              borderRadius: '10px',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              fontSize: '13px',
-              color: 'rgba(255, 255, 255, 0.8)'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', justifyContent: 'center' }}>
-                <span>✅</span>
-                <span>Instant activation upon payment</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
-                <span>🔒</span>
-                <span>Secure M-Pesa payment</span>
-              </div>
+            <button
+              onClick={() => {
+                // Restore body scrolling
+                document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.width = '';
+                document.body.style.height = '';
+                
+                setFullScreenNotification(null);
+              }}
+              style={{
+                background: 'rgba(255, 255, 255, 0.1)',
+                color: 'white',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '12px',
+                padding: '14px 20px',
+                fontSize: '15px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                width: '100%',
+                backdropFilter: 'blur(10px)'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+              }}
+            >
+              Maybe Later
+            </button>
+          </div>
+          
+          <div style={{
+            marginTop: '20px',
+            padding: '12px',
+            background: 'rgba(255, 255, 255, 0.08)',
+            borderRadius: '10px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            fontSize: '13px',
+            color: 'rgba(255, 255, 255, 0.8)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', justifyContent: 'center' }}>
+              <span>✅</span>
+              <span>Instant activation upon payment</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+              <span>🔒</span>
+              <span>Secure M-Pesa payment</span>
             </div>
           </div>
         </div>
-      )}
+      </div>
+    )}
 
       {/* MAIN MENU HEADER WITH DASHBOARD TITLE */}
       <header className="dashboard-main-header">
