@@ -79,9 +79,11 @@ export default function Dashboard() {
   const [reminderShown, setReminderShown] = useState(false);
 
   /* =========================
-     WELCOME BONUS MODAL STATE
+     WELCOME BONUS MODAL STATE - ENHANCED
   ========================= */
   const [showWelcomeBonusModal, setShowWelcomeBonusModal] = useState(false);
+  const [modalReady, setModalReady] = useState(false);
+  const [dontShowAgain, setDontShowAgain] = useState(false);
 
   /* =========================
      DATA STATE
@@ -158,16 +160,49 @@ export default function Dashboard() {
   }, []);
 
   /* =========================
-     SHOW WELCOME BONUS MODAL ON MOUNT
+     ENHANCED WELCOME BONUS MODAL TIMING LOGIC
+     Shows only for eligible users after delay
   ========================= */
   useEffect(() => {
-    // Show modal on component mount
-    const timer = setTimeout(() => {
-      setShowWelcomeBonusModal(true);
-    }, 1000); // Slight delay for better UX
+    if (!user) return;
 
-    return () => clearTimeout(timer);
-  }, []);
+    // Check if user is eligible for welcome bonus
+    const isEligibleForWelcomeBonus = () => {
+      // Check if user has already activated account
+      if (user.is_activated || user.has_claimed_welcome_bonus) return false;
+      
+      // Check localStorage for dismissal preference
+      const hasDismissedPermanently = localStorage.getItem('welcomeBonusDismissedPermanently');
+      if (hasDismissedPermanently === 'true') return false;
+      
+      // Check if shown recently (last 24 hours)
+      const lastShown = localStorage.getItem('welcomeBonusLastShown');
+      if (lastShown) {
+        const lastShownDate = new Date(lastShown);
+        const hoursSinceLastShown = (new Date() - lastShownDate) / (1000 * 60 * 60);
+        if (hoursSinceLastShown < 24) return false;
+      }
+      
+      return true;
+    };
+
+    if (isEligibleForWelcomeBonus()) {
+      // Set modal as ready after initial load
+      setModalReady(true);
+      
+      // Show modal after 3 seconds of user being on dashboard
+      const modalTimer = setTimeout(() => {
+        // Only show if user is still eligible and hasn't interacted elsewhere
+        if (isEligibleForWelcomeBonus()) {
+          setShowWelcomeBonusModal(true);
+          // Record when we showed it
+          localStorage.setItem('welcomeBonusLastShown', new Date().toISOString());
+        }
+      }, 3000);
+
+      return () => clearTimeout(modalTimer);
+    }
+  }, [user]);
 
   /* =========================
      LOAD PENDING WITHDRAWALS
@@ -361,16 +396,36 @@ export default function Dashboard() {
   };
 
   /* =========================
-     WELCOME BONUS
+     ENHANCED WELCOME BONUS HANDLERS
   ========================= */
   const handleWelcomeBonusWithdraw = () => {
-    // Close the modal first
-    setShowWelcomeBonusModal(false);
-    // Then show the notification
+    // Track conversion attempt
+    localStorage.setItem('welcomeBonusClicked', new Date().toISOString());
+    
+    // Close the modal
+    closeWelcomeBonusModal();
+    
+    // Show the activation notification
     setFullScreenNotification({
       message: "🎁 Activate your account with KES 100 to unlock your KES 1,200 welcome bonus!",
       redirect: "/activate?welcome_bonus=1",
     });
+  };
+
+  const handleRemindLater = () => {
+    // Set reminder for next session
+    localStorage.setItem('welcomeBonusRemindLater', 'true');
+    closeWelcomeBonusModal();
+  };
+
+  const closeWelcomeBonusModal = () => {
+    // If user selected "Don't show again", store preference
+    if (dontShowAgain) {
+      localStorage.setItem('welcomeBonusDismissedPermanently', 'true');
+    }
+    
+    setShowWelcomeBonusModal(false);
+    setDontShowAgain(false);
   };
 
   /* =========================
@@ -424,67 +479,107 @@ export default function Dashboard() {
   ========================= */
   return (
     <div className="dashboard" ref={dashboardRef}>
-      {/* WELCOME BONUS MODAL - FULL SCREEN CENTERED */}
+      {/* PROFESSIONAL WELCOME BONUS MODAL - ENHANCED TIMING */}
       {showWelcomeBonusModal && (
-        <div className="welcome-bonus-modal-overlay">
-          <div className="welcome-bonus-modal-container">
+        <div className="welcome-bonus-modal-overlay" onClick={closeWelcomeBonusModal}>
+          <div className="welcome-bonus-modal-container" onClick={(e) => e.stopPropagation()}>
             <div className="welcome-bonus-modal-card">
-              <button className="modal-close-btn" onClick={() => setShowWelcomeBonusModal(false)}>
+              {/* Close Button */}
+              <button 
+                className="modal-close-btn" 
+                onClick={closeWelcomeBonusModal}
+                aria-label="Close welcome bonus modal"
+              >
                 ✕
               </button>
               
+              {/* Header */}
               <div className="modal-bonus-card-header">
                 <span className="modal-bonus-icon">🎁</span>
                 <div className="modal-bonus-header-text">
                   <h3>Welcome Bonus</h3>
-                  <p className="modal-bonus-subtitle">Activate to claim</p>
+                  <p className="modal-bonus-subtitle">Unlock your special offer</p>
                 </div>
               </div>
               
+              {/* Amount Display */}
               <div className="modal-bonus-amount-display">
-                <span className="currency">KES</span>
-                <span className="amount">1,200</span>
+                <div className="modal-bonus-amount-wrapper">
+                  <span className="currency">KES</span>
+                  <span className="amount">1,200</span>
+                  <div className="bonus-badge">BONUS</div>
+                </div>
+                <p className="modal-bonus-tagline">Activate once, earn multiple times!</p>
               </div>
               
+              {/* Description */}
               <div className="modal-bonus-description">
-                <p>Activate your account with <strong>KES 100</strong> to unlock your welcome bonus</p>
+                <p>Welcome to <strong>SurveyEarn</strong>! Activate your account with just <strong>KES 100</strong> to instantly unlock:</p>
+                <ul className="bonus-features-list">
+                  <li>✅ <strong>KES 1,200 Welcome Bonus</strong></li>
+                  <li>✅ Access to all survey plans</li>
+                  <li>✅ Priority support</li>
+                  <li>✅ Faster withdrawals</li>
+                </ul>
               </div>
 
+              {/* Action Buttons */}
               <div className="modal-bonus-actions">
-                <button className="modal-primary-btn full-width" onClick={handleWelcomeBonusWithdraw}>
+                <button 
+                  className="modal-primary-btn full-width" 
+                  onClick={handleWelcomeBonusWithdraw}
+                  autoFocus
+                >
                   <span className="btn-icon">🔓</span>
                   Activate & Claim Bonus
+                  <span className="btn-arrow">→</span>
                 </button>
-                <button className="modal-secondary-btn full-width" onClick={() => {
-                  setShowWelcomeBonusModal(false);
-                  navigate("/faq#welcome-bonus");
-                }}>
-                  Learn More
+                
+                <button 
+                  className="modal-secondary-btn full-width" 
+                  onClick={handleRemindLater}
+                >
+                  Remind Me Later
+                </button>
+                
+                <button 
+                  className="modal-tertiary-btn full-width" 
+                  onClick={() => navigate("/faq#welcome-bonus")}
+                >
+                  Learn More About Bonuses
                 </button>
               </div>
 
-              <div className="modal-bonus-details-collapsible">
-                <details className="modal-bonus-details">
-                  <summary>View Bonus Details</summary>
-                  <div className="modal-details-content">
-                    <div className="modal-detail-item">
-                      <span className="modal-detail-icon">✅</span>
-                      <span>Instant activation upon payment</span>
-                    </div>
-                    <div className="modal-detail-item">
-                      <span className="modal-detail-icon">🔒</span>
-                      <span>Secure payment processing</span>
-                    </div>
-                    <div className="modal-detail-item">
-                      <span className="modal-detail-icon">👥</span>
-                      <span>15,000+ satisfied users</span>
-                    </div>
-                    <div className="modal-detail-item">
-                      <span className="modal-detail-icon">⏱️</span>
-                      <span>Limited time offer</span>
-                    </div>
-                  </div>
-                </details>
+              {/* Dismiss Options */}
+              <div className="modal-dismiss-options">
+                <label className="dont-show-again-checkbox">
+                  <input 
+                    type="checkbox" 
+                    checked={dontShowAgain}
+                    onChange={(e) => setDontShowAgain(e.target.checked)}
+                  />
+                  <span>Don't show this again</span>
+                </label>
+                
+                <p className="modal-security-note">
+                  🔒 Secure payment • 15,000+ activated users • 24/7 support
+                </p>
+              </div>
+
+              {/* Trust Indicators */}
+              <div className="modal-trust-indicators">
+                <div className="trust-item">
+                  <span className="trust-icon">✅</span>
+                  <span>Instant activation</span>
+                </div>
+                <div className="trust-item">
+                  <span className="trust-icon">🔄</span>
+                  <span>Money-back guarantee</span>
+                </div>
+                <div className="trust-item">
+                  <span className="trust-icon">👥</span>
+                  <span>Verified community</span>
+                </div>
               </div>
             </div>
           </div>
@@ -804,21 +899,31 @@ export default function Dashboard() {
       {/* LIVE WITHDRAWAL FEED */}
       <LiveWithdrawalFeed />
 
-      {/* REGULAR WELCOME BONUS CARD (Hidden when modal is shown) */}
-      {!showWelcomeBonusModal && (
+      {/* REGULAR WELCOME BONUS CARD (Shows in overview when modal not active) */}
+      {modalReady && !showWelcomeBonusModal && (
         <section ref={welcomeRef} className="dashboard-section">
           <div className="professional-bonus-card">
             <div className="bonus-card-header">
               <span className="bonus-icon">🎁</span>
               <div className="bonus-header-text">
                 <h3>Welcome Bonus</h3>
-                <p className="bonus-subtitle">Activate to claim</p>
+                <p className="bonus-subtitle">Unlock special offer</p>
               </div>
+              <button 
+                className="bonus-card-close"
+                onClick={() => localStorage.setItem('welcomeBonusDismissedPermanently', 'true')}
+                aria-label="Hide welcome bonus card"
+              >
+                ×
+              </button>
             </div>
             
             <div className="bonus-amount-display">
-              <span className="currency">KES</span>
-              <span className="amount">1,200</span>
+              <div className="bonus-amount-wrapper">
+                <span className="currency">KES</span>
+                <span className="amount">1,200</span>
+                <div className="bonus-mini-badge">BONUS</div>
+              </div>
             </div>
             
             <div className="bonus-description">
@@ -829,34 +934,26 @@ export default function Dashboard() {
               <button className="primary-btn full-width" onClick={handleWelcomeBonusWithdraw}>
                 <span className="btn-icon">🔓</span>
                 Activate & Claim Bonus
+                <span className="btn-arrow">→</span>
               </button>
               <button className="secondary-btn full-width" onClick={() => navigate("/faq#welcome-bonus")}>
                 Learn More
               </button>
             </div>
 
-            <div className="bonus-details-collapsible">
-              <details className="bonus-details">
-                <summary>View Bonus Details</summary>
-                <div className="details-content">
-                  <div className="detail-item">
-                    <span className="detail-icon">✅</span>
-                    <span>Instant activation upon payment</span>
-                  </div>
-                  <div className="detail-item">
-                    <span className="detail-icon">🔒</span>
-                    <span>Secure payment processing</span>
-                  </div>
-                  <div className="detail-item">
-                    <span className="detail-icon">👥</span>
-                    <span>15,000+ satisfied users</span>
-                  </div>
-                  <div className="detail-item">
-                    <span className="detail-icon">⏱️</span>
-                    <span>Limited time offer</span>
-                  </div>
-                </div>
-              </details>
+            <div className="bonus-trust-indicators">
+              <div className="trust-indicator">
+                <span>✅</span>
+                <span>Secure</span>
+              </div>
+              <div className="trust-indicator">
+                <span>⚡</span>
+                <span>Instant</span>
+              </div>
+              <div className="trust-indicator">
+                <span>👥</span>
+                <span>15K+ Users</span>
+              </div>
             </div>
           </div>
         </section>
@@ -1361,6 +1458,22 @@ export default function Dashboard() {
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+          from { 
+            opacity: 0; 
+            transform: translateY(30px) scale(0.95); 
+          }
+          to { 
+            opacity: 1; 
+            transform: translateY(0) scale(1); 
+          }
+        }
+        
+        @keyframes overlayFade {
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
       `}</style>
     </div>
