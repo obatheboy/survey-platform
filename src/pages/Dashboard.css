@@ -3478,94 +3478,88 @@ input:focus-visible {
 }
 
 /* =========================================================
-   FULL SCREEN NOTIFICATION - FIXED CENTER POSITION
+   FULL SCREEN NOTIFICATION - SIMPLE FIX
 ========================================================= */
 .full-screen-notif {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  background: rgba(0, 0, 0, 0.98) !important;
-  backdrop-filter: blur(25px) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 10000 !important;
-  padding: 20px !important;
-  margin: 0 !important;
-  overflow-y: auto !important;
-  -webkit-overflow-scrolling: touch !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+  overflow: auto;
 }
 
 .notif-content {
-  background: linear-gradient(135deg, 
-    rgba(255, 107, 53, 0.12),
-    rgba(255, 107, 53, 0.05)
-  ) !important;
-  border: 2px solid var(--primary) !important;
-  border-radius: var(--radius-xl) !important;
-  padding: 32px 28px !important;
-  max-width: 420px !important;
-  width: 100% !important;
-  text-align: center !important;
-  animation: scaleIn 0.4s ease !important;
-  box-shadow: 
-    0 30px 60px rgba(0, 0, 0, 0.8),
-    0 0 0 2px rgba(255, 107, 53, 0.3) inset,
-    0 0 50px rgba(255, 107, 53, 0.2) !important;
-  position: relative !important;
-  backdrop-filter: blur(20px) !important;
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: scaleIn 0.3s ease;
+  margin: auto;
 }
 
 .notif-content p {
-  margin-bottom: 28px !important;
-  font-size: 18px !important;
-  line-height: 1.6 !important;
-  color: white !important;
-  font-weight: 600 !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  margin-bottom: 25px;
+  font-size: 18px;
+  line-height: 1.5;
+  color: #333;
+  font-weight: 600;
 }
 
-.notif-content .primary-btn,
+.notif-content .primary-btn {
+  margin-top: 10px;
+  width: 100%;
+  min-height: 50px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
 .notif-content .secondary-btn {
-  width: 100% !important;
-  margin-bottom: 12px !important;
-  min-height: 54px !important;
-  font-size: 16px !important;
-  font-weight: 800 !important;
+  margin-top: 10px;
+  width: 100%;
+  min-height: 50px;
+  font-size: 16px;
 }
 
-/* Mobile responsive */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Mobile fixes */
 @media (max-width: 768px) {
   .full-screen-notif {
-    padding: 16px !important;
+    padding: 16px;
   }
   
   .notif-content {
-    padding: 28px 24px !important;
-    max-width: 360px !important;
+    width: 100%;
+    max-width: 320px;
+    padding: 24px;
   }
   
   .notif-content p {
-    font-size: 16px !important;
-    margin-bottom: 24px !important;
+    font-size: 16px;
   }
   
   .notif-content .primary-btn,
   .notif-content .secondary-btn {
-    min-height: 50px !important;
-    font-size: 15px !important;
-  }
-}
-
-@media (max-width: 375px) {
-  .notif-content {
-    padding: 24px 20px !important;
-    max-width: 320px !important;
-  }
-  
-  .notif-content p {
-    font-size: 15px !important;
+    min-height: 48px;
+    font-size: 15px;
   }
 }
