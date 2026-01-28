@@ -946,16 +946,15 @@ export default function Dashboard() {
             <p>Activate your account with <strong>KES 100</strong> to unlock your welcome bonus</p>
           </div>
 
-          <div className="bonus-actions">
-            <button className="primary-btn full-width" onClick={handleWelcomeBonusWithdraw}>
-              <span className="btn-icon">🔓</span>
-              Activate & Claim Bonus
-            </button>
-            <button className="secondary-btn full-width" onClick={() => navigate("/faq#welcome-bonus")}>
-              Learn More
-            </button>
-          </div>
-
+       <div className="bonus-actions">
+  <button className="activate-bonus-btn full-width" onClick={handleWelcomeBonusWithdraw}>
+    <span className="btn-icon">🔓</span>
+    Activate & Claim Bonus
+  </button>
+  <button className="secondary-btn full-width" onClick={() => navigate("/faq#welcome-bonus")}>
+    Learn More
+  </button>
+</div>
           <div className="bonus-details-collapsible">
             <details className="bonus-details">
               <summary>View Bonus Details</summary>

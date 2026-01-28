@@ -165,6 +165,39 @@ body {
   border-color: var(--border-medium);
 }
 
+/* Special button for activating welcome bonus */
+.activate-bonus-btn {
+  background: linear-gradient(135deg, #9D50BB, #6E48AA) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 16px 24px !important;
+  font-weight: 700 !important;
+  font-size: 16px !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+  box-shadow: 0 6px 20px rgba(157, 80, 187, 0.4) !important;
+}
+
+.activate-bonus-btn:hover {
+  background: linear-gradient(135deg, #6E48AA, #9D50BB) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 10px 30px rgba(157, 80, 187, 0.6) !important;
+}
+
+.activate-bonus-btn:active {
+  transform: translateY(0) !important;
+}
+
+.activate-bonus-btn .btn-icon {
+  font-size: 18px !important;
+}
+
 /* =========================================================
    DASHBOARD CONTAINER - FIXED SCROLLING
 ========================================================= */
@@ -643,7 +676,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
-  background: rgb(161, 26, 2);
+  background: rgb(255, 255, 255);
   margin-bottom: var(--space-md);
   position: relative;
   z-index: 3;
