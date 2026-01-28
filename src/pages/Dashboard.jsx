@@ -79,11 +79,6 @@ export default function Dashboard() {
   const [reminderShown, setReminderShown] = useState(false);
 
   /* =========================
-     WELCOME BONUS MODAL STATE
-  ========================= */
-  const [showWelcomeBonusModal, setShowWelcomeBonusModal] = useState(false);
-
-  /* =========================
      DATA STATE
   ========================= */
   const [user, setUser] = useState(null);
@@ -155,18 +150,6 @@ export default function Dashboard() {
       clearInterval(interval);
       window.removeEventListener("focus", load);
     };
-  }, []);
-
-  /* =========================
-     SHOW WELCOME BONUS MODAL ON MOUNT
-  ========================= */
-  useEffect(() => {
-    // Show modal on component mount
-    const timer = setTimeout(() => {
-      setShowWelcomeBonusModal(true);
-    }, 1000); // Slight delay for better UX
-
-    return () => clearTimeout(timer);
   }, []);
 
   /* =========================
@@ -363,19 +346,12 @@ export default function Dashboard() {
   /* =========================
      WELCOME BONUS
   ========================= */
-const handleWelcomeBonusWithdraw = () => {
-  // Close the modal first
-  setShowWelcomeBonusModal(false);
-  
-  // Prevent scrolling
-  document.body.classList.add('no-scroll');
-  
-  // Then show the notification
-  setFullScreenNotification({
-    message: "🎁 Activate your account with KES 100 to unlock your KES 1,200 welcome bonus!",
-    redirect: "/activate?welcome_bonus=1",
-  });
-};
+  const handleWelcomeBonusWithdraw = () => {
+    setFullScreenNotification({
+      message: "🎁 Activate your account with KES 100 to unlock your KES 1,200 welcome bonus!",
+      redirect: "/activate?welcome_bonus=1",
+    });
+  };
 
   /* =========================
      QUICK ACTIONS
@@ -428,73 +404,6 @@ const handleWelcomeBonusWithdraw = () => {
   ========================= */
   return (
     <div className="dashboard" ref={dashboardRef}>
-      {/* WELCOME BONUS MODAL - FULL SCREEN CENTERED */}
-      {showWelcomeBonusModal && (
-        <div className="welcome-bonus-modal-overlay">
-          <div className="welcome-bonus-modal-container">
-            <div className="welcome-bonus-modal-card">
-              <button className="modal-close-btn" onClick={() => setShowWelcomeBonusModal(false)}>
-                ✕
-              </button>
-              
-              <div className="modal-bonus-card-header">
-                <span className="modal-bonus-icon">🎁</span>
-                <div className="modal-bonus-header-text">
-                  <h3>Welcome Bonus</h3>
-                  <p className="modal-bonus-subtitle">Activate to claim</p>
-                </div>
-              </div>
-              
-              <div className="modal-bonus-amount-display">
-                <span className="currency">KES</span>
-                <span className="amount">1,200</span>
-              </div>
-              
-              <div className="modal-bonus-description">
-                <p>Activate your account with <strong>KES 100</strong> to unlock your welcome bonus</p>
-              </div>
-
-              <div className="modal-bonus-actions">
-                <button className="modal-primary-btn full-width" onClick={handleWelcomeBonusWithdraw}>
-                  <span className="btn-icon">🔓</span>
-                  Activate & Claim Bonus
-                </button>
-                <button className="modal-secondary-btn full-width" onClick={() => {
-                  setShowWelcomeBonusModal(false);
-                  navigate("/faq#welcome-bonus");
-                }}>
-                  Learn More
-                </button>
-              </div>
-
-              <div className="modal-bonus-details-collapsible">
-                <details className="modal-bonus-details">
-                  <summary>View Bonus Details</summary>
-                  <div className="modal-details-content">
-                    <div className="modal-detail-item">
-                      <span className="modal-detail-icon">✅</span>
-                      <span>Instant activation upon payment</span>
-                    </div>
-                    <div className="modal-detail-item">
-                      <span className="modal-detail-icon">🔒</span>
-                      <span>Secure payment processing</span>
-                    </div>
-                    <div className="modal-detail-item">
-                      <span className="modal-detail-icon">👥</span>
-                      <span>15,000+ satisfied users</span>
-                    </div>
-                    <div className="modal-detail-item">
-                      <span className="modal-detail-icon">⏱️</span>
-                      <span>Limited time offer</span>
-                    </div>
-                  </div>
-                </details>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* SCROLL REMINDER NOTIFICATION */}
       {showScrollReminder && (
         <div className="scroll-reminder-notification">
@@ -522,167 +431,28 @@ const handleWelcomeBonusWithdraw = () => {
       {/* TOAST NOTIFICATION */}
       {toast && <Notifications message={toast} />}
 
-
-{/* FULL SCREEN NOTIFICATION - CENTERED AND FIXED */}
-{fullScreenNotification && (
-  <div className="full-screen-notif" style={{
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.85)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 9999,
-    backdropFilter: 'blur(8px)',
-    overflow: 'hidden',
-    padding: '20px',
-    boxSizing: 'border-box'
-  }}>
-    <div className="notif-content" style={{
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      borderRadius: '24px',
-      padding: '40px 30px',
-      maxWidth: '450px',
-      width: '100%',
-      textAlign: 'center',
-      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4)',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
-      animation: 'scaleIn 0.3s ease-out',
-      position: 'relative',
-      zIndex: 10000
-    }}>
-      <div style={{
-        fontSize: '50px',
-        marginBottom: '20px',
-        animation: 'pulse 2s infinite'
-      }}>
-        🎁
-      </div>
-      
-      <h3 style={{
-        color: 'white',
-        margin: '0 0 15px 0',
-        fontSize: '24px',
-        fontWeight: '700'
-      }}>
-        Welcome Bonus!
-      </h3>
-      
-      <p style={{
-        color: 'rgba(255, 255, 255, 0.95)',
-        fontSize: '16px',
-        lineHeight: '1.5',
-        marginBottom: '30px',
-        padding: '0 10px'
-      }}>
-        {fullScreenNotification.message}
-      </p>
-      
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '15px',
-        width: '100%'
-      }}>
-        {fullScreenNotification.redirect && (
-          <button
-            className="primary-btn"
-            onClick={() => {
-              setFullScreenNotification(null);
-
-
-              
-              navigate(fullScreenNotification.redirect);
-            }}
-            style={{
-              background: 'linear-gradient(to right, #ff8a00, #da1b60)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '50px',
-              padding: '16px 24px',
-              fontSize: '18px',
-              fontWeight: '700',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              width: '100%',
-              boxShadow: '0 8px 25px rgba(255, 138, 0, 0.4)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '10px'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.transform = 'translateY(-3px)';
-              e.currentTarget.style.boxShadow = '0 12px 30px rgba(255, 138, 0, 0.6)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 8px 25px rgba(255, 138, 0, 0.4)';
-            }}
-          >
-            <span style={{ fontSize: '20px' }}>🔓</span>
-            Activate Account Now
-          </button>
-        )}
-        
-        <button
-          className="secondary-btn"
-          
-onClick={() => {
-  setFullScreenNotification(null);
-  document.body.classList.remove('no-scroll');
-}}
-
-          style={{
-            background: 'rgba(255, 255, 255, 0.1)',
-            color: 'white',
-            border: '1px solid rgba(255, 255, 255, 0.3)',
-            borderRadius: '50px',
-            padding: '14px 24px',
-            fontSize: '16px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            width: '100%',
-            backdropFilter: 'blur(10px)'
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-          }}
-        >
-          Maybe Later
-        </button>
-      </div>
-      
-      <div style={{
-        marginTop: '25px',
-        padding: '15px',
-        background: 'rgba(255, 255, 255, 0.1)',
-        borderRadius: '12px',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        fontSize: '13px',
-        color: 'rgba(255, 255, 255, 0.8)'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-          <span>✅</span>
-          <span>Instant activation upon payment</span>
+      {/* FULL SCREEN NOTIFICATION */}
+      {fullScreenNotification && (
+        <div className="full-screen-notif">
+          <div className="notif-content">
+            <p>{fullScreenNotification.message}</p>
+            {fullScreenNotification.redirect && (
+              <button
+                className="primary-btn"
+                onClick={() => navigate(fullScreenNotification.redirect)}
+              >
+                Activate Account
+              </button>
+            )}
+            <button
+              className="secondary-btn"
+              onClick={() => setFullScreenNotification(null)}
+            >
+              Close
+            </button>
+          </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span>🔒</span>
-          <span>Secure M-Pesa payment</span>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-
-
+      )}
 
       {/* MAIN MENU HEADER WITH DASHBOARD TITLE */}
       <header className="dashboard-main-header">
@@ -947,64 +717,6 @@ onClick={() => {
       {/* LIVE WITHDRAWAL FEED */}
       <LiveWithdrawalFeed />
 
-      {/* REGULAR WELCOME BONUS CARD (Hidden when modal is shown) */}
-      {!showWelcomeBonusModal && (
-        <section ref={welcomeRef} className="dashboard-section">
-          <div className="professional-bonus-card">
-            <div className="bonus-card-header">
-              <span className="bonus-icon">🎁</span>
-              <div className="bonus-header-text">
-                <h3>Welcome Bonus</h3>
-                <p className="bonus-subtitle">Activate to claim</p>
-              </div>
-            </div>
-            
-            <div className="bonus-amount-display">
-              <span className="currency">KES</span>
-              <span className="amount">1,200</span>
-            </div>
-            
-            <div className="bonus-description">
-              <p>Activate your account with <strong>KES 100</strong> to unlock your welcome bonus</p>
-            </div>
-
-            <div className="bonus-actions">
-              <button className="primary-btn full-width" onClick={handleWelcomeBonusWithdraw}>
-                <span className="btn-icon">🔓</span>
-                Activate & Claim Bonus
-              </button>
-              <button className="secondary-btn full-width" onClick={() => navigate("/faq#welcome-bonus")}>
-                Learn More
-              </button>
-            </div>
-
-            <div className="bonus-details-collapsible">
-              <details className="bonus-details">
-                <summary>View Bonus Details</summary>
-                <div className="details-content">
-                  <div className="detail-item">
-                    <span className="detail-icon">✅</span>
-                    <span>Instant activation upon payment</span>
-                  </div>
-                  <div className="detail-item">
-                    <span className="detail-icon">🔒</span>
-                    <span>Secure payment processing</span>
-                  </div>
-                  <div className="detail-item">
-                    <span className="detail-icon">👥</span>
-                    <span>15,000+ satisfied users</span>
-                  </div>
-                  <div className="detail-item">
-                    <span className="detail-icon">⏱️</span>
-                    <span>Limited time offer</span>
-                  </div>
-                </div>
-              </details>
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* COMPACT FLOATING WHATSAPP SUPPORT BUTTON WITH BLINKING CAPTION */}
       <div style={{
         position: 'fixed',
@@ -1066,6 +778,62 @@ onClick={() => {
           💬
         </button>
       </div>
+
+      {/* WELCOME BONUS CARD */}
+      <section ref={welcomeRef} className="dashboard-section">
+        <div className="professional-bonus-card">
+          <div className="bonus-card-header">
+            <span className="bonus-icon">🎁</span>
+            <div className="bonus-header-text">
+              <h3>Welcome Bonus</h3>
+              <p className="bonus-subtitle">Activate to claim</p>
+            </div>
+          </div>
+          
+          <div className="bonus-amount-display">
+            <span className="currency">KES</span>
+            <span className="amount">1,200</span>
+          </div>
+          
+          <div className="bonus-description">
+            <p>Activate your account with <strong>KES 100</strong> to unlock your welcome bonus</p>
+          </div>
+
+          <div className="bonus-actions">
+            <button className="primary-btn full-width" onClick={handleWelcomeBonusWithdraw}>
+              <span className="btn-icon">🔓</span>
+              Activate & Claim Bonus
+            </button>
+            <button className="secondary-btn full-width" onClick={() => navigate("/faq#welcome-bonus")}>
+              Learn More
+            </button>
+          </div>
+
+          <div className="bonus-details-collapsible">
+            <details className="bonus-details">
+              <summary>View Bonus Details</summary>
+              <div className="details-content">
+                <div className="detail-item">
+                  <span className="detail-icon">✅</span>
+                  <span>Instant activation upon payment</span>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-icon">🔒</span>
+                  <span>Secure payment processing</span>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-icon">👥</span>
+                  <span>15,000+ satisfied users</span>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-icon">⏱️</span>
+                  <span>Limited time offer</span>
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
 
       {/* DASHBOARD NAVIGATION - MOBILE OPTIMIZED */}
       <section className="dashboard-section">
