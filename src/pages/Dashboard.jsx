@@ -61,6 +61,7 @@ export default function Dashboard() {
      UI STATE
   ========================= */
   const [activeTab, setActiveTab] = useState("OVERVIEW");
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(true);
@@ -151,6 +152,14 @@ export default function Dashboard() {
       window.removeEventListener("focus", load);
     };
   }, []);
+
+  /* =========================
+     THEME EFFECT
+  ========================= */
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   /* =========================
      LOAD PENDING WITHDRAWALS
@@ -377,6 +386,10 @@ export default function Dashboard() {
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
 
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  };
+
   /* =========================
      RENDER LOADING & NO USER
   ========================= */
@@ -578,6 +591,13 @@ return (
           <h1 className="dashboard-main-title">Dashboard</h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <button
+              onClick={toggleTheme}
+              className="theme-toggle-btn"
+              title="Toggle Theme"
+            >
+              {theme === 'light' ? '🌙' : '☀️'}
+            </button>
+            <button
               onClick={openWhatsAppSupport}
               style={{
                 background: '#25D366',
@@ -623,11 +643,10 @@ return (
 
       {/* HERO SECTION - ULTRA COMPACT */}
       <div className="dashboard-section hero-section" style={{
-        background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)',
         borderRadius: 'var(--radius-xl)',
         padding: '1.25rem',
         margin: '0 var(--space-sm) var(--space-md)',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
+        border: '1px solid var(--border-soft)',
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
         position: 'relative',
         overflow: 'hidden'
@@ -664,13 +683,13 @@ return (
                 justifyContent: 'center',
                 fontSize: '1.2rem',
                 boxShadow: '0 3px 8px rgba(0, 0, 0, 0.12)',
-                border: '1px solid rgba(255, 255, 255, 0.15)'
+                border: '1px solid rgba(255, 255, 255, 0.2)'
               }}>
                 👋
               </div>
               <div>
                 <h3 style={{
-                  color: 'white', 
+                  color: 'var(--text-main)', 
                   margin: '0 0 0.1rem', 
                   fontSize: '1.25rem', 
                   fontWeight: '800',
@@ -680,7 +699,7 @@ return (
                   Hi, <span style={{color: '#ffef00', fontWeight: '900'}}>{user.full_name.split(' ')[0]}</span>!
                 </h3>
                 <p style={{
-                  color: 'rgba(255, 255, 255, 0.9)', 
+                  color: 'var(--text-muted)', 
                   margin: '0', 
                   fontSize: '0.8rem',
                   fontWeight: '500'
@@ -755,11 +774,11 @@ return (
           
           {/* COMPACT BALANCE SECTION */}
           <div style={{
-            background: 'rgba(0, 0, 0, 0.2)',
+            background: 'var(--bg-main)',
             backdropFilter: 'none',
             borderRadius: 'var(--radius-xl)',
             padding: '0.75rem 1rem',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            border: '1px solid var(--border-soft)',
             minWidth: '110px',
             textAlign: 'center',
             boxShadow: 'var(--card-shadow)',
@@ -768,7 +787,7 @@ return (
             justifyContent: 'center'
           }}>
             <div style={{
-              color: '#94a3b8',
+              color: 'var(--text-muted)',
               fontSize: '0.65rem',
               fontWeight: '800',
               textTransform: 'uppercase',
@@ -786,14 +805,14 @@ return (
               gap: '0.2rem'
             }}>
               <span style={{
-                color: '#e2e8f0',
+                color: 'var(--text-main)',
                 fontSize: '0.8rem',
                 fontWeight: '700',
               }}>
                 KES
               </span>
               <div style={{
-                color: '#ffef00',
+                color: 'var(--primary)',
                 fontSize: '1.3rem',
                 fontWeight: '900',
                 lineHeight: '1',
@@ -806,9 +825,9 @@ return (
             <button 
               onClick={() => navigate("/withdraw-form")}
               style={{
-                background: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'var(--bg-surface)',
+                color: 'var(--text-main)',
+                border: '1px solid var(--border-soft)',
                 borderRadius: 'var(--radius-sm)',
                 padding: '0.3rem 0.6rem',
                 fontSize: '0.7rem',
@@ -823,10 +842,10 @@ return (
                 gap: '0.2rem'
               }}
               onMouseOver={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                e.currentTarget.style.background = 'var(--bg-main)';
               }}
               onMouseOut={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                e.currentTarget.style.background = 'var(--bg-surface)';
               }}
             >
               <span style={{fontSize: '0.8rem'}}>💸</span> Withdraw
