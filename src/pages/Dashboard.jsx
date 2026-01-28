@@ -864,68 +864,82 @@ export default function Dashboard() {
       {/* LIVE WITHDRAWAL FEED */}
       <LiveWithdrawalFeed />
 
-      {/* COMPACT FLOATING WHATSAPP SUPPORT BUTTON WITH BLINKING CAPTION */}
-      <div style={{
-        position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        zIndex: 1000,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end',
-        gap: '5px'
-      }}>
-        {showCaption && (
-          <div style={{
-            background: 'rgba(37, 211, 102, 0.9)',
-            color: 'white',
-            padding: '4px 10px',
-            borderRadius: '12px',
-            fontSize: '12px',
-            fontWeight: '600',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
-            whiteSpace: 'nowrap',
-            backdropFilter: 'blur(4px)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            animation: 'fadeIn 0.5s ease'
-          }}>
-            Need help? Chat us
-          </div>
-        )}
-        
-        <button
-          onClick={openWhatsAppSupport}
-          style={{
-            background: '#25D366',
-            color: 'white',
-            border: 'none',
-            borderRadius: '50%',
-            width: '50px',
-            height: '50px',
-            fontSize: '26px',
-            boxShadow: '0 4px 12px rgba(37, 211, 102, 0.4)',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.3s ease',
-            padding: '0',
-            margin: '0'
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.transform = 'scale(1.1)';
-            e.currentTarget.style.boxShadow = '0 6px 16px rgba(37, 211, 102, 0.6)';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(37, 211, 102, 0.4)';
-          }}
-          title="Contact Support on WhatsApp"
-        >
-          💬
-        </button>
-      </div>
-
+    {/* FLOATING WHATSAPP SUPPORT BUTTON - NOW FIXED POSITION */}
+<div style={{
+  position: 'fixed',
+  bottom: '20px',
+  right: '20px',
+  zIndex: 1000,
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-end',
+  gap: '5px'
+}}>
+  {showCaption && (
+    <div style={{
+      background: 'rgba(37, 211, 102, 0.95)',
+      color: 'white',
+      padding: '8px 14px',
+      borderRadius: '15px',
+      fontSize: '13px',
+      fontWeight: '700',
+      boxShadow: '0 4px 15px rgba(37, 211, 102, 0.4)',
+      whiteSpace: 'nowrap',
+      backdropFilter: 'blur(10px)',
+      border: '2px solid rgba(255, 255, 255, 0.3)',
+      animation: 'fadeIn 0.5s ease',
+      transform: 'translateZ(0)',
+      WebkitTransform: 'translateZ(0)',
+      willChange: 'transform, opacity'
+    }}>
+      Need help? Chat us
+    </div>
+  )}
+  
+  <button
+    onClick={openWhatsAppSupport}
+    style={{
+      background: '#25D366',
+      color: 'white',
+      border: 'none',
+      borderRadius: '50%',
+      width: '60px',
+      height: '60px',
+      fontSize: '28px',
+      boxShadow: '0 8px 20px rgba(37, 211, 102, 0.5)',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      padding: '0',
+      margin: '0',
+      transform: 'translateZ(0)',
+      WebkitTransform: 'translateZ(0)',
+      willChange: 'transform',
+      position: 'relative',
+      overflow: 'hidden',
+      zIndex: 1001
+    }}
+    onMouseOver={(e) => {
+      e.currentTarget.style.transform = 'scale(1.15) translateZ(0)';
+      e.currentTarget.style.boxShadow = '0 12px 30px rgba(37, 211, 102, 0.7)';
+    }}
+    onMouseOut={(e) => {
+      e.currentTarget.style.transform = 'scale(1) translateZ(0)';
+      e.currentTarget.style.boxShadow = '0 8px 20px rgba(37, 211, 102, 0.5)';
+    }}
+    onTouchStart={(e) => {
+      e.currentTarget.style.transform = 'scale(1.1) translateZ(0)';
+    }}
+    onTouchEnd={(e) => {
+      e.currentTarget.style.transform = 'scale(1) translateZ(0)';
+    }}
+    title="Contact Support on WhatsApp"
+  >
+    💬
+  </button>
+</div>
       {/* WELCOME BONUS CARD */}
       <section ref={welcomeRef} className="dashboard-section">
         <div className="professional-bonus-card">
