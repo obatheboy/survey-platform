@@ -1993,6 +1993,123 @@ select {
   box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
   max-width: 300px;
 }
+/* =========================================================
+   FULL SCREEN NOTIFICATION - ADD THIS TO FIX CENTER POSITION
+========================================================= */
+
+/* Fixed overlay that covers entire screen */
+.full-screen-notif {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: rgba(0, 0, 0, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: var(--z-modal) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* Notification content box */
+.notif-content {
+  background: linear-gradient(135deg, 
+    rgba(20, 20, 30, 0.98), 
+    rgba(15, 15, 25, 0.95)
+  ) !important;
+  border: 2px solid var(--primary) !important;
+  border-radius: var(--radius-xl) !important;
+  padding: var(--space-xl) !important;
+  max-width: 400px !important;
+  width: 90% !important;
+  text-align: center !important;
+  animation: scaleIn 0.3s ease !important;
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.8),
+    0 0 0 2px rgba(255, 107, 53, 0.3) inset,
+    0 0 40px rgba(255, 107, 53, 0.2) !important;
+  margin: auto !important;
+  position: relative !important;
+  z-index: 10000 !important;
+}
+
+/* Ensure the notification content is always visible */
+.notif-content p {
+  margin-bottom: var(--space-lg) !important;
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+  color: var(--text-main) !important;
+  font-weight: 500 !important;
+}
+
+.notif-content .primary-btn,
+.notif-content .secondary-btn {
+  width: 100% !important;
+  margin-bottom: var(--space-sm) !important;
+  min-height: 50px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateZ(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+  }
+}
+
+/* Mobile-specific fixes */
+@media (max-width: 768px) {
+  .full-screen-notif {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 16px !important;
+  }
+  
+  .notif-content {
+    width: 100% !important;
+    max-width: 340px !important;
+    padding: 24px !important;
+    margin: 0 !important;
+    position: relative !important;
+    top: 0 !important;
+    transform: none !important;
+  }
+  
+  .notif-content p {
+    font-size: 15px !important;
+    margin-bottom: 20px !important;
+  }
+  
+  .notif-content .primary-btn,
+  .notif-content .secondary-btn {
+    min-height: 48px !important;
+    font-size: 14px !important;
+    margin-bottom: 10px !important;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 375px) {
+  .notif-content {
+    padding: 20px !important;
+    max-width: 300px !important;
+  }
+  
+  .notif-content p {
+    font-size: 14px !important;
+  }
+}
 
 @keyframes slideIn {
   from {
