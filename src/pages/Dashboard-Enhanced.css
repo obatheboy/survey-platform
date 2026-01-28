@@ -2152,6 +2152,7 @@ input:focus-visible {
   gap: var(--space-sm);
 }
 
+
 .progress-info {
   display: flex;
   flex-direction: column;

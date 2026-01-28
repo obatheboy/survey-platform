@@ -676,7 +676,7 @@ background: linear-gradient(135deg, #ff4800, #e63600) !important;
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
-  background: rgb(255, 255, 255);
+  
   margin-bottom: var(--space-md);
   position: relative;
   z-index: 3;
