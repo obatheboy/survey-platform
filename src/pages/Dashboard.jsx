@@ -373,7 +373,7 @@ export default function Dashboard() {
   ========================= */
   const openWhatsAppSupport = () => {
     const message = encodeURIComponent("Hello SurveyEarn Support, I need help with my survey account.");
-    const whatsappUrl = `https://wa.me/254794101450?text=${message}`;
+    const whatsappUrl = `https://wa.me/254102074596?text=${message}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
 
