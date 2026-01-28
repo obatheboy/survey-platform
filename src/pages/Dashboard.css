@@ -167,7 +167,7 @@ body {
 
 /* Special button for activating welcome bonus */
 .activate-bonus-btn {
-  background: linear-gradient(135deg, #9D50BB, #6E48AA) !important;
+background: linear-gradient(135deg, #ff4800, #e63600) !important;
   color: white !important;
   border: none !important;
   border-radius: 12px !important;
@@ -185,7 +185,7 @@ body {
 }
 
 .activate-bonus-btn:hover {
-  background: linear-gradient(135deg, #6E48AA, #9D50BB) !important;
+  background: linear-gradient(135deg, #1808a8, #9D50BB) !important;
   transform: translateY(-2px) !important;
   box-shadow: 0 10px 30px rgba(157, 80, 187, 0.6) !important;
 }
