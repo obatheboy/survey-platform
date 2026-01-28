@@ -98,10 +98,17 @@ html, body {
   --danger: #ef4444;
   --success: #10b981;
   
-  /* REDUCED ANIMATIONS */
+  /* Transition */
   --transition-fast: 0.15s ease;
   --transition-normal: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 0.3s ease;
+
+  /* Card Effects */
+  --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  --card-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+  --card-border: 1px solid rgba(255, 255, 255, 0.08);
+  --card-bg: rgba(255, 255, 255, 0.04);
+  --card-bg-hover: rgba(255, 255, 255, 0.07);
 }
 
 /* =========================================================

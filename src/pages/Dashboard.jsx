@@ -622,26 +622,27 @@ return (
       />
 
       {/* HERO SECTION - ULTRA COMPACT */}
-      <div className="dashboard-section" style={{
-        background: 'linear-gradient(135deg, rgba(255, 83, 3, 0.97), rgb(255, 40, 2))',
-        borderRadius: 'var(--radius-lg)',
-        padding: '1rem 1.25rem',
+      <div className="dashboard-section hero-section" style={{
+        background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+        borderRadius: 'var(--radius-xl)',
+        padding: '1.25rem',
         margin: '0 var(--space-sm) var(--space-md)',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
-        boxShadow: '0 8px 20px rgba(0, 0, 0, 0.2)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        boxShadow: 'var(--card-shadow)',
         position: 'relative',
         overflow: 'hidden'
       }}>
         <div style={{
           position: 'absolute',
-          top: '-20px',
-          right: '-20px',
-          width: '70px',
-          height: '70px',
-          background: 'radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 70%)',
+          top: '-10%',
+          right: '-5%',
+          width: '150px',
+          height: '150px',
+          background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)',
           borderRadius: '50%',
           zIndex: '0'
         }}></div>
+
         
         <div style={{
           display: 'flex', 
@@ -693,16 +694,16 @@ return (
               <button 
                 onClick={goToSurveys}
                 style={{
-                  background: 'linear-gradient(to right, #ffffff, #fff5e6)',
-                  color: '#ff2802',
-                  border: '1px solid rgba(255, 255, 255, 0.4)',
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                  color: 'white',
+                  border: 'none',
                   borderRadius: 'var(--radius-md)',
                   padding: '0.6rem 1rem',
                   fontSize: '0.9rem',
                   fontWeight: '700',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                  boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.4rem',
@@ -710,11 +711,11 @@ return (
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.2)';
+                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(59, 130, 246, 0.4)';
                 }}
                 onMouseOut={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)';
                 }}
               >
                 <span style={{fontSize: '1rem'}}>🚀</span> Start Surveys
@@ -723,16 +724,16 @@ return (
               <button 
                 onClick={goToWelcome}
                 style={{
-                  background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 180, 0, 0.85))',
-                  color: '#8B4500',
-                  border: '1px solid rgba(255, 255, 255, 0.5)',
+                  background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                  color: 'white',
+                  border: 'none',
                   borderRadius: 'var(--radius-md)',
                   padding: '0.6rem 1rem',
                   fontSize: '0.9rem',
-                  fontWeight: '800',
+                  fontWeight: '700',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
-                  boxShadow: '0 4px 12px rgba(255, 180, 0, 0.25)',
+                  boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.4rem',
@@ -740,13 +741,11 @@ return (
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.background = 'linear-gradient(135deg, #ffd700, #ffb400)';
-                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(255, 180, 0, 0.4)';
+                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(245, 158, 11, 0.4)';
                 }}
                 onMouseOut={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 180, 0, 0.85))';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 180, 0, 0.25)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(245, 158, 11, 0.3)';
                 }}
               >
                 <span style={{fontSize: '1rem'}}>🎁</span> Get Bonus
@@ -756,25 +755,29 @@ return (
           
           {/* COMPACT BALANCE SECTION */}
           <div style={{
-            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08))',
-            backdropFilter: 'blur(10px)',
-            borderRadius: 'var(--radius-lg)',
+            background: 'rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(12px)',
+            borderRadius: 'var(--radius-xl)',
             padding: '0.75rem 1rem',
-            border: '1px solid rgba(255, 255, 255, 0.25)',
-            minWidth: '100px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            minWidth: '110px',
             textAlign: 'center',
-            boxShadow: '0 6px 16px rgba(0, 0, 0, 0.18)'
+            boxShadow: 'var(--card-shadow)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center'
           }}>
             <div style={{
-              color: 'rgba(255, 255, 255, 0.85)',
-              fontSize: '0.7rem',
-              fontWeight: '700',
+              color: 'rgba(255, 255, 255, 0.6)',
+              fontSize: '0.65rem',
+              fontWeight: '800',
               textTransform: 'uppercase',
-              letterSpacing: '0.8px',
-              marginBottom: '0.3rem'
+              letterSpacing: '1px',
+              marginBottom: '0.2rem'
             }}>
-              Balance
+              Wallet
             </div>
+
             
             <div style={{
               display: 'flex',
