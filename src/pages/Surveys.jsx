@@ -81,17 +81,14 @@ export default function Surveys() {
 
     try {
       // Submit survey answers to backend
-      // FIX: Send 10 requests to ensure backend records full completion (10/10) and earnings
+      // FIX: Send requests sequentially to avoid backend race conditions
       // This ensures persistence even if local storage is cleared (logout/login)
-      const requests = [];
       for (let i = 0; i < 10; i++) {
-        requests.push(api.post("/surveys/complete", {
+        await api.post("/surveys/complete", {
           plan: activePlan,
           answers: answers,
-        }));
+        });
       }
-      
-      await Promise.all(requests);
 
       navigate("/activation-notice", {
         state: {
