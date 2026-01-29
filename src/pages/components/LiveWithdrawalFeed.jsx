@@ -168,7 +168,6 @@ export default function LiveWithdrawalFeed() {
   
   // Initialize with initial item to avoid synchronous setState in effect
   const [item, setItem] = useState(() => generateInitialItem(data, helpers));
-  const [items, setItems] = useState([]);
   const [currentCategory, setCurrentCategory] = useState(() => helpers.getTimeCategory());
   const [isMobile, setIsMobile] = useState(false);
   
@@ -241,7 +240,7 @@ export default function LiveWithdrawalFeed() {
       borderRadius: 14,
       display: "flex",
       alignItems: "center",
-      gap: "8px",
+      gap: "6px",
       position: "relative",
       marginBottom: "4px",
       willChange: "transform",
@@ -272,16 +271,16 @@ export default function LiveWithdrawalFeed() {
     },
     
     avatar: {
-      width: "28px",
-      height: "28px",
+      width: "24px",
+      height: "24px",
       borderRadius: "50%",
       color: "#fff",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      fontWeight: 800,
-      fontSize: "11px",
-      boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+      fontWeight: 700,
+      fontSize: "10px",
+      boxShadow: "0 1px 2px rgba(0,0,0,0.15)",
       flexShrink: 0,
     },
     
@@ -290,13 +289,12 @@ export default function LiveWithdrawalFeed() {
       gap: 4,
       alignItems: "center",
       flexWrap: "wrap",
-      minHeight: "20px",
     },
     
     nameText: {
       color: "#1a237e",
-      fontWeight: 900,
-      fontSize: "12px",
+      fontWeight: 800,
+      fontSize: "11px",
       lineHeight: 1.2,
     },
     
@@ -320,11 +318,10 @@ export default function LiveWithdrawalFeed() {
       display: "flex",
       gap: 6,
       alignItems: "center",
-      minHeight: "20px",
     },
     
     statusText: {
-      fontSize: "10px",
+      fontSize: "9px",
       fontWeight: 700,
       display: "flex",
       alignItems: "center",
@@ -333,8 +330,8 @@ export default function LiveWithdrawalFeed() {
     },
     
     amountText: {
-      fontSize: "13px",
-      fontWeight: 900,
+      fontSize: "12px",
+      fontWeight: 800,
       color: "#b71c1c",
       marginLeft: "auto",
       textShadow: "0 1px 1px rgba(0,0,0,0.1)",
@@ -342,11 +339,10 @@ export default function LiveWithdrawalFeed() {
     },
     
     detailsRow: {
-      marginTop: 4,
+      marginTop: 2,
       display: "flex",
       gap: 6,
       alignItems: "center",
-      minHeight: "18px",
     },
     
     telcoBadge: {
@@ -362,73 +358,6 @@ export default function LiveWithdrawalFeed() {
     phoneText: {
       fontSize: "10px",
       color: "#455a64",
-      fontWeight: 600,
-      lineHeight: 1.2,
-    },
-    
-    recentContainer: {
-      background: "#f8f9fa",
-      borderRadius: 10,
-      padding: "10px",
-      border: "2px solid red",
-      transform: "translateZ(0)",
-    },
-    
-    recentHeader: {
-      fontSize: isMobile ? "12px" : "13px",
-      fontWeight: 800,
-      color: "#37474f",
-      marginBottom: "8px",
-      paddingBottom: "4px",
-      borderBottom: "1px solid #e0e0e0",
-      lineHeight: 1.2,
-    },
-    
-    recentItemStyle: {
-      display: "flex",
-      alignItems: "center",
-      gap: "8px",
-      padding: "6px 0",
-      borderBottom: "1px solid #f0f0f0",
-    },
-    
-    recentAvatar: {
-      width: isMobile ? "26px" : "28px",
-      height: isMobile ? "26px" : "28px",
-      borderRadius: "50%",
-      color: "#fff",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      fontWeight: 700,
-      fontSize: isMobile ? "11px" : "12px",
-      flexShrink: 0,
-    },
-    
-    recentName: {
-      fontSize: isMobile ? "12px" : "13px",
-      fontWeight: 700,
-      color: "#263238",
-      lineHeight: 1.2,
-    },
-    
-    recentInfo: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginTop: "1px",
-    },
-    
-    recentAmount: {
-      fontSize: isMobile ? "11px" : "12px",
-      fontWeight: 800,
-      color: "#d32f2f",
-      lineHeight: 1.2,
-    },
-    
-    recentTime: {
-      fontSize: isMobile ? "10px" : "11px",
-      color: "#78909c",
       fontWeight: 600,
       lineHeight: 1.2,
     },
@@ -467,11 +396,6 @@ export default function LiveWithdrawalFeed() {
     };
 
     // Optimized update - batch state changes
-    setItems(prev => {
-      const newItems = [newItem, ...prev.slice(0, 2)];
-      return newItems;
-    });
-    
     setItem(newItem);
 
     // Play sound only if not mobile
@@ -560,7 +484,6 @@ export default function LiveWithdrawalFeed() {
   }, []);
 
   const timeCategory = data.TIME_CATEGORIES[item.timeCategory];
-  const showRecentTransactions = items.length > 0 && window.innerWidth > 375;
 
   return (
     <div style={styles.container}>
@@ -570,7 +493,7 @@ export default function LiveWithdrawalFeed() {
           LIVE WITHDRAWALS
         </span>
         <span style={styles.timeLabel}>
-          {timeCategory.label} • {items.length + 1}+ today
+          {timeCategory.label} • Live
         </span>
       </div>
 
@@ -579,7 +502,7 @@ export default function LiveWithdrawalFeed() {
         style={{
           ...styles.card,
           background: item.telco.light,
-          border: '2px solid red',
+          border: `1px solid ${item.telco.border}`,
           animation: `${item.telco.pulse} 2s infinite`,
         }}
       >
@@ -620,27 +543,6 @@ export default function LiveWithdrawalFeed() {
           </div>
         </div>
       </div>
-
-      {/* Recent Transactions - Only show on larger mobile screens */}
-      {showRecentTransactions && (
-        <div style={styles.recentContainer}>
-          <div style={styles.recentHeader}>Recent withdrawals</div>
-          {items.slice(0, 2).map((recentItem) => (
-            <div key={recentItem.id} style={styles.recentItemStyle}>
-              <div style={{ ...styles.recentAvatar, background: recentItem.telco.color }}>
-                {recentItem.avatar}
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={styles.recentName}>{recentItem.name}</div>
-                <div style={styles.recentInfo}>
-                  <span style={styles.recentAmount}>KES {recentItem.amount.toLocaleString()}</span>
-                  <span style={styles.recentTime}>{recentItem.timestamp}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
 
       {/* ANIMATIONS */}
       <style>
