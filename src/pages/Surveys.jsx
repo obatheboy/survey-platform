@@ -17,7 +17,6 @@ export default function Surveys() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [isCompleting, setIsCompleting] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(false);
 
   useEffect(() => {
     const plan = localStorage.getItem("active_plan");
@@ -56,12 +55,11 @@ export default function Surveys() {
         plan: activePlan,
         answers: answers,
       });
-      setIsCompleted(true);
+      navigate("/activation-notice");
     } catch (error) {
       console.error("Failed to complete survey:", error);
       // In a real app, show an error message
       alert("Failed to submit survey. Please try again.");
-    } finally {
       setIsCompleting(false);
     }
   };
@@ -80,29 +78,6 @@ export default function Surveys() {
   const currentQuestion = questions[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
   const planConfig = PLANS_CONFIG[activePlan];
-
-  if (isCompleted) {
-    return (
-      <div className="survey-page">
-        <div className="survey-container">
-          <div className="completion-container">
-            <div className="completion-icon">🎉</div>
-            <h2>Survey Completed!</h2>
-            <p>
-              Thank you for your feedback. Your earnings have been updated.
-              You can now return to your dashboard.
-            </p>
-            <button
-              className="nav-btn primary"
-              onClick={() => navigate("/dashboard")}
-            >
-              Go to Dashboard
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="survey-page">
