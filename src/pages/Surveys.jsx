@@ -80,14 +80,26 @@ export default function Surveys() {
     localStorage.setItem(`survey_completed_${activePlan}`, 'true');
 
     try {
-      // Submit survey answers to backend
-      // FIX: Send requests sequentially to avoid backend race conditions
-      // This ensures persistence even if local storage is cleared (logout/login)
-      for (let i = 0; i < 10; i++) {
-        await api.post("/surveys/complete", {
-          plan: activePlan,
-          answers: answers,
-        });
+      // 1. Get current status to know how many we need (idempotency)
+      let currentCount = 0;
+      try {
+        const res = await api.get("/auth/me");
+        currentCount = res.data.plans?.[activePlan]?.surveys_completed || 0;
+      } catch (err) {
+        console.warn("Could not fetch current survey count", err);
+      }
+
+      const needed = Math.max(0, 10 - currentCount);
+
+      // 2. Send requests sequentially with INDIVIDUAL error handling
+      // This ensures that if request #3 fails, #4-#10 still try to run
+      for (let i = 0; i < needed; i++) {
+        try {
+          await api.post("/surveys/complete", { plan: activePlan, answers });
+          await new Promise(r => setTimeout(r, 50)); // Small delay to prevent race conditions
+        } catch (reqError) {
+          console.error(`Survey submission ${i + 1}/${needed} failed:`, reqError);
+        }
       }
 
       navigate("/activation-notice", {
