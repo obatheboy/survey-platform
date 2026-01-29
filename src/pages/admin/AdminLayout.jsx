@@ -55,9 +55,11 @@ export default function AdminLayout() {
       <aside style={styles.sidebar}>
         <h2 style={{ marginBottom: 20 }}>Admin Panel</h2>
 
+        <NavItem to="/admin" end label="Dashboard" />
         <NavItem to="/admin/activations" label="Activation Payments" />
         <NavItem to="/admin/withdrawals" label="Withdrawals" />
         <NavItem to="/admin/users" label="Users" />
+        <NavItem to="/admin/notifications" label="Bulk Notifications" />
 
         <hr style={{ margin: "20px 0", borderColor: "#333" }} />
 
@@ -86,13 +88,14 @@ export default function AdminLayout() {
 }
 
 /* REUSABLE NAV ITEM */
-function NavItem({ to, label }) {
+function NavItem({ to, label, end = false }) {
   return (
     <NavLink
       to={to}
+      end={end}
       style={({ isActive }) => ({
         ...styles.link,
-        background: isActive ? "#222" : "transparent",
+        background: isActive ? "#3b82f6" : "transparent",
         fontWeight: isActive ? "bold" : "normal",
       })}
     >
@@ -104,22 +107,33 @@ function NavItem({ to, label }) {
 /* STYLES */
 const styles = {
   container: { display: "flex", minHeight: "100vh" },
-  sidebar: { width: 240, padding: 20, background: "#111", color: "#fff" },
+  sidebar: { 
+    width: 240, 
+    padding: 20, 
+    background: "#111827", 
+    color: "#e5e7eb",
+    display: 'flex',
+    flexDirection: 'column'
+  },
   link: {
     display: "block",
     margin: "10px 0",
     padding: "10px",
-    color: "#fff",
+    color: "#e5e7eb",
     textDecoration: "none",
     borderRadius: 6,
     transition: "background 0.2s",
   },
-  content: { flex: 1, padding: 20, background: "#f5f5f5" },
+  content: { 
+    flex: 1, 
+    padding: 0, 
+    background: "#f9fafb" 
+  },
   logout: {
     marginTop: 20,
     padding: 10,
     width: "100%",
-    background: "#c0392b",
+    background: "#374151",
     color: "#fff",
     border: "none",
     cursor: "pointer",

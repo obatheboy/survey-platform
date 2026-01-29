@@ -261,11 +261,11 @@ export default function AdminWithdrawals() {
    STYLES
 =========================== */
 const styles = {
-  container: {
-    padding: "var(--space-xl)",
-    maxWidth: "1200px",
-    margin: "0 auto",
-  },
+    container: {
+        padding: "24px",
+        background: "#f9fafb",
+        minHeight: "100vh",
+    },
   title: {
     fontSize: "24px",
     fontWeight: "800",
@@ -274,10 +274,10 @@ const styles = {
   },
   searchSection: {
     marginBottom: "var(--space-xl)",
-    background: "var(--bg-surface)",
+    background: "#ffffff",
     padding: "var(--space-xl)",
     borderRadius: "var(--radius-xl)",
-    boxShadow: "var(--card-shadow)",
+    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)",
   },
   searchContainer: {
     marginBottom: "var(--space-lg)",
@@ -286,7 +286,7 @@ const styles = {
     width: "100%",
     padding: "12px 16px",
     borderRadius: "var(--radius-md)",
-    border: "2px solid var(--border-medium)",
+    border: "1px solid #e5e7eb",
     fontSize: "14px",
     fontWeight: "500",
     boxSizing: "border-box",
@@ -299,22 +299,22 @@ const styles = {
   filterBtn: {
     padding: "8px 16px",
     borderRadius: "var(--radius-sm)",
-    border: "2px solid var(--border-medium)",
-    background: "var(--bg-surface)",
+    border: "1px solid #e5e7eb",
+    background: "#ffffff",
     cursor: "pointer",
     fontWeight: "600",
     transition: "all var(--transition-fast)",
   },
   filterBtnActive: {
-    background: "var(--primary)",
+    background: "#3b82f6",
     color: "#fff",
-    border: "2px solid var(--primary)",
+    borderColor: "#3b82f6",
   },
   tableWrapper: {
-    background: "var(--bg-surface)",
+    background: "#ffffff",
     borderRadius: "var(--radius-xl)",
     overflow: "hidden",
-    boxShadow: "var(--card-shadow)",
+    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)",
     overflowX: "auto",
   },
   table: {
@@ -322,7 +322,7 @@ const styles = {
     borderCollapse: "collapse",
   },
   headerRow: {
-    background: "var(--primary)",
+    background: "#f9fafb",
     color: "#fff",
   },
   th: {
@@ -332,12 +332,12 @@ const styles = {
     fontSize: "14px",
   },
   row: {
-    borderBottom: "1px solid var(--border-soft)",
+    borderBottom: "1px solid #e5e7eb",
   },
   td: {
     padding: "14px 16px",
     fontSize: "14px",
-    color: "var(--text-main)",
+    color: "#111827",
   },
   statusBadge: {
     padding: "6px 12px",
@@ -347,15 +347,15 @@ const styles = {
   },
   processingBadge: {
     background: "rgba(245, 158, 11, 0.1)",
-    color: "var(--vvip-color)",
+    color: "#f59e0b",
   },
   approvedBadge: {
     background: "rgba(16, 185, 129, 0.1)",
-    color: "var(--regular-color)",
+    color: "#10b981",
   },
   rejectedBadge: {
     background: "rgba(220, 38, 38, 0.1)",
-    color: "#dc2626",
+    color: "#ef4444",
   },
   typeBadge: {
     padding: "4px 10px",
@@ -363,7 +363,7 @@ const styles = {
     fontSize: "12px",
     fontWeight: "600",
     background: "rgba(37, 99, 235, 0.1)",
-    color: "var(--primary)",
+    color: "#3b82f6",
   },
   actionButtons: {
     display: "flex",
@@ -374,7 +374,7 @@ const styles = {
     padding: "6px 12px",
     borderRadius: "var(--radius-sm)",
     border: "none",
-    background: "var(--regular-color)",
+    background: "#10b981",
     color: "#fff",
     cursor: "pointer",
     fontWeight: "600",
@@ -384,7 +384,7 @@ const styles = {
     padding: "6px 12px",
     borderRadius: "var(--radius-sm)",
     border: "none",
-    background: "#dc2626",
+    background: "#ef4444",
     color: "#fff",
     cursor: "pointer",
     fontWeight: "600",
@@ -393,36 +393,36 @@ const styles = {
   doneText: {
     fontWeight: "600",
     fontSize: "12px",
-    color: "var(--text-muted)",
+    color: "#6b7280",
   },
   successMessage: {
     padding: "14px",
     marginBottom: "16px",
     borderRadius: "var(--radius-md)",
     background: "rgba(16, 185, 129, 0.1)",
-    color: "var(--regular-color)",
+    color: "#10b981",
     fontWeight: "600",
-    border: "1px solid var(--regular-color)",
+    border: "1px solid #10b981",
   },
   errorMessage: {
     padding: "14px",
     marginBottom: "16px",
     borderRadius: "var(--radius-md)",
     background: "rgba(220, 38, 38, 0.1)",
-    color: "#dc2626",
+    color: "#ef4444",
     fontWeight: "600",
-    border: "1px solid #dc2626",
+    border: "1px solid #ef4444",
   },
   loadingText: {
     textAlign: "center",
     padding: "40px",
     fontSize: "16px",
-    color: "var(--text-main)",
+    color: "#111827",
   },
   noResults: {
     textAlign: "center",
     padding: "40px",
     fontSize: "16px",
-    color: "var(--text-light)",
+    color: "#6b7280",
   },
 };

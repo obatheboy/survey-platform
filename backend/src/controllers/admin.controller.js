@@ -292,22 +292,78 @@ exports.deleteUser = async (req, res) => {
 };
 
 /* ======================================================
-   📊 ADMIN DASHBOARD STATS
+   📢 NOTIFICATIONS MANAGEMENT (ADMIN)
+====================================================== */
+
+/**
+ * SEND BULK NOTIFICATION
+ */
+exports.sendBulkNotification = async (req, res) => {
+  const { title, message } = req.body;
+
+  if (!title || !message) {
+    return res.status(400).json({ message: "Title and message are required" });
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    // Get all user IDs
+    const usersRes = await client.query('SELECT id FROM users');
+    const userIds = usersRes.rows.map(row => row.id);
+
+    // Insert a notification for each user
+    for (const userId of userIds) {
+      await client.query(
+        'INSERT INTO notifications (user_id, title, message, type) VALUES ($1, $2, $3, $4)',
+        [userId, title, message, 'bulk']
+      );
+    }
+
+    await client.query('COMMIT');
+    res.status(200).json({ message: `Notification sent to ${userIds.length} users.` });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error("Admin send bulk notification error:", error);
+    res.status(500).json({ message: "Server error while sending notifications" });
+  } finally {
+    client.release();
+  }
+};
+
+/* ======================================================
+   � ADMIN DASHBOARD STATS
 ====================================================== */
 exports.getAdminStats = async (req, res) => {
   try {
-    const users = await pool.query(`SELECT COUNT(*) FROM users`);
-    const activeUsers = await pool.query(
-      `SELECT COUNT(*) FROM users WHERE status = 'ACTIVE'`
-    );
-    const pendingActivations = await pool.query(
-      `SELECT COUNT(*) FROM activation_payments WHERE status = 'SUBMITTED'`
-    );
+    const [
+      totalUsersRes,
+      totalRevenueRes,
+      totalWithdrawalsRes,
+      pendingActivationsRes,
+      pendingWithdrawalsRes,
+      surveysCompletedRes,
+    ] = await Promise.all([
+      pool.query(`SELECT COUNT(*) FROM users`),
+      pool.query(`SELECT SUM(amount) as total FROM activation_payments WHERE status = 'APPROVED'`),
+      pool.query(`SELECT SUM(amount) as total FROM withdraw_requests WHERE status = 'APPROVED'`),
+      pool.query(`SELECT COUNT(*) FROM activation_payments WHERE status = 'SUBMITTED'`),
+      pool.query(`SELECT COUNT(*) FROM withdraw_requests WHERE status = 'PROCESSING'`),
+      pool.query(`
+        SELECT SUM(CAST(plan_data ->> 'surveys_completed' AS INTEGER)) as total
+        FROM users, jsonb_each(plans) as plan_data
+        WHERE plans IS NOT NULL AND jsonb_typeof(plans) = 'object'
+      `),
+    ]);
 
     res.json({
-      totalUsers: Number(users.rows[0].count),
-      activeUsers: Number(activeUsers.rows[0].count),
-      pendingActivations: Number(pendingActivations.rows[0].count),
+      totalUsers: Number(totalUsersRes.rows[0].count) || 0,
+      totalRevenue: Number(totalRevenueRes.rows[0].total) || 0,
+      totalWithdrawals: Number(totalWithdrawalsRes.rows[0].total) || 0,
+      pendingActivations: Number(pendingActivationsRes.rows[0].count) || 0,
+      pendingWithdrawals: Number(pendingWithdrawalsRes.rows[0].count) || 0,
+      surveysCompleted: Number(surveysCompletedRes.rows[0].total) || 0,
     });
   } catch (error) {
     console.error("Admin stats error:", error);
