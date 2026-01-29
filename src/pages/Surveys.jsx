@@ -6,9 +6,9 @@ import "./Surveys.css";
 
 // Plan config for display
 const PLANS_CONFIG = {
-  REGULAR: { name: "Regular", icon: "⭐" },
-  VIP: { name: "VIP", icon: "💎" },
-  VVIP: { name: "VVIP", icon: "👑" },
+  REGULAR: { name: "Regular", icon: "⭐", total: 1500 },
+  VIP: { name: "VIP", icon: "💎", total: 2000 },
+  VVIP: { name: "VVIP", icon: "👑", total: 3000 },
 };
 
 export default function Surveys() {
@@ -51,11 +51,21 @@ export default function Surveys() {
     setIsCompleting(true);
     try {
       // Simulate API call to submit survey answers
-      await api.post("/surveys/complete", {
-        plan: activePlan,
-        answers: answers,
+      try {
+        await api.post("/surveys/complete", {
+          plan: activePlan,
+          answers: answers,
+        });
+      } catch (apiError) {
+        console.warn("API submission failed, proceeding locally:", apiError);
+      }
+
+      navigate("/activation-notice", {
+        state: {
+          planType: activePlan,
+          amount: PLANS_CONFIG[activePlan]?.total || 0
+        }
       });
-      navigate("/activation-notice");
     } catch (error) {
       console.error("Failed to complete survey:", error);
       // In a real app, show an error message
