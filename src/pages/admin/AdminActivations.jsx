@@ -184,107 +184,46 @@ export default function AdminActivations() {
       </div>
 
       {filteredPayments.length === 0 ? (
-        <p style={styles.noResults}>No activation payments found.</p>
+        <p className="no-results">No activation payments found.</p>
       ) : (
-        <div style={styles.tableWrapper}>
-          <table style={styles.table}>
+        <div className="table-wrapper">
+          <table className="admin-table">
             <thead>
-              <tr style={styles.headerRow}>
-                <th style={styles.th}>User Name</th>
-                <th style={styles.th}>Phone</th>
-                <th style={styles.th}>Email</th>
-                <th style={styles.th}>M-Pesa Code</th>
-                <th style={styles.th}>Amount (KES)</th>
-                <th style={styles.th}>Status</th>
-                <th style={styles.th}>Submitted</th>
-                <th style={styles.th}>Actions</th>
+              <tr>
+                <th>User Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>M-Pesa Code</th>
+                <th>Amount (KES)</th>
+                <th>Status</th>
+                <th>Submitted</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredPayments.map((p) => (
-                <tr key={p.id} style={styles.row}>
-                  <td style={styles.td}>{p.full_name || "—"}</td>
-                  <td style={styles.td}>{p.phone || "—"}</td>
-                  <td style={styles.td}>{p.email || "—"}</td>
-                  <td style={styles.td}>
+                <tr key={p.id}>
+                  <td>{p.full_name || "—"}</td>
+                  <td>{p.phone || "—"}</td>
+                  <td>{p.email || "—"}</td>
+                  <td>
                     <strong style={{ fontFamily: "monospace" }}>{p.mpesa_code}</strong>
                   </td>
-                  <td style={styles.td}>
+                  <td>
                     <strong style={{ color: "#0a7c4a", fontSize: "16px" }}>
                       {Number(p.amount).toLocaleString()}
                     </strong>
                   </td>
-                  <td style={styles.td}>
-                    <span style={{
-                      ...styles.statusBadge,
-                      ...(p.status === "SUBMITTED" ? styles.pendingBadge :
-                        p.status === "APPROVED" ? styles.approvedBadge :
-                          styles.rejectedBadge)
-                    }}>
+                  <td>
+                    <span className={`status-badge ${
+                      p.status === "SUBMITTED" ? "pending-badge" :
+                      p.status === "APPROVED" ? "approved-badge" : "rejected-badge"
+                    }`}>
                       {p.status === "SUBMITTED" ? "⏳ PENDING" :
                         p.status === "APPROVED" ? "✅ APPROVED" :
                           "❌ REJECTED"}
                     </span>
-                  </td>p.status === "APPROVED" ? (
-                        <button
-                          onClick={() => {
-                            setSelectedPayment(p);
-                            setShowRoleModal(true);
-                          }}
-                          style={styles.roleBtn}
-                        >
-                          👤 Set Role
-                        </button>
-                      ) : 
-                  <td style={styles.td}>
-                    {new Date(p.created_at).toLocaleDateString()} <br />
-
-      {/* ROLE MODAL */}
-      {showRoleModal && selectedPayment && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modalContent}>
-            <h3 style={styles.modalTitle}>👤 Set User Role</h3>
-            <p style={styles.modalSubtext}>
-              User: <strong>{selectedPayment.full_name}</strong>
-            </p>
-
-            {roleMessage && (
-              <div style={{
-                ...styles.modalMessage,
-                ...(roleMessage.startsWith("✅") ? { background: "#d4edda", color: "#155724" } : { background: "#f8d7da", color: "#721c24" })
-              }}>
-                {roleMessage}
-              </div>
-            )}
-
-            <div style={styles.roleButtons}>
-              <button
-                onClick={() => updateUserRole(selectedPayment.user_id, "user")}
-                className="role-option-btn"
-              >
-                👤 Regular User
-              </button>
-              <button
-                onClick={() => updateUserRole(selectedPayment.user_id, "admin")}
-                className="role-option-btn admin"
-              >
-                👨‍💼 Admin User
-              </button>
-            </div>
-
-            <button
-              onClick={() => {
-                setShowRoleModal(false);
-                setSelectedPayment(null);
-                setRoleMessage("");
-              }}
-              className="modal-close-btn"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+                  </td>
                   <td>
                     {new Date(p.created_at).toLocaleDateString()} <br />
                     <small>{new Date(p.created_at).toLocaleTimeString()}</small>
@@ -313,12 +252,67 @@ export default function AdminActivations() {
                           {p.status === "APPROVED" ? "✓ Done" : "✕ Done"}
                         </span>
                       )}
+                      {p.status === "APPROVED" && (
+                        <button
+                          onClick={() => {
+                            setSelectedPayment(p);
+                            setShowRoleModal(true);
+                          }}
+                          className="role-btn"
+                        >
+                          👤 Set Role
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* ROLE MODAL */}
+      {showRoleModal && selectedPayment && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>👤 Set User Role</h3>
+            <p>
+              User: <strong>{selectedPayment.full_name}</strong>
+            </p>
+
+            {roleMessage && (
+              <div className={`response-message ${roleMessage.startsWith("✅") ? "success-message" : "error-message"}`}>
+                {roleMessage}
+              </div>
+            )}
+
+            <div className="action-buttons" style={{ marginBottom: '16px', justifyContent: 'center' }}>
+              <button
+                onClick={() => updateUserRole(selectedPayment.user_id, "user")}
+                className="role-option-btn"
+              >
+                👤 Regular User
+              </button>
+              <button
+                onClick={() => updateUserRole(selectedPayment.user_id, "admin")}
+                className="role-option-btn admin"
+              >
+                👨‍💼 Admin User
+              </button>
+            </div>
+
+            <button
+              onClick={() => {
+                setShowRoleModal(false);
+                setSelectedPayment(null);
+                setRoleMessage("");
+              }}
+              className="modal-close-btn"
+            >
+              Close
+            </button>
+          </div>
         </div>
       )}
     </div>
