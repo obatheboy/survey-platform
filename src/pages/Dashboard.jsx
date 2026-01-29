@@ -687,7 +687,8 @@ return (
         border: '2px solid red',
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        background: 'var(--bg-surface)'
       }}>
         <div style={{
           position: 'absolute',
@@ -901,7 +902,7 @@ return (
       <section ref={welcomeRef}>
         <div className="plan-card welcome-bonus" style={{
           border: '2px solid red',
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02))',
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)), var(--bg-surface)',
           boxShadow: '0 10px 30px rgba(255, 0, 0, 0.1)'
         }}>
           <div className="plan-card-header">
@@ -1202,7 +1203,7 @@ return (
               return (
                 <div key={key} className={`plan-card ${key.toLowerCase()}`} style={{
                   border: '2px solid red',
-                  background: `linear-gradient(135deg, ${plan.bgColor}, rgba(255, 255, 255, 0.05))`,
+                  background: `linear-gradient(135deg, ${plan.bgColor}, rgba(255, 255, 255, 0.05)), var(--bg-surface)`,
                   boxShadow: `0 10px 30px ${plan.color}20`
                 }}>
                   <div className="plan-card-header">

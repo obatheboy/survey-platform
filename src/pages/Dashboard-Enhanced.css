@@ -72,7 +72,7 @@ html, body {
   --vvip-color: #d97706;
 }
 
-[data-theme="dark"] {
+:root[data-theme="dark"] {
   --bg-main: #0f172a;
   --bg-surface: #1e293b;
   --bg-glass: rgba(30, 41, 59, 0.8);
