@@ -347,11 +347,7 @@ exports.getAdminStats = async (req, res) => {
       pool.query(`SELECT SUM(amount) as total FROM withdraw_requests WHERE status = 'APPROVED'`),
       pool.query(`SELECT COUNT(*) FROM activation_payments WHERE status = 'SUBMITTED'`),
       pool.query(`SELECT COUNT(*) FROM withdraw_requests WHERE status = 'PROCESSING'`),
-      pool.query(`
-        SELECT SUM(CAST(plan_data ->> 'surveys_completed' AS INTEGER)) as total
-        FROM users, jsonb_each(plans) as plan_data
-        WHERE plans IS NOT NULL AND jsonb_typeof(plans) = 'object'
-      `),
+      pool.query(`SELECT SUM(surveys_completed) as total FROM user_surveys`),
     ]);
 
     res.json({
