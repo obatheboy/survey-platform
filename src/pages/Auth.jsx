@@ -403,6 +403,20 @@ export default function Auth() {
         </div>
       </div>
 
+      <button
+        style={styles.contactButton}
+        onClick={() => {
+          const message = encodeURIComponent(
+            "Hello, I'm having trouble with registration or login on the Survey App."
+          );
+          const whatsappUrl = `https://wa.me/254102074596?text=${message}`;
+          window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+        }}
+        title="Contact Support on WhatsApp"
+      >
+        💬
+      </button>
+
       {/* Footer - compact */}
       <div style={styles.footer}>
         <p>
@@ -702,6 +716,24 @@ const styles = {
     fontSize: "12px",
     padding: "0 15px",
     zIndex: 1,
+  },
+  contactButton: {
+    position: "fixed",
+    bottom: "90px",
+    right: "20px",
+    background: "#25D366",
+    color: "white",
+    border: "none",
+    borderRadius: "50%",
+    width: "60px",
+    height: "60px",
+    fontSize: "28px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1000,
   },
   termsContainer: {
     display: "flex",
