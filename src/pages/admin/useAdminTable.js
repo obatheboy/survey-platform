@@ -4,6 +4,7 @@ export function useAdminTable({
   fetchData,
   approveData,
   rejectData,
+  deleteBulkData,
   searchFields,
   filterConfig,
   initialFilterStatus = 'all',
@@ -16,6 +17,7 @@ export function useAdminTable({
   const [failureMessage, setFailureMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState(initialFilterStatus);
+  const [selectedIds, setSelectedIds] = useState(new Set());
 
   const fetchItems = async () => {
     try {
@@ -23,6 +25,7 @@ export function useAdminTable({
       setLoading(true);
       const res = await fetchData();
       setItems(res.data);
+      setSelectedIds(new Set());
     } catch (err) {
       console.error('Fetch items error:', err);
       setError('Failed to load items.');
@@ -87,6 +90,54 @@ export function useAdminTable({
     );
   };
 
+  const handleSelectOne = (id) => {
+    setSelectedIds((prev) => {
+      const newSelected = new Set(prev);
+      if (newSelected.has(id)) {
+        newSelected.delete(id);
+      } else {
+        newSelected.add(id);
+      }
+      return newSelected;
+    });
+  };
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      const allIds = new Set(filteredItems.map((item) => item.id));
+      setSelectedIds(allIds);
+    } else {
+      setSelectedIds(new Set());
+    }
+  };
+
+  const deleteSelectedItems = async () => {
+    if (selectedIds.size === 0) {
+      setFailureMessage('No items selected.');
+      return;
+    }
+
+    if (!window.confirm(`Are you sure you want to delete ${selectedIds.size} selected item(s)?`)) {
+      return;
+    }
+
+    setLoading(true);
+    setSuccessMessage('');
+    setFailureMessage('');
+
+    try {
+      const idsToDelete = Array.from(selectedIds);
+      await deleteBulkData(idsToDelete);
+      setItems((prev) => prev.filter((item) => !idsToDelete.includes(item.id)));
+      setSelectedIds(new Set());
+      setSuccessMessage(`${idsToDelete.length} item(s) deleted successfully.`);
+    } catch (err) {
+      setFailureMessage(err.response?.data?.message || 'Bulk delete failed.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
       const searchLower = searchTerm.toLowerCase();
@@ -121,5 +172,9 @@ export function useAdminTable({
     approveItem,
     rejectItem,
     filteredItems,
+    selectedIds,
+    handleSelectOne,
+    handleSelectAll,
+    deleteSelectedItems,
   };
 }
