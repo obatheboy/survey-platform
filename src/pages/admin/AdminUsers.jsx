@@ -9,6 +9,7 @@ export default function AdminUsers() {
   const [processingId, setProcessingId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [selectedIds, setSelectedIds] = useState(new Set());
 
   useEffect(() => {
     fetchUsers();
@@ -64,6 +65,27 @@ export default function AdminUsers() {
     }
   };
 
+  const deleteSelectedUsers = async () => {
+    if (selectedIds.size === 0) {
+      alert('No users selected.');
+      return;
+    }
+
+    if (!window.confirm(`Are you sure you want to delete ${selectedIds.size} selected user(s)?`)) {
+      return;
+    }
+
+    try {
+      const idsToDelete = Array.from(selectedIds);
+      await adminApi.post('/admin/users/bulk-delete', { userIds: idsToDelete });
+      setUsers((prev) => prev.filter((user) => !idsToDelete.includes(user.id)));
+      setSelectedIds(new Set());
+      alert(`${idsToDelete.length} user(s) deleted successfully.`);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Bulk delete failed.');
+    }
+  };
+
   /* ===========================
      UPDATE USER ROLE
   =========================== */
@@ -99,6 +121,27 @@ export default function AdminUsers() {
 
     return matchesSearch && matchesStatus;
   });
+
+  const handleSelectOne = (id) => {
+    setSelectedIds((prev) => {
+      const newSelected = new Set(prev);
+      if (newSelected.has(id)) {
+        newSelected.delete(id);
+      } else {
+        newSelected.add(id);
+      }
+      return newSelected;
+    });
+  };
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      const allIds = new Set(filteredUsers.map((item) => item.id));
+      setSelectedIds(allIds);
+    } else {
+      setSelectedIds(new Set());
+    }
+  };
 
   if (loading) return <p className="loading-text">Loading users...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
@@ -144,6 +187,14 @@ export default function AdminUsers() {
         </div>
       </div>
 
+      {selectedIds.size > 0 && (
+        <div className="bulk-actions" style={{ marginBottom: '1rem' }}>
+          <button onClick={deleteSelectedUsers} className="delete-btn">
+            Delete {selectedIds.size} Selected
+          </button>
+        </div>
+      )}
+
       {filteredUsers.length === 0 ? (
         <p className="no-results">No users found matching your search.</p>
       ) : (
@@ -151,6 +202,14 @@ export default function AdminUsers() {
           <table className="admin-table">
             <thead>
               <tr>
+                <th>
+                  <input
+                    type="checkbox"
+                    onChange={handleSelectAll}
+                    checked={filteredUsers.length > 0 && selectedIds.size === filteredUsers.length}
+                    disabled={filteredUsers.length === 0}
+                  />
+                </th>
                 <th>Full Name</th>
                 <th>Phone Number</th>
                 <th>Email</th>
@@ -164,6 +223,13 @@ export default function AdminUsers() {
             <tbody>
               {filteredUsers.map((user) => (
                 <tr key={user.id}>
+                  <td>
+                    <input
+                      type="checkbox"
+                      onChange={() => handleSelectOne(user.id)}
+                      checked={selectedIds.has(user.id)}
+                    />
+                  </td>
                   <td>{user.full_name}</td>
                   <td>{user.phone}</td>
                   <td>{user.email || "—"}</td>
