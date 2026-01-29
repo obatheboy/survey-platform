@@ -684,7 +684,6 @@ return (
       <div className="dashboard-section hero-section" style={{
         borderRadius: 'var(--radius-xl)',
         padding: '1.25rem',
-        border: '2px solid red',
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
         position: 'relative',
         overflow: 'hidden',
@@ -817,7 +816,6 @@ return (
             backdropFilter: 'none',
             borderRadius: 'var(--radius-xl)',
             padding: '0.75rem 1rem',
-            border: '2px solid red',
             minWidth: '110px',
             textAlign: 'center',
             boxShadow: 'var(--card-shadow)',
@@ -901,7 +899,6 @@ return (
       {/* WELCOME BONUS CARD */}
       <section ref={welcomeRef}>
         <div className="plan-card welcome-bonus" style={{
-          border: '2px solid red',
           background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)), var(--bg-surface)',
           boxShadow: '0 10px 30px rgba(255, 0, 0, 0.1)'
         }}>
@@ -1017,7 +1014,6 @@ return (
                 
                 return (
                   <div key={key} className="progress-card" style={{
-                    border: '2px solid red',
                     background: plan.bgColor,
                   }}>
                     <div className="progress-card-header">
@@ -1202,7 +1198,6 @@ return (
               
               return (
                 <div key={key} className={`plan-card ${key.toLowerCase()}`} style={{
-                  border: '2px solid red',
                   background: `linear-gradient(135deg, ${plan.bgColor}, rgba(255, 255, 255, 0.05)), var(--bg-surface)`,
                   boxShadow: `0 10px 30px ${plan.color}20`
                 }}>
@@ -1376,6 +1371,43 @@ return (
       </footer>
 
       <style jsx>{`
+        /* FORCE DARK MODE STYLES GLOBALLY */
+        :global(:root[data-theme='dark']) {
+          --bg-main: #0f172a !important;
+          --bg-surface: #1e293b !important;
+          --text-main: #f8fafc !important;
+          --text-muted: #cbd5e1 !important;
+          --border-soft: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        :global(html[data-theme='dark'] body) {
+          background-color: var(--bg-main) !important;
+          color: var(--text-main) !important;
+        }
+
+        /* Override hardcoded backgrounds in Dashboard.css */
+        :global(html[data-theme='dark']) .stats-card,
+        :global(html[data-theme='dark']) .feature-card,
+        :global(html[data-theme='dark']) .quick-action-card {
+          background: var(--bg-surface) !important;
+          border-color: var(--border-soft) !important;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        /* Ensure text visibility in dark mode */
+        :global(html[data-theme='dark']) .stats-card h4,
+        :global(html[data-theme='dark']) .feature-card h4,
+        :global(html[data-theme='dark']) .quick-action-card h4 {
+          color: var(--text-main) !important;
+          text-shadow: none !important;
+        }
+        
+        :global(html[data-theme='dark']) .stats-card p,
+        :global(html[data-theme='dark']) .feature-card p,
+        :global(html[data-theme='dark']) .quick-action-card p {
+          color: var(--text-muted) !important;
+        }
+
         /* Add padding to main dashboard to avoid content being hidden by nav bar */
         .dashboard {
           padding-bottom: 90px; /* Adjust based on nav bar height */
