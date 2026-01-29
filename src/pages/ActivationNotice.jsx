@@ -11,18 +11,21 @@ const PLAN_CONFIG = {
     activationFee: 100,
     color: "#10b981",
     glow: "rgba(16, 185, 129, 0.2)",
+    total: 1500,
   },
   VIP: {
     label: "VIP",
     activationFee: 150,
     color: "#6366f1",
     glow: "rgba(99, 102, 241, 0.2)",
+    total: 2000,
   },
   VVIP: {
     label: "VVIP",
     activationFee: 200,
     color: "#f59e0b",
     glow: "rgba(245, 158, 11, 0.2)",
+    total: 3000,
   },
 };
 
@@ -74,16 +77,10 @@ export default function ActivationNotice() {
             const res = await api.get("/auth/me");
             if (!alive) return;
             
-            const activePlan = res.data.active_plan;
-            const backendPlan = res.data.plans?.[activePlan];
+            const currentPlanKey = planType || plan?.type || res.data.active_plan;
+            const backendPlan = res.data.plans?.[currentPlanKey];
 
-            if (!activePlan || !backendPlan) {
-              console.warn("No active plan found in backend");
-              // Don't show error - just use passed state
-              return;
-            }
-
-            if (backendPlan.is_activated) {
+            if (backendPlan && backendPlan.is_activated) {
               console.log("Plan already activated in backend");
               // If already activated, redirect to dashboard
               setTimeout(() => {
@@ -91,10 +88,9 @@ export default function ActivationNotice() {
               }, 1500);
               return;
             }
-
-            // Update with accurate backend data silently
-            setPlanKey(activePlan);
-            setTotalEarned(res.data.total_earned);
+            
+            // FIX: Do not overwrite state with generic backend data if we have specific state
+            // We trust the state passed from the previous page for the specific plan context.
           } catch (apiError) {
             console.error("Backend verification failed:", apiError);
             // Don't show error - just use passed state
@@ -128,7 +124,8 @@ export default function ActivationNotice() {
         if (!alive) return;
 
         setPlanKey(activePlan);
-        setTotalEarned(res.data.total_earned);
+        // FIX: Use the plan's specific total from config to ensure accuracy for that plan
+        setTotalEarned(PLAN_CONFIG[activePlan]?.total || res.data.total_earned);
       } catch (err) {
         console.error("ActivationNotice error:", err);
         // Only show error if we have NO state data
