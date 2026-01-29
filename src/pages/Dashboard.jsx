@@ -886,82 +886,6 @@ return (
         <LiveWithdrawalFeed />
       </div>
 
-    {/* FLOATING WHATSAPP SUPPORT BUTTON - NOW FIXED POSITION */}
-<div style={{
-  position: 'fixed',
-  bottom: '20px',
-  right: '20px',
-  zIndex: 1000,
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-end',
-  gap: '5px'
-}}>
-  {showCaption && (
-    <div style={{
-      background: 'rgba(37, 211, 102, 0.95)',
-      color: 'white',
-      padding: '8px 14px',
-      borderRadius: '15px',
-      fontSize: '13px',
-      fontWeight: '700',
-      boxShadow: '0 4px 15px rgba(37, 211, 102, 0.4)',
-      whiteSpace: 'nowrap',
-      backdropFilter: 'blur(10px)',
-      border: '2px solid rgba(255, 255, 255, 0.3)',
-      animation: 'fadeIn 0.5s ease',
-      transform: 'translateZ(0)',
-      WebkitTransform: 'translateZ(0)',
-      willChange: 'transform, opacity'
-    }}>
-      Need help? Chat us
-    </div>
-  )}
-  
-  <button
-    onClick={openWhatsAppSupport}
-    style={{
-      background: '#25D366',
-      color: 'white',
-      border: 'none',
-      borderRadius: '50%',
-      width: '60px',
-      height: '60px',
-      fontSize: '28px',
-      boxShadow: '0 8px 20px rgba(37, 211, 102, 0.5)',
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-      padding: '0',
-      margin: '0',
-      transform: 'translateZ(0)',
-      WebkitTransform: 'translateZ(0)',
-      willChange: 'transform',
-      position: 'relative',
-      overflow: 'hidden',
-      zIndex: 1001
-    }}
-    onMouseOver={(e) => {
-      e.currentTarget.style.transform = 'scale(1.15) translateZ(0)';
-      e.currentTarget.style.boxShadow = '0 12px 30px rgba(37, 211, 102, 0.7)';
-    }}
-    onMouseOut={(e) => {
-      e.currentTarget.style.transform = 'scale(1) translateZ(0)';
-      e.currentTarget.style.boxShadow = '0 8px 20px rgba(37, 211, 102, 0.5)';
-    }}
-    onTouchStart={(e) => {
-      e.currentTarget.style.transform = 'scale(1.1) translateZ(0)';
-    }}
-    onTouchEnd={(e) => {
-      e.currentTarget.style.transform = 'scale(1) translateZ(0)';
-    }}
-    title="Contact Support on WhatsApp"
-  >
-    💬
-  </button>
-</div>
       {/* WELCOME BONUS CARD */}
       <section ref={welcomeRef}>
         <div className="plan-card welcome-bonus" style={{
@@ -1005,44 +929,6 @@ return (
               Activate & Claim
             </button>
           </div>
-        </div>
-      </section>
-
-      {/* DASHBOARD NAVIGATION - MOBILE OPTIMIZED */}
-      <section className="dashboard-section">
-        <div className="section-heading">
-          <h3>Dashboard Navigation</h3>
-          <p>Switch between different sections</p>
-        </div>
-        <div className="dashboard-nav-mobile">
-          <button 
-            className={`nav-btn ${activeTab === "OVERVIEW" ? "active" : ""}`}
-            onClick={() => setActiveTab("OVERVIEW")}
-          >
-            <span className="nav-icon">📊</span>
-            <span className="nav-label">Overview</span>
-          </button>
-          <button 
-            className={`nav-btn ${activeTab === "TESTIMONIALS" ? "active" : ""}`}
-            onClick={() => setActiveTab("TESTIMONIALS")}
-          >
-            <span className="nav-icon">🌟</span>
-            <span className="nav-label">Testimonials</span>
-          </button>
-          <button 
-            className={`nav-btn ${activeTab === "SURVEYS" ? "active" : ""}`}
-            onClick={goToSurveys}
-          >
-            <span className="nav-icon">📝</span>
-            <span className="nav-label">Surveys</span>
-          </button>
-          <button 
-            className={`nav-btn ${activeTab === "WITHDRAW" ? "active" : ""}`}
-            onClick={() => navigate("/withdraw-form")}
-          >
-            <span className="nav-icon">💸</span>
-            <span className="nav-label">Withdraw</span>
-          </button>
         </div>
       </section>
 
@@ -1412,6 +1298,45 @@ return (
         </section>
       )}
 
+      {/* BOTTOM NAVIGATION BAR */}
+      <div className="bottom-nav-bar">
+        <button
+          className={`nav-btn ${activeTab === "OVERVIEW" ? "active" : ""}`}
+          onClick={() => setActiveTab("OVERVIEW")}
+        >
+          <span className="nav-icon">📊</span>
+          <span className="nav-label">Dashboard</span>
+        </button>
+        <button
+          className={`nav-btn ${activeTab === "SURVEYS" ? "active" : ""}`}
+          onClick={goToSurveys}
+        >
+          <span className="nav-icon">📝</span>
+          <span className="nav-label">Surveys</span>
+        </button>
+        <button
+          className="nav-btn"
+          onClick={() => navigate("/withdraw-form")}
+        >
+          <span className="nav-icon">💸</span>
+          <span className="nav-label">Withdraw</span>
+        </button>
+        <button
+          className={`nav-btn ${activeTab === "TESTIMONIALS" ? "active" : ""}`}
+          onClick={() => setActiveTab("TESTIMONIALS")}
+        >
+          <span className="nav-icon">🌟</span>
+          <span className="nav-label">Testimonials</span>
+        </button>
+        <button
+          className="nav-btn"
+          onClick={openWhatsAppSupport}
+        >
+          <span className="nav-icon">💬</span>
+          <span className="nav-label">Chat Us</span>
+        </button>
+      </div>
+
       {/* FOOTER */}
       <footer className="dashboard-footer">
         <p>Need help? 
@@ -1437,6 +1362,29 @@ return (
       </footer>
 
       <style jsx>{`
+        /* Add padding to main dashboard to avoid content being hidden by nav bar */
+        .dashboard {
+          padding-bottom: 80px; /* Adjust based on nav bar height */
+        }
+
+        .bottom-nav-bar {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          display: flex;
+          justify-content: space-around;
+          background: var(--bg-surface, #ffffff);
+          padding: 8px 0;
+          box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+          z-index: 1000;
+          border-top: 1px solid var(--border-soft, #f1f5f9);
+        }
+
+        /* The .nav-btn styles are already in Dashboard-Enhanced.css */
+        /* We can add overrides or new styles here if needed */
+
+
         @keyframes pulse {
           0%, 100% { transform: scale(1); }
           50% { transform: scale(1.1); }
