@@ -73,6 +73,8 @@ export default function AdminUsers() {
     try {
       await adminApi.delete(`/admin/users/${id}`);
       setItems((prev) => prev.filter((u) => u.id !== id));
+    } catch (err) {
+      alert(err.response?.data?.message || "Deletion failed");
     }
   };
 
