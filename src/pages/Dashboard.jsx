@@ -135,15 +135,33 @@ export default function Dashboard() {
         setPlans(resUser.data.plans || {});
         
         // Calculate stats
-        const totalEarned = Number(resUser.data.total_earned || 0);
-        const totalSurveys = Object.values(resUser.data.plans || {}).reduce(
-          (sum, plan) => sum + (plan.surveys_completed || 0), 0
-        );
+        let calculatedTotalEarned = Number(resUser.data.total_earned || 0);
+        let calculatedTotalSurveys = 0;
+
+        Object.keys(PLANS).forEach(planKey => {
+          const backendPlan = resUser.data.plans?.[planKey] || { surveys_completed: 0 };
+          const backendCompletedCount = backendPlan.surveys_completed || 0;
+          
+          let effectiveCount = backendCompletedCount;
+          
+          // Check local storage override for immediate feedback
+          if (localStorage.getItem(`survey_completed_${planKey}`) === 'true') {
+            effectiveCount = TOTAL_SURVEYS;
+          }
+          
+          calculatedTotalSurveys += effectiveCount;
+          
+          // Adjust earnings if local storage says complete but backend doesn't yet
+          if (effectiveCount > backendCompletedCount) {
+            const diff = effectiveCount - backendCompletedCount;
+            calculatedTotalEarned += (diff * PLANS[planKey].perSurvey);
+          }
+        });
         
         setStats({
-          totalEarned,
-          availableBalance: totalEarned,
-          totalSurveysCompleted: totalSurveys,
+          totalEarned: calculatedTotalEarned + (Number(resUser.data.total_withdrawals) || 0),
+          availableBalance: calculatedTotalEarned,
+          totalSurveysCompleted: calculatedTotalSurveys,
           totalWithdrawals: resUser.data.total_withdrawals || 0
         });
 
