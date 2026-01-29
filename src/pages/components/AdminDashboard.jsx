@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { adminApi } from "../../api/adminApi";
-import "./AdminDashboard.css";
+import "../admin/Admin.css";
 
 const StatCard = ({ title, value, icon, color, loading }) => (
   <div className="stat-card" style={{ '--card-color': color }}>
