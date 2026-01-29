@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { adminApi } from "../../api/adminApi";
+import "./AdminWithdrawals.css";
 
 export default function AdminWithdrawals() {
   const [withdrawals, setWithdrawals] = useState([]);
@@ -98,67 +99,55 @@ export default function AdminWithdrawals() {
     return matchesSearch && matchesStatus;
   });
 
-  if (loading) return <p style={styles.loadingText}>Loading withdrawals...</p>;
+  if (loading) return <p className="loading-text">Loading withdrawals...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
+    <div className="admin-container">
+      <div className="admin-header">
         <h2>💰 Withdrawal Requests Dashboard</h2>
-        <p style={styles.subheader}>
+        <p>
           Total: {withdrawals.length} | Pending: {withdrawals.filter(w => w.status === "PROCESSING").length} | Approved: {withdrawals.filter(w => w.status === "APPROVED").length}
         </p>
       </div>
 
       {/* MESSAGES */}
-      {successMessage && <div style={styles.successMessage}>{successMessage}</div>}
-      {failureMessage && <div style={styles.errorMessage}>{failureMessage}</div>}
+      {successMessage && <div className="response-message success-message">{successMessage}</div>}
+      {failureMessage && <div className="response-message error-message">{failureMessage}</div>}
 
       {/* SEARCH & FILTER SECTION */}
-      <div style={styles.searchSection}>
-        <div style={styles.searchContainer}>
+      <div className="search-section">
+        <div className="search-container">
           <input
             type="text"
             placeholder="🔍 Search by name, phone, or email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={styles.searchInput}
+            className="search-input"
           />
         </div>
 
-        <div style={styles.filterContainer}>
+        <div className="filter-container">
           <button
-            style={{
-              ...styles.filterBtn,
-              ...(filterStatus === "all" ? styles.filterBtnActive : {}),
-            }}
+            className={`filter-btn ${filterStatus === "all" ? "filter-btn-active" : ""}`}
             onClick={() => setFilterStatus("all")}
           >
             All
           </button>
           <button
-            style={{
-              ...styles.filterBtn,
-              ...(filterStatus === "processing" ? styles.filterBtnActive : {}),
-            }}
+            className={`filter-btn ${filterStatus === "processing" ? "filter-btn-active" : ""}`}
             onClick={() => setFilterStatus("processing")}
           >
             Processing
           </button>
           <button
-            style={{
-              ...styles.filterBtn,
-              ...(filterStatus === "approved" ? styles.filterBtnActive : {}),
-            }}
+            className={`filter-btn ${filterStatus === "approved" ? "filter-btn-active" : ""}`}
             onClick={() => setFilterStatus("approved")}
           >
             Approved
           </button>
           <button
-            style={{
-              ...styles.filterBtn,
-              ...(filterStatus === "rejected" ? styles.filterBtnActive : {}),
-            }}
+            className={`filter-btn ${filterStatus === "rejected" ? "filter-btn-active" : ""}`}
             onClick={() => setFilterStatus("rejected")}
           >
             Rejected
@@ -167,81 +156,79 @@ export default function AdminWithdrawals() {
       </div>
 
       {filteredWithdrawals.length === 0 ? (
-        <p style={styles.noResults}>No withdrawals found.</p>
+        <p className="no-results">No withdrawals found.</p>
       ) : (
-        <div style={styles.tableWrapper}>
-          <table style={styles.table}>
+        <div className="table-wrapper">
+          <table className="admin-table">
             <thead>
-              <tr style={styles.headerRow}>
-                <th style={styles.th}>User Name</th>
-                <th style={styles.th}>Phone</th>
-                <th style={styles.th}>Email</th>
-                <th style={styles.th}>Gross (KES)</th>
-                <th style={styles.th}>Fee (KES)</th>
-                <th style={styles.th}>Net (KES)</th>
-                <th style={styles.th}>Type</th>
-                <th style={styles.th}>Status</th>
-                <th style={styles.th}>Requested</th>
-                <th style={styles.th}>Actions</th>
+              <tr>
+                <th>User Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Gross (KES)</th>
+                <th>Fee (KES)</th>
+                <th>Net (KES)</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Requested</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredWithdrawals.map((w) => (
-                <tr key={w.id} style={styles.row}>
-                  <td style={styles.td}>{w.full_name || "—"}</td>
-                  <td style={styles.td}>{w.phone_number}</td>
-                  <td style={styles.td}>{w.email || "—"}</td>
-                  <td style={styles.td}>
+                <tr key={w.id}>
+                  <td>{w.full_name || "—"}</td>
+                  <td>{w.phone_number}</td>
+                  <td>{w.email || "—"}</td>
+                  <td>
                     <strong>{Number(w.amount).toLocaleString()}</strong>
                   </td>
-                  <td style={styles.td}>{Number(w.fee).toLocaleString()}</td>
-                  <td style={styles.td}>
+                  <td>{Number(w.fee).toLocaleString()}</td>
+                  <td>
                     <strong style={{ color: "#0a7c4a", fontSize: "16px" }}>
                       {Number(w.net_amount).toLocaleString()}
                     </strong>
                   </td>
-                  <td style={styles.td}>
-                    <span style={styles.typeBadge}>
+                  <td>
+                    <span className="type-badge">
                       {w.type === "normal" ? "💵 Normal" : "🎁 Bonus"}
                     </span>
                   </td>
-                  <td style={styles.td}>
-                    <span style={{
-                      ...styles.statusBadge,
-                      ...(w.status === "PROCESSING" ? styles.processingBadge :
-                        w.status === "APPROVED" ? styles.approvedBadge :
-                          styles.rejectedBadge)
-                    }}>
+                  <td>
+                    <span className={`status-badge ${
+                      w.status === "PROCESSING" ? "processing-badge" :
+                      w.status === "APPROVED" ? "approved-badge" : "rejected-badge"
+                    }`}>
                       {w.status === "PROCESSING" ? "⏳ PENDING" :
                         w.status === "APPROVED" ? "✅ APPROVED" :
                           "❌ REJECTED"}
                     </span>
                   </td>
-                  <td style={styles.td}>
+                  <td>
                     {new Date(w.created_at).toLocaleDateString()} <br />
                     <small>{new Date(w.created_at).toLocaleTimeString()}</small>
                   </td>
-                  <td style={styles.td}>
-                    <div style={styles.actionButtons}>
+                  <td>
+                    <div className="action-buttons">
                       {w.status === "PROCESSING" ? (
                         <>
                           <button
                             onClick={() => approve(w.id)}
                             disabled={processingId === w.id}
-                            style={styles.approveBtn}
+                            className="approve-btn"
                           >
                             {processingId === w.id ? "..." : "✓ Approve"}
                           </button>
                           <button
                             onClick={() => reject(w.id)}
                             disabled={processingId === w.id}
-                            style={styles.rejectBtn}
+                            className="reject-btn"
                           >
                             ✕ Reject
                           </button>
                         </>
                       ) : (
-                        <span style={styles.doneText}>
+                        <span className="done-text">
                           {w.status === "APPROVED" ? "✓ Done" : "✕ Done"}
                         </span>
                       )}
@@ -256,173 +243,3 @@ export default function AdminWithdrawals() {
     </div>
   );
 }
-
-/* ===========================
-   STYLES
-=========================== */
-const styles = {
-    container: {
-        padding: "24px",
-        background: "#f9fafb",
-        minHeight: "100vh",
-    },
-  title: {
-    fontSize: "24px",
-    fontWeight: "800",
-    color: "var(--text-main)",
-    marginBottom: "var(--space-xl)",
-  },
-  searchSection: {
-    marginBottom: "var(--space-xl)",
-    background: "#ffffff",
-    padding: "var(--space-xl)",
-    borderRadius: "var(--radius-xl)",
-    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)",
-  },
-  searchContainer: {
-    marginBottom: "var(--space-lg)",
-  },
-  searchInput: {
-    width: "100%",
-    padding: "12px 16px",
-    borderRadius: "var(--radius-md)",
-    border: "1px solid #e5e7eb",
-    fontSize: "14px",
-    fontWeight: "500",
-    boxSizing: "border-box",
-  },
-  filterContainer: {
-    display: "flex",
-    gap: "var(--space-sm)",
-    flexWrap: "wrap",
-  },
-  filterBtn: {
-    padding: "8px 16px",
-    borderRadius: "var(--radius-sm)",
-    border: "1px solid #e5e7eb",
-    background: "#ffffff",
-    cursor: "pointer",
-    fontWeight: "600",
-    transition: "all var(--transition-fast)",
-  },
-  filterBtnActive: {
-    background: "#3b82f6",
-    color: "#fff",
-    borderColor: "#3b82f6",
-  },
-  tableWrapper: {
-    background: "#ffffff",
-    borderRadius: "var(--radius-xl)",
-    overflow: "hidden",
-    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)",
-    overflowX: "auto",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-  },
-  headerRow: {
-    background: "#f9fafb",
-    color: "#fff",
-  },
-  th: {
-    padding: "16px",
-    textAlign: "left",
-    fontWeight: "700",
-    fontSize: "14px",
-  },
-  row: {
-    borderBottom: "1px solid #e5e7eb",
-  },
-  td: {
-    padding: "14px 16px",
-    fontSize: "14px",
-    color: "#111827",
-  },
-  statusBadge: {
-    padding: "6px 12px",
-    borderRadius: "20px",
-    fontSize: "12px",
-    fontWeight: "700",
-  },
-  processingBadge: {
-    background: "rgba(245, 158, 11, 0.1)",
-    color: "#f59e0b",
-  },
-  approvedBadge: {
-    background: "rgba(16, 185, 129, 0.1)",
-    color: "#10b981",
-  },
-  rejectedBadge: {
-    background: "rgba(220, 38, 38, 0.1)",
-    color: "#ef4444",
-  },
-  typeBadge: {
-    padding: "4px 10px",
-    borderRadius: "var(--radius-sm)",
-    fontSize: "12px",
-    fontWeight: "600",
-    background: "rgba(37, 99, 235, 0.1)",
-    color: "#3b82f6",
-  },
-  actionButtons: {
-    display: "flex",
-    gap: "8px",
-    flexWrap: "wrap",
-  },
-  approveBtn: {
-    padding: "6px 12px",
-    borderRadius: "var(--radius-sm)",
-    border: "none",
-    background: "#10b981",
-    color: "#fff",
-    cursor: "pointer",
-    fontWeight: "600",
-    fontSize: "12px",
-  },
-  rejectBtn: {
-    padding: "6px 12px",
-    borderRadius: "var(--radius-sm)",
-    border: "none",
-    background: "#ef4444",
-    color: "#fff",
-    cursor: "pointer",
-    fontWeight: "600",
-    fontSize: "12px",
-  },
-  doneText: {
-    fontWeight: "600",
-    fontSize: "12px",
-    color: "#6b7280",
-  },
-  successMessage: {
-    padding: "14px",
-    marginBottom: "16px",
-    borderRadius: "var(--radius-md)",
-    background: "rgba(16, 185, 129, 0.1)",
-    color: "#10b981",
-    fontWeight: "600",
-    border: "1px solid #10b981",
-  },
-  errorMessage: {
-    padding: "14px",
-    marginBottom: "16px",
-    borderRadius: "var(--radius-md)",
-    background: "rgba(220, 38, 38, 0.1)",
-    color: "#ef4444",
-    fontWeight: "600",
-    border: "1px solid #ef4444",
-  },
-  loadingText: {
-    textAlign: "center",
-    padding: "40px",
-    fontSize: "16px",
-    color: "#111827",
-  },
-  noResults: {
-    textAlign: "center",
-    padding: "40px",
-    fontSize: "16px",
-    color: "#6b7280",
-  },
-};

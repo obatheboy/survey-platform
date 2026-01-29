@@ -1,0 +1,159 @@
+.admin-container {
+    padding: 24px;
+    background-color: #f9fafb;
+    min-height: 100vh;
+}
+
+.admin-header {
+    margin-bottom: 24px;
+}
+
+.admin-header h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 4px;
+}
+
+.admin-header p {
+    font-size: 16px;
+    color: #6b7280;
+    margin: 0;
+}
+
+.search-section {
+    margin-bottom: 24px;
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+}
+
+.search-container {
+    margin-bottom: 16px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    font-size: 14px;
+    font-weight: 500;
+    box-sizing: border-box;
+}
+
+.filter-container {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.filter-btn-active {
+    background: #3b82f6;
+    color: #fff;
+    border-color: #3b82f6;
+}
+
+.table-wrapper {
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th {
+    padding: 16px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 12px;
+    background: #f9fafb;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.admin-table tr {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-table td {
+    padding: 14px 16px;
+    font-size: 14px;
+    color: #111827;
+    white-space: nowrap;
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.processing-badge {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+.approved-badge {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.rejected-badge {
+    background: rgba(220, 38, 38, 0.1);
+    color: #ef4444;
+}
+
+.type-badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(37, 99, 235, 0.1);
+    color: #3b82f6;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.action-buttons button {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.approve-btn {
+    background: #10b981;
+}
+
+.reject-btn {
+    background: #ef4444;
+}
+
+/* Add other styles from AdminWithdrawals.jsx here */

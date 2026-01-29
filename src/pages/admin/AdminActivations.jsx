@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { adminApi } from "../../api/adminApi";
+import "./AdminActivations.css";
 
 export default function AdminActivations() {
   const [payments, setPayments] = useState([]);
@@ -126,67 +127,55 @@ export default function AdminActivations() {
     return matchesSearch && matchesStatus;
   });
 
-  if (loading) return <p style={styles.loadingText}>Loading activation payments...</p>;
+  if (loading) return <p className="loading-text">Loading activation payments...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
+    <div className="admin-container">
+      <div className="admin-header">
         <h2>💳 Activation Payments Dashboard</h2>
-        <p style={styles.subheader}>
+        <p>
           Total: {payments.length} | Pending: {payments.filter(p => p.status === "SUBMITTED").length} | Approved: {payments.filter(p => p.status === "APPROVED").length}
         </p>
       </div>
 
       {/* MESSAGES */}
-      {successMessage && <div style={styles.successMessage}>{successMessage}</div>}
-      {failureMessage && <div style={styles.errorMessage}>{failureMessage}</div>}
+      {successMessage && <div className="response-message success-message">{successMessage}</div>}
+      {failureMessage && <div className="response-message error-message">{failureMessage}</div>}
 
       {/* SEARCH & FILTER SECTION */}
-      <div style={styles.searchSection}>
-        <div style={styles.searchContainer}>
+      <div className="search-section">
+        <div className="search-container">
           <input
             type="text"
             placeholder="🔍 Search by name, phone, email, or M-Pesa code..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={styles.searchInput}
+            className="search-input"
           />
         </div>
 
-        <div style={styles.filterContainer}>
+        <div className="filter-container">
           <button
-            style={{
-              ...styles.filterBtn,
-              ...(filterStatus === "all" ? styles.filterBtnActive : {}),
-            }}
+            className={`filter-btn ${filterStatus === "all" ? "filter-btn-active" : ""}`}
             onClick={() => setFilterStatus("all")}
           >
             All
           </button>
           <button
-            style={{
-              ...styles.filterBtn,
-              ...(filterStatus === "pending" ? styles.filterBtnActive : {}),
-            }}
+            className={`filter-btn ${filterStatus === "pending" ? "filter-btn-active" : ""}`}
             onClick={() => setFilterStatus("pending")}
           >
             Pending
           </button>
           <button
-            style={{
-              ...styles.filterBtn,
-              ...(filterStatus === "approved" ? styles.filterBtnActive : {}),
-            }}
+            className={`filter-btn ${filterStatus === "approved" ? "filter-btn-active" : ""}`}
             onClick={() => setFilterStatus("approved")}
           >
             Approved
           </button>
           <button
-            style={{
-              ...styles.filterBtn,
-              ...(filterStatus === "rejected" ? styles.filterBtnActive : {}),
-            }}
+            className={`filter-btn ${filterStatus === "rejected" ? "filter-btn-active" : ""}`}
             onClick={() => setFilterStatus("rejected")}
           >
             Rejected
@@ -271,13 +260,13 @@ export default function AdminActivations() {
             <div style={styles.roleButtons}>
               <button
                 onClick={() => updateUserRole(selectedPayment.user_id, "user")}
-                style={styles.roleOptionBtn}
+                className="role-option-btn"
               >
                 👤 Regular User
               </button>
               <button
                 onClick={() => updateUserRole(selectedPayment.user_id, "admin")}
-                style={styles.roleOptionBtnAdmin}
+                className="role-option-btn admin"
               >
                 👨‍💼 Admin User
               </button>
@@ -289,36 +278,38 @@ export default function AdminActivations() {
                 setSelectedPayment(null);
                 setRoleMessage("");
               }}
-              style={styles.modalCloseBtn}
+              className="modal-close-btn"
             >
               Close
             </button>
           </div>
         </div>
       )}
+                  <td>
+                    {new Date(p.created_at).toLocaleDateString()} <br />
                     <small>{new Date(p.created_at).toLocaleTimeString()}</small>
                   </td>
-                  <td style={styles.td}>
-                    <div style={styles.actionButtons}>
+                  <td>
+                    <div className="action-buttons">
                       {p.status === "SUBMITTED" ? (
                         <>
                           <button
                             onClick={() => approve(p.id)}
                             disabled={processingId === p.id}
-                            style={styles.approveBtn}
+                            className="approve-btn"
                           >
                             {processingId === p.id ? "..." : "✓ Approve"}
                           </button>
                           <button
                             onClick={() => reject(p.id)}
                             disabled={processingId === p.id}
-                            style={styles.rejectBtn}
+                            className="reject-btn"
                           >
                             ✕ Reject
                           </button>
                         </>
                       ) : (
-                        <span style={styles.doneText}>
+                        <span className="done-text">
                           {p.status === "APPROVED" ? "✓ Done" : "✕ Done"}
                         </span>
                       )}
@@ -333,251 +324,3 @@ export default function AdminActivations() {
     </div>
   );
 }
-
-/* ===========================
-   STYLES
-=========================== */
-const styles = {
-    container: {
-        padding: "24px",
-        background: "#f9fafb",
-        minHeight: "100vh",
-    },
-  title: {
-    fontSize: "24px",
-    fontWeight: "800",
-    color: "var(--text-main)",
-    marginBottom: "var(--space-xl)",
-  },
-  searchSection: {
-    marginBottom: "var(--space-xl)",
-    background: "#ffffff",
-    padding: "var(--space-xl)",
-    borderRadius: "var(--radius-xl)",
-    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)",
-  },
-  searchContainer: {
-    marginBottom: "var(--space-lg)",
-  },
-  searchInput: {
-    width: "100%",
-    padding: "12px 16px",
-    borderRadius: "var(--radius-md)",
-    border: "1px solid #e5e7eb",
-    fontSize: "14px",
-    fontWeight: "500",
-    boxSizing: "border-box",
-  },
-  filterContainer: {
-    display: "flex",
-    gap: "var(--space-sm)",
-    flexWrap: "wrap",
-  },
-  filterBtn: {
-    padding: "8px 16px",
-    borderRadius: "var(--radius-sm)",
-    border: "1px solid #e5e7eb",
-    background: "#ffffff",
-    cursor: "pointer",
-    fontWeight: "600",
-    transition: "all var(--transition-fast)",
-  },
-  filterBtnActive: {
-    background: "#3b82f6",
-    color: "#fff",
-    borderColor: "#3b82f6",
-  },
-  tableWrapper: {
-    background: "#ffffff",
-    borderRadius: "var(--radius-xl)",
-    overflow: "hidden",
-    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-  },
-  headerRow: {
-    background: "#f9fafb",
-    color: "#fff",
-  },
-  th: {
-    padding: "16px",
-    textAlign: "left",
-    fontWeight: "700",
-    fontSize: "14px",
-  },
-  row: {
-    borderBottom: "1px solid #e5e7eb",
-  },
-  td: {
-    padding: "14px 16px",
-    fontSize: "14px",
-    color: "#111827",
-  },
-  roleBtn: {
-    padding: "6px 12px",
-    borderRadius: "var(--radius-sm)",
-    border: "none",
-    background: "#3b82f6",
-    color: "#fff",
-    cursor: "pointer",
-    fontWeight: "600",
-    fontSize: "12px",
-  },
-  modalOverlay: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: "rgba(0,0,0,0.5)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 1000,
-  },
-  modalContent: {
-    background: "#ffffff",
-    borderRadius: "var(--radius-xl)",
-    padding: "32px",
-    maxWidth: "400px",
-    width: "90%",
-    boxShadow: "var(--card-shadow-hover)",
-  },
-  modalTitle: {
-    fontSize: "20px",
-    fontWeight: "700",
-    marginBottom: "8px",
-    color: "#111827",
-  },
-  modalSubtext: {
-    fontSize: "14px",
-    color: "#6b7280",
-    marginBottom: "16px",
-  },
-  modalMessage: {
-    padding: "12px",
-    borderRadius: "var(--radius-md)",
-    marginBottom: "16px",
-    fontSize: "14px",
-    fontWeight: "600",
-  },
-  roleButtons: {
-    display: "flex",
-    gap: "var(--space-sm)",
-    marginBottom: "16px",
-  },
-  roleOptionBtn: {
-    flex: 1,
-    padding: "12px",
-    borderRadius: "var(--radius-md)",
-    border: "1px solid #e5e7eb",
-    background: "#ffffff",
-    cursor: "pointer",
-    fontWeight: "600",
-    fontSize: "14px",
-    transition: "all var(--transition-fast)",
-  },
-  roleOptionBtnAdmin: {
-    flex: 1,
-    padding: "12px",
-    borderRadius: "var(--radius-md)",
-    border: "1px solid #f59e0b",
-    background: "rgba(245, 158, 11, 0.1)",
-    cursor: "pointer",
-    fontWeight: "600",
-    fontSize: "14px",
-    transition: "all var(--transition-fast)",
-    color: "#f59e0b",
-  },
-  modalCloseBtn: {
-    width: "100%",
-    padding: "10px",
-    borderRadius: "var(--radius-md)",
-    border: "none",
-    background: "#6b7280",
-    color: "#fff",
-    cursor: "pointer",
-    fontWeight: "600",
-    fontSize: "14px",
-  },
-  statusBadge: {
-    padding: "6px 12px",
-    borderRadius: "20px",
-    fontSize: "12px",
-    fontWeight: "700",
-  },
-  pendingBadge: {
-    background: "rgba(245, 158, 11, 0.1)",
-    color: "#f59e0b",
-  },
-  approvedBadge: {
-    background: "rgba(16, 185, 129, 0.1)",
-    color: "#10b981",
-  },
-  rejectedBadge: {
-    background: "rgba(220, 38, 38, 0.1)",
-    color: "#ef4444",
-  },
-  actionButtons: {
-    display: "flex",
-    gap: "8px",
-    flexWrap: "wrap",
-  },
-  approveBtn: {
-    padding: "6px 12px",
-    borderRadius: "var(--radius-sm)",
-    border: "none",
-    background: "#10b981",
-    color: "#fff",
-    cursor: "pointer",
-    fontWeight: "600",
-    fontSize: "12px",
-  },
-  rejectBtn: {
-    padding: "6px 12px",
-    borderRadius: "var(--radius-sm)",
-    border: "none",
-    background: "#ef4444",
-    color: "#fff",
-    cursor: "pointer",
-    fontWeight: "600",
-    fontSize: "12px",
-  },
-  doneText: {
-    fontWeight: "600",
-    fontSize: "12px",
-    color: "#6b7280",
-  },
-  successMessage: {
-    padding: "14px",
-    marginBottom: "16px",
-    borderRadius: "var(--radius-md)",
-    background: "rgba(16, 185, 129, 0.1)",
-    color: "#10b981",
-    fontWeight: "600",
-    border: "1px solid #10b981",
-  },
-  errorMessage: {
-    padding: "14px",
-    marginBottom: "16px",
-    borderRadius: "var(--radius-md)",
-    background: "rgba(220, 38, 38, 0.1)",
-    color: "#ef4444",
-    fontWeight: "600",
-    border: "1px solid #ef4444",
-  },
-  loadingText: {
-    textAlign: "center",
-    padding: "40px",
-    fontSize: "16px",
-    color: "#111827",
-  },
-  noResults: {
-    textAlign: "center",
-    padding: "40px",
-    fontSize: "16px",
-    color: "#6b7280",
-  },
-};
