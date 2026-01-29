@@ -12,6 +12,7 @@ const filterConfig = {
 
 export default function AdminUsers() {
   const [processingId, setProcessingId] = useState(null);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
 
   const {
     items: users,
@@ -115,13 +116,24 @@ export default function AdminUsers() {
       error={error}
       items={users} // Pass original items for stats
     >
-      {selectedIds.size > 0 && (
-        <div className="bulk-actions" style={{ marginBottom: '1rem', padding: '0 20px' }}>
-          <button onClick={deleteSelectedUsers} className="delete-btn">
-            Delete {selectedIds.size} Selected
+      <div className="bulk-actions" style={{ marginBottom: '1rem', padding: '0 20px', display: 'flex', gap: '10px' }}>
+        {!isSelectionMode ? (
+          <button onClick={() => setIsSelectionMode(true)} className="role-btn" style={{ background: '#64748b' }}>
+            Select Users
           </button>
-        </div>
-      )}
+        ) : (
+          <>
+            <button onClick={() => setIsSelectionMode(false)} className="role-btn" style={{ background: '#94a3b8' }}>
+              Cancel
+            </button>
+            {selectedIds.size > 0 && (
+              <button onClick={deleteSelectedUsers} className="delete-btn">
+                Delete {selectedIds.size} Selected
+              </button>
+            )}
+          </>
+        )}
+      </div>
 
       {filteredUsers.length === 0 ? (
         <p className="no-results">No users found matching your search.</p>
@@ -130,14 +142,16 @@ export default function AdminUsers() {
           <table className="admin-table">
             <thead>
               <tr>
-                <th>
-                  <input
-                    type="checkbox"
-                    onChange={handleSelectAll}
-                    checked={filteredUsers.length > 0 && selectedIds.size === filteredUsers.length}
-                    disabled={filteredUsers.length === 0}
-                  />
-                </th>
+                {isSelectionMode && (
+                  <th>
+                    <input
+                      type="checkbox"
+                      onChange={handleSelectAll}
+                      checked={filteredUsers.length > 0 && selectedIds.size === filteredUsers.length}
+                      disabled={filteredUsers.length === 0}
+                    />
+                  </th>
+                )}
                 <th>Full Name</th>
                 <th>Phone Number</th>
                 <th>Email</th>
@@ -151,13 +165,15 @@ export default function AdminUsers() {
             <tbody>
               {filteredUsers.map((user) => (
                 <tr key={user.id}>
-                  <td>
-                    <input
-                      type="checkbox"
-                      onChange={() => handleSelectOne(user.id)}
-                      checked={selectedIds.has(user.id)}
-                    />
-                  </td>
+                  {isSelectionMode && (
+                    <td>
+                      <input
+                        type="checkbox"
+                        onChange={() => handleSelectOne(user.id)}
+                        checked={selectedIds.has(user.id)}
+                      />
+                    </td>
+                  )}
                   <td>{user.full_name}</td>
                   <td>{user.phone}</td>
                   <td>{user.email || "—"}</td>
