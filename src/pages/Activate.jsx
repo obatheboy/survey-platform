@@ -1,6 +1,6 @@
 // ========================= Activate.jsx =========================
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import api from "../api/api";
 import TrustBadges from "../components/TrustBadges";
 import Testimonials from "../components/Testimonials";
@@ -242,6 +242,7 @@ const styles = {
 
 export default function Activate() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
 
   const [planKey, setPlanKey] = useState(null);
@@ -266,8 +267,9 @@ export default function Activate() {
         if (!isMounted) return;
         setUser(res.data);
 
+        const statePlanKey = location.state?.planKey;
         const isWelcome = searchParams.get("welcome_bonus");
-        const planFromQuery = isWelcome ? "WELCOME" : res.data.active_plan;
+        const planFromQuery = isWelcome ? "WELCOME" : (statePlanKey || res.data.active_plan);
 
         let plan;
         if (planFromQuery === "WELCOME") {
@@ -277,7 +279,12 @@ export default function Activate() {
             total: res.data.welcome_bonus || 1200 
           };
         } else {
-          plan = res.data.plans?.[res.data.active_plan];
+          plan = res.data.plans?.[planFromQuery];
+        }
+
+        // Fallback: if plan exists in config but not yet in user object (e.g. local state ahead), allow it
+        if (!plan && PLAN_CONFIG[planFromQuery]) {
+          plan = { is_activated: false };
         }
 
         if (!plan || (planFromQuery !== "WELCOME" && plan.is_activated)) {
@@ -300,7 +307,7 @@ export default function Activate() {
     return () => {
       isMounted = false;
     };
-  }, [navigate, searchParams]);
+  }, [navigate, searchParams, location.state]);
 
   /* =========================
      COPY NUMBER
