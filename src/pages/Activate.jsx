@@ -428,9 +428,9 @@ export default function Activate() {
               <br />
               {planKey === "WELCOME" ? (
                 <>
-                  2. Complete VIP SURVEY PLAN
+                  2. Complete VIP SURVEY PLAN(150) and  
                   <br />
-                  3. Pay the activation fee to withdraw
+                  3. Complete VVIP SURVEY PLAN (200) to unlock full withdrawals!
                 </>
               ) : (
                 <>
