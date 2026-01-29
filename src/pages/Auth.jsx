@@ -93,6 +93,7 @@ export default function Auth() {
 
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
+        localStorage.setItem("token", res.data.token);
         localStorage.removeItem("active_plan");
         localStorage.removeItem("survey_completed_REGULAR");
         localStorage.removeItem("survey_completed_VIP");
@@ -120,6 +121,7 @@ export default function Auth() {
       const res = await api.post("/auth/login", loginData);
 
       if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
         localStorage.setItem("token", res.data.token);
         localStorage.removeItem("active_plan");
         localStorage.removeItem("survey_completed_REGULAR");
