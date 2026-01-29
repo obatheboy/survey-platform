@@ -40,7 +40,7 @@ export default function Surveys() {
           setActivePlan(plan);
         }
       })
-      .catch(() => setActivePlan(plan));
+      .catch(() => navigate("/dashboard"));
   }, [navigate]);
 
   const questions = useMemo(() => {
@@ -66,15 +66,11 @@ export default function Surveys() {
   const handleComplete = async () => {
     setIsCompleting(true);
     try {
-      // Simulate API call to submit survey answers
-      try {
-        await api.post("/surveys/complete", {
-          plan: activePlan,
-          answers: answers,
-        });
-      } catch (apiError) {
-        console.warn("API submission failed, proceeding locally:", apiError);
-      }
+      // Submit survey answers to backend
+      await api.post("/surveys/complete", {
+        plan: activePlan,
+        answers: answers,
+      });
 
       navigate("/activation-notice", {
         state: {

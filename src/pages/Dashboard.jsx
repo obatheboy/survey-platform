@@ -1300,7 +1300,7 @@ return (
                             boxShadow: `0 5px 20px ${plan.color}40`
                           }}
                         >
-                          {!activated ? '🔓 Activate to Withdraw' : 
+                          {!activated ? 'Activate to Withdraw' : 
                            hasPending ? '📤 Manage Withdrawal' :
                            '💸 Withdraw KES'} {(!hasPending && activated) ? plan.total : ''}
                         </button>
