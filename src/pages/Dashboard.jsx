@@ -49,6 +49,7 @@ const PLANS = {
 };
 
 const TOTAL_SURVEYS = 10;
+const APP_VERSION = "1.2.1"; // Bump this version to force clients to refresh on deploy
 
 const getInitialTheme = () => {
   // 1. Check for a saved theme in localStorage
@@ -114,6 +115,16 @@ export default function Dashboard() {
   ========================= */
   useEffect(() => {
     let alive = true;
+
+    // 🔄 FORCE UPDATE CHECK
+    const savedVersion = localStorage.getItem("app_version");
+    if (savedVersion !== APP_VERSION) {
+      localStorage.setItem("app_version", APP_VERSION);
+      if (savedVersion) {
+        // If a previous version existed, reload to get new assets
+        window.location.reload();
+      }
+    }
 
     const load = async () => {
       try {
@@ -1145,6 +1156,15 @@ return (
               ))}
             </div>
           </section>
+
+          {/* TESTIMONIALS - Moved back to Dashboard */}
+          <section className="dashboard-section">
+            <div className="section-heading">
+              <h3>Community Success</h3>
+              <p>See what others are earning</p>
+            </div>
+            <Testimonials variant="grid" />
+          </section>
         </>
       )}
 
@@ -1322,13 +1342,6 @@ return (
           <span className="nav-label">Withdraw</span>
         </button>
         <button
-          className={`nav-btn ${activeTab === "TESTIMONIALS" ? "active" : ""}`}
-          onClick={() => setActiveTab("TESTIMONIALS")}
-        >
-          <span className="nav-icon">🌟</span>
-          <span className="nav-label">Testimonials</span>
-        </button>
-        <button
           className="nav-btn"
           onClick={openWhatsAppSupport}
         >
@@ -1364,7 +1377,7 @@ return (
       <style jsx>{`
         /* Add padding to main dashboard to avoid content being hidden by nav bar */
         .dashboard {
-          padding-bottom: 80px; /* Adjust based on nav bar height */
+          padding-bottom: 90px; /* Adjust based on nav bar height */
         }
 
         .bottom-nav-bar {
@@ -1374,16 +1387,57 @@ return (
           right: 0;
           display: flex;
           justify-content: space-around;
+          align-items: center;
           background: var(--bg-surface, #ffffff);
-          padding: 8px 0;
-          box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+          padding: 10px 16px;
+          padding-bottom: calc(10px + env(safe-area-inset-bottom));
+          box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
           z-index: 1000;
           border-top: 1px solid var(--border-soft, #f1f5f9);
+          backdrop-filter: blur(10px);
+          background: rgba(255, 255, 255, 0.95);
+        }
+
+        /* Dark mode support for nav bar */
+        [data-theme='dark'] .bottom-nav-bar {
+          background: rgba(30, 41, 59, 0.95);
+          border-top-color: rgba(255, 255, 255, 0.1);
         }
 
         /* The .nav-btn styles are already in Dashboard-Enhanced.css */
         /* We can add overrides or new styles here if needed */
+        .nav-btn {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          background: transparent;
+          border: none;
+          gap: 4px;
+          padding: 6px;
+          border-radius: 12px;
+          transition: all 0.2s ease;
+          color: var(--text-muted);
+          max-width: 80px; /* Prevent buttons from getting too wide */
+        }
 
+        .nav-btn.active {
+          color: var(--primary);
+          background: rgba(37, 99, 235, 0.1);
+        }
+
+        .nav-icon {
+          font-size: 22px;
+          margin-bottom: 2px;
+          display: block;
+        }
+
+        .nav-label {
+          font-size: 11px;
+          font-weight: 600;
+          display: block;
+        }
 
         @keyframes pulse {
           0%, 100% { transform: scale(1); }
