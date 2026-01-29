@@ -50,6 +50,19 @@ const PLANS = {
 
 const TOTAL_SURVEYS = 10;
 
+const getInitialTheme = () => {
+  // 1. Check for a saved theme in localStorage
+  if (typeof window !== 'undefined' && localStorage.getItem('theme')) {
+    return localStorage.getItem('theme');
+  }
+  // 2. Check for user's OS preference
+  if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
+    return 'dark';
+  }
+  // 3. Default to light
+  return 'light';
+};
+
 export default function Dashboard() {
   const navigate = useNavigate();
 
@@ -61,7 +74,7 @@ export default function Dashboard() {
      UI STATE
   ========================= */
   const [activeTab, setActiveTab] = useState("OVERVIEW");
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+  const [theme, setTheme] = useState(getInitialTheme);
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(true);
@@ -160,6 +173,20 @@ export default function Dashboard() {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
+
+  // Listen for system theme changes and update if no theme is saved
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e) => {
+      // Only update if user hasn't made a manual selection
+      if (!('theme' in localStorage)) {
+        setTheme(e.matches ? 'dark' : 'light');
+      }
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
 
   /* =========================
      LOAD PENDING WITHDRAWALS
