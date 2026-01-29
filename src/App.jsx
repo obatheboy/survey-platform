@@ -23,7 +23,7 @@ import AdminActivations from "./pages/admin/AdminActivations";
 import AdminWithdrawals from "./pages/admin/AdminWithdrawals";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminNotifications from "./pages/admin/AdminNotifications";
-import AdminDashboard from "./pages/components/AdminDashboard";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 /* ================= COMPONENTS ================= */
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
