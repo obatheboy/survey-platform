@@ -130,30 +130,25 @@ export default function AdminUsers() {
       error={error}
       items={users} // Pass original items for stats
     >
-      {selectedIds.size > 0 && (
-        <div style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          background: 'rgba(240, 245, 255, 0.9)',
-          backdropFilter: 'blur(8px)',
-          padding: '12px 20px',
-          marginBottom: '1rem',
-          borderRadius: '8px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          border: '1px solid #dbeafe',
-        }}>
-          <span style={{ fontWeight: '600', color: '#1e40af' }}>
-            {selectedIds.size} user(s) selected
-          </span>
-          <button onClick={handleBulkDelete} className="delete-btn">
-            Delete Selected
+      <div className="bulk-actions" style={{ padding: '0 20px 1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <button
+              onClick={handleSelectAll}
+              disabled={filteredUsers.length === 0}
+              className="role-btn"
+              style={{ background: '#64748b' }}
+          >
+              {selectedIds.size === filteredUsers.length && filteredUsers.length > 0
+                  ? 'Deselect All'
+                  : 'Select All'}
           </button>
-        </div>
-      )}
+          <button
+              onClick={handleBulkDelete}
+              className="delete-btn"
+              disabled={selectedIds.size === 0}
+          >
+              Delete Selected ({selectedIds.size})
+          </button>
+      </div>
 
       {filteredUsers.length === 0 ? (
         <p className="no-results">No users found matching your search.</p>
