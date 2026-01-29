@@ -282,10 +282,21 @@ export default function Dashboard() {
   /* =========================
      HELPERS
   ========================= */
-  const surveysDone = (plan) => plans[plan]?.surveys_completed || 0;
-  const isCompleted = (plan) => surveysDone(plan) >= TOTAL_SURVEYS || localStorage.getItem(`survey_completed_${plan}`) === 'true';
+  const surveysDone = (plan) => {
+    if (localStorage.getItem(`survey_completed_${plan}`) === 'true') {
+      return TOTAL_SURVEYS;
+    }
+    return plans[plan]?.surveys_completed || 0;
+  };
+  const isCompleted = (plan) => surveysDone(plan) >= TOTAL_SURVEYS;
   const isActivated = (plan) => plans[plan]?.is_activated === true;
-  const earnedSoFar = (plan) => surveysDone(plan) * PLANS[plan].perSurvey;
+  const earnedSoFar = (plan) => {
+    const count = surveysDone(plan);
+    if (count >= TOTAL_SURVEYS) {
+      return PLANS[plan].total;
+    }
+    return count * PLANS[plan].perSurvey;
+  };
   const progressPercentage = (plan) => (surveysDone(plan) / TOTAL_SURVEYS) * 100;
 
   const getPlanStatus = (plan) => {
