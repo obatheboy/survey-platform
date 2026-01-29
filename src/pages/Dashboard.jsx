@@ -984,26 +984,11 @@ return (
               lineHeight: '1.6',
               color: 'var(--text-muted)',
               textAlign: 'center',
-              margin: '0 0 16px'
+              margin: '0 0 16px',
+              fontWeight: 'bold'
             }}>
               Congratulations! You've received a welcome bonus of <strong style={{color: '#ef4444', fontSize: '18px'}}>KES 1,200</strong>. Activate your account to withdraw.
             </p>
-            
-            <div className="plan-stats">
-              <div className="stat-row">
-                <span className="stat-label">Bonus Amount</span>
-                <span className="stat-value earned" style={{color: '#ef4444', fontSize: '18px'}}>KES 1,200</span>
-              </div>
-              <div className="stat-row">
-                <span className="stat-label">Status</span>
-                <span className="stat-value">Pending Activation</span>
-              </div>
-            </div>
-            
-            <div className="plan-features">
-              <span className="feature-tag">⚡ Instant</span>
-              <span className="feature-tag">🔒 Secure</span>
-            </div>
           </div>
           
           <div className="plan-card-footer">
