@@ -309,20 +309,17 @@ exports.sendBulkNotification = async (req, res) => {
   try {
     await client.query('BEGIN');
 
-    // Get all user IDs
-    const usersRes = await client.query('SELECT id FROM users');
-    const userIds = usersRes.rows.map(row => row.id);
-
-    // Insert a notification for each user
-    for (const userId of userIds) {
-      await client.query(
-        'INSERT INTO notifications (user_id, title, message, type) VALUES ($1, $2, $3, $4)',
-        [userId, title, message, 'bulk']
-      );
-    }
+    // Use a single, more efficient query to insert notifications for all users.
+    const insertQuery = `
+      INSERT INTO notifications (user_id, title, message, type)
+      SELECT id, $1, $2, 'bulk' FROM users
+    `;
+    const result = await client.query(insertQuery, [title, message]);
 
     await client.query('COMMIT');
-    res.status(200).json({ message: `Notification sent to ${userIds.length} users.` });
+    res.status(200).json({
+      message: `Notification sent to ${result.rowCount} users.`,
+    });
   } catch (error) {
     await client.query('ROLLBACK');
     console.error("Admin send bulk notification error:", error);

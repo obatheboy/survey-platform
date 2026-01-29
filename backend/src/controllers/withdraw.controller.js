@@ -335,14 +335,20 @@ exports.approveWithdraw = async (req, res) => {
   try {
     await client.query("BEGIN");
     
-    await client.query(
+    const result = await client.query(
       `
       UPDATE withdraw_requests
       SET status = 'APPROVED'
       WHERE id = $1 AND status IN ('PROCESSING', 'PENDING')
+      RETURNING id
       `,
       [req.params.id]
     );
+
+    if (result.rowCount === 0) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ message: "Withdrawal not found or already processed." });
+    }
 
     await client.query("COMMIT");
     res.json({ message: "Withdrawal approved" });
@@ -364,37 +370,42 @@ exports.rejectWithdraw = async (req, res) => {
   try {
     await client.query("BEGIN");
     
-    // Get withdrawal details to refund amount
-    const withdrawal = await client.query(
+    // Lock the row and get withdrawal details to prevent race conditions
+    const withdrawalRes = await client.query(
       `
-      SELECT user_id, amount 
+      SELECT user_id, amount, status
       FROM withdraw_requests 
       WHERE id = $1
+      FOR UPDATE
       `,
       [req.params.id]
     );
     
-    if (withdrawal.rows.length > 0) {
-      const { user_id, amount } = withdrawal.rows[0];
-      
-      // Refund amount to user
-      await client.query(
-        `
-        UPDATE users
-        SET total_earned = total_earned + $1
-        WHERE id = $2
-        `,
-        [amount, user_id]
-      );
+    if (withdrawalRes.rowCount === 0) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ message: "Withdrawal request not found." });
     }
-    
+
+    const { user_id, amount, status } = withdrawalRes.rows[0];
+
+    if (!["PROCESSING", "PENDING"].includes(status)) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({ message: "Withdrawal already processed." });
+    }
+
     await client.query(
       `
       UPDATE withdraw_requests
       SET status = 'REJECTED'
-      WHERE id = $1 AND status IN ('PROCESSING', 'PENDING')
+      WHERE id = $1
       `,
       [req.params.id]
+    );
+
+    // Refund amount to user's total_earned
+    await client.query(
+      `UPDATE users SET total_earned = total_earned + $1 WHERE id = $2`,
+      [amount, user_id]
     );
 
     await client.query("COMMIT");
