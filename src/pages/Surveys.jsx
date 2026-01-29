@@ -22,9 +22,25 @@ export default function Surveys() {
     const plan = localStorage.getItem("active_plan");
     if (!plan || !SURVEY_QUESTIONS[plan]) {
       navigate("/dashboard");
-    } else {
-      setActivePlan(plan);
+      return;
     }
+
+    // Check if survey is already completed to prevent re-doing
+    api.get("/auth/me")
+      .then((res) => {
+        const userPlan = res.data.plans?.[plan];
+        if (userPlan && userPlan.surveys_completed >= 10) {
+          navigate("/activation-notice", {
+            state: {
+              planType: plan,
+              amount: PLANS_CONFIG[plan]?.total || 0
+            }
+          });
+        } else {
+          setActivePlan(plan);
+        }
+      })
+      .catch(() => setActivePlan(plan));
   }, [navigate]);
 
   const questions = useMemo(() => {
