@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import AdminLayout from "./AdminLayout";
 import AdminLogin from "./AdminLogin";
-import AdminDashboard from "../components/AdminDashboard";
+import AdminDashboard from "./AdminDashboard";
 import AdminActivations from "./AdminActivations";
 import AdminWithdrawals from "./AdminWithdrawals";
 import AdminUsers from "./AdminUsers";
