@@ -36,6 +36,7 @@ router.patch("/users/:id/role", adminController.updateUserRole);
 router.patch("/users/:id/balance", adminController.adjustUserBalance);
 router.patch("/users/:id/activate", adminController.activateUser); // ✅ NEW ROUTE
 router.delete("/users/:id", adminController.deleteUser);
+router.post("/users/bulk-delete", adminController.deleteBulkUsers);
 
 /**
  * =========================================

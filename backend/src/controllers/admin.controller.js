@@ -291,6 +291,44 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
+/**
+ * ❌ BULK DELETE USERS
+ */
+exports.deleteBulkUsers = async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const { userIds } = req.body;
+
+    if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
+      return res.status(400).json({ message: "Invalid user IDs provided" });
+    }
+
+    await client.query("BEGIN");
+
+    const result = await client.query(
+      `
+      DELETE FROM users
+      WHERE id = ANY($1)
+      RETURNING id
+      `,
+      [userIds]
+    );
+
+    await client.query("COMMIT");
+
+    res.json({
+      message: `${result.rowCount} users deleted successfully`,
+      deletedCount: result.rowCount,
+    });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Admin bulk delete users error:", error);
+    res.status(500).json({ message: "Server error" });
+  } finally {
+    client.release();
+  }
+};
+
 /* ======================================================
    📢 NOTIFICATIONS MANAGEMENT (ADMIN)
 ====================================================== */
