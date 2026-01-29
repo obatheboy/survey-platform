@@ -35,7 +35,7 @@ export default function AdminDashboard() {
         if (isInitialLoad) {
           setLoading(true);
         }
-        const res = await adminApi.get("/stats");
+        const res = await adminApi.get("/admin/stats");
         setStats(res.data);
       } catch (err) {
         console.error("Failed to fetch admin stats:", err);

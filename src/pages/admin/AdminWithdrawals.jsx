@@ -35,9 +35,9 @@ export default function AdminWithdrawals() {
     rejectItem,
     filteredItems: filteredWithdrawals,
   } = useAdminTable({
-    fetchData: () => adminApi.get('/withdraw/admin/all'),
-    approveData: (id) => adminApi.patch(`/withdraw/admin/${id}/approve`),
-    rejectData: (id) => adminApi.patch(`/withdraw/admin/${id}/reject`),
+    fetchData: () => adminApi.get('/admin/withdrawals'),
+    approveData: (id) => adminApi.patch(`/admin/withdrawals/${id}/approve`),
+    rejectData: (id) => adminApi.patch(`/admin/withdrawals/${id}/reject`),
     searchFields: ['full_name', 'phone_number', 'email'],
     filterConfig,
     initialFilterStatus: 'processing',
