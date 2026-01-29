@@ -151,7 +151,7 @@ export default function Dashboard() {
           
           calculatedTotalSurveys += effectiveCount;
           
-          // Adjust earnings if local storage says complete but backend doesn't yet
+          // Adjust earnings if plan is activated (effective count > actual count)
           if (effectiveCount > backendCompletedCount) {
             const diff = effectiveCount - backendCompletedCount;
             calculatedTotalEarned += (diff * PLANS[planKey].perSurvey);

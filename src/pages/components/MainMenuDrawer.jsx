@@ -59,9 +59,6 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate }) {
     // Clear localStorage token for mobile compatibility
     localStorage.removeItem("token");
     localStorage.removeItem("active_plan");
-    localStorage.removeItem("survey_completed_REGULAR");
-    localStorage.removeItem("survey_completed_VIP");
-    localStorage.removeItem("survey_completed_VVIP");
     
     navigate("/auth", { replace: true });
   };

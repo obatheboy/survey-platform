@@ -94,9 +94,6 @@ export default function Auth() {
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         localStorage.removeItem("active_plan");
-        localStorage.removeItem("survey_completed_REGULAR");
-        localStorage.removeItem("survey_completed_VIP");
-        localStorage.removeItem("survey_completed_VVIP");
       }
 
       setRegMessage("Account created successfully! Redirecting...");
@@ -122,9 +119,6 @@ export default function Auth() {
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         localStorage.removeItem("active_plan");
-        localStorage.removeItem("survey_completed_REGULAR");
-        localStorage.removeItem("survey_completed_VIP");
-        localStorage.removeItem("survey_completed_VVIP");
       }
 
       await api.get("/auth/me");
