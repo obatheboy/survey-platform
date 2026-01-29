@@ -11,79 +11,39 @@ const PLANS = {
   VVIP: { name: "VVIP", color: "#f59e0b", total: 3000 },
 };
 
-export default function MainMenuDrawer({ open, onClose, user }) {
+export default function MainMenuDrawer({ open, onClose, user, onNavigate }) {
   const navigate = useNavigate();
-  const [phones, setPhones] = useState({});
-  const [amounts, setAmounts] = useState({});
   const [toast, setToast] = useState("");
 
   if (!open || !user) return null;
 
-  /* =========================
-     WITHDRAW FLOW
-  ========================= */
-  const handleWithdraw = async (planKey) => {
-    const planData = user.plans?.[planKey];
-    if (!planData) return;
-
-    const completed = planData.completed === true;
-    const activated = planData.is_activated === true;
-    const submitted = planData.activation_status === "SUBMITTED";
-
-    if (!completed) {
-      setToast("❌ Complete surveys to unlock withdrawal for this plan");
-      setTimeout(() => setToast(""), 4000);
-      return;
-    }
-
-    if (!activated) {
-      if (submitted) {
-        setToast("⏳ Activation submitted. Waiting for admin approval.");
-      } else {
-        localStorage.setItem("active_plan", planKey);
-        navigate("/activation-notice", { replace: true });
-      }
-      setTimeout(() => setToast(""), 4000);
-      return;
-    }
-
-    // ✅ Validate phone and amount
-    const phone = phones[planKey];
-    const amount = Number(amounts[planKey]);
-
-    if (!phone || !amount) {
-      setToast("❌ Enter both phone number and amount");
-      setTimeout(() => setToast(""), 3000);
-      return;
-    }
-
-    try {
-      const res = await api.post("/withdraw/request", {
-        phone_number: phone,
-        amount,
-      });
-
-      setToast(
-        `🎉 Success! ${res.data.message}. For faster approval, complete remaining surveys and share your link with at least 3 people.`
-      );
-
-      setTimeout(() => setToast(""), 6000);
-      setPhones((prev) => ({ ...prev, [planKey]: "" }));
-      setAmounts((prev) => ({ ...prev, [planKey]: "" }));
-      onClose();
-    } catch (err) {
-      setToast(
-        err.response?.data?.message || "❌ Withdraw request failed"
-      );
-      setTimeout(() => setToast(""), 4000);
-    }
+  const openWhatsAppSupport = () => {
+    const message = encodeURIComponent("Hello SurveyEarn Support, I need help with my survey account.");
+    const whatsappUrl = `https://wa.me/254102074596?text=${message}`;
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+    onClose();
   };
 
-  const shareLink = () => {
-    navigator.clipboard.writeText(window.location.origin);
-    setToast("✅ Referral link copied");
-    setTimeout(() => setToast(""), 3000);
+  const referralCode = user?.referral_code || user?.id;
+  const referralLink = `${window.location.origin}/auth?ref=${referralCode}`;
+  const shareMessage = `Hey! I'm earning real money by completing simple surveys on SurveyEarn. 💰\n\nJoin using my link and get a KES 1,200 welcome bonus! 🎁\n\n${referralLink}`;
+
+  const shareToWhatsApp = () => {
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
     onClose();
+  };
+
+  const shareToSMS = () => {
+    const smsUrl = `sms:?body=${encodeURIComponent(shareMessage)}`;
+    window.open(smsUrl, '_blank');
+    onClose();
+  };
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(referralLink);
+    setToast("✅ Referral link copied!");
+    setTimeout(() => setToast(""), 3000);
   };
 
   const logout = async () => {
@@ -125,75 +85,31 @@ export default function MainMenuDrawer({ open, onClose, user }) {
 
         <hr style={divider} />
 
-        {/* WITHDRAW */}
-        <h4 style={withdrawTitle}>💸 Withdraw Earnings</h4>
-
-        {Object.entries(PLANS).map(([key, plan]) => {
-          const planData = user.plans?.[key];
-          const completed = planData?.completed === true;
-          const activated = planData?.is_activated === true;
-          const earned = completed ? plan.total.toLocaleString() : "0";
-          const canWithdraw = completed && activated;
-
-          return (
-            <div
-              key={key}
-              style={{
-                ...withdrawCard,
-                borderColor: plan.color,
-                opacity: 1,
-              }}
-            >
-              <div>
-                <strong style={{ color: plan.color }}>{plan.name}</strong>
-                <p style={withdrawAmount}>KES {earned}</p>
-
-                {canWithdraw && (
-                  <>
-                    <input
-                      type="text"
-                      placeholder="Phone Number"
-                      value={phones[key] || ""}
-                      onChange={(e) =>
-                        setPhones({ ...phones, [key]: e.target.value })
-                      }
-                      style={inputStyle}
-                    />
-                    <input
-                      type="number"
-                      placeholder="Amount"
-                      value={amounts[key] || ""}
-                      onChange={(e) =>
-                        setAmounts({ ...amounts, [key]: e.target.value })
-                      }
-                      style={inputStyle}
-                    />
-                  </>
-                )}
-              </div>
-
-              <button
-                style={{
-                  ...withdrawBtn,
-                  borderColor: plan.color,
-                  color: plan.color,
-                  cursor: "pointer",
-                }}
-                onClick={() => handleWithdraw(key)}
-              >
-                Withdraw
-              </button>
-            </div>
-          );
-        })}
+        {/* NEW FEATURES */}
+        <h4 style={withdrawTitle}>App Menu</h4>
+        <MenuItem label="❓ FAQ & Help" icon="❓" onClick={() => onNavigate('/faq')} />
+        <MenuItem label="📜 Terms of Service" icon="📜" onClick={() => onNavigate('/terms')} />
+        <MenuItem label="📞 Contact Support" icon="📞" onClick={openWhatsAppSupport} />
 
         <hr style={divider} />
 
-        <MenuItem label="🔗 Share Referral Link" icon="🔗" onClick={shareLink} />
+        <h4 style={withdrawTitle}>💌 Invite & Earn</h4>
         <p style={referralCaption}>
-          Earn <strong>KES 250</strong> for every successful signup.
+          Earn <strong>KES 250</strong> for every friend who signs up and activates.
         </p>
+        <div style={shareButtonsContainer}>
+            <button style={{...shareBtn, background: '#25D366'}} onClick={shareToWhatsApp}>
+                <span style={shareIconStyle}>💬</span> WhatsApp
+            </button>
+            <button style={{...shareBtn, background: '#3b82f6'}} onClick={shareToSMS}>
+                <span style={shareIconStyle}>✉️</span> SMS
+            </button>
+            <button style={{...shareBtn, background: '#64748b'}} onClick={copyLink}>
+                <span style={shareIconStyle}>🔗</span> Copy
+            </button>
+        </div>
 
+        <hr style={divider} />
         <MenuItem label="📊 Back to Dashboard" icon="📊" onClick={onClose} />
         <MenuItem label="🚪 Logout" icon="🚪" danger onClick={logout} />
       </div>
@@ -357,6 +273,33 @@ const referralCaption = {
   background: "rgba(59, 130, 246, 0.05)",
   borderRadius: "12px",
   border: "1px solid rgba(59, 130, 246, 0.1)"
+};
+
+const shareButtonsContainer = {
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr 1fr',
+  gap: '10px',
+  marginBottom: '24px'
+};
+
+const shareBtn = {
+  border: 'none',
+  borderRadius: '12px',
+  padding: '12px 8px',
+  color: 'white',
+  fontWeight: '700',
+  fontSize: '12px',
+  cursor: 'pointer',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '6px',
+  transition: 'transform 0.2s ease'
+};
+
+const shareIconStyle = {
+  fontSize: '20px'
 };
 
 const toastStyle = {
