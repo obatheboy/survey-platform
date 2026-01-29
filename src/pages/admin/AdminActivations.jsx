@@ -206,7 +206,7 @@ export default function AdminActivations() {
                   <td>{p.full_name || "—"}</td>
                   <td>{p.phone || "—"}</td>
                   <td>{p.email || "—"}</td>
-                  <td>
+                  <td style={{ maxWidth: "150px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={p.mpesa_code}>
                     <strong style={{ fontFamily: "monospace" }}>{p.mpesa_code}</strong>
                   </td>
                   <td>
