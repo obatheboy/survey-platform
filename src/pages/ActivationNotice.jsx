@@ -115,7 +115,7 @@ export default function ActivationNotice() {
         }
 
         // Only check surveys completed if NO state was passed
-        if (plan.surveys_completed < 10) { // Using hardcoded 10 instead of TOTAL_SURVEYS
+        if (plan.surveys_completed < 10 && localStorage.getItem(`survey_completed_${activePlan}`) !== 'true') {
           navigate("/dashboard");
           return;
         }
