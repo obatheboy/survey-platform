@@ -1,71 +1,52 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { adminApi } from "../../api/adminApi";
-import "./AdminActivations.css";
+import "./Admin.css";
+import { useAdminTable } from "./hooks/useAdminTable";
+import AdminTableLayout from "./components/AdminTableLayout";
+import ActionButtons from "./components/ActionButtons";
+import StatusBadge from "./components/StatusBadge";
+
+const filterConfig = {
+  all: { label: 'All', value: 'all' },
+  pending: { label: 'Pending', value: 'SUBMITTED' },
+  approved: { label: 'Approved', value: 'APPROVED' },
+  rejected: { label: 'Rejected', value: 'REJECTED' },
+};
+
+const statusMap = {
+  SUBMITTED: { label: '⏳ PENDING', className: 'pending-badge' },
+  APPROVED: { label: '✅ APPROVED', className: 'approved-badge' },
+  REJECTED: { label: '❌ REJECTED', className: 'rejected-badge' },
+};
 
 export default function AdminActivations() {
-  const [payments, setPayments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [processingId, setProcessingId] = useState(null);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [failureMessage, setFailureMessage] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [roleMessage, setRoleMessage] = useState("");
 
-  /* =========================
-     FETCH ACTIVATIONS
-  ========================= */
-  const fetchActivations = async () => {
-    try {
-      setError("");
-      setLoading(true);
-      const res = await adminApi.get("/admin/activations");
-      setPayments(res.data);
-    } catch (err) {
-      console.error("Fetch activations error:", err);
-      setError("Failed to load activation payments");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchActivations();
-  }, []);
-
-  /* =========================
-     APPROVE ACTIVATION
-  ========================= */
-  const approve = async (id) => {
-    if (!window.confirm("Approve this activation?")) return;
-
-    setProcessingId(id);
-    setSuccessMessage("");
-    setFailureMessage("");
-
-    try {
-      await adminApi.patch(`/admin/activations/${id}/approve`);
-      setPayments((prev) =>
-        prev.map((p) =>
-          p.id === id ? { ...p, status: "APPROVED" } : p
-        )
-      );
-      setSuccessMessage("✅ Activation approved! User can now withdraw.");
-      // Auto-open role modal after approval
-      const payment = payments.find(p => p.id === id);
-      if (payment) {
-        setSelectedPayment(payment);
-        setShowRoleModal(true);
-      }
-    } catch (err) {
-      setFailureMessage(err.response?.data?.message || "Approval failed");
-    } finally {
-      setProcessingId(null);
-    }
-  };
+  const {
+    items: payments,
+    loading,
+    error,
+    processingId,
+    successMessage,
+    setSuccessMessage,
+    failureMessage,
+    searchTerm,
+    setSearchTerm,
+    filterStatus,
+    setFilterStatus,
+    approveItem,
+    rejectItem,
+    filteredItems: filteredPayments,
+  } = useAdminTable({
+    fetchData: () => adminApi.get('/admin/activations'),
+    approveData: (id) => adminApi.patch(`/admin/activations/${id}/approve`),
+    rejectData: (id) => adminApi.patch(`/admin/activations/${id}/reject`),
+    searchFields: ['full_name', 'phone', 'email', 'mpesa_code'],
+    filterConfig,
+    initialFilterStatus: 'pending',
+  });
 
   /* =========================
      UPDATE USER ROLE
@@ -85,104 +66,46 @@ export default function AdminActivations() {
     }
   };
 
-  const reject = async (id) => {
-    if (!window.confirm("Reject this activation?")) return;
-
-    setProcessingId(id);
-    setSuccessMessage("");
-    setFailureMessage("");
-
-    try {
-      await adminApi.patch(`/admin/activations/${id}/reject`);
-      setPayments((prev) =>
-        prev.map((p) =>
-          p.id === id ? { ...p, status: "REJECTED" } : p
-        )
-      );
-      setSuccessMessage("❌ Activation rejected.");
-    } catch (err) {
-      setFailureMessage(err.response?.data?.message || "Rejection failed");
-    } finally {
-      setProcessingId(null);
-    }
+  const handleApprove = (id) => {
+    approveItem(id, (approvedId) => {
+      setSuccessMessage("✅ Activation approved! User can now withdraw.");
+      const payment = payments.find((p) => p.id === approvedId);
+      if (payment) {
+        setSelectedPayment(payment);
+        setShowRoleModal(true);
+      }
+    }, "Approve this activation?");
   };
 
-  /* =========================
-     FILTER & SEARCH
-  ========================= */
-  const filteredPayments = payments.filter((p) => {
-    const searchLower = searchTerm.toLowerCase();
-    const matchesSearch =
-      p.full_name?.toLowerCase().includes(searchLower) ||
-      p.phone?.includes(searchTerm) ||
-      p.email?.toLowerCase().includes(searchLower) ||
-      p.mpesa_code?.includes(searchTerm);
-
-    const matchesStatus =
-      filterStatus === "all" ||
-      (filterStatus === "pending" && p.status === "SUBMITTED") ||
-      (filterStatus === "approved" && p.status === "APPROVED") ||
-      (filterStatus === "rejected" && p.status === "REJECTED");
-
-    return matchesSearch && matchesStatus;
-  });
-
-  if (loading) return <p className="loading-text">Loading activation payments...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  const handleReject = (id) => {
+    rejectItem(id, "Reject this activation?");
+  };
 
   return (
-    <div className="admin-container">
-      <div className="admin-header">
-        <h2>💳 Activation Payments Dashboard</h2>
-        <p>
-          Total: {payments.length} | Pending: {payments.filter(p => p.status === "SUBMITTED").length} | Approved: {payments.filter(p => p.status === "APPROVED").length}
-        </p>
-      </div>
-
-      {/* MESSAGES */}
-      {successMessage && <div className="response-message success-message">{successMessage}</div>}
-      {failureMessage && <div className="response-message error-message">{failureMessage}</div>}
-
-      {/* SEARCH & FILTER SECTION */}
-      <div className="search-section">
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder="🔍 Search by name, phone, email, or M-Pesa code..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-        </div>
-
-        <div className="filter-container">
-          <button
-            className={`filter-btn ${filterStatus === "all" ? "filter-btn-active" : ""}`}
-            onClick={() => setFilterStatus("all")}
-          >
-            All
-          </button>
-          <button
-            className={`filter-btn ${filterStatus === "pending" ? "filter-btn-active" : ""}`}
-            onClick={() => setFilterStatus("pending")}
-          >
-            Pending
-          </button>
-          <button
-            className={`filter-btn ${filterStatus === "approved" ? "filter-btn-active" : ""}`}
-            onClick={() => setFilterStatus("approved")}
-          >
-            Approved
-          </button>
-          <button
-            className={`filter-btn ${filterStatus === "rejected" ? "filter-btn-active" : ""}`}
-            onClick={() => setFilterStatus("rejected")}
-          >
-            Rejected
-          </button>
-        </div>
-      </div>
-
+    <>
+      <AdminTableLayout
+        header={{
+          title: '💳 Activation Payments Dashboard',
+          stats: (items) =>
+            `Total: ${items.length} | Pending: ${
+              items.filter((p) => p.status === 'SUBMITTED').length
+            } | Approved: ${
+              items.filter((p) => p.status === 'APPROVED').length
+            }`,
+          loadingText: 'Loading activation payments...',
+        }}
+        filterConfig={filterConfig}
+        filterStatus={filterStatus}
+        setFilterStatus={setFilterStatus}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        searchInputPlaceholder="🔍 Search by name, phone, email, or M-Pesa code..."
+        successMessage={successMessage}
+        failureMessage={failureMessage}
+        loading={loading}
+        error={error}
+        items={filteredPayments}
+      >
       {filteredPayments.length === 0 ? (
         <p className="no-results">No activation payments found.</p>
       ) : (
@@ -215,14 +138,7 @@ export default function AdminActivations() {
                     </strong>
                   </td>
                   <td>
-                    <span className={`status-badge ${
-                      p.status === "SUBMITTED" ? "pending-badge" :
-                      p.status === "APPROVED" ? "approved-badge" : "rejected-badge"
-                    }`}>
-                      {p.status === "SUBMITTED" ? "⏳ PENDING" :
-                        p.status === "APPROVED" ? "✅ APPROVED" :
-                          "❌ REJECTED"}
-                    </span>
+                    <StatusBadge status={p.status} statusMap={statusMap} />
                   </td>
                   <td>
                     {new Date(p.created_at).toLocaleDateString()} <br />
@@ -230,28 +146,12 @@ export default function AdminActivations() {
                   </td>
                   <td>
                     <div className="action-buttons">
-                      {p.status === "SUBMITTED" ? (
-                        <>
-                          <button
-                            onClick={() => approve(p.id)}
-                            disabled={processingId === p.id}
-                            className="approve-btn"
-                          >
-                            {processingId === p.id ? "..." : "✓ Approve"}
-                          </button>
-                          <button
-                            onClick={() => reject(p.id)}
-                            disabled={processingId === p.id}
-                            className="reject-btn"
-                          >
-                            ✕ Reject
-                          </button>
-                        </>
-                      ) : (
-                        <span className="done-text">
-                          {p.status === "APPROVED" ? "✓ Done" : "✕ Done"}
-                        </span>
-                      )}
+                      <ActionButtons
+                        item={p}
+                        processingId={processingId}
+                        onApprove={() => handleApprove(p.id)}
+                        onReject={() => handleReject(p.id)}
+                      />
                       {p.status === "APPROVED" && (
                         <button
                           onClick={() => {
@@ -271,7 +171,7 @@ export default function AdminActivations() {
           </table>
         </div>
       )}
-
+      </AdminTableLayout>
       {/* ROLE MODAL */}
       {showRoleModal && selectedPayment && (
         <div className="modal-overlay">
@@ -315,6 +215,6 @@ export default function AdminActivations() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
