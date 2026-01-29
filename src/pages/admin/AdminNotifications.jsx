@@ -23,7 +23,7 @@ export default function AdminNotifications() {
     setResponse({ type: "", text: "" });
 
     try {
-      await adminApi.post("/admin/notifications/bulk", { title, message });
+      await adminApi.post("/notifications/bulk", { title, message });
       setResponse({ type: "success", text: "Bulk notification sent successfully!" });
       setTitle("");
       setMessage("");
