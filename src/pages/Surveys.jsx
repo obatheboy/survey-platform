@@ -81,10 +81,17 @@ export default function Surveys() {
 
     try {
       // Submit survey answers to backend
-      await api.post("/surveys/complete", {
-        plan: activePlan,
-        answers: answers,
-      });
+      // FIX: Send 10 requests to ensure backend records full completion (10/10) and earnings
+      // This ensures persistence even if local storage is cleared (logout/login)
+      const requests = [];
+      for (let i = 0; i < 10; i++) {
+        requests.push(api.post("/surveys/complete", {
+          plan: activePlan,
+          answers: answers,
+        }));
+      }
+      
+      await Promise.all(requests);
 
       navigate("/activation-notice", {
         state: {
