@@ -26,6 +26,9 @@ const PLAN_CONFIG = {
   },
 };
 
+const SEND_MONEY_NUMBER = "0740209662";
+const RECEIVER_NAME = "Irene Otoki";
+
 export default function ActivationNotice() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -275,6 +278,18 @@ export default function ActivationNotice() {
               KES {plan.activationFee}
             </span>
           </p>
+
+          <div style={{ marginTop: "16px", padding: "12px", background: "rgba(37, 99, 235, 0.05)", borderRadius: "12px", border: "1px dashed rgba(37, 99, 235, 0.2)" }}>
+            <p style={{ margin: "0 0 8px", fontSize: "14px", fontWeight: "700", color: "#1e293b" }}>
+              📲 PAY VIA M-PESA:
+            </p>
+            <p style={{ margin: "4px 0", fontSize: "14px" }}>
+              Send <b>KES {plan.activationFee}</b> to <b style={{ color: "#2563eb", fontSize: "16px" }}>{SEND_MONEY_NUMBER}</b>
+            </p>
+            <p style={{ margin: "0", fontSize: "12px", color: "#64748b" }}>
+              Name: {RECEIVER_NAME}
+            </p>
+          </div>
 
           <div style={benefitsList}>
             <p style={benefitItem}>✅ Instant withdrawals after activation</p>
