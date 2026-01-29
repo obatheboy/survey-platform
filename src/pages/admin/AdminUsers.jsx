@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { adminApi } from "../../api/adminApi";
+import "./Admin.css";
 import "./AdminUsers.css";
 import { useAdminTable } from "./useAdminTable";
 import AdminTableLayout from "./AdminTableLayout";
@@ -12,6 +13,9 @@ const filterConfig = {
 
 export default function AdminUsers() {
   const [processingId, setProcessingId] = useState(null);
+  const [showRoleModal, setShowRoleModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [roleMessage, setRoleMessage] = useState("");
 
   const {
     items: users,
@@ -81,18 +85,23 @@ export default function AdminUsers() {
   /* ===========================
      UPDATE USER ROLE
   =========================== */
-  const updateUserRole = async (id, role) => {
-    const newRole = role === "user" ? "admin" : "user";
-
+  const updateUserRole = async (userId, newRole) => {
     try {
-      await adminApi.patch(`/admin/users/${id}/role`, { role: newRole });
+      setRoleMessage("Updating role...");
+      await adminApi.patch(`/admin/users/${userId}/role`, { role: newRole });
       setItems((prev) =>
         prev.map((u) =>
-          u.id === id ? { ...u, role: newRole } : u
+          u.id === userId ? { ...u, role: newRole } : u
         )
       );
+      setRoleMessage(`✅ Role updated to ${newRole.toUpperCase()}`);
+      setTimeout(() => {
+        setShowRoleModal(false);
+        setSelectedUser(null);
+        setRoleMessage("");
+      }, 1500);
     } catch (err) {
-      alert(err.response?.data?.message || "Role update failed");
+      setRoleMessage(err.response?.data?.message || "❌ Failed to update role");
     }
   };
 
@@ -205,10 +214,13 @@ export default function AdminUsers() {
                         <span className="activated-text">Activated</span>
                       )}
                       <button
-                        onClick={() => updateUserRole(user.id, user.role)}
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setShowRoleModal(true);
+                        }}
                         className="role-btn"
                       >
-                        Role
+                        Set Role
                       </button>
                       <button
                         onClick={() => deleteUser(user.id)}
@@ -222,6 +234,49 @@ export default function AdminUsers() {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+      {/* ROLE MODAL */}
+      {showRoleModal && selectedUser && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>👤 Set User Role</h3>
+            <p>
+              User: <strong>{selectedUser.full_name}</strong>
+            </p>
+
+            {roleMessage && (
+              <div className={`response-message ${roleMessage.startsWith("✅") ? "success-message" : "error-message"}`}>
+                {roleMessage}
+              </div>
+            )}
+
+            <div className="action-buttons" style={{ marginBottom: '16px', justifyContent: 'center' }}>
+              <button
+                onClick={() => updateUserRole(selectedUser.id, "user")}
+                className="role-option-btn"
+              >
+                👤 Regular User
+              </button>
+              <button
+                onClick={() => updateUserRole(selectedUser.id, "admin")}
+                className="role-option-btn admin"
+              >
+                👨‍💼 Admin User
+              </button>
+            </div>
+
+            <button
+              onClick={() => {
+                setShowRoleModal(false);
+                setSelectedUser(null);
+                setRoleMessage("");
+              }}
+              className="modal-close-btn"
+            >
+              Close
+            </button>
+          </div>
         </div>
       )}
     </AdminTableLayout>
