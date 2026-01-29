@@ -12,7 +12,6 @@ const filterConfig = {
 
 export default function AdminUsers() {
   const [processingId, setProcessingId] = useState(null);
-  const [isSelectionMode, setIsSelectionMode] = useState(false);
 
   const {
     items: users,
@@ -97,6 +96,12 @@ export default function AdminUsers() {
     }
   };
 
+  const handleBulkDelete = () => {
+    if (window.confirm(`Are you sure you want to delete ${selectedIds.size} selected users? This action cannot be undone.`)) {
+      deleteSelectedUsers();
+    }
+  };
+
   return (
     <AdminTableLayout
       header={{
@@ -116,24 +121,30 @@ export default function AdminUsers() {
       error={error}
       items={users} // Pass original items for stats
     >
-      <div className="bulk-actions" style={{ marginBottom: '1rem', padding: '0 20px', display: 'flex', gap: '10px' }}>
-        {!isSelectionMode ? (
-          <button onClick={() => setIsSelectionMode(true)} className="role-btn" style={{ background: '#64748b' }}>
-            Select Users
+      {selectedIds.size > 0 && (
+        <div style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          background: 'rgba(240, 245, 255, 0.9)',
+          backdropFilter: 'blur(8px)',
+          padding: '12px 20px',
+          marginBottom: '1rem',
+          borderRadius: '8px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          border: '1px solid #dbeafe',
+        }}>
+          <span style={{ fontWeight: '600', color: '#1e40af' }}>
+            {selectedIds.size} user(s) selected
+          </span>
+          <button onClick={handleBulkDelete} className="delete-btn">
+            Delete Selected
           </button>
-        ) : (
-          <>
-            <button onClick={() => setIsSelectionMode(false)} className="role-btn" style={{ background: '#94a3b8' }}>
-              Cancel
-            </button>
-            {selectedIds.size > 0 && (
-              <button onClick={deleteSelectedUsers} className="delete-btn">
-                Delete {selectedIds.size} Selected
-              </button>
-            )}
-          </>
-        )}
-      </div>
+        </div>
+      )}
 
       {filteredUsers.length === 0 ? (
         <p className="no-results">No users found matching your search.</p>
@@ -142,16 +153,14 @@ export default function AdminUsers() {
           <table className="admin-table">
             <thead>
               <tr>
-                {isSelectionMode && (
-                  <th>
-                    <input
-                      type="checkbox"
-                      onChange={handleSelectAll}
-                      checked={filteredUsers.length > 0 && selectedIds.size === filteredUsers.length}
-                      disabled={filteredUsers.length === 0}
-                    />
-                  </th>
-                )}
+                <th style={{ width: '50px' }}>
+                  <input
+                    type="checkbox"
+                    onChange={handleSelectAll}
+                    checked={filteredUsers.length > 0 && selectedIds.size === filteredUsers.length}
+                    disabled={filteredUsers.length === 0}
+                  />
+                </th>
                 <th>Full Name</th>
                 <th>Phone Number</th>
                 <th>Email</th>
@@ -164,16 +173,14 @@ export default function AdminUsers() {
 
             <tbody>
               {filteredUsers.map((user) => (
-                <tr key={user.id}>
-                  {isSelectionMode && (
-                    <td>
-                      <input
-                        type="checkbox"
-                        onChange={() => handleSelectOne(user.id)}
-                        checked={selectedIds.has(user.id)}
-                      />
-                    </td>
-                  )}
+                <tr key={user.id} style={selectedIds.has(user.id) ? { backgroundColor: '#eff6ff' } : {}}>
+                  <td>
+                    <input
+                      type="checkbox"
+                      onChange={() => handleSelectOne(user.id)}
+                      checked={selectedIds.has(user.id)}
+                    />
+                  </td>
                   <td>{user.full_name}</td>
                   <td>{user.phone}</td>
                   <td>{user.email || "—"}</td>
