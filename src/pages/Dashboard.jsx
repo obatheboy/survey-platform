@@ -979,9 +979,15 @@ return (
           </div>
           
           <div className="plan-card-body">
-            <div className="plan-description">
-              <p>Activate your account with <strong>KES 100</strong> to unlock your welcome bonus.</p>
-            </div>
+            <p style={{
+              fontSize: '16px',
+              lineHeight: '1.6',
+              color: 'var(--text-muted)',
+              textAlign: 'center',
+              margin: '0 0 16px'
+            }}>
+              Congratulations! You've received a welcome bonus of <strong style={{color: '#ef4444', fontSize: '18px'}}>KES 1,200</strong>. Activate your account to withdraw.
+            </p>
             
             <div className="plan-stats">
               <div className="stat-row">

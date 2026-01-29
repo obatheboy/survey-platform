@@ -403,19 +403,22 @@ export default function Auth() {
         </div>
       </div>
 
-      <button
-        style={styles.contactButton}
-        onClick={() => {
-          const message = encodeURIComponent(
-            "Hello, I'm having trouble with registration or login on the Survey App."
-          );
-          const whatsappUrl = `https://wa.me/254102074596?text=${message}`;
-          window.open(whatsappUrl, "_blank", "noopener,noreferrer");
-        }}
-        title="Contact Support on WhatsApp"
-      >
-        💬
-      </button>
+      <div style={styles.contactContainer}>
+        <p style={styles.contactCaption}>Need help? Chat us..</p>
+        <button
+          style={styles.contactButton}
+          onClick={() => {
+            const message = encodeURIComponent(
+              "Hello, I'm having trouble with registration or login on the Survey App."
+            );
+            const whatsappUrl = `https://wa.me/254102074596?text=${message}`;
+            window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+          }}
+          title="Contact Support on WhatsApp"
+        >
+          💬
+        </button>
+      </div>
 
       {/* Footer - compact */}
       <div style={styles.footer}>
@@ -717,13 +720,19 @@ const styles = {
     padding: "0 15px",
     zIndex: 1,
   },
-  contactButton: {
+  contactContainer: {
     position: "fixed",
     bottom: "90px",
     right: "20px",
+    zIndex: 1000,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  contactButton: {
     background: "#25D366",
-    color: "white",
-    border: "none",
+    ,
     borderRadius: "50%",
     width: "60px",
     height: "60px",
@@ -733,11 +742,20 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    zIndex: 1000,
+  },
+  contactCaption: {
+    background: 'rgba(0,0,0,0.75)',
+    color: 'white',
+    padding: '6px 12px',
+    borderRadius: '12px',
+    fontSize: '12px',
+    fontWeight: '600',
+    margin: 0,
+    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+    whiteSpace: 'nowrap',
   },
   termsContainer: {
-    display: "flex",
-    alignItems: "flex-start",
+    display: "flex","flex-start",
     gap: "10px",
     marginTop: "16px",
     padding: "4px 0px",
