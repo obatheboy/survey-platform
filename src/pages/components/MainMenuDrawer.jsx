@@ -46,6 +46,11 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate }) {
     setTimeout(() => setToast(""), 3000);
   };
 
+  const showAccountStats = () => {
+    setToast("📊 Account stats coming soon!");
+    setTimeout(() => setToast(""), 3000);
+  };
+
   const logout = async () => {
     try {
       await api.post("/auth/logout");
@@ -88,7 +93,7 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate }) {
         {/* NEW FEATURES */}
         <h4 style={withdrawTitle}>App Menu</h4>
         <MenuItem label="❓ FAQ & Help" icon="❓" onClick={() => onNavigate('/faq')} />
-        <MenuItem label="📜 Terms of Service" icon="📜" onClick={() => onNavigate('/terms')} />
+        <MenuItem label="📊 Account Stats" icon="📊" onClick={showAccountStats} />
         <MenuItem label="📞 Contact Support" icon="📞" onClick={openWhatsAppSupport} />
 
         <hr style={divider} />
