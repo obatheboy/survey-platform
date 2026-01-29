@@ -1,10 +1,6 @@
 import { adminApi } from "../../api/adminApi";
 import "./Admin.css";
-import { useAdminTable } from "./hooks/useAdminTable";
-import AdminTableLayout from "./components/AdminTableLayout";
-import ActionButtons from "./components/ActionButtons";
-import StatusBadge from "./components/StatusBadge";
-
+import { useAdminTable } from "./
 const filterConfig = {
   all: { label: 'All', value: 'all' },
   processing: { label: 'Processing', value: 'PROCESSING' },
