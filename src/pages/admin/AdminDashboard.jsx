@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { adminApi } from "../../api/adminApi";
+import { Link } from "react-router-dom";
 import "./AdminDashboard.css";
 
 const StatCard = ({ title, value, icon, color, loading }) => (
@@ -111,9 +112,9 @@ export default function AdminDashboard() {
       <div className="admin-dashboard-actions">
         <h2>Quick Actions</h2>
         <div className="quick-actions-grid">
-           <a href="/admin/activations" className="quick-action-btn">Manage Activations</a>
-           <a href="/admin/withdrawals" className="quick-action-btn">Manage Withdrawals</a>
-           <a href="/admin/users" className="quick-action-btn">View Users</a>
+           <Link to="/admin/activations" className="quick-action-btn">Manage Activations</Link>
+           <Link to="/admin/withdrawals" className="quick-action-btn">Manage Withdrawals</Link>
+           <Link to="/admin/users" className="quick-action-btn">View Users</Link>
         </div>
       </div>
     </div>
