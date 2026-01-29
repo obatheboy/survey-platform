@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
-import { SURVEY_QUESTIONS } from "../data/surveyQuestions.js";
+import { SURVEY_QUESTIONS } from "./components/surveyQuestions.js";
 import "./Surveys.css";
 
 // Plan config for display
