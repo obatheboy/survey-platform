@@ -568,3 +568,26 @@
     padding: 16px;
   }
 }
+/* Add to WithdrawSuccess.css */
+
+/* Prevent scroll anchoring issues */
+.withdraw-success-page {
+  overflow-anchor: none;
+  scroll-behavior: auto;
+}
+
+/* Ensure smooth transitions are disabled for initial load */
+html:not(.smooth-scroll) {
+  scroll-behavior: auto;
+}
+
+/* Reset scroll position for the page */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Ensure the page container starts at top */
+.withdraw-success-page {
+  min-height: 100vh;
+  position: relative;
+}

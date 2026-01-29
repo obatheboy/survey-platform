@@ -362,6 +362,7 @@ export default function Dashboard() {
     // Check for pending withdrawal
     if (pendingWithdrawals[plan]) {
       // Navigate to success page to manage existing withdrawal
+      window.scrollTo(0, 0);
       navigate("/withdraw-success", {
         state: {
           withdrawal: pendingWithdrawals[plan],

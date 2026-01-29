@@ -17,9 +17,25 @@ export default function WithdrawSuccess() {
   const [shareCount, setShareCount] = useState(withdrawal?.share_count || 0);
   const [copied, setCopied] = useState(false);
 
-  // 🔥 FIX: Scroll to top when page loads
+  // 🔥 ENHANCED FIX: Multiple strategies to ensure scroll to top
   useEffect(() => {
+    // Immediate scroll when component mounts
     window.scrollTo(0, 0);
+    
+    // Force scroll after a tiny delay to ensure DOM is ready
+    const timeoutId = setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'instant' // Use 'instant' for immediate scroll
+      });
+      
+      // Additional scroll methods for compatibility
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, 0);
+
+    return () => clearTimeout(timeoutId);
   }, []);
 
   useEffect(() => {
