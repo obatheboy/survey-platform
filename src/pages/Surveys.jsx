@@ -25,17 +25,6 @@ export default function Surveys() {
       return;
     }
 
-    // Check local storage first for immediate feedback
-    if (localStorage.getItem(`survey_completed_${plan}`) === 'true') {
-      navigate("/activation-notice", {
-        state: {
-          planType: plan,
-          amount: PLANS_CONFIG[plan]?.total || 0
-        }
-      });
-      return;
-    }
-
     // Check if survey is already completed to prevent re-doing
     api.get("/auth/me")
       .then((res) => {
@@ -76,8 +65,6 @@ export default function Surveys() {
 
   const handleComplete = async () => {
     setIsCompleting(true);
-    // Mark as completed locally to prevent re-entry and update dashboard immediately
-    localStorage.setItem(`survey_completed_${activePlan}`, 'true');
 
     try {
       // 1. Get current status to know how many we need (idempotency)

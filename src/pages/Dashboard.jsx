@@ -144,8 +144,8 @@ export default function Dashboard() {
           
           let effectiveCount = backendCompletedCount;
           
-          // Check local storage override for immediate feedback
-          if (localStorage.getItem(`survey_completed_${planKey}`) === 'true' || backendPlan.is_activated) {
+          // Check backend status
+          if (backendPlan.is_activated) {
             effectiveCount = TOTAL_SURVEYS;
           }
           
@@ -301,9 +301,6 @@ export default function Dashboard() {
      HELPERS
   ========================= */
   const surveysDone = (plan) => {
-    if (localStorage.getItem(`survey_completed_${plan}`) === 'true') {
-      return TOTAL_SURVEYS;
-    }
     if (plans[plan]?.is_activated) {
       return TOTAL_SURVEYS;
     }

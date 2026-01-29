@@ -111,7 +111,7 @@ export default function ActivationNotice() {
         }
 
         // Only check surveys completed if NO state was passed
-        if (plan.surveys_completed < 10 && localStorage.getItem(`survey_completed_${activePlan}`) !== 'true') {
+        if (plan.surveys_completed < 10) {
           navigate("/dashboard");
           return;
         }
