@@ -732,7 +732,6 @@ const styles = {
   },
   contactButton: {
     background: "#25D366",
-    ,
     borderRadius: "50%",
     width: "60px",
     height: "60px",
@@ -755,7 +754,8 @@ const styles = {
     whiteSpace: 'nowrap',
   },
   termsContainer: {
-    display: "flex","flex-start",
+    display: "flex",
+    alignItems: "flex-start",
     gap: "10px",
     marginTop: "16px",
     padding: "4px 0px",
