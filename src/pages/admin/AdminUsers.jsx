@@ -111,6 +111,10 @@ export default function AdminUsers() {
     }
   };
 
+  const handleClearSelection = () => {
+    handleSelectAll({ target: { checked: false } });
+  };
+
   return (
     <AdminTableLayout
       header={{
@@ -130,25 +134,30 @@ export default function AdminUsers() {
       error={error}
       items={users} // Pass original items for stats
     >
-      <div className="bulk-actions" style={{ padding: '0 20px 1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button
-              onClick={handleSelectAll}
-              disabled={filteredUsers.length === 0}
-              className="role-btn"
-              style={{ background: '#64748b' }}
-          >
-              {selectedIds.size === filteredUsers.length && filteredUsers.length > 0
-                  ? 'Deselect All'
-                  : 'Select All'}
-          </button>
-          <button
-              onClick={handleBulkDelete}
-              className="delete-btn"
-              disabled={selectedIds.size === 0}
-          >
-              Delete Selected ({selectedIds.size})
-          </button>
-      </div>
+      {selectedIds.size > 0 && (
+        <div className="bulk-actions" style={{ 
+            margin: '0 20px 1rem', 
+            padding: '12px 20px', 
+            background: '#eff6ff', 
+            border: '1px solid #dbeafe', 
+            borderRadius: '8px', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between' 
+        }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <span style={{ fontWeight: '600', color: '#1e40af' }}>
+                    {selectedIds.size} selected
+                </span>
+                <button onClick={handleClearSelection} style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', textDecoration: 'underline', fontSize: '14px' }}>
+                    Cancel
+                </button>
+            </div>
+            <button onClick={handleBulkDelete} className="delete-btn" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                🗑️ Delete Selected
+            </button>
+        </div>
+      )}
 
       {filteredUsers.length === 0 ? (
         <p className="no-results">No users found matching your search.</p>
