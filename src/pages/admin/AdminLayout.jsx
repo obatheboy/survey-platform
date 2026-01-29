@@ -81,7 +81,9 @@ export default function AdminLayout() {
       </aside>
 
       <main style={styles.content}>
-        <Outlet />
+        <div style={{ color: '#374151' }}>
+          <Outlet />
+        </div>
       </main>
     </div>
   );
