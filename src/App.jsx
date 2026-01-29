@@ -22,6 +22,8 @@ import AdminLayout from "./pages/admin/AdminLayout";
 import AdminActivations from "./pages/admin/AdminActivations";
 import AdminWithdrawals from "./pages/admin/AdminWithdrawals";
 import AdminUsers from "./pages/admin/AdminUsers";
+import AdminNotifications from "./pages/admin/AdminNotifications";
+import AdminDashboard from "./pages/components/AdminDashboard";
 
 /* ================= COMPONENTS ================= */
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
@@ -177,10 +179,11 @@ export default function App() {
             </AdminRoute>
           }
         >
-          <Route index element={<Navigate to="activations" replace />} />
+          <Route index element={<AdminDashboard />} />
           <Route path="activations" element={<AdminActivations />} />
           <Route path="withdrawals" element={<AdminWithdrawals />} />
           <Route path="users" element={<AdminUsers />} />
+          <Route path="notifications" element={<AdminNotifications />} />
         </Route>
 
         {/* FALLBACK - 404 */}
