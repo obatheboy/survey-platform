@@ -40,7 +40,14 @@ router.post("/users/bulk-delete", adminController.deleteBulkUsers);
 
 /**
  * =========================================
- * 📊 ADMIN DASHBOARD STATS
+ * 📢 NOTIFICATIONS MANAGEMENT
+ * =========================================
+ */
+router.post("/notifications/bulk", adminController.sendBulkNotification);
+
+/**
+ * =========================================
+ * � ADMIN DASHBOARD STATS
  * =========================================
  */
 router.get("/stats", adminController.getAdminStats);
