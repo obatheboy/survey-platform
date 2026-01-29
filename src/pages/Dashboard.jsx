@@ -1448,6 +1448,79 @@ return (
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Quick Actions Mobile Fix */
+        .quick-actions-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 12px;
+          width: 100%;
+        }
+
+        .quick-action-card {
+          width: 100%;
+          box-sizing: border-box;
+          display: flex;
+          align-items: center;
+          padding: 16px;
+          background: var(--bg-surface, #ffffff);
+          border: 1px solid var(--border-soft, #f1f5f9);
+          border-radius: 16px;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .quick-action-card .action-content {
+          flex: 1;
+          padding: 0 12px;
+          text-align: left;
+        }
+
+        .quick-action-card h4 {
+          margin: 0 0 4px 0;
+          font-size: 15px;
+          font-weight: 700;
+          color: var(--text-main, #1e293b);
+        }
+
+        .quick-action-card p {
+          margin: 0;
+          font-size: 12px;
+          color: var(--text-muted, #64748b);
+        }
+
+        .quick-action-card .action-icon {
+          font-size: 24px;
+          width: 48px;
+          height: 48px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(59, 130, 246, 0.1);
+          border-radius: 12px;
+          flex-shrink: 0;
+        }
+
+        .quick-action-card .action-btn {
+          padding: 8px 16px;
+          border-radius: 10px;
+          border: none;
+          background: var(--primary, #2563eb);
+          color: white;
+          font-weight: 600;
+          font-size: 13px;
+          cursor: pointer;
+          white-space: nowrap;
+        }
+
+        .quick-action-card.completed .action-btn {
+          background: #10b981;
+        }
+
+        @media (min-width: 768px) {
+          .quick-actions-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
       `}</style>
     </div>
   );
