@@ -1,34 +1,47 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { adminApi } from "../../api/adminApi";
 import "./AdminUsers.css";
+import { useAdminTable } from "./useAdminTable";
+import AdminTableLayout from "./AdminTableLayout";
+
+const filterConfig = {
+  all: { label: 'All Users', value: 'all' },
+  active: { label: 'Active', value: 'active' },
+  inactive: { label: 'Inactive', value: 'inactive' },
+};
 
 export default function AdminUsers() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [processingId, setProcessingId] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
-  const [selectedIds, setSelectedIds] = useState(new Set());
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  /* ===========================
-     FETCH USERS (ADMIN)
-  =========================== */
-  const fetchUsers = async () => {
-    try {
-      const res = await adminApi.get("/admin/users");
-      setUsers(res.data);
-    } catch (err) {
-      console.error("Fetch users error:", err);
-      setError(err.response?.data?.message || "Failed to load users");
-    } finally {
-      setLoading(false);
+  const {
+    items: users,
+    setItems,
+    loading,
+    error,
+    successMessage,
+    failureMessage,
+    searchTerm,
+    setSearchTerm,
+    filterStatus,
+    setFilterStatus,
+    filteredItems: filteredUsers,
+    selectedIds,
+    handleSelectOne,
+    handleSelectAll,
+    deleteSelectedItems: deleteSelectedUsers,
+  } = useAdminTable({
+    fetchData: () => adminApi.get("/admin/users"),
+    deleteBulkData: (userIds) => adminApi.post('/admin/users/bulk-delete', { userIds }),
+    searchFields: ['full_name', 'phone', 'email'],
+    filterConfig,
+    initialFilterStatus: 'all',
+    customFilter: (item, filterKey) => {
+      if (filterKey === 'all') return true;
+      if (filterKey === 'active') return item.is_activated;
+      if (filterKey === 'inactive') return !item.is_activated;
+      return true;
     }
-  };
+  });
 
   /* ===========================
      ACTIVATE USER
@@ -39,7 +52,7 @@ export default function AdminUsers() {
     setProcessingId(id);
     try {
       await adminApi.patch(`/admin/users/${id}/activate`);
-      setUsers((prev) =>
+      setItems((prev) =>
         prev.map((u) =>
           u.id === id ? { ...u, is_activated: true, status: "ACTIVE" } : u
         )
@@ -59,30 +72,7 @@ export default function AdminUsers() {
 
     try {
       await adminApi.delete(`/admin/users/${id}`);
-      setUsers((prev) => prev.filter((u) => u.id !== id));
-    } catch (err) {
-      alert(err.response?.data?.message || "Delete failed");
-    }
-  };
-
-  const deleteSelectedUsers = async () => {
-    if (selectedIds.size === 0) {
-      alert('No users selected.');
-      return;
-    }
-
-    if (!window.confirm(`Are you sure you want to delete ${selectedIds.size} selected user(s)?`)) {
-      return;
-    }
-
-    try {
-      const idsToDelete = Array.from(selectedIds);
-      await adminApi.post('/admin/users/bulk-delete', { userIds: idsToDelete });
-      setUsers((prev) => prev.filter((user) => !idsToDelete.includes(user.id)));
-      setSelectedIds(new Set());
-      alert(`${idsToDelete.length} user(s) deleted successfully.`);
-    } catch (err) {
-      alert(err.response?.data?.message || 'Bulk delete failed.');
+      setItems((prev) => prev.filter((u) => u.id !== id));
     }
   };
 
@@ -94,7 +84,7 @@ export default function AdminUsers() {
 
     try {
       await adminApi.patch(`/admin/users/${id}/role`, { role: newRole });
-      setUsers((prev) =>
+      setItems((prev) =>
         prev.map((u) =>
           u.id === id ? { ...u, role: newRole } : u
         )
@@ -104,91 +94,27 @@ export default function AdminUsers() {
     }
   };
 
-  /* ===========================
-     FILTER & SEARCH USERS
-  =========================== */
-  const filteredUsers = users.filter((user) => {
-    const searchLower = searchTerm.toLowerCase();
-    const matchesSearch =
-      user.full_name?.toLowerCase().includes(searchLower) ||
-      user.phone?.includes(searchTerm) ||
-      user.email?.toLowerCase().includes(searchLower);
-
-    const matchesStatus =
-      filterStatus === "all" ||
-      (filterStatus === "active" && user.is_activated) ||
-      (filterStatus === "inactive" && !user.is_activated);
-
-    return matchesSearch && matchesStatus;
-  });
-
-  const handleSelectOne = (id) => {
-    setSelectedIds((prev) => {
-      const newSelected = new Set(prev);
-      if (newSelected.has(id)) {
-        newSelected.delete(id);
-      } else {
-        newSelected.add(id);
-      }
-      return newSelected;
-    });
-  };
-
-  const handleSelectAll = (e) => {
-    if (e.target.checked) {
-      const allIds = new Set(filteredUsers.map((item) => item.id));
-      setSelectedIds(allIds);
-    } else {
-      setSelectedIds(new Set());
-    }
-  };
-
-  if (loading) return <p className="loading-text">Loading users...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
-
   return (
-    <div className="admin-users-container">
-      <div className="admin-users-header">
-        <h2>👥 User Management Dashboard</h2>
-        <p>Total Users: {users.length} | Activated: {users.filter(u => u.is_activated).length}</p>
-      </div>
-
-      {/* Search Section */}
-      <div className="search-section">
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder="🔍 Search by name, phone, or email..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-        </div>
-
-        <div className="filter-container">
-          <button
-            className={`filter-btn ${filterStatus === "all" ? "filter-btn-active" : ""}`}
-            onClick={() => setFilterStatus("all")}
-          >
-            All Users
-          </button>
-          <button
-            className={`filter-btn ${filterStatus === "active" ? "filter-btn-active" : ""}`}
-            onClick={() => setFilterStatus("active")}
-          >
-            Active
-          </button>
-          <button
-            className={`filter-btn ${filterStatus === "inactive" ? "filter-btn-active" : ""}`}
-            onClick={() => setFilterStatus("inactive")}
-          >
-            Inactive
-          </button>
-        </div>
-      </div>
-
+    <AdminTableLayout
+      header={{
+        title: '👥 User Management Dashboard',
+        stats: (items) => `Total Users: ${items.length} | Activated: ${items.filter(u => u.is_activated).length}`,
+        loadingText: 'Loading users...',
+      }}
+      filterConfig={filterConfig}
+      filterStatus={filterStatus}
+      setFilterStatus={setFilterStatus}
+      searchTerm={searchTerm}
+      setSearchTerm={setSearchTerm}
+      searchInputPlaceholder="🔍 Search by name, phone, or email..."
+      successMessage={successMessage}
+      failureMessage={failureMessage}
+      loading={loading}
+      error={error}
+      items={users} // Pass original items for stats
+    >
       {selectedIds.size > 0 && (
-        <div className="bulk-actions" style={{ marginBottom: '1rem' }}>
+        <div className="bulk-actions" style={{ marginBottom: '1rem', padding: '0 20px' }}>
           <button onClick={deleteSelectedUsers} className="delete-btn">
             Delete {selectedIds.size} Selected
           </button>
@@ -273,6 +199,6 @@ export default function AdminUsers() {
           </table>
         </div>
       )}
-    </div>
+    </AdminTableLayout>
   );
 }

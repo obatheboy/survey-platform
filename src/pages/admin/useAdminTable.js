@@ -7,6 +7,7 @@ export function useAdminTable({
   deleteBulkData,
   searchFields,
   filterConfig,
+  customFilter,
   initialFilterStatus = 'all',
 }) {
   const [items, setItems] = useState([]);
@@ -147,6 +148,11 @@ export function useAdminTable({
           String(item[field] || '').toLowerCase().includes(searchLower)
         );
 
+      // Use custom filter if provided, otherwise use default status-based filter
+      if (customFilter) {
+        return matchesSearch && customFilter(item, filterStatus);
+      }
+
       const currentFilter = filterConfig[filterStatus];
       const matchesStatus =
         !currentFilter ||
@@ -155,10 +161,11 @@ export function useAdminTable({
 
       return matchesSearch && matchesStatus;
     });
-  }, [items, searchTerm, filterStatus, searchFields, filterConfig]);
+  }, [items, searchTerm, filterStatus, searchFields, filterConfig, customFilter]);
 
   return {
     items,
+    setItems,
     loading,
     error,
     processingId,
