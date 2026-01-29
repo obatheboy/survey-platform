@@ -57,11 +57,11 @@ export default function AdminWithdrawals() {
     <AdminTableLayout
       header={{
         title: '💰 Withdrawal Requests Dashboard',
-        stats: (items) =>
-          `Total: ${items.length} | Pending: ${
-            items.filter((w) => w.status === 'PROCESSING').length
+        stats: () =>
+          `Total: ${withdrawals.length} | Pending: ${
+            withdrawals.filter((w) => w.status === 'PROCESSING').length
           } | Approved: ${
-            items.filter((w) => w.status === 'APPROVED').length
+            withdrawals.filter((w) => w.status === 'APPROVED').length
           }`,
         loadingText: 'Loading withdrawals...',
       }}
