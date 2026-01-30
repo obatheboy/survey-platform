@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import api from "../api/api";
-import "./UserNotifications.css"; // Create this CSS file
+import "./UserNotifications.css";
 
 export default function UserNotifications() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isExpanded, setIsExpanded] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
 
   useEffect(() => {
     loadNotifications();
-    // Refresh every 30 seconds
     const interval = setInterval(loadNotifications, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -100,9 +100,7 @@ export default function UserNotifications() {
     
     return date.toLocaleDateString('en-US', {
       month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: 'numeric'
     });
   };
 
@@ -124,189 +122,245 @@ export default function UserNotifications() {
     return icons[type] || '💬';
   };
 
-  const toggleExpand = (id) => {
+  const toggleNotificationExpand = (id, e) => {
+    if (e) e.stopPropagation();
     setExpandedId(expandedId === id ? null : id);
+  };
+
+  const togglePanelExpand = () => {
+    setIsExpanded(!isExpanded);
   };
 
   if (loading) {
     return (
-      <div className="notifications-loading">
-        <div className="spinner"></div>
-        <p>Loading notifications...</p>
+      <div className="notifications-mini-card">
+        <div className="notifications-loading">
+          <div className="spinner-small"></div>
+          <span>Loading...</span>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="notifications-error">
+      <div className="notifications-mini-card error">
         <div className="error-icon">⚠️</div>
-        <div>
-          <p className="error-text">{error}</p>
-          <button className="retry-btn" onClick={loadNotifications}>
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (notifications.length === 0) {
-    return (
-      <div className="no-notifications">
-        <div className="empty-icon">📭</div>
-        <div className="empty-content">
-          <h4>No notifications yet</h4>
-          <p>Admin announcements and updates will appear here</p>
-        </div>
+        <span className="error-text">Failed to load</span>
+        <button className="retry-btn-small" onClick={loadNotifications}>
+          Retry
+        </button>
       </div>
     );
   }
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
   const hasUnread = unreadCount > 0;
+  const latestNotification = notifications[0];
 
-  return (
-    <div className="notifications-container">
-      <div className="notifications-header">
-        <div className="header-left">
-          <h3 className="notifications-title">
-            <span className="title-icon">🔔</span>
-            Notifications
-            {hasUnread && (
-              <span className="unread-count-badge">{unreadCount}</span>
+  // Mini Card View (Collapsed State)
+  if (!isExpanded) {
+    return (
+      <div className="notifications-mini-card" onClick={togglePanelExpand}>
+        <div className="mini-card-header">
+          <div className="bell-icon">
+            🔔
+            {hasUnread && <span className="unread-pulse"></span>}
+          </div>
+          <div className="mini-card-content">
+            <div className="mini-card-title">
+              {notifications.length === 0 ? (
+                <span className="empty-text">No notifications</span>
+              ) : (
+                <>
+                  <span className="notification-preview">
+                    {latestNotification.title || "New notification"}
+                  </span>
+                  <span className="notification-time">
+                    {formatTime(latestNotification.created_at)}
+                  </span>
+                </>
+              )}
+            </div>
+            {notifications.length > 0 && (
+              <div className="mini-card-stats">
+                {hasUnread && (
+                  <span className="unread-badge-mini">
+                    {unreadCount} new
+                  </span>
+                )}
+                <span className="total-count">
+                  {notifications.length} total
+                </span>
+              </div>
             )}
-          </h3>
-          <div className="header-stats">
-            {notifications.length} total • {unreadCount} unread
+          </div>
+          <div className="expand-icon">
+            {isExpanded ? '▲' : '▼'}
           </div>
         </div>
-        
-        <div className="header-actions">
+      </div>
+    );
+  }
+
+  // Expanded Panel View
+  return (
+    <div className="notifications-expanded-panel">
+      {/* Header */}
+      <div className="panel-header">
+        <div className="panel-title">
+          <span className="panel-icon">🔔</span>
+          <h3>Notifications</h3>
+          {hasUnread && (
+            <span className="unread-count">{unreadCount}</span>
+          )}
+        </div>
+        <div className="panel-actions">
           {hasUnread && (
             <button 
-              className="header-btn mark-all-read-btn"
+              className="panel-btn mark-all-btn"
               onClick={markAllAsRead}
               title="Mark all as read"
             >
-              <span className="btn-icon">✓</span>
-              Mark all read
+              ✓ Mark all
             </button>
           )}
           <button 
-            className="header-btn clear-all-btn"
+            className="panel-btn clear-btn"
             onClick={clearAll}
             title="Clear all notifications"
           >
-            <span className="btn-icon">🗑️</span>
-            Clear all
+            🗑️ Clear
+          </button>
+          <button 
+            className="panel-btn collapse-btn"
+            onClick={togglePanelExpand}
+            title="Collapse"
+          >
+            ▲
           </button>
         </div>
       </div>
 
-      <div className="notifications-list">
-        {notifications.slice(0, 10).map(notification => {
-          const isUnread = !notification.is_read;
-          const isExpanded = expandedId === notification.id;
-          const showMore = notification.message?.length > 100;
-          
-          return (
-            <div 
-              key={notification.id} 
-              className={`notification-item ${isUnread ? 'unread' : ''} ${isExpanded ? 'expanded' : ''}`}
-              onClick={() => toggleExpand(notification.id)}
-            >
-              <div className="notification-main">
-                <div className="notification-icon-container">
-                  <div className={`notification-icon ${notification.type}`}>
-                    {getNotificationIcon(notification.type, notification.is_welcome_bonus)}
-                  </div>
-                  {isUnread && <div className="unread-indicator"></div>}
-                </div>
-                
-                <div className="notification-content">
-                  <div className="notification-header">
-                    <div className="notification-title-row">
-                      <h4 className="notification-title">
-                        {notification.title || "Notification"}
-                        {notification.is_important && <span className="important-badge">!</span>}
-                      </h4>
-                      <div className="notification-actions">
-                        {isUnread && (
-                          <button 
-                            className="action-btn mark-read-btn"
-                            onClick={(e) => markAsRead(notification.id, e)}
-                            title="Mark as read"
-                          >
-                            ✓
-                          </button>
-                        )}
-                        <button 
-                          className="action-btn remove-btn"
-                          onClick={(e) => removeNotification(notification.id, e)}
-                          title="Remove notification"
-                        >
-                          ×
-                        </button>
-                      </div>
+      {/* Notifications List */}
+      <div className="panel-content">
+        {notifications.length === 0 ? (
+          <div className="empty-panel">
+            <div className="empty-icon">📭</div>
+            <div className="empty-message">
+              <h4>No notifications</h4>
+              <p>You're all caught up!</p>
+            </div>
+          </div>
+        ) : (
+          <div className="notifications-scrollable">
+            {notifications.map(notification => {
+              const isUnread = !notification.is_read;
+              const isExpandedItem = expandedId === notification.id;
+              const messagePreview = notification.message?.substring(0, 80) + 
+                (notification.message?.length > 80 ? '...' : '');
+              
+              return (
+                <div 
+                  key={notification.id} 
+                  className={`panel-notification-item ${isUnread ? 'unread' : ''} ${isExpandedItem ? 'expanded' : ''}`}
+                >
+                  <div className="panel-item-header">
+                    <div className="panel-item-icon">
+                      {getNotificationIcon(notification.type, notification.is_welcome_bonus)}
                     </div>
-                    
-                    <div className="notification-meta">
-                      <span className="notification-time">
-                        {formatTime(notification.created_at)}
-                      </span>
-                      <span className={`notification-type ${notification.type}`}>
-                        {notification.type?.replace('_', ' ') || 'General'}
-                      </span>
-                      {notification.priority === 'high' && (
-                        <span className="priority-badge high">High Priority</span>
-                      )}
+                    <div className="panel-item-content">
+                      <div className="panel-item-title-row">
+                        <h4 className="panel-item-title">
+                          {notification.title || "Notification"}
+                          {isUnread && <span className="unread-dot"></span>}
+                        </h4>
+                        <div className="panel-item-actions">
+                          {isUnread && (
+                            <button 
+                              className="action-btn-small mark-btn"
+                              onClick={(e) => markAsRead(notification.id, e)}
+                              title="Mark as read"
+                            >
+                              ✓
+                            </button>
+                          )}
+                          <button 
+                            className="action-btn-small delete-btn"
+                            onClick={(e) => removeNotification(notification.id, e)}
+                            title="Delete"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <div className="panel-item-meta">
+                        <span className="panel-item-time">
+                          {formatTime(notification.created_at)}
+                        </span>
+                        <span className={`panel-item-type ${notification.type}`}>
+                          {notification.type?.replace('_', ' ') || 'General'}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   
-                  <div className={`notification-message ${isExpanded ? 'expanded' : ''}`}>
-                    {notification.message || "No message content"}
-                    {showMore && !isExpanded && (
-                      <span className="show-more">... Read more</span>
+                  <div className="panel-item-body">
+                    <p className={`panel-item-message ${isExpandedItem ? 'expanded' : ''}`}>
+                      {isExpandedItem ? notification.message : messagePreview}
+                      {notification.message?.length > 80 && !isExpandedItem && (
+                        <button 
+                          className="read-more-btn"
+                          onClick={(e) => toggleNotificationExpand(notification.id, e)}
+                        >
+                          Read more
+                        </button>
+                      )}
+                      {isExpandedItem && notification.message?.length > 80 && (
+                        <button 
+                          className="read-less-btn"
+                          onClick={(e) => toggleNotificationExpand(notification.id, e)}
+                        >
+                          Show less
+                        </button>
+                      )}
+                    </p>
+                    
+                    {notification.action_route && (
+                      <div className="panel-item-actions-footer">
+                        <a 
+                          href={notification.action_route}
+                          className="action-link-btn"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          Take action →
+                        </a>
+                      </div>
                     )}
                   </div>
                 </div>
-              </div>
-              
-              {notification.action_route && (
-                <div className="notification-footer">
-                  <a 
-                    href={notification.action_route}
-                    className="action-link"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <span className="link-icon">→</span>
-                    Take action
-                  </a>
-                  {notification.action_deadline && (
-                    <span className="deadline">
-                      ⏰ Until {new Date(notification.action_deadline).toLocaleDateString()}
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
-          );
-        })}
+              );
+            })}
+          </div>
+        )}
       </div>
 
-      {notifications.length > 10 && (
-        <div className="notifications-footer">
-          <div className="footer-info">
-            Showing 10 of {notifications.length} notifications
+      {/* Footer */}
+      {notifications.length > 0 && (
+        <div className="panel-footer">
+          <div className="footer-stats">
+            Showing {notifications.length} notification{notifications.length !== 1 ? 's' : ''}
+            {hasUnread && ` • ${unreadCount} unread`}
           </div>
-          <button 
-            className="view-all-btn"
-            onClick={() => window.location.href = "/notifications"}
-          >
-            <span className="btn-icon">📋</span>
-            View all notifications
-          </button>
+          {notifications.length > 10 && (
+            <button 
+              className="view-all-link"
+              onClick={() => window.location.href = "/notifications"}
+            >
+              View all →
+            </button>
+          )}
         </div>
       )}
     </div>
