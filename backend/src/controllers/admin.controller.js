@@ -1,10 +1,11 @@
+/* eslint-disable no-undef */
 const pool = require("../config/db");
 
 /* ======================================================
    👑 ADMIN SESSION
    - Used by /api/admin/me
 ====================================================== */
-exports.getAdminMe = async (req, res) => {
+const getAdminMe = async (req, res) => {
   try {
     res.json({
       id: req.admin.id,
@@ -24,7 +25,7 @@ exports.getAdminMe = async (req, res) => {
 /**
  * GET ALL USERS
  */
-exports.getAllUsers = async (req, res) => {
+const getAllUsers = async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT
@@ -53,9 +54,14 @@ exports.getAllUsers = async (req, res) => {
 /**
  * GET SINGLE USER
  */
-exports.getUserById = async (req, res) => {
+const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
+
+    // Validate ID
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
 
     const result = await pool.query(
       `
@@ -91,17 +97,24 @@ exports.getUserById = async (req, res) => {
 /**
  * UPDATE USER STATUS
  */
-exports.updateUserStatus = async (req, res) => {
+const updateUserStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
-    if (!["ACTIVE", "SUSPENDED"].includes(status)) {
+    // Validate inputs
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    if (!status || !["ACTIVE", "SUSPENDED"].includes(status.toUpperCase())) {
       return res.status(400).json({
         message: "Only ACTIVE or SUSPENDED allowed",
       });
     }
 
+    const normalizedStatus = status.toUpperCase();
+    
     const result = await pool.query(
       `
       UPDATE users
@@ -109,7 +122,7 @@ exports.updateUserStatus = async (req, res) => {
       WHERE id = $2
       RETURNING id, full_name, status
       `,
-      [status, id]
+      [normalizedStatus, id]
     );
 
     if (!result.rows.length) {
@@ -129,15 +142,22 @@ exports.updateUserStatus = async (req, res) => {
 /**
  * UPDATE USER ROLE
  */
-exports.updateUserRole = async (req, res) => {
+const updateUserRole = async (req, res) => {
   try {
     const { id } = req.params;
     const { role } = req.body;
 
-    if (!["user", "admin"].includes(role)) {
+    // Validate inputs
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    if (!role || !["user", "admin"].includes(role.toLowerCase())) {
       return res.status(400).json({ message: "Invalid role" });
     }
 
+    const normalizedRole = role.toLowerCase();
+    
     const result = await pool.query(
       `
       UPDATE users
@@ -145,7 +165,7 @@ exports.updateUserRole = async (req, res) => {
       WHERE id = $2
       RETURNING id, full_name, role
       `,
-      [role, id]
+      [normalizedRole, id]
     );
 
     if (!result.rows.length) {
@@ -165,9 +185,14 @@ exports.updateUserRole = async (req, res) => {
 /**
  * 🔓 ACTIVATE USER ACCOUNT
  */
-exports.activateUser = async (req, res) => {
+const activateUser = async (req, res) => {
   try {
     const { id } = req.params;
+
+    // Validate ID
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
 
     const result = await pool.query(
       `
@@ -196,12 +221,17 @@ exports.activateUser = async (req, res) => {
 /**
  * 💰 MANUAL BALANCE ADJUSTMENT
  */
-exports.adjustUserBalance = async (req, res) => {
+const adjustUserBalance = async (req, res) => {
   const client = await pool.connect();
 
   try {
     const { id } = req.params;
     let { amount, type } = req.body;
+
+    // Validate ID
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
 
     amount = Number(amount);
 
@@ -209,10 +239,12 @@ exports.adjustUserBalance = async (req, res) => {
       return res.status(400).json({ message: "Invalid amount" });
     }
 
-    if (!["CREDIT", "DEBIT"].includes(type)) {
-      return res.status(400).json({ message: "Invalid action" });
+    if (!type || !["CREDIT", "DEBIT"].includes(type.toUpperCase())) {
+      return res.status(400).json({ message: "Invalid action. Use CREDIT or DEBIT" });
     }
 
+    const normalizedType = type.toUpperCase();
+    
     await client.query("BEGIN");
 
     const userRes = await client.query(
@@ -232,12 +264,16 @@ exports.adjustUserBalance = async (req, res) => {
 
     let balance = Number(userRes.rows[0].balance);
 
-    if (type === "DEBIT" && balance < amount) {
+    if (normalizedType === "DEBIT" && balance < amount) {
       await client.query("ROLLBACK");
-      return res.status(400).json({ message: "Insufficient balance" });
+      return res.status(400).json({ 
+        message: "Insufficient balance", 
+        currentBalance: balance,
+        requestedDebit: amount 
+      });
     }
 
-    balance = type === "CREDIT" ? balance + amount : balance - amount;
+    balance = normalizedType === "CREDIT" ? balance + amount : balance - amount;
 
     const update = await client.query(
       `
@@ -256,7 +292,9 @@ exports.adjustUserBalance = async (req, res) => {
       user: update.rows[0],
     });
   } catch (error) {
-    await client.query("ROLLBACK");
+    await client.query("ROLLBACK").catch(rollbackError => {
+      console.error("Rollback failed:", rollbackError);
+    });
     console.error("Admin adjust balance error:", error);
     res.status(500).json({ message: "Server error" });
   } finally {
@@ -267,11 +305,32 @@ exports.adjustUserBalance = async (req, res) => {
 /**
  * ❌ DELETE USER
  */
-exports.deleteUser = async (req, res) => {
+const deleteUser = async (req, res) => {
+  const client = await pool.connect();
+  
   try {
     const { id } = req.params;
 
-    const result = await pool.query(
+    // Validate ID
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    await client.query("BEGIN");
+
+    // Check if user exists
+    const checkRes = await client.query(
+      "SELECT id FROM users WHERE id = $1",
+      [id]
+    );
+
+    if (!checkRes.rows.length) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Delete user
+    const result = await client.query(
       `
       DELETE FROM users
       WHERE id = $1
@@ -280,27 +339,42 @@ exports.deleteUser = async (req, res) => {
       [id]
     );
 
-    if (!result.rows.length) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    await client.query("COMMIT");
 
-    res.json({ message: "User deleted successfully" });
+    res.json({ 
+      message: "User deleted successfully",
+      deletedId: result.rows[0]?.id 
+    });
   } catch (error) {
+    await client.query("ROLLBACK").catch(rollbackError => {
+      console.error("Rollback failed:", rollbackError);
+    });
     console.error("Admin delete user error:", error);
     res.status(500).json({ message: "Server error" });
+  } finally {
+    client.release();
   }
 };
 
 /**
  * ❌ BULK DELETE USERS
  */
-exports.deleteBulkUsers = async (req, res) => {
+const deleteBulkUsers = async (req, res) => {
   const client = await pool.connect();
   try {
     const { userIds } = req.body;
 
     if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
       return res.status(400).json({ message: "Invalid user IDs provided" });
+    }
+
+    // Validate all IDs are numbers
+    const invalidIds = userIds.filter(id => isNaN(parseInt(id)));
+    if (invalidIds.length > 0) {
+      return res.status(400).json({ 
+        message: "Invalid user IDs detected", 
+        invalidIds 
+      });
     }
 
     await client.query("BEGIN");
@@ -321,7 +395,9 @@ exports.deleteBulkUsers = async (req, res) => {
       deletedCount: result.rowCount,
     });
   } catch (error) {
-    await client.query("ROLLBACK");
+    await client.query("ROLLBACK").catch(rollbackError => {
+      console.error("Rollback failed:", rollbackError);
+    });
     console.error("Admin bulk delete users error:", error);
     res.status(500).json({ message: "Server error" });
   } finally {
@@ -336,11 +412,20 @@ exports.deleteBulkUsers = async (req, res) => {
 /**
  * SEND BULK NOTIFICATION
  */
-exports.sendBulkNotification = async (req, res) => {
+const sendBulkNotification = async (req, res) => {
   const { title, message } = req.body;
 
   if (!title || !message) {
     return res.status(400).json({ message: "Title and message are required" });
+  }
+
+  // Validate length
+  if (title.length > 100) {
+    return res.status(400).json({ message: "Title too long (max 100 chars)" });
+  }
+
+  if (message.length > 500) {
+    return res.status(400).json({ message: "Message too long (max 500 chars)" });
   }
 
   const client = await pool.connect();
@@ -349,17 +434,21 @@ exports.sendBulkNotification = async (req, res) => {
 
     // Use a single, more efficient query to insert notifications for all users.
     const insertQuery = `
-      INSERT INTO notifications (user_id, title, message, type)
-      SELECT id, $1, $2, 'bulk' FROM users
+      INSERT INTO notifications (user_id, title, message, type, created_at)
+      SELECT id, $1, $2, 'bulk', NOW() FROM users
+      WHERE status = 'ACTIVE'
     `;
-    const result = await client.query(insertQuery, [title, message]);
+    const result = await client.query(insertQuery, [title.trim(), message.trim()]);
 
     await client.query('COMMIT');
     res.status(200).json({
-      message: `Notification sent to ${result.rowCount} users.`,
+      message: `Notification sent to ${result.rowCount} active users.`,
+      sentCount: result.rowCount
     });
   } catch (error) {
-    await client.query('ROLLBACK');
+    await client.query('ROLLBACK').catch(rollbackError => {
+      console.error("Rollback failed:", rollbackError);
+    });
     console.error("Admin send bulk notification error:", error);
     res.status(500).json({ message: "Server error while sending notifications" });
   } finally {
@@ -368,9 +457,9 @@ exports.sendBulkNotification = async (req, res) => {
 };
 
 /* ======================================================
-   � ADMIN DASHBOARD STATS
+   📊 ADMIN DASHBOARD STATS
 ====================================================== */
-exports.getAdminStats = async (req, res) => {
+const getAdminStats = async (req, res) => {
   try {
     const [
       totalUsersRes,
@@ -379,6 +468,7 @@ exports.getAdminStats = async (req, res) => {
       pendingActivationsRes,
       pendingWithdrawalsRes,
       surveysCompletedRes,
+      todayRevenueRes,
     ] = await Promise.all([
       pool.query(`SELECT COUNT(*) FROM users`),
       pool.query(`SELECT SUM(amount) as total FROM activation_payments WHERE status = 'APPROVED'`),
@@ -386,18 +476,38 @@ exports.getAdminStats = async (req, res) => {
       pool.query(`SELECT COUNT(*) FROM activation_payments WHERE status = 'SUBMITTED'`),
       pool.query(`SELECT COUNT(*) FROM withdraw_requests WHERE status = 'PROCESSING'`),
       pool.query(`SELECT SUM(surveys_completed) as total FROM user_surveys`),
+      pool.query(`SELECT SUM(amount) as total FROM activation_payments WHERE status = 'APPROVED' AND DATE(created_at) = CURRENT_DATE`),
     ]);
 
     res.json({
-      totalUsers: Number(totalUsersRes.rows[0].count) || 0,
-      totalRevenue: Number(totalRevenueRes.rows[0].total) || 0,
-      totalWithdrawals: Number(totalWithdrawalsRes.rows[0].total) || 0,
-      pendingActivations: Number(pendingActivationsRes.rows[0].count) || 0,
-      pendingWithdrawals: Number(pendingWithdrawalsRes.rows[0].count) || 0,
-      surveysCompleted: Number(surveysCompletedRes.rows[0].total) || 0,
+      totalUsers: Number(totalUsersRes.rows[0]?.count) || 0,
+      totalRevenue: Number(totalRevenueRes.rows[0]?.total) || 0,
+      totalWithdrawals: Number(totalWithdrawalsRes.rows[0]?.total) || 0,
+      pendingActivations: Number(pendingActivationsRes.rows[0]?.count) || 0,
+      pendingWithdrawals: Number(pendingWithdrawalsRes.rows[0]?.count) || 0,
+      surveysCompleted: Number(surveysCompletedRes.rows[0]?.total) || 0,
+      todayRevenue: Number(todayRevenueRes.rows[0]?.total) || 0,
+      netProfit: (Number(totalRevenueRes.rows[0]?.total) || 0) - (Number(totalWithdrawalsRes.rows[0]?.total) || 0),
     });
   } catch (error) {
     console.error("Admin stats error:", error);
     res.status(500).json({ message: "Server error" });
   }
+};
+
+/* ======================================================
+   📤 EXPORT ALL FUNCTIONS
+====================================================== */
+module.exports = {
+  getAdminMe,
+  getAllUsers,
+  getUserById,
+  updateUserStatus,
+  updateUserRole,
+  activateUser,
+  adjustUserBalance,
+  deleteUser,
+  deleteBulkUsers,
+  sendBulkNotification,
+  getAdminStats
 };

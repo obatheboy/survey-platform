@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const pool = require("../config/db");
 
 /* ===============================
@@ -20,7 +21,7 @@ const WITHDRAW_FEES = {
 /* =====================================
    USER — REQUEST WITHDRAWAL
 ===================================== */
-exports.requestWithdraw = async (req, res) => {
+const requestWithdraw = async (req, res) => {
   const client = await pool.connect();
 
   try {
@@ -258,7 +259,7 @@ exports.requestWithdraw = async (req, res) => {
 /* =====================================
    USER — GET WITHDRAWAL HISTORY
 ===================================== */
-exports.getUserWithdrawalHistory = async (req, res) => {
+const getUserWithdrawalHistory = async (req, res) => {
   try {
     const userId = req.user.id;
     
@@ -298,7 +299,7 @@ exports.getUserWithdrawalHistory = async (req, res) => {
 /* =====================================
    ADMIN — GET PENDING WITHDRAWALS
 ===================================== */
-exports.getPendingWithdrawals = async (req, res) => {
+const getPendingWithdrawals = async (req, res) => {
   const { rows } = await pool.query(
     `
     SELECT wr.*, u.email, u.full_name
@@ -314,7 +315,7 @@ exports.getPendingWithdrawals = async (req, res) => {
 /* =====================================
    ADMIN — GET ALL WITHDRAWALS
 ===================================== */
-exports.getAllWithdrawals = async (req, res) => {
+const getAllWithdrawals = async (req, res) => {
   const { rows } = await pool.query(
     `
     SELECT wr.*, u.email, u.full_name
@@ -329,7 +330,7 @@ exports.getAllWithdrawals = async (req, res) => {
 /* =====================================
    ADMIN — APPROVE WITHDRAWAL
 ===================================== */
-exports.approveWithdraw = async (req, res) => {
+const approveWithdraw = async (req, res) => {
   const client = await pool.connect();
   
   try {
@@ -364,7 +365,7 @@ exports.approveWithdraw = async (req, res) => {
 /* =====================================
    ADMIN — REJECT WITHDRAWAL
 ===================================== */
-exports.rejectWithdraw = async (req, res) => {
+const rejectWithdraw = async (req, res) => {
   const client = await pool.connect();
   
   try {
@@ -417,4 +418,16 @@ exports.rejectWithdraw = async (req, res) => {
   } finally {
     client.release();
   }
+};
+
+/* =====================================
+   📤 EXPORT ALL FUNCTIONS
+===================================== */
+module.exports = {
+  requestWithdraw,
+  getUserWithdrawalHistory,
+  getPendingWithdrawals,
+  getAllWithdrawals,
+  approveWithdraw,
+  rejectWithdraw
 };

@@ -89,7 +89,8 @@ export default function Dashboard() {
   /* =========================
      WHATSAPP CAPTION BLINKING EFFECT - FASTER
   ========================= */
-  const [showCaption, setShowCaption] = useState(true);
+ 
+  const [_showCaption, setShowCaption] = useState(true);
   const [showScrollReminder, setShowScrollReminder] = useState(false);
   const [reminderShown, setReminderShown] = useState(false);
 

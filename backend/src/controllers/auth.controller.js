@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const pool = require("../config/db");

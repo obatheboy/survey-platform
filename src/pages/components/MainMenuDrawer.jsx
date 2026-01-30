@@ -54,13 +54,20 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate }) {
   const logout = async () => {
     try {
       await api.post("/auth/logout");
-    } catch {}
+    } catch (error) {
+      // Log for debugging but don't prevent logout
+      console.warn("Logout API failed, proceeding with client-side logout:", error);
+    }
     
-    // Clear localStorage token for mobile compatibility
+    // Always clear localStorage and redirect even if API fails
     localStorage.removeItem("token");
     localStorage.removeItem("active_plan");
+    localStorage.removeItem("cachedUser");
+    localStorage.removeItem("user");
     
+    // Use replace: true to prevent going back
     navigate("/auth", { replace: true });
+    onClose();
   };
 
   return (
@@ -233,41 +240,6 @@ const withdrawTitle = {
   display: "flex",
   alignItems: "center",
   gap: "8px"
-};
-
-const withdrawCard = {
-  background: "rgba(255, 255, 255, 0.03)",
-  padding: "16px",
-  borderRadius: "16px",
-  marginBottom: 12,
-  border: "1px solid rgba(255, 255, 255, 0.08)",
-  transition: "all 0.2s ease"
-};
-
-const withdrawAmount = { margin: "4px 0", fontSize: "14px", color: "#f8fafc", fontWeight: "700" };
-
-const withdrawBtn = {
-  background: "transparent",
-  border: "1.5px solid",
-  padding: "8px 20px",
-  borderRadius: "12px",
-  fontWeight: 800,
-  fontSize: "13px",
-  transition: "all 0.2s ease",
-  marginTop: "12px",
-  width: "100%"
-};
-
-const inputStyle = {
-  width: "100%",
-  marginTop: "10px",
-  padding: "10px 12px",
-  borderRadius: "10px",
-  border: "1px solid rgba(255, 255, 255, 0.1)",
-  background: "rgba(255, 255, 255, 0.05)",
-  color: "#fff",
-  fontSize: "14px",
-  outline: "none"
 };
 
 const referralCaption = {

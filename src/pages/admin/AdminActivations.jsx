@@ -50,22 +50,32 @@ export default function AdminActivations() {
 
   /* =========================
      UPDATE USER ROLE
-  ========================= */
-  const updateUserRole = async (userId, newRole) => {
-    try {
-      setRoleMessage("Updating role...");
-      await adminApi.patch(`/admin/users/${userId}/role`, { role: newRole });
-      setRoleMessage(`✅ Role updated to ${newRole.toUpperCase()}`);
-      setTimeout(() => {
-        setShowRoleModal(false);
-        setSelectedPayment(null);
-        setRoleMessage("");
-      }, 1500);
-    } catch (err) {
-      setRoleMessage("❌ Failed to update role");
-    }
-  };
-
+  ========================= */const updateUserRole = async (userId, newRole) => {
+  try {
+    setRoleMessage("Updating role...");
+    await adminApi.patch(`/admin/users/${userId}/role`, { role: newRole });
+    setRoleMessage(`✅ Role updated to ${newRole.toUpperCase()}`);
+    
+    // Auto-close on success
+    setTimeout(() => {
+      setShowRoleModal(false);
+      setSelectedPayment(null);
+      setRoleMessage("");
+      // Optionally refresh data here
+    }, 1500);
+  } catch (err) {
+    console.error("Role update failed:", err);
+    setRoleMessage("❌ Failed to update role");
+    
+    // Auto-clear error after 3 seconds
+    const errorTimer = setTimeout(() => {
+      setRoleMessage("");
+    }, 3000);
+    
+    // Cleanup timer if component unmounts
+    return () => clearTimeout(errorTimer);
+  }
+};
   const handleApprove = (id) => {
     approveItem(id, (approvedId) => {
       setSuccessMessage("✅ Activation approved! User can now withdraw.");
