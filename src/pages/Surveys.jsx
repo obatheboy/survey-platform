@@ -68,48 +68,61 @@ export default function Surveys() {
     setIsCompleting(true);
 
     try {
-      // 1. Get current status to know how many we need (idempotency)
-      let currentCount = 0;
-      try {
-        const res = await api.get(`/auth/me?_t=${Date.now()}`);
-        currentCount = res.data.plans?.[activePlan]?.surveys_completed || 0;
-      } catch (err) {
-        console.warn("Could not fetch current survey count", err);
+      // 1. First get current count from backend
+      const userRes = await api.get(`/auth/me?_t=${Date.now()}`);
+      const currentCount = userRes.data.plans?.[activePlan]?.surveys_completed || 0;
+      
+      // 2. Calculate how many surveys we actually need to complete
+      const surveysNeeded = 10 - currentCount;
+      
+      if (surveysNeeded <= 0) {
+        // Already completed, just navigate
+        navigate("/activation-notice", {
+          state: {
+            planType: activePlan,
+            amount: PLANS_CONFIG[activePlan]?.total || 0
+          }
+        });
+        return;
       }
 
-      const needed = Math.max(0, 10 - currentCount);
-
-      // 2. Send requests SEQUENTIALLY to ensure backend counts correctly
-      for (let i = 0; i < needed; i++) {
+      // 3. Send requests for the needed surveys only
+      for (let i = 0; i < surveysNeeded; i++) {
         try {
-          await api.post("/surveys/complete", { plan: activePlan, answers });
+          await api.post("/surveys/submit", { plan: activePlan }); // FIXED: Changed to /submit
           // Update progress UI
-          setSubmitProgress(Math.round(((i + 1) / needed) * 100));
+          setSubmitProgress(Math.round(((i + 1) / surveysNeeded) * 100));
         } catch (err) {
           console.error(`Survey submission ${i} failed`, err);
         }
       }
 
-      // 3. VERIFY AND RETRY (Critical Fix for Balance Update)
-      // We loop until backend confirms 10/10, or we try 3 times
-      for (let attempt = 0; attempt < 3; attempt++) {
-         // Small delay to allow DB propagation
-         await new Promise(r => setTimeout(r, 800));
-         
-         const verifyRes = await api.get(`/auth/me?_t=${Date.now()}`);
-         const verifiedCount = verifyRes.data.plans?.[activePlan]?.surveys_completed || 0;
-         
-         if (verifiedCount >= 10) {
-             break; // Success! Backend is synced.
-         }
-         
-         // If still missing, retry the specific amount
-         const missing = 10 - verifiedCount;
-         for (let k = 0; k < missing; k++) {
-             await api.post("/surveys/complete", { plan: activePlan, answers }).catch(e => console.error(e));
-         }
+      // 4. Verify completion (optional but good for reliability)
+      const verifyRes = await api.get(`/auth/me?_t=${Date.now()}`);
+      const verifiedCount = verifyRes.data.plans?.[activePlan]?.surveys_completed || 0;
+      
+      // Update localStorage immediately for instant UI update
+      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+      const updatedData = {
+        ...userData,
+        plans: {
+          ...userData.plans,
+          [activePlan]: {
+            surveys_completed: verifiedCount >= 10 ? 10 : verifiedCount,
+            is_activated: userData.plans?.[activePlan]?.is_activated || false
+          }
+        }
+      };
+      localStorage.setItem("userData", JSON.stringify(updatedData));
+
+      // Update balance in localStorage
+      if (verifiedCount >= 10) {
+        const currentBalance = Number(userData.total_earned || 0);
+        const surveyReward = PLANS_CONFIG[activePlan]?.total || 0;
+        localStorage.setItem("cachedBalance", (currentBalance + surveyReward).toString());
       }
 
+      // 5. Navigate to activation notice
       navigate("/activation-notice", {
         state: {
           planType: activePlan,

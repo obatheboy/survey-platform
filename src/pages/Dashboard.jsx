@@ -49,7 +49,7 @@ const PLANS = {
 };
 
 const TOTAL_SURVEYS = 10;
-const APP_VERSION = "1.2.4"; // Bump this version to force clients to refresh on deploy
+const APP_VERSION = "1.2.5"; // Bump this version to force clients to refresh on deploy
 
 const getInitialTheme = () => {
   // 1. Check for a saved theme in localStorage
