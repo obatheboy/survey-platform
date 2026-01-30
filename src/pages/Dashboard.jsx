@@ -49,7 +49,7 @@ const PLANS = {
 };
 
 const TOTAL_SURVEYS = 10;
-const APP_VERSION = "1.2.2"; // Bump this version to force clients to refresh on deploy
+const APP_VERSION = "1.2.3"; // Bump this version to force clients to refresh on deploy
 
 const getInitialTheme = () => {
   // 1. Check for a saved theme in localStorage
@@ -146,6 +146,9 @@ export default function Dashboard() {
           if (backendPlan.is_activated) {
             count = TOTAL_SURVEYS;
           }
+          
+          // Ensure count doesn't exceed total
+          count = Math.min(count, TOTAL_SURVEYS);
           
           calculatedTotalSurveys += count;
           surveyEarnings += count * PLANS[planKey].perSurvey;

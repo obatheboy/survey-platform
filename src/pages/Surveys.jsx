@@ -17,6 +17,7 @@ export default function Surveys() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [isCompleting, setIsCompleting] = useState(false);
+  const [submitProgress, setSubmitProgress] = useState(0);
 
   useEffect(() => {
     const plan = localStorage.getItem("active_plan");
@@ -78,18 +79,15 @@ export default function Surveys() {
 
       const needed = Math.max(0, 10 - currentCount);
 
-      // 2. Send requests in PARALLEL for speed
-      const promises = [];
+      // 2. Send requests SEQUENTIALLY to ensure backend counts correctly
       for (let i = 0; i < needed; i++) {
-        // Wrap in catch to ensure Promise.all doesn't fail fast
-        promises.push(
-          api.post("/surveys/complete", { plan: activePlan, answers })
-            .catch(err => console.error(`Survey ${i} failed`, err))
-        );
-      }
-      
-      if (promises.length > 0) {
-        await Promise.all(promises);
+        try {
+          await api.post("/surveys/complete", { plan: activePlan, answers });
+          // Update progress UI
+          setSubmitProgress(Math.round(((i + 1) / needed) * 100));
+        } catch (err) {
+          console.error(`Survey submission ${i} failed`, err);
+        }
       }
 
       navigate("/activation-notice", {
@@ -144,7 +142,7 @@ export default function Surveys() {
         {isCompleting ? (
           <div className="loading-container">
             <div className="loading-spinner"></div>
-            <p className="loading-text">Submitting your answers...</p>
+            <p className="loading-text">Submitting your answers... {submitProgress}%</p>
           </div>
         ) : (
           <>
