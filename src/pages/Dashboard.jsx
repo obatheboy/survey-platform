@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 import MainMenuDrawer from "./components/MainMenuDrawer.jsx";
 import LiveWithdrawalFeed from "./components/LiveWithdrawalFeed.jsx";
-import UserNotifications from "./components/UserNotifications.jsx";
+import UserNotifications from "../components/UserNotifications.jsx";
+
 import Testimonials from "../components/Testimonials.jsx";
 import "./Dashboard.css";
 import "./Dashboard-Enhanced.css";
