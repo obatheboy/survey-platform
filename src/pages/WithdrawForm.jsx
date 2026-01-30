@@ -28,6 +28,8 @@ const PLANS = {
   },
 };
 
+
+
 export default function WithdrawForm() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,7 +51,7 @@ export default function WithdrawForm() {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const res = await api.get("/auth/me");
+        const res = await api.get(`/auth/me?_t=${Date.now()}`);
         setUser(res.data);
         
         // Update cache

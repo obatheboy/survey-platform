@@ -70,7 +70,7 @@ export default function Surveys() {
       // 1. Get current status to know how many we need (idempotency)
       let currentCount = 0;
       try {
-        const res = await api.get("/auth/me");
+        const res = await api.get(`/auth/me?_t=${Date.now()}`);
         currentCount = res.data.plans?.[activePlan]?.surveys_completed || 0;
       } catch (err) {
         console.warn("Could not fetch current survey count", err);
@@ -78,15 +78,14 @@ export default function Surveys() {
 
       const needed = Math.max(0, 10 - currentCount);
 
-      // 2. Send requests sequentially with INDIVIDUAL error handling
-      // This ensures that if request #3 fails, #4-#10 still try to run
+      // 2. Send requests in PARALLEL for speed
+      const promises = [];
       for (let i = 0; i < needed; i++) {
-        try {
-          await api.post("/surveys/complete", { plan: activePlan, answers });
-          await new Promise(r => setTimeout(r, 50)); // Small delay to prevent race conditions
-        } catch (reqError) {
-          console.error(`Survey submission ${i + 1}/${needed} failed:`, reqError);
-        }
+        promises.push(api.post("/surveys/complete", { plan: activePlan, answers }));
+      }
+      
+      if (promises.length > 0) {
+        await Promise.all(promises);
       }
 
       navigate("/activation-notice", {

@@ -74,7 +74,7 @@ export default function ActivationNotice() {
           
           // THEN verify with backend in background (BUT DON'T SHOW ERRORS)
           try {
-            const res = await api.get("/auth/me");
+            const res = await api.get(`/auth/me?_t=${Date.now()}`);
             if (!alive) return;
             
             const currentPlanKey = planType || plan?.type || res.data.active_plan;
@@ -100,7 +100,7 @@ export default function ActivationNotice() {
         }
 
         // SECOND: If no state was passed, rely entirely on backend
-        const res = await api.get("/auth/me");
+        const res = await api.get(`/auth/me?_t=${Date.now()}`);
 
         const activePlan = res.data.active_plan;
         const plan = res.data.plans?.[activePlan];

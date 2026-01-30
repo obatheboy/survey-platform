@@ -128,7 +128,7 @@ export default function Dashboard() {
 
     const load = async () => {
       try {
-        const resUser = await api.get("/auth/me");
+        const resUser = await api.get(`/auth/me?_t=${Date.now()}`);
         if (!alive) return;
 
         setUser(resUser.data);

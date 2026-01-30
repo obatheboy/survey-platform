@@ -263,7 +263,7 @@ export default function Activate() {
 
     const load = async () => {
       try {
-        const res = await api.get("/auth/me");
+        const res = await api.get(`/auth/me?_t=${Date.now()}`);
         if (!isMounted) return;
         setUser(res.data);
 

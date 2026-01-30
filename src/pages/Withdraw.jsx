@@ -21,7 +21,7 @@ export default function Withdraw() {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await api.get("/auth/me");
+        const res = await api.get(`/auth/me?_t=${Date.now()}`);
         const u = res.data;
 
         if (!u.is_activated) {
@@ -56,7 +56,7 @@ export default function Withdraw() {
 
     const checkStatus = async () => {
       try {
-        const res = await api.get("/auth/me");
+        const res = await api.get(`/auth/me?_t=${Date.now()}`);
         const latestUser = res.data;
         // Get the most recent withdrawal request status (could be stored in user object)
         const withdrawalData = latestUser.withdrawal_status || "PROCESSING";
