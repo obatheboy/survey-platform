@@ -21,7 +21,8 @@ export default function Withdraw() {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await api.get(`/auth/me?_t=${Date.now()}`);
+        // Add random string to ensure absolutely no caching
+        const res = await api.get(`/auth/me?_t=${Date.now()}&r=${Math.random()}`);
         const u = res.data;
 
         if (!u.is_activated) {

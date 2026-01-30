@@ -90,6 +90,26 @@ export default function Surveys() {
         }
       }
 
+      // 3. VERIFY AND RETRY (Critical Fix for Balance Update)
+      // We loop until backend confirms 10/10, or we try 3 times
+      for (let attempt = 0; attempt < 3; attempt++) {
+         // Small delay to allow DB propagation
+         await new Promise(r => setTimeout(r, 800));
+         
+         const verifyRes = await api.get(`/auth/me?_t=${Date.now()}`);
+         const verifiedCount = verifyRes.data.plans?.[activePlan]?.surveys_completed || 0;
+         
+         if (verifiedCount >= 10) {
+             break; // Success! Backend is synced.
+         }
+         
+         // If still missing, retry the specific amount
+         const missing = 10 - verifiedCount;
+         for (let k = 0; k < missing; k++) {
+             await api.post("/surveys/complete", { plan: activePlan, answers }).catch(e => console.error(e));
+         }
+      }
+
       navigate("/activation-notice", {
         state: {
           planType: activePlan,
