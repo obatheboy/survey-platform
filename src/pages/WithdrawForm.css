@@ -560,3 +560,36 @@
     right: 16px;
   }
 }
+
+.redirecting-loader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  color: #059669;
+  font-weight: 600;
+}
+
+.mini-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(5, 150, 105, 0.3);
+  border-top-color: #059669;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Disabled state for inputs */
+input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.use-max-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

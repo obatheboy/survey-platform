@@ -28,8 +28,6 @@ const PLANS = {
   },
 };
 
-
-
 export default function WithdrawForm() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -43,10 +41,12 @@ export default function WithdrawForm() {
   const [submitting, setSubmitting] = useState(false);
   const [, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [autoRedirecting, setAutoRedirecting] = useState(false);
 
   useEffect(() => {
-  window.scrollTo(0, 0);
-}, []);
+    window.scrollTo(0, 0);
+  }, []);
+
   // Moved loadUser inside useEffect
   useEffect(() => {
     const loadUser = async () => {
@@ -102,11 +102,11 @@ export default function WithdrawForm() {
       return;
     }
 
-    // Validate phone number format (Kenyan)
-    const phoneRegex = /^07[0-9]{8}$/;
+    // Validate phone number format (Kenyan - accepts 07 or 01)
+    const phoneRegex = /^0[17][0-9]{8}$/;
     const cleanedPhone = phone.replace(/\s+/g, '');
     if (!phoneRegex.test(cleanedPhone)) {
-      setError("Please enter a valid Kenyan phone number (07XXXXXXXX)");
+      setError("Please enter a valid Kenyan phone number (07XXXXXXXX or 01XXXXXXXX)");
       return;
     }
 
@@ -126,24 +126,30 @@ export default function WithdrawForm() {
       const withdrawalId = res.data?.id || `temp_${Date.now()}`;
       const code = res.data?.referral_code || Math.random().toString(36).substring(2, 8).toUpperCase();
       
-      // Navigate to success page with withdrawal data
-      navigate("/withdraw-success", {
-        state: {
-          withdrawal: {
-            id: withdrawalId,
-            type: plan,
-            amount: amountNum,
-            phone_number: cleanedPhone,
-            referral_code: code,
-            share_count: 0,
-            status: res.data?.status || "PROCESSING",
-            created_at: new Date().toISOString(),
-            fee: res.data?.fee || 0,
-            net_amount: res.data?.net_amount || amountNum
-          },
-          plan: PLANS[plan]
-        }
-      });
+      // Set auto redirecting state
+      setAutoRedirecting(true);
+      setMessage("Withdrawal submitted successfully! Redirecting to success page...");
+      
+      // Auto redirect after 2 seconds
+      setTimeout(() => {
+        navigate("/withdraw-success", {
+          state: {
+            withdrawal: {
+              id: withdrawalId,
+              type: plan,
+              amount: amountNum,
+              phone_number: cleanedPhone,
+              referral_code: code,
+              share_count: 0,
+              status: res.data?.status || "PROCESSING",
+              created_at: new Date().toISOString(),
+              fee: res.data?.fee || 0,
+              net_amount: res.data?.net_amount || amountNum
+            },
+            plan: PLANS[plan]
+          }
+        });
+      }, 2000);
 
     } catch (err) {
       if (err.response?.status === 429) {
@@ -158,7 +164,6 @@ export default function WithdrawForm() {
         setError("Withdrawal failed. Please try again.");
       }
       console.error("Withdrawal error:", err.response?.data || err.message);
-    } finally {
       setSubmitting(false);
     }
   };
@@ -223,8 +228,6 @@ export default function WithdrawForm() {
         )}
 
         {/* Withdrawal Form */}
-
-        
         {plan && (
           <form className="withdrawal-form" onSubmit={handleSubmit}>
             <div className="form-header">
@@ -246,6 +249,12 @@ export default function WithdrawForm() {
               <div className="success-message">
                 <span className="success-icon">✅</span>
                 <p>{message}</p>
+                {autoRedirecting && (
+                  <div className="redirecting-loader">
+                    <div className="mini-spinner"></div>
+                    <span>Redirecting...</span>
+                  </div>
+                )}
               </div>
             )}
 
@@ -262,6 +271,7 @@ export default function WithdrawForm() {
                   min="100"
                   max={PLANS[plan].total}
                   required
+                  disabled={submitting || autoRedirecting}
                 />
               </div>
               <div className="amount-helper">
@@ -270,6 +280,7 @@ export default function WithdrawForm() {
                   type="button" 
                   className="use-max-btn"
                   onClick={() => setAmount(PLANS[plan].total.toString())}
+                  disabled={submitting || autoRedirecting}
                 >
                   Use Max
                 </button>
@@ -281,15 +292,15 @@ export default function WithdrawForm() {
               <label>Phone Number (M-Pesa)</label>
               <input
                 type="tel"
-                placeholder="07XX XXX XXX"
+                placeholder="07XX XXX XXX or 01XX XXX XXX"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 required
+                disabled={submitting || autoRedirecting}
               />
-              <p className="input-helper">Enter your Safaricom M-Pesa number (e.g., 0712345678)</p>
+              <p className="input-helper">Enter your M-Pesa number (e.g., 0712345678 or 0112345678)</p>
             </div>
 
-     
             {/* Processing Info */}
             <div className="processing-info">
               <div className="info-item">
@@ -311,13 +322,18 @@ export default function WithdrawForm() {
               <button 
                 type="submit" 
                 className="submit-btn"
-                disabled={submitting}
+                disabled={submitting || autoRedirecting}
                 style={{ background: PLANS[plan].gradient }}
               >
                 {submitting ? (
                   <>
                     <span className="spinner"></span>
                     Processing...
+                  </>
+                ) : autoRedirecting ? (
+                  <>
+                    <span className="btn-icon">✅</span>
+                    Submitted
                   </>
                 ) : (
                   <>
@@ -331,6 +347,7 @@ export default function WithdrawForm() {
                 type="button" 
                 className="cancel-btn"
                 onClick={() => plan ? setPlan("") : navigate("/dashboard")}
+                disabled={submitting || autoRedirecting}
               >
                 {plan ? 'Change Plan' : 'Cancel'}
               </button>
@@ -357,6 +374,31 @@ export default function WithdrawForm() {
           💬 Need Help?
         </button>
       </div>
+
+      {/* Add CSS for redirecting loader */}
+      <style jsx>{`
+        .redirecting-loader {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-top: 10px;
+          color: #059669;
+          font-weight: 600;
+        }
+        
+        .mini-spinner {
+          width: 16px;
+          height: 16px;
+          border: 2px solid rgba(5, 150, 105, 0.3);
+          border-top-color: #059669;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }
