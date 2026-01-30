@@ -672,24 +672,26 @@ body {
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   margin-bottom: var(--space-md);
-  border: 1px solid var(--border-soft, #e2e8f0);
+  border: 2px solid rgba(239, 68, 68, 0.15); /* Subtle red border for container */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   position: relative;
   overflow: hidden;
 }
 
-/* Subtle gradient overlay */
+/* Enhanced gradient overlay with red accent */
 .dashboard-section:first-of-type::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
+  height: 4px;
   background: linear-gradient(90deg, 
-    var(--primary, #3b82f6) 0%,
+    #ef4444 0%, /* Red accent */
+    var(--primary, #3b82f6) 25%,
     var(--secondary, #8b5cf6) 50%,
-    var(--accent, #10b981) 100%
+    var(--accent, #10b981) 75%,
+    #ef4444 100% /* Red accent */
   );
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
@@ -705,7 +707,7 @@ body {
   font-size: 20px;
   font-weight: 800;
   margin: 0 0 8px;
-  background: linear-gradient(135deg, var(--text-main), var(--primary));
+  background: linear-gradient(135deg, var(--text-main), #ef4444, var(--primary)); /* Added red */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -722,20 +724,20 @@ body {
 .dashboard-nav-mobile {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  gap: 12px; /* Increased gap for better separation */
   background: linear-gradient(135deg, 
-    rgba(var(--primary-rgb, 59, 130, 246), 0.05), 
-    rgba(var(--secondary-rgb, 139, 92, 246), 0.05)
+    rgba(var(--primary-rgb, 59, 130, 246), 0.08), 
+    rgba(var(--secondary-rgb, 139, 92, 246), 0.08)
   );
   border-radius: var(--radius-xl);
-  padding: 8px;
-  border: 1px solid var(--border-soft, rgba(255, 255, 255, 0.1));
+  padding: 12px; /* Increased padding */
+  border: 2px solid rgba(239, 68, 68, 0.1); /* Subtle red border */
   backdrop-filter: blur(10px);
   position: relative;
   overflow: hidden;
 }
 
-/* Grid lines for visual structure */
+/* Enhanced grid lines with red accent */
 .dashboard-nav-mobile::before {
   content: '';
   position: absolute;
@@ -743,7 +745,11 @@ body {
   left: 25%;
   right: 25%;
   height: 1px;
-  background: var(--border-soft, rgba(0, 0, 0, 0.05));
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    rgba(239, 68, 68, 0.2) 50%,
+    transparent 100%
+  );
   transform: translateY(-50%);
   z-index: 0;
 }
@@ -755,11 +761,16 @@ body {
   top: 25%;
   bottom: 25%;
   width: 1px;
-  background: var(--border-soft, rgba(0, 0, 0, 0.05));
+  background: linear-gradient(180deg, 
+    transparent 0%,
+    rgba(239, 68, 68, 0.2) 50%,
+    transparent 100%
+  );
   transform: translateX(-50%);
   z-index: 0;
 }
 
+/* ENHANCED BUTTON STYLES */
 .nav-btn {
   display: flex;
   flex-direction: column;
@@ -767,55 +778,58 @@ body {
   justify-content: center;
   gap: 6px;
   padding: var(--space-md) var(--space-sm);
-  background: var(--bg-surface, #ffffff);
+  background: linear-gradient(145deg, #ffffff, #f8fafc); /* Subtle gradient background */
   color: var(--text-muted, #64748b);
   font-weight: 700;
   font-size: 11px;
   cursor: pointer;
-  border-radius: var(--radius-lg);
+  border-radius: 16px; /* More rounded corners for app-like look */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  min-height: 68px;
-  min-width: 56px;
+  min-height: 78px; /* Increased height */
+  min-width: 64px; /* Increased width */
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   text-decoration: none;
   position: relative;
   z-index: 1;
-  border: 1px solid var(--border-soft, #e2e8f0);
+  border: 2px solid #e2e8f0; /* Thicker border */
   box-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    0 4px 12px rgba(0, 0, 0, 0.06),
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
+/* Hover state with red outline */
 .nav-btn:hover {
-  background: linear-gradient(135deg, 
-    rgba(var(--primary-rgb, 59, 130, 246), 0.1), 
-    rgba(var(--secondary-rgb, 139, 92, 246), 0.1)
-  );
-  border-color: var(--border-medium, #cbd5e1);
-  transform: translateY(-2px);
+  background: linear-gradient(145deg, #f1f5f9, #e2e8f0);
+  border-color: #ef4444; /* Red border on hover */
+  border-width: 2px;
+  transform: translateY(-3px); /* More pronounced lift */
   box-shadow: 
-    0 6px 20px rgba(var(--primary-rgb, 59, 130, 246), 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    0 8px 25px rgba(239, 68, 68, 0.15), /* Red shadow */
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
   color: var(--text-main, #1e293b);
 }
 
+/* Active state with red accent */
 .nav-btn.active {
-  background: linear-gradient(135deg, 
+  background: linear-gradient(145deg, 
     var(--primary, #3b82f6), 
     var(--secondary, #8b5cf6)
   );
   color: white;
-  border: none;
-  transform: translateY(-2px);
+  border: 2px solid #ef4444; /* Red border for active state */
+  transform: translateY(-3px);
   box-shadow: 
-    0 8px 25px rgba(var(--primary-rgb, 59, 130, 246), 0.4),
-    0 2px 4px rgba(0, 0, 0, 0.1);
+    0 10px 30px rgba(239, 68, 68, 0.25), /* Strong red shadow */
+    0 4px 15px rgba(var(--primary-rgb, 59, 130, 246), 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
   position: relative;
   overflow: hidden;
 }
 
-/* Active button glow effect */
+/* Active button glow effect with red */
 .nav-btn.active::before {
   content: '';
   position: absolute;
@@ -825,7 +839,7 @@ body {
   height: 100%;
   background: linear-gradient(90deg, 
     transparent 0%,
-    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.3) 50%,
     transparent 100%
   );
   animation: shimmer 2s infinite;
@@ -836,122 +850,157 @@ body {
   100% { transform: translateX(100%); }
 }
 
-/* Active button badge indicator */
+/* Enhanced active button indicator with red */
 .nav-btn.active::after {
   content: '';
   position: absolute;
-  top: -2px;
-  right: -2px;
-  width: 8px;
-  height: 8px;
-  background: var(--accent, #10b981);
+  top: -3px;
+  right: -3px;
+  width: 10px;
+  height: 10px;
+  background: #ef4444; /* Red dot */
   border-radius: 50%;
   border: 2px solid var(--bg-surface, #ffffff);
-  box-shadow: 0 0 0 1px var(--primary, #3b82f6);
-  animation: pulse 2s infinite;
+  box-shadow: 0 0 0 2px var(--primary, #3b82f6);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .nav-icon {
-  font-size: 20px;
-  margin-bottom: 2px;
+  font-size: 22px; /* Slightly larger icons */
+  margin-bottom: 4px;
   transition: all 0.3s ease;
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.15));
+  position: relative;
+  z-index: 2;
 }
 
 .nav-btn:hover .nav-icon {
-  transform: scale(1.1);
-  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.15));
+  transform: scale(1.15);
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.2));
 }
 
 .nav-btn.active .nav-icon {
-  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
-  transform: scale(1.1);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+  transform: scale(1.15);
 }
 
 .nav-label {
   font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.9px;
   transition: all 0.3s ease;
-  font-weight: 700;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  font-weight: 800; /* Bolder text */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 2;
 }
 
 .nav-btn:hover .nav-label {
   transform: translateY(-1px);
-  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  color: #1e293b;
 }
 
 .nav-btn.active .nav-label {
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  font-weight: 900;
+  letter-spacing: 1.2px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Press effect for button */
+.nav-btn:active {
+  transform: translateY(-1px);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    inset 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 /* =========================================================
    DARK MODE ENHANCEMENTS
 ========================================================= */
 [data-theme='dark'] .dashboard-section:first-of-type {
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(239, 68, 68, 0.2); /* Red border in dark mode */
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
   background: linear-gradient(135deg, 
-    rgba(30, 41, 59, 0.9), 
-    rgba(15, 23, 42, 0.95)
+    rgba(30, 41, 59, 0.95), 
+    rgba(15, 23, 42, 0.98)
   );
 }
 
 [data-theme='dark'] .dashboard-nav-mobile {
   background: linear-gradient(135deg, 
-    rgba(59, 130, 246, 0.08), 
-    rgba(139, 92, 246, 0.08)
+    rgba(59, 130, 246, 0.1), 
+    rgba(139, 92, 246, 0.1)
   );
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(239, 68, 68, 0.15); /* Red border */
 }
 
 [data-theme='dark'] .nav-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.7);
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+  border-color: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
   box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.2),
+    0 4px 15px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 [data-theme='dark'] .nav-btn:hover {
-  background: linear-gradient(135deg, 
-    rgba(59, 130, 246, 0.2), 
-    rgba(139, 92, 246, 0.2)
-  );
-  border-color: rgba(255, 255, 255, 0.2);
+  background: linear-gradient(145deg, rgba(51, 65, 85, 0.9), rgba(30, 41, 59, 0.9));
+  border-color: #ef4444; /* Red border on hover */
   color: white;
   box-shadow: 
-    0 8px 25px rgba(59, 130, 246, 0.25),
+    0 10px 30px rgba(239, 68, 68, 0.25),
+    0 4px 15px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 [data-theme='dark'] .nav-btn.active {
-  background: linear-gradient(135deg, 
-    rgba(59, 130, 246, 0.9), 
-    rgba(139, 92, 246, 0.9)
+  background: linear-gradient(145deg, 
+    rgba(59, 130, 246, 0.95), 
+    rgba(139, 92, 246, 0.95)
   );
+  border-color: #ef4444; /* Red border */
   box-shadow: 
-    0 8px 30px rgba(59, 130, 246, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
+    0 12px 35px rgba(239, 68, 68, 0.35),
+    0 4px 20px rgba(59, 130, 246, 0.5),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
 }
 
-/* Grid lines in dark mode */
-[data-theme='dark'] .dashboard-nav-mobile::before,
+/* Grid lines in dark mode with red */
+[data-theme='dark'] .dashboard-nav-mobile::before {
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    rgba(239, 68, 68, 0.15) 50%,
+    transparent 100%
+  );
+}
+
 [data-theme='dark'] .dashboard-nav-mobile::after {
-  background: rgba(255, 255, 255, 0.05);
+  background: linear-gradient(180deg, 
+    transparent 0%,
+    rgba(239, 68, 68, 0.15) 50%,
+    transparent 100%
+  );
 }
 
 /* =========================================================
-   INDIVIDUAL BUTTON COLORS (Optional Enhancement)
+   ENHANCED INDIVIDUAL BUTTON COLORS
 ========================================================= */
 /* First button - Surveys */
+.nav-btn:nth-child(1) {
+  border-left: 3px solid #3b82f6; /* Colored left border */
+}
+
 .nav-btn:nth-child(1):not(.active):hover {
   --primary-rgb: 59, 130, 246;
-  border-color: rgba(59, 130, 246, 0.3);
+  border-color: #3b82f6;
+  border-left-width: 4px;
 }
 
 .nav-btn:nth-child(1) .nav-icon {
@@ -963,9 +1012,14 @@ body {
 }
 
 /* Second button - Dashboard */
+.nav-btn:nth-child(2) {
+  border-left: 3px solid #10b981;
+}
+
 .nav-btn:nth-child(2):not(.active):hover {
   --primary-rgb: 16, 185, 129;
-  border-color: rgba(16, 185, 129, 0.3);
+  border-color: #10b981;
+  border-left-width: 4px;
 }
 
 .nav-btn:nth-child(2) .nav-icon {
@@ -977,9 +1031,14 @@ body {
 }
 
 /* Third button - Withdraw */
+.nav-btn:nth-child(3) {
+  border-left: 3px solid #f59e0b;
+}
+
 .nav-btn:nth-child(3):not(.active):hover {
   --primary-rgb: 245, 158, 11;
-  border-color: rgba(245, 158, 11, 0.3);
+  border-color: #f59e0b;
+  border-left-width: 4px;
 }
 
 .nav-btn:nth-child(3) .nav-icon {
@@ -991,9 +1050,14 @@ body {
 }
 
 /* Fourth button - Support */
+.nav-btn:nth-child(4) {
+  border-left: 3px solid #ef4444;
+}
+
 .nav-btn:nth-child(4):not(.active):hover {
   --primary-rgb: 239, 68, 68;
-  border-color: rgba(239, 68, 68, 0.3);
+  border-color: #ef4444;
+  border-left-width: 4px;
 }
 
 .nav-btn:nth-child(4) .nav-icon {
@@ -1004,9 +1068,14 @@ body {
   color: #f87171;
 }
 
-/* Active button overrides individual colors */
+/* Active button overrides */
 .nav-btn.active .nav-icon {
   color: white !important;
+}
+
+/* Remove left border for active buttons */
+.nav-btn.active {
+  border-left: 2px solid #ef4444 !important;
 }
 
 /* =========================================================
@@ -1014,35 +1083,45 @@ body {
 ========================================================= */
 @media (max-width: 480px) {
   .dashboard-nav-mobile {
-    gap: 6px;
-    padding: 6px;
+    gap: 10px;
+    padding: 10px;
   }
   
   .nav-btn {
-    padding: 10px 8px;
-    min-height: 64px;
-    min-width: 52px;
+    padding: 12px 10px;
+    min-height: 74px;
+    min-width: 60px;
+    border-radius: 14px;
   }
   
   .nav-icon {
-    font-size: 18px;
+    font-size: 20px;
   }
   
   .nav-label {
     font-size: 9px;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
   }
 }
 
 @media (max-width: 360px) {
   .dashboard-nav-mobile {
     grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    gap: 10px;
   }
   
   .nav-btn {
-    padding: 12px;
-    min-height: 72px;
+    padding: 14px 12px;
+    min-height: 80px;
+    border-radius: 16px;
+  }
+  
+  .nav-btn:nth-child(odd) {
+    border-left: 3px solid;
+  }
+  
+  .nav-btn:nth-child(even) {
+    border-left: 3px solid;
   }
 }
 /* =========================================================
