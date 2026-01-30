@@ -85,13 +85,13 @@ app.use("/api/auth", authRoutes);
 app.use("/api/surveys", surveyRoutes);
 app.use("/api/activation", activationRoutes);
 app.use("/api/withdraw", withdrawRoutes);
-app.use("/api/notifications", notificationRoutes);
+app.use("/api/notifications", notificationRoutes); // ✅ USER NOTIFICATIONS HERE
 
 /* ===============================
    🛡 ADMIN ROUTES
 ================================ */
 app.use("/api/admin/auth", adminAuthRoutes);
-app.use("/api/admin", adminRoutes);
+app.use("/api/admin", adminRoutes); // ✅ ADMIN NOTIFICATION SENDING IS IN HERE
 app.use("/api/admin", adminActivationRoutes);
 
 /* ===============================
