@@ -457,6 +457,286 @@ const sendBulkNotification = async (req, res) => {
 };
 
 /* ======================================================
+   🔔 NOTIFICATIONS MANAGEMENT (ADMIN - NEW)
+====================================================== */
+
+/**
+ * GET ALL NOTIFICATIONS ACROSS ALL USERS
+ * GET /api/admin/notifications
+ */
+const getAllNotifications = async (req, res) => {
+  try {
+    const { type, limit = 100, offset = 0 } = req.query;
+    
+    let query = `
+      SELECT 
+        n.*,
+        u.full_name as user_name,
+        u.email as user_email
+      FROM notifications n
+      LEFT JOIN users u ON n.user_id = u.id
+    `;
+    
+    const queryParams = [];
+    
+    if (type) {
+      query += ` WHERE n.type = $${queryParams.length + 1}`;
+      queryParams.push(type);
+    }
+    
+    query += ` ORDER BY n.created_at DESC LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
+    queryParams.push(parseInt(limit), parseInt(offset));
+    
+    const { rows } = await pool.query(query, queryParams);
+    
+    // Get stats
+    const statsResult = await pool.query(`
+      SELECT 
+        COUNT(*) as total,
+        COUNT(CASE WHEN is_read = false THEN 1 END) as unread,
+        type,
+        COUNT(*) as type_count
+      FROM notifications
+      GROUP BY type
+      ORDER BY type_count DESC
+    `);
+    
+    const stats = {
+      total: parseInt(statsResult.rows.reduce((sum, row) => sum + parseInt(row.total), 0) || 0),
+      unread: parseInt(statsResult.rows.reduce((sum, row) => sum + parseInt(row.unread || 0), 0) || 0),
+      byType: statsResult.rows.reduce((acc, row) => {
+        acc[row.type] = parseInt(row.type_count);
+        return acc;
+      }, {})
+    };
+
+    return res.json({
+      success: true,
+      count: rows.length,
+      notifications: rows,
+      stats
+    });
+  } catch (error) {
+    console.error("❌ Admin get all notifications error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error fetching notifications"
+    });
+  }
+};
+
+/**
+ * DELETE NOTIFICATION FOR ALL USERS
+ * DELETE /api/admin/notifications/:id
+ */
+const deleteNotificationForAllUsers = async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const { id } = req.params;
+
+    // Validate ID
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid notification ID"
+      });
+    }
+
+    await client.query("BEGIN");
+
+    // First check if notification exists
+    const checkResult = await client.query(
+      `SELECT id, title, user_id FROM notifications WHERE id = $1`,
+      [id]
+    );
+
+    if (!checkResult.rows.length) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({
+        success: false,
+        message: "Notification not found"
+      });
+    }
+
+    const notification = checkResult.rows[0];
+    
+    // Delete the notification
+    const deleteResult = await client.query(
+      `
+      DELETE FROM notifications
+      WHERE id = $1
+      RETURNING id, title, user_id
+      `,
+      [id]
+    );
+
+    await client.query("COMMIT");
+
+    const deletedNotification = deleteResult.rows[0];
+
+    return res.json({
+      success: true,
+      message: `Notification "${deletedNotification.title}" deleted successfully`,
+      deletedNotification: {
+        id: deletedNotification.id,
+        title: deletedNotification.title,
+        userId: deletedNotification.user_id
+      },
+      details: deletedNotification.user_id 
+        ? `Deleted notification for user ID: ${deletedNotification.user_id}`
+        : "Notification deleted"
+    });
+  } catch (error) {
+    await client.query("ROLLBACK").catch(rollbackError => {
+      console.error("Rollback failed:", rollbackError);
+    });
+    console.error("❌ Admin delete notification error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error deleting notification"
+    });
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * DELETE NOTIFICATIONS BY TYPE
+ * DELETE /api/admin/notifications/type/:type
+ */
+const deleteNotificationsByType = async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const { type } = req.params;
+
+    if (!type || typeof type !== 'string') {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid notification type"
+      });
+    }
+
+    await client.query("BEGIN");
+
+    // Check how many will be deleted
+    const checkResult = await client.query(
+      `SELECT COUNT(*) as count FROM notifications WHERE type = $1`,
+      [type]
+    );
+
+    const countBefore = parseInt(checkResult.rows[0]?.count || 0);
+
+    if (countBefore === 0) {
+      await client.query("ROLLBACK");
+      return res.json({
+        success: true,
+        message: `No notifications found with type "${type}"`,
+        deletedCount: 0
+      });
+    }
+
+    // Delete notifications by type
+    const result = await client.query(
+      `
+      DELETE FROM notifications
+      WHERE type = $1
+      RETURNING COUNT(*) as deleted_count
+      `,
+      [type]
+    );
+
+    await client.query("COMMIT");
+
+    const deletedCount = parseInt(result.rows[0]?.deleted_count || 0);
+
+    return res.json({
+      success: true,
+      message: `Deleted ${deletedCount} notifications of type "${type}"`,
+      deletedCount,
+      type
+    });
+  } catch (error) {
+    await client.query("ROLLBACK").catch(rollbackError => {
+      console.error("Rollback failed:", rollbackError);
+    });
+    console.error("❌ Admin delete notifications by type error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error deleting notifications by type"
+    });
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * DELETE OLD NOTIFICATIONS
+ * DELETE /api/admin/notifications/cleanup?days=30
+ */
+const deleteOldNotifications = async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const days = parseInt(req.query.days) || 30;
+    
+    if (days < 1) {
+      return res.status(400).json({
+        success: false,
+        message: "Days must be at least 1"
+      });
+    }
+
+    await client.query("BEGIN");
+
+    // Check how many will be deleted
+    const checkResult = await client.query(
+      `SELECT COUNT(*) as count FROM notifications WHERE created_at < NOW() - INTERVAL '${days} days'`
+    );
+
+    const countBefore = parseInt(checkResult.rows[0]?.count || 0);
+
+    if (countBefore === 0) {
+      await client.query("ROLLBACK");
+      return res.json({
+        success: true,
+        message: `No notifications older than ${days} days found`,
+        deletedCount: 0
+      });
+    }
+
+    // Delete old notifications
+    const result = await client.query(
+      `
+      DELETE FROM notifications
+      WHERE created_at < NOW() - INTERVAL '${days} days'
+      RETURNING COUNT(*) as deleted_count
+      `
+    );
+
+    await client.query("COMMIT");
+
+    const deletedCount = parseInt(result.rows[0]?.deleted_count || 0);
+
+    return res.json({
+      success: true,
+      message: `Deleted ${deletedCount} notifications older than ${days} days`,
+      deletedCount,
+      days
+    });
+  } catch (error) {
+    await client.query("ROLLBACK").catch(rollbackError => {
+      console.error("Rollback failed:", rollbackError);
+    });
+    console.error("❌ Admin delete old notifications error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error deleting old notifications"
+    });
+  } finally {
+    client.release();
+  }
+};
+
+/* ======================================================
    📊 ADMIN DASHBOARD STATS
 ====================================================== */
 const getAdminStats = async (req, res) => {
@@ -509,5 +789,9 @@ module.exports = {
   deleteUser,
   deleteBulkUsers,
   sendBulkNotification,
+  getAllNotifications,           // ✅ NEW
+  deleteNotificationForAllUsers, // ✅ NEW
+  deleteNotificationsByType,     // ✅ NEW
+  deleteOldNotifications,        // ✅ NEW
   getAdminStats
 };

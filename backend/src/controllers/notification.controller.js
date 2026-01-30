@@ -117,3 +117,42 @@ exports.clearAllNotifications = async (req, res) => {
     });
   }
 };
+
+/* =====================================
+   USER — DELETE SINGLE NOTIFICATION
+   DELETE /api/notifications/:id
+===================================== */
+exports.deleteNotification = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { id } = req.params;
+
+    const result = await pool.query(
+      `
+      DELETE FROM notifications
+      WHERE id = $1 AND user_id = $2
+      RETURNING id
+      `,
+      [id, userId]
+    );
+
+    if (!result.rows.length) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Notification not found or already deleted" 
+      });
+    }
+
+    return res.json({ 
+      success: true, 
+      message: "Notification deleted successfully",
+      deletedId: id
+    });
+  } catch (error) {
+    console.error("❌ Delete notification error:", error);
+    return res.status(500).json({ 
+      success: false, 
+      message: "Server error deleting notification" 
+    });
+  }
+};

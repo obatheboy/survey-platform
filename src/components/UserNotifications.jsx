@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import api from "../api/api";
+import "./UserNotifications.css"; // Create this CSS file
 
 export default function UserNotifications() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [expandedId, setExpandedId] = useState(null);
 
   useEffect(() => {
     loadNotifications();
@@ -16,9 +18,6 @@ export default function UserNotifications() {
   const loadNotifications = async () => {
     try {
       const res = await api.get("/notifications");
-      // ✅ Handle both response formats:
-      // Format 1: { success: true, notifications: [...] }
-      // Format 2: Direct array [...]
       const notificationsData = res.data.notifications || res.data || [];
       setNotifications(notificationsData);
       setError("");
@@ -30,9 +29,9 @@ export default function UserNotifications() {
     }
   };
 
-  const markAsRead = async (id) => {
+  const markAsRead = async (id, e) => {
+    if (e) e.stopPropagation();
     try {
-      // ✅ Use PATCH instead of PUT (matches your route)
       await api.patch(`/notifications/${id}/read`);
       setNotifications(prev => 
         prev.map(notif => 
@@ -44,20 +43,47 @@ export default function UserNotifications() {
     }
   };
 
-  const clearAll = async () => {
+  const markAllAsRead = async () => {
     try {
-      // ✅ Use DELETE /notifications/clear (not /clear)
-      await api.delete("/notifications/clear");
-      setNotifications([]);
-      // Show success message
-      alert("All notifications cleared successfully!");
+      const unreadNotifications = notifications.filter(n => !n.is_read);
+      await Promise.all(
+        unreadNotifications.map(notif => 
+          api.patch(`/notifications/${notif.id}/read`)
+        )
+      );
+      setNotifications(prev => 
+        prev.map(notif => ({ ...notif, is_read: true }))
+      );
     } catch (err) {
-      console.error("Failed to clear notifications:", err);
-      alert("Failed to clear notifications. Please try again.");
+      console.error("Failed to mark all as read:", err);
     }
   };
 
-  // Helper function to format time
+  const removeNotification = async (id, e) => {
+    if (e) e.stopPropagation();
+    if (!window.confirm("Remove this notification?")) return;
+    
+    try {
+      await api.delete(`/notifications/${id}`);
+      setNotifications(prev => prev.filter(notif => notif.id !== id));
+    } catch (err) {
+      console.error("Failed to remove notification:", err);
+      alert("Failed to remove notification");
+    }
+  };
+
+  const clearAll = async () => {
+    if (!window.confirm("Clear all notifications?")) return;
+    
+    try {
+      await api.delete("/notifications/clear");
+      setNotifications([]);
+    } catch (err) {
+      console.error("Failed to clear notifications:", err);
+      alert("Failed to clear notifications");
+    }
+  };
+
   const formatTime = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -74,14 +100,38 @@ export default function UserNotifications() {
     
     return date.toLocaleDateString('en-US', {
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
+  };
+
+  const getNotificationIcon = (type, isWelcomeBonus) => {
+    const icons = {
+      'bulk': '📢',
+      'admin_bulk': '👑',
+      'welcome_bonus': '🎁',
+      'system': '⚙️',
+      'payment': '💰',
+      'survey': '📝',
+      'warning': '⚠️',
+      'info': 'ℹ️',
+      'success': '✅',
+      'error': '❌'
+    };
+    
+    if (isWelcomeBonus) return '🎁';
+    return icons[type] || '💬';
+  };
+
+  const toggleExpand = (id) => {
+    setExpandedId(expandedId === id ? null : id);
   };
 
   if (loading) {
     return (
       <div className="notifications-loading">
-        <div className="loading-spinner-small"></div>
+        <div className="spinner"></div>
         <p>Loading notifications...</p>
       </div>
     );
@@ -90,8 +140,13 @@ export default function UserNotifications() {
   if (error) {
     return (
       <div className="notifications-error">
-        <p>⚠️ {error}</p>
-        <button onClick={loadNotifications}>Retry</button>
+        <div className="error-icon">⚠️</div>
+        <div>
+          <p className="error-text">{error}</p>
+          <button className="retry-btn" onClick={loadNotifications}>
+            Try Again
+          </button>
+        </div>
       </div>
     );
   }
@@ -99,93 +154,158 @@ export default function UserNotifications() {
   if (notifications.length === 0) {
     return (
       <div className="no-notifications">
-        <div className="empty-state-icon">📭</div>
-        <p>No notifications yet</p>
-        <p className="empty-state-sub">Admin announcements will appear here</p>
+        <div className="empty-icon">📭</div>
+        <div className="empty-content">
+          <h4>No notifications yet</h4>
+          <p>Admin announcements and updates will appear here</p>
+        </div>
       </div>
     );
   }
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
+  const hasUnread = unreadCount > 0;
 
   return (
     <div className="notifications-container">
       <div className="notifications-header">
-        <div className="notifications-title">
-          <h3>Notifications</h3>
-          {unreadCount > 0 && (
-            <span className="unread-badge">{unreadCount} unread</span>
-          )}
+        <div className="header-left">
+          <h3 className="notifications-title">
+            <span className="title-icon">🔔</span>
+            Notifications
+            {hasUnread && (
+              <span className="unread-count-badge">{unreadCount}</span>
+            )}
+          </h3>
+          <div className="header-stats">
+            {notifications.length} total • {unreadCount} unread
+          </div>
         </div>
-        {notifications.length > 0 && (
+        
+        <div className="header-actions">
+          {hasUnread && (
+            <button 
+              className="header-btn mark-all-read-btn"
+              onClick={markAllAsRead}
+              title="Mark all as read"
+            >
+              <span className="btn-icon">✓</span>
+              Mark all read
+            </button>
+          )}
           <button 
-            className="clear-all-btn" 
-            onClick={() => {
-              if (window.confirm("Are you sure you want to clear all notifications?")) {
-                clearAll();
-              }
-            }}
+            className="header-btn clear-all-btn"
+            onClick={clearAll}
+            title="Clear all notifications"
           >
-            Clear All
+            <span className="btn-icon">🗑️</span>
+            Clear all
           </button>
-        )}
+        </div>
       </div>
 
       <div className="notifications-list">
-        {notifications.slice(0, 5).map(notification => (
-          <div 
-            key={notification.id} 
-            className={`notification-item ${!notification.is_read ? 'unread' : ''}`}
-            onClick={() => !notification.is_read && markAsRead(notification.id)}
-            style={{ cursor: !notification.is_read ? 'pointer' : 'default' }}
-          >
-            <div className="notification-icon">
-              {notification.type === 'bulk' ? '📢' : 
-               notification.type === 'admin_bulk' ? '👑' : 
-               notification.type === 'welcome_bonus' ? '🎁' : 
-               notification.is_welcome_bonus ? '🎁' : '💬'}
-            </div>
-            <div className="notification-content">
-              <div className="notification-title-row">
-                <span className="notification-title">
-                  {notification.title || "Notification"}
-                </span>
-                {!notification.is_read && <span className="unread-dot"></span>}
+        {notifications.slice(0, 10).map(notification => {
+          const isUnread = !notification.is_read;
+          const isExpanded = expandedId === notification.id;
+          const showMore = notification.message?.length > 100;
+          
+          return (
+            <div 
+              key={notification.id} 
+              className={`notification-item ${isUnread ? 'unread' : ''} ${isExpanded ? 'expanded' : ''}`}
+              onClick={() => toggleExpand(notification.id)}
+            >
+              <div className="notification-main">
+                <div className="notification-icon-container">
+                  <div className={`notification-icon ${notification.type}`}>
+                    {getNotificationIcon(notification.type, notification.is_welcome_bonus)}
+                  </div>
+                  {isUnread && <div className="unread-indicator"></div>}
+                </div>
+                
+                <div className="notification-content">
+                  <div className="notification-header">
+                    <div className="notification-title-row">
+                      <h4 className="notification-title">
+                        {notification.title || "Notification"}
+                        {notification.is_important && <span className="important-badge">!</span>}
+                      </h4>
+                      <div className="notification-actions">
+                        {isUnread && (
+                          <button 
+                            className="action-btn mark-read-btn"
+                            onClick={(e) => markAsRead(notification.id, e)}
+                            title="Mark as read"
+                          >
+                            ✓
+                          </button>
+                        )}
+                        <button 
+                          className="action-btn remove-btn"
+                          onClick={(e) => removeNotification(notification.id, e)}
+                          title="Remove notification"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="notification-meta">
+                      <span className="notification-time">
+                        {formatTime(notification.created_at)}
+                      </span>
+                      <span className={`notification-type ${notification.type}`}>
+                        {notification.type?.replace('_', ' ') || 'General'}
+                      </span>
+                      {notification.priority === 'high' && (
+                        <span className="priority-badge high">High Priority</span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className={`notification-message ${isExpanded ? 'expanded' : ''}`}>
+                    {notification.message || "No message content"}
+                    {showMore && !isExpanded && (
+                      <span className="show-more">... Read more</span>
+                    )}
+                  </div>
+                </div>
               </div>
-              <div className="notification-message">
-                {notification.message || "No message"}
-              </div>
-              <div className="notification-meta">
-                <span className="notification-time">
-                  {formatTime(notification.created_at)}
-                </span>
-                {notification.type && (
-                  <span className={`notification-type badge-${notification.type}`}>
-                    {notification.type.replace('_', ' ')}
-                  </span>
-                )}
-                {notification.action_route && (
+              
+              {notification.action_route && (
+                <div className="notification-footer">
                   <a 
-                    href={notification.action_route} 
-                    className="notification-action"
+                    href={notification.action_route}
+                    className="action-link"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    View →
+                    <span className="link-icon">→</span>
+                    Take action
                   </a>
-                )}
-              </div>
+                  {notification.action_deadline && (
+                    <span className="deadline">
+                      ⏰ Until {new Date(notification.action_deadline).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      {notifications.length > 5 && (
+      {notifications.length > 10 && (
         <div className="notifications-footer">
+          <div className="footer-info">
+            Showing 10 of {notifications.length} notifications
+          </div>
           <button 
             className="view-all-btn"
             onClick={() => window.location.href = "/notifications"}
           >
-            View all ({notifications.length})
+            <span className="btn-icon">📋</span>
+            View all notifications
           </button>
         </div>
       )}
