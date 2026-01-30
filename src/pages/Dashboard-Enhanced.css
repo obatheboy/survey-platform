@@ -778,7 +778,7 @@ body {
   justify-content: center;
   gap: 6px;
   padding: var(--space-md) var(--space-sm);
-  background: linear-gradient(145deg, #ffffff, #f8fafc); /* Subtle gradient background */
+  background: linear-gradient(145deg, #0cd41d, #1a9451); /* Subtle gradient background */
   color: var(--text-muted, #64748b);
   font-weight: 700;
   font-size: 11px;
@@ -801,7 +801,7 @@ body {
 
 /* Hover state with red outline */
 .nav-btn:hover {
-  background: linear-gradient(145deg, #f1f5f9, #e2e8f0);
+  background: linear-gradient(145deg, #f5f9f1, #e2e8f0);
   border-color: #ef4444; /* Red border on hover */
   border-width: 2px;
   transform: translateY(-3px); /* More pronounced lift */
