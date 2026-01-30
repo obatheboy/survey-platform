@@ -135,34 +135,38 @@ export default function Dashboard() {
         setPlans(resUser.data.plans || {});
         
         // Calculate stats
-        let calculatedTotalEarned = Number(resUser.data.total_earned || 0);
+        let surveyEarnings = 0;
         let calculatedTotalSurveys = 0;
 
         Object.keys(PLANS).forEach(planKey => {
           const backendPlan = resUser.data.plans?.[planKey] || { surveys_completed: 0 };
-          const backendCompletedCount = backendPlan.surveys_completed || 0;
-          
-          let effectiveCount = backendCompletedCount;
+          let count = backendPlan.surveys_completed || 0;
           
           // Check backend status
           if (backendPlan.is_activated) {
-            effectiveCount = TOTAL_SURVEYS;
+            count = TOTAL_SURVEYS;
           }
           
-          calculatedTotalSurveys += effectiveCount;
-          
-          // Adjust earnings if plan is activated (effective count > actual count)
-          if (effectiveCount > backendCompletedCount) {
-            const diff = effectiveCount - backendCompletedCount;
-            calculatedTotalEarned += (diff * PLANS[planKey].perSurvey);
-          }
+          calculatedTotalSurveys += count;
+          surveyEarnings += count * PLANS[planKey].perSurvey;
         });
         
+        let availableBalance = Number(resUser.data.total_earned || 0);
+        const totalWithdrawals = Number(resUser.data.total_withdrawals || 0);
+        
+        // Fallback: if backend balance seems stale (less than survey earnings)
+        // We calculate expected balance = surveyEarnings - withdrawals
+        // If expected > reported, use expected.
+        const expectedBalance = surveyEarnings - totalWithdrawals;
+        if (expectedBalance > availableBalance) {
+            availableBalance = expectedBalance;
+        }
+        
         setStats({
-          totalEarned: calculatedTotalEarned + (Number(resUser.data.total_withdrawals) || 0),
-          availableBalance: calculatedTotalEarned,
+          totalEarned: availableBalance + totalWithdrawals,
+          availableBalance: availableBalance,
           totalSurveysCompleted: calculatedTotalSurveys,
-          totalWithdrawals: resUser.data.total_withdrawals || 0
+          totalWithdrawals: totalWithdrawals
         });
 
         // Load pending withdrawals

@@ -81,7 +81,11 @@ export default function Surveys() {
       // 2. Send requests in PARALLEL for speed
       const promises = [];
       for (let i = 0; i < needed; i++) {
-        promises.push(api.post("/surveys/complete", { plan: activePlan, answers }));
+        // Wrap in catch to ensure Promise.all doesn't fail fast
+        promises.push(
+          api.post("/surveys/complete", { plan: activePlan, answers })
+            .catch(err => console.error(`Survey ${i} failed`, err))
+        );
       }
       
       if (promises.length > 0) {
