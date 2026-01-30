@@ -811,7 +811,7 @@ body {
 
 /* Second button - Dashboard - Green Theme */
 .nav-btn:nth-child(2) {
-  background: linear-gradient(145deg, #043fff, #15db57);
+  background: linear-gradient(145deg, #0284ff, #15bddb);
   border-color: #86efac;
   color: #065f46;
 }
@@ -833,7 +833,7 @@ body {
 
 /* Fourth button - Support - Red Theme */
 .nav-btn:nth-child(4) {
-  background: linear-gradient(145deg, #0ad61b, #a30707);
+  background: linear-gradient(145deg, #0ad61b, #52a307);
   border-color: #fca5a5;
   color: #991b1b;
 }
