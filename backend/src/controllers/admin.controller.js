@@ -635,19 +635,15 @@ const deleteNotificationsByType = async (req, res) => {
       });
     }
 
-    // Delete notifications by type
-    const result = await client.query(
-      `
-      DELETE FROM notifications
-      WHERE type = $1
-      RETURNING COUNT(*) as deleted_count
-      `,
+    // ✅ FIXED: Simple DELETE without RETURNING COUNT(*)
+    const deleteResult = await client.query(
+      `DELETE FROM notifications WHERE type = $1`,
       [type]
     );
 
     await client.query("COMMIT");
 
-    const deletedCount = parseInt(result.rows[0]?.deleted_count || 0);
+    const deletedCount = deleteResult.rowCount;
 
     return res.json({
       success: true,
@@ -703,18 +699,14 @@ const deleteOldNotifications = async (req, res) => {
       });
     }
 
-    // Delete old notifications
-    const result = await client.query(
-      `
-      DELETE FROM notifications
-      WHERE created_at < NOW() - INTERVAL '${days} days'
-      RETURNING COUNT(*) as deleted_count
-      `
+    // ✅ FIXED: Simple DELETE without RETURNING COUNT(*)
+    const deleteResult = await client.query(
+      `DELETE FROM notifications WHERE created_at < NOW() - INTERVAL '${days} days'`
     );
 
     await client.query("COMMIT");
 
-    const deletedCount = parseInt(result.rows[0]?.deleted_count || 0);
+    const deletedCount = deleteResult.rowCount;
 
     return res.json({
       success: true,

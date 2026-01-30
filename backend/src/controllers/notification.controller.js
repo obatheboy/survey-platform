@@ -20,7 +20,7 @@ exports.getMyNotifications = async (req, res) => {
       FROM notifications
       WHERE user_id = $1
       ORDER BY created_at DESC
-      LIMIT 50  -- ✅ Added limit for performance
+      LIMIT 50
       `,
       [userId]
     );
@@ -92,21 +92,33 @@ exports.clearAllNotifications = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // Delete all notifications for this user
-    const result = await pool.query(
-      `
-      DELETE FROM notifications
-      WHERE user_id = $1
-      RETURNING COUNT(*) as deleted_count
-      `,
+    // ✅ FIXED: Get count before deleting
+    const countResult = await pool.query(
+      `SELECT COUNT(*) as count FROM notifications WHERE user_id = $1`,
       [userId]
     );
 
-    const deletedCount = parseInt(result.rows[0]?.deleted_count || 0);
+    const countBefore = parseInt(countResult.rows[0]?.count || 0);
+
+    if (countBefore === 0) {
+      return res.json({
+        success: true,
+        message: "No notifications to clear",
+        deletedCount: 0
+      });
+    }
+
+    // ✅ FIXED: Simple DELETE query without RETURNING COUNT(*)
+    const deleteResult = await pool.query(
+      `DELETE FROM notifications WHERE user_id = $1`,
+      [userId]
+    );
+
+    const deletedCount = deleteResult.rowCount;
 
     return res.json({
       success: true,
-      message: `All notifications cleared (${deletedCount} deleted)`,
+      message: `Cleared ${deletedCount} notifications`,
       deletedCount
     });
   } catch (error) {
