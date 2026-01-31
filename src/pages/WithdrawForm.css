@@ -13,6 +13,7 @@
   margin-bottom: 24px;
   padding: 20px 0;
   position: relative;
+  min-height: 60px; /* Ensure consistent height */
 }
 
 .back-btn {
@@ -30,6 +31,8 @@
   transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   touch-action: manipulation;
+  flex-shrink: 0;
+  min-width: 80px; /* Ensure consistent width */
 }
 
 .back-btn:active {
@@ -46,7 +49,10 @@
   margin: 0;
   text-align: center;
   flex: 1;
-  padding: 0 60px; /* Space for activation badge */
+  padding: 0 100px; /* More space for activation badge */
+  line-height: 1.2;
+  word-break: break-word; /* Allow title to wrap if needed */
+  min-width: 0; /* Allow title to shrink */
 }
 
 .form-container {
@@ -303,7 +309,6 @@
   color: #1e293b;
   outline: none;
   min-width: 0;
-  
 }
 
 .amount-input-group input::placeholder {
@@ -349,7 +354,6 @@
   background: white;
   transition: border-color 0.2s ease;
   outline: none;
- 
 }
 
 .withdrawal-form input[type="tel"]:focus {
@@ -545,34 +549,62 @@
   }
 }
 
-/* NEW STYLES ADDED FROM INLINE CSS */
-/* Activation Badge in Header */
+/* ========================= ACTIVATION BADGE STYLES ========================= */
+
+/* Activation Badge - FIXED POSITIONING */
 .activation-badge {
   position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0;
+  right: 0;
   background: linear-gradient(135deg, #fef3c7, #fde68a);
   color: #92400e;
   padding: 6px 12px;
   border-radius: 16px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   display: flex;
   align-items: center;
   gap: 6px;
   border: 1px solid #fbbf24;
-  max-width: 140px;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.2);
+  z-index: 10;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.2);
-  z-index: 10;
+  max-width: 140px;
+  animation: badgePulse 2s infinite ease-in-out;
+  margin-top: 5px; /* Add some space from top */
 }
 
 .badge-icon {
-  font-size: 14px;
+  font-size: 12px;
   flex-shrink: 0;
+  animation: iconShake 3s infinite ease-in-out;
+}
+
+/* Animation for badge pulse effect */
+@keyframes badgePulse {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 2px 12px rgba(251, 191, 36, 0.4), 0 0 0 4px rgba(251, 191, 36, 0.1);
+    transform: scale(1.02);
+  }
+}
+
+/* Animation for icon shake */
+@keyframes iconShake {
+  0%, 95%, 100% {
+    transform: rotate(0deg);
+  }
+  97.5% {
+    transform: rotate(-10deg);
+  }
+  98.75% {
+    transform: rotate(10deg);
+  }
 }
 
 /* Activation Notice */
@@ -761,28 +793,41 @@ input:disabled {
   margin-right: 6px;
 }
 
-/* Responsive Design - Mobile First */
+/* ========================= RESPONSIVE DESIGN ========================= */
+
+/* Mobile - Default */
 @media (max-width: 640px) {
   .withdraw-form-page {
     padding: 12px;
-    padding-bottom: 80px; /* Space for bottom navigation on mobile */
+    padding-bottom: 80px;
   }
   
   .withdraw-header {
     margin-bottom: 20px;
     padding: 16px 0;
+    min-height: 50px;
   }
   
   .withdraw-header h1 {
     font-size: 20px;
-    padding: 0 50px;
+    padding: 0 90px; /* More padding for mobile */
+    line-height: 1.3;
+  }
+  
+  .back-btn {
+    padding: 8px 14px;
+    font-size: 13px;
+    min-width: 70px;
   }
   
   .activation-badge {
-    right: 12px;
+    font-size: 10px;
     padding: 5px 10px;
-    font-size: 11px;
     max-width: 120px;
+  }
+  
+  .badge-icon {
+    font-size: 11px;
   }
   
   .plan-amount .amount {
@@ -830,37 +875,23 @@ input:disabled {
     padding: 10px 20px;
     font-size: 13px;
   }
-  
-  /* Activation modal adjustments for mobile */
-  .activation-modal-header,
-  .activation-modal-content {
-    padding: 16px;
-  }
-  
-  .activation-fee-display {
-    padding: 16px;
-    margin-bottom: 16px;
-  }
-  
-  .fee-amount {
-    font-size: 28px;
-  }
-  
-  .activation-modal-actions {
-    padding: 0 16px 16px;
-  }
-  
-  .activate-account-btn,
-  .cancel-activation-btn {
-    padding: 16px;
-    font-size: 15px;
-  }
 }
 
-/* Very small screens */
-@media (max-width: 360px) {
+/* Small phones (iPhone SE, small Android) */
+@media (max-width: 375px) {
   .withdraw-header h1 {
     font-size: 18px;
+    padding: 0 80px;
+  }
+  
+  .activation-badge {
+    font-size: 9px;
+    padding: 4px 8px;
+    max-width: 100px;
+  }
+  
+  .badge-icon {
+    font-size: 10px;
   }
   
   .plan-selection-card {
@@ -900,6 +931,34 @@ input:disabled {
   }
 }
 
+/* Extra small phones - Alternative layout */
+@media (max-width: 320px) {
+  .withdraw-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .withdraw-header h1 {
+    order: 1;
+    width: 100%;
+    padding: 0;
+    margin-bottom: 8px;
+  }
+  
+  .back-btn {
+    order: 2;
+    margin-right: auto;
+  }
+  
+  .activation-badge {
+    order: 3;
+    position: static;
+    margin-left: auto;
+    max-width: none;
+    width: auto;
+  }
+}
+
 /* Tablet and larger screens */
 @media (min-width: 768px) {
   .withdraw-form-page {
@@ -912,6 +971,17 @@ input:disabled {
   
   .withdraw-header h1 {
     font-size: 28px;
+    padding: 0 120px;
+  }
+  
+  .activation-badge {
+    font-size: 12px;
+    padding: 8px 16px;
+    max-width: 160px;
+  }
+  
+  .badge-icon {
+    font-size: 14px;
   }
   
   .plan-selection-cards {
@@ -947,6 +1017,8 @@ input:disabled {
     color: #2563eb;
   }
 }
+
+/* ========================= UTILITY CLASSES ========================= */
 
 /* Prevent text selection on buttons for better mobile experience */
 .activate-account-btn,
@@ -1010,142 +1082,4 @@ body {
   color: #64748b;
   font-size: 16px;
   font-weight: 600;
-}
-
-/* Activation Badge Container */
-.activation-badge-container {
-  position: relative;
-}
-
-/* Main Activation Badge */
-.activation-badge {
-  position: absolute;
-  top: 50%;
-  right: 70px;
-  transform: translateY(-50%);
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
-  color: #92400e;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid #fbbf24;
-  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.2);
-  z-index: 10;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 180px;
-  animation: badgePulse 2s infinite ease-in-out;
-}
-
-/* Badge Icon */
-.badge-icon {
-  font-size: 16px;
-  flex-shrink: 0;
-  animation: iconShake 3s infinite ease-in-out;
-}
-
-/* Badge Text */
-.badge-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Animation for badge pulse effect */
-@keyframes badgePulse {
-  0%, 100% {
-    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.2);
-    transform: translateY(-50%) scale(1);
-  }
-  50% {
-    box-shadow: 0 2px 12px rgba(251, 191, 36, 0.4), 0 0 0 4px rgba(251, 191, 36, 0.1);
-    transform: translateY(-50%) scale(1.02);
-  }
-}
-
-/* Animation for icon shake */
-@keyframes iconShake {
-  0%, 95%, 100% {
-    transform: rotate(0deg);
-  }
-  97.5% {
-    transform: rotate(-10deg);
-  }
-  98.75% {
-    transform: rotate(10deg);
-  }
-}
-
-/* ========================= RESPONSIVE POSITIONING ========================= */
-
-/* Default mobile positioning */
-@media (max-width: 768px) {
-  .activation-badge {
-    position: absolute;
-    top: 50%;
-    right: 60px;
-    padding: 6px 12px;
-    font-size: 12px;
-    max-width: 150px;
-    border-radius: 16px;
-  }
-  
-  .badge-icon {
-    font-size: 14px;
-  }
-}
-
-/* Small phones (iPhone SE, small Android) */
-@media (max-width: 375px) {
-  .activation-badge {
-    right: 50px;
-    padding: 5px 10px;
-    font-size: 11px;
-    max-width: 130px;
-  }
-  
-  .badge-icon {
-    font-size: 13px;
-  }
-}
-
-/* Extra small phones */
-@media (max-width: 320px) {
-  .activation-badge {
-    position: static;
-    transform: none;
-    top: auto;
-    right: auto;
-    margin-top: 8px;
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 200px;
-    width: fit-content;
-    display: inline-flex;
-  }
-  
-  /* Adjust header to accommodate inline badge */
-  .withdraw-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
-  
-  .withdraw-header h1 {
-    padding: 0;
-    order: 1;
-  }
-  
-  .back-btn {
-    align-self: flex-start;
-    order: 2;
-  }
-  
-  .activation-badge {
-    order: 3;
-  }
 }
