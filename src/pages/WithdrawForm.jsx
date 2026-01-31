@@ -635,128 +635,174 @@ export default function WithdrawForm() {
 
       {/* Add CSS for new components */}
       <style jsx>{`
-        /* Activation Modal Styles */
+       
+      
+        /* Activation Modal Styles - Mobile First */
         .activation-modal-overlay {
           position: fixed;
           top: 0;
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0, 0, 0, 0.8);
+          background: rgba(0, 0, 0, 0.9);
           display: flex;
           align-items: center;
           justify-content: center;
-          z-index: 1000;
-          backdrop-filter: blur(5px);
-          padding: 20px;
+          z-index: 9999;
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          padding: 16px;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
         }
         
         .activation-modal {
           background: white;
           border-radius: 20px;
           width: 100%;
-          max-width: 450px;
-          box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-          overflow: hidden;
+          max-width: 420px;
+          max-height: 90vh;
+          overflow-y: auto;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+          position: relative;
+          border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .activation-modal-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 20px 25px;
+          padding: 18px 20px;
           border-bottom: 1px solid #e5e7eb;
           background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+          position: sticky;
+          top: 0;
+          z-index: 10;
         }
         
         .activation-modal-header h3 {
           margin: 0;
           color: #1f2937;
-          font-size: 20px;
+          font-size: 18px;
           font-weight: 700;
+          line-height: 1.3;
         }
         
         .modal-close-btn {
-          background: none;
+          background: rgba(0, 0, 0, 0.05);
           border: none;
-          font-size: 28px;
+          font-size: 24px;
           cursor: pointer;
           color: #6b7280;
-          padding: 0;
+          padding: 4px;
           width: 36px;
           height: 36px;
           display: flex;
           align-items: center;
           justify-content: center;
-          border-radius: 8px;
+          border-radius: 50%;
+          flex-shrink: 0;
+          touch-action: manipulation;
         }
         
-        .modal-close-btn:hover {
-          background: #f3f4f6;
+        .modal-close-btn:active {
+          background: rgba(0, 0, 0, 0.1);
+          transform: scale(0.95);
         }
         
         .activation-modal-content {
-          padding: 25px;
+          padding: 20px;
         }
         
         .activation-icon {
           text-align: center;
-          margin-bottom: 20px;
+          margin-bottom: 16px;
+        }
+        
+        .activation-icon span {
+          font-size: 56px;
+          display: inline-block;
+          animation: pulse 2s infinite ease-in-out;
+        }
+        
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.05); }
         }
         
         .activation-message {
           text-align: center;
           color: #4b5563;
-          font-size: 16px;
+          font-size: 15px;
           line-height: 1.5;
-          margin-bottom: 25px;
+          margin-bottom: 20px;
+          padding: 0 4px;
         }
         
         .activation-fee-display {
           background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-          border-radius: 15px;
-          padding: 20px;
+          border-radius: 16px;
+          padding: 18px 16px;
           text-align: center;
-          margin-bottom: 25px;
-          border: 2px solid #0ea5e9;
+          margin-bottom: 20px;
+          border: 2px dashed #0ea5e9;
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .activation-fee-display::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background: linear-gradient(90deg, #0ea5e9, #3b82f6);
         }
         
         .fee-label {
-          font-size: 14px;
+          font-size: 13px;
           color: #64748b;
-          margin-bottom: 8px;
+          margin-bottom: 6px;
           font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
         
         .fee-amount {
-          font-size: 36px;
+          font-size: 32px;
           font-weight: 800;
           color: #0f766e;
-          margin-bottom: 12px;
+          margin-bottom: 10px;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
         .plan-badge {
           display: inline-block;
-          background: rgba(5, 150, 105, 0.1);
+          background: rgba(5, 150, 105, 0.15);
           color: #047857;
-          padding: 8px 18px;
+          padding: 8px 16px;
           border-radius: 20px;
-          font-size: 14px;
+          font-size: 13px;
           font-weight: 700;
+          border: 1px solid rgba(5, 150, 105, 0.3);
+          backdrop-filter: blur(4px);
         }
         
         .activation-benefits {
           background: #f8fafc;
-          border-radius: 15px;
-          padding: 20px;
-          margin-bottom: 20px;
+          border-radius: 16px;
+          padding: 18px;
+          margin-bottom: 16px;
+          border: 1px solid #e5e7eb;
         }
         
         .activation-benefits h4 {
-          margin: 0 0 15px 0;
+          margin: 0 0 14px 0;
           color: #1e293b;
-          font-size: 17px;
+          font-size: 16px;
           font-weight: 700;
+          text-align: center;
         }
         
         .activation-benefits ul {
@@ -771,90 +817,135 @@ export default function WithdrawForm() {
           display: flex;
           align-items: center;
           gap: 10px;
-          font-size: 15px;
+          font-size: 14px;
+          line-height: 1.4;
+          border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .activation-benefits li:last-child {
+          border-bottom: none;
+        }
+        
+        .activation-benefits li::before {
+          content: "✓";
+          color: #10b981;
+          font-weight: bold;
+          font-size: 16px;
+          flex-shrink: 0;
         }
         
         .activation-modal-actions {
-          padding: 0 25px 25px;
+          padding: 0 20px 20px;
           display: flex;
           flex-direction: column;
-          gap: 15px;
+          gap: 12px;
+          position: sticky;
+          bottom: 0;
+          background: white;
+          border-radius: 0 0 20px 20px;
         }
         
         .activate-account-btn {
-          padding: 18px 24px;
+          padding: 18px 20px;
           border: none;
-          border-radius: 15px;
+          border-radius: 14px;
           color: white;
-          font-size: 17px;
+          font-size: 16px;
           font-weight: 700;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 12px;
-          transition: all 0.3s ease;
+          gap: 10px;
+          transition: all 0.2s ease;
+          touch-action: manipulation;
+          position: relative;
+          overflow: hidden;
         }
         
-        .activate-account-btn:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        .activate-account-btn::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+          transition: left 0.5s ease;
+        }
+        
+        .activate-account-btn:active::after {
+          left: 100%;
+        }
+        
+        .activate-account-btn:active {
+          transform: translateY(2px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
         .cancel-activation-btn {
-          padding: 16px 24px;
+          padding: 16px 20px;
           border: 2px solid #e5e7eb;
           background: white;
-          border-radius: 15px;
+          border-radius: 14px;
           color: #6b7280;
-          font-size: 16px;
+          font-size: 15px;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.2s ease;
+          touch-action: manipulation;
         }
         
-        .cancel-activation-btn:hover {
+        .cancel-activation-btn:active {
           background: #f9fafb;
           border-color: #d1d5db;
+          transform: translateY(2px);
         }
         
         /* Activation Badge in Header */
         .activation-badge {
           position: absolute;
-          right: 70px;
+          right: 16px;
           top: 50%;
           transform: translateY(-50%);
           background: linear-gradient(135deg, #fef3c7, #fde68a);
           color: #92400e;
-          padding: 8px 16px;
-          border-radius: 20px;
-          font-size: 13px;
+          padding: 6px 12px;
+          border-radius: 16px;
+          font-size: 12px;
           font-weight: 700;
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 6px;
           border: 1px solid #fbbf24;
+          max-width: 140px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          box-shadow: 0 2px 8px rgba(251, 191, 36, 0.2);
         }
         
         .badge-icon {
-          font-size: 16px;
+          font-size: 14px;
+          flex-shrink: 0;
         }
         
         /* Activation Notice */
         .activation-notice {
           background: linear-gradient(135deg, #fef3c7, #fde68a);
           border: 1px solid #fbbf24;
-          border-radius: 15px;
-          padding: 18px;
-          margin-bottom: 20px;
+          border-radius: 14px;
+          padding: 16px;
+          margin-bottom: 16px;
           display: flex;
-          gap: 15px;
-          align-items: center;
+          gap: 12px;
+          align-items: flex-start;
         }
         
         .notice-icon {
-          font-size: 24px;
+          font-size: 22px;
           flex-shrink: 0;
+          padding-top: 2px;
         }
         
         .notice-content {
@@ -864,14 +955,15 @@ export default function WithdrawForm() {
         .notice-content strong {
           color: #92400e;
           display: block;
-          margin-bottom: 5px;
-          font-size: 16px;
+          margin-bottom: 4px;
+          font-size: 15px;
+          line-height: 1.3;
         }
         
         .notice-content p {
           color: #92400e;
           margin: 0;
-          font-size: 14px;
+          font-size: 13px;
           opacity: 0.9;
           line-height: 1.4;
         }
@@ -879,19 +971,21 @@ export default function WithdrawForm() {
         /* Plan Card Activation Status */
         .activation-required-badge {
           position: absolute;
-          top: 15px;
-          right: 15px;
-          background: rgba(239, 68, 68, 0.1);
+          top: 12px;
+          right: 12px;
+          background: rgba(239, 68, 68, 0.15);
           color: #ef4444;
-          padding: 6px 10px;
-          border-radius: 20px;
-          font-size: 12px;
-          font-weight: 600;
+          padding: 5px 8px;
+          border-radius: 16px;
+          font-size: 11px;
+          font-weight: 700;
           border: 1px solid rgba(239, 68, 68, 0.3);
+          backdrop-filter: blur(4px);
+          z-index: 2;
         }
         
         .activation-hint {
-          margin: 12px 0;
+          margin: 10px 0;
           text-align: center;
         }
         
@@ -899,63 +993,87 @@ export default function WithdrawForm() {
           display: inline-block;
           background: linear-gradient(135deg, #f59e0b, #d97706);
           color: white;
-          padding: 6px 12px;
-          border-radius: 20px;
-          font-size: 12px;
+          padding: 5px 10px;
+          border-radius: 16px;
+          font-size: 11px;
           font-weight: 700;
-          margin-top: 8px;
+          margin-top: 6px;
+          box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
         }
         
         /* In-form Activation Alert */
         .activation-alert-in-form {
           background: linear-gradient(135deg, #fef2f2, #fee2e2);
           border: 1px solid #fecaca;
-          border-radius: 15px;
-          padding: 20px;
-          margin: 20px 0;
+          border-radius: 14px;
+          padding: 18px;
+          margin: 16px 0;
           text-align: center;
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .activation-alert-in-form::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 3px;
+          background: linear-gradient(90deg, #ef4444, #dc2626);
         }
         
         .alert-header {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 10px;
-          margin-bottom: 12px;
+          gap: 8px;
+          margin-bottom: 10px;
         }
         
         .alert-icon {
-          font-size: 22px;
+          font-size: 20px;
+          animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+          0%, 100% { transform: rotate(0); }
+          25% { transform: rotate(-5deg); }
+          75% { transform: rotate(5deg); }
         }
         
         .alert-title {
           color: #dc2626;
           font-weight: 700;
-          font-size: 17px;
+          font-size: 16px;
         }
         
         .alert-message {
           color: #7f1d1d;
-          margin-bottom: 18px;
+          margin-bottom: 16px;
           line-height: 1.5;
-          font-size: 15px;
+          font-size: 14px;
+          padding: 0 4px;
         }
         
         .activate-now-btn {
-          padding: 16px 24px;
+          padding: 16px 20px;
           border: none;
           border-radius: 12px;
           color: white;
           font-weight: 700;
           cursor: pointer;
           width: 100%;
-          font-size: 16px;
-          transition: all 0.3s ease;
+          font-size: 15px;
+          transition: all 0.2s ease;
+          touch-action: manipulation;
+          position: relative;
+          overflow: hidden;
         }
         
-        .activate-now-btn:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        .activate-now-btn:active {
+          transform: translateY(2px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
         /* Loading Spinner */
@@ -967,42 +1085,130 @@ export default function WithdrawForm() {
           color: #059669;
           font-weight: 600;
           justify-content: center;
+          font-size: 14px;
         }
         
         .mini-spinner {
-          width: 18px;
-          height: 18px;
-          border: 3px solid rgba(5, 150, 105, 0.3);
+          width: 16px;
+          height: 16px;
+          border: 3px solid rgba(5, 150, 105, 0.2);
           border-top-color: #059669;
           border-radius: 50%;
-          animation: spin 1s linear infinite;
+          animation: spin 0.8s linear infinite;
         }
         
         @keyframes spin {
           to { transform: rotate(360deg); }
         }
         
-        /* Responsive */
-        @media (max-width: 480px) {
+        /* Mobile-specific improvements */
+        @media (max-width: 360px) {
           .activation-modal {
-            margin: 0 15px;
+            border-radius: 16px;
           }
           
-          .activation-modal-header,
-          .activation-modal-content,
+          .activation-modal-header {
+            padding: 14px 16px;
+          }
+          
+          .activation-modal-header h3 {
+            font-size: 16px;
+          }
+          
+          .activation-modal-content {
+            padding: 16px;
+          }
+          
+          .activation-icon span {
+            font-size: 48px;
+          }
+          
+          .activation-message {
+            font-size: 14px;
+          }
+          
+          .fee-amount {
+            font-size: 28px;
+          }
+          
           .activation-modal-actions {
-            padding: 15px;
-          }
-          
-          .activation-fee-display {
-            padding: 15px;
+            padding: 0 16px 16px;
           }
           
           .activate-account-btn,
           .cancel-activation-btn {
-            padding: 16px 20px;
+            padding: 14px 16px;
+            font-size: 15px;
+          }
+          
+          .activation-badge {
+            right: 12px;
+            padding: 5px 10px;
+            font-size: 11px;
+            max-width: 120px;
           }
         }
+        
+        /* Tablet and larger screens */
+        @media (min-width: 768px) {
+          .activation-modal {
+            max-width: 500px;
+          }
+          
+          .activation-modal-header h3 {
+            font-size: 20px;
+          }
+          
+          .activation-message {
+            font-size: 16px;
+          }
+          
+          .activate-account-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+          }
+          
+          .activate-account-btn:hover::after {
+            left: 100%;
+          }
+          
+          .cancel-activation-btn:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+          }
+          
+          .activate-now-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+          }
+        }
+        
+        /* Prevent text selection on buttons for better mobile experience */
+        .activate-account-btn,
+        .cancel-activation-btn,
+        .activate-now-btn,
+        .modal-close-btn {
+          user-select: none;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+        }
+        
+        /* Safe area insets for notched phones */
+        .activation-modal-overlay {
+          padding-left: max(16px, env(safe-area-inset-left));
+          padding-right: max(16px, env(safe-area-inset-right));
+          padding-top: max(16px, env(safe-area-inset-top));
+          padding-bottom: max(16px, env(safe-area-inset-bottom));
+        }
+        
+        /* Improve scrolling on iOS */
+        .activation-modal {
+          -webkit-overflow-scrolling: touch;
+        }
+
+
+
       `}</style>
     </div>
   );
