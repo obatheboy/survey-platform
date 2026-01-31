@@ -243,21 +243,14 @@ export default function ActivationNotice() {
           <span className="button-arrow">→</span>
         </button>
 
-        {/* QUICK INFO */}
-        <div className="simple-info">
-          <div className="info-item">
-            <span className="info-icon">⚡</span>
-            <span className="info-text">Instant M-Pesa withdrawal</span>
-          </div>
-          <div className="info-item">
-            <span className="info-icon">🔒</span>
-            <span className="info-text">Secure payment process</span>
-          </div>
+     
+       
+        
           <div className="info-item">
             <span className="info-icon">👑</span>
             <span className="info-text">One-time activation fee</span>
           </div>
-        </div>
+        
 
         {/* BACK BUTTON */}
         <button
