@@ -355,7 +355,7 @@ export default function WithdrawForm() {
         {!isUserActivated && (
           <div className="activation-badge">
             <span className="badge-icon">⚠️</span>
-            Account Not Activated
+            Account Not Active
           </div>
         )}
         {/* Empty div for alignment */}
