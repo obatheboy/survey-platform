@@ -103,7 +103,7 @@ export default function ActivateAccountPage() {
     return (
       <div className="activate-page">
         <header className="page-header">
-          <button className="back-btn" onClick={() => navigate("/withdraw-form")}>← Back</button> {/* Fixed */}
+          <button className="back-btn" onClick={() => navigate("/withdraw-form")}>← Back</button>
           <h1>Activate Account</h1>
         </header>
         
@@ -113,7 +113,7 @@ export default function ActivateAccountPage() {
             <p>Please select a plan to activate first.</p>
             <button 
               className="back-to-withdraw-btn"
-              onClick={() => navigate("/withdraw-form")} {/* Fixed */}
+              onClick={() => navigate("/withdraw-form")}
             >
               Back to Withdraw Page
             </button>
@@ -126,7 +126,7 @@ export default function ActivateAccountPage() {
   return (
     <div className="activate-page">
       <header className="page-header">
-        <button className="back-btn" onClick={() => navigate("/withdraw-form")}>← Back</button> {/* Fixed */}
+        <button className="back-btn" onClick={() => navigate("/withdraw-form")}>← Back</button>
         <h1>Activate Account</h1>
       </header>
 
@@ -210,7 +210,7 @@ export default function ActivateAccountPage() {
               
               <button 
                 className="cancel-btn"
-                onClick={() => navigate("/withdraw-form")} {/* Fixed */}
+                onClick={() => navigate("/withdraw-form")}
                 disabled={loading}
               >
                 Cancel
