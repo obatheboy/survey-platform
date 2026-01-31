@@ -195,9 +195,9 @@ export default function ActivationNotice() {
 
         {/* HEADING */}
         <h1 className="simple-title">
-          <span className="title-emoji">🎉</span>
-          You're Almost There!
-          <span className="title-emoji">🎉</span>
+    
+         🎉🎉 CONGRATULATIONS🎉🎉
+          
         </h1>
 
         {/* USER GREETING */}
@@ -209,7 +209,7 @@ export default function ActivationNotice() {
         <div className="simple-message">
           <h2>Surveys Completed! ✅</h2>
           <p>
-            You've successfully completed all surveys for the{" "}
+            You've successfully completed all surveys for the{" "} and Earned 
             <strong style={{ color: plan.color }}>{plan.label}</strong>.
           </p>
         </div>
@@ -222,16 +222,13 @@ export default function ActivationNotice() {
               KES {totalEarned.toLocaleString()}
             </span>
           </div>
-          <p className="earnings-note">Ready for withdrawal after activation</p>
+          <p className="earnings-note">Now Activate your Account and Withdraw Immediately</p>
         </div>
 
         {/* CALL TO ACTION */}
         <div className="simple-action">
-          <h3>Ready to Get Your Earnings? 🚀</h3>
+          <h3>Tap the button below,Follow all steps and withdraw your money. 🚀</h3>
           <p className="action-description">
-            Tap the button below to complete activation and withdraw your money.
-            <br />
-            All payment details and instructions will be shown on the next page.
           </p>
         </div>
 
