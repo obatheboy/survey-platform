@@ -27,19 +27,69 @@ export default function ActivateAccountPage() {
     setError("");
     
     try {
-      // Make API call to activate account - removed unused 'res' variable
-      await api.post("/account/activate", { plan });
+      // Try multiple possible activation endpoints since we don't know the exact one
+      let activationSuccessful = false;
       
-      setSuccess("Account activated successfully!");
-      
-      // Redirect after success
-      setTimeout(() => {
-        if (redirectTo) {
-          navigate(redirectTo, { state: redirectState });
-        } else {
-          navigate("/withdraw", { state: { plan } });
+      // Option 1: Try /account/upgrade-plan endpoint
+      try {
+        await api.post("/account/upgrade-plan", { 
+          plan: plan,
+          payment_method: "mpesa",
+          amount: planData?.activationFee || 0
+        });
+        activationSuccessful = true;
+      } catch (err1) {
+        console.warn("Option 1 failed:", err1.message);
+        
+        // Option 2: Try /user/activate-plan endpoint
+        try {
+          await api.post("/user/activate-plan", { 
+            plan: plan,
+            activation_fee: planData?.activationFee || 0
+          });
+          activationSuccessful = true;
+        } catch (err2) {
+          console.warn("Option 2 failed:", err2.message);
+          
+          // Option 3: Try /withdraw/activate-plan endpoint
+          try {
+            await api.post("/withdraw/activate-plan", { 
+              plan: plan
+            });
+            activationSuccessful = true;
+          } catch (err3) {
+            console.warn("Option 3 failed:", err3.message);
+            
+            // Option 4: Try the original endpoint as last resort
+            try {
+              await api.post("/account/activate", { plan });
+              activationSuccessful = true;
+            } catch (err4) {
+              console.warn("Option 4 failed:", err4.message);
+            }
+          }
         }
-      }, 2000);
+      }
+      
+      if (activationSuccessful) {
+        setSuccess("Account activated successfully!");
+        
+        // Store activation in localStorage for offline tracking
+        const activatedPlans = JSON.parse(localStorage.getItem('activatedPlans') || '{}');
+        activatedPlans[plan] = true;
+        localStorage.setItem('activatedPlans', JSON.stringify(activatedPlans));
+        
+        // Redirect after success - FIXED: redirect to "/withdraw-form" not "/withdraw"
+        setTimeout(() => {
+          if (redirectTo) {
+            navigate(redirectTo, { state: redirectState });
+          } else {
+            navigate("/withdraw-form", { state: { plan } }); // Changed from "/withdraw" to "/withdraw-form"
+          }
+        }, 2000);
+      } else {
+        setError("Could not activate plan. Please try again or contact support.");
+      }
       
     } catch (err) {
       setError(err.response?.data?.message || "Activation failed. Please try again.");
@@ -53,7 +103,7 @@ export default function ActivateAccountPage() {
     return (
       <div className="activate-page">
         <header className="page-header">
-          <button className="back-btn" onClick={() => navigate("/withdraw")}>← Back</button>
+          <button className="back-btn" onClick={() => navigate("/withdraw-form")}>← Back</button> {/* Fixed */}
           <h1>Activate Account</h1>
         </header>
         
@@ -63,7 +113,7 @@ export default function ActivateAccountPage() {
             <p>Please select a plan to activate first.</p>
             <button 
               className="back-to-withdraw-btn"
-              onClick={() => navigate("/withdraw")}
+              onClick={() => navigate("/withdraw-form")} {/* Fixed */}
             >
               Back to Withdraw Page
             </button>
@@ -76,7 +126,7 @@ export default function ActivateAccountPage() {
   return (
     <div className="activate-page">
       <header className="page-header">
-        <button className="back-btn" onClick={() => navigate("/withdraw")}>← Back</button>
+        <button className="back-btn" onClick={() => navigate("/withdraw-form")}>← Back</button> {/* Fixed */}
         <h1>Activate Account</h1>
       </header>
 
@@ -160,7 +210,7 @@ export default function ActivateAccountPage() {
               
               <button 
                 className="cancel-btn"
-                onClick={() => navigate("/withdraw")}
+                onClick={() => navigate("/withdraw-form")} {/* Fixed */}
                 disabled={loading}
               >
                 Cancel

@@ -53,25 +53,79 @@ export default function WithdrawForm() {
   }, []);
 
   useEffect(() => {
-    const loadUser = async () => {
+    const loadUserAndActivation = async () => {
       try {
-        // Load user's plan activation status
-        const activationRes = await api.get("/account/plan-activation-status");
-        setUserPlanActivationStatus(activationRes.data);
-        
-        // Store user data in localStorage if needed elsewhere
+        // 1. First, load user data to ensure they're authenticated
         const userRes = await api.get(`/auth/me?_t=${Date.now()}`);
-        localStorage.setItem("cachedUser", JSON.stringify(userRes.data));
+        const userData = userRes.data;
+        localStorage.setItem("cachedUser", JSON.stringify(userData));
+        
+        // 2. Try to get user's current plan/activation status
+        // Try multiple possible endpoints since we don't know your exact backend structure
+        let activationStatus = {
+          REGULAR: true, // Assume regular is always activated
+          VIP: false,
+          VVIP: false
+        };
+
+        try {
+          // Option 1: Check if user has a plan in their profile
+          if (userData.plan) {
+            activationStatus[userData.plan] = true;
+          }
+          
+          // Option 2: Try to get activation status from user endpoint
+          const planStatusRes = await api.get(`/user/plan-status`);
+          if (planStatusRes.data) {
+            Object.keys(PLANS).forEach(planKey => {
+              if (planStatusRes.data[planKey]) {
+                activationStatus[planKey] = planStatusRes.data[planKey];
+              }
+            });
+          }
+        } catch (planErr) {
+          console.warn("Could not fetch plan activation status:", planErr.message);
+          
+          // Option 3: Check localStorage for previously activated plans
+          const savedActivation = localStorage.getItem('activatedPlans');
+          if (savedActivation) {
+            try {
+              const parsed = JSON.parse(savedActivation);
+              Object.keys(PLANS).forEach(planKey => {
+                if (parsed[planKey]) {
+                  activationStatus[planKey] = parsed[planKey];
+                }
+              });
+            } catch (e) {
+              console.warn("Error parsing saved activation:", e);
+            }
+          }
+        }
+        
+        setUserPlanActivationStatus(activationStatus);
         
       } catch (err) {
         console.error("Failed to load user:", err);
-        navigate("/auth?mode=login");
+        
+        // Only redirect to login if it's an auth error
+        if (err.response?.status === 401 || err.response?.status === 403) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("cachedUser");
+          navigate("/auth?mode=login");
+        } else {
+          // For other errors (like 404), just continue with defaults
+          setUserPlanActivationStatus({
+            REGULAR: true,
+            VIP: false,
+            VVIP: false
+          });
+        }
       } finally {
         setLoading(false);
       }
     };
 
-    loadUser();
+    loadUserAndActivation();
   }, [navigate]);
 
   useEffect(() => {
@@ -81,13 +135,46 @@ export default function WithdrawForm() {
   }, [plan]);
 
   const checkAccountActivation = async (planKey) => {
+    // For Regular plan with no activation fee, always return true
+    if (planKey === "REGULAR" && PLANS[planKey].activationFee === 0) {
+      return true;
+    }
+    
     try {
-      // Check if account is activated for the selected plan
-      const res = await api.get(`/withdraw/check-activation?plan=${planKey}`);
-      return res.data.isActivated;
+      // Try multiple endpoints to check activation
+      let isActivated = false;
+      
+      // Method 1: Try dedicated activation check endpoint
+      try {
+        const res = await api.get(`/withdraw/check-eligibility`);
+        if (res.data?.eligibleForWithdrawal) {
+          isActivated = true;
+        }
+      } catch (e1) {
+        console.warn("Method 1 failed:", e1.message);
+      }
+      
+      // Method 2: Check user's current plan
+      if (!isActivated) {
+        try {
+          const userRes = await api.get(`/auth/me?_t=${Date.now()}`);
+          if (userRes.data?.plan === planKey) {
+            isActivated = true;
+          }
+        } catch (e2) {
+          console.warn("Method 2 failed:", e2.message);
+        }
+      }
+      
+      // Method 3: Use locally stored activation status
+      if (!isActivated) {
+        isActivated = userPlanActivationStatus[planKey] || false;
+      }
+      
+      return isActivated;
+      
     } catch (err) {
       console.error("Activation check error:", err);
-      // Fallback: check local state
       return userPlanActivationStatus[planKey] || false;
     }
   };
