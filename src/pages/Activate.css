@@ -643,3 +643,151 @@ body {
     min-height: 48px;
   }
 }
+
+/* Add these styles to your existing Activate.css file */
+
+/* =========================
+   LOADING STATE
+========================= */
+.activate-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: var(--bg-main);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.activate-loading-content {
+  text-align: center;
+}
+
+.activate-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(102, 126, 234, 0.1);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  animation: spin 1s linear infinite;
+}
+
+/* =========================
+   FEATURE LIST
+========================= */
+.activate-feature {
+  margin: 6px 0;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-main);
+}
+
+.activate-feature:before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--success);
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+/* =========================
+   ACTIVATION FEE
+========================= */
+.activation-fee {
+  color: var(--danger);
+  font-weight: 800;
+  font-size: 16px;
+}
+
+/* =========================
+   POPUP SPECIFIC
+========================= */
+.popup-steps {
+  list-style: none;
+  padding: 0;
+  margin: var(--space-lg) 0;
+}
+
+.popup-steps li {
+  margin-bottom: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--text-main);
+  font-size: 14px;
+}
+
+.popup-steps li:before {
+  content: '•';
+  color: var(--primary);
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* =========================
+   BUTTON HOVER EFFECTS
+========================= */
+.activate-button.primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.activate-button.secondary:hover {
+  background: rgba(37, 99, 235, 0.05);
+  transform: translateY(-2px);
+}
+
+.copy-button:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* =========================
+   RESPONSIVE ADJUSTMENTS
+========================= */
+@media (max-width: 480px) {
+  .activate-feature {
+    font-size: 13px;
+  }
+  
+  .activation-fee {
+    font-size: 15px;
+  }
+  
+  .popup-steps li {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 360px) {
+  .activate-feature {
+    font-size: 12px;
+  }
+  
+  .activation-fee {
+    font-size: 14px;
+  }
+  
+  .popup-steps li {
+    font-size: 12px;
+  }
+}
