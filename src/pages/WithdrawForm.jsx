@@ -121,7 +121,7 @@ export default function WithdrawForm() {
       // Navigate to activation page with plan info
       navigate("/activate", { 
         state: { 
-          plan: selectedPlanForActivation,
+          planKey: selectedPlanForActivation,
           activationFee: planData.activationFee,
           planName: planData.name
         }
