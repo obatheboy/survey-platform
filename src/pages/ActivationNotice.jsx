@@ -1,36 +1,35 @@
+// ========================= ActivationNotice.jsx =========================
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/api";
+import "./ActivationNotice.css";
 
 /* =========================
-   PLAN CONFIG (DISPLAY ONLY)
+   PLAN CONFIG
 ========================= */
 const PLAN_CONFIG = {
   REGULAR: {
-    label: "Regular",
+    label: "Regular Plan",
     activationFee: 100,
     color: "#10b981",
-    glow: "rgba(16, 185, 129, 0.2)",
+    icon: "⭐",
     total: 1500,
   },
   VIP: {
-    label: "VIP",
+    label: "VIP Plan",
     activationFee: 150,
     color: "#6366f1",
-    glow: "rgba(99, 102, 241, 0.2)",
+    icon: "💎",
     total: 2000,
   },
   VVIP: {
-    label: "VVIP",
+    label: "VVIP Plan",
     activationFee: 200,
     color: "#f59e0b",
-    glow: "rgba(245, 158, 11, 0.2)",
+    icon: "👑",
     total: 3000,
   },
 };
-
-const SEND_MONEY_NUMBER = "0740209662";
-const RECEIVER_NAME = "Irene Otoki";
 
 export default function ActivationNotice() {
   const navigate = useNavigate();
@@ -40,68 +39,45 @@ export default function ActivationNotice() {
   const [totalEarned, setTotalEarned] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [userName, setUserName] = useState("");
 
   /* =========================
-     LOAD STATE (PRIORITIZE PASSED STATE, THEN BACKEND)
+     SCROLL TO TOP ON MOUNT
   ========================= */
   useEffect(() => {
-    let alive = true;
+    // Scroll to top immediately when component mounts
+    window.scrollTo(0, 0);
+    
+    // Also scroll smoothly after a tiny delay for better UX
+    const timer = setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, []); // Empty dependency array = runs only on mount
 
-    const load = async () => {
+  /* =========================
+     LOAD USER AND PLAN DATA
+  ========================= */
+  useEffect(() => {
+    const loadData = async () => {
       try {
-        // FIRST: Check if plan data was passed via state/navigation
-        if (location.state?.plan || location.state?.planType) {
-          const { plan, amount, planType } = location.state;
-          
-          console.log("Received state from navigation:", { plan, amount, planType });
-          
-          // Use the passed state immediately for instant display
-          if (planType) {
-            setPlanKey(planType);
-          } else if (plan?.type) {
-            setPlanKey(plan.type);
-          }
-          
-          if (amount) {
-            setTotalEarned(amount);
-          } else if (plan?.amount) {
-            setTotalEarned(plan.amount);
-          }
-          
-          // Show the UI with passed data first
-          if (!alive) return;
-          setLoading(false);
-          
-          // THEN verify with backend in background (BUT DON'T SHOW ERRORS)
-          try {
-            const res = await api.get("/auth/me");
-            if (!alive) return;
-            
-            const currentPlanKey = planType || plan?.type || res.data.active_plan;
-            const backendPlan = res.data.plans?.[currentPlanKey];
+        // Load user data
+        const res = await api.get(`/auth/me?_t=${Date.now()}`);
+        setUserName(res.data.full_name || "User");
 
-            if (backendPlan && backendPlan.is_activated) {
-              console.log("Plan already activated in backend");
-              // If already activated, redirect to dashboard
-              setTimeout(() => {
-                navigate("/dashboard?activated=true");
-              }, 1500);
-              return;
-            }
-            
-            // FIX: Do not overwrite state with generic backend data if we have specific state
-            // We trust the state passed from the previous page for the specific plan context.
-          } catch (apiError) {
-            console.error("Backend verification failed:", apiError);
-            // Don't show error - just use passed state
-          }
-          
+        // Check for passed state from navigation
+        const statePlanKey = location.state?.planType || location.state?.plan?.type;
+        const stateAmount = location.state?.amount || location.state?.plan?.amount;
+
+        if (statePlanKey) {
+          setPlanKey(statePlanKey);
+          setTotalEarned(stateAmount || PLAN_CONFIG[statePlanKey]?.total || 0);
+          setLoading(false);
           return;
         }
 
-        // SECOND: If no state was passed, rely entirely on backend
-        const res = await api.get("/auth/me");
-
+        // If no state, check backend
         const activePlan = res.data.active_plan;
         const plan = res.data.plans?.[activePlan];
 
@@ -110,74 +86,68 @@ export default function ActivationNotice() {
           return;
         }
 
-        // Only check surveys completed if NO state was passed
-        if (plan.surveys_completed < 10 && localStorage.getItem(`survey_completed_${activePlan}`) !== 'true') {
-          navigate("/dashboard");
-          return;
-        }
-
+        // Check if plan needs activation
         if (plan.is_activated) {
           navigate("/dashboard?activated=true");
           return;
         }
 
-        if (!alive) return;
+        // Check if surveys are completed
+        if (plan.surveys_completed < 10) {
+          navigate("/dashboard");
+          return;
+        }
 
         setPlanKey(activePlan);
-        // FIX: Use the plan's specific total from config to ensure accuracy for that plan
-        setTotalEarned(PLAN_CONFIG[activePlan]?.total || res.data.total_earned);
+        setTotalEarned(PLAN_CONFIG[activePlan]?.total || 0);
       } catch (err) {
-        console.error("ActivationNotice error:", err);
-        // Only show error if we have NO state data
-        if (!location.state?.plan && !location.state?.planType) {
-          setError("Failed to load activation details. Please try again.");
-        }
+        console.error("Error loading activation details:", err);
+        setError("Unable to load activation details. Please try again.");
       } finally {
-        if (alive) setLoading(false);
+        setLoading(false);
       }
     };
 
-    load();
-    return () => (alive = false);
+    loadData();
   }, [navigate, location.state]);
 
   const handleActivate = () => {
-    // Pass along any plan data to the activation page
     navigate("/activate", { 
       state: { 
-        planKey,
+        plan: planKey,
+        activationFee: PLAN_CONFIG[planKey]?.activationFee,
         amount: totalEarned 
       }
     });
   };
 
+  /* =========================
+     LOADING STATE
+  ========================= */
   if (loading) {
     return (
-      <div style={page}>
-        <div style={{ ...card, boxShadow: "0 10px 30px rgba(0,0,0,0.05)" }}>
-          <div style={{ padding: "40px 0", color: "#64748b" }}>
-            <div style={spinnerStyle}></div>
-            <p>Loading activation details...</p>
-          </div>
+      <div className="activation-notice-page loading">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading your activation details...</p>
         </div>
       </div>
     );
   }
 
+  /* =========================
+     ERROR STATE
+  ========================= */
   if (error) {
     return (
-      <div style={page}>
-        <div style={{ ...card, boxShadow: "0 10px 30px rgba(239, 68, 68, 0.1)" }}>
-          <h2 style={{ color: "#ef4444", textAlign: "center" }}>⚠️ Error</h2>
-          <p style={{ ...text, textAlign: "center", color: "#ef4444" }}>{error}</p>
+      <div className="activation-notice-page">
+        <div className="notice-card error">
+          <div className="error-icon">⚠️</div>
+          <h2>Something Went Wrong</h2>
+          <p className="error-message">{error}</p>
           <button
-            style={{
-              ...activateBtn,
-              background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-              color: "#fff",
-              marginTop: "20px",
-            }}
             onClick={() => navigate("/dashboard")}
+            className="primary-button"
           >
             Return to Dashboard
           </button>
@@ -186,22 +156,19 @@ export default function ActivationNotice() {
     );
   }
 
+  /* =========================
+     NO PLAN STATE
+  ========================= */
   if (!planKey) {
     return (
-      <div style={page}>
-        <div style={{ ...card, boxShadow: "0 10px 30px rgba(0,0,0,0.05)" }}>
-          <h2 style={{ color: "#1e293b", textAlign: "center" }}>No Plan Selected</h2>
-          <p style={{ ...text, textAlign: "center", color: "#64748b" }}>
-            Please select a plan from the dashboard first.
-          </p>
+      <div className="activation-notice-page">
+        <div className="notice-card">
+          <div className="no-plan-icon">📋</div>
+          <h2>Select a Plan First</h2>
+          <p>Please complete surveys for a plan before activation.</p>
           <button
-            style={{
-              ...activateBtn,
-              background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-              color: "#fff",
-              marginTop: "20px",
-            }}
             onClick={() => navigate("/dashboard")}
+            className="primary-button"
           >
             Go to Dashboard
           </button>
@@ -213,230 +180,96 @@ export default function ActivationNotice() {
   const plan = PLAN_CONFIG[planKey];
   if (!plan) return null;
 
+  /* =========================
+     MAIN CONTENT - SIMPLIFIED
+  ========================= */
   return (
-    <div style={page}>
-      <div style={{ ...card, boxShadow: `0 20px 40px ${plan.glow}` }}>
-        <div style={flagWrap}>
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/4/49/Flag_of_Kenya.svg"
-            alt="Kenya Flag"
-            style={flag}
-          />
+    <div className="activation-notice-page simple">
+      {/* SIMPLE NOTICE CARD */}
+      <div className="simple-notice-card">
+        {/* SUCCESS ICON */}
+        <div className="simple-success-icon">
+          <div className="success-check">✓</div>
+          <div className="success-glow"></div>
         </div>
 
-        <h2
-          style={{
-            color: "#1e293b",
-            fontSize: "28px",
-            fontWeight: "800",
-            margin: "20px 0 10px",
-          }}
-        >
-          🎉 Congratulations! 🎉
-        </h2>
+        {/* HEADING */}
+        <h1 className="simple-title">
+          <span className="title-emoji">🎉</span>
+          You're Almost There!
+          <span className="title-emoji">🎉</span>
+        </h1>
 
-        <p style={{ ...text, color: "#475569" }}>
-          You have successfully completed all required surveys under the{" "}
-          <b style={{ color: plan.color }}>{plan.label}</b> plan.
-          <br />
-          <br />
-          Your total confirmed earnings are:
-          <br />
-          <b style={{ color: "#1e293b", fontSize: 28, fontWeight: "900" }}>
-            KES {totalEarned.toLocaleString()}
-          </b>
-          <br />
-          <br />
-          Activate your account now to unlock withdrawals directly to
-          <b style={{ color: "#10b981" }}> M-Pesa</b>.
+        {/* USER GREETING */}
+        <p className="simple-greeting">
+          Great work, <strong>{userName.split(' ')[0]}</strong>! 👏
         </p>
 
-        <div style={urgencyBox}>
-          ⏳ Action Required: Activate your account to secure and withdraw your
-          earnings now!
+        {/* SUCCESS MESSAGE */}
+        <div className="simple-message">
+          <h2>Surveys Completed! ✅</h2>
+          <p>
+            You've successfully completed all surveys for the{" "}
+            <strong style={{ color: plan.color }}>{plan.label}</strong>.
+          </p>
         </div>
 
-        <div style={highlightBox}>
-          <p style={highlightItem}>
-            💼 <b>Account Status:</b>{" "}
-            <span style={{ color: "#f59e0b", fontWeight: "700" }}>Pending Activation</span>
-          </p>
-
-          <p style={highlightItem}>
-            💰 <b>Earnings Available:</b>{" "}
-            <span style={{ color: plan.color, fontWeight: "700" }}>
+        {/* EARNINGS SUMMARY */}
+        <div className="simple-earnings">
+          <div className="earnings-badge" style={{ background: plan.color }}>
+            <span className="earnings-icon">💰</span>
+            <span className="earnings-text">
               KES {totalEarned.toLocaleString()}
             </span>
-          </p>
-
-          <p style={highlightItem}>
-            🔐 <b>One-Time Activation Fee:</b>{" "}
-            <span style={{ color: "#ef4444", fontWeight: "700" }}>
-              KES {plan.activationFee}
-            </span>
-          </p>
-
-          <div style={{ marginTop: "16px", padding: "12px", background: "rgba(37, 99, 235, 0.05)", borderRadius: "12px", border: "1px dashed rgba(37, 99, 235, 0.2)" }}>
-            <p style={{ margin: "0 0 8px", fontSize: "14px", fontWeight: "700", color: "#1e293b" }}>
-              📲 PAY VIA M-PESA:
-            </p>
-            <p style={{ margin: "4px 0", fontSize: "14px" }}>
-              Send <b>KES {plan.activationFee}</b> to <b style={{ color: "#2563eb", fontSize: "16px" }}>{SEND_MONEY_NUMBER}</b>
-            </p>
-            <p style={{ margin: "0", fontSize: "12px", color: "#64748b" }}>
-              Name: {RECEIVER_NAME}
-            </p>
           </div>
+          <p className="earnings-note">Ready for withdrawal after activation</p>
+        </div>
 
-          <div style={benefitsList}>
-            <p style={benefitItem}>✅ Instant withdrawals after activation</p>
-            <p style={benefitItem}>🛡️ Your earnings are secured and protected</p>
-            <p style={benefitItem}>📲 Withdraw to M-Pesa anytime after activation</p>
+        {/* CALL TO ACTION */}
+        <div className="simple-action">
+          <h3>Ready to Get Your Earnings? 🚀</h3>
+          <p className="action-description">
+            Tap the button below to complete activation and withdraw your money.
+            <br />
+            All payment details and instructions will be shown on the next page.
+          </p>
+        </div>
+
+        {/* ACTIVATE BUTTON */}
+        <button
+          onClick={handleActivate}
+          className="simple-activate-button"
+          style={{ background: plan.color }}
+        >
+          <span className="button-icon">🔓</span>
+          Activate & Withdraw Now
+          <span className="button-arrow">→</span>
+        </button>
+
+        {/* QUICK INFO */}
+        <div className="simple-info">
+          <div className="info-item">
+            <span className="info-icon">⚡</span>
+            <span className="info-text">Instant M-Pesa withdrawal</span>
+          </div>
+          <div className="info-item">
+            <span className="info-icon">🔒</span>
+            <span className="info-text">Secure payment process</span>
+          </div>
+          <div className="info-item">
+            <span className="info-icon">👑</span>
+            <span className="info-text">One-time activation fee</span>
           </div>
         </div>
 
-        {/* PRIMARY ACTION */}
+        {/* BACK BUTTON */}
         <button
-          style={{
-            ...activateBtn,
-            background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-            boxShadow: "0 10px 20px rgba(37, 99, 235, 0.3)",
-            color: "#fff",
-          }}
-          onClick={handleActivate}
-        >
-          🔓 Activate Account & Withdraw Earnings
-        </button>
-
-        {/* SECONDARY / DE-EMPHASIZED */}
-        <button
-          style={linkBtn}
           onClick={() => navigate("/dashboard")}
+          className="simple-back-button"
         >
-          Return to Dashboard
+          ← Back to Dashboard
         </button>
       </div>
-
-      <style>
-        {`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}
-      </style>
     </div>
   );
 }
-
-/* =========================
-   STYLES
-========================= */
-const page = {
-  minHeight: "100vh",
-  background: "#f8fafc",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  padding: 20,
-  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-};
-
-const card = {
-  maxWidth: 500,
-  width: "100%",
-  background: "#ffffff",
-  padding: "40px 32px",
-  borderRadius: 24,
-  textAlign: "center",
-  color: "#1e293b",
-  border: "1px solid #f1f5f9",
-};
-
-const flagWrap = { display: "flex", justifyContent: "center" };
-
-const flag = {
-  width: 70,
-  height: 70,
-  borderRadius: "50%",
-  boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
-  border: "3px solid #fff",
-};
-
-const text = { marginTop: 14, fontSize: 16, lineHeight: 1.6 };
-
-const urgencyBox = {
-  marginTop: 20,
-  padding: 16,
-  borderRadius: 16,
-  background: "rgba(239, 68, 68, 0.05)",
-  color: "#ef4444",
-  fontWeight: "700",
-  fontSize: "14px",
-  border: "1px solid rgba(239, 68, 68, 0.1)",
-};
-
-const highlightBox = {
-  marginTop: 24,
-  padding: 24,
-  borderRadius: 16,
-  background: "#f8fafc",
-  textAlign: "left",
-  border: "1px solid #e2e8f0",
-};
-
-const highlightItem = {
-  margin: "0 0 12px 0",
-  fontSize: "15px",
-  display: "flex",
-  justifyContent: "space-between",
-};
-
-const benefitsList = {
-  marginTop: 20,
-  paddingTop: 20,
-  borderTop: "1px solid #e2e8f0",
-};
-
-const benefitItem = {
-  margin: "0 0 8px 0",
-  fontSize: "14px",
-  color: "#64748b",
-  display: "flex",
-  alignItems: "center",
-  gap: "8px",
-};
-
-const activateBtn = {
-  width: "100%",
-  marginTop: 30,
-  padding: "20px",
-  color: "#fff",
-  border: "none",
-  borderRadius: 16,
-  fontWeight: "800",
-  cursor: "pointer",
-  fontSize: "16px",
-  transition: "all 0.3s ease",
-};
-
-const linkBtn = {
-  marginTop: 20,
-  background: "transparent",
-  color: "#94a3b8",
-  border: "none",
-  cursor: "pointer",
-  fontSize: "14px",
-  fontWeight: "600",
-  textDecoration: "none",
-};
-
-const spinnerStyle = {
-  width: "40px",
-  height: "40px",
-  border: "4px solid #f3f3f3",
-  borderTop: "4px solid #2563eb",
-  borderRadius: "50%",
-  margin: "0 auto 20px",
-  animation: "spin 1s linear infinite",
-};

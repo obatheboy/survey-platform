@@ -1,0 +1,359 @@
+/* ========================= ActivationNotice.css ========================= */
+
+.activation-notice-page.simple {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+.simple-notice-card {
+  background: white;
+  border-radius: 24px;
+  padding: 40px 32px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.simple-notice-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+/* Success Icon */
+.simple-success-icon {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+}
+
+.success-check {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  background: #10b981;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 32px;
+  font-weight: bold;
+  z-index: 2;
+  box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+}
+
+.success-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  background: rgba(16, 185, 129, 0.2);
+  border-radius: 50%;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+  50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.3; }
+}
+
+/* Title */
+.simple-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1f2937;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  line-height: 1.2;
+}
+
+.title-emoji {
+  font-size: 32px;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Greeting */
+.simple-greeting {
+  font-size: 18px;
+  color: #4b5563;
+  margin-bottom: 32px;
+  font-weight: 600;
+}
+
+/* Message */
+.simple-message {
+  margin-bottom: 32px;
+}
+
+.simple-message h2 {
+  font-size: 22px;
+  color: #059669;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.simple-message p {
+  font-size: 16px;
+  color: #6b7280;
+  line-height: 1.6;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* Earnings */
+.simple-earnings {
+  margin-bottom: 32px;
+}
+
+.earnings-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border-radius: 50px;
+  color: white;
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.earnings-icon {
+  font-size: 24px;
+}
+
+.earnings-note {
+  font-size: 14px;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+/* Action */
+.simple-action {
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 32px;
+  border: 2px solid #bae6fd;
+}
+
+.simple-action h3 {
+  font-size: 20px;
+  color: #0369a1;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.action-description {
+  font-size: 15px;
+  color: #475569;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Button */
+.simple-activate-button {
+  width: 100%;
+  padding: 20px;
+  border: none;
+  border-radius: 16px;
+  color: white;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.simple-activate-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+.simple-activate-button:active {
+  transform: translateY(-1px);
+}
+
+.button-icon {
+  font-size: 22px;
+}
+
+.button-arrow {
+  font-size: 22px;
+  animation: slide 1.5s infinite ease-in-out;
+}
+
+@keyframes slide {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(5px); }
+}
+
+/* Info */
+.simple-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #4b5563;
+  font-weight: 600;
+}
+
+.info-icon {
+  font-size: 16px;
+}
+
+/* Back Button */
+.simple-back-button {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid #d1d5db;
+  border-radius: 12px;
+  background: white;
+  color: #6b7280;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.simple-back-button:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  color: #4b5563;
+}
+
+/* Loading and Error States */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.notice-card.error {
+  max-width: 480px;
+  margin: 40px auto;
+  padding: 40px;
+  text-align: center;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.error-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.error-message {
+  color: #dc2626;
+  margin: 20px 0;
+  font-size: 16px;
+}
+
+.primary-button {
+  padding: 14px 28px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.primary-button:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .simple-notice-card {
+    padding: 32px 24px;
+    border-radius: 20px;
+  }
+  
+  .simple-title {
+    font-size: 24px;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .title-emoji {
+    font-size: 28px;
+  }
+  
+  .simple-message h2 {
+    font-size: 20px;
+  }
+  
+  .simple-activate-button {
+    padding: 18px;
+    font-size: 16px;
+  }
+  
+  .simple-action {
+    padding: 20px;
+  }
+}
