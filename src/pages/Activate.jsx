@@ -1,4 +1,4 @@
-// ========================= Activate.jsx (Mobile Optimized) =========================
+// ========================= Activate.jsx =========================
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import api from "../api/api";
@@ -13,183 +13,36 @@ const SEND_MONEY_NUMBER = "0740209662";
 const RECEIVER_NAME = "Irene Otoki";
 
 /* =========================
-   PLAN CONFIG
+   PLAN CONFIG (DISPLAY ONLY)
 ========================= */
 const PLAN_CONFIG = {
   REGULAR: { 
     label: "Regular", 
     total: 1500, 
     activationFee: 100, 
-    color: "#10b981"
+    color: "#10b981", 
+    glow: "rgba(16, 185, 129, 0.2)" 
   },
   VIP: { 
     label: "VIP", 
     total: 2000, 
     activationFee: 150, 
-    color: "#6366f1"
+    color: "#6366f1", 
+    glow: "rgba(99, 102, 241, 0.2)" 
   },
   VVIP: { 
     label: "VVIP", 
     total: 3000, 
     activationFee: 200, 
-    color: "#f59e0b"
+    color: "#f59e0b", 
+    glow: "rgba(245, 158, 11, 0.2)" 
   },
 };
 
 /* =========================
-   MOBILE-OPTIMIZED STYLES
+   INLINE STYLES (OPTIMIZED FOR MOBILE)
 ========================= */
 const styles = {
-  page: {
-    minHeight: "100vh",
-    background: "var(--bg-main)",
-    padding: "16px",
-    paddingTop: "80px",
-    paddingBottom: "40px",
-    fontFamily: "'Inter', sans-serif",
-  },
-  card: {
-    maxWidth: "100%",
-    background: "var(--bg-surface)",
-    padding: "20px",
-    borderRadius: "16px",
-    color: "var(--text-main)",
-    border: "1px solid var(--border-soft)",
-    boxShadow: "0 8px 30px rgba(0, 0, 0, 0.08)",
-    marginBottom: "24px",
-  },
-  header: {
-    textAlign: "center",
-    marginBottom: "20px",
-  },
-  planBadge: {
-    display: "inline-block",
-    padding: "6px 12px",
-    borderRadius: "20px",
-    background: "var(--primary-light)",
-    color: "var(--primary)",
-    fontSize: "12px",
-    fontWeight: 700,
-    marginBottom: "8px",
-  },
-  amount: {
-    fontSize: "28px",
-    fontWeight: 800,
-    margin: "8px 0",
-  },
-  section: {
-    background: "var(--bg-main)",
-    border: "1px solid var(--border-soft)",
-    borderRadius: "12px",
-    padding: "16px",
-    marginTop: "16px",
-  },
-  sectionTitle: {
-    fontSize: "14px",
-    fontWeight: 800,
-    marginBottom: "10px",
-    display: "flex",
-    alignItems: "center",
-    gap: "6px",
-  },
-  stepsList: {
-    fontSize: "13px",
-    lineHeight: "1.6",
-    paddingLeft: "18px",
-    margin: 0,
-  },
-  stepItem: {
-    marginBottom: "8px",
-  },
-  paymentInfo: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
-    fontSize: "14px",
-  },
-  copyRow: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    background: "var(--bg-main)",
-    padding: "12px",
-    borderRadius: "8px",
-    border: "1px solid var(--border-medium)",
-    marginTop: "8px",
-  },
-  copyBtn: {
-    padding: "8px 16px",
-    background: "var(--primary)",
-    color: "white",
-    border: "none",
-    borderRadius: "6px",
-    fontSize: "12px",
-    fontWeight: 700,
-    cursor: "pointer",
-    whiteSpace: "nowrap",
-  },
-  textarea: {
-    width: "100%",
-    padding: "14px",
-    marginTop: "16px",
-    borderRadius: "10px",
-    border: "2px solid var(--border-medium)",
-    background: "var(--bg-surface)",
-    color: "var(--text-main)",
-    fontSize: "14px",
-    fontFamily: "inherit",
-    minHeight: "100px",
-    resize: "vertical",
-    boxSizing: "border-box",
-  },
-  button: {
-    width: "100%",
-    padding: "16px",
-    borderRadius: "12px",
-    fontWeight: 700,
-    fontSize: "16px",
-    border: "none",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "10px",
-    marginTop: "20px",
-    transition: "all 0.2s",
-  },
-  backButton: {
-    background: "transparent",
-    border: "2px solid var(--primary)",
-    color: "var(--primary)",
-    marginTop: "12px",
-  },
-  notification: {
-    padding: "12px",
-    borderRadius: "8px",
-    marginTop: "16px",
-    fontSize: "13px",
-    fontWeight: 600,
-    textAlign: "center",
-  },
-  success: {
-    background: "rgba(16, 185, 129, 0.1)",
-    border: "1px solid #10b981",
-    color: "#10b981",
-  },
-  error: {
-    background: "rgba(220, 38, 38, 0.1)",
-    border: "1px solid #dc2626",
-    color: "#dc2626",
-  },
-  loadingContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    minHeight: "100vh",
-    fontSize: "14px",
-    fontWeight: 600,
-    color: "var(--text-muted)",
-  },
   overlay: {
     position: "fixed",
     top: 0,
@@ -201,19 +54,150 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     zIndex: 99999,
-    padding: "20px",
+    padding: "16px",
+    backdropFilter: "blur(4px)",
   },
   overlayCard: {
+    maxWidth: "100%",
     width: "100%",
-    maxWidth: "400px",
     background: "var(--bg-surface)",
-    padding: "24px",
+    padding: "24px 20px",
     borderRadius: "16px",
+    color: "var(--text-main)",
     textAlign: "center",
+    boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3)",
+    border: "1px solid var(--border-soft)",
+    margin: "0 16px",
   },
-  overlayIcon: {
-    fontSize: "48px",
-    marginBottom: "16px",
+  page: {
+    minHeight: "100vh",
+    background: "var(--bg-main)",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    padding: "16px",
+    paddingTop: "20px",
+    paddingBottom: "40px",
+    fontFamily: "'Inter', sans-serif",
+  },
+  card: {
+    maxWidth: "100%",
+    width: "100%",
+    background: "var(--bg-surface)",
+    padding: "20px 16px",
+    borderRadius: "16px",
+    color: "var(--text-main)",
+    border: "1px solid var(--border-soft)",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+  },
+  section: {
+    marginTop: "20px",
+    padding: "16px",
+    borderRadius: "12px",
+    background: "var(--bg-main)",
+    border: "1px solid var(--border-soft)",
+    fontSize: "14px",
+  },
+  sectionHighlight: {
+    marginTop: "20px",
+    padding: "16px",
+    borderRadius: "12px",
+    background: "rgba(37, 99, 235, 0.05)",
+    border: "1px solid rgba(37, 99, 235, 0.1)",
+    fontSize: "14px",
+  },
+  caption: {
+    fontSize: "13px",
+    color: "var(--primary)",
+    fontWeight: 700,
+    marginBottom: "10px",
+    lineHeight: "1.4",
+  },
+  noteBox: {
+    marginTop: "20px",
+    padding: "14px",
+    borderRadius: "10px",
+    background: "var(--bg-surface)",
+    fontSize: "13px",
+    fontWeight: 600,
+    border: "1px solid var(--border-medium)",
+    color: "var(--text-muted)",
+    lineHeight: "1.4",
+  },
+  notificationBox: {
+    marginTop: "16px",
+    padding: "14px",
+    borderRadius: "10px",
+    background: "rgba(16, 185, 129, 0.1)",
+    color: "var(--regular-color)",
+    fontWeight: 700,
+    border: "1px solid var(--regular-color)",
+    fontSize: "13px",
+  },
+  activationFee: {
+    color: "#dc2626",
+    fontWeight: 800,
+    fontSize: "15px",
+  },
+  copiedNote: {
+    color: "var(--regular-color)",
+    fontWeight: 700,
+    fontSize: "12px",
+    marginTop: "8px",
+  },
+  input: {
+    width: "100%",
+    padding: "14px",
+    marginTop: "16px",
+    borderRadius: "10px",
+    border: "2px solid var(--border-medium)",
+    background: "var(--bg-surface)",
+    color: "var(--text-main)",
+    fontSize: "14px",
+    fontFamily: "inherit",
+    resize: "vertical",
+    minHeight: "120px",
+    boxSizing: "border-box",
+  },
+  button: {
+    width: "100%",
+    marginTop: "16px",
+    padding: "16px",
+    borderRadius: "12px",
+    fontWeight: 700,
+    fontSize: "15px",
+    cursor: "pointer",
+    border: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+    minHeight: "50px",
+    background: "var(--primary)",
+    color: "#ffffff",
+    boxShadow: "0 6px 12px -3px rgba(37, 99, 235, 0.3)",
+  },
+  copyBtn: {
+    padding: "8px 14px",
+    borderRadius: "8px",
+    border: "none",
+    background: "var(--primary)",
+    color: "white",
+    fontWeight: 700,
+    fontSize: "12px",
+    cursor: "pointer",
+    boxShadow: "0 3px 6px -1px rgba(37, 99, 235, 0.2)",
+  },
+  loadingContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "100vh",
+    fontSize: "14px",
+    fontWeight: 600,
+    color: "var(--text-muted)",
+    background: "var(--bg-main)",
+    padding: "20px",
   },
 };
 
@@ -292,9 +276,9 @@ export default function Activate() {
     try {
       await navigator.clipboard.writeText(SEND_MONEY_NUMBER);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(false), 2500);
     } catch {
-      setNotification("⚠️ Failed to copy. Copy manually.");
+      setNotification("⚠️ Failed to copy. Please copy manually.");
     }
   };
 
@@ -303,7 +287,7 @@ export default function Activate() {
   ========================== */
   const submitActivation = async () => {
     if (!paymentText.trim()) {
-      setNotification("❌ Paste the M-Pesa confirmation message.");
+      setNotification("❌ Paste the FULL M-Pesa confirmation message.");
       return;
     }
 
@@ -321,7 +305,7 @@ export default function Activate() {
       
       setShowSuccessPopup(true);
     } catch (error) {
-      console.error("Activation failed:", error);
+      console.error("Activation submission failed:", error);
       setShowSuccessPopup(true);
     } finally {
       setSubmitting(false);
@@ -336,15 +320,15 @@ export default function Activate() {
       <div style={styles.loadingContainer}>
         <div style={{ textAlign: "center" }}>
           <div style={{
-            width: "32px",
-            height: "32px",
-            border: "3px solid rgba(0, 0, 0, 0.1)",
-            borderTopColor: "#2563eb",
+            width: "36px",
+            height: "36px",
+            border: "3px solid rgba(255, 255, 255, 0.1)",
+            borderTopColor: "#00ff99",
             borderRadius: "50%",
             margin: "0 auto 12px",
             animation: "spin 1s linear infinite"
           }}></div>
-          Loading...
+          Loading activation details...
         </div>
       </div>
     );
@@ -358,7 +342,8 @@ export default function Activate() {
           label: "Welcome Bonus", 
           total: user.welcome_bonus || 1200, 
           activationFee: 100, 
-          color: "#10b981"
+          color: "#10b981", 
+          glow: "rgba(16, 185, 129, 0.2)" 
         }
       : PLAN_CONFIG[planKey] || PLAN_CONFIG.REGULAR;
 
@@ -367,16 +352,21 @@ export default function Activate() {
   ========================== */
   return (
     <>
-      {/* SUCCESS POPUP */}
+      {/* FULL SCREEN SUCCESS POPUP */}
       {showSuccessPopup && (
         <div style={styles.overlay}>
           <div style={styles.overlayCard}>
-            <div style={{...styles.overlayIcon, color: "#10b981"}}>
+            <div style={{
+              fontSize: "48px",
+              marginBottom: "16px",
+              animation: "bounce 1s infinite"
+            }}>
               ✅
             </div>
             
             <h2 style={{ 
               color: "#10b981", 
+              textAlign: "center",
               fontSize: "20px",
               fontWeight: 800,
               marginBottom: "12px"
@@ -385,21 +375,41 @@ export default function Activate() {
             </h2>
 
             <p style={{ 
+              marginTop: "12px", 
+              lineHeight: "1.6", 
+              fontWeight: 500,
               fontSize: "14px",
-              lineHeight: "1.6",
-              color: "#64748b",
-              marginBottom: "24px"
+              color: "#475569"
             }}>
-              Your payment is being verified. Account will be activated shortly.
+              Your payment has been submitted for approval.
+              <br /><br />
+              Our team will verify your transaction and activate your account shortly.
+              <br /><br />
+              <strong>Next Steps:</strong>
+              <br />
+              1. Go back to dashboard
+              <br />
+              {planKey === "WELCOME" ? (
+                <>
+                  2. Complete VIP SURVEY PLAN(150)
+                  <br />
+                  3. Complete VVIP PLAN (200) to unlock withdrawals
+                </>
+              ) : (
+                <>
+                  2. Start completing surveys
+                  <br />
+                  3. Withdraw after completing {plan.label} plan!
+                </>
+              )}
             </p>
 
             <button
               onClick={() => navigate("/dashboard", { replace: true })}
               style={{
                 ...styles.button,
+                marginTop: "20px",
                 background: "#2563eb",
-                color: "white",
-                marginTop: "0",
               }}
             >
               Go to Dashboard
@@ -409,123 +419,187 @@ export default function Activate() {
       )}
 
       {/* MAIN PAGE */}
-      <div style={styles.page}>
-        {/* Activation Card */}
-        <div style={styles.card}>
-          <div style={styles.header}>
-            <div style={styles.planBadge}>
-              🔓 {plan.label} Activation
-            </div>
-            <div style={{...styles.amount, color: plan.color}}>
-              KES {plan.total}
-            </div>
-            <div style={{ fontSize: "12px", color: "#64748b" }}>
-              Withdrawable after activation
-            </div>
+      <div className="activate-page" style={styles.page}>
+        {/* Main Activation Card */}
+        <div style={{ 
+          ...styles.card, 
+          boxShadow: `0 0 20px ${plan.glow}` 
+        }}>
+          <h2 style={{ 
+            textAlign: "center", 
+            color: plan.color,
+            fontSize: "20px",
+            marginBottom: "6px"
+          }}>
+            🔓 Account Activation
+          </h2>
+
+          <h3 style={{ 
+            textAlign: "center", 
+            marginTop: "10px",
+            fontSize: "18px",
+            fontWeight: 700
+          }}>
+            💰 Withdrawable:{" "}
+            <span style={{ color: plan.color }}>KES {plan.total}</span>
+          </h3>
+
+          <div style={styles.sectionHighlight}>
+            <p style={{ 
+              fontWeight: 900, 
+              color: "#ef4444",
+              fontSize: "14px",
+              marginBottom: "10px"
+            }}>
+              ⚠ ACTIVATION REQUIRED
+            </p>
+            {["✔ One-time activation fee", "✔ Unlock withdrawals", "✔ Verified & secure account", "✔ Direct M-Pesa payments"].map((text, index) => (
+              <p key={index} style={{ 
+                margin: "4px 0",
+                fontSize: "13px",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px"
+              }}>
+                {text}
+              </p>
+            ))}
           </div>
 
-          {/* Steps */}
           <div style={styles.section}>
-            <div style={styles.sectionTitle}>
-              📲 HOW TO PAY
-            </div>
-            <ol style={styles.stepsList}>
-              <li style={styles.stepItem}>Open M-Pesa</li>
-              <li style={styles.stepItem}>Select Send Money</li>
-              <li style={styles.stepItem}>Number: <strong>{SEND_MONEY_NUMBER}</strong></li>
-              <li style={styles.stepItem}>Name: <strong>{RECEIVER_NAME}</strong></li>
-              <li style={styles.stepItem}>Amount: <strong style={{color: "#dc2626"}}>KES {plan.activationFee}</strong></li>
-              <li style={styles.stepItem}>Enter PIN & confirm</li>
+            <p style={{ fontWeight: 900, fontSize: "14px", marginBottom: "10px" }}>
+              📲 HOW TO PAY (SEND MONEY)
+            </p>
+
+            <p style={styles.caption}>
+              ⚠ <strong>IMPORTANT:</strong> This is the official CEO payment number.
+              Payments are <strong>Automatically verified</strong>.
+            </p>
+
+            <ol style={{ 
+              fontSize: "13px", 
+              lineHeight: "1.6",
+              paddingLeft: "18px",
+              marginTop: "10px"
+            }}>
+              {[
+                "Open M-Pesa",
+                "Select Send Money",
+                `Enter number: ${SEND_MONEY_NUMBER}`,
+                `Confirm name: ${RECEIVER_NAME}`,
+                <span key={4}>Amount: <span style={styles.activationFee}>KES {plan.activationFee}</span></span>,
+                "Enter PIN and confirm"
+              ].map((item, index) => (
+                <li key={index} style={{ marginBottom: "6px" }}>
+                  {item}
+                </li>
+              ))}
             </ol>
           </div>
 
-          {/* Payment Info */}
           <div style={styles.section}>
-            <div style={styles.sectionTitle}>
-              📋 PAYMENT DETAILS
+            <p style={{ margin: "6px 0", fontSize: "14px" }}>
+              <strong>Receiver:</strong> {RECEIVER_NAME}
+            </p>
+            <div style={{ 
+              margin: "10px 0",
+              display: "flex",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "8px"
+            }}>
+              <span style={{ fontSize: "14px", fontWeight: 600 }}>Number:</span>
+              <span style={{ fontSize: "14px" }}>{SEND_MONEY_NUMBER}</span>
+              <button 
+                onClick={copyNumber} 
+                style={styles.copyBtn}
+              >
+                📋 Copy
+              </button>
             </div>
-            <div style={styles.paymentInfo}>
-              <div>
-                <strong>Receiver:</strong> {RECEIVER_NAME}
-              </div>
-              <div>
-                <strong>Number:</strong> {SEND_MONEY_NUMBER}
-              </div>
-              <div style={styles.copyRow}>
-                <span>Tap to copy:</span>
-                <button 
-                  onClick={copyNumber} 
-                  style={styles.copyBtn}
-                >
-                  {copied ? "✅ Copied" : "📋 Copy"}
-                </button>
-              </div>
-            </div>
+            {copied && <p style={styles.copiedNote}>✅ Number copied</p>}
           </div>
 
-          {/* Confirmation Input */}
-          <div style={{ marginTop: "16px" }}>
-            <div style={{ fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>
-              Paste M-Pesa confirmation:
-            </div>
-            <textarea
-              placeholder="Paste the full SMS here..."
-              value={paymentText}
-              onChange={(e) => setPaymentText(e.target.value)}
-              style={styles.textarea}
-            />
+          <div style={styles.noteBox}>
+            📌 After payment, paste the <strong>FULL M-Pesa SMS</strong> below.
           </div>
 
-          {/* Submit Button */}
+          <textarea
+            placeholder="Paste M-Pesa confirmation message here..."
+            value={paymentText}
+            onChange={(e) => setPaymentText(e.target.value)}
+            rows={3}
+            style={styles.input}
+          />
+
           <button
             onClick={submitActivation}
             disabled={submitting}
             style={{
               ...styles.button,
-              background: plan.color,
-              color: "white",
+              background: submitting
+                ? "#94a3b8"
+                : `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)`,
               opacity: submitting ? 0.7 : 1,
+              cursor: submitting ? "not-allowed" : "pointer",
             }}
           >
-            {submitting ? "Submitting..." : "Submit Payment"}
+            {submitting ? (
+              <>
+                <span style={{
+                  display: "inline-block",
+                  width: "14px",
+                  height: "14px",
+                  border: "2px solid rgba(255,255,255,0.3)",
+                  borderTopColor: "white",
+                  borderRadius: "50%",
+                  marginRight: "6px",
+                  animation: "spin 1s linear infinite"
+                }}></span>
+                Submitting...
+              </>
+            ) : (
+              "Submit Payment"
+            )}
           </button>
 
-          {/* Back Button */}
+          {notification && (
+            <div style={styles.notificationBox}>
+              {notification}
+            </div>
+          )}
+
           <button
             onClick={() => navigate("/dashboard")}
             style={{
               ...styles.button,
-              ...styles.backButton,
+              background: "transparent",
+              border: "2px solid #2563eb",
+              color: "#2563eb",
             }}
           >
-            ← Back to Dashboard
+            ⬅ Back to Dashboard
           </button>
-
-          {/* Notification */}
-          {notification && (
-            <div style={{
-              ...styles.notification,
-              ...(notification.includes("❌") ? styles.error : styles.success)
-            }}>
-              {notification}
-            </div>
-          )}
         </div>
 
-        {/* Trust Badges - Compact Mobile Version */}
-        <div style={{ marginTop: "24px" }}>
-          <TrustBadges variant="mobile" />
+        {/* Trust Badges */}
+        <div style={{ marginTop: "30px", width: "100%" }}>
+          <TrustBadges variant="compact" />
         </div>
 
-        {/* Testimonials - Optional for mobile (can be removed if space is tight) */}
-        <div style={{ marginTop: "32px" }}>
-          <Testimonials variant="mobile" />
+        {/* Testimonials */}
+        <div style={{ marginTop: "30px", width: "100%" }}>
+          <Testimonials variant="carousel" />
         </div>
       </div>
 
       <style jsx>{`
         @keyframes spin {
           to { transform: rotate(360deg); }
+        }
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-8px); }
         }
       `}</style>
     </>
