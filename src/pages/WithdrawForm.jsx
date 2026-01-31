@@ -351,11 +351,11 @@ export default function WithdrawForm() {
         >
           ← Back
         </button>
-        <h1>Withdraw Earnings</h1>
+        <h1>💰💰💰</h1>
         {!isUserActivated && (
           <div className="activation-badge">
             <span className="badge-icon">⚠️</span>
-            Account Not Active
+            Activate Account
           </div>
         )}
         {/* Empty div for alignment */}
