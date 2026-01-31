@@ -1,150 +1,43 @@
-/* =========================
-   ACTIVATION NOTICE STYLES
-========================= */
+/* ========================= ActivationNotice.css ========================= */
 
-/* Reset and base styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
-  padding: 20px;
-}
-
-/* =========================
-   LOADING STATE
-========================= */
-.activation-notice-page.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 20px;
-}
-
-.loading-container {
-  text-align: center;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 40px 30px;
-  border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  max-width: 400px;
-  width: 100%;
-}
-
-.loading-spinner {
-  width: 60px;
-  height: 60px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #667eea;
-  border-radius: 50%;
-  margin: 0 auto 20px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.loading-container p {
-  color: #4a5568;
-  font-size: 16px;
-  font-weight: 500;
-}
-
-/* =========================
-   ERROR & NOTICE CARDS
-========================= */
-.activation-notice-page {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
-
-.notice-card {
-  background: white;
-  border-radius: 24px;
-  padding: 40px 30px;
-  text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-  max-width: 400px;
-  width: 100%;
-  animation: slideUp 0.5s ease-out;
-}
-
-.error-icon, .no-plan-icon {
-  font-size: 48px;
-  margin-bottom: 20px;
-  display: block;
-}
-
-.notice-card h2 {
-  color: #2d3748;
-  font-size: 24px;
-  margin-bottom: 15px;
-  font-weight: 700;
-}
-
-.error-message, .notice-card p {
-  color: #718096;
-  font-size: 16px;
-  line-height: 1.5;
-  margin-bottom: 30px;
-}
-
-/* =========================
-   SIMPLE NOTICE CARD
-========================= */
 .activation-notice-page.simple {
   min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   display: flex;
+  align-items: center;
   justify-content: center;
-  align-items: flex-start;
   padding: 20px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
 }
 
 .simple-notice-card {
   background: white;
-  border-radius: 28px;
-  padding: 30px 25px;
+  border-radius: 24px;
+  padding: 40px 32px;
+  max-width: 480px;
   width: 100%;
-  max-width: 450px;
-  box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  text-align: center;
   position: relative;
   overflow: hidden;
-  animation: slideUp 0.6s ease-out;
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.simple-notice-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
 }
 
 /* Success Icon */
 .simple-success-icon {
   position: relative;
-  width: 100px;
-  height: 100px;
-  margin: 0 auto 25px;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
 }
 
 .success-check {
@@ -154,7 +47,7 @@ body {
   transform: translate(-50%, -50%);
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: #10b981;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -163,145 +56,129 @@ body {
   font-size: 32px;
   font-weight: bold;
   z-index: 2;
+  box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
 }
 
 .success-glow {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  background: rgba(16, 185, 129, 0.2);
   border-radius: 50%;
-  animation: pulse 2s infinite;
-  opacity: 0.3;
+  animation: pulse 2s infinite ease-in-out;
 }
 
 @keyframes pulse {
-  0% {
-    transform: scale(1);
-    opacity: 0.3;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 0.2;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0.3;
-  }
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+  50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.3; }
 }
 
 /* Title */
 .simple-title {
-  text-align: center;
-  color: #2d3748;
   font-size: 28px;
   font-weight: 800;
-  margin-bottom: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #1f2937;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  line-height: 1.2;
+}
+
+.title-emoji {
+  font-size: 32px;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
 /* Greeting */
 .simple-greeting {
-  text-align: center;
-  color: #4a5568;
   font-size: 18px;
-  margin-bottom: 30px;
-  font-weight: 500;
-}
-
-.simple-greeting strong {
-  color: #667eea;
+  color: #4b5563;
+  margin-bottom: 32px;
+  font-weight: 600;
 }
 
 /* Message */
 .simple-message {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-  border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 25px;
-  border-left: 4px solid #667eea;
+  margin-bottom: 32px;
 }
 
 .simple-message h2 {
-  color: #2d3748;
-  font-size: 20px;
-  margin-bottom: 10px;
+  font-size: 22px;
+  color: #059669;
+  margin-bottom: 12px;
   font-weight: 700;
 }
 
 .simple-message p {
-  color: #4a5568;
-  font-size: 15px;
-  line-height: 1.5;
+  font-size: 16px;
+  color: #6b7280;
+  line-height: 1.6;
+  max-width: 400px;
+  margin: 0 auto;
 }
 
 /* Earnings */
 .simple-earnings {
-  text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 32px;
 }
 
 .earnings-badge {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 15px 25px;
+  padding: 12px 24px;
   border-radius: 50px;
-  margin-bottom: 15px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  animation: bounce 1s infinite alternate;
-}
-
-@keyframes bounce {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(-5px);
-  }
+  color: white;
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .earnings-icon {
-  font-size: 22px;
-}
-
-.earnings-text {
-  color: white;
   font-size: 24px;
-  font-weight: 800;
 }
 
 .earnings-note {
-  color: #4a5568;
-  font-size: 15px;
-  font-weight: 500;
+  font-size: 14px;
+  color: #9ca3af;
+  font-weight: 600;
 }
 
-/* Action Section */
+/* Action */
 .simple-action {
-  text-align: center;
-  margin-bottom: 30px;
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 32px;
+  border: 2px solid #bae6fd;
 }
 
 .simple-action h3 {
-  color: #2d3748;
-  font-size: 18px;
-  margin-bottom: 10px;
+  font-size: 20px;
+  color: #0369a1;
+  margin-bottom: 12px;
   font-weight: 700;
 }
 
 .action-description {
-  color: #718096;
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 15px;
+  color: #475569;
+  line-height: 1.6;
+  margin: 0;
 }
 
-/* Activate Button */
+/* Button */
 .simple-activate-button {
   width: 100%;
   padding: 20px;
@@ -309,26 +186,26 @@ body {
   border-radius: 16px;
   color: white;
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 800;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  margin-bottom: 30px;
-  cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  margin-bottom: 24px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   position: relative;
   overflow: hidden;
 }
 
 .simple-activate-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  transform: translateY(-3px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
 }
 
 .simple-activate-button:active {
-  transform: translateY(0);
+  transform: translateY(-1px);
 }
 
 .button-icon {
@@ -337,272 +214,146 @@ body {
 
 .button-arrow {
   font-size: 22px;
-  transition: transform 0.3s ease;
+  animation: slide 1.5s infinite ease-in-out;
 }
 
-.simple-activate-button:hover .button-arrow {
-  transform: translateX(5px);
+@keyframes slide {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(5px); }
 }
 
-/* Info Section */
+/* Info */
 .simple-info {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  margin-bottom: 30px;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
 .info-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 15px;
-  background: #f8fafc;
-  border-radius: 12px;
-  transition: all 0.3s ease;
-}
-
-.info-item:hover {
-  background: #edf2f7;
-  transform: translateX(5px);
+  justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #4b5563;
+  font-weight: 600;
 }
 
 .info-icon {
-  font-size: 18px;
-  color: #667eea;
-  width: 30px;
-  text-align: center;
-}
-
-.info-text {
-  color: #4a5568;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 16px;
 }
 
 /* Back Button */
 .simple-back-button {
   width: 100%;
   padding: 16px;
-  border: 2px solid #e2e8f0;
-  border-radius: 16px;
-  background: transparent;
-  color: #718096;
+  border: 2px solid #d1d5db;
+  border-radius: 12px;
+  background: white;
+  color: #6b7280;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .simple-back-button:hover {
-  background: #f8fafc;
-  border-color: #cbd5e0;
+  background: #f9fafb;
+  border-color: #9ca3af;
+  color: #4b5563;
 }
 
-/* =========================
-   BUTTONS (COMMON)
-========================= */
-.primary-button {
-  width: 100%;
-  padding: 18px;
-  border: none;
-  border-radius: 16px;
+/* Loading and Error States */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  font-size: 17px;
-  font-weight: 700;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.notice-card.error {
+  max-width: 480px;
+  margin: 40px auto;
+  padding: 40px;
+  text-align: center;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.error-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.error-message {
+  color: #dc2626;
+  margin: 20px 0;
+  font-size: 16px;
+}
+
+.primary-button {
+  padding: 14px 28px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  transition: all 0.2s ease;
 }
 
 .primary-button:hover {
+  background: #1d4ed8;
   transform: translateY(-2px);
-  box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
 }
 
-/* =========================
-   RESPONSIVE DESIGN
-========================= */
-
-/* Tablets and larger phones */
-@media (max-width: 768px) {
+/* Responsive */
+@media (max-width: 480px) {
   .simple-notice-card {
-    padding: 25px 20px;
-    border-radius: 24px;
+    padding: 32px 24px;
+    border-radius: 20px;
   }
   
   .simple-title {
     font-size: 24px;
+    flex-direction: column;
+    gap: 8px;
   }
   
-  .earnings-badge {
-    padding: 12px 20px;
-  }
-  
-  .earnings-text {
-    font-size: 22px;
-  }
-}
-
-/* Small phones */
-@media (max-width: 480px) {
-  body {
-    padding: 15px;
-  }
-  
-  .activation-notice-page.simple {
-    padding: 15px;
-    align-items: center;
-  }
-  
-  .simple-notice-card {
-    padding: 20px 18px;
-    border-radius: 20px;
-    max-width: 100%;
-  }
-  
-  .simple-success-icon {
-    width: 80px;
-    height: 80px;
-    margin-bottom: 20px;
-  }
-  
-  .success-check {
-    width: 50px;
-    height: 50px;
-    font-size: 26px;
-  }
-  
-  .simple-title {
-    font-size: 22px;
-    margin-bottom: 15px;
-  }
-  
-  .simple-greeting {
-    font-size: 16px;
-    margin-bottom: 25px;
-  }
-  
-  .simple-message {
-    padding: 15px;
-    margin-bottom: 20px;
+  .title-emoji {
+    font-size: 28px;
   }
   
   .simple-message h2 {
-    font-size: 18px;
-  }
-  
-  .simple-message p {
-    font-size: 14px;
+    font-size: 20px;
   }
   
   .simple-activate-button {
     padding: 18px;
     font-size: 16px;
-    margin-bottom: 25px;
   }
   
-  .simple-action h3 {
-    font-size: 16px;
-  }
-  
-  .action-description {
-    font-size: 13px;
-  }
-  
-  .info-item {
-    padding: 10px 12px;
-  }
-  
-  .info-text {
-    font-size: 13px;
-  }
-  
-  .simple-back-button {
-    padding: 14px;
-    font-size: 15px;
-  }
-  
-  .primary-button {
-    padding: 16px;
-    font-size: 16px;
-  }
-}
-
-/* Very small phones (iPhone SE, etc.) */
-@media (max-width: 320px) {
-  .simple-title {
-    font-size: 20px;
-  }
-  
-  .simple-greeting {
-    font-size: 15px;
-  }
-  
-  .simple-activate-button {
-    padding: 16px;
-    font-size: 15px;
-  }
-  
-  .button-icon, .button-arrow {
-    font-size: 18px;
-  }
-}
-
-/* Landscape mode */
-@media (max-height: 600px) and (orientation: landscape) {
-  .activation-notice-page.simple {
-    padding: 10px;
-  }
-  
-  .simple-notice-card {
+  .simple-action {
     padding: 20px;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .activation-notice-page.simple {
-    background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
-  }
-  
-  .simple-notice-card {
-    background: #2d3748;
-    box-shadow: 
-      0 25px 50px -12px rgba(0, 0, 0, 0.5),
-      0 0 0 1px rgba(255, 255, 255, 0.1);
-  }
-  
-  .simple-title {
-    color: white;
-  }
-  
-  .simple-greeting, .simple-message p, .earnings-note,
-  .action-description, .info-text, .simple-back-button {
-    color: #cbd5e0;
-  }
-  
-  .simple-message h2 {
-    color: white;
-  }
-  
-  .simple-back-button {
-    border-color: #4a5568;
-    color: #a0aec0;
-  }
-  
-  .simple-back-button:hover {
-    background: #4a5568;
-  }
-  
-  .info-item {
-    background: #4a5568;
-  }
-  
-  .info-item:hover {
-    background: #5a6578;
   }
 }
