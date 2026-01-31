@@ -39,6 +39,207 @@ const PLAN_CONFIG = {
   },
 };
 
+/* =========================
+   INLINE STYLES
+========================= */
+const styles = {
+  overlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: "rgba(15, 23, 42, 0.9)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 99999,
+    padding: "var(--space-xl)",
+    backdropFilter: "blur(8px)",
+  },
+  overlayCard: {
+    maxWidth: "480px",
+    width: "100%",
+    background: "var(--bg-surface)",
+    padding: "40px 32px",
+    borderRadius: "var(--radius-xl)",
+    color: "var(--text-main)",
+    textAlign: "center",
+    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+    border: "1px solid var(--border-soft)",
+  },
+  vipBtn: {
+    marginTop: "var(--space-xl)",
+    width: "100%",
+    padding: "16px",
+    borderRadius: "var(--radius-lg)",
+    border: "none",
+    background: "var(--primary)",
+    color: "#ffffff",
+    fontWeight: 700,
+    fontSize: "16px",
+    cursor: "pointer",
+    transition: "all var(--transition-fast)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+    boxShadow: "0 10px 15px -3px rgba(37, 99, 235, 0.3)",
+  },
+  page: {
+    minHeight: "100vh",
+    background: "var(--bg-main)",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    padding: "var(--space-xl)",
+    paddingTop: "60px",
+    paddingBottom: "60px",
+    fontFamily: "'Inter', sans-serif",
+  },
+  card: {
+    maxWidth: "520px",
+    width: "100%",
+    background: "var(--bg-surface)",
+    padding: "32px",
+    borderRadius: "var(--radius-xl)",
+    color: "var(--text-main)",
+    border: "1px solid var(--border-soft)",
+    boxShadow: "var(--card-shadow)",
+  },
+  section: {
+    marginTop: "var(--space-xl)",
+    padding: "20px",
+    borderRadius: "var(--radius-lg)",
+    background: "var(--bg-main)",
+    border: "1px solid var(--border-soft)",
+  },
+  sectionHighlight: {
+    marginTop: "var(--space-xl)",
+    padding: "20px",
+    borderRadius: "var(--radius-lg)",
+    background: "rgba(37, 99, 235, 0.05)",
+    border: "1px solid rgba(37, 99, 235, 0.1)",
+  },
+  caption: {
+    fontSize: "14px",
+    color: "var(--primary)",
+    fontWeight: 700,
+    marginBottom: "12px",
+    lineHeight: "1.5",
+  },
+  noteBox: {
+    marginTop: "var(--space-xl)",
+    padding: "16px",
+    borderRadius: "var(--radius-md)",
+    background: "var(--bg-surface)",
+    fontSize: "14px",
+    fontWeight: 600,
+    border: "1px solid var(--border-medium)",
+    color: "var(--text-muted)",
+    lineHeight: "1.5",
+  },
+  notificationBox: {
+    marginTop: "var(--space-xl)",
+    padding: "16px",
+    borderRadius: "var(--radius-md)",
+    background: "rgba(16, 185, 129, 0.1)",
+    color: "var(--regular-color)",
+    fontWeight: 700,
+    border: "1px solid var(--regular-color)",
+    fontSize: "14px",
+  },
+  activationFee: {
+    color: "#dc2626",
+    fontWeight: 800,
+    fontSize: "16px",
+  },
+  copiedNote: {
+    color: "var(--regular-color)",
+    fontWeight: 700,
+    fontSize: "13px",
+    marginTop: "var(--space-sm)",
+  },
+  input: {
+    width: "100%",
+    padding: "16px",
+    marginTop: "var(--space-xl)",
+    borderRadius: "var(--radius-md)",
+    border: "2px solid var(--border-medium)",
+    background: "var(--bg-surface)",
+    color: "var(--text-main)",
+    fontSize: "15px",
+    fontFamily: "inherit",
+    resize: "vertical",
+    minHeight: "140px",
+    transition: "all var(--transition-fast)",
+    boxSizing: "border-box",
+  },
+  button: {
+    width: "100%",
+    marginTop: "var(--space-xl)",
+    padding: "16px",
+    borderRadius: "var(--radius-lg)",
+    fontWeight: 700,
+    fontSize: "16px",
+    cursor: "pointer",
+    border: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "10px",
+    transition: "all var(--transition-fast)",
+    minHeight: "54px",
+    background: "var(--primary)",
+    color: "#ffffff",
+    boxShadow: "0 10px 15px -3px rgba(37, 99, 235, 0.3)",
+  },
+  copyBtn: {
+    marginLeft: "12px",
+    padding: "10px 18px",
+    borderRadius: "var(--radius-sm)",
+    border: "none",
+    background: "var(--primary)",
+    color: "white",
+    fontWeight: 700,
+    fontSize: "13px",
+    cursor: "pointer",
+    transition: "all var(--transition-fast)",
+    boxShadow: "0 4px 6px -1px rgba(37, 99, 235, 0.2)",
+  },
+  roiCard: {
+    maxWidth: "520px",
+    width: "100%",
+    background: "var(--bg-surface)",
+    padding: "24px",
+    borderRadius: "var(--radius-xl)",
+    color: "var(--text-main)",
+    marginBottom: "var(--space-xl)",
+    boxShadow: "var(--card-shadow)",
+    border: "1px solid var(--border-soft)",
+  },
+  roiRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "12px 0",
+    fontSize: "14px",
+    fontWeight: "500",
+    borderBottom: "1px solid var(--border-soft)",
+    color: "var(--text-muted)",
+  },
+  loadingContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "100vh",
+    fontSize: "16px",
+    fontWeight: 600,
+    color: "var(--text-muted)",
+    background: "var(--bg-main)",
+  },
+};
+
 export default function Activate() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -160,9 +361,17 @@ export default function Activate() {
   ========================== */
   if (loading) {
     return (
-      <div className="activate-loading">
-        <div className="activate-loading-content">
-          <div className="activate-loading-spinner"></div>
+      <div style={styles.loadingContainer}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{
+            width: "40px",
+            height: "40px",
+            border: "3px solid rgba(255, 255, 255, 0.1)",
+            borderTopColor: "#00ff99",
+            borderRadius: "50%",
+            margin: "0 auto 16px",
+            animation: "spin 1s linear infinite"
+          }}></div>
           Loading activation details...
         </div>
       </div>
@@ -189,39 +398,72 @@ export default function Activate() {
     <>
       {/* FULL SCREEN SUCCESS POPUP */}
       {showSuccessPopup && (
-        <div className="activate-overlay">
-          <div className="activate-popup">
-            <div className="popup-icon">✅</div>
+        <div style={styles.overlay}>
+          <div style={styles.overlayCard}>
+            <div style={{
+              fontSize: "64px",
+              marginBottom: "24px",
+              animation: "bounce 1s infinite"
+            }}>
+              ✅
+            </div>
             
-            <h2 className="popup-title">
+            <h2 style={{ 
+              color: "#10b981", 
+              textAlign: "center",
+              fontSize: "26px",
+              fontWeight: 800,
+              marginBottom: "16px"
+            }}>
               PAYMENT SUBMITTED
             </h2>
 
-            <div className="popup-content">
+            <p style={{ 
+              marginTop: "18px", 
+              lineHeight: "1.7", 
+              fontWeight: 600,
+              fontSize: "15px",
+              color: "#475569"
+            }}>
               Your payment has been submitted for approval.
               <br /><br />
               Our team will verify your transaction and activate your account shortly.
               <br /><br />
               <strong>Next Steps:</strong>
-              <ul className="popup-steps">
-                <li>1. Go back to your dashboard</li>
-                {planKey === "WELCOME" ? (
-                  <>
-                    <li>2. Complete VIP SURVEY PLAN(150) and</li>
-                    <li>3. Complete VVIP SURVEY PLAN (200) to unlock full withdrawals!</li>
-                  </>
-                ) : (
-                  <>
-                    <li>2. Start completing surveys</li>
-                    <li>3. Withdraw after completing {plan.label} plan!</li>
-                  </>
-                )}
-              </ul>
-            </div>
+              <br />
+              1. Go back to your dashboard
+              <br />
+              {planKey === "WELCOME" ? (
+                <>
+                  2. Complete VIP SURVEY PLAN(150) and  
+                  <br />
+                  3. Complete VVIP SURVEY PLAN (200) to unlock full withdrawals!
+                </>
+              ) : (
+                <>
+                  2. Start completing surveys
+                  <br />
+                  3. Withdraw after completing {plan.label} plan!
+                </>
+              )}
+            </p>
 
             <button
               onClick={() => navigate("/dashboard", { replace: true })}
-              className="activate-button primary"
+              style={{
+                ...styles.vipBtn,
+                marginTop: "32px",
+                background: "#2563eb",
+                boxShadow: "0 10px 20px -5px rgba(37, 99, 235, 0.4)"
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = "translateY(-2px)";
+                e.target.style.background = "#1d4ed8";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = "translateY(0)";
+                e.target.style.background = "#2563eb";
+              }}
             >
               Go to Dashboard
             </button>
@@ -230,100 +472,297 @@ export default function Activate() {
       )}
 
       {/* MAIN PAGE */}
-      <div className="activate-page">
-        {/* Main Activation Card */}
-        <div className="activate-card" style={{ boxShadow: `0 0 40px ${plan.glow}` }}>
-          <div className="activate-header">
-            <h2 className="activate-title" style={{ color: plan.color }}>
-              <span>🔓</span> Account Activation
-            </h2>
-
-            <h3 className="activate-amount">
-              <span>💰</span> Withdrawable Amount:{" "}
-              <span style={{ color: plan.color }}>KES {plan.total}</span>
-            </h3>
+      <div className="activate-page" style={styles.page}>
+        {/* ROI Calculator */}
+        <div style={styles.roiCard}>
+          <h3 style={{ 
+            margin: "0 0 16px", 
+            fontSize: "16px", 
+            fontWeight: 700,
+            color: "#1e293b",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px"
+          }}>
+            <span style={{ fontSize: "20px" }}>📊</span>
+            Investment Summary
+          </h3>
+          
+          <div style={styles.roiRow}>
+            <div style={{ 
+              display: "flex", 
+              justifyContent: "space-between", 
+              alignItems: "center",
+              marginBottom: "12px"
+            }}>
+              <span style={{ fontSize: "14px", color: "#64748b" }}>Activation Fee</span>
+              <span style={{ 
+                fontSize: "20px", 
+                fontWeight: 800, 
+                color: "#dc2626"
+              }}>
+                KES {plan.activationFee}
+              </span>
+            </div>
+            <div style={{ 
+              display: "flex", 
+              justifyContent: "space-between", 
+              alignItems: "center",
+              marginBottom: "16px"
+            }}>
+              <span style={{ fontSize: "14px", color: "#64748b" }}>Withdrawable Amount</span>
+              <span style={{ 
+                fontSize: "20px", 
+                fontWeight: 800, 
+                color: "#059669"
+              }}>
+                KES {plan.total.toLocaleString()}
+              </span>
+            </div>
           </div>
+          
+          <div style={{ 
+            ...styles.roiRow, 
+            borderBottom: "none",
+            padding: "16px 12px",
+            marginTop: "16px",
+            marginBottom: "16px",
+            borderTop: "2px solid #10b981",
+            background: "linear-gradient(135deg, #f0f9ff, #e0f2fe)",
+            borderRadius: "12px",
+            border: "1px solid #bae6fd"
+          }}>
+            <div style={{ 
+              display: "flex", 
+              justifyContent: "space-between", 
+              alignItems: "center",
+              marginBottom: "8px"
+            }}>
+              <span style={{ 
+                fontWeight: 700, 
+                fontSize: "16px",
+                color: "#1e293b",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px"
+              }}>
+                <span style={{ fontSize: "18px" }}>📈</span>
+                Return on Investment
+              </span>
+              <span style={{ 
+                fontWeight: 900, 
+                fontSize: "24px",
+                color: "#059669"
+              }}>
+                {Math.round((plan.total / plan.activationFee) * 10) / 10}x
+              </span>
+            </div>
+            <div style={{ 
+              textAlign: "right",
+              fontSize: "14px",
+              color: "#64748b",
+              fontWeight: 600
+            }}>
+              ({Math.round((plan.total / plan.activationFee) * 100)}% return)
+            </div>
+          </div>
+          
+          <div style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "10px",
+            marginTop: "16px",
+            padding: "0 8px"
+          }}>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              fontSize: "14px",
+              color: "#475569",
+              fontWeight: 500
+            }}>
+              <span style={{ color: "#10b981", fontWeight: 600 }}>✓</span>
+              <span>Instant account activation</span>
+            </div>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              fontSize: "14px",
+              color: "#475569",
+              fontWeight: 500
+            }}>
+              <span style={{ color: "#10b981", fontWeight: 600 }}>✓</span>
+              <span>Access to all surveys</span>
+            </div>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              fontSize: "14px",
+              color: "#475569",
+              fontWeight: 500
+            }}>
+              <span style={{ color: "#10b981", fontWeight: 600 }}>✓</span>
+              <span>Withdrawal processing</span>
+            </div>
+          </div>
+        </div>
 
-          <div className="activate-section highlight">
-            <p className="activate-section-title">
-              <span>⚠</span> ACTIVATION REQUIRED
+        {/* Main Activation Card */}
+        <div style={{ 
+          ...styles.card, 
+          boxShadow: `0 0 40px ${plan.glow}` 
+        }}>
+          <h2 style={{ 
+            textAlign: "center", 
+            color: plan.color,
+            fontSize: "24px",
+            marginBottom: "8px"
+          }}>
+            🔓 Account Activation
+          </h2>
+
+          <h3 style={{ 
+            textAlign: "center", 
+            marginTop: "14px",
+            fontSize: "20px",
+            fontWeight: 700
+          }}>
+            💰 Withdrawable Amount:{" "}
+            <span style={{ color: plan.color }}>KES {plan.total}</span>
+          </h3>
+
+          <div style={styles.sectionHighlight}>
+            <p style={{ 
+              fontWeight: 900, 
+              color: "#ef4444",
+              fontSize: "16px",
+              marginBottom: "12px"
+            }}>
+              ⚠ ACTIVATION REQUIRED
             </p>
             {["✔ One-time activation fee", "✔ Unlock withdrawals", "✔ Verified & secure account", "✔ Direct M-Pesa payments"].map((text, index) => (
-              <p key={index} className="activate-feature">
+              <p key={index} style={{ 
+                margin: "6px 0",
+                fontSize: "14px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px"
+              }}>
                 {text}
               </p>
             ))}
           </div>
 
-          <div className="activate-section">
-            <p className="activate-section-title">
-              <span>📲</span> HOW TO PAY (SEND MONEY)
+          <div style={styles.section}>
+            <p style={{ fontWeight: 900, fontSize: "16px", marginBottom: "12px" }}>
+              📲 HOW TO PAY (SEND MONEY)
             </p>
 
-            <div className="activate-caption">
+            <p style={styles.caption}>
               ⚠ <strong>IMPORTANT:</strong> This is the <strong>official CEO payment number</strong>.
               Payments sent here are <strong>Automatically verified</strong> and activate your account instantly.
-            </div>
+            </p>
 
-            <ol className="activate-instructions">
-              <li>Open M-Pesa</li>
-              <li>Select Send Money</li>
-              <li>Enter phone number: {SEND_MONEY_NUMBER}</li>
-              <li>Confirm name: {RECEIVER_NAME}</li>
-              <li>Enter amount: <span className="activation-fee">KES {plan.activationFee}</span></li>
-              <li>Enter M-Pesa PIN and confirm</li>
+            <ol style={{ 
+              fontSize: "14px", 
+              lineHeight: "1.7",
+              paddingLeft: "20px",
+              marginTop: "12px"
+            }}>
+              {[
+                "Open M-Pesa",
+                "Select Send Money",
+                `Enter phone number: ${SEND_MONEY_NUMBER}`,
+                `Confirm name: ${RECEIVER_NAME}`,
+                <span key={4}>Enter amount: <span style={styles.activationFee}>KES {plan.activationFee}</span></span>,
+                "Enter M-Pesa PIN and confirm"
+              ].map((item, index) => (
+                <li key={index} style={{ marginBottom: "8px" }}>
+                  {item}
+                </li>
+              ))}
             </ol>
           </div>
 
-          <div className="payment-details">
-            <div className="payment-item">
-              <span className="payment-label">Receiver Name:</span>
-              <span className="payment-value">{RECEIVER_NAME}</span>
-            </div>
-            <div className="payment-item">
-              <span className="payment-label">Send Money Number:</span>
-              <span className="payment-value">
-                {SEND_MONEY_NUMBER}
-                <button 
-                  onClick={copyNumber} 
-                  className="copy-button"
-                >
-                  📋 Copy
-                </button>
-              </span>
-            </div>
-            {copied && (
-              <div className="copy-success">
-                ✅ Number copied successfully
-              </div>
-            )}
+          <div style={styles.section}>
+            <p style={{ margin: "8px 0" }}>
+              <strong>Receiver Name:</strong> {RECEIVER_NAME}
+            </p>
+            <p style={{ 
+              margin: "8px 0",
+              display: "flex",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "8px"
+            }}>
+              <strong>Send Money Number:</strong> {SEND_MONEY_NUMBER}
+              <button 
+                onClick={copyNumber} 
+                style={styles.copyBtn}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = "scale(1.05)";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = "scale(1)";
+                }}
+              >
+                📋 Copy
+              </button>
+            </p>
+            {copied && <p style={styles.copiedNote}>✅ Number copied successfully</p>}
           </div>
 
-          <div className="note-box important">
+          <div style={styles.noteBox}>
             📌 After payment, paste the <strong>FULL M-Pesa confirmation SMS</strong> below.
           </div>
 
           <textarea
-            className="activate-textarea"
             placeholder="Paste M-Pesa confirmation message here..."
             value={paymentText}
             onChange={(e) => setPaymentText(e.target.value)}
             rows={4}
+            style={styles.input}
           />
 
           <button
             onClick={submitActivation}
             disabled={submitting}
-            className="activate-button primary"
             style={{
+              ...styles.button,
               background: submitting
                 ? "#94a3b8"
                 : `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)`,
+              opacity: submitting ? 0.7 : 1,
+              cursor: submitting ? "not-allowed" : "pointer",
+            }}
+            onMouseEnter={(e) => {
+              if (!submitting) {
+                e.target.style.transform = "translateY(-2px)";
+                e.target.style.boxShadow = `0 10px 30px ${plan.glow}`;
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!submitting) {
+                e.target.style.transform = "translateY(0)";
+                e.target.style.boxShadow = "none";
+              }
             }}
           >
             {submitting ? (
               <>
-                <span className="loading-spinner"></span>
+                <span style={{
+                  display: "inline-block",
+                  width: "16px",
+                  height: "16px",
+                  border: "2px solid rgba(255,255,255,0.3)",
+                  borderTopColor: "white",
+                  borderRadius: "50%",
+                  marginRight: "8px",
+                  animation: "spin 1s linear infinite"
+                }}></span>
                 Submitting...
               </>
             ) : (
@@ -332,29 +771,52 @@ export default function Activate() {
           </button>
 
           {notification && (
-            <div className="activate-notification">
+            <div style={styles.notificationBox}>
               {notification}
             </div>
           )}
 
           <button
             onClick={() => navigate("/dashboard")}
-            className="activate-button secondary"
+            style={{
+              ...styles.button,
+              background: "transparent",
+              border: "2px solid #2563eb",
+              color: "#2563eb",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = "rgba(37, 99, 235, 0.05)";
+              e.target.style.transform = "translateY(-2px)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = "transparent";
+              e.target.style.transform = "translateY(0)";
+            }}
           >
             ⬅ Back to Dashboard
           </button>
         </div>
 
         {/* Trust Badges */}
-        <div className="activate-trust-section">
+        <div className="activate-trust-section" style={{ marginTop: "40px" }}>
           <TrustBadges variant="compact" />
         </div>
 
         {/* Testimonials */}
-        <div className="activate-testimonials-section">
+        <div className="activate-testimonials-section" style={{ marginTop: "40px", width: "100%", maxWidth: "800px" }}>
           <Testimonials variant="carousel" />
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+      `}</style>
     </>
   );
 }
