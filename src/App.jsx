@@ -10,14 +10,11 @@ import Surveys from "./pages/Surveys";
 import Activate from "./pages/Activate";
 import ActivationNotice from "./pages/ActivationNotice";
 import Withdraw from "./pages/Withdraw";
-import WithdrawForm from "./pages/WithdrawForm";
-import WithdrawSuccess from "./pages/WithdrawSuccess";
+import WithdrawForm from "./pages/WithdrawForm"; // Add this import
+import WithdrawSuccess from "./pages/WithdrawSuccess"; // Add this import
 import FAQ from "./pages/FAQ";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import NotFound from "./pages/NotFound";
-
-/* ================= NEW PAGES ================= */
-import ActivateAccountPage from "./pages/ActivateAccountPage"; // ADD THIS IMPORT
 
 /* ================= ADMIN ================= */
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -139,17 +136,17 @@ export default function App() {
           }
         />
 
-        {/* OLD WITHDRAW PAGE - Redirect to new withdraw-form */}
+        {/* OLD WITHDRAW PAGE - You might want to keep or remove this */}
         <Route
           path="/withdraw"
           element={
             <ProtectedRoute>
-              <Navigate to="/withdraw-form" replace />
+              <Withdraw />
             </ProtectedRoute>
           }
         />
 
-        {/* NEW WITHDRAW PAGES */}
+        {/* NEW WITHDRAW PAGES - Add these routes */}
         <Route
           path="/withdraw-form"
           element={
@@ -164,16 +161,6 @@ export default function App() {
           element={
             <ProtectedRoute>
               <WithdrawSuccess />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* NEW ACCOUNT ACTIVATION PAGE */}
-        <Route
-          path="/activate-account"
-          element={
-            <ProtectedRoute>
-              <ActivateAccountPage />
             </ProtectedRoute>
           }
         />

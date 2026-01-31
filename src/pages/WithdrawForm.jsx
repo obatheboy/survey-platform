@@ -11,7 +11,8 @@ const PLANS = {
     total: 1500, 
     color: "#10b981",
     gradient: "linear-gradient(135deg, #10b981, #059669)",
-    activationFee: 0
+    // Added activation fee - adjust these values based on your actual activation fees
+    activationFee: 100
   },
   VIP: { 
     name: "VIP", 
@@ -19,7 +20,7 @@ const PLANS = {
     total: 2000, 
     color: "#6366f1",
     gradient: "linear-gradient(135deg, #6366f1, #4f46e5)",
-    activationFee: 500
+    activationFee: 150
   },
   VVIP: { 
     name: "VVIP", 
@@ -27,7 +28,7 @@ const PLANS = {
     total: 3000, 
     color: "#f59e0b",
     gradient: "linear-gradient(135deg, #f59e0b, #d97706)",
-    activationFee: 1000
+    activationFee: 200
   },
 };
 
@@ -46,181 +47,116 @@ export default function WithdrawForm() {
   const [autoRedirecting, setAutoRedirecting] = useState(false);
   const [showActivationModal, setShowActivationModal] = useState(false);
   const [selectedPlanForActivation, setSelectedPlanForActivation] = useState(null);
-  const [userPlanActivationStatus, setUserPlanActivationStatus] = useState({});
+  const [isUserActivated, setIsUserActivated] = useState(false);
+  const [userPlans, setUserPlans] = useState({});
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+  // Load user and check activation status
   useEffect(() => {
-    const loadUserAndActivation = async () => {
+    const loadUser = async () => {
       try {
-        // 1. First, load user data to ensure they're authenticated
-        const userRes = await api.get(`/auth/me?_t=${Date.now()}`);
-        const userData = userRes.data;
+        const res = await api.get(`/auth/me?_t=${Date.now()}`);
+        const userData = res.data;
+        
+        // Check user activation status
+        const activated = userData?.is_activated || userData?.account_activated || false;
+        setIsUserActivated(activated);
+        
+        // Store user plans to check individual plan activation
+        setUserPlans(userData.plans || {});
+        
+        // Update cache
         localStorage.setItem("cachedUser", JSON.stringify(userData));
-        
-        // 2. Try to get user's current plan/activation status
-        // Try multiple possible endpoints since we don't know your exact backend structure
-        let activationStatus = {
-          REGULAR: true, // Assume regular is always activated
-          VIP: false,
-          VVIP: false
-        };
-
-        try {
-          // Option 1: Check if user has a plan in their profile
-          if (userData.plan) {
-            activationStatus[userData.plan] = true;
-          }
-          
-          // Option 2: Try to get activation status from user endpoint
-          const planStatusRes = await api.get(`/user/plan-status`);
-          if (planStatusRes.data) {
-            Object.keys(PLANS).forEach(planKey => {
-              if (planStatusRes.data[planKey]) {
-                activationStatus[planKey] = planStatusRes.data[planKey];
-              }
-            });
-          }
-        } catch (planErr) {
-          console.warn("Could not fetch plan activation status:", planErr.message);
-          
-          // Option 3: Check localStorage for previously activated plans
-          const savedActivation = localStorage.getItem('activatedPlans');
-          if (savedActivation) {
-            try {
-              const parsed = JSON.parse(savedActivation);
-              Object.keys(PLANS).forEach(planKey => {
-                if (parsed[planKey]) {
-                  activationStatus[planKey] = parsed[planKey];
-                }
-              });
-            } catch (e) {
-              console.warn("Error parsing saved activation:", e);
-            }
-          }
-        }
-        
-        setUserPlanActivationStatus(activationStatus);
-        
       } catch (err) {
         console.error("Failed to load user:", err);
-        
-        // Only redirect to login if it's an auth error
-        if (err.response?.status === 401 || err.response?.status === 403) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("cachedUser");
-          navigate("/auth?mode=login");
-        } else {
-          // For other errors (like 404), just continue with defaults
-          setUserPlanActivationStatus({
-            REGULAR: true,
-            VIP: false,
-            VVIP: false
-          });
-        }
+        navigate("/login");
       } finally {
         setLoading(false);
       }
     };
 
-    loadUserAndActivation();
+    loadUser();
   }, [navigate]);
 
+  // Set amount based on selected plan
   useEffect(() => {
     if (plan && PLANS[plan]) {
       setAmount(PLANS[plan].total.toString());
     }
   }, [plan]);
 
-  const checkAccountActivation = async (planKey) => {
-    // For Regular plan with no activation fee, always return true
-    if (planKey === "REGULAR" && PLANS[planKey].activationFee === 0) {
-      return true;
+  // Check if specific plan is activated
+  const isPlanActivated = (planKey) => {
+    return userPlans[planKey]?.is_activated === true;
+  };
+
+  // Handle plan selection with activation check
+  const handlePlanSelection = (planKey) => {
+    // Check if user is activated globally
+    if (!isUserActivated) {
+      // Show activation modal
+      setSelectedPlanForActivation(planKey);
+      setShowActivationModal(true);
+      return;
     }
     
-    try {
-      // Try multiple endpoints to check activation
-      let isActivated = false;
-      
-      // Method 1: Try dedicated activation check endpoint
-      try {
-        const res = await api.get(`/withdraw/check-eligibility`);
-        if (res.data?.eligibleForWithdrawal) {
-          isActivated = true;
-        }
-      } catch (e1) {
-        console.warn("Method 1 failed:", e1.message);
-      }
-      
-      // Method 2: Check user's current plan
-      if (!isActivated) {
-        try {
-          const userRes = await api.get(`/auth/me?_t=${Date.now()}`);
-          if (userRes.data?.plan === planKey) {
-            isActivated = true;
-          }
-        } catch (e2) {
-          console.warn("Method 2 failed:", e2.message);
-        }
-      }
-      
-      // Method 3: Use locally stored activation status
-      if (!isActivated) {
-        isActivated = userPlanActivationStatus[planKey] || false;
-      }
-      
-      return isActivated;
-      
-    } catch (err) {
-      console.error("Activation check error:", err);
-      return userPlanActivationStatus[planKey] || false;
+    // Check if specific plan is activated
+    if (!isPlanActivated(planKey)) {
+      // Show activation modal for this specific plan
+      setSelectedPlanForActivation(planKey);
+      setShowActivationModal(true);
+      return;
     }
-  };
-
-  const handlePlanSelection = async (planKey) => {
-    try {
-      // For Regular plan with no activation fee, skip activation check
-      if (planKey === "REGULAR" && PLANS[planKey].activationFee === 0) {
-        setPlan(planKey);
-        return;
-      }
-      
-      // Check account activation status
-      const isActivated = await checkAccountActivation(planKey);
-      
-      if (!isActivated) {
-        // Show activation modal instead of setting plan directly
-        setSelectedPlanForActivation(planKey);
-        setShowActivationModal(true);
-      } else {
-        // Account is activated, proceed to withdraw form
-        setPlan(planKey);
-      }
-    } catch (err) {
-      setError("Unable to verify account status. Please try again.");
-      console.error("Plan selection error:", err);
-    }
-  };
-
-  const handleActivateAccount = () => {
-    if (!selectedPlanForActivation) return;
     
-    // Navigate to activation page with plan info
-    navigate("/activate-account", {
-      state: {
-        plan: selectedPlanForActivation,
-        planData: PLANS[selectedPlanForActivation],
-        redirectTo: "/withdraw-form",
-        redirectState: { plan: selectedPlanForActivation }
-      }
-    });
+    // If activated, proceed normally
+    setPlan(planKey);
   };
 
+  // Handle activation redirect
+  const handleActivationRedirect = () => {
+    if (selectedPlanForActivation) {
+      const planData = PLANS[selectedPlanForActivation];
+      // Navigate to activation page with plan info
+      navigate("/activate", { 
+        state: { 
+          plan: selectedPlanForActivation,
+          activationFee: planData.activationFee,
+          planName: planData.name
+        }
+      });
+    } else {
+      // Fallback to generic activation page
+      navigate("/activate");
+    }
+  };
+
+  const closeActivationModal = () => {
+    setShowActivationModal(false);
+    setSelectedPlanForActivation(null);
+  };
+
+  // Main withdrawal submission handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Double-check activation before submission
+    if (!isUserActivated) {
+      setError("Please activate your account before making a withdrawal.");
+      setShowActivationModal(true);
+      return;
+    }
+    
+    // Check specific plan activation
+    if (plan && !isPlanActivated(plan)) {
+      setError(`Please activate your ${PLANS[plan].name} plan before withdrawing.`);
+      setSelectedPlanForActivation(plan);
+      setShowActivationModal(true);
+      return;
+    }
+
     if (submitting) {
       setError("Please wait, processing your request...");
       return;
@@ -260,16 +196,6 @@ export default function WithdrawForm() {
     setMessage("");
 
     try {
-      // Final activation check before withdrawal (skip for Regular with no fee)
-      if (plan !== "REGULAR" || PLANS[plan].activationFee > 0) {
-        const isActivated = await checkAccountActivation(plan);
-        if (!isActivated) {
-          setError(`Your ${PLANS[plan].name} account is not activated. Please activate first.`);
-          setSubmitting(false);
-          return;
-        }
-      }
-
       const res = await queueWithdrawRequest(() => 
         api.post("/withdraw/request", {
           phone_number: cleanedPhone,
@@ -312,7 +238,13 @@ export default function WithdrawForm() {
       } else if (err.response?.status === 409) {
         setError("You already have a withdrawal pending for this plan. Please manage it from the success page.");
       } else if (err.response?.status === 403) {
-        setError("Account not activated or insufficient surveys completed.");
+        if (err.response?.data?.message?.includes("activated") || !isUserActivated) {
+          // Show activation modal if backend also confirms not activated
+          setError("Account not activated. Please activate your account to withdraw.");
+          setShowActivationModal(true);
+        } else {
+          setError("Account not activated or insufficient surveys completed.");
+        }
       } else if (err.response?.status === 400) {
         setError(err.response?.data?.message || "Invalid request. Please check your inputs.");
       } else {
@@ -334,6 +266,84 @@ export default function WithdrawForm() {
 
   return (
     <div className="withdraw-form-page">
+      {/* Activation Modal */}
+      {showActivationModal && (
+        <div className="activation-modal-overlay">
+          <div className="activation-modal">
+            <div className="activation-modal-header">
+              <h3>Account Activation Required</h3>
+              <button 
+                className="modal-close-btn"
+                onClick={closeActivationModal}
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="activation-modal-content">
+              <div className="activation-icon">
+                <span style={{ fontSize: "48px" }}>🔒</span>
+              </div>
+              
+              <p className="activation-message">
+                {selectedPlanForActivation ? (
+                  <>
+                    Your <strong>{PLANS[selectedPlanForActivation].name} Plan</strong> needs to be activated before you can withdraw.
+                  </>
+                ) : (
+                  "Your account needs to be activated before you can withdraw earnings."
+                )}
+              </p>
+              
+              {selectedPlanForActivation && (
+                <div className="activation-fee-display">
+                  <div className="fee-label">Activation Fee:</div>
+                  <div className="fee-amount">
+                    KES {PLANS[selectedPlanForActivation].activationFee}
+                  </div>
+                  <div className="plan-badge">
+                    {PLANS[selectedPlanForActivation].icon}{" "}
+                    {PLANS[selectedPlanForActivation].name} Plan
+                  </div>
+                </div>
+              )}
+              
+              <div className="activation-benefits">
+                <h4>Activation Benefits:</h4>
+                <ul>
+                  <li>✅ Unlock withdrawals for this plan</li>
+                  <li>✅ Priority withdrawal processing</li>
+                  <li>✅ Access to all surveys</li>
+                  <li>✅ Dedicated customer support</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="activation-modal-actions">
+              <button 
+                className="activate-account-btn"
+                onClick={handleActivationRedirect}
+                style={{
+                  background: selectedPlanForActivation 
+                    ? PLANS[selectedPlanForActivation].gradient 
+                    : "linear-gradient(135deg, #6366f1, #4f46e5)"
+                }}
+              >
+                <span className="btn-icon">🔓</span>
+                Activate Now
+              </button>
+              
+              <button 
+                className="cancel-activation-btn"
+                onClick={closeActivationModal}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="withdraw-header">
         <button 
@@ -343,19 +353,37 @@ export default function WithdrawForm() {
           ← Back
         </button>
         <h1>Withdraw Earnings</h1>
+        {!isUserActivated && (
+          <div className="activation-badge">
+            <span className="badge-icon">⚠️</span>
+            Account Not Activated
+          </div>
+        )}
         <div style={{ width: "60px" }}></div>
       </header>
 
       <div className="form-container">
-        {/* Plan Selection */}
+        {/* Plan Selection Section */}
         {!plan && (
           <div className="plan-selection-section">
             <h2>Select Plan to Withdraw</h2>
             <p className="section-subtitle">Choose which plan you want to withdraw from</p>
             
+            {/* Activation Notice */}
+            {!isUserActivated && (
+              <div className="activation-notice">
+                <div className="notice-icon">🔒</div>
+                <div className="notice-content">
+                  <strong>Account Not Activated</strong>
+                  <p>You need to activate your account before withdrawing. Select a plan to proceed with activation.</p>
+                </div>
+              </div>
+            )}
+            
             <div className="plan-selection-cards">
               {Object.entries(PLANS).map(([key, planData]) => {
-                const isActivated = userPlanActivationStatus[key] || false;
+                const isActivated = isPlanActivated(key);
+                
                 return (
                   <div 
                     key={key}
@@ -364,35 +392,52 @@ export default function WithdrawForm() {
                     style={{
                       borderColor: planData.color,
                       background: `linear-gradient(135deg, ${planData.color}20, transparent)`,
-                      opacity: (key !== "REGULAR" && planData.activationFee > 0 && !isActivated) ? 0.9 : 1
+                      opacity: !isUserActivated ? 0.9 : 1,
+                      cursor: isActivated ? 'pointer' : 'not-allowed'
                     }}
                   >
                     <div className="plan-selection-header">
                       <span className="plan-icon">{planData.icon}</span>
                       <h3>{planData.name} Plan</h3>
-                      {isActivated && (
-                        <span className="activated-badge">✅ Activated</span>
+                      {!isActivated && (
+                        <span className="activation-required-badge">🔒</span>
                       )}
                     </div>
+                    
                     <div className="plan-amount">
                       <span className="currency">KES</span>
                       <span className="amount">{planData.total.toLocaleString()}</span>
                     </div>
-                    <p className="plan-description">Available for withdrawal</p>
-                    {planData.activationFee > 0 && !isActivated && (
-                      <div className="activation-badge">
-                        <span className="badge-icon">🔒</span>
-                        <span>Activation required</span>
+                    
+                    <p className="plan-description">
+                      {isActivated ? "Available for withdrawal" : "Activation required"}
+                    </p>
+                    
+                    {!isActivated && (
+                      <div className="activation-hint">
+                        <div className="activation-fee-small">
+                          Activation: KES {planData.activationFee}
+                        </div>
                       </div>
                     )}
-                    {planData.activationFee > 0 && isActivated && (
-                      <div className="activated-fee-badge">
-                        <span className="badge-icon">✅</span>
-                        <span>Already activated</span>
-                      </div>
-                    )}
-                    <button className="select-plan-btn">
-                      {isActivated ? 'Withdraw Now →' : 'Select Plan →'}
+                    
+                    <button 
+                      className="select-plan-btn"
+                      style={{
+                        background: isActivated 
+                          ? planData.gradient 
+                          : 'linear-gradient(135deg, #f59e0b, #d97706)',
+                        cursor: isActivated ? 'pointer' : 'not-allowed'
+                      }}
+                    >
+                      {isActivated ? (
+                        "Select Plan →"
+                      ) : (
+                        <>
+                          <span className="btn-icon-small">🔓</span>
+                          Activate to Withdraw
+                        </>
+                      )}
                     </button>
                   </div>
                 );
@@ -432,28 +477,28 @@ export default function WithdrawForm() {
               </div>
             )}
 
-            {/* Check if plan needs activation */}
-            {(PLANS[plan].activationFee > 0 && !userPlanActivationStatus[plan]) && (
-              <div className="warning-banner">
-                <span className="warning-icon">⚠️</span>
-                <div className="warning-content">
-                  <strong>Plan Not Activated</strong>
-                  <p>You need to activate your {PLANS[plan].name} plan before withdrawing.</p>
-                  <button 
-                    type="button"
-                    className="activate-btn-small"
-                    onClick={() => navigate("/activate-account", { 
-                      state: { 
-                        plan: plan,
-                        planData: PLANS[plan],
-                        redirectTo: "/withdraw-form",
-                        redirectState: { plan: plan }
-                      } 
-                    })}
-                  >
-                    Activate Now
-                  </button>
+            {/* Activation Warning for Non-activated Plans */}
+            {!isPlanActivated(plan) && (
+              <div className="activation-alert-in-form">
+                <div className="alert-header">
+                  <span className="alert-icon">🔒</span>
+                  <span className="alert-title">Plan Not Activated</span>
                 </div>
+                <p className="alert-message">
+                  You need to activate your <strong>{PLANS[plan].name} Plan</strong> before withdrawing. 
+                  Activation fee: <strong>KES {PLANS[plan].activationFee}</strong>
+                </p>
+                <button 
+                  type="button"
+                  className="activate-now-btn"
+                  onClick={() => {
+                    setSelectedPlanForActivation(plan);
+                    setShowActivationModal(true);
+                  }}
+                  style={{ background: PLANS[plan].gradient }}
+                >
+                  🔓 Activate {PLANS[plan].name} Plan
+                </button>
               </div>
             )}
 
@@ -470,7 +515,7 @@ export default function WithdrawForm() {
                   min="100"
                   max={PLANS[plan].total}
                   required
-                  disabled={submitting || autoRedirecting || (PLANS[plan].activationFee > 0 && !userPlanActivationStatus[plan])}
+                  disabled={submitting || autoRedirecting || !isPlanActivated(plan)}
                 />
               </div>
               <div className="amount-helper">
@@ -479,7 +524,7 @@ export default function WithdrawForm() {
                   type="button" 
                   className="use-max-btn"
                   onClick={() => setAmount(PLANS[plan].total.toString())}
-                  disabled={submitting || autoRedirecting || (PLANS[plan].activationFee > 0 && !userPlanActivationStatus[plan])}
+                  disabled={submitting || autoRedirecting || !isPlanActivated(plan)}
                 >
                   Use Max
                 </button>
@@ -495,7 +540,7 @@ export default function WithdrawForm() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 required
-                disabled={submitting || autoRedirecting || (PLANS[plan].activationFee > 0 && !userPlanActivationStatus[plan])}
+                disabled={submitting || autoRedirecting || !isPlanActivated(plan)}
               />
               <p className="input-helper">Enter your M-Pesa number (e.g., 0712345678 or 0112345678)</p>
             </div>
@@ -518,48 +563,38 @@ export default function WithdrawForm() {
 
             {/* Form Actions */}
             <div className="form-actions">
-              {(PLANS[plan].activationFee > 0 && !userPlanActivationStatus[plan]) ? (
-                <button 
-                  type="button" 
-                  className="activate-btn-large"
-                  onClick={() => navigate("/activate-account", { 
-                    state: { 
-                      plan: plan,
-                      planData: PLANS[plan],
-                      redirectTo: "/withdraw-form",
-                      redirectState: { plan: plan }
-                    } 
-                  })}
-                  style={{ background: PLANS[plan].gradient }}
-                >
-                  <span className="btn-icon">🔓</span>
-                  Activate {PLANS[plan].name} Plan to Withdraw
-                </button>
-              ) : (
-                <button 
-                  type="submit" 
-                  className="submit-btn"
-                  disabled={submitting || autoRedirecting}
-                  style={{ background: PLANS[plan].gradient }}
-                >
-                  {submitting ? (
-                    <>
-                      <span className="spinner"></span>
-                      Processing...
-                    </>
-                  ) : autoRedirecting ? (
-                    <>
-                      <span className="btn-icon">✅</span>
-                      Submitted
-                    </>
-                  ) : (
-                    <>
-                      <span className="btn-icon">💸</span>
-                      Confirm Withdrawal
-                    </>
-                  )}
-                </button>
-              )}
+              <button 
+                type="submit" 
+                className="submit-btn"
+                disabled={submitting || autoRedirecting || !isPlanActivated(plan)}
+                style={{ 
+                  background: PLANS[plan].gradient,
+                  opacity: !isPlanActivated(plan) ? 0.6 : 1,
+                  cursor: !isPlanActivated(plan) ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {!isPlanActivated(plan) ? (
+                  <>
+                    <span className="btn-icon">🔒</span>
+                    Plan Not Activated
+                  </>
+                ) : submitting ? (
+                  <>
+                    <span className="spinner"></span>
+                    Processing...
+                  </>
+                ) : autoRedirecting ? (
+                  <>
+                    <span className="btn-icon">✅</span>
+                    Submitted
+                  </>
+                ) : (
+                  <>
+                    <span className="btn-icon">💸</span>
+                    Confirm Withdrawal
+                  </>
+                )}
+              </button>
               
               <button 
                 type="button" 
@@ -577,83 +612,16 @@ export default function WithdrawForm() {
                 <strong>Important:</strong> By withdrawing, you agree to our terms. 
                 Processing may take 5-30 minutes. You'll receive an SMS confirmation from M-Pesa.
                 Ensure your phone number is correct.
+                {!isPlanActivated(plan) && (
+                  <span style={{ color: '#ef4444', fontWeight: 'bold' }}>
+                    {" "}Plan activation is required for withdrawal.
+                  </span>
+                )}
               </p>
             </div>
           </form>
         )}
       </div>
-
-      {/* Activation Modal */}
-      {showActivationModal && selectedPlanForActivation && (
-        <div className="modal-overlay">
-          <div className="activation-modal">
-            <div className="modal-header">
-              <h2>Account Activation Required</h2>
-              <button 
-                className="modal-close"
-                onClick={() => {
-                  setShowActivationModal(false);
-                  setSelectedPlanForActivation(null);
-                }}
-              >
-                ×
-              </button>
-            </div>
-            
-            <div className="modal-content">
-              <div className="activation-plan-info">
-                <div className="activation-plan-icon">
-                  {PLANS[selectedPlanForActivation].icon}
-                </div>
-                <h3>{PLANS[selectedPlanForActivation].name} Plan</h3>
-                <p className="activation-fee">
-                  Activation Fee: <strong>KES {PLANS[selectedPlanForActivation].activationFee.toLocaleString()}</strong>
-                </p>
-              </div>
-              
-              <div className="activation-features">
-                <h4>Benefits of Activation:</h4>
-                <ul>
-                  <li>✅ Withdraw up to KES {PLANS[selectedPlanForActivation].total.toLocaleString()}</li>
-                  <li>✅ Priority processing for withdrawals</li>
-                  <li>✅ Access to premium surveys</li>
-                  <li>✅ Higher earning rates</li>
-                  <li>✅ Exclusive customer support</li>
-                </ul>
-              </div>
-              
-              <div className="activation-note">
-                <p>
-                  <strong>Note:</strong> You need to activate your account before 
-                  you can withdraw from the {PLANS[selectedPlanForActivation].name} plan.
-                  The activation fee is a one-time payment.
-                </p>
-              </div>
-            </div>
-            
-            <div className="modal-actions">
-              <button 
-                className="modal-activate-btn"
-                onClick={handleActivateAccount}
-                style={{ background: PLANS[selectedPlanForActivation].gradient }}
-              >
-                <span className="btn-icon">🔓</span>
-                Activate Account Now
-              </button>
-              
-              <button 
-                className="modal-cancel-btn"
-                onClick={() => {
-                  setShowActivationModal(false);
-                  setSelectedPlanForActivation(null);
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Support Button */}
       <div className="support-fixed">
@@ -665,30 +633,375 @@ export default function WithdrawForm() {
         </button>
       </div>
 
-      {/* Add CSS for new badges */}
+      {/* Add CSS for new components */}
       <style jsx>{`
-        .activated-badge {
-          background: #10b981;
+        /* Activation Modal Styles */
+        .activation-modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.8);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+          backdrop-filter: blur(5px);
+          padding: 20px;
+        }
+        
+        .activation-modal {
+          background: white;
+          border-radius: 20px;
+          width: 100%;
+          max-width: 450px;
+          box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+          overflow: hidden;
+        }
+        
+        .activation-modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 20px 25px;
+          border-bottom: 1px solid #e5e7eb;
+          background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        }
+        
+        .activation-modal-header h3 {
+          margin: 0;
+          color: #1f2937;
+          font-size: 20px;
+          font-weight: 700;
+        }
+        
+        .modal-close-btn {
+          background: none;
+          border: none;
+          font-size: 28px;
+          cursor: pointer;
+          color: #6b7280;
+          padding: 0;
+          width: 36px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 8px;
+        }
+        
+        .modal-close-btn:hover {
+          background: #f3f4f6;
+        }
+        
+        .activation-modal-content {
+          padding: 25px;
+        }
+        
+        .activation-icon {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+        
+        .activation-message {
+          text-align: center;
+          color: #4b5563;
+          font-size: 16px;
+          line-height: 1.5;
+          margin-bottom: 25px;
+        }
+        
+        .activation-fee-display {
+          background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+          border-radius: 15px;
+          padding: 20px;
+          text-align: center;
+          margin-bottom: 25px;
+          border: 2px solid #0ea5e9;
+        }
+        
+        .fee-label {
+          font-size: 14px;
+          color: #64748b;
+          margin-bottom: 8px;
+          font-weight: 600;
+        }
+        
+        .fee-amount {
+          font-size: 36px;
+          font-weight: 800;
+          color: #0f766e;
+          margin-bottom: 12px;
+        }
+        
+        .plan-badge {
+          display: inline-block;
+          background: rgba(5, 150, 105, 0.1);
+          color: #047857;
+          padding: 8px 18px;
+          border-radius: 20px;
+          font-size: 14px;
+          font-weight: 700;
+        }
+        
+        .activation-benefits {
+          background: #f8fafc;
+          border-radius: 15px;
+          padding: 20px;
+          margin-bottom: 20px;
+        }
+        
+        .activation-benefits h4 {
+          margin: 0 0 15px 0;
+          color: #1e293b;
+          font-size: 17px;
+          font-weight: 700;
+        }
+        
+        .activation-benefits ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+        
+        .activation-benefits li {
+          padding: 10px 0;
+          color: #475569;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-size: 15px;
+        }
+        
+        .activation-modal-actions {
+          padding: 0 25px 25px;
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+        }
+        
+        .activate-account-btn {
+          padding: 18px 24px;
+          border: none;
+          border-radius: 15px;
           color: white;
-          padding: 4px 10px;
+          font-size: 17px;
+          font-weight: 700;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          transition: all 0.3s ease;
+        }
+        
+        .activate-account-btn:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .cancel-activation-btn {
+          padding: 16px 24px;
+          border: 2px solid #e5e7eb;
+          background: white;
+          border-radius: 15px;
+          color: #6b7280;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        
+        .cancel-activation-btn:hover {
+          background: #f9fafb;
+          border-color: #d1d5db;
+        }
+        
+        /* Activation Badge in Header */
+        .activation-badge {
+          position: absolute;
+          right: 70px;
+          top: 50%;
+          transform: translateY(-50%);
+          background: linear-gradient(135deg, #fef3c7, #fde68a);
+          color: #92400e;
+          padding: 8px 16px;
+          border-radius: 20px;
+          font-size: 13px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          border: 1px solid #fbbf24;
+        }
+        
+        .badge-icon {
+          font-size: 16px;
+        }
+        
+        /* Activation Notice */
+        .activation-notice {
+          background: linear-gradient(135deg, #fef3c7, #fde68a);
+          border: 1px solid #fbbf24;
+          border-radius: 15px;
+          padding: 18px;
+          margin-bottom: 20px;
+          display: flex;
+          gap: 15px;
+          align-items: center;
+        }
+        
+        .notice-icon {
+          font-size: 24px;
+          flex-shrink: 0;
+        }
+        
+        .notice-content {
+          flex: 1;
+        }
+        
+        .notice-content strong {
+          color: #92400e;
+          display: block;
+          margin-bottom: 5px;
+          font-size: 16px;
+        }
+        
+        .notice-content p {
+          color: #92400e;
+          margin: 0;
+          font-size: 14px;
+          opacity: 0.9;
+          line-height: 1.4;
+        }
+        
+        /* Plan Card Activation Status */
+        .activation-required-badge {
+          position: absolute;
+          top: 15px;
+          right: 15px;
+          background: rgba(239, 68, 68, 0.1);
+          color: #ef4444;
+          padding: 6px 10px;
           border-radius: 20px;
           font-size: 12px;
           font-weight: 600;
-          margin-left: 10px;
-          display: inline-block;
+          border: 1px solid rgba(239, 68, 68, 0.3);
         }
         
-        .activated-fee-badge {
-          background: #d1fae5;
-          color: #065f46;
+        .activation-hint {
+          margin: 12px 0;
+          text-align: center;
+        }
+        
+        .activation-fee-small {
+          display: inline-block;
+          background: linear-gradient(135deg, #f59e0b, #d97706);
+          color: white;
           padding: 6px 12px;
           border-radius: 20px;
-          font-size: 13px;
-          font-weight: 600;
-          margin: 10px 0;
-          display: inline-flex;
+          font-size: 12px;
+          font-weight: 700;
+          margin-top: 8px;
+        }
+        
+        /* In-form Activation Alert */
+        .activation-alert-in-form {
+          background: linear-gradient(135deg, #fef2f2, #fee2e2);
+          border: 1px solid #fecaca;
+          border-radius: 15px;
+          padding: 20px;
+          margin: 20px 0;
+          text-align: center;
+        }
+        
+        .alert-header {
+          display: flex;
           align-items: center;
-          gap: 6px;
+          justify-content: center;
+          gap: 10px;
+          margin-bottom: 12px;
+        }
+        
+        .alert-icon {
+          font-size: 22px;
+        }
+        
+        .alert-title {
+          color: #dc2626;
+          font-weight: 700;
+          font-size: 17px;
+        }
+        
+        .alert-message {
+          color: #7f1d1d;
+          margin-bottom: 18px;
+          line-height: 1.5;
+          font-size: 15px;
+        }
+        
+        .activate-now-btn {
+          padding: 16px 24px;
+          border: none;
+          border-radius: 12px;
+          color: white;
+          font-weight: 700;
+          cursor: pointer;
+          width: 100%;
+          font-size: 16px;
+          transition: all 0.3s ease;
+        }
+        
+        .activate-now-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Loading Spinner */
+        .redirecting-loader {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-top: 12px;
+          color: #059669;
+          font-weight: 600;
+          justify-content: center;
+        }
+        
+        .mini-spinner {
+          width: 18px;
+          height: 18px;
+          border: 3px solid rgba(5, 150, 105, 0.3);
+          border-top-color: #059669;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+          .activation-modal {
+            margin: 0 15px;
+          }
+          
+          .activation-modal-header,
+          .activation-modal-content,
+          .activation-modal-actions {
+            padding: 15px;
+          }
+          
+          .activation-fee-display {
+            padding: 15px;
+          }
+          
+          .activate-account-btn,
+          .cancel-activation-btn {
+            padding: 16px 20px;
+          }
         }
       `}</style>
     </div>
