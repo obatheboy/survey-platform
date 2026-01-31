@@ -351,7 +351,7 @@ export default function WithdrawForm() {
         >
           ← Back
         </button>
-        <h1>💰💰💰</h1>
+        <h1>💰</h1>
         {!isUserActivated && (
           <div className="activation-badge">
             <span className="badge-icon">⚠️</span>
