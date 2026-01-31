@@ -3,6 +3,7 @@
   min-height: 100vh;
   background: #f8fafc;
   padding: 16px;
+  padding-bottom: 90px; /* Space for bottom navigation */
 }
 
 .withdraw-header {
@@ -11,6 +12,7 @@
   justify-content: space-between;
   margin-bottom: 24px;
   padding: 20px 0;
+  position: relative;
 }
 
 .back-btn {
@@ -27,9 +29,10 @@
   gap: 8px;
   transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  touch-action: manipulation;
 }
 
-.back-btn:hover {
+.back-btn:active {
   background: #f8fafc;
   border-color: #2563eb;
   color: #2563eb;
@@ -43,6 +46,7 @@
   margin: 0;
   text-align: center;
   flex: 1;
+  padding: 0 60px; /* Space for activation badge */
 }
 
 .form-container {
@@ -85,10 +89,11 @@
   position: relative;
   overflow: hidden;
   background: white;
+  touch-action: manipulation;
 }
 
-.plan-selection-card:hover {
-  transform: translateY(-4px);
+.plan-selection-card:active {
+  transform: translateY(-2px);
   box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
 }
 
@@ -147,7 +152,6 @@
 }
 
 .select-plan-btn {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: white;
   border: none;
   border-radius: 16px;
@@ -157,9 +161,10 @@
   cursor: pointer;
   width: 100%;
   transition: all 0.3s ease;
+  touch-action: manipulation;
 }
 
-.select-plan-btn:hover {
+.select-plan-btn:active {
   transform: translateY(-2px);
   box-shadow: 0 8px 15px rgba(37, 99, 235, 0.3);
 }
@@ -298,6 +303,7 @@
   color: #1e293b;
   outline: none;
   min-width: 0;
+  -webkit-appearance: none; /* Remove iOS styling */
 }
 
 .amount-input-group input::placeholder {
@@ -325,9 +331,10 @@
   padding: 4px 8px;
   border-radius: 8px;
   transition: all 0.2s ease;
+  touch-action: manipulation;
 }
 
-.use-max-btn:hover {
+.use-max-btn:active {
   background: rgba(37, 99, 235, 0.05);
 }
 
@@ -342,6 +349,7 @@
   background: white;
   transition: border-color 0.2s ease;
   outline: none;
+  -webkit-appearance: none; /* Remove iOS styling */
 }
 
 .withdrawal-form input[type="tel"]:focus {
@@ -359,9 +367,6 @@
   margin-top: 6px;
   margin-bottom: 0;
 }
-
-
-
 
 /* Processing Info */
 .processing-info {
@@ -403,7 +408,6 @@
 }
 
 .submit-btn {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: white;
   border: none;
   border-radius: 16px;
@@ -417,11 +421,12 @@
   gap: 10px;
   transition: all 0.3s ease;
   box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+  touch-action: manipulation;
 }
 
-.submit-btn:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 25px -5px rgba(37, 99, 235, 0.4);
+.submit-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .submit-btn:disabled {
@@ -452,12 +457,14 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  touch-action: manipulation;
 }
 
-.cancel-btn:hover {
+.cancel-btn:active {
   background: #f8fafc;
   border-color: #cbd5e1;
   color: #1e293b;
+  transform: translateY(2px);
 }
 
 /* Terms Notice */
@@ -499,9 +506,10 @@
   gap: 8px;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  touch-action: manipulation;
 }
 
-.support-btn:hover {
+.support-btn:active {
   transform: translateY(-3px) scale(1.05);
   box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.2);
   border-color: #2563eb;
@@ -537,56 +545,210 @@
   }
 }
 
-/* Responsive Design */
-@media (max-width: 640px) {
-  .withdraw-form-page {
-    padding: 12px;
-  }
-  
-  .withdraw-header h1 {
-    font-size: 20px;
-  }
-  
-  .plan-amount .amount {
-    font-size: 24px;
-  }
-  
-  .submit-btn, .cancel-btn {
-    padding: 16px;
-  }
-  
-  .support-fixed {
-    bottom: 16px;
-    right: 16px;
-  }
+/* NEW STYLES ADDED FROM INLINE CSS */
+/* Activation Badge in Header */
+.activation-badge {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #92400e;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #fbbf24;
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.2);
+  z-index: 10;
 }
 
+.badge-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* Activation Notice */
+.activation-notice {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border: 1px solid #fbbf24;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  animation: slideIn 0.3s ease;
+}
+
+.notice-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.notice-content {
+  flex: 1;
+}
+
+.notice-content strong {
+  color: #92400e;
+  display: block;
+  margin-bottom: 4px;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.notice-content p {
+  color: #92400e;
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.9;
+  line-height: 1.4;
+}
+
+/* Plan Card Activation Status */
+.activation-required-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  padding: 5px 8px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  backdrop-filter: blur(4px);
+  z-index: 2;
+}
+
+.activation-hint {
+  margin: 10px 0;
+  text-align: center;
+}
+
+.activation-fee-small {
+  display: inline-block;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 6px;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+}
+
+/* In-form Activation Alert */
+.activation-alert-in-form {
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  border: 1px solid #fecaca;
+  border-radius: 14px;
+  padding: 18px;
+  margin: 16px 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  animation: slideIn 0.3s ease;
+}
+
+.activation-alert-in-form::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.alert-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.alert-icon {
+  font-size: 20px;
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+
+.alert-title {
+  color: #dc2626;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.alert-message {
+  color: #7f1d1d;
+  margin-bottom: 16px;
+  line-height: 1.5;
+  font-size: 14px;
+  padding: 0 4px;
+}
+
+.activate-now-btn {
+  padding: 16px 20px;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  font-size: 15px;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+  position: relative;
+  overflow: hidden;
+}
+
+.activate-now-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Loading Spinner */
 .redirecting-loader {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 10px;
+  gap: 10px;
+  margin-top: 12px;
   color: #059669;
   font-weight: 600;
+  justify-content: center;
+  font-size: 14px;
 }
 
 .mini-spinner {
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(5, 150, 105, 0.3);
+  border: 3px solid rgba(5, 150, 105, 0.2);
   border-top-color: #059669;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
+  animation: spin 0.8s linear infinite;
 }
 
 /* Disabled state for inputs */
 input:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+  background-color: #f8fafc;
 }
 
 .use-max-btn:disabled {
@@ -594,4 +756,258 @@ input:disabled {
   cursor: not-allowed;
 }
 
+/* Button icon small */
+.btn-icon-small {
+  margin-right: 6px;
+}
 
+/* Responsive Design - Mobile First */
+@media (max-width: 640px) {
+  .withdraw-form-page {
+    padding: 12px;
+    padding-bottom: 80px; /* Space for bottom navigation on mobile */
+  }
+  
+  .withdraw-header {
+    margin-bottom: 20px;
+    padding: 16px 0;
+  }
+  
+  .withdraw-header h1 {
+    font-size: 20px;
+    padding: 0 50px;
+  }
+  
+  .activation-badge {
+    right: 12px;
+    padding: 5px 10px;
+    font-size: 11px;
+    max-width: 120px;
+  }
+  
+  .plan-amount .amount {
+    font-size: 24px;
+  }
+  
+  .withdrawal-form {
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+  
+  .form-header h2 {
+    font-size: 18px;
+  }
+  
+  .amount-input-group,
+  .withdrawal-form input[type="tel"] {
+    border-radius: 14px;
+  }
+  
+  .amount-prefix,
+  .amount-input-group input,
+  .withdrawal-form input[type="tel"] {
+    padding: 12px 14px;
+    font-size: 15px;
+  }
+  
+  .submit-btn, .cancel-btn {
+    padding: 16px;
+    font-size: 15px;
+    border-radius: 14px;
+  }
+  
+  .terms-notice {
+    padding: 16px;
+    border-radius: 14px;
+  }
+  
+  .support-fixed {
+    bottom: 20px;
+    right: 20px;
+  }
+  
+  .support-btn {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+  
+  /* Activation modal adjustments for mobile */
+  .activation-modal-header,
+  .activation-modal-content {
+    padding: 16px;
+  }
+  
+  .activation-fee-display {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .fee-amount {
+    font-size: 28px;
+  }
+  
+  .activation-modal-actions {
+    padding: 0 16px 16px;
+  }
+  
+  .activate-account-btn,
+  .cancel-activation-btn {
+    padding: 16px;
+    font-size: 15px;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 360px) {
+  .withdraw-header h1 {
+    font-size: 18px;
+  }
+  
+  .plan-selection-card {
+    padding: 20px;
+  }
+  
+  .plan-icon {
+    font-size: 22px;
+  }
+  
+  .plan-selection-header h3 {
+    font-size: 16px;
+  }
+  
+  .plan-amount .amount {
+    font-size: 22px;
+  }
+  
+  .withdrawal-form {
+    padding: 20px 16px;
+  }
+  
+  .activation-notice {
+    padding: 14px;
+  }
+  
+  .notice-icon {
+    font-size: 20px;
+  }
+  
+  .notice-content strong {
+    font-size: 14px;
+  }
+  
+  .notice-content p {
+    font-size: 12px;
+  }
+}
+
+/* Tablet and larger screens */
+@media (min-width: 768px) {
+  .withdraw-form-page {
+    padding: 24px;
+  }
+  
+  .withdraw-header {
+    margin-bottom: 32px;
+  }
+  
+  .withdraw-header h1 {
+    font-size: 28px;
+  }
+  
+  .plan-selection-cards {
+    gap: 20px;
+  }
+  
+  .plan-selection-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
+  }
+  
+  .select-plan-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(37, 99, 235, 0.3);
+  }
+  
+  .submit-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 25px -5px rgba(37, 99, 235, 0.4);
+  }
+  
+  .cancel-btn:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #1e293b;
+    transform: translateY(-2px);
+  }
+  
+  .support-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.2);
+    border-color: #2563eb;
+    color: #2563eb;
+  }
+}
+
+/* Prevent text selection on buttons for better mobile experience */
+.activate-account-btn,
+.cancel-activation-btn,
+.activate-now-btn,
+.modal-close-btn,
+.select-plan-btn,
+.submit-btn,
+.cancel-btn,
+.back-btn,
+.use-max-btn,
+.support-btn {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Safe area insets for notched phones */
+.withdraw-form-page {
+  padding-left: max(16px, env(safe-area-inset-left, 16px));
+  padding-right: max(16px, env(safe-area-inset-right, 16px));
+  padding-top: max(16px, env(safe-area-inset-top, 16px));
+  padding-bottom: max(90px, env(safe-area-inset-bottom, 90px));
+}
+
+/* Fix for iOS input styling */
+input, button, select, textarea {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 0;
+}
+
+/* Ensure proper font rendering */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Loading container styles */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 16px;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e2e8f0;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  color: #64748b;
+  font-size: 16px;
+  font-weight: 600;
+}
