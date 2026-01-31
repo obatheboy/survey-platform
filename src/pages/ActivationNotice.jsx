@@ -209,7 +209,7 @@ export default function ActivationNotice() {
   <h2>Surveys Completed! ✅</h2>
   <p>
     You have successfully completed all surveys for the{" "}
-    <strong style={{ color: plan.color }}>{plan.label} SURVEY PLAN</strong> and earned{" "}
+    <strong style={{ color: plan.color }}>{plan.label} SURVEY</strong> and earned{" "}
     <strong style={{ color: plan.color }}>KES {plan.total}</strong>.
   </p>
   <p>
