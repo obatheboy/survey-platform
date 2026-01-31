@@ -477,49 +477,140 @@ export default function Activate() {
         <div style={styles.roiCard}>
           <h3 style={{ 
             margin: "0 0 16px", 
-            fontSize: "18px", 
-            fontWeight: 800,
-            color: "#000"
+            fontSize: "16px", 
+            fontWeight: 700,
+            color: "#1e293b",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px"
           }}>
-            💰 Your Investment Breakdown
+            <span style={{ fontSize: "20px" }}>📊</span>
+            Investment Summary
           </h3>
+          
           <div style={styles.roiRow}>
-            <span>Activation Fee:</span>
-            <span style={{ fontWeight: 700 }}>KES {plan.activationFee}</span>
+            <div style={{ 
+              display: "flex", 
+              justifyContent: "space-between", 
+              alignItems: "center",
+              marginBottom: "12px"
+            }}>
+              <span style={{ fontSize: "14px", color: "#64748b" }}>Activation Fee</span>
+              <span style={{ 
+                fontSize: "20px", 
+                fontWeight: 800, 
+                color: "#dc2626"
+              }}>
+                KES {plan.activationFee}
+              </span>
+            </div>
+            <div style={{ 
+              display: "flex", 
+              justifyContent: "space-between", 
+              alignItems: "center",
+              marginBottom: "16px"
+            }}>
+              <span style={{ fontSize: "14px", color: "#64748b" }}>Withdrawable Amount</span>
+              <span style={{ 
+                fontSize: "20px", 
+                fontWeight: 800, 
+                color: "#059669"
+              }}>
+                KES {plan.total.toLocaleString()}
+              </span>
+            </div>
           </div>
-          <div style={styles.roiRow}>
-            <span>Withdrawable Amount:</span>
-            <span style={{ color: '#10b981', fontWeight: 700 }}>
-              +KES {plan.total}
-            </span>
-          </div>
+          
           <div style={{ 
             ...styles.roiRow, 
             borderBottom: "none",
-            paddingTop: "16px",
-            marginTop: "8px",
-            borderTop: "2px solid #10b981"
+            padding: "16px 12px",
+            marginTop: "16px",
+            marginBottom: "16px",
+            borderTop: "2px solid #10b981",
+            background: "linear-gradient(135deg, #f0f9ff, #e0f2fe)",
+            borderRadius: "12px",
+            border: "1px solid #bae6fd"
           }}>
-            <span style={{ fontWeight: 800, fontSize: "16px" }}>Your Return:</span>
-            <span style={{ 
-              fontWeight: 900, 
-              fontSize: "18px",
-              color: "#059669"
+            <div style={{ 
+              display: "flex", 
+              justifyContent: "space-between", 
+              alignItems: "center",
+              marginBottom: "8px"
             }}>
-              {Math.round((plan.total / plan.activationFee) * 10) / 10}x ROI
-            </span>
+              <span style={{ 
+                fontWeight: 700, 
+                fontSize: "16px",
+                color: "#1e293b",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px"
+              }}>
+                <span style={{ fontSize: "18px" }}>📈</span>
+                Return on Investment
+              </span>
+              <span style={{ 
+                fontWeight: 900, 
+                fontSize: "24px",
+                color: "#059669"
+              }}>
+                {Math.round((plan.total / plan.activationFee) * 10) / 10}x
+              </span>
+            </div>
+            <div style={{ 
+              textAlign: "right",
+              fontSize: "14px",
+              color: "#64748b",
+              fontWeight: 600
+            }}>
+              ({Math.round((plan.total / plan.activationFee) * 100)}% return)
+            </div>
           </div>
-          <p style={{ 
-            marginTop: "16px", 
-            textAlign: "center",
-            fontWeight: 700,
-            color: "#059669",
-            fontSize: "14px"
+          
+          <div style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "10px",
+            marginTop: "16px",
+            padding: "0 8px"
           }}>
-            That's {Math.round((plan.total / plan.activationFee) * 100)}% return on your investment!
-          </p>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              fontSize: "14px",
+              color: "#475569",
+              fontWeight: 500
+            }}>
+              <span style={{ color: "#10b981", fontWeight: 600 }}>✓</span>
+              <span>Instant account activation</span>
+            </div>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              fontSize: "14px",
+              color: "#475569",
+              fontWeight: 500
+            }}>
+              <span style={{ color: "#10b981", fontWeight: 600 }}>✓</span>
+              <span>Access to all surveys</span>
+            </div>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              fontSize: "14px",
+              color: "#475569",
+              fontWeight: 500
+            }}>
+              <span style={{ color: "#10b981", fontWeight: 600 }}>✓</span>
+              <span>Withdrawal processing</span>
+            </div>
+          </div>
         </div>
 
+        {/* Main Activation Card */}
         <div style={{ 
           ...styles.card, 
           boxShadow: `0 0 40px ${plan.glow}` 
