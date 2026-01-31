@@ -407,3 +407,36 @@
     margin: 10px 0;
   }
 }
+.success-message-content p {
+  line-height: 1.6;
+  margin-bottom: 12px;
+  font-size: 15px;
+  color: #4b5563;
+}
+
+.highlight-plan {
+  color: var(--plan-color, #10b981);
+  font-weight: 700;
+}
+
+.highlight-amount {
+  color: var(--plan-color, #10b981);
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.highlight-fee {
+  color: #dc2626;
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.activation-note {
+  background: rgba(99, 102, 241, 0.1);
+  padding: 10px 14px;
+  border-radius: 8px;
+  border-left: 4px solid #6366f1;
+  font-size: 14px;
+  color: #4f46e5;
+  margin-top: 16px;
+}

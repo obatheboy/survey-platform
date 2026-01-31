@@ -207,20 +207,18 @@ export default function ActivationNotice() {
 {/* SUCCESS MESSAGE */}
 <div className="simple-message">
   <h2>Surveys Completed! ✅</h2>
-  <div className="success-message-content">
-    <p>
-      🎉 You have successfully completed all surveys for the{" "}
-      <span className="highlight-plan">{plan.label} SURVEY PLAN</span> and earned{" "}
-      <span className="highlight-amount">KES {plan.total}</span>.
-    </p>
-    <p>
-      🔓 Now activate your account by paying activation fee of{" "}
-      <span className="highlight-fee">KES {plan.activationFee}</span> and immediately withdraw your earnings.
-    </p>
-    <p className="activation-note">
-      💡 <strong>Remember:</strong> Account will be activated <strong>automatically</strong> after paying activation fee!
-    </p>
-  </div>
+  <p>
+    You have successfully completed all surveys for the{" "}
+    <strong style={{ color: plan.color }}>{plan.label} SURVEY PLAN</strong> and earned{" "}
+    <strong style={{ color: plan.color }}>KES {plan.total}</strong>.
+  </p>
+  <p>
+    Now activate your account by paying activation fee of{" "}
+    <strong style={{ color: "#dc2626" }}>KES {plan.activationFee}</strong> and immediately withdraw your earnings.
+  </p>
+  <p style={{ fontWeight: 600, fontSize: "14px", color: "#6366f1", marginTop: "8px" }}>
+    💡 Remember: Account will be activated automatically after paying activation fee!
+  </p>
 </div>
         {/* EARNINGS SUMMARY */}
         <div className="simple-earnings">
