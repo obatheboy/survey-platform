@@ -254,7 +254,7 @@ export default function WithdrawSuccess() {
         <p>Contact support if you have any questions about your withdrawal</p>
         <button 
           className="support-btn"
-          onClick={() => window.open(`https://wa.me/254740209662?text=Hello%20Support,%20I%20need%20help%20with%20my%20withdrawal%20${withdrawal.id}`, '_blank')}
+          onClick={() => window.open(`https://wa.me/254102074596?text=Hello%20Support,%20I%20need%20help%20with%20my%20withdrawal%20${withdrawal.id}`, '_blank')}
         >
           💬 Chat with Support
         </button>

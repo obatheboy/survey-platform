@@ -627,7 +627,7 @@ export default function WithdrawForm() {
       <div className="support-fixed">
         <button 
           className="support-btn"
-          onClick={() => window.open('https://wa.me/254740209662?text=Hello%20Support,%20I%20need%20help%20with%20withdrawal', '_blank')}
+          onClick={() => window.open('https://wa.me/254102074596?text=Hello%20Support,%20I%20need%20help%20with%20withdrawal', '_blank')}
         >
           💬 Need Help?
         </button>
@@ -902,34 +902,7 @@ export default function WithdrawForm() {
           transform: translateY(2px);
         }
         
-        /* Activation Badge in Header */
-        .activation-badge {
-          position: absolute;
-          right: 16px;
-          top: 50%;
-          transform: translateY(-50%);
-          background: linear-gradient(135deg, #fef3c7, #fde68a);
-          color: #92400e;
-          padding: 6px 12px;
-          border-radius: 16px;
-          font-size: 12px;
-          font-weight: 700;
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          border: 1px solid #fbbf24;
-          max-width: 140px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          box-shadow: 0 2px 8px rgba(251, 191, 36, 0.2);
-        }
-        
-        .badge-icon {
-          font-size: 14px;
-          flex-shrink: 0;
-        }
-        
+       
         /* Activation Notice */
         .activation-notice {
           background: linear-gradient(135deg, #fef3c7, #fde68a);
