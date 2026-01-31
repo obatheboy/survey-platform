@@ -413,7 +413,7 @@ export default function Auth() {
             const message = encodeURIComponent(
               "Hello, I'm having trouble with registration or login on the Survey App."
             );
-            const whatsappUrl = `https://wa.me/254102074596?text=${message}`;
+            const whatsappUrl = `https://wa.me/254740209662?text=${message}`;
             window.open(whatsappUrl, "_blank", "noopener,noreferrer");
           }}
           title="Contact Support on WhatsApp"

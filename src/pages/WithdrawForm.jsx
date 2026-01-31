@@ -369,7 +369,7 @@ export default function WithdrawForm() {
       <div className="support-fixed">
         <button 
           className="support-btn"
-          onClick={() => window.open('https://wa.me/254102074596?text=Hello%20Support,%20I%20need%20help%20with%20withdrawal', '_blank')}
+          onClick={() => window.open('https://wa.me/254740209662?text=Hello%20Support,%20I%20need%20help%20with%20withdrawal', '_blank')}
         >
           💬 Need Help?
         </button>
