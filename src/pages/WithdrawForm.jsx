@@ -10,21 +10,24 @@ const PLANS = {
     icon: "⭐", 
     total: 1500, 
     color: "#10b981",
-    gradient: "linear-gradient(135deg, #10b981, #059669)"
+    gradient: "linear-gradient(135deg, #10b981, #059669)",
+    activationFee: 0
   },
   VIP: { 
     name: "VIP", 
     icon: "💎", 
     total: 2000, 
     color: "#6366f1",
-    gradient: "linear-gradient(135deg, #6366f1, #4f46e5)"
+    gradient: "linear-gradient(135deg, #6366f1, #4f46e5)",
+    activationFee: 500
   },
   VVIP: { 
     name: "VVIP", 
     icon: "👑", 
     total: 3000, 
     color: "#f59e0b",
-    gradient: "linear-gradient(135deg, #f59e0b, #d97706)"
+    gradient: "linear-gradient(135deg, #f59e0b, #d97706)",
+    activationFee: 1000
   },
 };
 
@@ -39,39 +42,94 @@ export default function WithdrawForm() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [autoRedirecting, setAutoRedirecting] = useState(false);
+  const [showActivationModal, setShowActivationModal] = useState(false);
+  const [selectedPlanForActivation, setSelectedPlanForActivation] = useState(null);
+  const [userPlanActivationStatus, setUserPlanActivationStatus] = useState({});
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Moved loadUser inside useEffect
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const res = await api.get(`/auth/me?_t=${Date.now()}`);
-        setUser(res.data);
+        // Load user's plan activation status
+        const activationRes = await api.get("/account/plan-activation-status");
+        setUserPlanActivationStatus(activationRes.data);
         
-        // Update cache
-        localStorage.setItem("cachedUser", JSON.stringify(res.data));
+        // Store user data in localStorage if needed elsewhere
+        const userRes = await api.get(`/auth/me?_t=${Date.now()}`);
+        localStorage.setItem("cachedUser", JSON.stringify(userRes.data));
+        
       } catch (err) {
         console.error("Failed to load user:", err);
-        navigate("/login");
+        navigate("/auth?mode=login");
       } finally {
         setLoading(false);
       }
     };
 
     loadUser();
-  }, [navigate]); // Only navigate is needed in dependencies
+  }, [navigate]);
 
   useEffect(() => {
     if (plan && PLANS[plan]) {
       setAmount(PLANS[plan].total.toString());
     }
   }, [plan]);
+
+  const checkAccountActivation = async (planKey) => {
+    try {
+      // Check if account is activated for the selected plan
+      const res = await api.get(`/withdraw/check-activation?plan=${planKey}`);
+      return res.data.isActivated;
+    } catch (err) {
+      console.error("Activation check error:", err);
+      // Fallback: check local state
+      return userPlanActivationStatus[planKey] || false;
+    }
+  };
+
+  const handlePlanSelection = async (planKey) => {
+    try {
+      // For Regular plan with no activation fee, skip activation check
+      if (planKey === "REGULAR" && PLANS[planKey].activationFee === 0) {
+        setPlan(planKey);
+        return;
+      }
+      
+      // Check account activation status
+      const isActivated = await checkAccountActivation(planKey);
+      
+      if (!isActivated) {
+        // Show activation modal instead of setting plan directly
+        setSelectedPlanForActivation(planKey);
+        setShowActivationModal(true);
+      } else {
+        // Account is activated, proceed to withdraw form
+        setPlan(planKey);
+      }
+    } catch (err) {
+      setError("Unable to verify account status. Please try again.");
+      console.error("Plan selection error:", err);
+    }
+  };
+
+  const handleActivateAccount = () => {
+    if (!selectedPlanForActivation) return;
+    
+    // Navigate to activation page with plan info
+    navigate("/activate-account", {
+      state: {
+        plan: selectedPlanForActivation,
+        planData: PLANS[selectedPlanForActivation],
+        redirectTo: "/withdraw-form",
+        redirectState: { plan: selectedPlanForActivation }
+      }
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -115,6 +173,16 @@ export default function WithdrawForm() {
     setMessage("");
 
     try {
+      // Final activation check before withdrawal (skip for Regular with no fee)
+      if (plan !== "REGULAR" || PLANS[plan].activationFee > 0) {
+        const isActivated = await checkAccountActivation(plan);
+        if (!isActivated) {
+          setError(`Your ${PLANS[plan].name} account is not activated. Please activate first.`);
+          setSubmitting(false);
+          return;
+        }
+      }
+
       const res = await queueWithdrawRequest(() => 
         api.post("/withdraw/request", {
           phone_number: cleanedPhone,
@@ -188,7 +256,7 @@ export default function WithdrawForm() {
           ← Back
         </button>
         <h1>Withdraw Earnings</h1>
-        <div style={{ width: "60px" }}></div> {/* Spacer for alignment */}
+        <div style={{ width: "60px" }}></div>
       </header>
 
       <div className="form-container">
@@ -199,30 +267,49 @@ export default function WithdrawForm() {
             <p className="section-subtitle">Choose which plan you want to withdraw from</p>
             
             <div className="plan-selection-cards">
-              {Object.entries(PLANS).map(([key, planData]) => (
-                <div 
-                  key={key}
-                  className="plan-selection-card"
-                  onClick={() => setPlan(key)}
-                  style={{
-                    borderColor: planData.color,
-                    background: `linear-gradient(135deg, ${planData.color}20, transparent)`
-                  }}
-                >
-                  <div className="plan-selection-header">
-                    <span className="plan-icon">{planData.icon}</span>
-                    <h3>{planData.name} Plan</h3>
+              {Object.entries(PLANS).map(([key, planData]) => {
+                const isActivated = userPlanActivationStatus[key] || false;
+                return (
+                  <div 
+                    key={key}
+                    className="plan-selection-card"
+                    onClick={() => handlePlanSelection(key)}
+                    style={{
+                      borderColor: planData.color,
+                      background: `linear-gradient(135deg, ${planData.color}20, transparent)`,
+                      opacity: (key !== "REGULAR" && planData.activationFee > 0 && !isActivated) ? 0.9 : 1
+                    }}
+                  >
+                    <div className="plan-selection-header">
+                      <span className="plan-icon">{planData.icon}</span>
+                      <h3>{planData.name} Plan</h3>
+                      {isActivated && (
+                        <span className="activated-badge">✅ Activated</span>
+                      )}
+                    </div>
+                    <div className="plan-amount">
+                      <span className="currency">KES</span>
+                      <span className="amount">{planData.total.toLocaleString()}</span>
+                    </div>
+                    <p className="plan-description">Available for withdrawal</p>
+                    {planData.activationFee > 0 && !isActivated && (
+                      <div className="activation-badge">
+                        <span className="badge-icon">🔒</span>
+                        <span>Activation required</span>
+                      </div>
+                    )}
+                    {planData.activationFee > 0 && isActivated && (
+                      <div className="activated-fee-badge">
+                        <span className="badge-icon">✅</span>
+                        <span>Already activated</span>
+                      </div>
+                    )}
+                    <button className="select-plan-btn">
+                      {isActivated ? 'Withdraw Now →' : 'Select Plan →'}
+                    </button>
                   </div>
-                  <div className="plan-amount">
-                    <span className="currency">KES</span>
-                    <span className="amount">{planData.total.toLocaleString()}</span>
-                  </div>
-                  <p className="plan-description">Available for withdrawal</p>
-                  <button className="select-plan-btn">
-                    Select Plan →
-                  </button>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -258,6 +345,31 @@ export default function WithdrawForm() {
               </div>
             )}
 
+            {/* Check if plan needs activation */}
+            {(PLANS[plan].activationFee > 0 && !userPlanActivationStatus[plan]) && (
+              <div className="warning-banner">
+                <span className="warning-icon">⚠️</span>
+                <div className="warning-content">
+                  <strong>Plan Not Activated</strong>
+                  <p>You need to activate your {PLANS[plan].name} plan before withdrawing.</p>
+                  <button 
+                    type="button"
+                    className="activate-btn-small"
+                    onClick={() => navigate("/activate-account", { 
+                      state: { 
+                        plan: plan,
+                        planData: PLANS[plan],
+                        redirectTo: "/withdraw-form",
+                        redirectState: { plan: plan }
+                      } 
+                    })}
+                  >
+                    Activate Now
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Amount Input */}
             <div className="form-group">
               <label>Amount to Withdraw (KES)</label>
@@ -271,7 +383,7 @@ export default function WithdrawForm() {
                   min="100"
                   max={PLANS[plan].total}
                   required
-                  disabled={submitting || autoRedirecting}
+                  disabled={submitting || autoRedirecting || (PLANS[plan].activationFee > 0 && !userPlanActivationStatus[plan])}
                 />
               </div>
               <div className="amount-helper">
@@ -280,7 +392,7 @@ export default function WithdrawForm() {
                   type="button" 
                   className="use-max-btn"
                   onClick={() => setAmount(PLANS[plan].total.toString())}
-                  disabled={submitting || autoRedirecting}
+                  disabled={submitting || autoRedirecting || (PLANS[plan].activationFee > 0 && !userPlanActivationStatus[plan])}
                 >
                   Use Max
                 </button>
@@ -296,7 +408,7 @@ export default function WithdrawForm() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 required
-                disabled={submitting || autoRedirecting}
+                disabled={submitting || autoRedirecting || (PLANS[plan].activationFee > 0 && !userPlanActivationStatus[plan])}
               />
               <p className="input-helper">Enter your M-Pesa number (e.g., 0712345678 or 0112345678)</p>
             </div>
@@ -319,29 +431,48 @@ export default function WithdrawForm() {
 
             {/* Form Actions */}
             <div className="form-actions">
-              <button 
-                type="submit" 
-                className="submit-btn"
-                disabled={submitting || autoRedirecting}
-                style={{ background: PLANS[plan].gradient }}
-              >
-                {submitting ? (
-                  <>
-                    <span className="spinner"></span>
-                    Processing...
-                  </>
-                ) : autoRedirecting ? (
-                  <>
-                    <span className="btn-icon">✅</span>
-                    Submitted
-                  </>
-                ) : (
-                  <>
-                    <span className="btn-icon">💸</span>
-                    Confirm Withdrawal
-                  </>
-                )}
-              </button>
+              {(PLANS[plan].activationFee > 0 && !userPlanActivationStatus[plan]) ? (
+                <button 
+                  type="button" 
+                  className="activate-btn-large"
+                  onClick={() => navigate("/activate-account", { 
+                    state: { 
+                      plan: plan,
+                      planData: PLANS[plan],
+                      redirectTo: "/withdraw-form",
+                      redirectState: { plan: plan }
+                    } 
+                  })}
+                  style={{ background: PLANS[plan].gradient }}
+                >
+                  <span className="btn-icon">🔓</span>
+                  Activate {PLANS[plan].name} Plan to Withdraw
+                </button>
+              ) : (
+                <button 
+                  type="submit" 
+                  className="submit-btn"
+                  disabled={submitting || autoRedirecting}
+                  style={{ background: PLANS[plan].gradient }}
+                >
+                  {submitting ? (
+                    <>
+                      <span className="spinner"></span>
+                      Processing...
+                    </>
+                  ) : autoRedirecting ? (
+                    <>
+                      <span className="btn-icon">✅</span>
+                      Submitted
+                    </>
+                  ) : (
+                    <>
+                      <span className="btn-icon">💸</span>
+                      Confirm Withdrawal
+                    </>
+                  )}
+                </button>
+              )}
               
               <button 
                 type="button" 
@@ -365,6 +496,78 @@ export default function WithdrawForm() {
         )}
       </div>
 
+      {/* Activation Modal */}
+      {showActivationModal && selectedPlanForActivation && (
+        <div className="modal-overlay">
+          <div className="activation-modal">
+            <div className="modal-header">
+              <h2>Account Activation Required</h2>
+              <button 
+                className="modal-close"
+                onClick={() => {
+                  setShowActivationModal(false);
+                  setSelectedPlanForActivation(null);
+                }}
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="modal-content">
+              <div className="activation-plan-info">
+                <div className="activation-plan-icon">
+                  {PLANS[selectedPlanForActivation].icon}
+                </div>
+                <h3>{PLANS[selectedPlanForActivation].name} Plan</h3>
+                <p className="activation-fee">
+                  Activation Fee: <strong>KES {PLANS[selectedPlanForActivation].activationFee.toLocaleString()}</strong>
+                </p>
+              </div>
+              
+              <div className="activation-features">
+                <h4>Benefits of Activation:</h4>
+                <ul>
+                  <li>✅ Withdraw up to KES {PLANS[selectedPlanForActivation].total.toLocaleString()}</li>
+                  <li>✅ Priority processing for withdrawals</li>
+                  <li>✅ Access to premium surveys</li>
+                  <li>✅ Higher earning rates</li>
+                  <li>✅ Exclusive customer support</li>
+                </ul>
+              </div>
+              
+              <div className="activation-note">
+                <p>
+                  <strong>Note:</strong> You need to activate your account before 
+                  you can withdraw from the {PLANS[selectedPlanForActivation].name} plan.
+                  The activation fee is a one-time payment.
+                </p>
+              </div>
+            </div>
+            
+            <div className="modal-actions">
+              <button 
+                className="modal-activate-btn"
+                onClick={handleActivateAccount}
+                style={{ background: PLANS[selectedPlanForActivation].gradient }}
+              >
+                <span className="btn-icon">🔓</span>
+                Activate Account Now
+              </button>
+              
+              <button 
+                className="modal-cancel-btn"
+                onClick={() => {
+                  setShowActivationModal(false);
+                  setSelectedPlanForActivation(null);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Support Button */}
       <div className="support-fixed">
         <button 
@@ -375,28 +578,30 @@ export default function WithdrawForm() {
         </button>
       </div>
 
-      {/* Add CSS for redirecting loader */}
+      {/* Add CSS for new badges */}
       <style jsx>{`
-        .redirecting-loader {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          margin-top: 10px;
-          color: #059669;
+        .activated-badge {
+          background: #10b981;
+          color: white;
+          padding: 4px 10px;
+          border-radius: 20px;
+          font-size: 12px;
           font-weight: 600;
+          margin-left: 10px;
+          display: inline-block;
         }
         
-        .mini-spinner {
-          width: 16px;
-          height: 16px;
-          border: 2px solid rgba(5, 150, 105, 0.3);
-          border-top-color: #059669;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-          to { transform: rotate(360deg); }
+        .activated-fee-badge {
+          background: #d1fae5;
+          color: #065f46;
+          padding: 6px 12px;
+          border-radius: 20px;
+          font-size: 13px;
+          font-weight: 600;
+          margin: 10px 0;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
         }
       `}</style>
     </div>
