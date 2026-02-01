@@ -711,7 +711,6 @@ return (
             </span>
           )}
         </div>
-        <p className="header-subtitle">Welcome back, {user.full_name.split(' ')[0]}!👋Start Earning Today💸💸</p>
       </header>
 
       {/* MAIN MENU DRAWER */}
@@ -727,100 +726,42 @@ return (
 
       {/* HERO SECTION - ULTRA COMPACT */}
       <div className="dashboard-section hero-section" style={{
-        borderRadius: 'var(--radius-xl)',
-        padding: '1.25rem',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+        borderRadius: '24px',
+        padding: '20px',
+        background: 'var(--bg-surface)',
+        boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.1)',
+        border: '1px solid var(--border-soft)',
         position: 'relative',
-        overflow: 'hidden',
-        background: 'var(--bg-surface)'
+        overflow: 'hidden'
       }}>
         <div style={{
-          position: 'absolute',
-          top: '-10%',
-          right: '-5%',
-          width: '150px',
-          height: '150px',
-          background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)',
-          borderRadius: '50%',
-          zIndex: '0'
-        }}></div>
-
-        
-        <div style={{
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'space-between', 
-          gap: '1.25rem',
-          position: 'relative',
-          zIndex: '1'
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '15px',
+          alignItems: 'stretch'
         }}>
-          <div style={{flex: 1}}>
-            <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem'}}>
-              <div style={{
-                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08))',
-                borderRadius: '50%',
-                width: '36px',
-                height: '36px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '1.2rem',
-                boxShadow: '0 3px 8px rgba(0, 0, 0, 0.12)',
-                border: '1px solid rgba(255, 255, 255, 0.2)'
-              }}>
-                👋
-              </div>
-              <div>
-                <h3 style={{
-                  color: 'var(--text-main)', 
-                  margin: '0 0 0.1rem', 
-                  fontSize: '1.25rem', 
-                  fontWeight: '800',
-                  textShadow: '0 1px 3px rgba(0,0,0,0.2)',
-                  letterSpacing: '-0.1px'
-                }}>
-                  Hi, <span style={{color: 'red', fontWeight: '900'}}>{user.full_name.split(' ')[0]}</span>!
-                </h3>
-                <p style={{
-                  color: 'var(--text-muted)', 
-                  margin: '0', 
-                  fontSize: '0.8rem',
-                  fontWeight: '500'
-                }}>
-                  🎉🎉Start earning now 🎉🎉
-                </p>
-              </div>
-            </div>
-            
-            <div style={{display: 'flex', gap: '0.75rem', alignItems: 'center', marginTop: '0.75rem'}}>
+          {/* LEFT COLUMN: BUTTONS */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <button 
                 onClick={goToSurveys}
                 style={{
                   background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
                   color: 'white',
                   border: 'none',
-                  borderRadius: 'var(--radius-md)',
-                  padding: '0.6rem 1rem',
-                  fontSize: '0.9rem',
-                  fontWeight: '700',
+                  borderRadius: '16px',
+                  padding: '15px',
+                  fontSize: '14px',
+                  fontWeight: '800',
                   cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
+                  boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.4rem',
+                  justifyContent: 'center',
+                  gap: '8px',
                   flex: 1
                 }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(59, 130, 246, 0.4)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)';
-                }}
               >
-                <span style={{fontSize: '1rem'}}>🚀</span> Start Surveys
+                <span style={{fontSize: '20px'}}>🚀</span> Start Survey
               </button>
               
               <button 
@@ -829,76 +770,81 @@ return (
                   background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
                   color: 'white',
                   border: 'none',
-                  borderRadius: 'var(--radius-md)',
-                  padding: '0.6rem 1rem',
-                  fontSize: '0.9rem',
-                  fontWeight: '700',
+                  borderRadius: '16px',
+                  padding: '15px',
+                  fontSize: '14px',
+                  fontWeight: '800',
                   cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)',
+                  boxShadow: '0 4px 15px rgba(245, 158, 11, 0.3)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.4rem',
+                  justifyContent: 'center',
+                  gap: '8px',
                   flex: 1
                 }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 6px 16px rgba(245, 158, 11, 0.4)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(245, 158, 11, 0.3)';
-                }}
               >
-                <span style={{fontSize: '1rem'}}>🎁</span> Get Bonus
+                <span style={{fontSize: '20px'}}>🎁</span> Get Bonus
               </button>
-            </div>
           </div>
           
-          {/* COMPACT BALANCE SECTION */}
+          {/* RIGHT COLUMN: BALANCE */}
           <div style={{
-            background: 'var(--bg-main)',
-            backdropFilter: 'none',
-            borderRadius: 'var(--radius-xl)',
-            padding: '0.75rem 1rem',
-            minWidth: '110px',
+            background: 'linear-gradient(145deg, #1e293b, #0f172a)',
+            borderRadius: '20px',
+            padding: '15px',
             textAlign: 'center',
-            boxShadow: 'var(--card-shadow)',
+            boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            alignItems: 'center',
+            color: 'white',
+            position: 'relative',
+            overflow: 'hidden'
           }}>
             <div style={{
-              color: 'var(--text-muted)',
-              fontSize: '0.65rem',
+              position: 'absolute',
+              top: '-50%',
+              right: '-50%',
+              width: '100%',
+              height: '100%',
+              background: 'radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%)',
+              transform: 'rotate(45deg)'
+            }}></div>
+
+            <div style={{
+              color: 'rgba(255,255,255,0.7)',
+              fontSize: '11px',
               fontWeight: '800',
               textTransform: 'uppercase',
               letterSpacing: '1px',
-              marginBottom: '0.2rem'
+              marginBottom: '5px'
             }}>
-              Balance
+              Total Balance
             </div>
 
-            
             <div style={{
               display: 'flex',
-              alignItems: 'baseline',
+              alignItems: 'flex-start',
               justifyContent: 'center',
-              gap: '0.2rem'
+              gap: '4px',
+              marginBottom: '10px'
             }}>
               <span style={{
-                color: 'var(--text-main)',
-                fontSize: '0.8rem',
+                color: 'white',
+                fontSize: '14px',
                 fontWeight: '700',
+                marginTop: '4px'
               }}>
                 KES
               </span>
               <div style={{
-                color: 'var(--primary)',
-                fontSize: '1.3rem',
+                background: 'linear-gradient(to right, #34d399, #10b981)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontSize: '28px',
                 fontWeight: '900',
-                lineHeight: '1',
-                textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'
+                lineHeight: '1'
               }}>
                 {stats.availableBalance.toLocaleString()}
               </div>
@@ -907,30 +853,19 @@ return (
             <button 
               onClick={() => navigate("/withdraw-form")}
               style={{
-                background: 'var(--bg-surface)',
-                color: 'var(--text-main)',
-                border: '1px solid var(--border-soft)',
-                borderRadius: 'var(--radius-sm)',
-                padding: '0.3rem 0.6rem',
-                fontSize: '0.7rem',
-                fontWeight: '600',
+                background: 'rgba(16, 185, 129, 0.2)',
+                color: '#34d399',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+                borderRadius: '10px',
+                padding: '8px 16px',
+                fontSize: '12px',
+                fontWeight: '700',
                 cursor: 'pointer',
-                marginTop: '0.5rem',
                 width: '100%',
-                transition: 'all 0.15s ease',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.2rem'
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.background = 'var(--bg-main)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.background = 'var(--bg-surface)';
+                transition: 'all 0.2s'
               }}
             >
-              <span style={{fontSize: '0.8rem'}}>💸</span> Withdraw
+              Withdraw
             </button>
           </div>
         </div>
