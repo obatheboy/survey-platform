@@ -279,20 +279,25 @@ body {
 
 .header-title-container {
   display: flex;
-  justify-content: flex-end;
-  flex-direction: row-reverse;
+  justify-content: space-between; /* Distribute space evenly */
+  flex-direction: row; /* Restore normal row direction */
   gap: 15px;
+  padding: 0 10px;
   align-items: center;
-  margin-bottom: var(--space-xs);
+  margin-bottom: 5px;
   position: relative;
   z-index: 5;
 }
 
 .dashboard-main-title {
-  font-size: 0 !important;
+  font-size: 0 !important; /* Hide original title text */
   font-weight: 900;
   color: white;
   margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   letter-spacing: -0.5px;
 }
 
@@ -308,17 +313,19 @@ body {
   display: block;
 }
 
+.header-activation-container{
+    position: relative;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
 .header-activation-badge {
   background: rgba(239, 68, 68, 0.15);
   color: #ef4444;
   border: 1px solid rgba(239, 68, 68, 0.3);
   font-size: 10px;
   font-weight: 800;
-  padding: 4px 8px;
-  border-radius: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
   cursor: pointer;
   animation: pulse 2s infinite;
 }
@@ -332,7 +339,7 @@ body {
 
 .menu-btn {
   background: rgba(255, 255, 255, 0.15);
-  border: none;
+  border: 1px solid rgba(255,255,255,0.3);
   color: white;
   width: 44px;
   height: 44px;
@@ -997,6 +1004,56 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.9px;
   transition: all 0.3s ease;
+  color: white !important; /* Added: Make captions white */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); /* Changed: Darker shadow for white text */
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 768px) {
+  /* Base adjustments */
+  .dashboard {
+    padding: 12px;
+    padding-top: 100px;
+    gap: 12px;
+  }
+  
+  /* Main Header */
+  .dashboard-main-header {
+    padding: var(--space-lg);
+    margin-bottom: 12px;
+  }
+  
+  .dashboard-main-title {
+    font-size: 22px;
+  }
+  
+  .header-subtitle {
+    font-size: 12px;
+  }
+  
+  /* Welcome Bonus Card */
+  .professional-bonus-card {
+    padding: var(--space-lg);
+    margin: 0 -12px 12px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  
+  .bonus-card-header {
+    gap: 16px;
+    margin-bottom: var(--space-lg);
+  }
+  
+  .bonus-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 28px;
+  }
+  
+  
+}
   font-weight: 800;
   color: white !important; /* Added: Make captions white */
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); /* Changed: Darker shadow for white text */

@@ -665,13 +665,15 @@ return (
       {/* MAIN MENU HEADER WITH DASHBOARD TITLE */}
       <header className="dashboard-main-header">
         <div className="header-title-container">
-          <h1 className="dashboard-main-title">Dashboard</h1>
-          {user && !user.is_activated && !user.account_activated && (
-            <span 
-              className="header-activation-badge"
-              onClick={() => navigate('/activate')}
-            >
-              ⚠️ Not Active
+          <button className="menu-btn" onClick={() => setMenuOpen(true)}>
+            <span className="menu-icon">☰</span>
+          </button>
+          <h1 className="dashboard-main-title">Dashboard</h1>          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+             <button
+              onClick={toggleTheme}
+              className="theme-toggle-btn"
+              title="Toggle Theme"
             </span>
           )}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -698,6 +700,17 @@ return (
                 justifyContent: 'center',
                 transition: 'all 0.3s ease',
                 boxShadow: '0 3px 8px rgba(37, 211, 102, 0.3)',
+            
+
+          
+        </div>
+
+        <div  className="header-activation-container">
+          {user && !user.is_activated && !user.account_activated && (
+            <span className="header-activation-badge" onClick={() => navigate('/activate')}>
+              ⚠️ Account not Activated
+            </span>
+          )}
                 padding: 0
               }}
               onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
@@ -707,9 +720,6 @@ return (
               💬
             </button>
             
-            <button className="menu-btn" onClick={() => setMenuOpen(true)}>
-              <span className="menu-icon">☰</span>
-            </button>
           </div>
         </div>
         <p className="header-subtitle">Welcome back, {user.full_name.split(' ')[0]}!👋Start Earning Today💸💸</p>
