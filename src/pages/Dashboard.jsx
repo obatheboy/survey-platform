@@ -666,6 +666,14 @@ return (
       <header className="dashboard-main-header">
         <div className="header-title-container">
           <h1 className="dashboard-main-title">Dashboard</h1>
+          {user && !user.is_activated && !user.account_activated && (
+            <span 
+              className="header-activation-badge"
+              onClick={() => navigate('/activate')}
+            >
+              ⚠️ Not Active
+            </span>
+          )}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <button
               onClick={toggleTheme}
