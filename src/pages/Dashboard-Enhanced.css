@@ -1771,12 +1771,12 @@ body {
 /* =========================================================
    HERO SECTION (AT BOTTOM) - REDUCED ANIMATIONS
 ========================================================= */
-.dashboard-hero {
+.hero-section {
   background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   margin-bottom: var(--space-md);
-  border: 3px solid red;
+  border: 3px solid red !important;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
 }
 
