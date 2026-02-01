@@ -670,20 +670,6 @@ return (
           </button>
           <h1 className="dashboard-main-title">Dashboard</h1>          
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-             <button
-              onClick={toggleTheme}
-              className="theme-toggle-btn"
-              title="Toggle Theme"
-            </span>
-          )}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <button
-              onClick={toggleTheme}
-              className="theme-toggle-btn"
-              title="Toggle Theme"
-            >
-              {theme === 'light' ? '🌙' : '☀️'}
-            </button>
             <button
               onClick={openWhatsAppSupport}
               style={{
@@ -700,17 +686,6 @@ return (
                 justifyContent: 'center',
                 transition: 'all 0.3s ease',
                 boxShadow: '0 3px 8px rgba(37, 211, 102, 0.3)',
-            
-
-          
-        </div>
-
-        <div  className="header-activation-container">
-          {user && !user.is_activated && !user.account_activated && (
-            <span className="header-activation-badge" onClick={() => navigate('/activate')}>
-              ⚠️ Account not Activated
-            </span>
-          )}
                 padding: 0
               }}
               onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
@@ -719,8 +694,22 @@ return (
             >
               💬
             </button>
-            
+            <button
+              onClick={toggleTheme}
+              className="theme-toggle-btn"
+              title="Toggle Theme"
+            >
+              {theme === 'light' ? '🌙' : '☀️'}
+            </button>
           </div>
+        </div>
+
+        <div className="header-activation-container">
+          {user && !user.is_activated && !user.account_activated && (
+            <span className="header-activation-badge" onClick={() => navigate('/activate')}>
+              ⚠️ Account not Activated
+            </span>
+          )}
         </div>
         <p className="header-subtitle">Welcome back, {user.full_name.split(' ')[0]}!👋Start Earning Today💸💸</p>
       </header>
