@@ -337,6 +337,15 @@ body {
   font-weight: 500;
 }
 
+.header-greeting-bottom {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  margin: 8px 0 0 0;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
 .menu-btn {
   background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255,255,255,0.3);

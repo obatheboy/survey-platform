@@ -711,6 +711,9 @@ return (
             </span>
           )}
         </div>
+        <p className="header-greeting-bottom">
+          Hello, {user?.full_name?.split(' ')[0] || 'Earner'}! 👋 Let's make money today!
+        </p>
       </header>
 
       {/* MAIN MENU DRAWER */}
