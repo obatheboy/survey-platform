@@ -220,6 +220,7 @@ body {
   gap: var(--space-md);
   width: 100%;
   position: relative;
+  padding-top: 130px;
 }
 
 /* =========================================================
@@ -233,6 +234,11 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.3);
   position: 
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 1200px;
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
   z-index: 999;
   overflow: hidden;
 }
