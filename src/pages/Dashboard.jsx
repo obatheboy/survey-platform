@@ -729,42 +729,43 @@ return (
 
       {/* HERO SECTION - ULTRA COMPACT */}
       <div className="dashboard-section hero-section" style={{
-        borderRadius: '24px',
-        padding: '20px',
+        borderRadius: '20px',
+        padding: '12px',
         background: 'var(--bg-surface)',
         boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.1)',
         border: '1px solid var(--border-soft)',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        marginTop: '10px'
       }}>
         <div style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
-          gap: '15px',
+          gap: '10px',
           alignItems: 'stretch'
         }}>
           {/* LEFT COLUMN: BUTTONS */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <button 
                 onClick={goToSurveys}
                 style={{
                   background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '16px',
-                  padding: '15px',
-                  fontSize: '14px',
+                  borderRadius: '12px',
+                  padding: '10px',
+                  fontSize: '13px',
                   fontWeight: '800',
                   cursor: 'pointer',
                   boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '8px',
+                  gap: '6px',
                   flex: 1
                 }}
               >
-                <span style={{fontSize: '20px'}}>🚀</span> Start Survey
+                <span style={{fontSize: '18px'}}>🚀</span> Start Survey
               </button>
               
               <button 
@@ -773,28 +774,28 @@ return (
                   background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '16px',
-                  padding: '15px',
-                  fontSize: '14px',
+                  borderRadius: '12px',
+                  padding: '10px',
+                  fontSize: '13px',
                   fontWeight: '800',
                   cursor: 'pointer',
                   boxShadow: '0 4px 15px rgba(245, 158, 11, 0.3)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: '8px',
+                  gap: '6px',
                   flex: 1
                 }}
               >
-                <span style={{fontSize: '20px'}}>🎁</span> Get Bonus
+                <span style={{fontSize: '18px'}}>🎁</span> Get Bonus
               </button>
           </div>
           
           {/* RIGHT COLUMN: BALANCE */}
           <div style={{
             background: 'linear-gradient(145deg, #1e293b, #0f172a)',
-            borderRadius: '20px',
-            padding: '15px',
+            borderRadius: '16px',
+            padding: '10px',
             textAlign: 'center',
             boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
             display: 'flex',
@@ -817,11 +818,11 @@ return (
 
             <div style={{
               color: 'rgba(255,255,255,0.7)',
-              fontSize: '11px',
+              fontSize: '10px',
               fontWeight: '800',
               textTransform: 'uppercase',
               letterSpacing: '1px',
-              marginBottom: '5px'
+              marginBottom: '2px'
             }}>
               Total Balance
             </div>
@@ -830,12 +831,12 @@ return (
               display: 'flex',
               alignItems: 'flex-start',
               justifyContent: 'center',
-              gap: '4px',
-              marginBottom: '10px'
+              gap: '2px',
+              marginBottom: '6px'
             }}>
               <span style={{
                 color: 'white',
-                fontSize: '14px',
+                fontSize: '12px',
                 fontWeight: '700',
                 marginTop: '4px'
               }}>
@@ -845,7 +846,7 @@ return (
                 background: 'linear-gradient(to right, #34d399, #10b981)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                fontSize: '28px',
+                fontSize: '22px',
                 fontWeight: '900',
                 lineHeight: '1'
               }}>
@@ -859,9 +860,9 @@ return (
                 background: 'rgba(16, 185, 129, 0.2)',
                 color: '#34d399',
                 border: '1px solid rgba(16, 185, 129, 0.3)',
-                borderRadius: '10px',
-                padding: '8px 16px',
-                fontSize: '12px',
+                borderRadius: '8px',
+                padding: '6px 12px',
+                fontSize: '11px',
                 fontWeight: '700',
                 cursor: 'pointer',
                 width: '100%',
