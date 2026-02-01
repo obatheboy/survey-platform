@@ -294,10 +294,9 @@ body {
   font-weight: 900;
   color: white;
   margin: 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  flex: 1;
+  text-align: center;
+  min-width: 0;
   letter-spacing: -0.5px;
 }
 
@@ -1034,6 +1033,10 @@ body {
   }
   
   .dashboard-main-title {
+    /* font-size handled by pseudo element */
+  }
+
+  .dashboard-main-title::after {
     font-size: 22px;
   }
   
@@ -2061,7 +2064,11 @@ body {
   }
   
   .dashboard-main-title {
-    font-size: 20px;
+    /* font-size handled by pseudo element */
+  }
+
+  .dashboard-main-title::after {
+    font-size: 18px;
   }
   
   .bonus-amount-display .amount {
