@@ -20,11 +20,13 @@ const WITHDRAW_FEES = {
 
 /* =====================================
    USER — REQUEST WITHDRAWAL
+   ✅ FIXED: Welcome bonus now creates activation request for admin dashboard
+   ✅ FIXED: Allows resubmission if previous was rejected
 ===================================== */
 exports.requestWithdraw = async (req, res) => {
   try {
     const userId = req.user.id;
-    let { phone_number, amount, type } = req.body;
+    let { phone_number, amount, type, mpesa_code } = req.body; // ✅ Added mpesa_code
 
     if (!phone_number || !amount) {
       return res.status(400).json({
@@ -32,8 +34,16 @@ exports.requestWithdraw = async (req, res) => {
       });
     }
 
+    // ✅ M-Pesa code is required for welcome bonus
+    if (type === "welcome_bonus" && !mpesa_code) {
+      return res.status(400).json({
+        message: "M-Pesa transaction code is required for welcome bonus withdrawal"
+      });
+    }
+
     const withdrawAmount = Number(amount);
     phone_number = String(phone_number).trim();
+    mpesa_code = mpesa_code ? String(mpesa_code).trim().toUpperCase() : null;
 
     if (!Number.isFinite(withdrawAmount)) {
       return res.status(400).json({ message: "Invalid amount" });
@@ -45,7 +55,6 @@ exports.requestWithdraw = async (req, res) => {
       });
     }
 
-    // ✅ CHANGED: MongoDB find instead of pool.query
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -65,7 +74,14 @@ exports.requestWithdraw = async (req, res) => {
     // 🌟 SPECIAL LOGIC FOR WELCOME BONUS
     // -------------------------------
     if (type === "welcome_bonus") {
-      if (user.welcome_bonus_withdrawn) {
+      console.log(`🎁 Welcome bonus withdrawal requested by ${user.full_name || user.email}`);
+      
+      // ✅ ALLOW RESUBMISSION: Check if previous was rejected
+      const previousRejected = user.withdrawal_requests?.find(
+        req => req.type === 'welcome_bonus' && req.status === 'REJECTED'
+      );
+      
+      if (user.welcome_bonus_withdrawn && !previousRejected) {
         return res.status(400).json({ message: "Welcome bonus already withdrawn" });
       }
 
@@ -81,33 +97,55 @@ exports.requestWithdraw = async (req, res) => {
         });
       }
 
-      // Initialize withdrawal_requests array if it doesn't exist
-      if (!user.withdrawal_requests) {
-        user.withdrawal_requests = [];
-      }
+      // Initialize arrays if they don't exist
+      if (!user.withdrawal_requests) user.withdrawal_requests = [];
+      if (!user.activation_requests) user.activation_requests = [];
 
-      // Add withdrawal request
-      user.withdrawal_requests.push({
+      // ✅ Create withdrawal request
+      const withdrawalRequest = {
         phone_number: phone_number,
         amount: withdrawAmount,
         fee: 0,
         net_amount: withdrawAmount,
-        status: 'PROCESSING',
+        status: 'SUBMITTED', // Changed from PROCESSING to SUBMITTED for consistency
         type: 'welcome_bonus',
+        mpesa_code: mpesa_code, // Store M-Pesa code
         created_at: new Date()
-      });
+      };
 
-      // Mark welcome bonus as withdrawn
+      // ✅ ALSO create activation request for admin dashboard
+      const activationRequest = {
+        plan: 'WELCOME_BONUS',
+        amount: 1200,
+        mpesa_code: mpesa_code,
+        status: 'SUBMITTED',
+        type: 'welcome_bonus_withdrawal',
+        submitted_at: new Date(),
+        created_at: new Date()
+      };
+
+      user.withdrawal_requests.push(withdrawalRequest);
+      user.activation_requests.push(activationRequest);
+      
+      // Mark welcome bonus as withdrawn (pending admin approval)
       user.welcome_bonus_withdrawn = true;
 
       await user.save();
 
+      // Get the IDs of newly created requests
+      const savedUser = await User.findById(userId);
+      const latestWithdrawal = savedUser.withdrawal_requests[savedUser.withdrawal_requests.length - 1];
+      const latestActivation = savedUser.activation_requests[savedUser.activation_requests.length - 1];
+
       return res.json({
-        message: "🎉 Your welcome bonus withdrawal request is being processed!",
-        status: "PROCESSING",
+        message: "🎉 Your welcome bonus withdrawal request has been submitted! It will appear in your activation payments for admin approval.",
+        status: "SUBMITTED",
         gross_amount: withdrawAmount,
         fee: 0,
         net_amount: withdrawAmount,
+        withdrawal_id: latestWithdrawal._id,
+        activation_id: latestActivation._id, // Added activation request ID
+        type: 'welcome_bonus'
       });
     }
 
@@ -125,10 +163,10 @@ exports.requestWithdraw = async (req, res) => {
       });
     }
 
-    // Check for existing PENDING/PROCESSING withdrawal for THIS SPECIFIC PLAN
+    // ✅ ALLOW RESUBMISSION: Check only for active withdrawals, allow if previous was rejected
     if (user.withdrawal_requests) {
       const activeWithdrawal = user.withdrawal_requests.find(
-        req => req.type === type && ['PROCESSING', 'PENDING'].includes(req.status)
+        req => req.type === type && ['PROCESSING', 'PENDING', 'SUBMITTED'].includes(req.status)
       );
       
       if (activeWithdrawal) {
@@ -153,7 +191,7 @@ exports.requestWithdraw = async (req, res) => {
       const today = new Date().toDateString();
       const dailyCount = user.withdrawal_requests.filter(req => {
         const reqDate = new Date(req.created_at).toDateString();
-        return reqDate === today && ['PROCESSING', 'PENDING', 'APPROVED'].includes(req.status);
+        return reqDate === today && ['PROCESSING', 'PENDING', 'SUBMITTED', 'APPROVED'].includes(req.status);
       }).length;
       
       if (dailyCount >= DAILY_WITHDRAW_LIMIT) {
@@ -176,7 +214,7 @@ exports.requestWithdraw = async (req, res) => {
       amount: withdrawAmount,
       fee: fee,
       net_amount: netAmount,
-      status: 'PROCESSING',
+      status: 'SUBMITTED', // Changed from PROCESSING to SUBMITTED
       type: type,
       created_at: new Date()
     };
@@ -193,8 +231,8 @@ exports.requestWithdraw = async (req, res) => {
     const latestWithdrawal = savedUser.withdrawal_requests[savedUser.withdrawal_requests.length - 1];
 
     res.json({
-      message: `🎉 Your withdrawal request is being processed! Share your referral link with 3+ people for faster approval.`,
-      status: "PROCESSING",
+      message: `🎉 Your withdrawal request has been submitted! Share your referral link with 3+ people for faster approval.`,
+      status: "SUBMITTED",
       gross_amount: withdrawAmount,
       fee,
       net_amount: netAmount,
@@ -229,15 +267,17 @@ exports.getUserWithdrawalHistory = async (req, res) => {
       net_amount: withdrawal.net_amount,
       status: withdrawal.status,
       type: withdrawal.type,
+      mpesa_code: withdrawal.mpesa_code, // ✅ Added M-Pesa code
       created_at: withdrawal.created_at,
-      user_name: user.full_name || 'User', // ADDED: User name
+      user_name: user.full_name || 'User',
       user_email: user.email,
       user_phone: user.phone,
       status_message: 
+        withdrawal.status === 'SUBMITTED' ? 'Pending admin approval' :
         withdrawal.status === 'PROCESSING' ? 'Share referral link for faster approval' :
         withdrawal.status === 'PENDING' ? 'Awaiting admin approval' :
         withdrawal.status === 'APPROVED' ? 'Payment processed' :
-        withdrawal.status === 'REJECTED' ? 'Request declined' :
+        withdrawal.status === 'REJECTED' ? 'Request declined - You can resubmit' :
         'Unknown status'
     })).sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
       .slice(0, 20);
@@ -256,7 +296,7 @@ exports.getPendingWithdrawals = async (req, res) => {
   try {
     // Find all users with pending withdrawal requests
     const users = await User.find({
-      'withdrawal_requests.status': { $in: ['PROCESSING', 'PENDING'] }
+      'withdrawal_requests.status': { $in: ['SUBMITTED', 'PROCESSING', 'PENDING'] }
     }).select('full_name email phone withdrawal_requests');
 
     // Format the response
@@ -264,11 +304,11 @@ exports.getPendingWithdrawals = async (req, res) => {
     
     users.forEach(user => {
       user.withdrawal_requests.forEach(withdrawal => {
-        if (['PROCESSING', 'PENDING'].includes(withdrawal.status)) {
+        if (['SUBMITTED', 'PROCESSING', 'PENDING'].includes(withdrawal.status)) {
           pendingWithdrawals.push({
             id: withdrawal._id,
             user_id: user._id,
-            user_name: user.full_name || 'User', // ADDED: User name with fallback
+            user_name: user.full_name || 'User',
             user_email: user.email || 'No email',
             user_phone: user.phone || 'No phone',
             phone_number: withdrawal.phone_number,
@@ -277,6 +317,7 @@ exports.getPendingWithdrawals = async (req, res) => {
             net_amount: withdrawal.net_amount,
             status: withdrawal.status,
             type: withdrawal.type,
+            mpesa_code: withdrawal.mpesa_code, // ✅ Added M-Pesa code
             created_at: withdrawal.created_at
           });
         }
@@ -300,7 +341,7 @@ exports.getAllWithdrawals = async (req, res) => {
   try {
     // Find all users with withdrawal requests
     const users = await User.find({
-      'withdrawal_requests.0': { $exists: true } // Users with at least one withdrawal
+      'withdrawal_requests.0': { $exists: true }
     }).select('full_name email phone withdrawal_requests');
 
     // Format the response
@@ -311,7 +352,7 @@ exports.getAllWithdrawals = async (req, res) => {
         allWithdrawals.push({
           id: withdrawal._id,
           user_id: user._id,
-          user_name: user.full_name || 'User', // ADDED: User name with fallback
+          user_name: user.full_name || 'User',
           user_email: user.email || 'No email',
           user_phone: user.phone || 'No phone',
           phone_number: withdrawal.phone_number,
@@ -320,6 +361,7 @@ exports.getAllWithdrawals = async (req, res) => {
           net_amount: withdrawal.net_amount,
           status: withdrawal.status,
           type: withdrawal.type,
+          mpesa_code: withdrawal.mpesa_code, // ✅ Added M-Pesa code
           created_at: withdrawal.created_at,
           processed_at: withdrawal.processed_at
         });
@@ -346,7 +388,7 @@ exports.approveWithdraw = async (req, res) => {
     // Find user with this withdrawal
     const user = await User.findOne({
       'withdrawal_requests._id': withdrawalId
-    }).select('full_name email');
+    }).select('full_name email withdrawal_requests activation_requests');
 
     if (!user) {
       return res.status(404).json({ message: "Withdrawal not found" });
@@ -359,8 +401,20 @@ exports.approveWithdraw = async (req, res) => {
       return res.status(404).json({ message: "Withdrawal not found" });
     }
 
-    if (!['PROCESSING', 'PENDING'].includes(withdrawal.status)) {
+    if (!['SUBMITTED', 'PROCESSING', 'PENDING'].includes(withdrawal.status)) {
       return res.status(400).json({ message: "Withdrawal already processed" });
+    }
+
+    // ✅ If it's a welcome bonus, also update the corresponding activation request
+    if (withdrawal.type === 'welcome_bonus' && user.activation_requests) {
+      const activationRequest = user.activation_requests.find(
+        req => req.mpesa_code === withdrawal.mpesa_code && req.type === 'welcome_bonus_withdrawal'
+      );
+      
+      if (activationRequest) {
+        activationRequest.status = 'APPROVED';
+        activationRequest.processed_at = new Date();
+      }
     }
 
     // Update withdrawal status
@@ -373,9 +427,10 @@ exports.approveWithdraw = async (req, res) => {
       message: "Withdrawal approved",
       withdrawal_id: withdrawalId,
       user_id: user._id,
-      user_name: user.full_name, // ADDED: User name
+      user_name: user.full_name,
       user_email: user.email,
-      amount: withdrawal.amount
+      amount: withdrawal.amount,
+      type: withdrawal.type
     });
   } catch (error) {
     console.error("Approve withdrawal error:", error);
@@ -385,6 +440,7 @@ exports.approveWithdraw = async (req, res) => {
 
 /* =====================================
    ADMIN — REJECT WITHDRAWAL
+   ✅ FIXED: Allows resubmission by not permanently blocking
 ===================================== */
 exports.rejectWithdraw = async (req, res) => {
   try {
@@ -393,7 +449,7 @@ exports.rejectWithdraw = async (req, res) => {
     // Find user with this withdrawal
     const user = await User.findOne({
       'withdrawal_requests._id': withdrawalId
-    }).select('full_name email total_earned');
+    }).select('full_name email total_earned withdrawal_requests activation_requests');
 
     if (!user) {
       return res.status(404).json({ message: "Withdrawal request not found" });
@@ -406,29 +462,45 @@ exports.rejectWithdraw = async (req, res) => {
       return res.status(404).json({ message: "Withdrawal request not found" });
     }
 
-    if (!['PROCESSING', 'PENDING'].includes(withdrawal.status)) {
+    if (!['SUBMITTED', 'PROCESSING', 'PENDING'].includes(withdrawal.status)) {
       return res.status(400).json({ message: "Withdrawal already processed" });
+    }
+
+    // ✅ If it's a welcome bonus, also update the corresponding activation request
+    if (withdrawal.type === 'welcome_bonus' && user.activation_requests) {
+      const activationRequest = user.activation_requests.find(
+        req => req.mpesa_code === withdrawal.mpesa_code && req.type === 'welcome_bonus_withdrawal'
+      );
+      
+      if (activationRequest) {
+        activationRequest.status = 'REJECTED';
+        activationRequest.processed_at = new Date();
+      }
     }
 
     // Update withdrawal status
     withdrawal.status = 'REJECTED';
     withdrawal.processed_at = new Date();
 
-    // Refund amount to user's total_earned (if it was a balance withdrawal)
-    if (withdrawal.type !== 'welcome_bonus') {
+    // ✅ Allow resubmission for welcome bonus by resetting the flag
+    if (withdrawal.type === 'welcome_bonus') {
+      user.welcome_bonus_withdrawn = false; // User can resubmit
+    } else {
+      // Refund amount to user's total_earned (if it was a balance withdrawal)
       user.total_earned = (user.total_earned || 0) + withdrawal.amount;
     }
     
     await user.save();
 
     res.json({ 
-      message: "Withdrawal rejected and amount refunded",
+      message: "Withdrawal rejected. User can resubmit with correct information.",
       withdrawal_id: withdrawalId,
       user_id: user._id,
-      user_name: user.full_name, // ADDED: User name
+      user_name: user.full_name,
       user_email: user.email,
       amount: withdrawal.amount,
-      refunded: withdrawal.type !== 'welcome_bonus'
+      refunded: withdrawal.type !== 'welcome_bonus',
+      can_resubmit: true // ✅ Indicates user can resubmit
     });
   } catch (error) {
     console.error("Reject withdrawal error:", error);
