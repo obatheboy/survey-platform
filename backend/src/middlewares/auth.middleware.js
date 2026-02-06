@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const pool = require("../config/db");
+const User = require("../models/User"); // Changed from pool to User model
 
 /* ===============================
    🔐 USER AUTH (COOKIE + BEARER)
@@ -31,24 +31,27 @@ exports.protect = async (req, res, next) => {
       });
     }
 
-    // 3️⃣ Fetch user from DB
-    const result = await pool.query(
-      `
-      SELECT id, full_name, phone, email, is_activated, role
-      FROM users
-      WHERE id = $1
-      `,
-      [decoded.id]
-    );
+    // 3️⃣ Fetch user from MongoDB (Changed from PostgreSQL)
+    const user = await User.findById(decoded.id)
+      .select('full_name phone email is_activated role');
 
-    if (result.rowCount === 0) {
+    if (!user) {
       return res.status(401).json({ 
         success: false,
         message: "User no longer exists" 
       });
     }
 
-    req.user = result.rows[0];
+    // Attach user to request (format to match old structure)
+    req.user = {
+      id: user._id,
+      full_name: user.full_name,
+      phone: user.phone,
+      email: user.email,
+      is_activated: user.is_activated,
+      role: user.role
+    };
+    
     next();
   } catch (error) {
     console.error("❌ User auth error:", error.message);
@@ -60,7 +63,7 @@ exports.protect = async (req, res, next) => {
 };
 
 /* ===============================
-   🛡 ADMIN AUTH (STRICT) - FIXED VERSION
+   🛡 ADMIN AUTH (STRICT) - MONGODB VERSION
 ================================ */
 exports.adminProtect = async (req, res, next) => {
   try {
@@ -113,28 +116,21 @@ exports.adminProtect = async (req, res, next) => {
       });
     }
 
-    // 3️⃣ FIRST check database for admin role, THEN verify
-    const result = await pool.query(
-      `
-      SELECT id, full_name, email, role
-      FROM users
-      WHERE id = $1 AND role = 'admin'
-      `,
-      [decoded.id]
-    );
+    // 3️⃣ Check database for admin user using MongoDB (Changed from PostgreSQL)
+    const adminUser = await User.findOne({
+      _id: decoded.id,
+      role: 'admin'
+    }).select('full_name email role');
 
-    if (result.rowCount === 0) {
+    if (!adminUser) {
       console.log("❌ User is not an admin in database. User ID:", decoded.id);
       console.log("❌ Token claims role:", decoded.role);
       
       // Optional: Check what the user's actual role is
-      const userCheck = await pool.query(
-        "SELECT role FROM users WHERE id = $1",
-        [decoded.id]
-      );
+      const userCheck = await User.findById(decoded.id).select('role');
       
-      if (userCheck.rowCount > 0) {
-        console.log("❌ User's actual role in DB:", userCheck.rows[0].role);
+      if (userCheck) {
+        console.log("❌ User's actual role in DB:", userCheck.role);
       }
       
       return res.status(403).json({ 
@@ -143,13 +139,17 @@ exports.adminProtect = async (req, res, next) => {
       });
     }
 
-    // 4️⃣ Attach admin user to request
-    const adminUser = result.rows[0];
-    req.user = adminUser;
-    req.admin = adminUser; // Some routes might expect req.admin
+    // 4️⃣ Attach admin user to request (format to match old structure)
+    req.user = {
+      id: adminUser._id,
+      full_name: adminUser.full_name,
+      email: adminUser.email,
+      role: adminUser.role
+    };
+    req.admin = req.user; // Some routes might expect req.admin
     
     console.log("✅ Admin authenticated successfully:", { 
-      id: adminUser.id, 
+      id: adminUser._id, 
       name: adminUser.full_name,
       email: adminUser.email,
       role: adminUser.role 

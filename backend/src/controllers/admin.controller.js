@@ -1,11 +1,13 @@
 /* eslint-disable no-undef */
-const pool = require("../config/db");
+const mongoose = require("mongoose");
+const User = require("../models/User");
+const Notification = require("../models/Notification");
 
 /* ======================================================
    👑 ADMIN SESSION
    - Used by /api/admin/me
 ====================================================== */
-const getAdminMe = async (req, res) => {
+exports.getAdminMe = async (req, res) => {
   try {
     res.json({
       id: req.admin.id,
@@ -25,26 +27,33 @@ const getAdminMe = async (req, res) => {
 /**
  * GET ALL USERS
  */
-const getAllUsers = async (req, res) => {
+exports.getAllUsers = async (req, res) => {
   try {
-    const result = await pool.query(`
-      SELECT
-        id,
-        full_name,
-        email,
-        phone,
-        role,
-        status,
-        is_activated,
-        plan,
-        surveys_completed,
-        balance,
-        created_at
-      FROM users
-      ORDER BY created_at DESC
-    `);
+    const users = await User.find()
+      .select('full_name email phone is_activated total_earned welcome_bonus welcome_bonus_withdrawn plans created_at')
+      .sort({ created_at: -1 })
+      .lean();
 
-    res.json(result.rows);
+    // Format the response
+    const formattedUsers = users.map(user => ({
+      id: user._id,
+      full_name: user.full_name,
+      email: user.email,
+      phone: user.phone,
+      is_activated: user.is_activated,
+      total_earned: user.total_earned || 0,
+      welcome_bonus: user.welcome_bonus || 1200,
+      welcome_bonus_withdrawn: user.welcome_bonus_withdrawn || false,
+      // Calculate surveys completed
+      surveys_completed: user.plans ? 
+        Object.values(user.plans).reduce((sum, plan) => sum + (plan.surveys_completed || 0), 0) : 0,
+      // Get active plan
+      active_plan: user.plans ? 
+        Object.keys(user.plans).find(plan => user.plans[plan] && !user.plans[plan].is_activated) : null,
+      created_at: user.created_at
+    }));
+
+    res.json(formattedUsers);
   } catch (error) {
     console.error("Admin get users error:", error);
     res.status(500).json({ message: "Server error" });
@@ -54,40 +63,56 @@ const getAllUsers = async (req, res) => {
 /**
  * GET SINGLE USER
  */
-const getUserById = async (req, res) => {
+exports.getUserById = async (req, res) => {
   try {
     const { id } = req.params;
 
     // Validate ID
-    if (!id || isNaN(parseInt(id))) {
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
 
-    const result = await pool.query(
-      `
-      SELECT
-        id,
-        full_name,
-        email,
-        phone,
-        role,
-        status,
-        is_activated,
-        plan,
-        surveys_completed,
-        balance,
-        created_at
-      FROM users
-      WHERE id = $1
-      `,
-      [id]
-    );
+    const user = await User.findById(id)
+      .select('full_name email phone is_activated total_earned welcome_bonus welcome_bonus_withdrawn plans activation_requests withdrawal_requests created_at')
+      .lean();
 
-    if (!result.rows.length) {
+    if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.json(result.rows[0]);
+    // Calculate total surveys completed
+    let totalSurveysCompleted = 0;
+    if (user.plans) {
+      for (const planKey in user.plans) {
+        if (user.plans[planKey]) {
+          totalSurveysCompleted += user.plans[planKey].surveys_completed || 0;
+        }
+      }
+    }
+
+    // Get pending activations count
+    const pendingActivations = user.activation_requests ? 
+      user.activation_requests.filter(req => req.status === 'SUBMITTED').length : 0;
+
+    // Get pending withdrawals count
+    const pendingWithdrawals = user.withdrawal_requests ? 
+      user.withdrawal_requests.filter(req => ['PROCESSING', 'PENDING'].includes(req.status)).length : 0;
+
+    res.json({
+      id: user._id,
+      full_name: user.full_name,
+      email: user.email,
+      phone: user.phone,
+      is_activated: user.is_activated,
+      total_earned: user.total_earned || 0,
+      welcome_bonus: user.welcome_bonus || 1200,
+      welcome_bonus_withdrawn: user.welcome_bonus_withdrawn || false,
+      surveys_completed: totalSurveysCompleted,
+      pending_activations: pendingActivations,
+      pending_withdrawals: pendingWithdrawals,
+      plans: user.plans || {},
+      created_at: user.created_at
+    });
   } catch (error) {
     console.error("Admin get user error:", error);
     res.status(500).json({ message: "Server error" });
@@ -96,14 +121,16 @@ const getUserById = async (req, res) => {
 
 /**
  * UPDATE USER STATUS
+ * Note: In MongoDB, we don't have a 'status' field in User model.
+ * We'll add it or use is_activated field
  */
-const updateUserStatus = async (req, res) => {
+exports.updateUserStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
-    // Validate inputs
-    if (!id || isNaN(parseInt(id))) {
+    // Validate ID
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
 
@@ -113,25 +140,24 @@ const updateUserStatus = async (req, res) => {
       });
     }
 
-    const normalizedStatus = status.toUpperCase();
-    
-    const result = await pool.query(
-      `
-      UPDATE users
-      SET status = $1
-      WHERE id = $2
-      RETURNING id, full_name, status
-      `,
-      [normalizedStatus, id]
-    );
+    // For MongoDB, we'll store status in a new field
+    const user = await User.findByIdAndUpdate(
+      id,
+      { $set: { status: status.toUpperCase() } },
+      { new: true, runValidators: true }
+    ).select('full_name email status');
 
-    if (!result.rows.length) {
+    if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     res.json({
       message: "User status updated",
-      user: result.rows[0],
+      user: {
+        id: user._id,
+        full_name: user.full_name,
+        status: user.status
+      },
     });
   } catch (error) {
     console.error("Admin update status error:", error);
@@ -142,13 +168,13 @@ const updateUserStatus = async (req, res) => {
 /**
  * UPDATE USER ROLE
  */
-const updateUserRole = async (req, res) => {
+exports.updateUserRole = async (req, res) => {
   try {
     const { id } = req.params;
     const { role } = req.body;
 
-    // Validate inputs
-    if (!id || isNaN(parseInt(id))) {
+    // Validate ID
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
 
@@ -158,23 +184,23 @@ const updateUserRole = async (req, res) => {
 
     const normalizedRole = role.toLowerCase();
     
-    const result = await pool.query(
-      `
-      UPDATE users
-      SET role = $1
-      WHERE id = $2
-      RETURNING id, full_name, role
-      `,
-      [normalizedRole, id]
-    );
+    const user = await User.findByIdAndUpdate(
+      id,
+      { $set: { role: normalizedRole } },
+      { new: true, runValidators: true }
+    ).select('full_name email role');
 
-    if (!result.rows.length) {
+    if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     res.json({
       message: "User role updated",
-      user: result.rows[0],
+      user: {
+        id: user._id,
+        full_name: user.full_name,
+        role: user.role
+      },
     });
   } catch (error) {
     console.error("Admin update role error:", error);
@@ -185,32 +211,34 @@ const updateUserRole = async (req, res) => {
 /**
  * 🔓 ACTIVATE USER ACCOUNT
  */
-const activateUser = async (req, res) => {
+exports.activateUser = async (req, res) => {
   try {
     const { id } = req.params;
 
     // Validate ID
-    if (!id || isNaN(parseInt(id))) {
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
 
-    const result = await pool.query(
-      `
-      UPDATE users
-      SET is_activated = TRUE
-      WHERE id = $1
-      RETURNING id, full_name, email, phone, is_activated
-      `,
-      [id]
-    );
+    const user = await User.findByIdAndUpdate(
+      id,
+      { $set: { is_activated: true } },
+      { new: true, runValidators: true }
+    ).select('full_name email phone is_activated');
 
-    if (!result.rows.length) {
+    if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     res.json({
       message: "User activated successfully",
-      user: result.rows[0],
+      user: {
+        id: user._id,
+        full_name: user.full_name,
+        email: user.email,
+        phone: user.phone,
+        is_activated: user.is_activated
+      },
     });
   } catch (error) {
     console.error("Admin activate user error:", error);
@@ -221,15 +249,13 @@ const activateUser = async (req, res) => {
 /**
  * 💰 MANUAL BALANCE ADJUSTMENT
  */
-const adjustUserBalance = async (req, res) => {
-  const client = await pool.connect();
-
+exports.adjustUserBalance = async (req, res) => {
   try {
     const { id } = req.params;
     let { amount, type } = req.body;
 
     // Validate ID
-    if (!id || isNaN(parseInt(id))) {
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
 
@@ -245,122 +271,76 @@ const adjustUserBalance = async (req, res) => {
 
     const normalizedType = type.toUpperCase();
     
-    await client.query("BEGIN");
-
-    const userRes = await client.query(
-      `
-      SELECT balance
-      FROM users
-      WHERE id = $1
-      FOR UPDATE
-      `,
-      [id]
-    );
-
-    if (!userRes.rows.length) {
-      await client.query("ROLLBACK");
+    const user = await User.findById(id);
+    if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    let balance = Number(userRes.rows[0].balance);
+    const currentBalance = user.total_earned || 0;
 
-    if (normalizedType === "DEBIT" && balance < amount) {
-      await client.query("ROLLBACK");
+    if (normalizedType === "DEBIT" && currentBalance < amount) {
       return res.status(400).json({ 
         message: "Insufficient balance", 
-        currentBalance: balance,
+        currentBalance: currentBalance,
         requestedDebit: amount 
       });
     }
 
-    balance = normalizedType === "CREDIT" ? balance + amount : balance - amount;
+    const newBalance = normalizedType === "CREDIT" ? 
+      currentBalance + amount : currentBalance - amount;
 
-    const update = await client.query(
-      `
-      UPDATE users
-      SET balance = $1
-      WHERE id = $2
-      RETURNING id, full_name, balance
-      `,
-      [balance, id]
-    );
-
-    await client.query("COMMIT");
+    user.total_earned = newBalance;
+    await user.save();
 
     res.json({
       message: "Balance updated",
-      user: update.rows[0],
+      user: {
+        id: user._id,
+        full_name: user.full_name,
+        total_earned: user.total_earned
+      },
     });
   } catch (error) {
-    await client.query("ROLLBACK").catch(rollbackError => {
-      console.error("Rollback failed:", rollbackError);
-    });
     console.error("Admin adjust balance error:", error);
     res.status(500).json({ message: "Server error" });
-  } finally {
-    client.release();
   }
 };
 
 /**
  * ❌ DELETE USER
  */
-const deleteUser = async (req, res) => {
-  const client = await pool.connect();
-  
+exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
 
     // Validate ID
-    if (!id || isNaN(parseInt(id))) {
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
 
-    await client.query("BEGIN");
+    const user = await User.findByIdAndDelete(id);
 
-    // Check if user exists
-    const checkRes = await client.query(
-      "SELECT id FROM users WHERE id = $1",
-      [id]
-    );
-
-    if (!checkRes.rows.length) {
-      await client.query("ROLLBACK");
+    if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Delete user
-    const result = await client.query(
-      `
-      DELETE FROM users
-      WHERE id = $1
-      RETURNING id
-      `,
-      [id]
-    );
-
-    await client.query("COMMIT");
+    // Also delete user's notifications
+    await Notification.deleteMany({ user_id: id });
 
     res.json({ 
       message: "User deleted successfully",
-      deletedId: result.rows[0]?.id 
+      deletedId: user._id 
     });
   } catch (error) {
-    await client.query("ROLLBACK").catch(rollbackError => {
-      console.error("Rollback failed:", rollbackError);
-    });
     console.error("Admin delete user error:", error);
     res.status(500).json({ message: "Server error" });
-  } finally {
-    client.release();
   }
 };
 
 /**
  * ❌ BULK DELETE USERS
  */
-const deleteBulkUsers = async (req, res) => {
-  const client = await pool.connect();
+exports.deleteBulkUsers = async (req, res) => {
   try {
     const { userIds } = req.body;
 
@@ -368,8 +348,8 @@ const deleteBulkUsers = async (req, res) => {
       return res.status(400).json({ message: "Invalid user IDs provided" });
     }
 
-    // Validate all IDs are numbers
-    const invalidIds = userIds.filter(id => isNaN(parseInt(id)));
+    // Validate all IDs are valid ObjectIds
+    const invalidIds = userIds.filter(id => !mongoose.Types.ObjectId.isValid(id));
     if (invalidIds.length > 0) {
       return res.status(400).json({ 
         message: "Invalid user IDs detected", 
@@ -377,31 +357,19 @@ const deleteBulkUsers = async (req, res) => {
       });
     }
 
-    await client.query("BEGIN");
+    // Delete users
+    const deleteResult = await User.deleteMany({ _id: { $in: userIds } });
 
-    const result = await client.query(
-      `
-      DELETE FROM users
-      WHERE id = ANY($1)
-      RETURNING id
-      `,
-      [userIds]
-    );
-
-    await client.query("COMMIT");
+    // Delete their notifications
+    await Notification.deleteMany({ user_id: { $in: userIds } });
 
     res.json({
-      message: `${result.rowCount} users deleted successfully`,
-      deletedCount: result.rowCount,
+      message: `${deleteResult.deletedCount} users deleted successfully`,
+      deletedCount: deleteResult.deletedCount,
     });
   } catch (error) {
-    await client.query("ROLLBACK").catch(rollbackError => {
-      console.error("Rollback failed:", rollbackError);
-    });
     console.error("Admin bulk delete users error:", error);
     res.status(500).json({ message: "Server error" });
-  } finally {
-    client.release();
   }
 };
 
@@ -412,7 +380,7 @@ const deleteBulkUsers = async (req, res) => {
 /**
  * SEND BULK NOTIFICATION
  */
-const sendBulkNotification = async (req, res) => {
+exports.sendBulkNotification = async (req, res) => {
   const { title, message } = req.body;
 
   if (!title || !message) {
@@ -428,31 +396,35 @@ const sendBulkNotification = async (req, res) => {
     return res.status(400).json({ message: "Message too long (max 500 chars)" });
   }
 
-  const client = await pool.connect();
   try {
-    await client.query('BEGIN');
+    // Get all active users (users without suspended status)
+    const activeUsers = await User.find({ 
+      $or: [{ status: { $ne: 'SUSPENDED' } }, { status: { $exists: false } }] 
+    }).select('_id');
 
-    // Use a single, more efficient query to insert notifications for all users.
-    const insertQuery = `
-      INSERT INTO notifications (user_id, title, message, type, created_at)
-      SELECT id, $1, $2, 'bulk', NOW() FROM users
-      WHERE status = 'ACTIVE'
-    `;
-    const result = await client.query(insertQuery, [title.trim(), message.trim()]);
+    if (activeUsers.length === 0) {
+      return res.status(404).json({ message: "No active users found" });
+    }
 
-    await client.query('COMMIT');
+    // Prepare notifications for batch insert
+    const notifications = activeUsers.map(user => ({
+      user_id: user._id,
+      title: title.trim(),
+      message: message.trim(),
+      type: 'bulk',
+      created_at: new Date()
+    }));
+
+    // Insert all notifications
+    const result = await Notification.insertMany(notifications);
+
     res.status(200).json({
-      message: `Notification sent to ${result.rowCount} active users.`,
-      sentCount: result.rowCount
+      message: `Notification sent to ${result.length} active users.`,
+      sentCount: result.length
     });
   } catch (error) {
-    await client.query('ROLLBACK').catch(rollbackError => {
-      console.error("Rollback failed:", rollbackError);
-    });
     console.error("Admin send bulk notification error:", error);
     res.status(500).json({ message: "Server error while sending notifications" });
-  } finally {
-    client.release();
   }
 };
 
@@ -464,56 +436,58 @@ const sendBulkNotification = async (req, res) => {
  * GET ALL NOTIFICATIONS ACROSS ALL USERS
  * GET /api/admin/notifications
  */
-const getAllNotifications = async (req, res) => {
+exports.getAllNotifications = async (req, res) => {
   try {
     const { type, limit = 100, offset = 0 } = req.query;
     
-    let query = `
-      SELECT 
-        n.*,
-        u.full_name as user_name,
-        u.email as user_email
-      FROM notifications n
-      LEFT JOIN users u ON n.user_id = u.id
-    `;
-    
-    const queryParams = [];
-    
+    // Build query
+    const query = {};
     if (type) {
-      query += ` WHERE n.type = $${queryParams.length + 1}`;
-      queryParams.push(type);
+      query.type = type;
     }
     
-    query += ` ORDER BY n.created_at DESC LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
-    queryParams.push(parseInt(limit), parseInt(offset));
-    
-    const { rows } = await pool.query(query, queryParams);
+    const notifications = await Notification.find(query)
+      .populate('user_id', 'full_name email')
+      .sort({ created_at: -1 })
+      .skip(parseInt(offset))
+      .limit(parseInt(limit))
+      .lean();
+
+    // Format response
+    const formattedNotifications = notifications.map(notif => ({
+      id: notif._id,
+      title: notif.title,
+      message: notif.message,
+      type: notif.type,
+      is_read: notif.is_read,
+      created_at: notif.created_at,
+      user_id: notif.user_id?._id,
+      user_name: notif.user_id?.full_name || 'Unknown User',
+      user_email: notif.user_id?.email || 'No email'
+    }));
     
     // Get stats
-    const statsResult = await pool.query(`
-      SELECT 
-        COUNT(*) as total,
-        COUNT(CASE WHEN is_read = false THEN 1 END) as unread,
-        type,
-        COUNT(*) as type_count
-      FROM notifications
-      GROUP BY type
-      ORDER BY type_count DESC
-    `);
+    const totalCount = await Notification.countDocuments();
+    const unreadCount = await Notification.countDocuments({ is_read: false });
     
+    const typeStats = await Notification.aggregate([
+      { $group: { _id: "$type", count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]);
+
     const stats = {
-      total: parseInt(statsResult.rows.reduce((sum, row) => sum + parseInt(row.total), 0) || 0),
-      unread: parseInt(statsResult.rows.reduce((sum, row) => sum + parseInt(row.unread || 0), 0) || 0),
-      byType: statsResult.rows.reduce((acc, row) => {
-        acc[row.type] = parseInt(row.type_count);
+      total: totalCount,
+      unread: unreadCount,
+      byType: typeStats.reduce((acc, stat) => {
+        acc[stat._id] = stat.count;
         return acc;
       }, {})
     };
 
     return res.json({
       success: true,
-      count: rows.length,
-      notifications: rows,
+      count: formattedNotifications.length,
+      notifications: formattedNotifications,
       stats
     });
   } catch (error) {
@@ -529,74 +503,42 @@ const getAllNotifications = async (req, res) => {
  * DELETE NOTIFICATION FOR ALL USERS
  * DELETE /api/admin/notifications/:id
  */
-const deleteNotificationForAllUsers = async (req, res) => {
-  const client = await pool.connect();
+exports.deleteNotificationForAllUsers = async (req, res) => {
   try {
     const { id } = req.params;
 
     // Validate ID
-    if (!id || isNaN(parseInt(id))) {
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
         message: "Invalid notification ID"
       });
     }
 
-    await client.query("BEGIN");
+    const notification = await Notification.findByIdAndDelete(id);
 
-    // First check if notification exists
-    const checkResult = await client.query(
-      `SELECT id, title, user_id FROM notifications WHERE id = $1`,
-      [id]
-    );
-
-    if (!checkResult.rows.length) {
-      await client.query("ROLLBACK");
+    if (!notification) {
       return res.status(404).json({
         success: false,
         message: "Notification not found"
       });
     }
 
-    const notification = checkResult.rows[0];
-    
-    // Delete the notification
-    const deleteResult = await client.query(
-      `
-      DELETE FROM notifications
-      WHERE id = $1
-      RETURNING id, title, user_id
-      `,
-      [id]
-    );
-
-    await client.query("COMMIT");
-
-    const deletedNotification = deleteResult.rows[0];
-
     return res.json({
       success: true,
-      message: `Notification "${deletedNotification.title}" deleted successfully`,
+      message: `Notification "${notification.title}" deleted successfully`,
       deletedNotification: {
-        id: deletedNotification.id,
-        title: deletedNotification.title,
-        userId: deletedNotification.user_id
-      },
-      details: deletedNotification.user_id 
-        ? `Deleted notification for user ID: ${deletedNotification.user_id}`
-        : "Notification deleted"
+        id: notification._id,
+        title: notification.title,
+        userId: notification.user_id
+      }
     });
   } catch (error) {
-    await client.query("ROLLBACK").catch(rollbackError => {
-      console.error("Rollback failed:", rollbackError);
-    });
     console.error("❌ Admin delete notification error:", error);
     return res.status(500).json({
       success: false,
       message: "Server error deleting notification"
     });
-  } finally {
-    client.release();
   }
 };
 
@@ -604,8 +546,7 @@ const deleteNotificationForAllUsers = async (req, res) => {
  * DELETE NOTIFICATIONS BY TYPE
  * DELETE /api/admin/notifications/type/:type
  */
-const deleteNotificationsByType = async (req, res) => {
-  const client = await pool.connect();
+exports.deleteNotificationsByType = async (req, res) => {
   try {
     const { type } = req.params;
 
@@ -616,52 +557,20 @@ const deleteNotificationsByType = async (req, res) => {
       });
     }
 
-    await client.query("BEGIN");
-
-    // Check how many will be deleted
-    const checkResult = await client.query(
-      `SELECT COUNT(*) as count FROM notifications WHERE type = $1`,
-      [type]
-    );
-
-    const countBefore = parseInt(checkResult.rows[0]?.count || 0);
-
-    if (countBefore === 0) {
-      await client.query("ROLLBACK");
-      return res.json({
-        success: true,
-        message: `No notifications found with type "${type}"`,
-        deletedCount: 0
-      });
-    }
-
-    // ✅ FIXED: Simple DELETE without RETURNING COUNT(*)
-    const deleteResult = await client.query(
-      `DELETE FROM notifications WHERE type = $1`,
-      [type]
-    );
-
-    await client.query("COMMIT");
-
-    const deletedCount = deleteResult.rowCount;
+    const result = await Notification.deleteMany({ type: type });
 
     return res.json({
       success: true,
-      message: `Deleted ${deletedCount} notifications of type "${type}"`,
-      deletedCount,
+      message: `Deleted ${result.deletedCount} notifications of type "${type}"`,
+      deletedCount: result.deletedCount,
       type
     });
   } catch (error) {
-    await client.query("ROLLBACK").catch(rollbackError => {
-      console.error("Rollback failed:", rollbackError);
-    });
     console.error("❌ Admin delete notifications by type error:", error);
     return res.status(500).json({
       success: false,
       message: "Server error deleting notifications by type"
     });
-  } finally {
-    client.release();
   }
 };
 
@@ -669,8 +578,7 @@ const deleteNotificationsByType = async (req, res) => {
  * DELETE OLD NOTIFICATIONS
  * DELETE /api/admin/notifications/cleanup?days=30
  */
-const deleteOldNotifications = async (req, res) => {
-  const client = await pool.connect();
+exports.deleteOldNotifications = async (req, res) => {
   try {
     const days = parseInt(req.query.days) || 30;
     
@@ -681,109 +589,115 @@ const deleteOldNotifications = async (req, res) => {
       });
     }
 
-    await client.query("BEGIN");
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
 
-    // Check how many will be deleted
-    const checkResult = await client.query(
-      `SELECT COUNT(*) as count FROM notifications WHERE created_at < NOW() - INTERVAL '${days} days'`
-    );
-
-    const countBefore = parseInt(checkResult.rows[0]?.count || 0);
-
-    if (countBefore === 0) {
-      await client.query("ROLLBACK");
-      return res.json({
-        success: true,
-        message: `No notifications older than ${days} days found`,
-        deletedCount: 0
-      });
-    }
-
-    // ✅ FIXED: Simple DELETE without RETURNING COUNT(*)
-    const deleteResult = await client.query(
-      `DELETE FROM notifications WHERE created_at < NOW() - INTERVAL '${days} days'`
-    );
-
-    await client.query("COMMIT");
-
-    const deletedCount = deleteResult.rowCount;
+    const result = await Notification.deleteMany({ 
+      created_at: { $lt: cutoffDate } 
+    });
 
     return res.json({
       success: true,
-      message: `Deleted ${deletedCount} notifications older than ${days} days`,
-      deletedCount,
+      message: `Deleted ${result.deletedCount} notifications older than ${days} days`,
+      deletedCount: result.deletedCount,
       days
     });
   } catch (error) {
-    await client.query("ROLLBACK").catch(rollbackError => {
-      console.error("Rollback failed:", rollbackError);
-    });
     console.error("❌ Admin delete old notifications error:", error);
     return res.status(500).json({
       success: false,
       message: "Server error deleting old notifications"
     });
-  } finally {
-    client.release();
   }
 };
 
 /* ======================================================
    📊 ADMIN DASHBOARD STATS
 ====================================================== */
-const getAdminStats = async (req, res) => {
+exports.getAdminStats = async (req, res) => {
   try {
-    const [
-      totalUsersRes,
-      totalRevenueRes,
-      totalWithdrawalsRes,
-      pendingActivationsRes,
-      pendingWithdrawalsRes,
-      surveysCompletedRes,
-      todayRevenueRes,
-    ] = await Promise.all([
-      pool.query(`SELECT COUNT(*) FROM users`),
-      pool.query(`SELECT SUM(amount) as total FROM activation_payments WHERE status = 'APPROVED'`),
-      pool.query(`SELECT SUM(amount) as total FROM withdraw_requests WHERE status = 'APPROVED'`),
-      pool.query(`SELECT COUNT(*) FROM activation_payments WHERE status = 'SUBMITTED'`),
-      pool.query(`SELECT COUNT(*) FROM withdraw_requests WHERE status = 'PROCESSING'`),
-      pool.query(`SELECT SUM(surveys_completed) as total FROM user_surveys`),
-      pool.query(`SELECT SUM(amount) as total FROM activation_payments WHERE status = 'APPROVED' AND DATE(created_at) = CURRENT_DATE`),
-    ]);
+    // Get all users count
+    const totalUsers = await User.countDocuments();
+    
+    // Calculate total revenue from activation requests
+    const allUsers = await User.find().select('activation_requests');
+    let totalRevenue = 0;
+    allUsers.forEach(user => {
+      if (user.activation_requests) {
+        user.activation_requests.forEach(activation => {
+          if (activation.status === 'APPROVED') {
+            totalRevenue += activation.amount || 0;
+          }
+        });
+      }
+    });
+    
+    // Calculate total withdrawals
+    let totalWithdrawals = 0;
+    let pendingWithdrawals = 0;
+    allUsers.forEach(user => {
+      if (user.withdrawal_requests) {
+        user.withdrawal_requests.forEach(withdrawal => {
+          if (withdrawal.status === 'APPROVED') {
+            totalWithdrawals += withdrawal.amount || 0;
+          } else if (withdrawal.status === 'PROCESSING') {
+            pendingWithdrawals++;
+          }
+        });
+      }
+    });
+    
+    // Calculate pending activations
+    let pendingActivations = 0;
+    allUsers.forEach(user => {
+      if (user.activation_requests) {
+        pendingActivations += user.activation_requests.filter(
+          req => req.status === 'SUBMITTED'
+        ).length;
+      }
+    });
+    
+    // Calculate surveys completed
+    let surveysCompleted = 0;
+    allUsers.forEach(user => {
+      if (user.plans) {
+        for (const planKey in user.plans) {
+          if (user.plans[planKey]) {
+            surveysCompleted += user.plans[planKey].surveys_completed || 0;
+          }
+        }
+      }
+    });
+    
+    // Calculate today's revenue
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let todayRevenue = 0;
+    allUsers.forEach(user => {
+      if (user.activation_requests) {
+        user.activation_requests.forEach(activation => {
+          if (activation.status === 'APPROVED' && activation.processed_at) {
+            const activationDate = new Date(activation.processed_at);
+            if (activationDate >= today) {
+              todayRevenue += activation.amount || 0;
+            }
+          }
+        });
+      }
+    });
 
     res.json({
-      totalUsers: Number(totalUsersRes.rows[0]?.count) || 0,
-      totalRevenue: Number(totalRevenueRes.rows[0]?.total) || 0,
-      totalWithdrawals: Number(totalWithdrawalsRes.rows[0]?.total) || 0,
-      pendingActivations: Number(pendingActivationsRes.rows[0]?.count) || 0,
-      pendingWithdrawals: Number(pendingWithdrawalsRes.rows[0]?.count) || 0,
-      surveysCompleted: Number(surveysCompletedRes.rows[0]?.total) || 0,
-      todayRevenue: Number(todayRevenueRes.rows[0]?.total) || 0,
-      netProfit: (Number(totalRevenueRes.rows[0]?.total) || 0) - (Number(totalWithdrawalsRes.rows[0]?.total) || 0),
+      totalUsers,
+      totalRevenue,
+      totalWithdrawals,
+      pendingActivations,
+      pendingWithdrawals,
+      surveysCompleted,
+      todayRevenue,
+      netProfit: totalRevenue - totalWithdrawals,
     });
   } catch (error) {
     console.error("Admin stats error:", error);
     res.status(500).json({ message: "Server error" });
   }
-};
-
-/* ======================================================
-   📤 EXPORT ALL FUNCTIONS
-====================================================== */
-module.exports = {
-  getAdminMe,
-  getAllUsers,
-  getUserById,
-  updateUserStatus,
-  updateUserRole,
-  activateUser,
-  adjustUserBalance,
-  deleteUser,
-  deleteBulkUsers,
-  sendBulkNotification,
-  getAllNotifications,           // ✅ NEW
-  deleteNotificationForAllUsers, // ✅ NEW
-  deleteNotificationsByType,     // ✅ NEW
-  deleteOldNotifications,        // ✅ NEW
-  getAdminStats
 };

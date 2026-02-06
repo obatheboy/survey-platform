@@ -1,4 +1,6 @@
-const pool = require("../config/db");
+const mongoose = require("mongoose");
+const User = require("../models/User");
+const Notification = require("../models/Notification"); // ✅ ADDED: Import Notification model
 
 const TOTAL_SURVEYS = 10;
 
@@ -15,8 +17,6 @@ const PLAN_FEES = {
    USER — SUBMIT ACTIVATION PAYMENT
 ===================================== */
 exports.submitActivationPayment = async (req, res) => {
-  const client = await pool.connect();
-
   try {
     const userId = req.user.id;
     const { mpesa_code, plan } = req.body;
@@ -34,67 +34,73 @@ exports.submitActivationPayment = async (req, res) => {
       });
     }
 
-    await client.query("BEGIN");
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    const { rows } = await client.query(
-      `
-      SELECT surveys_completed, completed, is_activated
-      FROM user_surveys
-      WHERE user_id = $1 AND plan = $2
-      FOR UPDATE
-      `,
-      [userId, plan]
-    );
-
-    if (!rows.length) {
-      await client.query("ROLLBACK");
+    // Check if user has the plan
+    if (!user.plans || !user.plans[plan]) {
       return res.status(400).json({ message: "Survey plan not found" });
     }
 
-    const planRow = rows[0];
+    const userPlan = user.plans[plan];
 
-    if (!planRow.completed || planRow.surveys_completed !== TOTAL_SURVEYS) {
-      await client.query("ROLLBACK");
+    // Check if surveys are completed
+    if (!userPlan.completed || userPlan.surveys_completed !== TOTAL_SURVEYS) {
       return res.status(400).json({
         message: "Complete all surveys before activation",
       });
     }
 
-    if (planRow.is_activated) {
-      await client.query("ROLLBACK");
+    // Check if already activated
+    if (userPlan.is_activated) {
       return res.status(400).json({
         message: "Plan already activated",
       });
     }
 
-    const existing = await client.query(
-      `
-      SELECT id
-      FROM activation_payments
-      WHERE user_id = $1
-        AND plan = $2
-        AND status = 'SUBMITTED'
-      `,
-      [userId, plan]
+    // Initialize activation_requests array if it doesn't exist
+    if (!user.activation_requests) {
+      user.activation_requests = [];
+    }
+    
+    // Check for existing pending activation for this plan
+    const existingRequest = user.activation_requests.find(
+      req => req.plan === plan && req.status === 'SUBMITTED'
     );
-
-    if (existing.rows.length) {
-      await client.query("ROLLBACK");
+    
+    if (existingRequest) {
       return res.status(400).json({
         message: "Activation already submitted and pending approval",
       });
     }
+    
+    // Add new activation request
+    user.activation_requests.push({
+      plan: plan,
+      mpesa_code: paymentReference,
+      amount: PLAN_FEES[plan],
+      status: 'SUBMITTED',
+      created_at: new Date()
+    });
+    
+    await user.save();
 
-    await client.query(
-      `
-      INSERT INTO activation_payments
-        (user_id, plan, mpesa_code, amount, status)
-      VALUES ($1, $2, $3, $4, 'SUBMITTED')
-      `,
-      [userId, plan, paymentReference, PLAN_FEES[plan]]
-    );
-
-    await client.query("COMMIT");
+    // ✅ ADDED: Create notification for activation submission
+    try {
+      const notification = new Notification({
+        user_id: user._id,
+        title: `📝 ${plan} Activation Submitted`,
+        message: `Your ${plan} plan activation request has been submitted. Awaiting admin approval.`,
+        action_route: "/dashboard",
+        type: "activation"
+      });
+      await notification.save();
+      console.log(`✅ Activation submission notification created for ${plan} plan`);
+    } catch (notifError) {
+      console.error("❌ Activation submission notification error:", notifError);
+    }
 
     return res.json({
       activation_status: "SUBMITTED",
@@ -103,11 +109,8 @@ exports.submitActivationPayment = async (req, res) => {
       message: "Payment submitted successfully. Awaiting admin approval.",
     });
   } catch (error) {
-    await client.query("ROLLBACK");
     console.error("❌ Activation submit error:", error);
     return res.status(500).json({ message: "Server error" });
-  } finally {
-    client.release();
   }
 };
 
@@ -115,119 +118,97 @@ exports.submitActivationPayment = async (req, res) => {
    ADMIN — APPROVE ACTIVATION
 ===================================== */
 exports.approveActivation = async (req, res) => {
-  const client = await pool.connect();
-
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Admin access only" });
     }
 
-    const { id } = req.params;
+    const { userId, activationId } = req.body;
 
-    await client.query("BEGIN");
+    if (!userId || !activationId) {
+      return res.status(400).json({ 
+        message: "User ID and Activation ID required" 
+      });
+    }
 
-    const activationRes = await client.query(
-      `
-      SELECT id, user_id, plan, status
-      FROM activation_payments
-      WHERE id = $1
-      FOR UPDATE
-      `,
-      [id]
-    );
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    if (!activationRes.rows.length) {
-      await client.query("ROLLBACK");
+    // Find the activation request
+    const activationRequest = user.activation_requests.id(activationId);
+    if (!activationRequest) {
       return res.status(404).json({ message: "Activation request not found" });
     }
 
-    const activation = activationRes.rows[0];
-
-    if (activation.status !== "SUBMITTED") {
-      await client.query("ROLLBACK");
+    if (activationRequest.status !== 'SUBMITTED') {
       return res.status(400).json({
         message: "Activation already processed",
       });
     }
 
-    const planCheck = await client.query(
-      `
-      SELECT surveys_completed, completed, is_activated
-      FROM user_surveys
-      WHERE user_id = $1 AND plan = $2
-      FOR UPDATE
-      `,
-      [activation.user_id, activation.plan]
-    );
+    const plan = activationRequest.plan;
 
-    if (
-      !planCheck.rows.length ||
-      !planCheck.rows[0].completed ||
-      planCheck.rows[0].surveys_completed !== TOTAL_SURVEYS
-    ) {
-      await client.query("ROLLBACK");
+    // Check if user has the plan completed
+    if (!user.plans || !user.plans[plan]) {
       return res.status(400).json({
         message: "User has not completed required surveys",
       });
     }
 
-    if (planCheck.rows[0].is_activated) {
-      await client.query("ROLLBACK");
+    const userPlan = user.plans[plan];
+    
+    if (!userPlan.completed || userPlan.surveys_completed !== TOTAL_SURVEYS) {
+      return res.status(400).json({
+        message: "User has not completed required surveys",
+      });
+    }
+
+    if (userPlan.is_activated) {
       return res.status(400).json({
         message: "Plan already activated",
       });
     }
 
-    await client.query(
-      `UPDATE activation_payments SET status = 'APPROVED' WHERE id = $1`,
-      [id]
-    );
+    // Update activation request status
+    activationRequest.status = 'APPROVED';
+    activationRequest.processed_at = new Date();
 
-    // ✅ Activate only the specific plan
-    await client.query(
-      `
-      UPDATE user_surveys
-      SET is_activated = true
-      WHERE user_id = $1 AND plan = $2
-      `,
-      [activation.user_id, activation.plan]
-    );
-
-    /* =====================================
-       🔔 CREATE USER NOTIFICATION
-    ===================================== */
-    if (activation.plan === "REGULAR") {
-      await client.query(
-        `
-        INSERT INTO notifications
-          (user_id, title, message, action_route, is_read)
-        VALUES
-          ($1, $2, $3, $4, false)
-        `,
-        [
-          activation.user_id,
-          "🎉 REGULAR Plan Activated",
-          "Congratulations! Your REGULAR plan has been successfully activated.\n\n" +
-            "You now have 1 remaining survey plan — VIP.\n\n" +
-            "Complete VIP surveys and activate VIP with a KES 150 activation fee to unlock withdrawals for your entire remaining balance.",
-          "/dashboard?vip=true",
-        ]
-      );
+    // Activate the plan
+    user.plans[plan].is_activated = true;
+    user.plans[plan].activated_at = new Date();
+    
+    // If REGULAR plan is activated, also set user.is_activated = true
+    if (plan === "REGULAR") {
+      user.is_activated = true;
     }
+    
+    await user.save();
 
-    await client.query("COMMIT");
+    // ✅ ADDED: Create notification for activation approval
+    try {
+      const notification = new Notification({
+        user_id: user._id,
+        title: `✅ ${plan} Plan Activated!`,
+        message: `Your ${plan} plan has been successfully activated! You can now withdraw your earnings.`,
+        action_route: "/withdraw",
+        type: "activation"
+      });
+      await notification.save();
+      console.log(`✅ Activation approval notification created for ${plan} plan`);
+    } catch (notifError) {
+      console.error("❌ Activation approval notification error:", notifError);
+    }
 
     return res.json({
       message: "Activation approved",
-      plan: activation.plan,
+      plan: plan,
       withdraw_unlocked: true,
     });
   } catch (error) {
-    await client.query("ROLLBACK");
     console.error("❌ Approve activation error:", error);
     return res.status(500).json({ message: "Server error" });
-  } finally {
-    client.release();
   }
 };
 
@@ -235,43 +216,110 @@ exports.approveActivation = async (req, res) => {
    ADMIN — REJECT ACTIVATION
 ===================================== */
 exports.rejectActivation = async (req, res) => {
-  const client = await pool.connect();
-
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Admin access only" });
     }
 
-    const { id } = req.params;
+    const { userId, activationId } = req.body;
 
-    await client.query("BEGIN");
-
-    const result = await client.query(
-      `
-      UPDATE activation_payments
-      SET status = 'REJECTED'
-      WHERE id = $1
-        AND status = 'SUBMITTED'
-      RETURNING id
-      `,
-      [id]
-    );
-
-    if (!result.rows.length) {
-      await client.query("ROLLBACK");
-      return res.status(404).json({
-        message: "Activation request not found or already processed",
+    if (!userId || !activationId) {
+      return res.status(400).json({ 
+        message: "User ID and Activation ID required" 
       });
     }
 
-    await client.query("COMMIT");
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    return res.json({ message: "Activation rejected" });
+    // Find the activation request
+    const activationRequest = user.activation_requests.id(activationId);
+    if (!activationRequest) {
+      return res.status(404).json({ 
+        message: "Activation request not found" 
+      });
+    }
+
+    if (activationRequest.status !== 'SUBMITTED') {
+      return res.status(400).json({
+        message: "Activation already processed",
+      });
+    }
+
+    // Update activation request status
+    activationRequest.status = 'REJECTED';
+    activationRequest.processed_at = new Date();
+    
+    await user.save();
+
+    // ✅ ADDED: Create notification for activation rejection
+    try {
+      const notification = new Notification({
+        user_id: user._id,
+        title: `❌ ${activationRequest.plan} Activation Rejected`,
+        message: `Your ${activationRequest.plan} plan activation request was rejected. Please check your M-Pesa payment and try again.`,
+        action_route: "/activation",
+        type: "system"
+      });
+      await notification.save();
+    } catch (notifError) {
+      console.error("❌ Activation rejection notification error:", notifError);
+    }
+
+    return res.json({ 
+      message: "Activation rejected",
+      user_id: userId,
+      activation_id: activationId
+    });
   } catch (error) {
-    await client.query("ROLLBACK");
     console.error("❌ Reject activation error:", error);
     return res.status(500).json({ message: "Server error" });
-  } finally {
-    client.release();
+  }
+};
+
+/* =====================================
+   ADMIN — GET PENDING ACTIVATIONS
+===================================== */
+exports.getPendingActivations = async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Admin access only" });
+    }
+
+    // Find all users with pending activation requests
+    const users = await User.find({
+      'activation_requests.status': 'SUBMITTED'
+    }).select('full_name phone email activation_requests');
+
+    // Format the response
+    const pendingActivations = [];
+    
+    users.forEach(user => {
+      user.activation_requests.forEach(activation => {
+        if (activation.status === 'SUBMITTED') {
+          pendingActivations.push({
+            activation_id: activation._id,
+            user_id: user._id,
+            user_name: user.full_name,
+            user_phone: user.phone,
+            user_email: user.email,
+            plan: activation.plan,
+            mpesa_code: activation.mpesa_code,
+            amount: activation.amount,
+            created_at: activation.created_at
+          });
+        }
+      });
+    });
+
+    return res.json({
+      count: pendingActivations.length,
+      activations: pendingActivations
+    });
+  } catch (error) {
+    console.error("❌ Get pending activations error:", error);
+    return res.status(500).json({ message: "Server error" });
   }
 };

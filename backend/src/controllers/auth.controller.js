@@ -1,7 +1,8 @@
 /* eslint-disable no-undef */
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const pool = require("../config/db");
+const User = require("../models/User");
+const Notification = require("../models/Notification"); // ✅ ADDED: Import Notification model
 
 const TOTAL_SURVEYS = 10;
 
@@ -10,10 +11,10 @@ const TOTAL_SURVEYS = 10;
 ================================ */
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: true,          // ✅ ALWAYS TRUE ON HTTPS
-  sameSite: "none",      // ✅ REQUIRED FOR CROSS-SITE COOKIE
+  secure: true,
+  sameSite: "none",
   path: "/",
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
 /* ===============================
@@ -28,66 +29,90 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: "Required fields missing" });
     }
 
-    const exists = await pool.query("SELECT id FROM users WHERE phone = $1", [phone]);
-    if (exists.rows.length) {
+    // ✅ CHANGED: MongoDB findOne instead of pool.query
+    const exists = await User.findOne({ phone });
+    if (exists) {
       return res.status(409).json({ message: "Phone already registered" });
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
 
-    const result = await pool.query(
-      `
-      INSERT INTO users (
-        full_name,
-        phone,
-        email,
-        password_hash,
-        is_activated,
-        total_earned,
-        welcome_bonus_received
-      )
-      VALUES ($1, $2, $3, $4, false, 1200, true)
-      RETURNING id, full_name, phone, email, is_activated
-      `,
-      [fullName, phone, email || null, passwordHash]
-    );
+    // ✅ CHANGED: MongoDB create instead of pool.query
+    const user = new User({
+      full_name: fullName,
+      phone,
+      email: email || null,
+      password_hash: passwordHash,
+      is_activated: false,
+      total_earned: 1200,
+      welcome_bonus_received: true,
+      welcome_bonus: 1200, // Add this field
+      // Initialize empty plans structure
+      plans: {
+        REGULAR: {
+          surveys_completed: 0,
+          completed: false,
+          is_activated: false,
+          total_surveys: 10
+        },
+        VIP: {
+          surveys_completed: 0,
+          completed: false,
+          is_activated: false,
+          total_surveys: 10
+        },
+        VVIP: {
+          surveys_completed: 0,
+          completed: false,
+          is_activated: false,
+          total_surveys: 10
+        }
+      }
+    });
 
-    const user = result.rows[0];
+    await user.save();
 
     // ---------------------------
-    // 🌟 WELCOME BONUS LOGIC
+    // 🌟 WELCOME BONUS LOGIC - UPDATED
     // ---------------------------
     try {
-      // Add notification for the welcome bonus
-      await pool.query(
-        `INSERT INTO notifications (user_id, title, message, action_route, is_read, type, created_at)
-         VALUES ($1, $2, $3, $4, false, 'welcome_bonus', NOW())`,
-        [
-          user.id,
-          "🎉 Welcome Bonus Unlocked!",
-          "You've received KES 1,200 as a welcome bonus. Activate your account to withdraw.",
-          "/dashboard",
-        ]
-      );
+      // ✅ UPDATED: Use Notification model
+      const notification = new Notification({
+        user_id: user._id,
+        title: "🎉 Welcome Bonus Unlocked!",
+        message: "You've received KES 1,200 as a welcome bonus. Activate your account to withdraw.",
+        action_route: "/dashboard",
+        type: "welcome_bonus"
+      });
+      
+      await notification.save();
+      console.log("✅ Welcome bonus notification created for user:", user._id);
     } catch (bonusError) {
-      console.error(
-        "WELCOME BONUS NOTIFICATION ERROR on register:",
-        bonusError
-      );
+      console.error("WELCOME BONUS NOTIFICATION ERROR:", bonusError);
       // Don't block registration if notification fails
     }
 
-    // Issue token and set cookie
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    // ✅ CHANGED: Use user._id instead of user.id
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
     res.cookie("token", token, COOKIE_OPTIONS);
 
     res.status(201).json({
       message: "Registration successful",
-      token: token,  // ← Send token in response for mobile
-      user,
+      token: token,
+      user: {
+        id: user._id, // ✅ CHANGED to _id
+        full_name: user.full_name,
+        phone: user.phone,
+        email: user.email,
+        is_activated: user.is_activated
+      },
     });
   } catch (error) {
     console.error("REGISTER ERROR:", error);
+    // ✅ ADDED: Handle MongoDB duplicate key error
+    if (error.code === 11000) {
+      return res.status(409).json({ message: "Phone already registered" });
+    }
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -99,25 +124,22 @@ exports.login = async (req, res) => {
   try {
     const { phone, password } = req.body;
 
-    const result = await pool.query(
-      `SELECT id, phone, password_hash, is_activated, welcome_bonus_received FROM users WHERE phone = $1`,
-      [phone]
-    );
+    // ✅ CHANGED: MongoDB findOne instead of pool.query
+    const user = await User.findOne({ phone });
+    if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
-    if (!result.rows.length) return res.status(401).json({ message: "Invalid credentials" });
-
-    const user = result.rows[0];
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) return res.status(401).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    // ✅ CHANGED: Use user._id instead of user.id
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
     res.cookie("token", token, COOKIE_OPTIONS);
 
     res.json({
       message: "Login successful",
-      token: token,  // ← Send token in response for mobile
+      token: token,
       user: {
-        id: user.id,
+        id: user._id, // ✅ CHANGED to _id
         phone: user.phone,
         is_activated: user.is_activated,
       },
@@ -129,7 +151,7 @@ exports.login = async (req, res) => {
 };
 
 /* ===============================
-   LOGOUT
+   LOGOUT (No changes needed)
 ================================ */
 exports.logout = (req, res) => {
   res.clearCookie("token", { ...COOKIE_OPTIONS, maxAge: 0 });
@@ -137,56 +159,55 @@ exports.logout = (req, res) => {
 };
 
 /* ===============================
-   GET ME
+   GET ME (Updated for plans structure)
 ================================ */
 exports.getMe = async (req, res) => {
   try {
     if (!req.user?.id) return res.status(401).json({ message: "Invalid session" });
 
-    const userRes = await pool.query(
-      `SELECT id, full_name, phone, email, is_activated, total_earned, welcome_bonus_received
-       FROM users
-       WHERE id = $1`,
-      [req.user.id]
-    );
+    // ✅ CHANGED: MongoDB findById instead of pool.query
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(401).json({ message: "Invalid session" });
 
-    if (!userRes.rows.length) return res.status(401).json({ message: "Invalid session" });
-
-    const plansRes = await pool.query(
-      `SELECT plan, surveys_completed, completed, is_activated, created_at
-       FROM user_surveys
-       WHERE user_id = $1
-       ORDER BY created_at DESC`,
-      [req.user.id]
-    );
-
-    const plans = {};
+    // Calculate active plan and totals from plans structure
     let activePlan = null;
     let totalSurveysCompleted = 0;
+    let surveysCompleted = 0;
+    let surveysLocked = false;
 
-    for (const row of plansRes.rows) {
-      plans[row.plan] = {
-        surveys_completed: row.surveys_completed,
-        completed: row.completed,
-        is_activated: row.is_activated,
-        total_surveys: TOTAL_SURVEYS,
-      };
-
-      // Accumulate total surveys completed across all plans
-      totalSurveysCompleted += row.surveys_completed;
-
-      if (!row.is_activated && !activePlan) activePlan = row.plan;
+    // Check if user has plans structure
+    if (user.plans) {
+      // Loop through all plans (REGULAR, VIP, VVIP)
+      for (const [planKey, planData] of Object.entries(user.plans)) {
+        if (planData && typeof planData === 'object') {
+          // Accumulate total surveys completed across all plans
+          totalSurveysCompleted += planData.surveys_completed || 0;
+          
+          // Determine active plan (first non-activated plan)
+          if (!activePlan && planData.is_activated === false) {
+            activePlan = planKey;
+            surveysCompleted = planData.surveys_completed || 0;
+            surveysLocked = planData.completed === true;
+          }
+        }
+      }
     }
 
-    const activePlanData = activePlan ? plans[activePlan] : null;
-
     res.json({
-      ...userRes.rows[0],
+      id: user._id,
+      full_name: user.full_name,
+      phone: user.phone,
+      email: user.email,
+      is_activated: user.is_activated,
+      total_earned: user.total_earned,
+      welcome_bonus: user.welcome_bonus || 1200, // Include welcome_bonus field
+      welcome_bonus_received: user.welcome_bonus_received,
+      welcome_bonus_withdrawn: user.welcome_bonus_withdrawn || false,
       active_plan: activePlan,
-      surveys_completed: activePlanData?.surveys_completed || 0,
-      total_surveys_completed: totalSurveysCompleted, // ← NEW: Total across all plans
-      surveys_locked: activePlanData?.completed === true,
-      plans,
+      surveys_completed: surveysCompleted,
+      total_surveys_completed: totalSurveysCompleted,
+      surveys_locked: surveysLocked,
+      plans: user.plans || {},
     });
   } catch (error) {
     console.error("GET ME ERROR:", error);

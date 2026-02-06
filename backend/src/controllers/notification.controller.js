@@ -1,4 +1,4 @@
-const pool = require("../config/db");
+const Notification = require("../models/Notification");
 
 /* =====================================
    USER — GET MY NOTIFICATIONS
@@ -7,34 +7,27 @@ exports.getMyNotifications = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const { rows } = await pool.query(
-      `
-      SELECT
-        id,
-        title,
-        message,
-        action_route,
-        is_read,
-        type,
-        created_at
-      FROM notifications
-      WHERE user_id = $1
-      ORDER BY created_at DESC
-      LIMIT 50
-      `,
-      [userId]
-    );
+    const notifications = await Notification.find({ user_id: userId })
+      .sort({ created_at: -1 })
+      .limit(50)
+      .lean(); // Convert to plain JavaScript objects
 
     // Optional: Highlight welcome bonus notification
-    const notifications = rows.map((notif) => ({
-      ...notif,
+    const formattedNotifications = notifications.map((notif) => ({
+      id: notif._id,
+      title: notif.title,
+      message: notif.message,
+      action_route: notif.action_route,
+      is_read: notif.is_read,
+      type: notif.type,
+      created_at: notif.created_at,
       is_welcome_bonus: notif.type === "welcome_bonus",
     }));
 
     return res.json({
       success: true,
-      count: notifications.length,
-      notifications
+      count: formattedNotifications.length,
+      notifications: formattedNotifications
     });
   } catch (error) {
     console.error("❌ Get notifications error:", error);
@@ -53,17 +46,13 @@ exports.markNotificationRead = async (req, res) => {
     const userId = req.user.id;
     const { id } = req.params;
 
-    const result = await pool.query(
-      `
-      UPDATE notifications
-      SET is_read = true
-      WHERE id = $1 AND user_id = $2
-      RETURNING id, title, is_read, type
-      `,
-      [id, userId]
+    const notification = await Notification.findOneAndUpdate(
+      { _id: id, user_id: userId },
+      { $set: { is_read: true } },
+      { new: true, runValidators: true }
     );
 
-    if (!result.rows.length) {
+    if (!notification) {
       return res.status(404).json({ 
         success: false, 
         message: "Notification not found" 
@@ -73,7 +62,12 @@ exports.markNotificationRead = async (req, res) => {
     return res.json({ 
       success: true, 
       message: "Notification marked as read",
-      notification: result.rows[0]
+      notification: {
+        id: notification._id,
+        title: notification.title,
+        is_read: notification.is_read,
+        type: notification.type
+      }
     });
   } catch (error) {
     console.error("❌ Mark notification read error:", error);
@@ -92,13 +86,8 @@ exports.clearAllNotifications = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // ✅ FIXED: Get count before deleting
-    const countResult = await pool.query(
-      `SELECT COUNT(*) as count FROM notifications WHERE user_id = $1`,
-      [userId]
-    );
-
-    const countBefore = parseInt(countResult.rows[0]?.count || 0);
+    // Get count before deleting
+    const countBefore = await Notification.countDocuments({ user_id: userId });
 
     if (countBefore === 0) {
       return res.json({
@@ -108,18 +97,13 @@ exports.clearAllNotifications = async (req, res) => {
       });
     }
 
-    // ✅ FIXED: Simple DELETE query without RETURNING COUNT(*)
-    const deleteResult = await pool.query(
-      `DELETE FROM notifications WHERE user_id = $1`,
-      [userId]
-    );
-
-    const deletedCount = deleteResult.rowCount;
+    // Delete all notifications for this user
+    const deleteResult = await Notification.deleteMany({ user_id: userId });
 
     return res.json({
       success: true,
-      message: `Cleared ${deletedCount} notifications`,
-      deletedCount
+      message: `Cleared ${deleteResult.deletedCount} notifications`,
+      deletedCount: deleteResult.deletedCount
     });
   } catch (error) {
     console.error("❌ Clear all notifications error:", error);
@@ -139,16 +123,12 @@ exports.deleteNotification = async (req, res) => {
     const userId = req.user.id;
     const { id } = req.params;
 
-    const result = await pool.query(
-      `
-      DELETE FROM notifications
-      WHERE id = $1 AND user_id = $2
-      RETURNING id
-      `,
-      [id, userId]
-    );
+    const result = await Notification.findOneAndDelete({ 
+      _id: id, 
+      user_id: userId 
+    });
 
-    if (!result.rows.length) {
+    if (!result) {
       return res.status(404).json({ 
         success: false, 
         message: "Notification not found or already deleted" 
@@ -167,4 +147,39 @@ exports.deleteNotification = async (req, res) => {
       message: "Server error deleting notification" 
     });
   }
+};
+
+/* =====================================
+   HELPER: CREATE NOTIFICATION
+   (For use in other controllers)
+===================================== */
+exports.createNotification = async (userId, notificationData) => {
+  try {
+    const notification = new Notification({
+      user_id: userId,
+      title: notificationData.title,
+      message: notificationData.message,
+      action_route: notificationData.action_route || '/dashboard',
+      type: notificationData.type || 'system',
+      ...notificationData
+    });
+
+    await notification.save();
+    return notification;
+  } catch (error) {
+    console.error("❌ Create notification error:", error);
+    return null;
+  }
+};
+
+/* =====================================
+   HELPER: CREATE WELCOME BONUS NOTIFICATION
+===================================== */
+exports.createWelcomeBonusNotification = async (userId) => {
+  return await exports.createNotification(userId, {
+    title: "🎉 Welcome Bonus Unlocked!",
+    message: "You've received KES 1,200 as a welcome bonus. Activate your account to withdraw.",
+    action_route: "/dashboard",
+    type: "welcome_bonus"
+  });
 };
