@@ -1,28 +1,32 @@
-const pool = require('./src/config/db');
+const mongoose = require('mongoose');
 
-(async () => {
+async function check() {
   try {
-    // Check for admin users
-    const result = await pool.query(
-      'SELECT id, full_name, phone, role FROM users WHERE role = \'admin\''
-    );
+    console.log('Connecting to MongoDB...');
     
-    console.log('\n📊 Admin users in database:');
-    if (result.rows.length === 0) {
-      console.log('❌ No admin users found!');
-      console.log('\nYou need to create an admin account first.');
-      console.log('1. Update an existing user to be admin, or');
-      console.log('2. Create a new admin user account');
+    await mongoose.connect('mongodb+srv://zyron:obatheboy@survey-platform-cluster.dkb1wm6.mongodb.net/survey_platform_db?retryWrites=true&w=majority&appName=survey-platform-cluster');
+    
+    console.log('Connected!');
+    
+    const User = require('./src/models/User');
+    const admin = await User.findOne({email:'admin@survey.com'});
+    
+    if (!admin) {
+      console.log('❌ NO ADMIN FOUND');
     } else {
-      console.log('✅ Found admin users:');
-      result.rows.forEach(admin => {
-        console.log(`   - ${admin.full_name} (${admin.phone})`);
-      });
+      console.log('✅ ADMIN FOUND:');
+      console.log('  Phone:', admin.phone);
+      console.log('  Role:', admin.role);
+      console.log('  Has password_hash:', !!admin.password_hash);
+      console.log('  Password hash first 30 chars:', admin.password_hash?.substring(0, 30));
     }
     
-    process.exit(0);
-  } catch (err) {
-    console.error('Database error:', err.message);
-    process.exit(1);
+    await mongoose.disconnect();
+    console.log('Check complete.');
+    
+  } catch (error) {
+    console.error('Error:', error.message);
   }
-})();
+}
+
+check();
