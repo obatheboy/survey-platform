@@ -1,68 +1,69 @@
-const pool = require('./src/config/db');
-const bcrypt = require('bcrypt');
-const crypto = require('crypto');
+const mongoose = require('mongoose');
 
-/**
- * CREATE ADMIN USER SCRIPT
- * Run: node create-admin.js <phone> <password> <fullName>
- * Example: node create-admin.js 0712345678 mypassword123 "Admin User"
- */
-
-const phone = process.argv[2];
-const password = process.argv[3];
-const fullName = process.argv[4];
-
-if (!phone || !password || !fullName) {
-  console.log('\n❌ Missing arguments!\n');
-  console.log('Usage: node create-admin.js <phone> <password> <fullName>\n');
-  console.log('Example: node create-admin.js 0712345678 mypassword123 "Admin User"\n');
-  process.exit(1);
-}
-
-// Generate UUID v4
-function generateUUID() {
-  return crypto.randomUUID();
-}
-
-(async () => {
+async function createAdmin() {
   try {
-    console.log('\n🔐 Creating admin account...\n');
-
-    // 1️⃣ Hash the password with bcrypt
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    console.log('🔗 Connecting to MongoDB Atlas...');
     
-    // 2️⃣ Generate a proper UUID
-    const adminId = generateUUID();
+    const MONGODB_URI = 'mongodb+srv://zyron:obatheboy@survey-platform-cluster.dkb1wm6.mongodb.net/survey_platform_db?retryWrites=true&w=majority&appName=survey-platform-cluster';
     
-    // 3️⃣ Create the admin user
-    const result = await pool.query(
-      `INSERT INTO users (id, full_name, email, phone, password_hash, role, is_activated, status)
-       VALUES ($1, $2, $3, $4, $5, 'admin', true, 'ACTIVE')
-       RETURNING id, full_name, phone, role`,
-      [adminId, fullName, `admin-${Date.now()}@survey.local`, phone, hashedPassword]
-    );
-
-    if (result.rows.length > 0) {
-      const admin = result.rows[0];
-      console.log('✅ Admin account created successfully!\n');
-      console.log('📋 Account Details:');
-      console.log(`   Name: ${admin.full_name}`);
-      console.log(`   Phone: ${admin.phone}`);
-      console.log(`   Role: ${admin.role}`);
-      console.log(`   ID: ${admin.id}\n`);
-      console.log('🔑 Login with:');
-      console.log(`   Phone: ${phone}`);
-      console.log(`   Password: ${password}\n`);
-    }
-
-    process.exit(0);
-  } catch (err) {
-    if (err.message.includes('duplicate key')) {
-      console.error('\n❌ Admin account with this phone already exists!\n');
+    await mongoose.connect(MONGODB_URI);
+    console.log('✅ Connected to MongoDB');
+    
+    // Get the User collection directly (bypass model middleware)
+    const db = mongoose.connection.db;
+    const usersCollection = db.collection('users');
+    
+    // Check if admin already exists
+    const existingAdmin = await usersCollection.findOne({ email: 'admin@survey.com' });
+    
+    if (existingAdmin) {
+      console.log('✅ Admin already exists:');
+      console.log('   Email:', existingAdmin.email);
+      console.log('   Role:', existingAdmin.role);
+      console.log('   ID:', existingAdmin._id);
     } else {
-      console.error('\n❌ Error creating admin:', err.message, '\n');
+      // Create admin directly in collection
+      const adminData = {
+        full_name: 'System Administrator',
+        email: 'admin@survey.com',
+        phone: '+254794101450',
+        password_hash: '$2a$10$N9qo8uLOickgx2ZMRZoMye5aT6cZHQz7xHFnLw8q.6J5cY7aQdG0a', // Hash for "Admin123!"
+        role: 'admin',
+        is_activated: true,
+        status: 'ACTIVE',
+        total_earned: 0,
+        welcome_bonus: 1200,
+        welcome_bonus_withdrawn: false,
+        created_at: new Date(),
+        updated_at: new Date()
+      };
+      
+      const result = await usersCollection.insertOne(adminData);
+      
+      console.log('✅ Admin created successfully!');
+      console.log('📋 Login Details:');
+      console.log('   Email: admin@survey.com');
+      console.log('   Password: Admin123!');
+      console.log('   Role: admin');
+      console.log('   ID:', result.insertedId);
     }
-    process.exit(1);
+    
+    // List all admins
+    const allAdmins = await usersCollection.find({ role: 'admin' }).toArray();
+    console.log('\n📋 All Admin Users:', allAdmins.length);
+    allAdmins.forEach(admin => {
+      console.log(`   - ${admin.email} (${admin.full_name})`);
+    });
+    
+    await mongoose.disconnect();
+    console.log('\n✅ Done! Test login with:');
+    console.log('   Email: admin@survey.com');
+    console.log('   Password: Admin123!');
+    
+  } catch (error) {
+    console.error('❌ Error:', error.message);
+    console.error('Stack:', error.stack);
   }
-})();
+}
+
+createAdmin();
