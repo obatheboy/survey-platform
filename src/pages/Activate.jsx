@@ -9,8 +9,8 @@ import "./Activate.css";
 /* =========================
    CONSTANTS
 ========================= */
-const SEND_MONEY_NUMBER = "0740209662";
-const RECEIVER_NAME = "Irene Otoki";
+const SEND_MONEY_NUMBER = "0794101450";
+const RECEIVER_NAME = "Obadiah Otoki";
 
 /* =========================
    PLAN CONFIG (DISPLAY ONLY)

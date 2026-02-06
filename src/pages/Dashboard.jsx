@@ -733,7 +733,7 @@ return (
         padding: '12px',
         background: 'var(--bg-surface)',
         boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.1)',
-        border: '1px solid var(--border-soft)',
+        border: '3px solid red',
         position: 'relative',
         overflow: 'hidden',
         marginTop: '10px'
