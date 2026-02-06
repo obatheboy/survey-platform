@@ -54,6 +54,9 @@ exports.adminLogin = async (req, res) => {
         email: user.email,
         phone: user.phone,
         role: user.role,
+        status: user.status,
+        active_plan: user.active_plan || null,
+        surveys_completed: user.surveys_completed || 0,
       },
     });
   } catch (error) {
@@ -113,6 +116,9 @@ exports.createAdmin = async (req, res) => {
         email: admin.email,
         phone: admin.phone,
         role: admin.role,
+        status: admin.status,
+        active_plan: null,
+        surveys_completed: 0,
       },
     });
   } catch (error) {
@@ -164,6 +170,8 @@ exports.getAdminProfile = async (req, res) => {
         phone: admin.phone,
         role: admin.role,
         status: admin.status,
+        active_plan: admin.active_plan || null,
+        surveys_completed: admin.surveys_completed || 0,
         created_at: admin.created_at
       },
     });
