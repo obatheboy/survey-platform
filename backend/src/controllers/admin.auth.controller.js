@@ -54,7 +54,7 @@ exports.adminLogin = async (req, res) => {
         email: user.email,
         phone: user.phone,
         role: user.role,
-        status: user.status,
+        status: user.status || "ACTIVE",
         active_plan: user.active_plan || null,
         surveys_completed: user.surveys_completed || 0,
       },
@@ -169,7 +169,7 @@ exports.getAdminProfile = async (req, res) => {
         email: admin.email,
         phone: admin.phone,
         role: admin.role,
-        status: admin.status,
+        status: admin.status || "ACTIVE",
         active_plan: admin.active_plan || null,
         surveys_completed: admin.surveys_completed || 0,
         created_at: admin.created_at
