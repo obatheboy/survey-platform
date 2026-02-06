@@ -25,33 +25,53 @@ exports.getAdminMe = async (req, res) => {
 ====================================================== */
 
 /**
- * GET ALL USERS
+ * GET ALL USERS - FIXED: active_plan undefined error
  */
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.find()
-      .select('full_name email phone is_activated total_earned welcome_bonus welcome_bonus_withdrawn plans created_at')
+      .select('full_name email phone is_activated total_earned welcome_bonus welcome_bonus_withdrawn plans status created_at')
       .sort({ created_at: -1 })
       .lean();
 
-    // Format the response
-    const formattedUsers = users.map(user => ({
-      id: user._id,
-      full_name: user.full_name,
-      email: user.email,
-      phone: user.phone,
-      is_activated: user.is_activated,
-      total_earned: user.total_earned || 0,
-      welcome_bonus: user.welcome_bonus || 1200,
-      welcome_bonus_withdrawn: user.welcome_bonus_withdrawn || false,
+    // Format the response - FIXED VERSION
+    const formattedUsers = users.map(user => {
       // Calculate surveys completed
-      surveys_completed: user.plans ? 
-        Object.values(user.plans).reduce((sum, plan) => sum + (plan.surveys_completed || 0), 0) : 0,
-      // Get active plan
-      active_plan: user.plans ? 
-        Object.keys(user.plans).find(plan => user.plans[plan] && !user.plans[plan].is_activated) : null,
-      created_at: user.created_at
-    }));
+      let surveys_completed = 0;
+      if (user.plans) {
+        Object.values(user.plans).forEach(plan => {
+          if (plan && typeof plan.surveys_completed === 'number') {
+            surveys_completed += plan.surveys_completed;
+          }
+        });
+      }
+
+      // Get active plan - FIXED: Handle undefined properly
+      let active_plan = null;
+      if (user.plans) {
+        const planKey = Object.keys(user.plans).find(plan => 
+          user.plans[plan] && !user.plans[plan].is_activated
+        );
+        if (planKey) {
+          active_plan = planKey; // Already uppercase like "REGULAR", "VIP", "VVIP"
+        }
+      }
+
+      return {
+        id: user._id.toString(),
+        full_name: user.full_name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        is_activated: user.is_activated || false,
+        status: user.status || 'ACTIVE', // Default status
+        total_earned: user.total_earned || 0,
+        welcome_bonus: user.welcome_bonus || 1200,
+        welcome_bonus_withdrawn: user.welcome_bonus_withdrawn || false,
+        surveys_completed: surveys_completed,
+        active_plan: active_plan, // Now never undefined
+        created_at: user.created_at
+      };
+    });
 
     res.json(formattedUsers);
   } catch (error) {
@@ -61,7 +81,7 @@ exports.getAllUsers = async (req, res) => {
 };
 
 /**
- * GET SINGLE USER
+ * GET SINGLE USER - FIXED: active_plan undefined error
  */
 exports.getUserById = async (req, res) => {
   try {
@@ -90,6 +110,17 @@ exports.getUserById = async (req, res) => {
       }
     }
 
+    // Get active plan - FIXED: Handle undefined
+    let active_plan = null;
+    if (user.plans) {
+      const planKey = Object.keys(user.plans).find(plan => 
+        user.plans[plan] && !user.plans[plan].is_activated
+      );
+      if (planKey) {
+        active_plan = planKey;
+      }
+    }
+
     // Get pending activations count
     const pendingActivations = user.activation_requests ? 
       user.activation_requests.filter(req => req.status === 'SUBMITTED').length : 0;
@@ -108,6 +139,7 @@ exports.getUserById = async (req, res) => {
       welcome_bonus: user.welcome_bonus || 1200,
       welcome_bonus_withdrawn: user.welcome_bonus_withdrawn || false,
       surveys_completed: totalSurveysCompleted,
+      active_plan: active_plan, // FIXED: Now never undefined
       pending_activations: pendingActivations,
       pending_withdrawals: pendingWithdrawals,
       plans: user.plans || {},

@@ -214,7 +214,7 @@ exports.getUserWithdrawalHistory = async (req, res) => {
   try {
     const userId = req.user.id;
     
-    const user = await User.findById(userId).select('withdrawal_requests');
+    const user = await User.findById(userId).select('withdrawal_requests full_name email phone');
     
     if (!user || !user.withdrawal_requests) {
       return res.json([]);
@@ -230,6 +230,9 @@ exports.getUserWithdrawalHistory = async (req, res) => {
       status: withdrawal.status,
       type: withdrawal.type,
       created_at: withdrawal.created_at,
+      user_name: user.full_name || 'User', // ADDED: User name
+      user_email: user.email,
+      user_phone: user.phone,
       status_message: 
         withdrawal.status === 'PROCESSING' ? 'Share referral link for faster approval' :
         withdrawal.status === 'PENDING' ? 'Awaiting admin approval' :
@@ -265,9 +268,9 @@ exports.getPendingWithdrawals = async (req, res) => {
           pendingWithdrawals.push({
             id: withdrawal._id,
             user_id: user._id,
-            user_name: user.full_name,
-            user_email: user.email,
-            user_phone: user.phone,
+            user_name: user.full_name || 'User', // ADDED: User name with fallback
+            user_email: user.email || 'No email',
+            user_phone: user.phone || 'No phone',
             phone_number: withdrawal.phone_number,
             amount: withdrawal.amount,
             fee: withdrawal.fee,
@@ -308,9 +311,9 @@ exports.getAllWithdrawals = async (req, res) => {
         allWithdrawals.push({
           id: withdrawal._id,
           user_id: user._id,
-          user_name: user.full_name,
-          user_email: user.email,
-          user_phone: user.phone,
+          user_name: user.full_name || 'User', // ADDED: User name with fallback
+          user_email: user.email || 'No email',
+          user_phone: user.phone || 'No phone',
           phone_number: withdrawal.phone_number,
           amount: withdrawal.amount,
           fee: withdrawal.fee,
@@ -343,7 +346,7 @@ exports.approveWithdraw = async (req, res) => {
     // Find user with this withdrawal
     const user = await User.findOne({
       'withdrawal_requests._id': withdrawalId
-    });
+    }).select('full_name email');
 
     if (!user) {
       return res.status(404).json({ message: "Withdrawal not found" });
@@ -369,7 +372,10 @@ exports.approveWithdraw = async (req, res) => {
     res.json({ 
       message: "Withdrawal approved",
       withdrawal_id: withdrawalId,
-      user_id: user._id
+      user_id: user._id,
+      user_name: user.full_name, // ADDED: User name
+      user_email: user.email,
+      amount: withdrawal.amount
     });
   } catch (error) {
     console.error("Approve withdrawal error:", error);
@@ -387,7 +393,7 @@ exports.rejectWithdraw = async (req, res) => {
     // Find user with this withdrawal
     const user = await User.findOne({
       'withdrawal_requests._id': withdrawalId
-    });
+    }).select('full_name email total_earned');
 
     if (!user) {
       return res.status(404).json({ message: "Withdrawal request not found" });
@@ -418,7 +424,11 @@ exports.rejectWithdraw = async (req, res) => {
     res.json({ 
       message: "Withdrawal rejected and amount refunded",
       withdrawal_id: withdrawalId,
-      user_id: user._id
+      user_id: user._id,
+      user_name: user.full_name, // ADDED: User name
+      user_email: user.email,
+      amount: withdrawal.amount,
+      refunded: withdrawal.type !== 'welcome_bonus'
     });
   } catch (error) {
     console.error("Reject withdrawal error:", error);

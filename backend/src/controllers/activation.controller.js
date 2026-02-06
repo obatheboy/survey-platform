@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const User = require("../models/User");
-const Notification = require("../models/Notification"); // ✅ ADDED: Import Notification model
+const Notification = require("../models/Notification");
 
 const TOTAL_SURVEYS = 10;
 
@@ -87,7 +87,7 @@ exports.submitActivationPayment = async (req, res) => {
     
     await user.save();
 
-    // ✅ ADDED: Create notification for activation submission
+    // Create notification for activation submission
     try {
       const notification = new Notification({
         user_id: user._id,
@@ -97,7 +97,6 @@ exports.submitActivationPayment = async (req, res) => {
         type: "activation"
       });
       await notification.save();
-      console.log(`✅ Activation submission notification created for ${plan} plan`);
     } catch (notifError) {
       console.error("❌ Activation submission notification error:", notifError);
     }
@@ -186,7 +185,7 @@ exports.approveActivation = async (req, res) => {
     
     await user.save();
 
-    // ✅ ADDED: Create notification for activation approval
+    // Create notification for activation approval
     try {
       const notification = new Notification({
         user_id: user._id,
@@ -196,7 +195,6 @@ exports.approveActivation = async (req, res) => {
         type: "activation"
       });
       await notification.save();
-      console.log(`✅ Activation approval notification created for ${plan} plan`);
     } catch (notifError) {
       console.error("❌ Activation approval notification error:", notifError);
     }
@@ -254,7 +252,7 @@ exports.rejectActivation = async (req, res) => {
     
     await user.save();
 
-    // ✅ ADDED: Create notification for activation rejection
+    // Create notification for activation rejection
     try {
       const notification = new Notification({
         user_id: user._id,
@@ -320,6 +318,54 @@ exports.getPendingActivations = async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Get pending activations error:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+/* =====================================
+   ADMIN — GET ALL ACTIVATIONS (PENDING, APPROVED, REJECTED)
+===================================== */
+exports.getAllActivations = async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Admin access only" });
+    }
+
+    // Find all users with activation requests
+    const users = await User.find({
+      'activation_requests.0': { $exists: true }
+    }).select('full_name phone email activation_requests');
+
+    // Format the response
+    const allActivations = [];
+    
+    users.forEach(user => {
+      user.activation_requests.forEach(activation => {
+        allActivations.push({
+          activation_id: activation._id,
+          user_id: user._id,
+          user_name: user.full_name,
+          user_phone: user.phone,
+          user_email: user.email,
+          plan: activation.plan,
+          mpesa_code: activation.mpesa_code,
+          amount: activation.amount,
+          status: activation.status,
+          created_at: activation.created_at,
+          processed_at: activation.processed_at
+        });
+      });
+    });
+
+    // Sort by creation date (newest first)
+    allActivations.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    return res.json({
+      count: allActivations.length,
+      activations: allActivations
+    });
+  } catch (error) {
+    console.error("❌ Get all activations error:", error);
     return res.status(500).json({ message: "Server error" });
   }
 };
