@@ -42,6 +42,11 @@
 - Shows surveys completed on withdrawal page
 - User knows exactly how many more surveys needed
 
+### 3. **Admin Tables** - Defensive Rendering
+- Added null checks for user data (role, name, etc.)
+- Prevents crashes on legacy data
+- Default fallback values for missing fields
+
 ---
 
 ## 🚀 Deploy These Files

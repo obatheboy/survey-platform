@@ -146,6 +146,29 @@ const result = await pool.query(
 
 ---
 
+### **Issue #5: Frontend Crash on Missing User Data**
+
+**Problem:**
+- Frontend crashes when rendering user tables if fields are missing
+- Error: `Cannot read properties of undefined (reading 'toUpperCase')`
+- Specifically affects `user.role`
+
+**Root Cause:**
+- Legacy data or incomplete registrations may have missing fields
+- Frontend assumes all fields exist
+
+**Solution:**
+```javascript
+// ✅ FIXED: Add fallback for role and other text fields
+<td>{(user.role || 'user').toUpperCase()}</td>
+```
+
+**Files Updated:**
+- `src/pages/AdminUsers.jsx` - Added defensive checks
+- `src/pages/AdminActivations.jsx` - Added defensive checks
+
+---
+
 ## 🔄 Complete Fixed Flow
 
 ### **User Withdrawal Flow:**

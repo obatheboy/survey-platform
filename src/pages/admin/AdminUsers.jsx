@@ -203,7 +203,8 @@ export default function AdminUsers() {
                       {user.is_activated ? "✓ ACTIVE" : "✗ INACTIVE"}
                     </span>
                   </td>
-                  <td>{user.role.toUpperCase()}</td>
+                 
+                  <td>{(user.role || 'user').toUpperCase()}</td>
                   <td>
                     <div className="action-buttons">
                       {!user.is_activated ? (
