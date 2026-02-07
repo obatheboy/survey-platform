@@ -25,11 +25,50 @@ export function useAdminTable({
       setError('');
       setLoading(true);
       const res = await fetchData();
-      setItems(res.data);
+      
+      console.log('🔍 useAdminTable raw response:', res);
+      console.log('🔍 res.data:', res.data);
+      
+      // 🔥 FIX: Handle different response formats
+      let dataArray = [];
+      
+      if (res && res.data) {
+        // Format 1: { success: true, payments: [...] }
+        if (res.data.success && Array.isArray(res.data.payments)) {
+          dataArray = res.data.payments;
+        }
+        // Format 2: { success: true, users: [...] }
+        else if (res.data.success && Array.isArray(res.data.users)) {
+          dataArray = res.data.users;
+        }
+        // Format 3: { success: true, withdrawals: [...] }
+        else if (res.data.success && Array.isArray(res.data.withdrawals)) {
+          dataArray = res.data.withdrawals;
+        }
+        // Format 4: Direct array in res.data (old format)
+        else if (Array.isArray(res.data)) {
+          dataArray = res.data;
+        }
+        // Format 5: Direct array in res (alternative)
+        else if (Array.isArray(res)) {
+          dataArray = res;
+        }
+        // Format 6: { data: [...] } nested
+        else if (res.data.data && Array.isArray(res.data.data)) {
+          dataArray = res.data.data;
+        }
+      }
+      
+      console.log('✅ Processed data array:', dataArray);
+      
+      // Always ensure we set an array
+      setItems(Array.isArray(dataArray) ? dataArray : []);
       setSelectedIds(new Set());
+      
     } catch (err) {
-      console.error('Fetch items error:', err);
+      console.error('❌ Fetch items error:', err);
       setError('Failed to load items.');
+      setItems([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
@@ -65,7 +104,7 @@ export function useAdminTable({
       (itemId) => {
         setItems((prev) =>
           prev.map((item) =>
-            item.id === itemId ? { ...item, status: 'APPROVED' } : item
+            item.id === itemId || item._id === itemId ? { ...item, status: 'APPROVED' } : item
           )
         );
         if (successCb) successCb(itemId);
@@ -82,7 +121,7 @@ export function useAdminTable({
       (itemId) => {
         setItems((prev) =>
           prev.map((item) =>
-            item.id === itemId ? { ...item, status: 'REJECTED' } : item
+            item.id === itemId || item._id === itemId ? { ...item, status: 'REJECTED' } : item
           )
         );
         setSuccessMessage('❌ Item rejected.');
@@ -105,7 +144,11 @@ export function useAdminTable({
 
   const handleSelectAll = (e) => {
     if (e.target.checked) {
-      const allIds = new Set(filteredItems.map((item) => item.id));
+      const allIds = new Set(
+        filteredItems
+          .map((item) => item.id || item._id)
+          .filter(id => id) // Remove undefined
+      );
       setSelectedIds(allIds);
     } else {
       setSelectedIds(new Set());
@@ -129,7 +172,7 @@ export function useAdminTable({
     try {
       const idsToDelete = Array.from(selectedIds);
       await deleteBulkData(idsToDelete);
-      setItems((prev) => prev.filter((item) => !idsToDelete.includes(item.id)));
+      setItems((prev) => prev.filter((item) => !idsToDelete.includes(item.id || item._id)));
       setSelectedIds(new Set());
       setSuccessMessage(`${idsToDelete.length} item(s) deleted successfully.`);
     } catch (err) {
@@ -140,7 +183,10 @@ export function useAdminTable({
   };
 
   const filteredItems = useMemo(() => {
-    return items.filter((item) => {
+    // 🔥 FIX: Ensure items is always an array
+    const safeItems = Array.isArray(items) ? items : [];
+    
+    return safeItems.filter((item) => {
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch =
         !searchTerm ||

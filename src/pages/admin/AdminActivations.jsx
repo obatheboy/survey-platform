@@ -48,20 +48,20 @@ export default function AdminActivations() {
         // Handle the new response format { success: true, payments: [...] }
         if (response.data && response.data.success && Array.isArray(response.data.payments)) {
           console.log("✅ Using payments array from response");
-          return response.data.payments;
+          return { data: response.data.payments };
         }
         
         // Handle old format (direct array) or error
         if (Array.isArray(response.data)) {
           console.log("⚠️ Using direct array (old format)");
-          return response.data;
+          return { data: response.data };
         }
         
         console.error("❌ Invalid response format:", response.data);
-        return [];
+        return { data: [] };
       } catch (err) {
         console.error("❌ API Error:", err);
-        return [];
+        return { data: [] };
       }
     },
     approveData: (id) => adminApi.patch(`/admin/activations/${id}/approve`),
