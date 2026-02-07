@@ -7,10 +7,10 @@ import Testimonials from "../components/Testimonials";
 import "./Activate.css";
 
 /* =========================
-   CONSTANTS
+   CONSTANTS (UPDATED)
 ========================= */
-const TILL_NUMBER = "7282886";
-const BUSINESS_NAME = "OBADIAH NYAKUNDI OTOKI";
+const PHONE_NUMBER = "0794101450";
+const RECIPIENT_NAME = "OBADIAH OTOKI";
 
 /* =========================
    PLAN CONFIG (DISPLAY ONLY)
@@ -290,11 +290,11 @@ export default function Activate() {
   }, [navigate, searchParams, location.state]);
 
   /* =========================
-     COPY TILL NUMBER
+     COPY PHONE NUMBER
   ========================== */
-  const copyTillNumber = async () => {
+  const copyPhoneNumber = async () => {
     try {
-      await navigator.clipboard.writeText(TILL_NUMBER);
+      await navigator.clipboard.writeText(PHONE_NUMBER);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     } catch {
@@ -488,15 +488,15 @@ export default function Activate() {
 
           <div style={styles.section}>
             <p style={{ fontWeight: 900, fontSize: "14px", marginBottom: "10px" }}>
-              📲 HOW TO PAY (LIPA NA M-PESA)
+              📲 HOW TO PAY (SEND MONEY)
             </p>
 
             <p style={styles.caption}>
-              ⚠ <strong>IMPORTANT:</strong> This is the official business till number.
+              ⚠ <strong>IMPORTANT:</strong> This is the official recipient phone number.
               Payments are <strong>Automatically verified</strong>.
             </p>
 
-            {/* STEP-BY-STEP GUIDE */}
+            {/* STEP-BY-STEP GUIDE - UPDATED FOR SEND MONEY */}
             <div style={{ marginTop: "16px" }}>
               <div style={styles.stepBox}>
                 <span style={styles.stepNumber}>1</span>
@@ -508,38 +508,30 @@ export default function Activate() {
 
               <div style={styles.stepBox}>
                 <span style={styles.stepNumber}>2</span>
-                <strong>Select "Lipa na M-PESA"</strong>
+                <strong>Select "Send Money"</strong>
                 <p style={{ margin: "4px 0 0 0", fontSize: "13px" }}>
-                  Choose the "Lipa na M-PESA" option
+                  Choose the "Send Money" option
                 </p>
               </div>
 
               <div style={styles.stepBox}>
                 <span style={styles.stepNumber}>3</span>
-                <strong>Select "Buy Goods and Services"</strong>
+                <strong>Enter Phone Number</strong>
                 <p style={{ margin: "4px 0 0 0", fontSize: "13px" }}>
-                  Choose "Buy Goods and Services" option
+                  Enter: <strong>{PHONE_NUMBER}</strong>
                 </p>
               </div>
 
               <div style={styles.stepBox}>
                 <span style={styles.stepNumber}>4</span>
-                <strong>Enter Till Number</strong>
+                <strong>Verify Recipient Name</strong>
                 <p style={{ margin: "4px 0 0 0", fontSize: "13px" }}>
-                  Enter: <strong>{TILL_NUMBER}</strong>
+                  Confirm name: <strong>{RECIPIENT_NAME}</strong>
                 </p>
               </div>
 
               <div style={styles.stepBox}>
                 <span style={styles.stepNumber}>5</span>
-                <strong>Verify Business Name</strong>
-                <p style={{ margin: "4px 0 0 0", fontSize: "13px" }}>
-                  Confirm name: <strong>{BUSINESS_NAME}</strong>
-                </p>
-              </div>
-
-              <div style={styles.stepBox}>
-                <span style={styles.stepNumber}>6</span>
                 <strong>Enter Amount</strong>
                 <p style={{ margin: "4px 0 0 0", fontSize: "13px" }}>
                   Amount: <span style={styles.activationFee}>KES {plan.activationFee}</span>
@@ -547,7 +539,7 @@ export default function Activate() {
               </div>
 
               <div style={styles.stepBox}>
-                <span style={styles.stepNumber}>7</span>
+                <span style={styles.stepNumber}>6</span>
                 <strong>Complete Payment</strong>
                 <p style={{ margin: "4px 0 0 0", fontSize: "13px" }}>
                   Enter your M-PESA PIN and confirm
@@ -558,7 +550,7 @@ export default function Activate() {
 
           <div style={styles.section}>
             <p style={{ margin: "6px 0", fontSize: "14px" }}>
-              <strong>Business Name:</strong> {BUSINESS_NAME}
+              <strong>Recipient Name:</strong> {RECIPIENT_NAME}
             </p>
             <div style={{ 
               margin: "10px 0",
@@ -567,30 +559,30 @@ export default function Activate() {
               flexWrap: "wrap",
               gap: "8px"
             }}>
-              <span style={{ fontSize: "14px", fontWeight: 600 }}>Till Number:</span>
-              <span style={{ fontSize: "14px" }}>{TILL_NUMBER}</span>
+              <span style={{ fontSize: "14px", fontWeight: 600 }}>Phone Number:</span>
+              <span style={{ fontSize: "14px" }}>{PHONE_NUMBER}</span>
               <button 
-                onClick={copyTillNumber} 
+                onClick={copyPhoneNumber} 
                 style={styles.copyBtn}
               >
                 📋 Copy
               </button>
             </div>
-            {copied && <p style={styles.copiedNote}>✅ Till number copied</p>}
+            {copied && <p style={styles.copiedNote}>✅ Phone number copied</p>}
           </div>
 
           <div style={styles.noteBox}>
             📌 After payment, paste the <strong>FULL M-Pesa SMS</strong> below.
             <br />
             <span style={{ fontSize: "12px", color: "#dc2626", fontWeight: 700 }}>
-              ⚠ Must include: Transaction ID, Amount, Time, and Reference
+              ⚠ Must include: Transaction ID, Amount, Time, and Phone Number
             </span>
           </div>
 
           <textarea
             placeholder="Paste M-Pesa confirmation message here...
 Example:
-Confirmed. Ksh100.00 sent to OBADIAH NYAKUNDI OTOKI for account 7282886 on 15/2/25 at 10:15 AM. New M-PESA balance is Ksh4,230.00. Transaction cost, Ksh0.00. Amount you can transact within the day is 299,900.00. To reverse, forward this message to 456."
+Confirmed. Ksh100.00 sent to OBADIAH OTOKI 0794101450 on 15/2/25 at 10:15 AM. New M-PESA balance is Ksh4,230.00. Transaction cost, Ksh0.00. Amount you can transact within the day is 299,900.00. To reverse, forward this message to 456."
             value={paymentText}
             onChange={(e) => setPaymentText(e.target.value)}
             rows={5}
