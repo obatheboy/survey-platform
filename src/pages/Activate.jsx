@@ -661,4 +661,4 @@ Confirmed. Ksh100.00 sent to OBADIAH OTOKI 0794101450 on 15/2/25 at 10:15 AM. Ne
       `}</style>
     </>
   );
-}
+}   
