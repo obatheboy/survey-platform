@@ -492,7 +492,7 @@ export default function Activate() {
             </p>
 
             <p style={styles.caption}>
-              ⚠ <strong>IMPORTANT:</strong> This is the official recipient phone number.
+              ⚠ <strong>IMPORTANT:</strong> This is the official CEO phone number.
               Payments are <strong>Automatically verified</strong>.
             </p>
 
