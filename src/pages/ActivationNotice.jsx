@@ -62,7 +62,7 @@ export default function ActivationNotice() {
   }, []); // Empty dependency array = runs only on mount
 
   /* =========================
-     LOAD USER AND PLAN DATA
+     LOAD USER AND PLAN DATA - FIXED VERSION
   ========================= */
   useEffect(() => {
     const loadData = async () => {
@@ -71,51 +71,107 @@ export default function ActivationNotice() {
         const res = await api.get(`/auth/me?_t=${Date.now()}`);
         setUserName(res.data.full_name || "User");
 
-        // DEBUG: Log what's coming from navigation
-        console.log("🔍 ActivationNotice: Received location.state:", location.state);
+        // COMPREHENSIVE DEBUG
+        console.log("🔍 ===== ACTIVATION NOTICE LOAD DEBUG =====");
+        console.log("🔍 Full location.state:", location.state);
         console.log("🔍 location.state?.planKey:", location.state?.planKey);
         console.log("🔍 location.state?.planType:", location.state?.planType);
         console.log("🔍 location.state?.plan:", location.state?.plan);
+        console.log("🔍 location.state?.plan?.planKey:", location.state?.plan?.planKey);
+        console.log("🔍 location.state?.plan?.type:", location.state?.plan?.type);
         
-        // Check for passed state from navigation
-        const statePlanKey = location.state?.planKey || 
-                            location.state?.planType || 
-                            location.state?.plan?.type;
-        const stateAmount = location.state?.amount || 
-                           location.state?.plan?.amount;
-
+        // FIXED LOGIC: Handle both plan object and planKey
+        let statePlanKey = null;
+        let stateAmount = null;
+        
+        // Check if planKey was passed directly
+        if (location.state?.planKey) {
+          statePlanKey = location.state.planKey;
+          stateAmount = location.state.amount;
+          console.log("✅ Using planKey from state:", statePlanKey);
+        }
+        // Check if a plan object was passed
+        else if (location.state?.plan) {
+          // The plan object might have planKey or type property
+          statePlanKey = location.state.plan.planKey || location.state.plan.type;
+          stateAmount = location.state.plan.amount || location.state.plan.total;
+          console.log("✅ Using planKey from plan object:", statePlanKey);
+        }
+        // Legacy support for planType
+        else if (location.state?.planType) {
+          statePlanKey = location.state.planType;
+          stateAmount = location.state.amount;
+          console.log("✅ Using planType from state:", statePlanKey);
+        }
+        
         console.log("🔍 Determined statePlanKey:", statePlanKey);
         
         if (statePlanKey) {
+          // Ensure planKey is uppercase
+          statePlanKey = statePlanKey.toUpperCase();
           setPlanKey(statePlanKey);
           setTotalEarned(stateAmount || PLAN_CONFIG[statePlanKey]?.total || 0);
           setLoading(false);
           return;
         }
 
-        // If no state, check backend
+        console.log("⚠️ No plan found in location.state, checking user data...");
+        
+        // If no state, check backend for active plan
         const activePlan = res.data.active_plan;
-        const plan = res.data.plans?.[activePlan];
+        const userPlans = res.data.plans || {};
+        
+        console.log("🔍 User active_plan:", activePlan);
+        console.log("🔍 User plans:", userPlans);
 
-        if (!activePlan || !plan) {
+        // Find which plan is completed but not activated
+        let planToActivate = null;
+        
+        // Check in order: VVIP -> VIP -> REGULAR
+        if (userPlans.VVIP?.completed && !userPlans.VVIP?.is_activated) {
+          planToActivate = "VVIP";
+        } else if (userPlans.VIP?.completed && !userPlans.VIP?.is_activated) {
+          planToActivate = "VIP";
+        } else if (userPlans.REGULAR?.completed && !userPlans.REGULAR?.is_activated) {
+          planToActivate = "REGULAR";
+        } else {
+          planToActivate = activePlan;
+        }
+        
+        console.log("🔍 Plan to activate determined:", planToActivate);
+        
+        if (!planToActivate) {
+          console.log("❌ No plan to activate, redirecting to dashboard");
+          navigate("/dashboard");
+          return;
+        }
+
+        const plan = userPlans[planToActivate];
+
+        if (!plan) {
+          console.log("❌ Plan data not found, redirecting to dashboard");
           navigate("/dashboard");
           return;
         }
 
         // Check if plan needs activation
         if (plan.is_activated) {
+          console.log("⚠️ Plan already activated, redirecting to dashboard");
           navigate("/dashboard?activated=true");
           return;
         }
 
         // Check if surveys are completed
-        if (plan.surveys_completed < 10) {
+        if (!plan.completed) {
+          console.log("⚠️ Surveys not completed, redirecting to dashboard");
           navigate("/dashboard");
           return;
         }
 
-        setPlanKey(activePlan);
-        setTotalEarned(PLAN_CONFIG[activePlan]?.total || 0);
+        setPlanKey(planToActivate);
+        setTotalEarned(PLAN_CONFIG[planToActivate]?.total || 0);
+        console.log("✅ Plan loaded successfully:", planToActivate);
+        console.log("🔍 ===== END LOAD DEBUG =====");
       } catch (err) {
         console.error("Error loading activation details:", err);
         setError("Unable to load activation details. Please try again.");
@@ -130,19 +186,23 @@ export default function ActivationNotice() {
   const handleActivate = () => {
     console.log("🟢 ===== ACTIVATION NOTICE DEBUG =====");
     console.log("🟢 Current planKey:", planKey);
-    console.log("🟢 Plan config:", PLAN_CONFIG[planKey]);
+    console.log("🟢 Plan config for this key:", PLAN_CONFIG[planKey]);
+    console.log("🟢 User name:", userName);
+    
+    // FIX: Make sure we're passing planKey (string), not plan object
+    navigate("/activate", { 
+      state: { 
+        planKey: planKey,  // This MUST be a string like "VVIP"
+        activationFee: PLAN_CONFIG[planKey]?.activationFee,
+        amount: totalEarned,
+        userName: userName
+      }
+    });
+    
     console.log("🟢 Navigating to /activate with state:", { 
       planKey: planKey,
       activationFee: PLAN_CONFIG[planKey]?.activationFee,
       amount: totalEarned 
-    });
-    
-    navigate("/activate", { 
-      state: { 
-        planKey: planKey,  // FIX: Use 'planKey' (Activate.jsx expects this)
-        activationFee: PLAN_CONFIG[planKey]?.activationFee,
-        amount: totalEarned 
-      }
     });
   };
 

@@ -362,7 +362,7 @@ export default function Activate() {
   };
 
   /* =========================
-     SUBMIT ACTIVATION - FIXED VERSION
+     SUBMIT ACTIVATION - ULTIMATE DEBUG VERSION
   ========================== */
   const submitActivation = async () => {
     if (!paymentText.trim()) {
@@ -374,40 +374,45 @@ export default function Activate() {
     setNotification(null);
 
     try {
-      // COMPREHENSIVE DEBUG
-      console.log("🟡 ===== SUBMIT ACTIVATION DEBUG =====");
-      console.log("🟡 Current planKey state:", planKey);
-      console.log("🟡 User plans object:", user?.plans);
+      // ULTIMATE DEBUG - FIND THE ROOT CAUSE
+      console.log("=== ULTIMATE DEBUG START ===");
+      console.log("1. Current planKey:", planKey);
+      console.log("2. planKey type:", typeof planKey);
+      console.log("3. User object exists:", !!user);
+      console.log("4. User plans object:", user?.plans);
       
-      // STRATEGY: Always check what the user has actually completed
-      let planToSend = planKey === "WELCOME" ? "REGULAR" : planKey;
+      // Check VVIP specifically
+      console.log("5. VVIP plan exists:", !!user?.plans?.VVIP);
+      console.log("6. VVIP completed:", user?.plans?.VVIP?.completed);
+      console.log("7. VVIP is_activated:", user?.plans?.VVIP?.is_activated);
+      console.log("8. VVIP surveys_completed:", user?.plans?.VVIP?.surveys_completed);
+      console.log("9. Full VVIP object:", user?.plans?.VVIP);
       
-      // Check if user has completed a higher plan than what's being activated
-      if (user?.plans?.VVIP?.completed && !user?.plans?.VVIP?.is_activated) {
-        planToSend = "VVIP";
-        console.log("✅ User has completed VVIP surveys - sending VVIP");
-      } else if (user?.plans?.VIP?.completed && !user?.plans?.VIP?.is_activated) {
-        planToSend = "VIP";
-        console.log("✅ User has completed VIP surveys - sending VIP");
-      } else if (user?.plans?.REGULAR?.completed && !user?.plans?.REGULAR?.is_activated) {
-        planToSend = "REGULAR";
-        console.log("✅ User has completed REGULAR surveys - sending REGULAR");
-      } else {
-        console.log("⚠️ No completed plan found, using planKey:", planToSend);
-      }
+      // Check all plans
+      ['REGULAR', 'VIP', 'VVIP'].forEach(p => {
+        const plan = user?.plans?.[p];
+        console.log(`Plan ${p}:`, {
+          exists: !!plan,
+          completed: plan?.completed,
+          is_activated: plan?.is_activated,
+          surveys_completed: plan?.surveys_completed
+        });
+      });
       
-      console.log("🟡 Final planToSend:", planToSend);
-      console.log("🟡 Payment text length:", paymentText.length);
-      console.log("🟡 ===== END DEBUG =====");
+      // FORCE VVIP FOR TESTING
+      const FINAL_PLAN_TO_SEND = "VVIP"; // HARDCODE THIS FOR TESTING
+      console.log("10. HARDCODED PLAN TO SEND:", FINAL_PLAN_TO_SEND);
       
-      // CRITICAL FIX: Backend expects 'plan' parameter (not 'planKey')
+      console.log("=== ULTIMATE DEBUG END ===");
+      
+      // Send to backend
       const requestData = {
         mpesa_code: paymentText.trim(),
-        plan: planToSend,  // Backend expects 'plan' parameter
+        plan: FINAL_PLAN_TO_SEND,  // HARDCODED VVIP
         is_welcome_bonus: planKey === "WELCOME",
       };
       
-      console.log("📤 Sending to backend /activation/submit:", requestData);
+      console.log("📤 Sending to backend:", requestData);
       
       const response = await api.post("/activation/submit", requestData);
       
@@ -562,6 +567,28 @@ export default function Activate() {
             💰 Withdrawable:{" "}
             <span style={{ color: plan.color }}>KES {plan.total}</span>
           </h3>
+
+          {/* DEBUG SECTION */}
+          <div style={{
+            marginTop: "16px",
+            padding: "12px",
+            background: "#1e293b",
+            color: "white",
+            borderRadius: "10px",
+            fontSize: "12px",
+            fontFamily: "monospace"
+          }}>
+            <div style={{ fontWeight: 700, color: "#f59e0b", marginBottom: "8px" }}>
+              🔍 DEBUG: User Data
+            </div>
+            <div>planKey: {planKey}</div>
+            <div>VVIP completed: {user?.plans?.VVIP?.completed?.toString()}</div>
+            <div>VVIP activated: {user?.plans?.VVIP?.is_activated?.toString()}</div>
+            <div>VVIP surveys: {user?.plans?.VVIP?.surveys_completed}</div>
+            <div style={{ marginTop: "8px", fontSize: "11px", color: "#94a3b8" }}>
+              This shows real-time data
+            </div>
+          </div>
 
           {/* PLAN VERIFICATION SECTION */}
           <div style={{
