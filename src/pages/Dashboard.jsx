@@ -731,9 +731,9 @@ return (
       <div className="dashboard-section hero-section" style={{
         borderRadius: '20px',
         padding: '12px',
-        background: 'var(--bg-surface)',
+        background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
         boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.1)',
-        border: '3px solid red',
+        border: 'none',
         position: 'relative',
         overflow: 'hidden',
         marginTop: '10px'

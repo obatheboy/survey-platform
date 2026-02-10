@@ -84,12 +84,13 @@ const userSchema = new mongoose.Schema({
       activated_at: { type: Date }
     }
   },
-  // ✅ Activation requests array
+  // ✅ Activation requests array - ENUM RESTRICTION REMOVED
   activation_requests: [{
     plan: { 
       type: String, 
-      enum: ['REGULAR', 'VIP', 'VVIP'],
-      required: true 
+      required: true,
+      trim: true,
+      uppercase: true  // Convert to uppercase for consistency
     },
     mpesa_code: { 
       type: String, 

@@ -233,7 +233,8 @@ body {
   margin-bottom: var(--space-md);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.3);
-  position: 
+  position: fixed; /* Added: Fixed positioning */
+  top: 0; /* Added: Position at top */
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -242,7 +243,6 @@ body {
   z-index: 999;
   overflow: hidden;
 }
-
 .dashboard-main-header::before {
   content: '';
   position: absolute;
