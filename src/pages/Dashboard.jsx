@@ -890,15 +890,15 @@ return (
       {/* WELCOME BONUS CARD */}
       <section ref={welcomeRef}>
         <div className="plan-card welcome-bonus" style={{
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)), var(--bg-surface)',
-          boxShadow: '0 10px 30px rgba(255, 0, 0, 0.1)'
+          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(217, 119, 6, 0.05)), var(--bg-surface)',
+          boxShadow: '0 10px 30px rgba(245, 158, 11, 0.2)'
         }}>
           <div className="plan-card-header">
             <div className="plan-badge">
               <span className="plan-icon">🎁</span>
-              <span className="plan-name" style={{ color: '#ef4444' }}>Welcome Bonus</span>
+              <span className="plan-name" style={{ color: 'var(--vvip-color, #f59e0b)' }}>Welcome Bonus</span>
             </div>
-            <span className="plan-status" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+            <span className="plan-status" style={{ background: 'rgba(245, 158, 11, 0.1)', color: 'var(--vvip-color, #f59e0b)', border: '1px solid rgba(245, 158, 11, 0.2)' }}>
               🔓 Activate
             </span>
           </div>
@@ -912,7 +912,7 @@ return (
               margin: '0 0 16px',
               fontWeight: 'bold'
             }}>
-              Congratulations! You've received a welcome bonus of <strong style={{color: '#ef4444', fontSize: '18px'}}>KES 1,200</strong>. Activate your account to withdraw.
+              Congratulations! You've received a welcome bonus of <strong style={{color: 'var(--vvip-color, #f59e0b)', fontSize: '18px'}}>KES 1,200</strong>. Activate your account to withdraw.
             </p>
           </div>
           
@@ -921,8 +921,8 @@ return (
               className="start-survey-btn"
               onClick={handleWelcomeBonusWithdraw}
               style={{
-                background: 'linear-gradient(135deg, #ef4444, #b91c1c)',
-                boxShadow: '0 5px 20px rgba(239, 68, 68, 0.4)'
+                background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                boxShadow: '0 5px 20px rgba(245, 158, 11, 0.4)'
               }}
             >
               <span className="btn-icon">🔓</span>

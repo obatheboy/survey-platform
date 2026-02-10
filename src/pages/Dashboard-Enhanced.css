@@ -2476,7 +2476,6 @@ input:focus-visible {
   transition: none;
   position: relative;
   overflow: hidden;
-  color: white;
 }
 
 .plan-card.regular::before {
@@ -2526,15 +2525,12 @@ input:focus-visible {
 }
 
 .plan-card.regular .plan-name {
-  color: white;
 }
 
 .plan-card.vip .plan-name {
-  color: white;
 }
 
 .plan-card.vvip .plan-name {
-  color: white;
 }
 
 .plan-status {
@@ -2573,7 +2569,7 @@ input:focus-visible {
 }
 
 .plan-description {
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-muted);
   font-size: 13px;
   line-height: 1.5;
 }
@@ -2608,12 +2604,12 @@ input:focus-visible {
 }
 
 .stat-label {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-muted);
 }
 
 .stat-value {
   font-weight: 700;
-  color: white;
+  color: var(--text-main);
 }
 
 .stat-value.earned {
@@ -2749,7 +2745,6 @@ input:focus-visible {
   transition: none;
   position: relative;
   overflow: hidden;
-  color: white;
 }
 
 .withdraw-card::before {
@@ -2810,19 +2805,16 @@ input:focus-visible {
 }
 
 .plan-info h4[style*="color: var(--regular-color)"] {
-  color: white !important;
 }
 
 .plan-info h4[style*="color: var(--vip-color)"] {
-  color: white !important;
 }
 
 .plan-info h4[style*="color: var(--vvip-color)"] {
-  color: white !important;
 }
 
 .plan-earnings {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-muted);
   font-size: 13px;
   margin: 0;
 }
@@ -2871,12 +2863,12 @@ input:focus-visible {
 }
 
 .progress-summary strong {
-  color: white;
+  color: var(--text-main);
   font-weight: 700;
 }
 
 .available-amount {
-  color: white !important;
+  color: var(--primary) !important;
   font-size: 14px;
 }
 
@@ -2887,7 +2879,7 @@ input:focus-visible {
 }
 
 .requirement {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-muted);
   font-size: 12px;
   margin: 0 0 4px;
   display: flex;
