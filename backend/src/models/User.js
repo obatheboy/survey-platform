@@ -117,7 +117,7 @@ const userSchema = new mongoose.Schema({
       type: String 
     }
   }],
-  // ✅ Withdrawal requests array
+  // ✅ Withdrawal requests array - FIXED: Added 'SUBMITTED' to enum
   withdrawal_requests: [{
     phone_number: { type: String, required: true },
     amount: { type: Number, required: true },
@@ -125,8 +125,8 @@ const userSchema = new mongoose.Schema({
     net_amount: { type: Number, required: true },
     status: { 
       type: String, 
-      enum: ['PENDING', 'PROCESSING', 'APPROVED', 'REJECTED', 'PAID'],
-      default: 'PROCESSING' 
+      enum: ['SUBMITTED', 'PENDING', 'PROCESSING', 'APPROVED', 'REJECTED', 'PAID'], // ✅ FIX: Added 'SUBMITTED'
+      default: 'SUBMITTED'  // ✅ FIX: Changed default to 'SUBMITTED'
     },
     type: { 
       type: String, 
