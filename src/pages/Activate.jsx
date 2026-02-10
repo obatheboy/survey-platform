@@ -350,44 +350,57 @@ export default function Activate() {
   };
 
   /* =========================
-     SUBMIT ACTIVATION
-========================= */
-const submitActivation = async () => {
-  if (!paymentText.trim()) {
-    setNotification("❌ Paste the FULL M-Pesa confirmation message.");
-    return;
-  }
+     SUBMIT ACTIVATION - FIXED VERSION
+  ========================== */
+  const submitActivation = async () => {
+    if (!paymentText.trim()) {
+      setNotification("❌ Paste the FULL M-Pesa confirmation message.");
+      return;
+    }
 
-  setSubmitting(true);
-  setNotification(null);
+    setSubmitting(true);
+    setNotification(null);
 
-  try {
-    const planParam = planKey === "WELCOME" ? "REGULAR" : planKey;
-    
-    console.log("🟡 ===== SUBMIT ACTIVATION DEBUG =====");
-    console.log("🟡 planKey from state:", planKey);
-    console.log("🟡 planParam being sent:", planParam);
-    console.log("🟡 paymentText:", paymentText);
-    console.log("🟡 user.plans object:", user?.plans);
-    console.log("🟡 current planState:", planState);
-    console.log("🟡 user.plans.VVIP:", user?.plans?.VVIP);
-    console.log("🟡 user.plans.VIP:", user?.plans?.VIP);
-    console.log("🟡 ===== END DEBUG =====");
-    
-    await api.post("/activation/submit", {
-      mpesa_code: paymentText.trim(),
-      plan: planParam,
-      is_welcome_bonus: planKey === "WELCOME",
-    });
-    
-    setShowSuccessPopup(true);
-  } catch (error) {
-    console.error("Activation submission failed:", error);
-    setShowSuccessPopup(true);
-  } finally {
-    setSubmitting(false);
-  }
-};
+    try {
+      // CRITICAL FIX: Send the correct planKey to backend
+      const planToSend = planKey === "WELCOME" ? "REGULAR" : planKey;
+      
+      console.log("🟡 ===== SUBMIT ACTIVATION DEBUG =====");
+      console.log("🟡 planKey from state:", planKey);
+      console.log("🟡 planToSend being sent:", planToSend);
+      console.log("🟡 paymentText length:", paymentText.length);
+      console.log("🟡 user.plans object:", user?.plans);
+      console.log("🟡 user.plans.VVIP?.completed:", user?.plans?.VVIP?.completed);
+      console.log("🟡 user.plans.VIP?.completed:", user?.plans?.VIP?.completed);
+      console.log("🟡 ===== END DEBUG =====");
+      
+      // FIX: Send the data in the correct format that backend expects
+      const requestData = {
+        mpesa_code: paymentText.trim(),
+        planKey: planToSend,  // Changed from 'plan' to 'planKey' to match backend expectation
+        is_welcome_bonus: planKey === "WELCOME",
+      };
+      
+      console.log("📤 Sending to backend /activation/submit:", requestData);
+      
+      const response = await api.post("/activation/submit", requestData);
+      
+      console.log("✅ Backend response:", response.data);
+      
+      setShowSuccessPopup(true);
+    } catch (error) {
+      console.error("❌ Activation submission failed:", error);
+      if (error.response) {
+        console.error("Error response data:", error.response.data);
+        console.error("Error response status:", error.response.status);
+        setNotification(`❌ ${error.response.data?.message || "Submission failed. Please try again."}`);
+      } else {
+        setNotification("❌ Network error. Please check your connection.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   /* =========================
      RENDER LOADING
