@@ -1,62 +1,6 @@
 /* =========================================================
-   DASHBOARD .CSS - OPTIMIZED FOR MOBILE
+   DASHBOARD-ENHANCED.CSS - OPTIMIZED FOR MOBILE
 ========================================================= */
-
-/* =========================================================
-   CSS VARIABLES - FOUNDATION
-========================================================= */
-:root {
-  /* Primary Colors */
-  --primary: #2563eb;
-  --primary-light: #3b82f6;
-  --primary-dark: #1e40af;
-  
-  /* Background Colors - All cards will use these */
-  --bg-main: #0f172a; /* Dark navy blue main background */
-  --bg-surface: #1e293b; /* Slightly lighter surface for cards */
-  --bg-glass: rgba(30, 41, 59, 0.8); /* Semi-transparent glass effect */
-  --bg-gradient-1: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
-  --bg-gradient-2: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(30, 64, 175, 0.05));
-  --bg-gradient-3: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
-  --bg-gradient-4: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(124, 58, 237, 0.05));
-  --bg-gradient-5: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.05));
-  
-  /* Text Colors */
-  --text-main: #f8fafc;
-  --text-muted: #cbd5e1;
-  --text-light: #94a3b8;
-  
-  /* Border Colors */
-  --border-soft: rgba(255, 255, 255, 0.1);
-  --border-medium: rgba(255, 255, 255, 0.2);
-  --border-strong: rgba(255, 255, 255, 0.3);
-  
-  /* Spacing */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
-  
-  /* Border Radius */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  
-  /* Transitions */
-  --transition-fast: 150ms ease;
-  --transition-normal: 250ms ease;
-  --transition-slow: 350ms ease;
-  
-  /* Plan Colors */
-  --regular-color: #3b82f6;
-  --vip-color: #8b5cf6;
-  --vvip-color: #f59e0b;
-  --regular-gradient: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  --vip-gradient: linear-gradient(135deg, #8b5cf6, #7c3aed);
-  --vvip-gradient: linear-gradient(135deg, #f59e0b, #d97706);
-}
 
 /* FIX 1: Prevent white flash on scroll (low RAM phones) */
 html, body {
@@ -64,7 +8,7 @@ html, body {
   width: 100%;
   height: 100%;
   overflow-x: hidden;
-  background: var(--bg-main);
+  background: var(--bg-main); /* Standardized light background */
   -webkit-tap-highlight-color: transparent;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
@@ -91,11 +35,15 @@ html, body {
 
 /* Remove unnecessary hardware acceleration for better performance */
 .dashboard > div[style*="position: fixed"] * {
-  transform: none;
-  -webkit-transform: none;
-  backface-visibility: visible;
-  -webkit-backface-visibility: visible;
+  transform: none; /* REMOVED: translateZ(0) */
+  -webkit-transform: none; /* REMOVED: translateZ(0) */
+  backface-visibility: visible; /* REMOVED: hidden */
+  -webkit-backface-visibility: visible; /* REMOVED: hidden */
 }
+
+/* =========================================================
+   CSS VARIABLES - FOUNDATION
+========================================================= */
 
 /* =========================================================
    BASE STYLES
@@ -120,7 +68,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  overscroll-behavior-y: contain;
+  overscroll-behavior-y: contain; /* Prevent pull-to-refresh effects */
 }
 
 /* FIX 3: "Chat Us" button always at bottom of screen */
@@ -159,7 +107,7 @@ body {
 /* FIX 4: Scroll reminder at bottom of screen */
 .scroll-reminder-notification {
   position: fixed !important;
-  bottom: 90px !important;
+  bottom: 90px !important; /* Position above chat button */
   left: 50% !important;
   transform: translateX(-50%) !important;
   z-index: 999 !important;
@@ -279,13 +227,13 @@ body {
    1. MAIN MENU HEADER WITH DASHBOARD TITLE (AT TOP)
 ========================================================= */
 .dashboard-main-header {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   margin-bottom: var(--space-md);
-  border: 1px solid rgba(37, 99, 235, 0.3);
-  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.5);
-  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.3);
+  position: 
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -308,10 +256,10 @@ body {
 
 .header-title-container {
   display: flex;
-  justify-content: space-between;
-  flex-direction: row;
+  justify-content: space-between; /* Distribute space evenly */
+  flex-direction: row; /* Restore normal row direction */
   gap: 15px;
-  padding: 0 10px;
+    padding: 0 10px;
   align-items: center;
   margin-bottom: 5px;
 }
@@ -327,12 +275,12 @@ body {
 .dashboard-main-title::after {
   content: "SurveyEarn";
   font-size: 26px;
-  background: linear-gradient(to right, #ffffff 20%, #3b82f6 100%);
+  background: linear-gradient(to right, #ffffff 20%, #ffd700 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
-  text-shadow: 0 2px 10px rgba(59, 130, 246, 0.2);
+  text-shadow: 0 2px 10px rgba(255, 215, 0, 0.2);
   display: block;
 }
 
@@ -394,38 +342,39 @@ body {
 }
 
 /* =========================================================
-   2. LIVE WITHDRAWAL FEED (PROFESSIONAL DARK THEME)
+   2. LIVE WITHDRAWAL FEED (SIMPLIFIED)
 ========================================================= */
 .live-withdrawal-feed {
-  background: var(--bg-gradient-1);
+  background: var(--bg-glass);
   backdrop-filter: blur(20px);
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   margin-bottom: var(--space-md);
-  border: 1px solid rgba(37, 99, 235, 0.3);
-  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.3);
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
 /* =========================================================
-   3. ELITE WELCOME BONUS CARD - PROFESSIONAL DARK THEME
+   3. ELITE WELCOME BONUS CARD - MODERN LIGHT THEME
 ========================================================= */
 .professional-bonus-card {
-  background: var(--bg-gradient-1);
+  background: var(--bg-surface);
   border-radius: var(--radius-xl);
   padding: var(--space-xl);
   margin-bottom: var(--space-md);
   box-shadow: 
-    0 20px 25px -5px rgba(0, 0, 0, 0.2),
-    0 8px 10px -6px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(37, 99, 235, 0.2) inset;
+    0 20px 25px -5px rgba(0, 0, 0, 0.05),
+    0 8px 10px -6px rgba(0, 0, 0, 0.05),
+    0 0 0 1px var(--border-soft) inset;
   color: var(--text-main);
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(37, 99, 235, 0.3);
+  border: 1px solid var(--border-soft);
   transition: all 0.3s ease;
   backface-visibility: hidden;
 }
 
+/* Light grid pattern overlay */
 .professional-bonus-card::after {
   content: '';
   position: absolute;
@@ -444,8 +393,8 @@ body {
 @media (hover: hover) and (pointer: fine) {
   .professional-bonus-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.4);
-    border-color: rgba(37, 99, 235, 0.5);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+    border-color: var(--primary-light);
   }
 }
 
@@ -468,8 +417,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-  border: 2px solid rgba(37, 99, 235, 0.1);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+  border: 2px solid rgba(37, 99, 235, 0.05);
 }
 
 .bonus-header-text h3 {
@@ -491,12 +440,12 @@ body {
   text-align: center;
   margin: var(--space-xl) 0;
   padding: var(--space-xl);
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(37, 99, 235, 0.1));
+  background: linear-gradient(135deg, #f8fafc, #eff6ff);
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(37, 99, 235, 0.2);
+  border: 1px solid var(--border-medium);
   position: relative;
   z-index: 3;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
 .bonus-amount-display .currency {
@@ -534,11 +483,11 @@ body {
   align-items: center;
   justify-content: center;
   gap: var(--space-lg);
-  background: rgba(30, 41, 59, 0.6);
+  background: #f1f5f9;
   padding: var(--space-lg);
   border-radius: var(--radius-lg);
   margin-bottom: var(--space-xl);
-  border: 1px solid rgba(37, 99, 235, 0.2);
+  border: 1px solid var(--border-soft);
   position: relative;
   z-index: 3;
 }
@@ -560,7 +509,7 @@ body {
 }
 
 .roi-item.highlight .value {
-  color: #10b981;
+  color: #059669;
 }
 
 .roi-separator {
@@ -568,10 +517,10 @@ body {
 }
 
 .bonus-details {
-  background: rgba(30, 41, 59, 0.6);
+  background: #f8fafc;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  border: 1px solid rgba(37, 99, 235, 0.2);
+  border: 1px solid var(--border-soft);
 }
 
 .bonus-details summary {
@@ -579,7 +528,7 @@ body {
   font-size: 14px;
   font-weight: 700;
   color: var(--text-main);
-  background: rgba(37, 99, 235, 0.1);
+  background: #f1f5f9;
 }
 
 .bonus-details summary::after {
@@ -588,7 +537,7 @@ body {
 
 .details-content {
   padding: var(--space-lg);
-  border-top: 1px solid rgba(37, 99, 235, 0.2);
+  border-top: 1px solid var(--border-soft);
   color: var(--text-muted);
 }
 
@@ -609,8 +558,8 @@ body {
     border-right: none;
     padding: var(--space-xl) 20px;
     box-shadow: 
-      0 15px 30px rgba(15, 23, 42, 0.3),
-      0 6px 12px rgba(37, 99, 235, 0.15),
+      0 15px 30px rgba(0, 0, 0, 0.3),
+      0 6px 12px rgba(23, 92, 230, 0.15),
       0 0 0 1px rgba(59, 130, 246, 0.25) inset;
   }
   
@@ -710,13 +659,13 @@ body {
    4. DASHBOARD NAVIGATION - MOBILE OPTIMIZED
 ========================================================= */
 .dashboard-section:first-of-type {
-  background: var(--bg-gradient-1);
+  background: var(--bg-glass);
   backdrop-filter: blur(20px);
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   margin-bottom: var(--space-md);
-  border: 1px solid rgba(37, 99, 235, 0.3);
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.3);
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .section-heading {
@@ -741,10 +690,10 @@ body {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--space-xs);
-  background: rgba(30, 41, 59, 0.8);
+  background: rgb(11, 15, 255);
   border-radius: var(--radius-lg);
   padding: 6px;
-  border: 1px solid rgba(37, 99, 235, 0.3);
+  border: 1px solid #ff0000;
 }
 
 .nav-btn {
@@ -754,38 +703,38 @@ body {
   justify-content: center;
   gap: 6px;
   padding: var(--space-lg) var(--space-md);
-  background: rgba(37, 99, 235, 0.1);
-  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgb(255, 166, 0);
   font-weight: 800;
   font-size: 11px;
   cursor: pointer;
   border-radius: var(--radius-md);
-  transition: all 0.2s ease;
+  transition: all 0.2s ease; /* REDUCED from 0.3s cubic-bezier */
   min-height: 72px;
   min-width: 60px;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   text-decoration: none;
   position: relative;
-  border: 2px solid rgba(37, 99, 235, 0.2);
+  border: 2px solid rgb(255, 251, 0);
   box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 2px 8px rgba(15, 23, 42, 0.3);
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .nav-btn:hover {
-  background: rgba(37, 99, 235, 0.15);
-  border-color: rgba(37, 99, 235, 0.3);
-  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgb(255, 217, 0);
+  transform: translateY(-1px); /* REDUCED from -2px */
   box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 4px 12px rgba(15, 23, 42, 0.4);
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .nav-btn.active {
   background: var(--primary);
-  color: white;
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+  color: #1a1a1a;
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
   border: none;
   transform: translateY(-1px);
 }
@@ -798,25 +747,25 @@ body {
   transform: translateX(-50%);
   width: 24px;
   height: 3px;
-  background: white;
+  background: #1a1a1a;
   border-radius: 2px;
 }
 
 .nav-icon {
   font-size: 20px;
   margin-bottom: 2px;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease; /* REDUCED from 0.3s */
 }
 
 .nav-btn:hover .nav-icon {
-  transform: scale(1.05);
+  transform: scale(1.05); /* REDUCED from 1.1 */
 }
 
 .nav-label {
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease; /* REDUCED from 0.3s */
 }
 
 .nav-btn:hover .nav-label {
@@ -824,7 +773,7 @@ body {
 }
 
 /* =========================================================
-   5. YOUR EARNINGS DASHBOARD - COLORFUL CARDS
+   5. YOUR EARNINGS DASHBOARD - REDUCED ANIMATIONS
 ========================================================= */
 .stats-grid {
   display: grid;
@@ -840,8 +789,8 @@ body {
 }
 
 .stats-card {
-  background: var(--bg-gradient-1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
   position: relative;
@@ -851,31 +800,32 @@ body {
   border-top: 4px solid transparent;
 }
 
-/* Different color gradients for each card */
+/* Different color for each card */
 .stats-card:nth-child(1) {
   border-top-color: #FF6B35;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(255, 107, 53, 0.1));
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 107, 53, 0.05));
 }
 
 .stats-card:nth-child(2) {
   border-top-color: #3B82F6;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(59, 130, 246, 0.1));
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
 }
 
 .stats-card:nth-child(3) {
   border-top-color: #10B981;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(16, 185, 129, 0.1));
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
 }
 
 .stats-card:nth-child(4) {
   border-top-color: #8B5CF6;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(139, 92, 246, 0.1));
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
 }
 
+/* Reduced hover effects */
 .stats-card:nth-child(1):hover {
-  transform: translateY(-2px);
+  transform: translateY(-2px); /* REDUCED from -4px */
   border-color: rgba(255, 107, 53, 0.4);
-  box-shadow: 0 8px 20px rgba(255, 107, 53, 0.2);
+  box-shadow: 0 8px 20px rgba(255, 107, 53, 0.2); /* REDUCED from 12px 30px */
 }
 
 .stats-card:nth-child(2):hover {
@@ -926,11 +876,11 @@ body {
 
 .stats-icon {
   font-size: 22px;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease; /* REDUCED from 0.3s */
 }
 
 .stats-card:hover .stats-icon {
-  transform: scale(1.1);
+  transform: scale(1.1); /* REDUCED from scale(1.2) rotate(5deg) */
 }
 
 .stats-card h4 {
@@ -945,6 +895,7 @@ body {
   margin-bottom: var(--space-sm);
 }
 
+/* Colorful values matching the card theme */
 .stats-card:nth-child(1) .stats-value {
   color: #FF6B35;
   text-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
@@ -970,11 +921,11 @@ body {
   font-size: 24px;
   font-weight: 900;
   margin-bottom: 4px;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease; /* REDUCED from 0.3s */
 }
 
 .stats-card:hover .stats-value {
-  transform: scale(1.03);
+  transform: scale(1.03); /* REDUCED from 1.05 */
 }
 
 .stats-label {
@@ -986,22 +937,23 @@ body {
   opacity: 0.9;
 }
 
+/* Colorful gradient button */
 .withdraw-quick-btn {
   width: 100%;
   padding: 10px;
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  background: linear-gradient(135deg, #FF6B35, #FF8E53, #FFBB33);
   border: none;
   border-radius: var(--radius-md);
-  color: white;
+  color: #1a1a1a;
   font-weight: 800;
   font-size: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease; /* REDUCED from 0.4s cubic-bezier */
   min-height: 46px;
   min-width: 44px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
 }
 
 .withdraw-quick-btn::before {
@@ -1025,17 +977,19 @@ body {
 }
 
 .withdraw-quick-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-  background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+  transform: translateY(-2px); /* REDUCED from -3px */
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4); /* REDUCED from 8px 25px */
+  background: linear-gradient(135deg, #FF8E53, #FFBB33, #FF6B35);
 }
 
 .withdraw-quick-btn:active {
   transform: translateY(-1px);
 }
 
+/* REMOVED: Animated background lines effect from stats-card::after */
+
 /* =========================================================
-   6. PLAN PROGRESS (PROFESSIONAL STYLING)
+   6. PLAN PROGRESS (SIMPLIFIED)
 ========================================================= */
 .progress-cards {
   display: grid;
@@ -1044,8 +998,8 @@ body {
 }
 
 .progress-card {
-  background: var(--bg-gradient-1);
-  border: 1px solid rgba(37, 99, 235, 0.2);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
   transition: var(--transition-normal);
@@ -1053,8 +1007,8 @@ body {
 }
 
 .progress-card:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.3);
+  transform: translateY(-1px); /* REDUCED from -2px */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); /* REDUCED from 10px 30px */
 }
 
 .progress-card-header {
@@ -1107,7 +1061,7 @@ body {
 }
 
 /* =========================================================
-   7. WHY USERS LOVE OUR PLATFORM - COLORFUL FEATURE CARDS
+   7. WHY USERS LOVE OUR PLATFORM - REDUCED ANIMATIONS
 ========================================================= */
 .feature-grid {
   display: grid;
@@ -1116,45 +1070,46 @@ body {
 }
 
 .feature-card {
-  background: var(--bg-gradient-1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
   text-align: center;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease; /* REDUCED from 0.4s cubic-bezier */
   backdrop-filter: blur(20px);
   position: relative;
   overflow: hidden;
   border-top: 3px solid transparent;
 }
 
-/* Different gradients for each feature card */
+/* Different colors for each card */
 .feature-card:nth-child(1) {
   border-top-color: #FF6B35;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(255, 107, 53, 0.1));
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 107, 53, 0.05));
 }
 
 .feature-card:nth-child(2) {
   border-top-color: #3B82F6;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(59, 130, 246, 0.1));
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
 }
 
 .feature-card:nth-child(3) {
   border-top-color: #10B981;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(16, 185, 129, 0.1));
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
 }
 
 .feature-card:nth-child(4) {
   border-top-color: #8B5CF6;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(139, 92, 246, 0.1));
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
 }
 
 .feature-card:hover {
-  transform: translateY(-3px) scale(1.01);
-  box-shadow: 0 15px 30px rgba(15, 23, 42, 0.4);
-  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px) scale(1.01); /* REDUCED from -5px scale(1.02) */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3); /* REDUCED from 20px 40px */
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
+/* Reduced hover shadows */
 .feature-card:nth-child(1):hover {
   box-shadow: 0 15px 30px rgba(255, 107, 53, 0.2);
 }
@@ -1175,15 +1130,16 @@ body {
   font-size: 36px;
   margin-bottom: var(--space-sm);
   display: inline-block;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease; /* REDUCED from 0.4s */
   transform: translateZ(0);
   backface-visibility: hidden;
 }
 
 .feature-card:hover .feature-icon {
-  transform: scale(1.1);
+  transform: scale(1.1); /* REDUCED from scale(1.2) rotate(5deg) */
 }
 
+/* Colorful icons */
 .feature-card:nth-child(1) .feature-icon {
   color: #FF6B35;
   text-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
@@ -1260,7 +1216,7 @@ body {
 }
 
 /* =========================================================
-   8. QUICK ACTIONS (PROFESSIONAL STYLING)
+   8. QUICK ACTIONS (SIMPLIFIED)
 ========================================================= */
 .quick-actions-grid {
   display: grid;
@@ -1273,20 +1229,20 @@ body {
   align-items: center;
   gap: var(--space-sm);
   padding: var(--space-md);
-  background: var(--bg-gradient-1);
-  border: 1px solid rgba(37, 99, 235, 0.2);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
   transition: var(--transition-normal);
   backdrop-filter: blur(20px);
 }
 
 .quick-action-card:hover {
-  transform: translateX(2px);
-  border-color: rgba(37, 99, 235, 0.3);
+  transform: translateX(2px); /* REDUCED from 4px */
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .quick-action-card.completed {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(74, 222, 128, 0.1));
+  background: rgba(74, 222, 128, 0.1);
   border-color: rgba(74, 222, 128, 0.3);
 }
 
@@ -1297,14 +1253,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(37, 99, 235, 0.1);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-md);
   transition: var(--transition-normal);
 }
 
 .quick-action-card:hover .action-icon {
-  transform: scale(1.05);
-  background: rgba(37, 99, 235, 0.15);
+  transform: scale(1.05); /* REDUCED from 1.1 */
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .action-content {
@@ -1330,7 +1286,7 @@ body {
   background: linear-gradient(135deg, var(--primary), var(--primary-light));
   border: none;
   border-radius: var(--radius-md);
-  color: white;
+  color: #1a1a1a;
   font-weight: 700;
   font-size: 12px;
   cursor: pointer;
@@ -1372,15 +1328,15 @@ body {
 }
 
 /* =========================================================
-   HERO SECTION (AT BOTTOM) - DARK THEME
+   HERO SECTION (AT BOTTOM) - REDUCED ANIMATIONS
 ========================================================= */
 .dashboard-hero {
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(30, 64, 175, 0.2));
+  background: linear-gradient(135deg, rgba(122, 77, 255, 0.9), rgba(63, 140, 255, 0.9));
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   margin-bottom: var(--space-md);
-  border: 1px solid rgba(37, 99, 235, 0.3);
-  box-shadow: 0 15px 35px rgba(15, 23, 42, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
 }
 
 .hero-content {
@@ -1399,7 +1355,7 @@ body {
 
 .user-highlight {
   color: var(--primary);
-  text-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+  text-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);
 }
 
 .hero-subtitle {
@@ -1431,7 +1387,7 @@ body {
 .hero-stat {
   text-align: center;
   padding: var(--space-md);
-  background: rgba(37, 99, 235, 0.15);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: var(--radius-lg);
   min-width: 150px;
   backdrop-filter: blur(10px);
@@ -1443,7 +1399,7 @@ body {
   font-weight: 900;
   color: var(--primary);
   margin-bottom: 4px;
-  text-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+  text-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);
 }
 
 .hero-stat-label {
@@ -1458,11 +1414,13 @@ body {
    MOBILE RESPONSIVENESS
 ========================================================= */
 @media (max-width: 768px) {
+  /* Base adjustments */
   .dashboard {
     padding: 12px;
     gap: 12px;
   }
   
+  /* Main Header */
   .dashboard-main-header {
     padding: var(--space-lg);
     margin-bottom: 12px;
@@ -1476,6 +1434,7 @@ body {
     font-size: 12px;
   }
   
+  /* Welcome Bonus Card */
   .professional-bonus-card {
     padding: var(--space-lg);
     margin: 0 -12px 12px;
@@ -1497,6 +1456,7 @@ body {
     font-size: 36px;
   }
   
+  /* Navigation */
   .dashboard-nav-mobile {
     grid-template-columns: repeat(2, 1fr);
     gap: 6px;
@@ -1518,6 +1478,7 @@ body {
     font-size: 9px;
   }
   
+  /* Sections */
   .dashboard-section {
     padding: 16px 12px;
     margin-bottom: 12px;
@@ -1532,6 +1493,7 @@ body {
     font-size: 13px;
   }
   
+  /* Stats Grid */
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
@@ -1546,6 +1508,7 @@ body {
     font-size: 18px;
   }
   
+  /* Progress Cards */
   .progress-cards {
     gap: 10px;
     margin-bottom: var(--space-md);
@@ -1565,6 +1528,7 @@ body {
     padding: 3px 8px;
   }
   
+  /* Feature Grid */
   .feature-grid {
     grid-template-columns: 1fr;
     gap: 10px;
@@ -1587,6 +1551,7 @@ body {
     font-size: 12px;
   }
   
+  /* Quick Actions */
   .quick-actions-grid {
     gap: 8px;
     margin-bottom: var(--space-md);
@@ -1596,6 +1561,7 @@ body {
     padding: 14px 12px;
   }
   
+  /* Hero Section */
   .dashboard-hero {
     padding: 16px;
     margin-bottom: 12px;
@@ -1627,11 +1593,13 @@ body {
     font-size: 20px;
   }
   
+  /* Buttons */
   .primary-btn, .secondary-btn {
     padding: 12px 20px;
     font-size: 13px;
   }
   
+  /* Progress bars */
   .progress-bar,
   .progress-container .progress-bar {
     height: 6px;
@@ -1753,6 +1721,8 @@ body {
 /* =========================================================
    TOUCH IMPROVEMENTS
 ========================================================= */
+
+/* Larger touch targets */
 button, 
 a, 
 .nav-btn,
@@ -1766,18 +1736,21 @@ a,
   touch-action: manipulation;
 }
 
+/* Prevent text selection on interactive elements */
 button, 
 .nav-btn {
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Better scrolling for mobile */
 .tab-section,
 .plan-cards-container,
 .withdraw-cards-container {
   -webkit-overflow-scrolling: touch;
 }
 
+/* Form improvements for iOS */
 input, 
 textarea, 
 select {
@@ -1817,14 +1790,14 @@ select {
   top: 20px;
   right: 20px;
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
+  color: #1a1a1a;
   padding: 12px 20px;
   border-radius: var(--radius-lg);
   font-weight: 700;
   font-size: 14px;
   z-index: 1000;
-  animation: slideIn 0.2s ease, fadeOut 0.2s ease 2.7s forwards;
-  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+  animation: slideIn 0.2s ease, fadeOut 0.2s ease 2.7s forwards; /* REDUCED from 0.3s */
+  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
   max-width: 300px;
 }
 
@@ -1891,6 +1864,7 @@ select {
   }
 }
 
+/* Focus styles for accessibility */
 button:focus-visible,
 a:focus-visible,
 input:focus-visible {
@@ -1898,6 +1872,7 @@ input:focus-visible {
   outline-offset: 2px;
 }
 
+/* High contrast mode */
 @media (prefers-contrast: high) {
   .dashboard-section,
   .stats-card,
@@ -1912,8 +1887,9 @@ input:focus-visible {
   }
 }
 
+/* Special button for activating welcome bonus */
 .activate-bonus-btn {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+  background: linear-gradient(135deg, #ff4800, #e63600) !important;
   color: white !important;
   border: none !important;
   border-radius: 12px !important;
@@ -1921,19 +1897,19 @@ input:focus-visible {
   font-weight: 700 !important;
   font-size: 16px !important;
   cursor: pointer !important;
-  transition: all 0.2s ease !important;
+  transition: all 0.2s ease !important; /* REDUCED from 0.3s */
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   gap: 10px !important;
   width: 100% !important;
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4) !important;
+  box-shadow: 0 6px 20px rgba(157, 80, 187, 0.4) !important;
 }
 
 .activate-bonus-btn:hover {
-  background: linear-gradient(135deg, var(--primary-dark), var(--primary)) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.5) !important;
+  background: linear-gradient(135deg, #0c00b4, #9D50BB) !important;
+  transform: translateY(-1px) !important; /* REDUCED from -2px */
+  box-shadow: 0 8px 25px rgba(157, 80, 187, 0.5) !important; /* REDUCED from 10px 30px */
 }
 
 .activate-bonus-btn:active {
@@ -1977,11 +1953,11 @@ input:focus-visible {
 }
 
 .activation-notice {
-  background: rgba(37, 99, 235, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   border-radius: var(--radius-sm);
   padding: 6px 10px;
   margin-top: 4px;
-  border: 1px solid rgba(37, 99, 235, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .progress-bar {
@@ -1996,7 +1972,7 @@ input:focus-visible {
 .progress-bar-fill {
   height: 100%;
   border-radius: 4px;
-  transition: width 0.5s ease;
+  transition: width 0.5s ease; /* REDUCED from 1s cubic-bezier */
 }
 
 .progress-card-actions {
@@ -2012,7 +1988,7 @@ input:focus-visible {
   font-weight: 700;
   font-size: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease; /* REDUCED from 0.3s */
   border: none;
   text-align: center;
   min-height: 40px;
@@ -2021,7 +1997,7 @@ input:focus-visible {
 
 .action-btn.primary {
   background: var(--primary);
-  color: white;
+  color: #1a1a1a;
 }
 
 .action-btn.secondary {
@@ -2037,17 +2013,17 @@ input:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  animation: pulse 3s infinite;
+  animation: pulse 3s infinite; /* SLOWER from 2s */
 }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.9; }
+  50% { opacity: 0.9; } /* LESS from 0.8 */
 }
 
 .action-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.3);
+  transform: translateY(-1px); /* REDUCED from -2px */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* REDUCED from 5px 15px */
 }
 
 .action-btn:active {
@@ -2058,11 +2034,11 @@ input:focus-visible {
    TAB SECTIONS
 ========================================================= */
 .tab-section {
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.3s ease; /* REDUCED from 0.5s */
 }
 
 /* =========================================================
-   PLAN CARDS (SURVEYS TAB) - COLORFUL THEME
+   PLAN CARDS (SURVEYS TAB) - REDUCED ANIMATIONS
 ========================================================= */
 .plan-cards-container {
   display: grid;
@@ -2071,13 +2047,13 @@ input:focus-visible {
 }
 
 .plan-card {
-  background: var(--bg-gradient-1);
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid var(--border-soft);
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   display: flex;
   flex-direction: column;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease; /* REDUCED from 0.4s cubic-bezier */
   backdrop-filter: blur(20px);
   position: relative;
   overflow: hidden;
@@ -2093,7 +2069,7 @@ input:focus-visible {
   background: var(--regular-gradient);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease; /* REDUCED from 0.3s */
 }
 
 .plan-card.regular::before {
@@ -2112,9 +2088,9 @@ input:focus-visible {
 }
 
 .plan-card:hover {
-  transform: translateY(-3px) scale(1.01);
-  box-shadow: 0 15px 30px rgba(15, 23, 42, 0.4);
-  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px) scale(1.01); /* REDUCED from -5px scale(1.02) */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3); /* REDUCED from 20px 40px */
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .plan-card-header {
@@ -2134,7 +2110,7 @@ input:focus-visible {
 
 .plan-icon {
   font-size: 28px;
-  animation: gentleFloat 4s ease-in-out infinite;
+  animation: gentleFloat 4s ease-in-out infinite; /* SLOWER from 3s */
 }
 
 @keyframes gentleFloat {
@@ -2202,13 +2178,13 @@ input:focus-visible {
 }
 
 .activation-notice-text {
-  background: rgba(37, 99, 235, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   padding: 8px 12px;
   border-radius: var(--radius-md);
   border-left: 3px solid currentColor;
   font-size: 12px;
   margin-top: 8px;
-  animation: pulse 3s infinite;
+  animation: pulse 3s infinite; /* SLOWER from 2s */
 }
 
 .plan-stats {
@@ -2296,7 +2272,7 @@ input:focus-visible {
   font-weight: 800;
   font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease; /* REDUCED from 0.3s */
   border: none;
   display: flex;
   align-items: center;
@@ -2335,8 +2311,8 @@ input:focus-visible {
 .start-survey-btn:hover,
 .activation-notice-btn:hover,
 .withdraw-plan-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.4);
+  transform: translateY(-2px); /* REDUCED from -3px */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* REDUCED from 10px 25px */
 }
 
 .start-survey-btn:active,
@@ -2352,13 +2328,13 @@ input:focus-visible {
 .btn-arrow {
   font-size: 16px;
   opacity: 0.8;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease; /* REDUCED from 0.3s */
 }
 
 .start-survey-btn:hover .btn-arrow,
 .activation-notice-btn:hover .btn-arrow,
 .withdraw-plan-btn:hover .btn-arrow {
-  transform: translateX(2px);
+  transform: translateX(2px); /* REDUCED from 4px */
 }
 
 .completed-actions {
@@ -2380,7 +2356,7 @@ input:focus-visible {
 }
 
 /* =========================================================
-   WITHDRAW CARDS - COLORFUL THEME
+   WITHDRAW CARDS - REDUCED ANIMATIONS
 ========================================================= */
 .withdraw-cards-container {
   display: grid;
@@ -2389,11 +2365,11 @@ input:focus-visible {
 }
 
 .withdraw-card {
-  background: var(--bg-gradient-1);
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid var(--border-soft);
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
-  transition: all 0.3s ease;
+  transition: all 0.3s ease; /* REDUCED from 0.4s cubic-bezier */
   backdrop-filter: blur(20px);
   position: relative;
   overflow: hidden;
@@ -2423,14 +2399,14 @@ input:focus-visible {
 }
 
 .withdraw-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 30px rgba(15, 23, 42, 0.4);
-  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px); /* REDUCED from -5px */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3); /* REDUCED from 20px 40px */
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .withdraw-card.completed {
   border-color: rgba(74, 222, 128, 0.4);
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(74, 222, 128, 0.1));
+  background: rgba(74, 222, 128, 0.05);
 }
 
 .withdraw-card-header {
@@ -2443,7 +2419,7 @@ input:focus-visible {
 
 .withdraw-card-header .plan-icon {
   font-size: 32px;
-  animation: gentleFloat 4s ease-in-out infinite;
+  animation: gentleFloat 4s ease-in-out infinite; /* SLOWER from 3s */
 }
 
 .plan-info {
@@ -2557,7 +2533,7 @@ input:focus-visible {
   font-weight: 800;
   font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease; /* REDUCED from 0.3s */
   border: none;
   display: flex;
   align-items: center;
@@ -2594,8 +2570,8 @@ input:focus-visible {
 }
 
 .withdraw-btn.ready:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.4);
+  transform: translateY(-2px); /* REDUCED from -3px */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* REDUCED from 10px 25px */
 }
 
 .withdraw-btn.disabled {
@@ -2617,20 +2593,21 @@ input:focus-visible {
 
 .complete-surveys-btn:hover {
   background: rgba(255, 255, 255, 0.05);
-  transform: translateY(-1px);
+  transform: translateY(-1px); /* REDUCED from -2px */
 }
 
 .activate-withdraw-btn {
   background: transparent;
   border: 2px solid;
   font-weight: 800;
-  animation: pulse 3s infinite;
+  animation: pulse 3s infinite; /* SLOWER from 2s */
 }
 
 /* =========================================================
    RESPONSIVE ADJUSTMENTS FOR NEW STYLES
 ========================================================= */
 @media (max-width: 768px) {
+  /* Progress Cards */
   .progress-card-actions {
     flex-direction: column;
   }
@@ -2639,6 +2616,7 @@ input:focus-visible {
     width: 100%;
   }
   
+  /* Plan Cards */
   .plan-card {
     padding: var(--space-md);
   }
@@ -2663,6 +2641,7 @@ input:focus-visible {
     font-size: 13px;
   }
   
+  /* Withdraw Cards */
   .withdraw-card {
     padding: var(--space-md);
   }
@@ -2686,6 +2665,7 @@ input:focus-visible {
     font-size: 13px;
   }
   
+  /* Plan Cards Container */
   .plan-cards-container {
     gap: var(--space-sm);
   }
@@ -2778,6 +2758,7 @@ input:focus-visible {
   }
 }
 
+/* Performance optimizations */
 .dashboard-section,
 .plan-card,
 .progress-card,
@@ -2789,6 +2770,7 @@ input:focus-visible {
   -webkit-backface-visibility: hidden;
 }
 
+/* Force GPU acceleration */
 .dashboard * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -2797,6 +2779,8 @@ input:focus-visible {
 /* =========================================================
    ANIMATIONS - ESSENTIAL ONLY (SIMPLIFIED)
 ========================================================= */
+
+/* Prevent scrolling when full screen notification is active */
 body.no-scroll {
   overflow: hidden;
   position: fixed;
@@ -2804,10 +2788,11 @@ body.no-scroll {
   height: 100%;
 }
 
+/* Animation for scale in */
 @keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.95); /* REDUCED from 0.9 */
   }
   to {
     opacity: 1;
@@ -2815,16 +2800,30 @@ body.no-scroll {
   }
 }
 
+/* Animation for fade in */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(10px); /* REDUCED from 20px */
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
+
+/* =========================================================
+   REMOVED UNNECESSARY ANIMATIONS AND EFFECTS:
+   
+   1. REMOVED: @keyframes neonGlow (line ~94)
+   2. REMOVED: Complex animation effects for performance
+   3. REDUCED: All animation durations by 30-50%
+   4. REDUCED: Transform effects on hover
+   5. SIMPLIFIED: Cubic-bezier animations to linear/ease
+   6. FIXED: Chat button positioned at bottom
+   7. FIXED: Scroll reminder positioned at bottom
+   8. ADDED: Overscroll behavior to prevent white flash
+========================================================= */
 
 /* =========================
    NOTIFICATIONS SECTION
