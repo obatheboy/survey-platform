@@ -358,9 +358,9 @@ body {
    3. ELITE WELCOME BONUS CARD - MODERN LIGHT THEME
 ========================================================= */
 .professional-bonus-card {
-  background: var(--bg-surface);
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
   border-radius: var(--radius-xl);
-  padding: var(--space-xl);
+  padding: 20px;
   margin-bottom: var(--space-md);
   box-shadow: 
     0 20px 25px -5px rgba(0, 0, 0, 0.05),
@@ -789,13 +789,13 @@ body {
 }
 
 .stats-card {
-  background: var(--bg-glass);
+  background: #ffffff;
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
-  padding: var(--space-md);
+  padding: 12px;
   position: relative;
   overflow: hidden;
-  backdrop-filter: blur(20px);
+  backdrop-filter: none;
   transition: var(--transition-normal);
   border-top: 4px solid transparent;
 }
@@ -803,22 +803,22 @@ body {
 /* Different color for each card */
 .stats-card:nth-child(1) {
   border-top-color: #FF6B35;
-  background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 107, 53, 0.05));
+  background: linear-gradient(135deg, #fff7ed, #ffedd5);
 }
 
 .stats-card:nth-child(2) {
   border-top-color: #3B82F6;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
 }
 
 .stats-card:nth-child(3) {
   border-top-color: #10B981;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
 }
 
 .stats-card:nth-child(4) {
   border-top-color: #8B5CF6;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
+  background: linear-gradient(135deg, #faf5ff, #e9d5ff);
 }
 
 /* Reduced hover effects */
@@ -998,12 +998,12 @@ body {
 }
 
 .progress-card {
-  background: var(--bg-glass);
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
-  padding: var(--space-md);
+  padding: 16px;
   transition: var(--transition-normal);
-  backdrop-filter: blur(20px);
+  backdrop-filter: none;
 }
 
 .progress-card:hover {
@@ -1070,13 +1070,13 @@ body {
 }
 
 .feature-card {
-  background: var(--bg-glass);
+  background: #ffffff;
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
-  padding: var(--space-lg);
+  padding: 16px;
   text-align: center;
   transition: all 0.3s ease; /* REDUCED from 0.4s cubic-bezier */
-  backdrop-filter: blur(20px);
+  backdrop-filter: none;
   position: relative;
   overflow: hidden;
   border-top: 3px solid transparent;
@@ -1085,22 +1085,22 @@ body {
 /* Different colors for each card */
 .feature-card:nth-child(1) {
   border-top-color: #FF6B35;
-  background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(255, 107, 53, 0.05));
+  background: linear-gradient(135deg, #fff7ed, #ffedd5);
 }
 
 .feature-card:nth-child(2) {
   border-top-color: #3B82F6;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
 }
 
 .feature-card:nth-child(3) {
   border-top-color: #10B981;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
 }
 
 .feature-card:nth-child(4) {
   border-top-color: #8B5CF6;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
+  background: linear-gradient(135deg, #faf5ff, #e9d5ff);
 }
 
 .feature-card:hover {
@@ -1228,12 +1228,13 @@ body {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  padding: var(--space-md);
-  background: var(--bg-glass);
+  padding: 12px;
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
   transition: var(--transition-normal);
-  backdrop-filter: blur(20px);
+  backdrop-filter: none;
+  border-left: 4px solid var(--primary);
 }
 
 .quick-action-card:hover {
@@ -2047,14 +2048,14 @@ input:focus-visible {
 }
 
 .plan-card {
-  background: rgba(255, 255, 255, 0.03);
+  background: #ffffff;
   border: 2px solid var(--border-soft);
   border-radius: var(--radius-xl);
-  padding: var(--space-lg);
+  padding: 16px;
   display: flex;
   flex-direction: column;
   transition: all 0.3s ease; /* REDUCED from 0.4s cubic-bezier */
-  backdrop-filter: blur(20px);
+  backdrop-filter: none;
   position: relative;
   overflow: hidden;
 }
@@ -2076,16 +2077,19 @@ input:focus-visible {
   background: var(--regular-gradient);
   opacity: 1;
 }
+.plan-card.regular { background: linear-gradient(135deg, #f0fdf4, #dcfce7); }
 
 .plan-card.vip::before {
   background: var(--vip-gradient);
   opacity: 1;
 }
+.plan-card.vip { background: linear-gradient(135deg, #eff6ff, #dbeafe); }
 
 .plan-card.vvip::before {
   background: var(--vvip-gradient);
   opacity: 1;
 }
+.plan-card.vvip { background: linear-gradient(135deg, #fffbeb, #fef3c7); }
 
 .plan-card:hover {
   transform: translateY(-3px) scale(1.01); /* REDUCED from -5px scale(1.02) */
@@ -2188,7 +2192,7 @@ input:focus-visible {
 }
 
 .plan-stats {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.5);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -2365,12 +2369,12 @@ input:focus-visible {
 }
 
 .withdraw-card {
-  background: rgba(255, 255, 255, 0.03);
+  background: #ffffff;
   border: 2px solid var(--border-soft);
   border-radius: var(--radius-xl);
-  padding: var(--space-lg);
+  padding: 16px;
   transition: all 0.3s ease; /* REDUCED from 0.4s cubic-bezier */
-  backdrop-filter: blur(20px);
+  backdrop-filter: none;
   position: relative;
   overflow: hidden;
 }
@@ -2389,14 +2393,17 @@ input:focus-visible {
 .withdraw-card.regular::before {
   background: var(--regular-gradient);
 }
+.withdraw-card.regular { background: linear-gradient(135deg, #f0fdf4, #dcfce7); }
 
 .withdraw-card.vip::before {
   background: var(--vip-gradient);
 }
+.withdraw-card.vip { background: linear-gradient(135deg, #eff6ff, #dbeafe); }
 
 .withdraw-card.vvip::before {
   background: var(--vvip-gradient);
 }
+.withdraw-card.vvip { background: linear-gradient(135deg, #fffbeb, #fef3c7); }
 
 .withdraw-card:hover {
   transform: translateY(-3px); /* REDUCED from -5px */
@@ -2473,7 +2480,7 @@ input:focus-visible {
 }
 
 .withdraw-card-body {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.4);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
   margin-bottom: var(--space-md);
