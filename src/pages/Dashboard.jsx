@@ -398,13 +398,13 @@ export default function Dashboard() {
         console.error("Failed to set active plan:", error);
       }
       
-      navigate("/activation-notice", { 
-        state: { 
-          plan: plans[plan],
-          planType: plan,
-          amount: PLANS[plan].total
-        }
-      });
+   // In the handleWithdrawClick function
+navigate("/activation-notice", { 
+  state: { 
+    planKey: plan,           // ← Use planKey (ActivationNotice expects this)
+    amount: PLANS[plan].total
+  }
+});
       return;
     }
 

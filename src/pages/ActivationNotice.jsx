@@ -40,6 +40,11 @@ export default function ActivationNotice() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [userName, setUserName] = useState("");
+  
+  // Check if we're in development mode (simpler approach)
+  const isDevelopment = window.location.hostname === 'localhost' || 
+                        window.location.hostname === '127.0.0.1' ||
+                        window.location.hostname.includes('local');
 
   /* =========================
      SCROLL TO TOP ON MOUNT
@@ -66,10 +71,21 @@ export default function ActivationNotice() {
         const res = await api.get(`/auth/me?_t=${Date.now()}`);
         setUserName(res.data.full_name || "User");
 
+        // DEBUG: Log what's coming from navigation
+        console.log("🔍 ActivationNotice: Received location.state:", location.state);
+        console.log("🔍 location.state?.planKey:", location.state?.planKey);
+        console.log("🔍 location.state?.planType:", location.state?.planType);
+        console.log("🔍 location.state?.plan:", location.state?.plan);
+        
         // Check for passed state from navigation
-        const statePlanKey = location.state?.planType || location.state?.plan?.type;
-        const stateAmount = location.state?.amount || location.state?.plan?.amount;
+        const statePlanKey = location.state?.planKey || 
+                            location.state?.planType || 
+                            location.state?.plan?.type;
+        const stateAmount = location.state?.amount || 
+                           location.state?.plan?.amount;
 
+        console.log("🔍 Determined statePlanKey:", statePlanKey);
+        
         if (statePlanKey) {
           setPlanKey(statePlanKey);
           setTotalEarned(stateAmount || PLAN_CONFIG[statePlanKey]?.total || 0);
@@ -112,9 +128,18 @@ export default function ActivationNotice() {
   }, [navigate, location.state]);
 
   const handleActivate = () => {
+    console.log("🟢 ===== ACTIVATION NOTICE DEBUG =====");
+    console.log("🟢 Current planKey:", planKey);
+    console.log("🟢 Plan config:", PLAN_CONFIG[planKey]);
+    console.log("🟢 Navigating to /activate with state:", { 
+      planKey: planKey,
+      activationFee: PLAN_CONFIG[planKey]?.activationFee,
+      amount: totalEarned 
+    });
+    
     navigate("/activate", { 
       state: { 
-        plan: planKey,
+        planKey: planKey,  // FIX: Use 'planKey' (Activate.jsx expects this)
         activationFee: PLAN_CONFIG[planKey]?.activationFee,
         amount: totalEarned 
       }
@@ -195,31 +220,31 @@ export default function ActivationNotice() {
 
         {/* HEADING */}
         <h1 className="simple-title">
-    
          🎉🎉 CONGRATULATIONS🎉🎉
-          
         </h1>
 
         {/* USER GREETING */}
         <p className="simple-greeting">
           Great work, <strong>{userName.split(' ')[0]}</strong>! 👏
         </p>
-{/* SUCCESS MESSAGE */}
-<div className="simple-message">
-  <h2>Surveys Completed! ✅</h2>
-  <p>
-    You have successfully completed all surveys for the{" "}
-    <strong style={{ color: plan.color }}>{plan.label} SURVEY</strong> and earned{" "}
-    <strong style={{ color: plan.color }}>KES {plan.total}</strong>.
-  </p>
-  <p>
-    Now activate your account by paying activation fee of{" "}
-    <strong style={{ color: "#dc2626" }}>KES {plan.activationFee}</strong> and immediately withdraw your earnings.
-  </p>
-  <p style={{ fontWeight: 600, fontSize: "14px", color: "#6366f1", marginTop: "8px" }}>
-    💡 Remember: Account will be activated automatically after paying activation fee!
-  </p>
-</div>
+        
+        {/* SUCCESS MESSAGE */}
+        <div className="simple-message">
+          <h2>Surveys Completed! ✅</h2>
+          <p>
+            You have successfully completed all surveys for the{" "}
+            <strong style={{ color: plan.color }}>{plan.label} SURVEY</strong> and earned{" "}
+            <strong style={{ color: plan.color }}>KES {plan.total}</strong>.
+          </p>
+          <p>
+            Now activate your account by paying activation fee of{" "}
+            <strong style={{ color: "#dc2626" }}>KES {plan.activationFee}</strong> and immediately withdraw your earnings.
+          </p>
+          <p style={{ fontWeight: 600, fontSize: "14px", color: "#6366f1", marginTop: "8px" }}>
+            💡 Remember: Account will be activated automatically after paying activation fee!
+          </p>
+        </div>
+
         {/* EARNINGS SUMMARY */}
         <div className="simple-earnings">
           <div className="earnings-badge" style={{ background: plan.color }}>
@@ -234,8 +259,7 @@ export default function ActivationNotice() {
         {/* CALL TO ACTION */}
         <div className="simple-action">
           <h3>Tap the button below,Follow all steps and withdraw your money. 🚀</h3>
-          <p className="action-description">
-          </p>
+          <p className="action-description"></p>
         </div>
 
         {/* ACTIVATE BUTTON */}
@@ -248,15 +272,33 @@ export default function ActivationNotice() {
           Activate & Withdraw Now
           <span className="button-arrow">→</span>
         </button>
+        
+        <div className="info-item">
+          <span className="info-icon">👑</span>
+          <span className="info-text">One-time activation fee</span>
+        </div>
 
-     
-       
-        
-          <div className="info-item">
-            <span className="info-icon">👑</span>
-            <span className="info-text">One-time activation fee</span>
+        {/* DEBUG INFO - Shows in local development */}
+        {isDevelopment && (
+          <div style={{
+            marginTop: '15px',
+            padding: '10px',
+            background: 'rgba(59, 130, 246, 0.1)',
+            border: '1px solid rgba(59, 130, 246, 0.3)',
+            borderRadius: '8px',
+            fontSize: '12px',
+            color: '#3b82f6'
+          }}>
+            <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>🔍 DEBUG INFO:</div>
+            <div>Plan Key: <strong>{planKey}</strong></div>
+            <div>Plan Label: <strong>{plan.label}</strong></div>
+            <div>Activation Fee: <strong>KES {plan.activationFee}</strong></div>
+            <div>Total Earned: <strong>KES {totalEarned}</strong></div>
+            <div style={{ marginTop: '8px', fontSize: '11px', color: '#6b7280' }}>
+              This debug info only shows on localhost
+            </div>
           </div>
-        
+        )}
 
         {/* BACK BUTTON */}
         <button

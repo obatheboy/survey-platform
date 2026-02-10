@@ -250,18 +250,47 @@ export default function Activate() {
 
         const statePlanKey = location.state?.planKey;
         const isWelcome = searchParams.get("welcome_bonus");
-        const planFromQuery = isWelcome ? "WELCOME" : (statePlanKey || res.data.active_plan);
+        
+        // FIX: Check URL query parameters for plan
+        const planFromUrl = searchParams.get("plan");
+        
+        // DEBUG: Log everything
+        console.log("🔍 ===== LOAD PLAN DEBUG =====");
+        console.log("🔍 location.state:", location.state);
+        console.log("🔍 statePlanKey:", statePlanKey);
+        console.log("🔍 isWelcome:", isWelcome);
+        console.log("🔍 planFromUrl:", planFromUrl);
+        console.log("🔍 searchParams:", Object.fromEntries(searchParams.entries()));
+        console.log("🔍 user.active_plan:", res.data.active_plan);
+        console.log("🔍 user.plans:", res.data.plans);
+        console.log("🔍 ===== END DEBUG =====");
 
-        // ADD DEBUG LOG HERE
-        console.log("🔍 Plan debug:", {
-          statePlanKey: statePlanKey,
-          isWelcome: isWelcome,
-          planFromQuery: planFromQuery,
-          active_plan: res.data.active_plan,
-          plans: res.data.plans,
-          searchParams: Object.fromEntries(searchParams.entries()),
-          locationState: location.state
-        });
+        // FIXED LOGIC: Prioritize URL param, then state, then active_plan
+        let planFromQuery;
+        if (isWelcome) {
+          planFromQuery = "WELCOME";
+        } else if (planFromUrl && PLAN_CONFIG[planFromUrl.toUpperCase()]) {
+          planFromQuery = planFromUrl.toUpperCase();
+        } else if (statePlanKey && PLAN_CONFIG[statePlanKey.toUpperCase()]) {
+          planFromQuery = statePlanKey.toUpperCase();
+        } else {
+          // Find the highest plan that's completed but not activated
+          const userPlans = res.data.plans || {};
+          let highestPlan = null;
+          
+          // Check plans in order: VVIP -> VIP -> REGULAR
+          if (userPlans.VVIP && userPlans.VVIP.completed && !userPlans.VVIP.is_activated) {
+            highestPlan = "VVIP";
+          } else if (userPlans.VIP && userPlans.VIP.completed && !userPlans.VIP.is_activated) {
+            highestPlan = "VIP";
+          } else if (userPlans.REGULAR && userPlans.REGULAR.completed && !userPlans.REGULAR.is_activated) {
+            highestPlan = "REGULAR";
+          }
+          
+          planFromQuery = highestPlan || res.data.active_plan || "REGULAR";
+        }
+
+        console.log("✅ Determined planFromQuery:", planFromQuery);
 
         let plan;
         if (planFromQuery === "WELCOME") {
@@ -279,6 +308,7 @@ export default function Activate() {
         }
 
         if (!plan || (planFromQuery !== "WELCOME" && plan.is_activated)) {
+          console.log("⚠️ Plan already activated or not found, redirecting to dashboard");
           navigate("/dashboard", { replace: true });
           return;
         }
@@ -286,7 +316,6 @@ export default function Activate() {
         setPlanKey(planFromQuery);
         setPlanState(plan);
         
-        // ADD DEBUG LOG HERE
         console.log("✅ Plan loaded:", {
           planKey: planFromQuery,
           planState: plan,
@@ -335,17 +364,15 @@ const submitActivation = async () => {
   try {
     const planParam = planKey === "WELCOME" ? "REGULAR" : planKey;
     
-    // ADD DEBUG LOG HERE
-    console.log("🟡 Frontend submitting:", {
-      planKey: planKey,
-      planParam: planParam,
-      is_welcome_bonus: planKey === "WELCOME",
-      paymentText: paymentText.trim(),
-      user: {
-        id: user?._id,
-        email: user?.email
-      }
-    });
+    console.log("🟡 ===== SUBMIT ACTIVATION DEBUG =====");
+    console.log("🟡 planKey from state:", planKey);
+    console.log("🟡 planParam being sent:", planParam);
+    console.log("🟡 paymentText:", paymentText);
+    console.log("🟡 user.plans object:", user?.plans);
+    console.log("🟡 current planState:", planState);
+    console.log("🟡 user.plans.VVIP:", user?.plans?.VVIP);
+    console.log("🟡 user.plans.VIP:", user?.plans?.VIP);
+    console.log("🟡 ===== END DEBUG =====");
     
     await api.post("/activation/submit", {
       mpesa_code: paymentText.trim(),
@@ -396,6 +423,9 @@ const submitActivation = async () => {
           glow: "rgba(16, 185, 129, 0.2)" 
         }
       : PLAN_CONFIG[planKey] || PLAN_CONFIG.REGULAR;
+
+  // Add plan verification warning
+  const showPlanWarning = planKey === "VIP" && user?.plans?.VVIP?.completed && !user?.plans?.VVIP?.is_activated;
 
   /* =========================
      RENDER
@@ -493,6 +523,22 @@ const submitActivation = async () => {
             💰 Withdrawable:{" "}
             <span style={{ color: plan.color }}>KES {plan.total}</span>
           </h3>
+
+          {showPlanWarning && (
+            <div style={{
+              marginTop: "16px",
+              padding: "12px",
+              borderRadius: "10px",
+              background: "rgba(245, 158, 11, 0.1)",
+              border: "1px solid rgba(245, 158, 11, 0.3)",
+              color: "#f59e0b",
+              fontSize: "13px",
+              fontWeight: 600
+            }}>
+              ⚠️ <strong>Note:</strong> You have completed VVIP surveys. 
+              Make sure you're activating the correct plan. Current: <strong>{plan.label}</strong>
+            </div>
+          )}
 
           <div style={styles.sectionHighlight}>
             <p style={{ 
@@ -615,6 +661,10 @@ const submitActivation = async () => {
             <span style={{ fontSize: "12px", color: "#dc2626", fontWeight: 700 }}>
               ⚠ Must include: Transaction ID, Amount, Time, and Reference
             </span>
+            <br />
+            <span style={{ fontSize: "12px", color: "#3b82f6", fontWeight: 700, marginTop: "4px", display: "block" }}>
+              ℹ️ Activating: <strong>{plan.label} Plan</strong> (KES {plan.activationFee})
+            </span>
           </div>
 
           <textarea
@@ -654,7 +704,7 @@ Confirmed. Ksh100.00 sent to OBADIAH NYAKUNDI OTOKI for account 7282886 on 15/2/
                 Submitting...
               </>
             ) : (
-              "Submit Payment"
+              `Submit ${plan.label} Activation (KES ${plan.activationFee})`
             )}
           </button>
 
