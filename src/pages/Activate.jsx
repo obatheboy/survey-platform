@@ -263,6 +263,18 @@ export default function Activate() {
         console.log("🔍 searchParams:", Object.fromEntries(searchParams.entries()));
         console.log("🔍 user.active_plan:", res.data.active_plan);
         console.log("🔍 user.plans:", res.data.plans);
+        
+        // Log each plan's status
+        ['VVIP', 'VIP', 'REGULAR'].forEach(planName => {
+          const plan = res.data.plans?.[planName];
+          console.log(`🔍 ${planName}:`, {
+            exists: !!plan,
+            completed: plan?.completed,
+            is_activated: plan?.is_activated,
+            surveys_completed: plan?.surveys_completed
+          });
+        });
+        
         console.log("🔍 ===== END DEBUG =====");
 
         // FIXED LOGIC: Prioritize URL param, then state, then active_plan
@@ -362,22 +374,36 @@ export default function Activate() {
     setNotification(null);
 
     try {
-      // CRITICAL FIX: Send the correct planKey to backend
-      const planToSend = planKey === "WELCOME" ? "REGULAR" : planKey;
-      
+      // COMPREHENSIVE DEBUG
       console.log("🟡 ===== SUBMIT ACTIVATION DEBUG =====");
-      console.log("🟡 planKey from state:", planKey);
-      console.log("🟡 planToSend being sent:", planToSend);
-      console.log("🟡 paymentText length:", paymentText.length);
-      console.log("🟡 user.plans object:", user?.plans);
-      console.log("🟡 user.plans.VVIP?.completed:", user?.plans?.VVIP?.completed);
-      console.log("🟡 user.plans.VIP?.completed:", user?.plans?.VIP?.completed);
+      console.log("🟡 Current planKey state:", planKey);
+      console.log("🟡 User plans object:", user?.plans);
+      
+      // STRATEGY: Always check what the user has actually completed
+      let planToSend = planKey === "WELCOME" ? "REGULAR" : planKey;
+      
+      // Check if user has completed a higher plan than what's being activated
+      if (user?.plans?.VVIP?.completed && !user?.plans?.VVIP?.is_activated) {
+        planToSend = "VVIP";
+        console.log("✅ User has completed VVIP surveys - sending VVIP");
+      } else if (user?.plans?.VIP?.completed && !user?.plans?.VIP?.is_activated) {
+        planToSend = "VIP";
+        console.log("✅ User has completed VIP surveys - sending VIP");
+      } else if (user?.plans?.REGULAR?.completed && !user?.plans?.REGULAR?.is_activated) {
+        planToSend = "REGULAR";
+        console.log("✅ User has completed REGULAR surveys - sending REGULAR");
+      } else {
+        console.log("⚠️ No completed plan found, using planKey:", planToSend);
+      }
+      
+      console.log("🟡 Final planToSend:", planToSend);
+      console.log("🟡 Payment text length:", paymentText.length);
       console.log("🟡 ===== END DEBUG =====");
       
-      // FIX: Send the data in the correct format that backend expects
+      // CRITICAL FIX: Backend expects 'plan' parameter (not 'planKey')
       const requestData = {
         mpesa_code: paymentText.trim(),
-        planKey: planToSend,  // Changed from 'plan' to 'planKey' to match backend expectation
+        plan: planToSend,  // Backend expects 'plan' parameter
         is_welcome_bonus: planKey === "WELCOME",
       };
       
@@ -536,6 +562,74 @@ export default function Activate() {
             💰 Withdrawable:{" "}
             <span style={{ color: plan.color }}>KES {plan.total}</span>
           </h3>
+
+          {/* PLAN VERIFICATION SECTION */}
+          <div style={{
+            marginTop: "16px",
+            padding: "12px",
+            borderRadius: "10px",
+            background: "rgba(59, 130, 246, 0.1)",
+            border: "1px solid rgba(59, 130, 246, 0.3)",
+            fontSize: "13px"
+          }}>
+            <div style={{ 
+              fontWeight: 700, 
+              color: "#2563eb",
+              marginBottom: "8px",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px"
+            }}>
+              🔍 Plan Status
+            </div>
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              {['REGULAR', 'VIP', 'VVIP'].map((p) => {
+                const planData = user?.plans?.[p];
+                const isCurrent = planKey === p || (planKey === 'WELCOME' && p === 'REGULAR');
+                return (
+                  <div key={p} style={{ 
+                    display: "flex", 
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "8px",
+                    background: isCurrent ? "rgba(37, 99, 235, 0.15)" : "transparent",
+                    borderRadius: "6px",
+                    border: isCurrent ? "1px solid rgba(37, 99, 235, 0.3)" : "none"
+                  }}>
+                    <span style={{ fontWeight: 600, fontSize: "12px" }}>{p}:</span>
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                      <span style={{ 
+                        color: planData?.completed ? "#10b981" : "#ef4444",
+                        fontWeight: 700,
+                        fontSize: "11px"
+                      }}>
+                        {planData?.completed ? "✓ Completed" : "✗ Not Complete"}
+                      </span>
+                      <span style={{ 
+                        color: planData?.is_activated ? "#10b981" : "#f59e0b",
+                        fontWeight: 700,
+                        fontSize: "11px"
+                      }}>
+                        {planData?.is_activated ? "✅ Activated" : "⏳ Not Activated"}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            
+            <div style={{ 
+              marginTop: "10px", 
+              paddingTop: "8px", 
+              borderTop: "1px solid rgba(59, 130, 246, 0.2)",
+              fontWeight: 700,
+              fontSize: "12px",
+              color: plan.color
+            }}>
+              📋 Activating: <strong>{plan.label} Plan</strong>
+            </div>
+          </div>
 
           {showPlanWarning && (
             <div style={{
