@@ -18,6 +18,13 @@ const PLAN_FEES = {
 ===================================== */
 exports.submitActivationPayment = async (req, res) => {
   try {
+    console.log("🔍 ACTIVATION SUBMISSION DEBUG:");
+    console.log("User ID:", req.user.id);
+    console.log("Request body:", req.body);
+    console.log("Plan received:", req.body.plan);
+    console.log("Plan uppercase:", req.body.plan?.toUpperCase());
+    console.log("PLAN_FEES for this plan:", PLAN_FEES[req.body.plan?.toUpperCase()]);
+    
     const userId = req.user.id;
     const { mpesa_code, plan } = req.body;
     const paymentReference = String(mpesa_code || "").trim();
@@ -86,6 +93,14 @@ exports.submitActivationPayment = async (req, res) => {
     });
     
     await user.save();
+
+    // Debug: Check what was saved
+    const savedRequest = user.activation_requests[user.activation_requests.length - 1];
+    console.log("💾 Saved activation request:", {
+      plan: savedRequest.plan,
+      amount: savedRequest.amount,
+      status: savedRequest.status
+    });
 
     // Create notification for activation submission
     try {

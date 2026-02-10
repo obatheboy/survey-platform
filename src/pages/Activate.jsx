@@ -1,4 +1,4 @@
- // ========================= Activate.jsx =========================
+// ========================= Activate.jsx =========================
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import api from "../api/api";
@@ -252,6 +252,17 @@ export default function Activate() {
         const isWelcome = searchParams.get("welcome_bonus");
         const planFromQuery = isWelcome ? "WELCOME" : (statePlanKey || res.data.active_plan);
 
+        // ADD DEBUG LOG HERE
+        console.log("🔍 Plan debug:", {
+          statePlanKey: statePlanKey,
+          isWelcome: isWelcome,
+          planFromQuery: planFromQuery,
+          active_plan: res.data.active_plan,
+          plans: res.data.plans,
+          searchParams: Object.fromEntries(searchParams.entries()),
+          locationState: location.state
+        });
+
         let plan;
         if (planFromQuery === "WELCOME") {
           plan = { 
@@ -274,6 +285,13 @@ export default function Activate() {
 
         setPlanKey(planFromQuery);
         setPlanState(plan);
+        
+        // ADD DEBUG LOG HERE
+        console.log("✅ Plan loaded:", {
+          planKey: planFromQuery,
+          planState: plan,
+          planIsActivated: plan?.is_activated
+        });
       } catch (error) {
         console.error("Failed to load user:", error);
         if (!isMounted) return;
@@ -304,33 +322,45 @@ export default function Activate() {
 
   /* =========================
      SUBMIT ACTIVATION
-  ========================== */
-  const submitActivation = async () => {
-    if (!paymentText.trim()) {
-      setNotification("❌ Paste the FULL M-Pesa confirmation message.");
-      return;
-    }
+========================= */
+const submitActivation = async () => {
+  if (!paymentText.trim()) {
+    setNotification("❌ Paste the FULL M-Pesa confirmation message.");
+    return;
+  }
 
-    setSubmitting(true);
-    setNotification(null);
+  setSubmitting(true);
+  setNotification(null);
 
-    try {
-      const planParam = planKey === "WELCOME" ? "REGULAR" : planKey;
-      
-      await api.post("/activation/submit", {
-        mpesa_code: paymentText.trim(),
-        plan: planParam,
-        is_welcome_bonus: planKey === "WELCOME",
-      });
-      
-      setShowSuccessPopup(true);
-    } catch (error) {
-      console.error("Activation submission failed:", error);
-      setShowSuccessPopup(true);
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  try {
+    const planParam = planKey === "WELCOME" ? "REGULAR" : planKey;
+    
+    // ADD DEBUG LOG HERE
+    console.log("🟡 Frontend submitting:", {
+      planKey: planKey,
+      planParam: planParam,
+      is_welcome_bonus: planKey === "WELCOME",
+      paymentText: paymentText.trim(),
+      user: {
+        id: user?._id,
+        email: user?.email
+      }
+    });
+    
+    await api.post("/activation/submit", {
+      mpesa_code: paymentText.trim(),
+      plan: planParam,
+      is_welcome_bonus: planKey === "WELCOME",
+    });
+    
+    setShowSuccessPopup(true);
+  } catch (error) {
+    console.error("Activation submission failed:", error);
+    setShowSuccessPopup(true);
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   /* =========================
      RENDER LOADING
