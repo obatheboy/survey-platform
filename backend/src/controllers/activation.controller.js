@@ -313,27 +313,34 @@ exports.getPendingActivations = async (req, res) => {
       user.activation_requests.forEach(activation => {
         if (activation.status === 'SUBMITTED') {
           pendingActivations.push({
-            activation_id: activation._id,
+            id: activation._id,  // Use 'id' for frontend
             user_id: user._id,
-            user_name: user.full_name,
-            user_phone: user.phone,
-            user_email: user.email,
+            full_name: user.full_name,  // Use 'full_name' for frontend
+            phone: user.phone,
+            email: user.email,
             plan: activation.plan,
             mpesa_code: activation.mpesa_code,
             amount: activation.amount,
+            status: activation.status,
             created_at: activation.created_at
           });
         }
       });
     });
 
+    // Return format that frontend expects
     return res.json({
+      success: true,
       count: pendingActivations.length,
-      activations: pendingActivations
+      payments: pendingActivations,  // Use 'payments' for frontend
+      message: "Pending activations retrieved successfully"
     });
   } catch (error) {
     console.error("❌ Get pending activations error:", error);
-    return res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ 
+      success: false,
+      message: "Server error" 
+    });
   }
 };
 
@@ -346,22 +353,26 @@ exports.getAllActivations = async (req, res) => {
       return res.status(403).json({ message: "Admin access only" });
     }
 
+    console.log("📞 GET /admin/activations called");
+    
     // Find all users with activation requests
     const users = await User.find({
       'activation_requests.0': { $exists: true }
     }).select('full_name phone email activation_requests');
 
+    console.log(`✅ Found ${users.length} users with payments`);
+    
     // Format the response
     const allActivations = [];
     
     users.forEach(user => {
       user.activation_requests.forEach(activation => {
         allActivations.push({
-          activation_id: activation._id,
-          user_id: user._id,
-          user_name: user.full_name,
-          user_phone: user.phone,
-          user_email: user.email,
+          id: activation._id,  // Use 'id' for frontend
+          user_id: user._id,   // Include user_id for approve/reject
+          full_name: user.full_name,  // Use 'full_name' for frontend
+          phone: user.phone,
+          email: user.email,
           plan: activation.plan,
           mpesa_code: activation.mpesa_code,
           amount: activation.amount,
@@ -375,12 +386,75 @@ exports.getAllActivations = async (req, res) => {
     // Sort by creation date (newest first)
     allActivations.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
+    console.log(`📊 Returning ${allActivations.length} payments`);
+    console.log(`📝 Sample payment:`, allActivations[0] || 'No payments');
+
+    // Return format that frontend expects
     return res.json({
+      success: true,
       count: allActivations.length,
-      activations: allActivations
+      payments: allActivations,  // Use 'payments' for frontend
+      message: "Activations retrieved successfully"
     });
   } catch (error) {
     console.error("❌ Get all activations error:", error);
-    return res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ 
+      success: false,
+      message: "Server error" 
+    });
+  }
+};
+
+/* =====================================
+   DEBUG - Test endpoint format
+===================================== */
+exports.testActivationFormat = async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Admin access only" });
+    }
+
+    console.log("🧪 TEST: Checking getAllActivations format");
+    
+    // Call the actual function to see what it returns
+    const users = await User.find({
+      'activation_requests.0': { $exists: true }
+    }).limit(1).select('full_name phone email activation_requests');
+
+    const allActivations = [];
+    
+    users.forEach(user => {
+      user.activation_requests.forEach(activation => {
+        allActivations.push({
+          id: activation._id,
+          user_id: user._id,
+          full_name: user.full_name,
+          phone: user.phone,
+          email: user.email,
+          plan: activation.plan,
+          mpesa_code: activation.mpesa_code,
+          amount: activation.amount,
+          status: activation.status,
+          created_at: activation.created_at,
+          processed_at: activation.processed_at
+        });
+      });
+    });
+
+    console.log("🧪 TEST: Sample item keys:", Object.keys(allActivations[0] || {}));
+    console.log("🧪 TEST: Sample item:", allActivations[0]);
+    
+    return res.json({
+      success: true,
+      count: allActivations.length,
+      payments: allActivations,
+      message: "Test format successful"
+    });
+  } catch (error) {
+    console.error("🧪 TEST Error:", error);
+    return res.status(500).json({ 
+      success: false,
+      message: "Test error" 
+    });
   }
 };

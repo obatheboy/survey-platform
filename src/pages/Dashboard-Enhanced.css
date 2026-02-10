@@ -2525,12 +2525,15 @@ input:focus-visible {
 }
 
 .plan-card.regular .plan-name {
+  color: var(--regular-color);
 }
 
 .plan-card.vip .plan-name {
+  color: var(--vip-color);
 }
 
 .plan-card.vvip .plan-name {
+  color: var(--vvip-color);
 }
 
 .plan-status {

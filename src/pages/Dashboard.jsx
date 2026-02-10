@@ -1195,7 +1195,7 @@ return (
                   <div className="plan-card-header">
                     <div className="plan-badge">
                       <span className="plan-icon">{plan.icon}</span>
-                      <span className="plan-name" style={{ color: plan.color }}>{plan.name}</span>
+                      <span className="plan-name">{plan.name}</span>
                     </div>
                     <span className={`plan-status ${status.status}`}>
                       {status.icon} {status.label}
