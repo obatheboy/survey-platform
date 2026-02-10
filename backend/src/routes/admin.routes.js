@@ -51,11 +51,14 @@ router.get("/activations", activationController.getAllActivations);
 // Get only pending activations
 router.get("/activations/pending", activationController.getPendingActivations);
 
-// Approve an activation
-router.patch("/activations/approve", activationController.approveActivation);
+// Approve an activation - FIXED: Use POST with body params
+router.post("/activations/approve", activationController.approveActivation);
 
-// Reject an activation  
-router.patch("/activations/reject", activationController.rejectActivation);
+// Reject an activation - FIXED: Use POST with body params  
+router.post("/activations/reject", activationController.rejectActivation);
+
+// Debug/test endpoint
+router.get("/activations/test", activationController.testActivationFormat);
 
 /**
  * =========================================
