@@ -159,7 +159,7 @@ exports.logout = (req, res) => {
 };
 
 /* ===============================
-   GET ME (Updated for plans structure)
+   GET ME (FIXED VERSION - Correct active plan logic)
 ================================ */
 exports.getMe = async (req, res) => {
   try {
@@ -171,27 +171,76 @@ exports.getMe = async (req, res) => {
 
     // Calculate active plan and totals from plans structure
     let activePlan = null;
+    let recommendedPlan = null; // Plan that user should activate
     let totalSurveysCompleted = 0;
     let surveysCompleted = 0;
     let surveysLocked = false;
 
+    // Define plan hierarchy (highest to lowest)
+    const PLAN_HIERARCHY = ['VVIP', 'VIP', 'REGULAR'];
+    
     // Check if user has plans structure
     if (user.plans) {
-      // Loop through all plans (REGULAR, VIP, VVIP)
-      for (const [planKey, planData] of Object.entries(user.plans)) {
+      // First pass: Find the highest COMPLETED but not activated plan
+      for (const planKey of PLAN_HIERARCHY) {
+        const planData = user.plans[planKey];
+        
         if (planData && typeof planData === 'object') {
           // Accumulate total surveys completed across all plans
           totalSurveysCompleted += planData.surveys_completed || 0;
           
-          // Determine active plan (first non-activated plan)
-          if (!activePlan && planData.is_activated === false) {
-            activePlan = planKey;
+          // Check if this plan is completed but not activated
+          const isCompleted = planData.completed === true || 
+                             planData.surveys_completed >= TOTAL_SURVEYS;
+          const isNotActivated = planData.is_activated === false;
+          
+          if (isCompleted && isNotActivated) {
+            // This is the plan that should be activated
+            recommendedPlan = planKey;
             surveysCompleted = planData.surveys_completed || 0;
-            surveysLocked = planData.completed === true;
+            surveysLocked = true;
+            
+            // Also set as active plan for backward compatibility
+            if (!activePlan) {
+              activePlan = planKey;
+            }
+            break; // Found highest completed plan, stop searching
           }
         }
       }
+      
+      // Second pass: If no completed plan found, find first non-activated plan
+      if (!activePlan) {
+        for (const planKey of PLAN_HIERARCHY) {
+          const planData = user.plans[planKey];
+          
+          if (planData && typeof planData === 'object' && planData.is_activated === false) {
+            activePlan = planKey;
+            surveysCompleted = planData.surveys_completed || 0;
+            surveysLocked = planData.completed === true || planData.surveys_completed >= TOTAL_SURVEYS;
+            break;
+          }
+        }
+      }
+      
+      // If still no active plan found, use the first plan
+      if (!activePlan && user.plans.REGULAR) {
+        activePlan = 'REGULAR';
+        surveysCompleted = user.plans.REGULAR.surveys_completed || 0;
+        surveysLocked = user.plans.REGULAR.completed === true || user.plans.REGULAR.surveys_completed >= TOTAL_SURVEYS;
+      }
     }
+
+    // Add debug logging to help diagnose
+    console.log(`🔍 GET ME DEBUG for user ${user._id}:`, {
+      activePlan,
+      recommendedPlan,
+      plans: {
+        REGULAR: user.plans?.REGULAR,
+        VIP: user.plans?.VIP,
+        VVIP: user.plans?.VVIP
+      }
+    });
 
     res.json({
       id: user._id,
@@ -204,6 +253,7 @@ exports.getMe = async (req, res) => {
       welcome_bonus_received: user.welcome_bonus_received,
       welcome_bonus_withdrawn: user.welcome_bonus_withdrawn || false,
       active_plan: activePlan,
+      recommended_plan: recommendedPlan, // New field: which plan should be activated
       surveys_completed: surveysCompleted,
       total_surveys_completed: totalSurveysCompleted,
       surveys_locked: surveysLocked,
