@@ -24,4 +24,15 @@ router.post(
   surveyController.submitSurvey
 );
 
+// ===============================
+// NEW: BATCH SUBMIT - SUPER FAST!
+// Submit MULTIPLE surveys in ONE request
+// BODY: { plan: "REGULAR" | "VIP" | "VVIP", count: number }
+// ===============================
+router.post(
+  "/batch-submit",
+  protect,
+  surveyController.batchSubmitSurveys
+);
+
 module.exports = router;

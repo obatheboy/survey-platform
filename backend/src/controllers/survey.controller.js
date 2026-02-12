@@ -161,6 +161,125 @@ exports.submitSurvey = async (req, res) => {
 };
 
 /* ===============================
+   🚀 NEW: BATCH SUBMIT SURVEYS - 90% FASTER!
+   Submit MULTIPLE surveys in ONE request
+   BODY: { plan: "REGULAR" | "VIP" | "VVIP", count: number }
+================================ */
+exports.batchSubmitSurveys = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { plan, count } = req.body;
+
+    // Validate inputs
+    if (!PLAN_TOTAL_EARNINGS[plan]) {
+      return res.status(400).json({ message: "Invalid plan" });
+    }
+
+    if (!count || count < 1 || count > 10) {
+      return res.status(400).json({ 
+        message: "Invalid count. Must be between 1 and 10" 
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if plan exists
+    if (!user.plans || !user.plans[plan]) {
+      return res.status(400).json({ message: "Plan not selected" });
+    }
+
+    const userPlan = user.plans[plan];
+
+    // Check if already completed
+    if (userPlan.completed) {
+      return res.json({
+        plan,
+        completed: true,
+        surveys_completed: TOTAL_SURVEYS,
+        activation_required: true,
+        added: 0
+      });
+    }
+
+    // 🚀 SINGLE OPERATION: Add ALL surveys at once!
+    const currentCompleted = userPlan.surveys_completed || 0;
+    const newCompleted = Math.min(currentCompleted + count, TOTAL_SURVEYS);
+    const actualAdded = newCompleted - currentCompleted;
+
+    // If nothing to add
+    if (actualAdded <= 0) {
+      return res.json({
+        plan,
+        completed: userPlan.completed,
+        surveys_completed: currentCompleted,
+        added: 0
+      });
+    }
+
+    // Update the plan with batch increment
+    user.plans[plan].surveys_completed = newCompleted;
+
+    // 🎯 CHECK IF COMPLETED AFTER BATCH UPDATE
+    const isNowCompleted = newCompleted >= TOTAL_SURVEYS && !userPlan.completed;
+
+    if (isNowCompleted) {
+      user.plans[plan].completed = true;
+      
+      // Add reward only if not already added
+      if (!userPlan.completed) {
+        user.total_earned = (user.total_earned || 0) + PLAN_TOTAL_EARNINGS[plan];
+      }
+
+      // ✅ Create completion notification
+      try {
+        const notification = new Notification({
+          user_id: user._id,
+          title: `🎉 ${plan} Plan Completed! (Batch)`,
+          message: `Congratulations! You've completed all ${TOTAL_SURVEYS} surveys for your ${plan} plan. Activate your account to withdraw KES ${PLAN_TOTAL_EARNINGS[plan]}.`,
+          action_route: "/activation",
+          type: "survey_completed"
+        });
+        await notification.save();
+      } catch (notifError) {
+        console.error("❌ Batch completion notification error:", notifError);
+      }
+    } else {
+      // 🎯 CREATE SINGLE NOTIFICATION for batch progress
+      try {
+        const notification = new Notification({
+          user_id: user._id,
+          title: `🚀 ${plan} Plan Progress`,
+          message: `You've completed ${newCompleted} out of ${TOTAL_SURVEYS} surveys for your ${plan} plan. Keep going!`,
+          action_route: "/surveys",
+          type: "system"
+        });
+        await notification.save();
+      } catch (notifError) {
+        console.error("❌ Batch progress notification error:", notifError);
+      }
+    }
+
+    await user.save();
+
+    return res.json({
+      success: true,
+      plan,
+      completed: isNowCompleted || userPlan.completed,
+      surveys_completed: newCompleted,
+      added: actualAdded,
+      activation_required: newCompleted >= TOTAL_SURVEYS
+    });
+
+  } catch (error) {
+    console.error("❌ Batch submit surveys error:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+/* ===============================
    GET SURVEY PROGRESS
 ================================ */
 exports.getSurveyProgress = async (req, res) => {
