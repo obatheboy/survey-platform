@@ -1,8 +1,4 @@
 
-```diff
---- /dev/null
-+++ b/src/pages/admin/AdminDashboard.css
-@@ -0,0 +1,153 @@
 .admin-dashboard {
   padding: 24px;
   background-color: #f9fafb;

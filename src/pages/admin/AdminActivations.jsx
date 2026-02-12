@@ -23,7 +23,7 @@ export default function AdminActivations() {
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [roleMessage, setRoleMessage] = useState("");
-  const [allPayments, setAllPayments] = useState([]); // Store all payments for approve/reject
+  const [allPayments, setAllPayments] = useState([]);
 
   const {
     items: payments,
@@ -47,19 +47,17 @@ export default function AdminActivations() {
         const response = await adminApi.get('/admin/activations');
         console.log("🔍 API Response:", response.data);
         
-        // Handle the new response format { success: true, payments: [...] }
         if (response.data && response.data.success && Array.isArray(response.data.payments)) {
           console.log("✅ Using payments array from response");
           const data = response.data.payments;
-          setAllPayments(data); // Store for approve/reject functions
+          setAllPayments(data);
           return { data };
         }
         
-        // Handle old format (direct array) or error
         if (Array.isArray(response.data)) {
           console.log("⚠️ Using direct array (old format)");
           const data = response.data;
-          setAllPayments(data); // Store for approve/reject functions
+          setAllPayments(data);
           return { data };
         }
         
@@ -73,7 +71,6 @@ export default function AdminActivations() {
       }
     },
     approveData: (id) => {
-      // Find the activation to get userId and activationId
       const activation = allPayments.find(p => p.id === id || p._id === id);
       if (!activation) {
         throw new Error("Activation not found");
@@ -84,13 +81,13 @@ export default function AdminActivations() {
         activation: activation
       });
       
-      return adminApi.patch('/admin/activations/approve', {
-        userId: activation.user_id,
-        activationId: id
+      // FIXED: Use the correct endpoint format with ID in URL
+      return adminApi.patch(`/admin/activations/${id}/approve`, {
+        userId: activation.user_id
+        // No need to send activationId in body since it's in URL
       });
     },
     rejectData: (id) => {
-      // Find the activation to get userId and activationId
       const activation = allPayments.find(p => p.id === id || p._id === id);
       if (!activation) {
         throw new Error("Activation not found");
@@ -101,9 +98,10 @@ export default function AdminActivations() {
         activation: activation
       });
       
-      return adminApi.patch('/admin/activations/reject', {
-        userId: activation.user_id,
-        activationId: id
+      // FIXED: Use the correct endpoint format with ID in URL
+      return adminApi.patch(`/admin/activations/${id}/reject`, {
+        userId: activation.user_id
+        // No need to send activationId in body since it's in URL
       });
     },
     searchFields: ['full_name', 'phone', 'email', 'mpesa_code'],
@@ -120,7 +118,6 @@ export default function AdminActivations() {
       await adminApi.patch(`/admin/users/${userId}/role`, { role: newRole });
       setRoleMessage(`✅ Role updated to ${newRole.toUpperCase()}`);
       
-      // Auto-close on success
       setTimeout(() => {
         setShowRoleModal(false);
         setSelectedPayment(null);
@@ -130,7 +127,6 @@ export default function AdminActivations() {
       console.error("Role update failed:", err);
       setRoleMessage("❌ Failed to update role");
       
-      // Auto-clear error after 3 seconds
       setTimeout(() => {
         setRoleMessage("");
       }, 3000);
@@ -145,7 +141,6 @@ export default function AdminActivations() {
         setSelectedPayment(payment);
         setShowRoleModal(true);
       }
-      // Refresh data after approval
       setTimeout(() => {
         refreshData();
       }, 1000);
@@ -154,14 +149,12 @@ export default function AdminActivations() {
 
   const handleReject = (id) => {
     rejectItem(id, () => {
-      // Refresh data after rejection
       setTimeout(() => {
         refreshData();
       }, 1000);
     }, "Reject this activation?");
   };
 
-  // Debug effect to log data
   useEffect(() => {
     console.log("🟢 Payments loaded:", payments.length);
     if (payments.length > 0) {
@@ -170,7 +163,6 @@ export default function AdminActivations() {
     }
   }, [payments]);
 
-  // Add safety check for filteredPayments
   const safeFilteredPayments = Array.isArray(filteredPayments) ? filteredPayments : [];
   const safePayments = Array.isArray(payments) ? payments : [];
 
