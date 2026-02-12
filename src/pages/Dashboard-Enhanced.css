@@ -2,15 +2,46 @@
 
 /* =========================================================
    DASHBOARD-ENHANCED.CSS - OPTIMIZED FOR MOBILE
-   !!! IMPORTANT: FORCE CACHE CLEAR ON ALL DEVICES !!!
-   ADDED: Version 3.0 - 2024 - Cache Busting
-   USE: Append ?v=3.0 to CSS link in HTML: 
-   <link rel="stylesheet" href="Dashboard-Enhanced.css?v=3.0">
-   ALSO: Add these meta tags for no-cache in your HTML:
-   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-   <meta http-equiv="Pragma" content="no-cache">
-   <meta http-equiv="Expires" content="0">
-   ========================================================= */
+========================================================= */
+
+/* FIX 1: Prevent white flash on scroll (low RAM phones) */
+html, body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  background: var(--bg-main); /* Standardized light background */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Fix iOS scrolling issues */
+@supports (-webkit-touch-callout: none) {
+  html {
+    height: -webkit-fill-available;
+  }
+  
+  body {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* FIX 2: Remove unnecessary animations and hardware acceleration */
+.dashboard > div[style*="position: fixed"] {
+  position: fixed !important;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Remove unnecessary hardware acceleration for better performance */
+.dashboard > div[style*="position: fixed"] * {
+  transform: none; /* REMOVED: translateZ(0) */
+  -webkit-transform: none; /* REMOVED: translateZ(0) */
+  backface-visibility: visible; /* REMOVED: hidden */
+  -webkit-backface-visibility: visible; /* REMOVED: hidden */
+}
 
 /* =========================================================
    CSS VARIABLES - FOUNDATION
@@ -39,20 +70,9 @@
   --regular-color: #059669;
   --vip-color: #4f46e5;
   --vvip-color: #d97706;
-  
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
-  --transition-normal: all 0.2s ease;
 }
 
-[data-theme="dark"] {
+:root[data-theme="dark"] {
   --bg-main: #0f172a;
   --bg-surface: #1e293b;
   --bg-glass: rgba(30, 41, 59, 0.8);
@@ -78,35 +98,13 @@
   box-sizing: border-box;
 }
 
-html, body {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden;
-  background: var(--bg-main);
-  -webkit-tap-highlight-color: transparent;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-}
-
-/* Fix iOS scrolling issues */
-@supports (-webkit-touch-callout: none) {
-  html {
-    height: -webkit-fill-available;
-  }
-  
-  body {
-    min-height: -webkit-fill-available;
-  }
-}
-
 html {
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
 }
 
 body {
-  background-color: var(--bg-main);
+  background-color: var(--bg-main); /* Match html background */
   color: var(--text-main);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   min-height: 100vh;
@@ -114,22 +112,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-}
-
-/* FIX 2: Remove unnecessary animations and hardware acceleration */
-.dashboard > div[style*="position: fixed"] {
-  position: fixed !important;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-/* Remove unnecessary hardware acceleration for better performance */
-.dashboard > div[style*="position: fixed"] * {
-  transform: none;
-  -webkit-transform: none;
-  backface-visibility: visible;
-  -webkit-backface-visibility: visible;
 }
 
 /* FIX 3: "Chat Us" button always at bottom of screen */
@@ -168,7 +150,7 @@ body {
 /* FIX 4: Scroll reminder at bottom of screen */
 .scroll-reminder-notification {
   position: fixed !important;
-  bottom: 90px !important;
+  bottom: 90px !important; /* Position above chat button */
   left: 50% !important;
   transform: translateX(-50%) !important;
   z-index: 999 !important;
@@ -178,13 +160,14 @@ body {
   border-radius: 30px !important;
   font-weight: 700 !important;
   font-size: 14px !important;
-  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4) !important;
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4) !important;
   max-width: 90% !important;
   text-align: center !important;
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
 }
+
 
 /* =========================================================
    BUTTONS (SIMPLIFIED)
@@ -258,7 +241,7 @@ body {
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   margin-bottom: var(--space-md);
-  border: none;
+  border: 3px solid red;
   box-shadow: var(--card-shadow);
   position: fixed;
   top: -15px;
@@ -282,6 +265,7 @@ body {
   border-radius: 50%;
 }
 
+
 .dashboard-main-header::before {
   content: '';
   position: absolute;
@@ -295,8 +279,8 @@ body {
 
 .header-title-container {
   display: flex;
-  justify-content: space-between;
-  flex-direction: row;
+  justify-content: space-between; /* Distribute space evenly */
+  flex-direction: row; /* Restore normal row direction */
   gap: 15px;
   padding: 0 10px;
   align-items: center;
@@ -306,7 +290,7 @@ body {
 }
 
 .dashboard-main-title {
-  font-size: 0 !important;
+  font-size: 0 !important; /* Hide original title text */
   font-weight: 900;
   color: white;
   margin: 0;
@@ -403,23 +387,22 @@ body {
 }
 
 /* =========================================================
-   2. LIVE WITHDRAWAL FEED - BEAUTIFUL GRADIENT
+   2. LIVE WITHDRAWAL FEED (SIMPLIFIED)
 ========================================================= */
 .live-withdrawal-feed {
-  background: linear-gradient(135deg, #fbc2eb, #a6c1ee);
+  background: var(--bg-surface); /* Solid background for performance */
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   margin-bottom: var(--space-md);
-  border: none;
-  box-shadow: var(--card-shadow);
-  color: white;
+  border: 3px solid red;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 /* =========================================================
-   3. ELITE WELCOME BONUS CARD - BEAUTIFUL GRADIENT
+   3. ELITE WELCOME BONUS CARD - MODERN LIGHT THEME
 ========================================================= */
 .professional-bonus-card {
-  background: linear-gradient(135deg, #FF416C, #FF4B2B);
+  background: linear-gradient(135deg, #FF416C, #FF4B2B); /* Shouting Red/Pink */
   border-radius: var(--radius-xl);
   padding: 12px;
   margin-bottom: var(--space-md);
@@ -444,17 +427,18 @@ body {
   right: 0;
   bottom: 0;
   background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    linear-gradient(rgba(37, 99, 235, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.03) 1px, transparent 1px);
   background-size: 20px 20px;
   z-index: 2;
-  opacity: 0.3;
+  opacity: 1;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .professional-bonus-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+    border-color: var(--primary-light);
   }
 }
 
@@ -553,11 +537,189 @@ body {
   flex: 1;
 }
 
+.roi-summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-lg);
+  background: var(--bg-main);
+  padding: var(--space-lg);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-xl);
+  border: 1px solid var(--border-soft);
+  position: relative;
+  z-index: 3;
+}
+
+.roi-item .label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.roi-item .value {
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.roi-item.highlight .value {
+  color: #34d399;
+}
+
+.roi-separator {
+  color: var(--border-medium);
+}
+
+.bonus-details {
+  background: var(--bg-main);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+  position: relative;
+  z-index: 3;
+}
+
+.bonus-details summary {
+  padding: var(--space-md) var(--space-lg);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  background: var(--bg-surface);
+}
+
+.bonus-details summary::after {
+  color: var(--text-muted);
+}
+
+.details-content {
+  padding: var(--space-lg);
+  border-top: 1px solid var(--border-soft);
+  color: var(--text-muted);
+}
+
+.detail-item {
+  color: var(--text-muted);
+}
+
+.detail-icon {
+  color: var(--primary);
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  .professional-bonus-card {
+    margin: 0 -12px var(--space-md);
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    padding: var(--space-xl) 20px;
+    box-shadow: 
+      0 15px 30px rgba(0, 0, 0, 0.3),
+      0 6px 12px rgba(23, 92, 230, 0.15),
+      0 0 0 1px rgba(59, 130, 246, 0.25) inset;
+  }
+  
+  .bonus-card-header {
+    gap: 16px;
+    margin-bottom: var(--space-lg);
+  }
+  
+  .bonus-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 28px;
+  }
+  
+  .bonus-amount-display {
+    margin: var(--space-lg) 0;
+    padding: 20px;
+    backdrop-filter: blur(8px);
+  }
+  
+  .bonus-amount-display .amount {
+    font-size: 44px;
+  }
+  
+  .roi-summary {
+    gap: 16px;
+    padding: 16px;
+    backdrop-filter: blur(8px);
+  }
+  
+  .roi-item {
+    min-width: 70px;
+  }
+  
+  .roi-item .value {
+    font-size: 18px;
+  }
+  
+  .bonus-actions {
+    gap: 12px;
+  }
+}
+
+/* Small phones */
+@media (max-width: 375px) {
+  .professional-bonus-card {
+    padding: 18px 16px;
+  }
+  
+  .bonus-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 24px;
+  }
+  
+  .bonus-header-text h3 {
+    font-size: 18px;
+  }
+  
+  .bonus-amount-display .amount {
+    font-size: 36px;
+  }
+  
+  .roi-summary {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .roi-item {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .roi-separator {
+    display: none;
+  }
+}
+
+/* Performance optimizations */
+@media (prefers-reduced-motion: reduce) {
+  .professional-bonus-card,
+  .bonus-details summary,
+  .bonus-details summary::after {
+    transition: none;
+  }
+  
+  .bonus-details[open] .details-content {
+    animation: none;
+  }
+  
+  .bonus-icon {
+    animation: none;
+  }
+}
 /* =========================================================
-   4. DASHBOARD NAVIGATION - BEAUTIFUL GRADIENTS
+   4. DASHBOARD NAVIGATION - MOBILE OPTIMIZED
 ========================================================= */
 .dashboard-section:first-of-type {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
   border-radius: var(--radius-xl);
   padding: 12px;
   margin-bottom: var(--space-md);
@@ -567,7 +729,7 @@ body {
   overflow: hidden;
 }
 
-/* Enhanced gradient overlay */
+/* Enhanced gradient overlay with red accent */
 .dashboard-section:first-of-type::before {
   content: '';
   position: absolute;
@@ -577,9 +739,9 @@ body {
   height: 4px;
   background: linear-gradient(90deg, 
     #ef4444 0%,
-    var(--primary) 25%,
-    #8b5cf6 50%,
-    #10b981 75%,
+    var(--primary, #3b82f6) 25%,
+    var(--secondary, #8b5cf6) 50%,
+    var(--accent, #10b981) 75%,
     #ef4444 100%
   );
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
@@ -620,13 +782,13 @@ body {
   );
   border-radius: var(--radius-xl);
   padding: 12px;
-  border: none;
+  border: 3px solid red;
   backdrop-filter: blur(10px);
   position: relative;
   overflow: hidden;
 }
 
-/* Enhanced grid lines */
+/* Enhanced grid lines with red accent */
 .dashboard-nav-mobile::before {
   content: '';
   position: absolute;
@@ -659,7 +821,7 @@ body {
   z-index: 0;
 }
 
-/* ENHANCED BUTTON STYLES - BEAUTIFUL GRADIENTS */
+/* ENHANCED BUTTON STYLES - COLORED CARDS */
 .nav-btn {
   display: flex;
   flex-direction: column;
@@ -679,80 +841,105 @@ body {
   text-decoration: none;
   position: relative;
   z-index: 1;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid;
   box-shadow: 
     0 4px 12px rgba(0, 0, 0, 0.1),
     0 1px 2px rgba(0, 0, 0, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
-/* INDIVIDUAL BUTTON COLORS - BEAUTIFUL GRADIENTS */
+/* INDIVIDUAL BUTTON COLORS */
 /* First button - Surveys - Blue Theme */
 .nav-btn:nth-child(1) {
-  background: linear-gradient(145deg, #60a5fa, #3b82f6);
-  border-color: rgba(255, 255, 255, 0.3);
-  color: white;
+  background: linear-gradient(145deg, #e0f2fe, #dbeafe);
+  border-color: #93c5fd;
+  color: #1e40af;
 }
 
 .nav-btn:nth-child(1) .nav-icon {
-  color: white;
+  color: #1d4ed8;
 }
 
 /* Second button - Dashboard - Green Theme */
 .nav-btn:nth-child(2) {
-  background: linear-gradient(145deg, #34d399, #10b981);
-  border-color: rgba(255, 255, 255, 0.3);
-  color: white;
+  background: linear-gradient(145deg, #1900ff, #045cff);
+  border-color: #86efac;
+  color: #065f46;
 }
 
 .nav-btn:nth-child(2) .nav-icon {
-  color: white;
+  color: #059669;
 }
 
 /* Third button - Withdraw - Amber Theme */
 .nav-btn:nth-child(3) {
-  background: linear-gradient(145deg, #fbbf24, #f59e0b);
-  border-color: rgba(255, 255, 255, 0.3);
-  color: white;
+  background: linear-gradient(145deg, #c7a20d, #ddb102);
+  border-color: #fcd34d;
+  color: #92400e;
 }
 
 .nav-btn:nth-child(3) .nav-icon {
-  color: white;
+  color: #d97706;
 }
 
 /* Fourth button - Support - Red Theme */
 .nav-btn:nth-child(4) {
-  background: linear-gradient(145deg, #f87171, #ef4444);
-  border-color: rgba(255, 255, 255, 0.3);
-  color: white;
+  background: linear-gradient(145deg, #0ad61b, #25af03);
+  border-color: #fca5a5;
+  color: #991b1b;
 }
 
 .nav-btn:nth-child(4) .nav-icon {
-  color: white;
+  color: #dc2626;
 }
 
-/* Hover state */
+/* Hover state with red outline */
 .nav-btn:hover {
-  border-color: rgba(255, 255, 255, 0.5);
-  border-width: 2px;
+  border-color: #ef4444 !important;
+  border-width: 3px;
   transform: translateY(-3px);
   box-shadow: 
-    0 8px 25px rgba(0, 0, 0, 0.2),
+    0 8px 25px rgba(239, 68, 68, 0.2),
     0 4px 12px rgba(0, 0, 0, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  filter: brightness(1.1);
+  color: #1e293b;
+  background: linear-gradient(145deg, 
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 255, 255, 0.8)
+  );
 }
 
-/* Active state - Purple theme */
+.nav-btn:nth-child(1):hover {
+  background: linear-gradient(145deg, #e0f2fe, #dbeafe, rgba(255, 255, 255, 0.9));
+}
+
+.nav-btn:nth-child(2):hover {
+  background: linear-gradient(145deg, #d1fae5, #bbf7d0, rgba(255, 255, 255, 0.9));
+}
+
+.nav-btn:nth-child(3):hover {
+  background: linear-gradient(145deg, #fef3c7, #fde68a, rgba(255, 255, 255, 0.9));
+}
+
+.nav-btn:nth-child(4):hover {
+  background: linear-gradient(145deg, #fee2e2, #fecaca, rgba(255, 255, 255, 0.9));
+}
+
+/* Active state - Unified purple theme */
 .nav-btn.active {
-  background: linear-gradient(145deg, #8b5cf6, #7c3aed);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.5);
+  background: linear-gradient(145deg, 
+    #7c3aed, /* Deep purple */
+    #8b5cf6, /* Purple */
+    #a78bfa  /* Light purple */
+  );
+  color: white !important;
+  border: 3px solid #ef4444 !important;
   transform: translateY(-3px);
   box-shadow: 
-    0 10px 30px rgba(124, 58, 237, 0.4),
-    0 4px 15px rgba(0, 0, 0, 0.2),
-    inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    0 10px 30px rgba(239, 68, 68, 0.3),
+    0 4px 15px rgba(124, 58, 237, 0.5),
+    inset 0 1px 1px rgba(255, 255, 255, 0.3),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
 }
@@ -817,7 +1004,7 @@ body {
 .nav-btn.active .nav-icon {
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
   transform: scale(1.15);
-  color: white;
+  color: white !important;
 }
 
 .nav-label {
@@ -825,32 +1012,228 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.9px;
   transition: all 0.3s ease;
-  color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  color: white !important; /* Added: Make captions white */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); /* Changed: Darker shadow for white text */
   position: relative;
   z-index: 2;
+}
+
+@media (max-width: 768px) {
+  /* Base adjustments */
+  .dashboard {
+    padding: 12px;
+    padding-top: 100px;
+    gap: 12px;
+  }
+  
+  /* Main Header */
+  .dashboard-main-header {
+    padding: var(--space-lg);
+    margin-bottom: 12px;
+  }
+  
+  
+
+  .dashboard-main-title::after {
+    font-size: 22px;
+  }
+  
+  .header-subtitle {
+    font-size: 12px;
+  }
+  
+  /* Welcome Bonus Card */
+  .professional-bonus-card {
+    padding: var(--space-lg);
+    margin: 0 -12px 12px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  
+  .bonus-card-header {
+    gap: 16px;
+    margin-bottom: var(--space-lg);
+  }
+  
+  .bonus-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 28px;
+  }
+  
+  
+.nav-label {
   font-weight: 800;
+  color: white !important; /* Added: Make captions white */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); /* Changed: Darker shadow for white text */
+  position: relative;
+  z-index: 2;
 }
 
 .nav-btn:hover .nav-label {
   transform: translateY(-1px);
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Changed: Darker shadow */
+  color: white !important; /* Changed: Keep white on hover */
 }
 
 .nav-btn.active .nav-label {
   font-weight: 900;
   letter-spacing: 1.2px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-  color: white;
+  color: white !important;
 }
-
 /* Press effect */
 .nav-btn:active {
   transform: translateY(-1px);
   box-shadow: 
     0 4px 12px rgba(0, 0, 0, 0.1),
     inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* =========================================================
+   DARK MODE ENHANCEMENTS
+========================================================= */
+[data-theme='dark'] .dashboard-section:first-of-type {
+  border-color: rgba(239, 68, 68, 0.2);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, 
+    rgba(30, 41, 59, 0.95), 
+    rgba(15, 23, 42, 0.98)
+  );
+}
+
+[data-theme='dark'] .dashboard-nav-mobile {
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.1), 
+    rgba(139, 92, 246, 0.1)
+  );
+  border-color: rgba(239, 68, 68, 0.15);
+}
+
+/* Dark mode button colors */
+[data-theme='dark'] .nav-btn:nth-child(1) {
+  background: linear-gradient(145deg, rgba(30, 64, 175, 0.2), rgba(59, 130, 246, 0.15));
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #93c5fd;
+}
+
+[data-theme='dark'] .nav-btn:nth-child(1) .nav-icon {
+  color: #60a5fa;
+}
+
+[data-theme='dark'] .nav-btn:nth-child(2) {
+  background: linear-gradient(145deg, rgba(6, 95, 70, 0.2), rgba(16, 185, 129, 0.15));
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #86efac;
+}
+
+[data-theme='dark'] .nav-btn:nth-child(2) .nav-icon {
+  color: #34d399;
+}
+
+[data-theme='dark'] .nav-btn:nth-child(3) {
+  background: linear-gradient(145deg, rgba(146, 64, 14, 0.2), rgba(245, 158, 11, 0.15));
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #fcd34d;
+}
+
+[data-theme='dark'] .nav-btn:nth-child(3) .nav-icon {
+  color: #fbbf24;
+}
+
+[data-theme='dark'] .nav-btn:nth-child(4) {
+  background: linear-gradient(145deg, rgba(153, 27, 27, 0.2), rgba(239, 68, 68, 0.15));
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+[data-theme='dark'] .nav-btn:nth-child(4) .nav-icon {
+  color: #f87171;
+}
+
+[data-theme='dark'] .nav-btn:hover {
+  border-color: #ef4444 !important;
+  border-width: 3px;
+  color: white;
+  background: linear-gradient(145deg, 
+    rgba(255, 255, 255, 0.15),
+    rgba(255, 255, 255, 0.1)
+  ) !important;
+  box-shadow: 
+    0 10px 30px rgba(239, 68, 68, 0.25),
+    0 4px 15px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .nav-btn.active {
+  background: linear-gradient(145deg, 
+    rgba(124, 58, 237, 0.9), 
+    rgba(139, 92, 246, 0.9),
+    rgba(167, 139, 250, 0.9)
+  );
+  border: 3px solid #ef4444 !important;
+  box-shadow: 
+    0 12px 35px rgba(239, 68, 68, 0.35),
+    0 4px 20px rgba(124, 58, 237, 0.5),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.2);
+}
+
+/* Dark mode grid lines */
+[data-theme='dark'] .dashboard-nav-mobile::before {
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    rgba(239, 68, 68, 0.15) 50%,
+    transparent 100%
+  );
+}
+
+[data-theme='dark'] .dashboard-nav-mobile::after {
+  background: linear-gradient(180deg, 
+    transparent 0%,
+    rgba(239, 68, 68, 0.15) 50%,
+    transparent 100%
+  );
+}
+
+/* =========================================================
+   RESPONSIVE ADJUSTMENTS
+========================================================= */
+@media (max-width: 480px) {
+  .dashboard-nav-mobile {
+    gap: 10px;
+    padding: 10px;
+  }
+  
+  .nav-btn {
+    padding: 12px 10px;
+    min-height: 74px;
+    min-width: 60px;
+    border-radius: 14px;
+  }
+  
+  .nav-icon {
+    font-size: 20px;
+  }
+  
+  .nav-label {
+    font-size: 9px;
+    letter-spacing: 0.6px;
+  }
+}
+
+@media (max-width: 360px) {
+  .dashboard-nav-mobile {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  
+  .nav-btn {
+    padding: 14px 12px;
+    min-height: 80px;
+    border-radius: 16px;
+  }
 }
 
 /* Optional: Add subtle pattern overlay to buttons */
@@ -883,91 +1266,8 @@ body {
     );
   background-size: 10px 10px;
 }
-
 /* =========================================================
-   DARK MODE ENHANCEMENTS
-========================================================= */
-[data-theme="dark"] .dashboard-section:first-of-type {
-  border-color: rgba(239, 68, 68, 0.2);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-  background: linear-gradient(135deg, 
-    rgba(30, 41, 59, 0.95), 
-    rgba(15, 23, 42, 0.98)
-  );
-}
-
-[data-theme="dark"] .dashboard-nav-mobile {
-  background: linear-gradient(135deg, 
-    rgba(59, 130, 246, 0.1), 
-    rgba(139, 92, 246, 0.1)
-  );
-  border-color: rgba(239, 68, 68, 0.15);
-}
-
-/* Dark mode button colors */
-[data-theme="dark"] .nav-btn:nth-child(1) {
-  background: linear-gradient(145deg, rgba(37, 99, 235, 0.8), rgba(29, 78, 216, 0.8));
-  border-color: rgba(59, 130, 246, 0.3);
-  color: white;
-}
-
-[data-theme="dark"] .nav-btn:nth-child(2) {
-  background: linear-gradient(145deg, rgba(5, 150, 105, 0.8), rgba(4, 120, 87, 0.8));
-  border-color: rgba(16, 185, 129, 0.3);
-  color: white;
-}
-
-[data-theme="dark"] .nav-btn:nth-child(3) {
-  background: linear-gradient(145deg, rgba(217, 119, 6, 0.8), rgba(180, 83, 9, 0.8));
-  border-color: rgba(245, 158, 11, 0.3);
-  color: white;
-}
-
-[data-theme="dark"] .nav-btn:nth-child(4) {
-  background: linear-gradient(145deg, rgba(220, 38, 38, 0.8), rgba(185, 28, 28, 0.8));
-  border-color: rgba(239, 68, 68, 0.3);
-  color: white;
-}
-
-[data-theme="dark"] .nav-btn:hover {
-  border-color: rgba(255, 255, 255, 0.5);
-  border-width: 2px;
-  color: white;
-  filter: brightness(1.2);
-  box-shadow: 
-    0 10px 30px rgba(239, 68, 68, 0.25),
-    0 4px 15px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-[data-theme="dark"] .nav-btn.active {
-  background: linear-gradient(145deg, rgba(124, 58, 237, 0.9), rgba(109, 40, 217, 0.9));
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 
-    0 12px 35px rgba(239, 68, 68, 0.35),
-    0 4px 20px rgba(124, 58, 237, 0.5),
-    inset 0 1px 1px rgba(255, 255, 255, 0.2);
-}
-
-/* Dark mode grid lines */
-[data-theme="dark"] .dashboard-nav-mobile::before {
-  background: linear-gradient(90deg, 
-    transparent 0%,
-    rgba(239, 68, 68, 0.15) 50%,
-    transparent 100%
-  );
-}
-
-[data-theme="dark"] .dashboard-nav-mobile::after {
-  background: linear-gradient(180deg, 
-    transparent 0%,
-    rgba(239, 68, 68, 0.15) 50%,
-    transparent 100%
-  );
-}
-
-/* =========================================================
-   5. YOUR EARNINGS DASHBOARD - BEAUTIFUL GRADIENTS
+   5. YOUR EARNINGS DASHBOARD - REDUCED ANIMATIONS
 ========================================================= */
 .stats-grid {
   display: grid;
@@ -983,7 +1283,7 @@ body {
 }
 
 .stats-card {
-  background: linear-gradient(135deg, #FF512F, #DD2476);
+  background: #ffffff;
   border: none;
   border-radius: var(--radius-xl);
   padding: 12px;
@@ -994,24 +1294,46 @@ body {
   flex-direction: column;
   justify-content: space-between;
   box-shadow: var(--card-shadow);
-  color: white;
 }
 
 .stats-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--card-shadow-hover);
+  transform: none;
 }
 
-/* Different color gradients for each card */
+/* Different color accents for each card using pseudo-element for subtle top border */
+.stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: transparent;
+  transition: var(--transition-normal);
+}
+
 .stats-card:nth-child(1) { background: linear-gradient(135deg, #FF512F, #DD2476); }
 .stats-card:nth-child(2) { background: linear-gradient(135deg, #1A2980, #26D0CE); }
 .stats-card:nth-child(3) { background: linear-gradient(135deg, #11998e, #38ef7d); }
 .stats-card:nth-child(4) { background: linear-gradient(135deg, #834d9b, #d04ed6); }
 
+
 /* Colorful icons */
-.stats-card:nth-child(1) .stats-icon,
-.stats-card:nth-child(2) .stats-icon,
-.stats-card:nth-child(3) .stats-icon,
+.stats-card:nth-child(1) .stats-icon {
+  color: white;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.stats-card:nth-child(2) .stats-icon {
+  color: white;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.stats-card:nth-child(3) .stats-icon {
+  color: white;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
 .stats-card:nth-child(4) .stats-icon {
   color: white;
   text-shadow: 0 2px 8px rgba(0,0,0,0.2);
@@ -1026,11 +1348,11 @@ body {
 
 .stats-icon {
   font-size: 22px;
-  transition: transform 0.2s ease;
+  transition: none;
 }
 
 .stats-card:hover .stats-icon {
-  transform: scale(1.1);
+  transform: none;
 }
 
 .stats-card h4 {
@@ -1045,9 +1367,22 @@ body {
   margin-bottom: var(--space-sm);
 }
 
-.stats-card:nth-child(1) .stats-value,
-.stats-card:nth-child(2) .stats-value,
-.stats-card:nth-child(3) .stats-value,
+/* Colorful values matching the card theme */
+.stats-card:nth-child(1) .stats-value {
+  color: white;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.stats-card:nth-child(2) .stats-value {
+  color: white;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.stats-card:nth-child(3) .stats-value {
+  color: white;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
 .stats-card:nth-child(4) .stats-value {
   color: white;
   text-shadow: 0 2px 8px rgba(0,0,0,0.2);
@@ -1058,11 +1393,11 @@ body {
   font-size: 24px;
   font-weight: 900;
   margin-bottom: 4px;
-  transition: transform 0.2s ease;
+  transition: none;
 }
 
 .stats-card:hover .stats-value {
-  transform: scale(1.03);
+  transform: none;
 }
 
 .stats-label {
@@ -1079,13 +1414,13 @@ body {
   width: 100%;
   padding: 10px;
   background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: none;
   border-radius: var(--radius-md);
   color: white;
   font-weight: 800;
   font-size: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: none;
   min-height: 46px;
   min-width: 44px;
   position: relative;
@@ -1094,17 +1429,19 @@ body {
 }
 
 .withdraw-quick-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  transform: none;
+  box-shadow: none;
   background: rgba(255, 255, 255, 0.3);
 }
 
 .withdraw-quick-btn:active {
-  transform: translateY(0);
+  transform: none;
 }
 
+/* REMOVED: Animated background lines effect from stats-card::after */
+
 /* =========================================================
-   6. PLAN PROGRESS - BEAUTIFUL GRADIENTS
+   6. PLAN PROGRESS (SIMPLIFIED)
 ========================================================= */
 .progress-cards {
   display: grid;
@@ -1126,6 +1463,7 @@ body {
 }
 
 .progress-card:hover {
+  background: linear-gradient(135deg, #00F260, #0575E6);
   transform: translateY(-4px);
   box-shadow: var(--card-shadow-hover);
 }
@@ -1137,10 +1475,11 @@ body {
   right: 0;
   width: 100px;
   height: 100px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
+
 
 .progress-card-header {
   display: flex;
@@ -1192,7 +1531,7 @@ body {
 }
 
 /* =========================================================
-   7. WHY USERS LOVE OUR PLATFORM - BEAUTIFUL GRADIENTS
+   7. WHY USERS LOVE OUR PLATFORM - REDUCED ANIMATIONS
 ========================================================= */
 .feature-grid {
   display: grid;
@@ -1201,7 +1540,7 @@ body {
 }
 
 .feature-card {
-  background: linear-gradient(135deg, #f12711, #f5af19);
+  background: #ffffff;
   border: none;
   border-radius: var(--radius-xl);
   padding: 12px;
@@ -1215,29 +1554,64 @@ body {
 }
 
 .feature-card:hover {
+  /* background: var(--bg-surface); */
   transform: translateY(-4px);
   box-shadow: var(--card-shadow-hover);
+  border-color: var(--border-medium);
 }
 
-/* Different gradient backgrounds for each card */
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: transparent;
+  transition: var(--transition-normal);
+}
+
 .feature-card:nth-child(1) { background: linear-gradient(135deg, #f12711, #f5af19); }
 .feature-card:nth-child(2) { background: linear-gradient(135deg, #654ea3, #eaafc8); }
 .feature-card:nth-child(3) { background: linear-gradient(135deg, #00c6ff, #0072ff); }
 .feature-card:nth-child(4) { background: linear-gradient(135deg, #fe8c00, #f83600); }
 
+.feature-card:nth-child(4):hover {
+  box-shadow: 0 15px 30px rgba(139, 92, 246, 0.2);
+}
+
 .feature-icon {
   font-size: 36px;
   margin-bottom: var(--space-sm);
   display: inline-block;
-  transition: transform 0.2s ease;
+  transition: none;
   transform: translateZ(0);
   backface-visibility: hidden;
+}
+
+.feature-card:hover .feature-icon {
+  transform: none;
+}
+
+/* Colorful icons */
+.feature-card:nth-child(1) .feature-icon {
   color: white;
   text-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
-.feature-card:hover .feature-icon {
-  transform: scale(1.1);
+.feature-card:nth-child(2) .feature-icon {
+  color: white;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.feature-card:nth-child(3) .feature-icon {
+  color: white;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.feature-card:nth-child(4) .feature-icon {
+  color: white;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .feature-card h4 {
@@ -1256,8 +1630,47 @@ body {
   font-weight: 500;
 }
 
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .feature-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: var(--space-md);
+  }
+  
+  .feature-card {
+    padding: 20px;
+  }
+  
+  .feature-icon {
+    font-size: 32px;
+  }
+  
+  .feature-card h4 {
+    font-size: 16px;
+  }
+  
+  .feature-card p {
+    font-size: 13px;
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop optimizations */
+@media (min-width: 1025px) {
+  .feature-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
 /* =========================================================
-   8. QUICK ACTIONS - BEAUTIFUL GRADIENTS
+   8. QUICK ACTIONS (SIMPLIFIED)
 ========================================================= */
 .quick-actions-grid {
   display: grid;
@@ -1280,12 +1693,16 @@ body {
 }
 
 .quick-action-card:hover {
+  background: linear-gradient(135deg, #00B4DB, #0083B0);
   transform: translateX(4px);
   box-shadow: var(--card-shadow-hover);
+  border-color: var(--border-medium);
 }
 
+
 .quick-action-card.completed {
-  background: linear-gradient(135deg, #11998e, #38ef7d);
+  background: rgba(74, 222, 128, 0.1);
+  border-color: rgba(74, 222, 128, 0.3);
 }
 
 .action-icon {
@@ -1297,11 +1714,12 @@ body {
   justify-content: center;
   background: rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-md);
-  transition: transform 0.2s ease;
+  transition: none;
 }
 
 .quick-action-card:hover .action-icon {
-  transform: scale(1.1);
+  transform: none;
+  background: var(--border-soft);
 }
 
 .action-content {
@@ -1325,7 +1743,7 @@ body {
 .action-btn {
   padding: 8px 16px;
   background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: none;
   border-radius: var(--radius-md);
   color: white;
   font-weight: 700;
@@ -1333,14 +1751,9 @@ body {
   cursor: pointer;
   min-width: 70px;
   min-height: 44px;
-  transition: all 0.2s ease;
+  transition: none;
   position: relative;
   overflow: hidden;
-}
-
-.action-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
 }
 
 .action-btn.completed {
@@ -1354,15 +1767,15 @@ body {
 }
 
 /* =========================================================
-   HERO SECTION - BEAUTIFUL GRADIENTS
+   HERO SECTION (AT BOTTOM) - REDUCED ANIMATIONS
 ========================================================= */
 .hero-section {
-  background: linear-gradient(135deg, #4158D0, #C850C0, #FFCC70);
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   margin-bottom: var(--space-md);
-  border: none;
-  box-shadow: 0 15px 35px rgba(65, 88, 208, 0.3);
+  border: none !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
 }
 
 .hero-content {
@@ -1377,12 +1790,11 @@ body {
   margin: 0 0 var(--space-sm);
   color: white;
   line-height: 1.2;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .user-highlight {
-  color: #FFD700;
-  text-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
+  color: var(--primary);
+  text-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);
 }
 
 .hero-subtitle {
@@ -1417,17 +1829,16 @@ body {
   background: rgba(255, 255, 255, 0.15);
   border-radius: var(--radius-lg);
   min-width: 150px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: none;
 }
 
 .hero-stat-value {
   display: block;
   font-size: 24px;
   font-weight: 900;
-  color: #FFD700;
+  color: var(--primary);
   margin-bottom: 4px;
-  text-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
+  text-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);
 }
 
 .hero-stat-label {
@@ -1455,7 +1866,7 @@ body {
     margin-bottom: 12px;
   }
   
-  .dashboard-main-title::after {
+  .dashboard-main-title {
     font-size: 22px;
   }
   
@@ -1473,14 +1884,7 @@ body {
   }
   
   .bonus-card-header {
-    gap: 16px;
-    margin-bottom: var(--space-lg);
-  }
-  
-  .bonus-icon {
-    width: 48px;
-    height: 48px;
-    font-size: 28px;
+    margin-bottom: var(--space-md);
   }
   
   .bonus-amount-display {
@@ -1598,7 +2002,7 @@ body {
   }
   
   /* Hero Section */
-  .hero-section {
+  .dashboard-hero {
     padding: 16px;
     margin-bottom: 12px;
   }
@@ -1654,6 +2058,8 @@ body {
     padding: 10px;
   }
   
+ 
+
   .dashboard-main-title::after {
     font-size: 18px;
   }
@@ -1720,7 +2126,7 @@ body {
   .progress-card,
   .feature-card,
   .quick-action-card,
-  .hero-section {
+  .dashboard-hero {
     animation: none;
     transition: none;
   }
@@ -1733,15 +2139,6 @@ body {
   .quick-action-card:hover,
   .progress-card:hover {
     transform: none;
-  }
-  
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
 }
 
@@ -1824,11 +2221,6 @@ select {
   animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 .loading-text {
   color: var(--text-muted);
   font-size: 14px;
@@ -1840,34 +2232,17 @@ select {
   top: 20px;
   right: 20px;
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
+  color: #1a1a1a;
   padding: 12px 20px;
   border-radius: var(--radius-lg);
   font-weight: 700;
   font-size: 14px;
   z-index: 1000;
-  animation: slideIn 0.2s ease, fadeOut 0.2s ease 2.7s forwards;
-  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+  animation: none;
+  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
   max-width: 300px;
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes fadeOut {
-  to {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-}
 
 /* =========================================================
    DASHBOARD FOOTER
@@ -1903,6 +2278,16 @@ select {
 /* =========================================================
    ACCESSIBILITY
 ========================================================= */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 
 /* Focus styles for accessibility */
 button:focus-visible,
@@ -1937,7 +2322,7 @@ input:focus-visible {
   font-weight: 700 !important;
   font-size: 16px !important;
   cursor: pointer !important;
-  transition: all 0.2s ease !important;
+  transition: none !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -1948,12 +2333,12 @@ input:focus-visible {
 
 .activate-bonus-btn:hover {
   background: linear-gradient(135deg, #0c00b4, #9D50BB) !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 25px rgba(157, 80, 187, 0.5) !important;
+  transform: none !important;
+  box-shadow: 0 8px 25px rgba(157, 80, 187, 0.5) !important; /* REDUCED from 10px 30px */
 }
 
 .activate-bonus-btn:active {
-  transform: translateY(0) !important;
+  transform: none !important;
 }
 
 .activate-bonus-btn .btn-icon {
@@ -1980,7 +2365,7 @@ input:focus-visible {
   justify-content: space-between;
   align-items: center;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-muted);
 }
 
 .progress-row strong {
@@ -1993,16 +2378,16 @@ input:focus-visible {
 }
 
 .activation-notice {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-main);
   border-radius: var(--radius-sm);
   padding: 6px 10px;
   margin-top: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--border-soft);
 }
 
 .progress-bar {
   height: 8px;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--border-soft);
   border-radius: 4px;
   overflow: hidden;
   margin: 8px 0;
@@ -2012,8 +2397,7 @@ input:focus-visible {
 .progress-bar-fill {
   height: 100%;
   border-radius: 4px;
-  background: white;
-  transition: width 0.5s ease;
+  transition: none;
 }
 
 .progress-card-actions {
@@ -2029,7 +2413,7 @@ input:focus-visible {
   font-weight: 700;
   font-size: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: none;
   border: none;
   text-align: center;
   min-height: 40px;
@@ -2038,12 +2422,12 @@ input:focus-visible {
 
 .action-btn.primary {
   background: var(--primary);
-  color: white;
+  color: #1a1a1a;
 }
 
 .action-btn.secondary {
   background: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid var(--border-medium);
   color: white;
 }
 
@@ -2054,38 +2438,27 @@ input:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  animation: pulse 3s infinite;
+  animation: none;
 }
 
 .action-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transform: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* REDUCED from 5px 15px */
 }
 
 .action-btn:active {
-  transform: translateY(0);
+  transform: none;
 }
 
 /* =========================================================
    TAB SECTIONS
 ========================================================= */
 .tab-section {
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  animation: none;
 }
 
 /* =========================================================
-   PLAN CARDS (SURVEYS TAB) - BEAUTIFUL GRADIENTS
+   PLAN CARDS (SURVEYS TAB) - REDUCED ANIMATIONS
 ========================================================= */
 .plan-cards-container {
   display: grid;
@@ -2094,33 +2467,35 @@ input:focus-visible {
 }
 
 .plan-card {
-  background: linear-gradient(135deg, #fbc2eb, #a6c1ee);
+  background: #ffffff;
   border: none;
   border-radius: var(--radius-xl);
   padding: 12px;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s ease;
+  transition: none;
   position: relative;
   overflow: hidden;
-  color: white;
 }
 
-.plan-card.regular {
-  background: linear-gradient(135deg, #10b981, #059669);
+.plan-card.regular::before {
+  background: var(--regular-gradient);
 }
 
-.plan-card.vip {
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
+.plan-card.vip::before {
+  background: var(--vip-gradient);
+  opacity: 1;
 }
 
-.plan-card.vvip {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+.plan-card.vvip::before {
+  background: var(--vvip-gradient);
+  opacity: 1;
 }
 
 .plan-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--card-shadow-hover);
+  transform: none;
+  box-shadow: none;
+  border-color: var(--border-medium);
 }
 
 .plan-card-header {
@@ -2140,19 +2515,25 @@ input:focus-visible {
 
 .plan-icon {
   font-size: 28px;
-  animation: gentleFloat 4s ease-in-out infinite;
-}
-
-@keyframes gentleFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+  animation: none;
 }
 
 .plan-name {
   font-size: 20px;
   font-weight: 900;
-  color: white;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.plan-card.regular .plan-name {
+  color: var(--regular-color);
+}
+
+.plan-card.vip .plan-name {
+  color: var(--vip-color);
+}
+
+.plan-card.vvip .plan-name {
+  color: var(--vvip-color);
 }
 
 .plan-status {
@@ -2163,9 +2544,24 @@ input:focus-visible {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   white-space: nowrap;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.plan-card.regular .plan-status {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.plan-card.vip .plan-status {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.plan-card.vvip .plan-status {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
 .plan-card-body {
@@ -2176,7 +2572,7 @@ input:focus-visible {
 }
 
 .plan-description {
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-muted);
   font-size: 13px;
   line-height: 1.5;
 }
@@ -2185,18 +2581,17 @@ input:focus-visible {
   background: rgba(255, 255, 255, 0.1);
   padding: 8px 12px;
   border-radius: var(--radius-md);
-  border-left: 3px solid rgba(255, 255, 255, 0.5);
+  border-left: 3px solid currentColor;
   font-size: 12px;
   margin-top: 8px;
-  animation: pulse 3s infinite;
+  animation: none;
 }
 
 .plan-stats {
   background: rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .stat-row {
@@ -2212,12 +2607,12 @@ input:focus-visible {
 }
 
 .stat-label {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-muted);
 }
 
 .stat-value {
   font-weight: 700;
-  color: white;
+  color: var(--text-main);
 }
 
 .stat-value.earned {
@@ -2235,11 +2630,6 @@ input:focus-visible {
 .progress-container .progress-bar {
   flex: 1;
   height: 6px;
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.progress-container .progress-bar-fill {
-  background: white;
 }
 
 .progress-text {
@@ -2263,7 +2653,7 @@ input:focus-visible {
   border-radius: 12px;
   font-size: 11px;
   color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .plan-card-footer {
@@ -2282,7 +2672,7 @@ input:focus-visible {
   font-weight: 800;
   font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: none;
   border: none;
   display: flex;
   align-items: center;
@@ -2292,17 +2682,19 @@ input:focus-visible {
   overflow: hidden;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .start-survey-btn:hover,
 .activation-notice-btn:hover,
 .withdraw-plan-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  background: rgba(255, 255, 255, 0.3);
+  transform: none;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* REDUCED from 10px 25px */
+}
+
+.start-survey-btn:active,
+.activation-notice-btn:active,
+.withdraw-plan-btn:active {
+  transform: none;
 }
 
 .btn-icon {
@@ -2312,13 +2704,13 @@ input:focus-visible {
 .btn-arrow {
   font-size: 16px;
   opacity: 0.8;
-  transition: transform 0.2s ease;
+  transition: none;
 }
 
 .start-survey-btn:hover .btn-arrow,
 .activation-notice-btn:hover .btn-arrow,
 .withdraw-plan-btn:hover .btn-arrow {
-  transform: translateX(4px);
+  transform: none;
 }
 
 .completed-actions {
@@ -2329,7 +2721,7 @@ input:focus-visible {
 }
 
 .completed-badge {
-  background: rgba(74, 222, 128, 0.2);
+  background: rgba(74, 222, 128, 0.15);
   color: #4ade80;
   padding: 10px 16px;
   border-radius: var(--radius-md);
@@ -2340,7 +2732,7 @@ input:focus-visible {
 }
 
 /* =========================================================
-   WITHDRAW CARDS - BEAUTIFUL GRADIENTS
+   WITHDRAW CARDS - REDUCED ANIMATIONS
 ========================================================= */
 .withdraw-cards-container {
   display: grid;
@@ -2349,35 +2741,47 @@ input:focus-visible {
 }
 
 .withdraw-card {
-  background: linear-gradient(135deg, #fbc2eb, #a6c1ee);
+  background: #ffffff;
   border: none;
   border-radius: var(--radius-xl);
   padding: 12px;
-  transition: all 0.3s ease;
+  transition: none;
   position: relative;
   overflow: hidden;
-  color: white;
 }
 
-.withdraw-card.regular {
-  background: linear-gradient(135deg, #10b981, #059669);
+.withdraw-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--regular-gradient);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
-.withdraw-card.vip {
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
+.withdraw-card.regular::before {
+  background: var(--regular-gradient);
 }
 
-.withdraw-card.vvip {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+.withdraw-card.vip::before {
+  background: var(--vip-gradient);
+}
+
+.withdraw-card.vvip::before {
+  background: var(--vvip-gradient);
 }
 
 .withdraw-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--card-shadow-hover);
+  transform: none;
+  box-shadow: none;
+  border-color: var(--border-medium);
 }
 
 .withdraw-card.completed {
-  border: 2px solid rgba(74, 222, 128, 0.5);
+  border-color: rgba(74, 222, 128, 0.4);
+  background: rgba(74, 222, 128, 0.05);
 }
 
 .withdraw-card-header {
@@ -2390,7 +2794,7 @@ input:focus-visible {
 
 .withdraw-card-header .plan-icon {
   font-size: 32px;
-  animation: gentleFloat 4s ease-in-out infinite;
+  animation: none;
 }
 
 .plan-info {
@@ -2401,11 +2805,19 @@ input:focus-visible {
   margin: 0 0 4px;
   font-size: 18px;
   font-weight: 900;
-  color: white;
+}
+
+.plan-info h4[style*="color: var(--regular-color)"] {
+}
+
+.plan-info h4[style*="color: var(--vip-color)"] {
+}
+
+.plan-info h4[style*="color: var(--vvip-color)"] {
 }
 
 .plan-earnings {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-muted);
   font-size: 13px;
   margin: 0;
 }
@@ -2421,14 +2833,14 @@ input:focus-visible {
 }
 
 .status-indicator.ready {
-  background: rgba(74, 222, 128, 0.2);
+  background: rgba(74, 222, 128, 0.15);
   color: #4ade80;
   border: 1px solid rgba(74, 222, 128, 0.3);
 }
 
 .status-indicator.pending {
-  background: rgba(245, 158, 11, 0.2);
-  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
   border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
@@ -2437,8 +2849,7 @@ input:focus-visible {
   border-radius: var(--radius-lg);
   padding: var(--space-md);
   margin-bottom: var(--space-md);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .progress-summary {
@@ -2452,27 +2863,26 @@ input:focus-visible {
   justify-content: space-between;
   align-items: center;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.8);
 }
 
 .progress-summary strong {
-  color: white;
+  color: var(--text-main);
   font-weight: 700;
 }
 
 .available-amount {
-  color: white !important;
+  color: var(--primary) !important;
   font-size: 14px;
 }
 
 .withdraw-requirements {
   margin-top: var(--space-md);
   padding-top: var(--space-md);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .requirement {
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-muted);
   font-size: 12px;
   margin: 0 0 4px;
   display: flex;
@@ -2495,7 +2905,7 @@ input:focus-visible {
   font-weight: 800;
   font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: none;
   border: none;
   display: flex;
   align-items: center;
@@ -2505,32 +2915,40 @@ input:focus-visible {
   overflow: hidden;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.withdraw-btn.ready:hover,
-.activate-withdraw-btn:hover,
-.complete-surveys-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  background: rgba(255, 255, 255, 0.3);
+.withdraw-btn.ready:hover {
+  transform: none;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* REDUCED from 10px 25px */
 }
 
 .withdraw-btn.disabled {
-  opacity: 0.5;
+  opacity: 0.7;
   cursor: not-allowed;
+}
+
+.withdraw-btn.disabled:hover {
+  transform: none;
+  box-shadow: none;
 }
 
 .complete-surveys-btn {
   background: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid var(--border-medium);
   color: white;
+  font-weight: 700;
+}
+
+.complete-surveys-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: none;
 }
 
 .activate-withdraw-btn {
-  animation: pulse 3s infinite;
+  background: transparent;
+  border: 2px solid;
+  font-weight: 800;
+  animation: none;
 }
 
 /* =========================================================
@@ -2552,7 +2970,7 @@ input:focus-visible {
   }
   
   .plan-card:hover {
-    transform: translateY(-2px);
+    transform: none;
   }
   
   .plan-name {
@@ -2577,7 +2995,7 @@ input:focus-visible {
   }
   
   .withdraw-card:hover {
-    transform: translateY(-2px);
+    transform: none;
   }
   
   .withdraw-card-header .plan-icon {
@@ -2764,8 +3182,8 @@ body.no-scroll {
 .dashboard-section,
 .professional-bonus-card,
 .scroll-reminder-notification {
-  z-index: 1;
-  position: relative;
+  z-index: 1 !important;
+  position: relative !important;
 }
 
 /* Make sure modals and notifications are above the WhatsApp button */
@@ -2779,6 +3197,19 @@ body.no-scroll {
 .dashboard > div[style*="position: fixed"][style*="z-index: 1000"] {
   z-index: 1000 !important;
 }
+
+/* =========================================================
+   REMOVED UNNECESSARY ANIMATIONS AND EFFECTS:
+   
+   1. REMOVED: @keyframes neonGlow (line ~94)
+   2. REMOVED: Complex animation effects for performance
+   3. REDUCED: All animation durations by 30-50%
+   4. REDUCED: Transform effects on hover
+   5. SIMPLIFIED: Cubic-bezier animations to linear/ease
+   6. FIXED: Chat button positioned at bottom
+   7. FIXED: Scroll reminder positioned at bottom
+   8. ADDED: Overscroll behavior to prevent white flash
+========================================================= */
 
 /* =========================================================
    MAIN MENU DRAWER STYLES
@@ -2802,7 +3233,7 @@ body.no-scroll {
   height: 100%;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
-  animation: fadeIn 0.2s ease;
+  animation: none;
 }
 
 .drawer-panel {
@@ -2814,17 +3245,8 @@ body.no-scroll {
   box-shadow: -5px 0 25px rgba(0,0,0,0.5);
   display: flex;
   flex-direction: column;
-  animation: slideInRight 0.2s ease;
+  animation: none;
   z-index: 10000;
-}
-
-@keyframes slideInRight {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
 }
 
 .drawer-header {
@@ -2881,10 +3303,6 @@ body.no-scroll {
   line-height: 1;
 }
 
-.drawer-close:hover {
-  color: white;
-}
-
 .drawer-scrollable {
   flex: 1;
   overflow-y: auto;
@@ -2922,11 +3340,8 @@ body.no-scroll {
   margin-bottom: 4px;
 }
 
-.drawer-link:hover {
-  background: rgba(255,255,255,0.1);
-}
-
 .drawer-link:active {
+  background: rgba(255,255,255,0.1);
   transform: scale(0.98);
 }
 
@@ -2964,11 +3379,8 @@ body.no-scroll {
   transition: all 0.2s ease;
 }
 
-.drawer-logout:hover {
-  background: rgba(239, 68, 68, 0.25);
-}
-
 .drawer-logout:active {
+  background: rgba(239, 68, 68, 0.25);
   transform: scale(0.98);
 }
 
@@ -2986,23 +3398,23 @@ body.no-scroll {
   -webkit-transform: translate3d(0,0,0);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  
+  /* Ensure solid background fallback behind glass effect */
+  background-color: #1e293b;
 }
 
-/* Notification Card Styles */
+/* Only apply glass effect if supported and on top of solid color */
+@supports (backdrop-filter: blur(10px)) {
+  .plan-card, .stats-card, .feature-card, .withdraw-card, .progress-card {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(10px);
+  }
+}
+
+/* Notification Card Red Border */
 .notifications-mini-card,
 .notifications-expanded-panel {
-  border: none;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
+  border: 3px solid red !important;
+  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.1) !important;
 }
-
-/* =========================================================
-   REMOVED UNNECESSARY ANIMATIONS AND EFFECTS:
-   
-   1. REMOVED: Debug red borders
-   2. ADDED: Beautiful gradients to all cards
-   3. FIXED: Dark mode selector syntax
-   4. FIXED: Stray closing braces
-   5. FIXED: All card backgrounds are now vibrant
-========================================================= */
+}
