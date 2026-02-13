@@ -3271,3 +3271,118 @@ body.no-scroll {
 /* =========================
    NOTIFICATIONS SECTION
 ========================= */
+
+
+/* =========================================================
+   ULTIMATE OVERRIDES - FORCE BRIGHT COLORS FOR SURVEY BUTTON CARDS
+========================================================= */
+
+/* Force Regular total to bright orange */
+.plan-card.regular .stat-value,
+.plan-card.regular .stat-value.earned {
+  color: #FF8C00 !important;
+  text-shadow: 0 0 15px #FF8C00, 0 0 30px #FFA500 !important;
+  font-weight: 900 !important;
+  font-size: 18px !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  display: inline-block !important;
+}
+
+/* Force VIP total to orange */
+.plan-card.vip .stat-value,
+.plan-card.vip .stat-value.earned {
+  color: #FFA500 !important;
+  text-shadow: 0 0 15px #FFA500, 0 0 30px #FFD700 !important;
+  font-weight: 900 !important;
+  font-size: 18px !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  display: inline-block !important;
+}
+
+/* Force VVIP total to gold */
+.plan-card.vvip .stat-value,
+.plan-card.vvip .stat-value.earned {
+  color: #FFD700 !important;
+  text-shadow: 0 0 15px #FFD700, 0 0 30px #FFB347 !important;
+  font-weight: 900 !important;
+  font-size: 18px !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  display: inline-block !important;
+}
+
+/* Make the "Total Plan" label more visible */
+.plan-card .stat-label {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  font-size: 12px !important;
+  letter-spacing: 0.8px !important;
+}
+
+/* Make the "Per Survey" values also bright but slightly different */
+.plan-card.regular .stat-row:first-child .stat-value {
+  color: #b7efc5 !important;
+  text-shadow: 0 0 15px #10b981 !important;
+}
+
+.plan-card.vip .stat-row:first-child .stat-value {
+  color: #d8b4fe !important;
+  text-shadow: 0 0 15px #8b5cf6 !important;
+}
+
+.plan-card.vvip .stat-row:first-child .stat-value {
+  color: #fed7aa !important;
+  text-shadow: 0 0 15px #f59e0b !important;
+}
+
+/* Fix the "Earned So Far" text */
+.plan-card .stat-row:last-child .stat-value.earned {
+  font-size: 18px !important;
+  font-weight: 900 !important;
+}
+
+/* Make the completed badge more visible */
+.plan-card .completed-badge {
+  background: rgba(16, 185, 129, 0.2) !important;
+  color: #b7efc5 !important;
+  border: 1px solid rgba(255, 215, 0, 0.3) !important;
+  padding: 10px 16px !important;
+  border-radius: 40px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+}
+
+/* Make the "Start Survey" button more consistent */
+.plan-card .start-survey-btn {
+  background: linear-gradient(145deg, #3a7bd5, #2d5fa3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  border-radius: 40px !important;
+}
+
+/* Make the withdraw button for completed plans */
+.plan-card .withdraw-plan-btn {
+  background: linear-gradient(145deg, #10b981, #059669) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  border-radius: 40px !important;
+}
+
+/* Dark mode adjustments */
+[data-theme='dark'] .plan-card .stat-value,
+[data-theme='dark'] .plan-card .stat-value.earned {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
