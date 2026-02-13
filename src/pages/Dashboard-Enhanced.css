@@ -2,8 +2,6 @@
 
 /* =========================================================
    DASHBOARD-ENHANCED.CSS - OPTIMIZED FOR MOBILE
-   UPDATED: Plan progress caption colors bright & visible
-   UPDATED: Welcome bonus card - red border + beautiful background
 ========================================================= */
 
 /* FIX 1: Prevent white flash on scroll (low RAM phones) */
@@ -12,7 +10,7 @@ html, body {
   width: 100%;
   height: 100%;
   overflow-x: hidden;
-  background: var(--bg-main);
+  background: var(--bg-main); /* Standardized light background */
   -webkit-tap-highlight-color: transparent;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
@@ -39,10 +37,10 @@ html, body {
 
 /* Remove unnecessary hardware acceleration for better performance */
 .dashboard > div[style*="position: fixed"] * {
-  transform: none;
-  -webkit-transform: none;
-  backface-visibility: visible;
-  -webkit-backface-visibility: visible;
+  transform: none; /* REMOVED: translateZ(0) */
+  -webkit-transform: none; /* REMOVED: translateZ(0) */
+  backface-visibility: visible; /* REMOVED: hidden */
+  -webkit-backface-visibility: visible; /* REMOVED: hidden */
 }
 
 /* =========================================================
@@ -72,6 +70,14 @@ html, body {
   --regular-color: #059669;
   --vip-color: #4f46e5;
   --vvip-color: #d97706;
+  
+  /* Bright caption colors for progress cards */
+  --caption-bright-blue: #00e5ff;
+  --caption-bright-green: #a3ff47;
+  --caption-bright-yellow: #ffe600;
+  --caption-bright-pink: #ff7eb6;
+  --caption-bright-orange: #ffb86b;
+  --caption-bright-purple: #d683ff;
 }
 
 :root[data-theme="dark"] {
@@ -89,6 +95,14 @@ html, body {
   --regular-color: #34d399;
   --vip-color: #818cf8;
   --vvip-color: #fbbf24;
+  
+  /* Dark mode bright caption colors - even more vibrant */
+  --caption-bright-blue: #4df0ff;
+  --caption-bright-green: #c6ff8a;
+  --caption-bright-yellow: #ffee70;
+  --caption-bright-pink: #ffb3d9;
+  --caption-bright-orange: #ffcd94;
+  --caption-bright-purple: #e7b0ff;
 }
 
 /* =========================================================
@@ -106,7 +120,7 @@ html {
 }
 
 body {
-  background-color: var(--bg-main);
+  background-color: var(--bg-main); /* Match html background */
   color: var(--text-main);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   min-height: 100vh;
@@ -152,7 +166,7 @@ body {
 /* FIX 4: Scroll reminder at bottom of screen */
 .scroll-reminder-notification {
   position: fixed !important;
-  bottom: 90px !important;
+  bottom: 90px !important; /* Position above chat button */
   left: 50% !important;
   transform: translateX(-50%) !important;
   z-index: 999 !important;
@@ -281,8 +295,8 @@ body {
 
 .header-title-container {
   display: flex;
-  justify-content: space-between;
-  flex-direction: row;
+  justify-content: space-between; /* Distribute space evenly */
+  flex-direction: row; /* Restore normal row direction */
   gap: 15px;
   padding: 0 10px;
   align-items: center;
@@ -292,7 +306,7 @@ body {
 }
 
 .dashboard-main-title {
-  font-size: 0 !important;
+  font-size: 0 !important; /* Hide original title text */
   font-weight: 900;
   color: white;
   margin: 0;
@@ -392,7 +406,7 @@ body {
    2. LIVE WITHDRAWAL FEED (SIMPLIFIED)
 ========================================================= */
 .live-withdrawal-feed {
-  background: var(--bg-surface);
+  background: var(--bg-surface); /* Solid background for performance */
   border-radius: var(--radius-xl);
   padding: var(--space-lg);
   margin-bottom: var(--space-md);
@@ -401,27 +415,40 @@ body {
 }
 
 /* =========================================================
-   3. ELITE WELCOME BONUS CARD - MODERN LIGHT THEME
-   UPDATED: Red border + beautiful blue-purple background
+   3. ELITE WELCOME BONUS CARD - ENHANCED WITH RED BORDER & BRIGHT BACKGROUND
 ========================================================= */
 .professional-bonus-card {
-  background: linear-gradient(145deg, #667eea, #764ba2, #6b8cff) !important; /* Beautiful gradient */
-  border: 4px solid #ff3333 !important; /* Bright red border */
+  background: linear-gradient(145deg, #FF416C, #FF4B2B); /* Beautiful bright coral-red */
   border-radius: var(--radius-xl);
   padding: 12px;
   margin-bottom: var(--space-md);
   box-shadow: 
-    0 15px 25px -8px rgba(255, 51, 51, 0.4),
+    0 10px 15px -3px rgba(255, 75, 43, 0.25),
     0 4px 6px -2px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(255, 200, 200, 0.3) inset;
+    0 0 0 1px rgba(255,255,255,0.15) inset;
   color: white;
   position: relative;
   overflow: hidden;
+  border: 4px solid #FF0000 !important; /* Thick red border */
   transition: all 0.3s ease;
   backface-visibility: hidden;
 }
 
-/* Enhanced overlay for depth */
+/* Add a second red border for extra emphasis */
+.professional-bonus-card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 2px solid #ff6a6a;
+  border-radius: calc(var(--radius-xl) + 4px);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Light grid pattern overlay */
 .professional-bonus-card::after {
   content: '';
   position: absolute;
@@ -429,31 +456,19 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.15) 0%, transparent 60%);
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
   z-index: 2;
-  opacity: 1;
-  pointer-events: none;
-}
-
-/* Subtle shine effect */
-.professional-bonus-card::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-  opacity: 0.4;
-  z-index: 1;
-  pointer-events: none;
+  opacity: 0.2;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .professional-bonus-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 25px 30px -10px rgba(255, 51, 51, 0.5);
-    border-color: #ff6666 !important;
+    box-shadow: 0 25px 50px -12px rgba(255, 75, 43, 0.4);
+    border-color: #ff3333 !important;
   }
 }
 
@@ -476,7 +491,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
@@ -486,7 +501,7 @@ body {
   color: white;
   margin: 0 0 4px;
   line-height: 1.2;
-  text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .bonus-subtitle {
@@ -494,19 +509,18 @@ body {
   color: rgba(255, 255, 255, 0.95);
   margin: 0;
   font-weight: 600;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
 .bonus-amount-display {
   text-align: center;
   margin: 12px 0;
   padding: 12px;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-lg);
   border: 1px solid rgba(255, 255, 255, 0.3);
   position: relative;
   z-index: 3;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .bonus-amount-display .currency {
@@ -525,7 +539,7 @@ body {
   color: white;
   display: block;
   line-height: 1;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .bonus-description p {
@@ -535,7 +549,6 @@ body {
   font-weight: 500;
   position: relative;
   z-index: 3;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .bonus-description strong {
@@ -561,13 +574,14 @@ body {
   align-items: center;
   justify-content: center;
   gap: var(--space-lg);
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   padding: var(--space-lg);
   border-radius: var(--radius-lg);
   margin-bottom: var(--space-xl);
   border: 1px solid rgba(255, 255, 255, 0.2);
   position: relative;
   z-index: 3;
+  backdrop-filter: blur(5px);
 }
 
 .roi-item .label {
@@ -587,7 +601,7 @@ body {
 }
 
 .roi-item.highlight .value {
-  color: #a7f3d0;
+  color: #ffd700;
 }
 
 .roi-separator {
@@ -595,13 +609,13 @@ body {
 }
 
 .bonus-details {
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.2);
   position: relative;
   z-index: 3;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(5px);
 }
 
 .bonus-details summary {
@@ -609,7 +623,7 @@ body {
   font-size: 14px;
   font-weight: 700;
   color: white;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .bonus-details summary::after {
@@ -619,7 +633,7 @@ body {
 .details-content {
   padding: var(--space-lg);
   border-top: 1px solid rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.9);
+  color: white;
 }
 
 .detail-item {
@@ -630,7 +644,7 @@ body {
   color: white;
 }
 
-/* Mobile-specific optimizations */
+/* Mobile-specific optimizations for welcome bonus card */
 @media (max-width: 768px) {
   .professional-bonus-card {
     margin: 0 -12px var(--space-md);
@@ -638,8 +652,11 @@ body {
     border-left: none;
     border-right: none;
     padding: var(--space-xl) 20px;
+    box-shadow: 
+      0 15px 30px rgba(255, 75, 43, 0.35),
+      0 6px 12px rgba(0, 0, 0, 0.2),
+      0 0 0 1px rgba(255, 255, 255, 0.25) inset;
     border-width: 4px !important;
-    border-style: solid !important;
   }
   
   .bonus-card-header {
@@ -656,6 +673,7 @@ body {
   .bonus-amount-display {
     margin: var(--space-lg) 0;
     padding: 20px;
+    backdrop-filter: blur(8px);
   }
   
   .bonus-amount-display .amount {
@@ -665,6 +683,7 @@ body {
   .roi-summary {
     gap: 16px;
     padding: 16px;
+    backdrop-filter: blur(8px);
   }
   
   .roi-item {
@@ -680,57 +699,6 @@ body {
   }
 }
 
-/* Small phones */
-@media (max-width: 375px) {
-  .professional-bonus-card {
-    padding: 18px 16px;
-  }
-  
-  .bonus-icon {
-    width: 44px;
-    height: 44px;
-    font-size: 24px;
-  }
-  
-  .bonus-header-text h3 {
-    font-size: 18px;
-  }
-  
-  .bonus-amount-display .amount {
-    font-size: 36px;
-  }
-  
-  .roi-summary {
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .roi-item {
-    width: 100%;
-    min-width: auto;
-  }
-  
-  .roi-separator {
-    display: none;
-  }
-}
-
-/* Performance optimizations */
-@media (prefers-reduced-motion: reduce) {
-  .professional-bonus-card,
-  .bonus-details summary,
-  .bonus-details summary::after {
-    transition: none;
-  }
-  
-  .bonus-details[open] .details-content {
-    animation: none;
-  }
-  
-  .bonus-icon {
-    animation: none;
-  }
-}
 /* =========================================================
    4. DASHBOARD NAVIGATION - MOBILE OPTIMIZED
 ========================================================= */
@@ -944,9 +912,9 @@ body {
 /* Active state - Unified purple theme */
 .nav-btn.active {
   background: linear-gradient(145deg, 
-    #7c3aed,
-    #8b5cf6,
-    #a78bfa
+    #7c3aed, /* Deep purple */
+    #8b5cf6, /* Purple */
+    #a78bfa  /* Light purple */
   );
   color: white !important;
   border: 3px solid #ef4444 !important;
@@ -1454,10 +1422,8 @@ body {
   transform: none;
 }
 
-
 /* =========================================================
-   6. PLAN PROGRESS (SIMPLIFIED)
-   UPDATED: Caption colors changed to bright, easily visible
+   6. PLAN PROGRESS - ENHANCED WITH BRIGHT CAPTION COLORS
 ========================================================= */
 .progress-cards {
   display: grid;
@@ -1478,8 +1444,28 @@ body {
   color: white;
 }
 
+/* Alternate progress card colors for visual variety */
+.progress-card:nth-child(1) {
+  background: linear-gradient(135deg, #4776E6, #8E54E9);
+}
+
+.progress-card:nth-child(2) {
+  background: linear-gradient(135deg, #FF416C, #FF4B2B);
+}
+
+.progress-card:nth-child(3) {
+  background: linear-gradient(135deg, #11998e, #38ef7d);
+}
+
+.progress-card:nth-child(4) {
+  background: linear-gradient(135deg, #f7971e, #ffd200);
+}
+
+.progress-card:nth-child(5) {
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+}
+
 .progress-card:hover {
-  background: linear-gradient(135deg, #00F260, #0575E6);
   transform: translateY(-4px);
   box-shadow: var(--card-shadow-hover);
 }
@@ -1495,7 +1481,6 @@ body {
   border-radius: 50%;
   pointer-events: none;
 }
-
 
 .progress-card-header {
   display: flex;
@@ -1516,67 +1501,99 @@ body {
   flex: 1;
   color: white;
   min-width: 100px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* BRIGHT, EASILY VISIBLE CAPTION COLORS FOR PLAN PROGRESS */
 .status-badge {
-  padding: 6px 12px;
-  border-radius: 30px;
-  font-size: 12px;
-  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.5px;
   white-space: nowrap;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  background: rgba(0, 0, 0, 0.25);
-  color: #ffffff !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .status-badge.completed {
-  background: linear-gradient(145deg, #00c851, #007e33);
-  color: #ffffff !important;
-  border-color: #eaff00; /* Bright yellow border */
-  text-shadow: 0 1px 4px #000000;
+  background: rgba(74, 222, 128, 0.2);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.3);
 }
 
 .status-badge.in-progress {
-  background: linear-gradient(145deg, #ffbb33, #ff8800);
-  color: #ffffff !important;
-  border-color: #fff700; /* Bright yellow border */
-  text-shadow: 0 1px 4px #000000;
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .status-badge.not-started {
-  background: linear-gradient(145deg, #ff4444, #cc0000);
-  color: #ffffff !important;
-  border-color: #ffdd00; /* Bright yellow border */
-  text-shadow: 0 1px 4px #000000;
+  background: rgba(168, 85, 247, 0.2);
+  color: #a855f7;
+  border: 1px solid rgba(168, 85, 247, 0.3);
 }
 
-.progress-info .progress-row span {
-  color: rgba(255, 255, 255, 0.95);
-  font-weight: 700;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-}
-
-.progress-info .progress-row strong {
-  color: #ffffff;
-  font-weight: 900;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-}
-
-.earned-amount {
-  color: #ffff00 !important;
-  font-weight: 900;
-  text-shadow: 0 1px 4px #000000;
-}
-
-.progress-text {
-  color: #ffffff;
+/* BRIGHT CAPTION COLORS FOR PROGRESS CARDS */
+.progress-row strong,
+.progress-card .earned-amount,
+.progress-card .progress-row span,
+.progress-card .progress-row .label,
+.progress-card .progress-text,
+.progress-card .stat-value,
+.progress-card .progress-percentage,
+.progress-card .completion-text,
+.progress-card .remaining-text {
+  color: var(--caption-bright-yellow) !important;
   font-weight: 800;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  text-shadow: 0 0 8px rgba(255, 230, 0, 0.5);
+}
+
+/* Different bright colors for different progress card sections */
+.progress-card .progress-row:first-child strong {
+  color: var(--caption-bright-blue) !important;
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.5);
+}
+
+.progress-card .progress-row:nth-child(2) strong {
+  color: var(--caption-bright-green) !important;
+  text-shadow: 0 0 8px rgba(163, 255, 71, 0.5);
+}
+
+.progress-card .progress-row:nth-child(3) strong {
+  color: var(--caption-bright-pink) !important;
+  text-shadow: 0 0 8px rgba(255, 126, 182, 0.5);
+}
+
+.progress-card .progress-text {
+  color: var(--caption-bright-orange) !important;
+  text-shadow: 0 0 8px rgba(255, 184, 107, 0.5);
+}
+
+/* Progress bar fill with glow effect */
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #ffd700, #ffb347);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+  transition: none;
+}
+
+/* Dark mode progress card caption enhancements */
+[data-theme='dark'] .progress-row strong,
+[data-theme='dark'] .progress-card .earned-amount,
+[data-theme='dark'] .progress-card .progress-row span,
+[data-theme='dark'] .progress-card .progress-text {
+  color: var(--caption-bright-green) !important;
+  text-shadow: 0 0 12px rgba(198, 255, 138, 0.7);
+}
+
+[data-theme='dark'] .progress-card .progress-row:first-child strong {
+  color: var(--caption-bright-blue) !important;
+  text-shadow: 0 0 12px rgba(77, 240, 255, 0.7);
+}
+
+[data-theme='dark'] .progress-card .progress-row:nth-child(2) strong {
+  color: var(--caption-bright-pink) !important;
+  text-shadow: 0 0 12px rgba(255, 179, 217, 0.7);
 }
 
 /* =========================================================
@@ -2012,8 +2029,8 @@ body {
   }
   
   .status-badge {
-    font-size: 11px;
-    padding: 5px 10px;
+    font-size: 10px;
+    padding: 3px 8px;
   }
   
   /* Feature Grid */
@@ -2417,12 +2434,14 @@ input:focus-visible {
 }
 
 .progress-row strong {
-  color: white;
-  font-weight: 700;
+  color: var(--caption-bright-yellow) !important;
+  font-weight: 800;
+  text-shadow: 0 0 8px rgba(255, 230, 0, 0.5);
 }
 
 .earned-amount {
-  color: white !important;
+  color: var(--caption-bright-green) !important;
+  text-shadow: 0 0 8px rgba(163, 255, 71, 0.5);
 }
 
 .activation-notice {
@@ -2445,6 +2464,8 @@ input:focus-visible {
 .progress-bar-fill {
   height: 100%;
   border-radius: 4px;
+  background: linear-gradient(90deg, #ffd700, #ffb347);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
   transition: none;
 }
 
@@ -2681,7 +2702,8 @@ input:focus-visible {
 .progress-text {
   font-size: 12px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--caption-bright-orange) !important;
+  text-shadow: 0 0 8px rgba(255, 184, 107, 0.5);
   min-width: 45px;
   text-align: right;
 }
@@ -2855,30 +2877,18 @@ input:focus-visible {
 }
 
 /* =========================================================
-   WITHDRAW CARDS - PLAN INFO HEADER COLORS
+   FIXED: Plan info heading color selectors
 ========================================================= */
 .plan-info h4[style*="color: var(--regular-color)"] {
   color: var(--regular-color) !important;
-  font-weight: 900;
-  font-size: 18px;
-  margin: 0 0 4px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .plan-info h4[style*="color: var(--vip-color)"] {
   color: var(--vip-color) !important;
-  font-weight: 900;
-  font-size: 18px;
-  margin: 0 0 4px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .plan-info h4[style*="color: var(--vvip-color)"] {
   color: var(--vvip-color) !important;
-  font-weight: 900;
-  font-size: 18px;
-  margin: 0 0 4px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 .plan-earnings {
   color: var(--text-muted);

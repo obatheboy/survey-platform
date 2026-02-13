@@ -4,6 +4,7 @@
    DASHBOARD.CSS - OPTIMIZED FOR MOBILE
    UPDATED: Plan progress caption colors bright & visible
    UPDATED: Welcome bonus card - red border + beautiful background
+   FIXED: Plan info heading color selectors with proper styles
 ========================================================= */
 
 /* FIX 1: Prevent white flash on scroll (low RAM phones) */
@@ -12,7 +13,7 @@ html, body {
   width: 100%;
   height: 100%;
   overflow-x: hidden;
-  background: var(--bg-main); /* Standardized light background */
+  background: var(--bg-main);
   -webkit-tap-highlight-color: transparent;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
@@ -2481,6 +2482,7 @@ input:focus-visible {
 
 /* =========================================================
    WITHDRAW CARDS - REDUCED ANIMATIONS
+   FIXED: Plan info heading color selectors with proper styles
 ========================================================= */
 .withdraw-cards-container {
   display: grid;
@@ -2559,16 +2561,39 @@ input:focus-visible {
   font-weight: 900;
 }
 
+/* FIXED: Plan info heading color selectors with proper styles */
 .plan-info h4[style*="color: var(--regular-color)"] {
   color: var(--regular-color) !important;
+  text-shadow: 0 2px 4px rgba(5, 150, 105, 0.3);
+  font-weight: 900;
 }
 
 .plan-info h4[style*="color: var(--vip-color)"] {
   color: var(--vip-color) !important;
+  text-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
+  font-weight: 900;
 }
 
 .plan-info h4[style*="color: var(--vvip-color)"] {
   color: var(--vvip-color) !important;
+  text-shadow: 0 2px 4px rgba(217, 119, 6, 0.3);
+  font-weight: 900;
+}
+
+/* Dark mode support for plan info headings */
+[data-theme="dark"] .plan-info h4[style*="color: var(--regular-color)"] {
+  color: var(--regular-color) !important;
+  text-shadow: 0 2px 8px rgba(52, 211, 153, 0.5);
+}
+
+[data-theme="dark"] .plan-info h4[style*="color: var(--vip-color)"] {
+  color: var(--vip-color) !important;
+  text-shadow: 0 2px 8px rgba(129, 140, 248, 0.5);
+}
+
+[data-theme="dark"] .plan-info h4[style*="color: var(--vvip-color)"] {
+  color: var(--vvip-color) !important;
+  text-shadow: 0 2px 8px rgba(251, 191, 36, 0.5);
 }
 
 .plan-earnings {
@@ -2947,7 +2972,7 @@ body.no-scroll {
 /* =========================================================
    REMOVED UNNECESSARY ANIMATIONS AND EFFECTS:
    
-   1. REMOVED: @keyframes neonGlow (line ~94)
+   1. REMOVED: @keyframes neonGlow
    2. REMOVED: Complex animation effects for performance
    3. REDUCED: All animation durations by 30-50%
    4. REDUCED: Transform effects on hover
@@ -2955,6 +2980,7 @@ body.no-scroll {
    6. FIXED: Chat button positioned at bottom
    7. FIXED: Scroll reminder positioned at bottom
    8. ADDED: Overscroll behavior to prevent white flash
+   9. FIXED: Plan info heading color selectors with proper styles
 ========================================================= */
 
 /* =========================
