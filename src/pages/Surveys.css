@@ -113,7 +113,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 8px !important;
-  margin-bottom: 16px !important; /* Added margin to create space before footer */
+  margin-bottom: 16px !important;
 }
 
 .option-btn {
@@ -127,7 +127,7 @@
   font-weight: 600;
   color: #334155;
   cursor: pointer;
-  display: flex; /* Removed transition */
+  display: flex;
   align-items: center;
   gap: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
@@ -139,22 +139,40 @@
   transform: translateY(-1px);
 }
 
-/* Selected option - NO ANIMATIONS, just solid green */
+/* Selected option - BRIGHT GREEN with !important on EVERYTHING */
 .option-btn.selected {
   background: #10b981 !important;
+  background-color: #10b981 !important;
   border-color: #10b981 !important;
   color: white !important;
-  box-shadow: none !important; /* Removed shadow */
-  transform: none !important; /* Removed transform */
-  transition: none !important; /* Removed transition */
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+  opacity: 1 !important;
+  border-width: 2px !important;
+  border-style: solid !important;
 }
 
 .option-btn.selected .option-indicator {
   background: white !important;
+  background-color: white !important;
   border-color: white !important;
   color: #10b981 !important;
-  transform: none !important; /* Removed scale transform */
-  transition: none !important; /* Removed transition */
+  transform: none !important;
+  transition: none !important;
+}
+
+/* Force override for any potential mobile browser default styles */
+.option-btn.selected,
+.option-btn.selected:active,
+.option-btn.selected:focus,
+.option-btn.selected:hover,
+.option-btn.selected:visited,
+.option-btn.selected:link {
+  background: #10b981 !important;
+  background-color: #10b981 !important;
+  border-color: #10b981 !important;
+  color: white !important;
 }
 
 .option-btn:disabled {
@@ -173,17 +191,17 @@
   font-weight: 800;
   flex-shrink: 0;
   background: white;
-  transition: none; /* Removed transition */
+  transition: none;
 }
 
 .survey-footer {
-  padding: 8px 24px 16px !important; /* Increased top padding */
+  padding: 8px 24px 16px !important;
   border-top: 1px solid rgba(203, 213, 225, 0.2);
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: transparent;
-  margin-top: 0px !important; /* Removed negative margin */
+  margin-top: 0px !important;
   position: relative !important;
   z-index: 10 !important;
 }
@@ -238,13 +256,6 @@
   border-color: #e2e8f0;
   background: transparent;
   cursor: not-allowed;
-}
-
-/* Button group positioning */
-.button-group {
-  display: flex;
-  gap: 12px;
-  margin-left: auto;
 }
 
 /* Completion Screen */
@@ -371,7 +382,7 @@
   
   .options-grid {
     gap: 6px !important;
-    margin-bottom: 20px !important; /* Increased margin on mobile */
+    margin-bottom: 20px !important;
   }
   
   .option-btn {
@@ -379,6 +390,42 @@
     font-size: 14px;
     border-radius: 12px !important;
     border-width: 1.5px;
+  }
+  
+  /* FIX FOR MOBILE - Force green with !important */
+  .option-btn.selected {
+    background: #10b981 !important;
+    background-color: #10b981 !important;
+    border-color: #10b981 !important;
+    color: white !important;
+    box-shadow: none !important;
+    transform: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    -webkit-appearance: none !important; /* Remove default mobile styling */
+    appearance: none !important;
+  }
+  
+  .option-btn.selected .option-indicator {
+    background: white !important;
+    background-color: white !important;
+    border-color: white !important;
+    color: #10b981 !important;
+  }
+  
+  /* Override any mobile browser default states */
+  .option-btn.selected:active,
+  .option-btn.selected:focus,
+  .option-btn.selected:hover,
+  .option-btn.selected:visited,
+  .option-btn.selected:link,
+  button.option-btn.selected,
+  button.option-btn.selected:active,
+  button.option-btn.selected:focus {
+    background: #10b981 !important;
+    background-color: #10b981 !important;
+    border-color: #10b981 !important;
+    color: white !important;
   }
   
   .option-indicator {
@@ -389,15 +436,15 @@
   }
   
   .survey-footer {
-    padding: 12px 16px 16px !important; /* Increased top padding on mobile */
-    margin-top: 0 !important; /* Removed negative margin */
+    padding: 12px 16px 16px !important;
+    margin-top: 0 !important;
     border-top: 1px solid rgba(203, 213, 225, 0.15);
     position: relative !important;
     z-index: 20 !important;
   }
   
   .nav-btn {
-    padding: 10px 16px !important; /* Slightly larger padding */
+    padding: 10px 16px !important;
     font-size: 14px;
     min-width: 90px !important;
     border-radius: 10px !important;
@@ -466,6 +513,13 @@
     font-size: 13px;
   }
   
+  /* Extra small devices - force green */
+  .option-btn.selected {
+    background: #10b981 !important;
+    background-color: #10b981 !important;
+    border-color: #10b981 !important;
+  }
+  
   .survey-footer {
     padding: 10px 12px 14px !important;
     margin-top: 0 !important;
@@ -486,6 +540,22 @@
 @media (min-height: 800px) {
   .survey-footer {
     margin-top: 0 !important;
+  }
+}
+
+/* iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+  .option-btn.selected {
+    background: #10b981 !important;
+    background-color: #10b981 !important;
+  }
+}
+
+/* Android specific fixes */
+@supports (-webkit-appearance: none) {
+  .option-btn.selected {
+    background: #10b981 !important;
+    background-color: #10b981 !important;
   }
 }
 
