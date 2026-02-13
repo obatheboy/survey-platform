@@ -250,32 +250,7 @@ export default function Activate() {
 
         const statePlanKey = location.state?.planKey;
         const isWelcome = searchParams.get("welcome_bonus");
-        
-        // FIX: Check URL query parameters for plan
         const planFromUrl = searchParams.get("plan");
-        
-        // DEBUG: Log everything
-        console.log("🔍 ===== LOAD PLAN DEBUG =====");
-        console.log("🔍 location.state:", location.state);
-        console.log("🔍 statePlanKey:", statePlanKey);
-        console.log("🔍 isWelcome:", isWelcome);
-        console.log("🔍 planFromUrl:", planFromUrl);
-        console.log("🔍 searchParams:", Object.fromEntries(searchParams.entries()));
-        console.log("🔍 user.active_plan:", res.data.active_plan);
-        console.log("🔍 user.plans:", res.data.plans);
-        
-        // Log each plan's status
-        ['VVIP', 'VIP', 'REGULAR'].forEach(planName => {
-          const plan = res.data.plans?.[planName];
-          console.log(`🔍 ${planName}:`, {
-            exists: !!plan,
-            completed: plan?.completed,
-            is_activated: plan?.is_activated,
-            surveys_completed: plan?.surveys_completed
-          });
-        });
-        
-        console.log("🔍 ===== END DEBUG =====");
 
         // FIXED LOGIC: Prioritize URL param, then state, then active_plan
         let planFromQuery;
@@ -302,8 +277,6 @@ export default function Activate() {
           planFromQuery = highestPlan || res.data.active_plan || "REGULAR";
         }
 
-        console.log("✅ Determined planFromQuery:", planFromQuery);
-
         let plan;
         if (planFromQuery === "WELCOME") {
           plan = { 
@@ -320,7 +293,6 @@ export default function Activate() {
         }
 
         if (!plan || (planFromQuery !== "WELCOME" && plan.is_activated)) {
-          console.log("⚠️ Plan already activated or not found, redirecting to dashboard");
           navigate("/dashboard", { replace: true });
           return;
         }
@@ -328,11 +300,6 @@ export default function Activate() {
         setPlanKey(planFromQuery);
         setPlanState(plan);
         
-        console.log("✅ Plan loaded:", {
-          planKey: planFromQuery,
-          planState: plan,
-          planIsActivated: plan?.is_activated
-        });
       } catch (error) {
         console.error("Failed to load user:", error);
         if (!isMounted) return;
@@ -362,7 +329,7 @@ export default function Activate() {
   };
 
   /* =========================
-     SUBMIT ACTIVATION - ULTIMATE DEBUG VERSION
+     SUBMIT ACTIVATION
   ========================== */
   const submitActivation = async () => {
     if (!paymentText.trim()) {
@@ -374,56 +341,19 @@ export default function Activate() {
     setNotification(null);
 
     try {
-      // ULTIMATE DEBUG - FIND THE ROOT CAUSE
-      console.log("=== ULTIMATE DEBUG START ===");
-      console.log("1. Current planKey:", planKey);
-      console.log("2. planKey type:", typeof planKey);
-      console.log("3. User object exists:", !!user);
-      console.log("4. User plans object:", user?.plans);
-      
-      // Check VVIP specifically
-      console.log("5. VVIP plan exists:", !!user?.plans?.VVIP);
-      console.log("6. VVIP completed:", user?.plans?.VVIP?.completed);
-      console.log("7. VVIP is_activated:", user?.plans?.VVIP?.is_activated);
-      console.log("8. VVIP surveys_completed:", user?.plans?.VVIP?.surveys_completed);
-      console.log("9. Full VVIP object:", user?.plans?.VVIP);
-      
-      // Check all plans
-      ['REGULAR', 'VIP', 'VVIP'].forEach(p => {
-        const plan = user?.plans?.[p];
-        console.log(`Plan ${p}:`, {
-          exists: !!plan,
-          completed: plan?.completed,
-          is_activated: plan?.is_activated,
-          surveys_completed: plan?.surveys_completed
-        });
-      });
-      
-      // FORCE VVIP FOR TESTING
-      const FINAL_PLAN_TO_SEND = "VVIP"; // HARDCODE THIS FOR TESTING
-      console.log("10. HARDCODED PLAN TO SEND:", FINAL_PLAN_TO_SEND);
-      
-      console.log("=== ULTIMATE DEBUG END ===");
-      
       // Send to backend
       const requestData = {
         mpesa_code: paymentText.trim(),
-        plan: FINAL_PLAN_TO_SEND,  // HARDCODED VVIP
+        plan: planKey === "WELCOME" ? "REGULAR" : planKey,
         is_welcome_bonus: planKey === "WELCOME",
       };
       
-      console.log("📤 Sending to backend:", requestData);
-      
-      const response = await api.post("/activation/submit", requestData);
-      
-      console.log("✅ Backend response:", response.data);
+      await api.post("/activation/submit", requestData);
       
       setShowSuccessPopup(true);
     } catch (error) {
       console.error("❌ Activation submission failed:", error);
       if (error.response) {
-        console.error("Error response data:", error.response.data);
-        console.error("Error response status:", error.response.status);
         setNotification(`❌ ${error.response.data?.message || "Submission failed. Please try again."}`);
       } else {
         setNotification("❌ Network error. Please check your connection.");
@@ -515,7 +445,7 @@ export default function Activate() {
               <br />
               {planKey === "WELCOME" ? (
                 <>
-                  2. Complete VIP SURVEY PLAN(150)
+                  2. Complete VIP SURVEY PLAN (150)
                   <br />
                   3. Complete VVIP PLAN (200) to unlock withdrawals
                 </>
@@ -568,49 +498,28 @@ export default function Activate() {
             <span style={{ color: plan.color }}>KES {plan.total}</span>
           </h3>
 
-          {/* DEBUG SECTION */}
+          {/* PLAN STATUS SECTION - CLEAN VERSION */}
           <div style={{
             marginTop: "16px",
-            padding: "12px",
-            background: "#1e293b",
-            color: "white",
-            borderRadius: "10px",
-            fontSize: "12px",
-            fontFamily: "monospace"
-          }}>
-            <div style={{ fontWeight: 700, color: "#f59e0b", marginBottom: "8px" }}>
-              🔍 DEBUG: User Data
-            </div>
-            <div>planKey: {planKey}</div>
-            <div>VVIP completed: {user?.plans?.VVIP?.completed?.toString()}</div>
-            <div>VVIP activated: {user?.plans?.VVIP?.is_activated?.toString()}</div>
-            <div>VVIP surveys: {user?.plans?.VVIP?.surveys_completed}</div>
-            <div style={{ marginTop: "8px", fontSize: "11px", color: "#94a3b8" }}>
-              This shows real-time data
-            </div>
-          </div>
-
-          {/* PLAN VERIFICATION SECTION */}
-          <div style={{
-            marginTop: "16px",
-            padding: "12px",
-            borderRadius: "10px",
-            background: "rgba(59, 130, 246, 0.1)",
-            border: "1px solid rgba(59, 130, 246, 0.3)",
+            padding: "16px",
+            borderRadius: "12px",
+            background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+            border: "1px solid #e2e8f0",
             fontSize: "13px"
           }}>
             <div style={{ 
               fontWeight: 700, 
               color: "#2563eb",
-              marginBottom: "8px",
+              marginBottom: "12px",
               display: "flex",
               alignItems: "center",
-              gap: "6px"
+              gap: "6px",
+              fontSize: "14px"
             }}>
-              🔍 Plan Status
+              📊 Plan Status
             </div>
             
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               {['REGULAR', 'VIP', 'VVIP'].map((p) => {
                 const planData = user?.plans?.[p];
                 const isCurrent = planKey === p || (planKey === 'WELCOME' && p === 'REGULAR');
@@ -619,26 +528,44 @@ export default function Activate() {
                     display: "flex", 
                     justifyContent: "space-between",
                     alignItems: "center",
-                    padding: "8px",
-                    background: isCurrent ? "rgba(37, 99, 235, 0.15)" : "transparent",
-                    borderRadius: "6px",
-                    border: isCurrent ? "1px solid rgba(37, 99, 235, 0.3)" : "none"
+                    padding: "10px 12px",
+                    background: isCurrent ? "rgba(37, 99, 235, 0.08)" : "transparent",
+                    borderRadius: "8px",
+                    border: isCurrent ? "1px solid rgba(37, 99, 235, 0.2)" : "1px solid transparent",
+                    transition: "all 0.2s ease"
                   }}>
-                    <span style={{ fontWeight: 600, fontSize: "12px" }}>{p}:</span>
-                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                    <span style={{ 
+                      fontWeight: 700, 
+                      fontSize: "13px",
+                      color: isCurrent ? "#2563eb" : "#334155"
+                    }}>
+                      {p}
+                      {isCurrent && planKey === "WELCOME" && p === "REGULAR" && " (Welcome)"}
+                      {isCurrent && planKey !== "WELCOME" && " (Current)"}
+                    </span>
+                    <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
                       <span style={{ 
-                        color: planData?.completed ? "#10b981" : "#ef4444",
-                        fontWeight: 700,
-                        fontSize: "11px"
+                        color: planData?.completed ? "#10b981" : "#94a3b8",
+                        fontWeight: 600,
+                        fontSize: "12px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px"
                       }}>
-                        {planData?.completed ? "✓ Completed" : "✗ Not Complete"}
+                        {planData?.completed ? "✓" : "✗"} Complete
                       </span>
                       <span style={{ 
                         color: planData?.is_activated ? "#10b981" : "#f59e0b",
-                        fontWeight: 700,
-                        fontSize: "11px"
+                        fontWeight: 600,
+                        fontSize: "12px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                        background: planData?.is_activated ? "rgba(16, 185, 129, 0.1)" : "rgba(245, 158, 11, 0.1)",
+                        padding: "4px 10px",
+                        borderRadius: "20px"
                       }}>
-                        {planData?.is_activated ? "✅ Activated" : "⏳ Not Activated"}
+                        {planData?.is_activated ? "✅ Activated" : "⏳ Pending"}
                       </span>
                     </div>
                   </div>
@@ -647,14 +574,27 @@ export default function Activate() {
             </div>
             
             <div style={{ 
-              marginTop: "10px", 
-              paddingTop: "8px", 
-              borderTop: "1px solid rgba(59, 130, 246, 0.2)",
+              marginTop: "16px", 
+              paddingTop: "12px", 
+              borderTop: "1px solid #e2e8f0",
               fontWeight: 700,
-              fontSize: "12px",
-              color: plan.color
+              fontSize: "13px",
+              color: plan.color,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between"
             }}>
-              📋 Activating: <strong>{plan.label} Plan</strong>
+              <span>🎯 Activating:</span>
+              <span style={{ 
+                background: plan.color,
+                color: "white",
+                padding: "4px 14px",
+                borderRadius: "20px",
+                fontSize: "12px",
+                fontWeight: 700
+              }}>
+                {plan.label} Plan
+              </span>
             </div>
           </div>
 
