@@ -885,21 +885,20 @@ return (
 <div className="user-notifications-section">
   <UserNotifications />
 </div>
-
-{/* WELCOME BONUS CARD - PREMIUM ROYAL PURPLE THEME WITH RED BORDER - COMPACT SIZE */}
+{/* WELCOME BONUS CARD - PREMIUM ROYAL PURPLE THEME WITH RED BORDER - HEIGHT REDUCED */}
 <section ref={welcomeRef}>
   <div className="plan-card welcome-bonus" style={{
     background: 'linear-gradient(145deg, #5f0f40, #831843, #9d174d)',
-    border: '3px solid #ff3333', // Reduced from 4px
+    border: '3px solid #ff3333',
     boxShadow: '0 10px 20px -8px rgba(95, 15, 64, 0.4), 0 4px 8px -4px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 215, 0, 0.2) inset',
-    borderRadius: '18px', // Reduced from 24px
-    padding: '12px', // Reduced from 20px
+    borderRadius: '18px',
+    padding: '10px 12px', // Reduced vertical padding, kept horizontal
     color: 'white',
     position: 'relative',
     overflow: 'hidden',
     transition: 'all 0.3s ease'
   }}>
-    {/* Diamond pattern overlay - reduced opacity */}
+    {/* Diamond pattern overlay */}
     <div style={{
       position: 'absolute',
       top: 0,
@@ -907,13 +906,13 @@ return (
       right: 0,
       bottom: 0,
       backgroundImage: 'linear-gradient(45deg, rgba(255, 255, 255, 0.03) 25%, transparent 25%), linear-gradient(-45deg, rgba(255, 255, 255, 0.03) 25%, transparent 25%)',
-      backgroundSize: '20px 20px', // Reduced from 30px
+      backgroundSize: '20px 20px',
       opacity: 0.2,
       pointerEvents: 'none',
       zIndex: 1
     }} />
     
-    {/* Shine effect - reduced opacity */}
+    {/* Shine effect */}
     <div style={{
       position: 'absolute',
       top: '-50%',
@@ -926,37 +925,37 @@ return (
       zIndex: 1
     }} />
     
-    {/* HEADER - COMPACT */}
+    {/* HEADER - TIGHTER */}
     <div className="plan-card-header" style={{ 
       position: 'relative', 
       zIndex: 2,
-      marginBottom: '8px' // Added to control spacing
+      marginBottom: '4px' // Reduced from 8px
     }}>
       <div className="plan-badge" style={{ 
         display: 'flex', 
         alignItems: 'center', 
-        gap: '8px' // Reduced from 12px
+        gap: '6px' // Reduced from 8px
       }}>
         <span className="plan-icon" style={{ 
-          fontSize: '24px', // Reduced from 36px
+          fontSize: '22px', // Reduced from 24px
           color: '#ffd700',
           background: 'rgba(255, 255, 255, 0.15)',
-          width: '44px', // Reduced from 64px
-          height: '44px', // Reduced from 64px
+          width: '38px', // Reduced from 44px
+          height: '38px', // Reduced from 44px
           borderRadius: '50%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 3px 12px rgba(255, 215, 0, 0.25)', // Reduced
-          border: '1.5px solid rgba(255, 215, 0, 0.5)', // Reduced from 2px
+          boxShadow: '0 3px 10px rgba(255, 215, 0, 0.2)',
+          border: '1.5px solid rgba(255, 215, 0, 0.5)',
           textShadow: '0 0 8px rgba(255, 215, 0, 0.4)'
         }}>
           🎁
         </span>
         <span className="plan-name" style={{ 
           color: '#ffffff !important',
-          fontSize: '18px', // Reduced from 24px
-          fontWeight: '800', // Reduced from 900
+          fontSize: '16px', // Reduced from 18px
+          fontWeight: '800',
           textShadow: '0 2px 5px rgba(0, 0, 0, 0.5)',
           letterSpacing: '-0.3px'
         }}>
@@ -966,49 +965,48 @@ return (
       <span className="plan-status" style={{ 
         background: '#c2410c !important',
         color: '#ffffff !important',
-        border: '1.5px solid #ffd700 !important', // Reduced from 2px
-        padding: '5px 12px', // Reduced from 8px 16px
-        borderRadius: '30px', // Reduced from 40px
-        fontSize: '10px', // Reduced from 12px
-        fontWeight: '800', // Reduced from 900
+        border: '1.5px solid #ffd700 !important',
+        padding: '4px 10px', // Reduced from 5px 12px
+        borderRadius: '30px',
+        fontSize: '9px', // Reduced from 10px
+        fontWeight: '800',
         textTransform: 'uppercase',
-        letterSpacing: '0.8px', // Reduced from 1px
-        boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)',
+        letterSpacing: '0.6px', // Reduced from 0.8px
+        boxShadow: '0 0 8px rgba(255, 255, 255, 0.2)',
         textShadow: '0 1px 2px #000000'
       }}>
         🔓 ACTIVATE
       </span>
     </div>
     
-    {/* BODY - COMPACT */}
+    {/* BODY - MUCH TIGHTER */}
     <div className="plan-card-body" style={{ position: 'relative', zIndex: 2 }}>
-      {/* BONUS AMOUNT - COMPACT */}
+      {/* BONUS AMOUNT - COMPACT VERTICAL */}
       <div style={{
-        textAlign: 'center',
-        margin: '8px 0', // Reduced from 20px
-        padding: '10px', // Reduced from 20px
+        display: 'flex', // Changed to flex for horizontal layout
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        margin: '4px 0', // Reduced from 8px 0
+        padding: '6px 10px', // Reduced from 10px
         background: 'rgba(0, 0, 0, 0.25)',
-        borderRadius: '12px', // Reduced from 16px
+        borderRadius: '30px', // More pill-shaped
         border: '1px solid rgba(255, 215, 0, 0.3)',
-        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.15)'
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
       }}>
         <span style={{
-          fontSize: '11px', // Reduced from 14px
+          fontSize: '10px', // Reduced from 11px
           fontWeight: '700',
           color: '#ffd700',
-          display: 'block',
-          marginBottom: '4px', // Reduced from 8px
-          letterSpacing: '1.5px', // Reduced from 2px
+          letterSpacing: '1px',
           textTransform: 'uppercase',
           textShadow: '0 0 8px rgba(255, 215, 0, 0.4)'
         }}>
-          BONUS
+          🎁 BONUS
         </span>
         <span style={{
-          fontSize: '32px', // Reduced from 48px
+          fontSize: '26px', // Reduced from 32px
           fontWeight: '900',
           color: 'white',
-          display: 'block',
           lineHeight: '1',
           textShadow: '0 0 15px #ffd700, 0 2px 6px rgba(0, 0, 0, 0.4)'
         }}>
@@ -1016,26 +1014,26 @@ return (
         </span>
       </div>
       
-      {/* DESCRIPTION - COMPACT */}
+      {/* DESCRIPTION - MUCH SHORTER */}
       <p style={{
-        fontSize: '13px', // Reduced from 16px
-        lineHeight: '1.4', // Reduced from 1.6
+        fontSize: '12px', // Reduced from 13px
+        lineHeight: '1.3', // Tighter line height
         color: 'rgba(255, 255, 255, 0.95)',
         textAlign: 'center',
-        margin: '0 0 12px', // Reduced from 20px
+        margin: '0 0 8px', // Reduced from 12px
         fontWeight: '600',
         textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)',
         background: 'rgba(0, 0, 0, 0.2)',
-        padding: '8px 12px', // Reduced from 12px 16px
+        padding: '6px 10px', // Reduced from 8px 12px
         borderRadius: '30px',
         border: '1px solid rgba(255, 215, 0, 0.15)'
       }}>
-        Congrats! You've received <strong style={{
+        <strong style={{
           color: '#ffd700',
-          fontSize: '16px', // Reduced from 20px
+          fontSize: '14px', // Reduced from 16px
           fontWeight: '900',
           textShadow: '0 0 8px #ffd700, 0 1px 2px #000000'
-        }}>KES 1,200</strong> bonus. Activate to withdraw!
+        }}>KES 1,200</strong> bonus! Activate to withdraw
       </p>
     </div>
     
@@ -1046,18 +1044,18 @@ return (
         onClick={handleWelcomeBonusWithdraw}
         style={{
           background: 'linear-gradient(145deg, #2563eb, #1e40af)',
-          border: '1.5px solid #ffd700', // Reduced from 2px
-          borderRadius: '30px', // Reduced from 40px
-          padding: '10px 16px', // Reduced from 16px 24px
-          fontWeight: '800', // Reduced from 900
-          fontSize: '13px', // Reduced from 16px
+          border: '1.5px solid #ffd700',
+          borderRadius: '30px',
+          padding: '8px 16px', // Reduced vertical padding from 10px 16px
+          fontWeight: '800',
+          fontSize: '12px', // Reduced from 13px
           color: 'white',
           textTransform: 'uppercase',
-          letterSpacing: '0.8px', // Reduced from 1px
+          letterSpacing: '0.6px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '8px', // Reduced from 12px
+          gap: '6px', // Reduced from 8px
           width: '100%',
           cursor: 'pointer',
           boxShadow: '0 6px 15px rgba(0, 0, 0, 0.3), 0 0 12px rgba(255, 215, 0, 0.2)',
@@ -1076,9 +1074,9 @@ return (
           e.currentTarget.style.borderColor = '#ffd700';
         }}
       >
-        <span className="btn-icon" style={{ fontSize: '16px' }}>🔓</span>
+        <span className="btn-icon" style={{ fontSize: '14px' }}>🔓</span>
         CLAIM NOW
-        <span style={{ fontSize: '14px', marginLeft: '2px' }}>✨</span>
+        <span style={{ fontSize: '12px', marginLeft: '2px' }}>✨</span>
       </button>
     </div>
   </div>
