@@ -2467,13 +2467,12 @@ input:focus-visible {
 }
 
 .plan-card {
-  background: #ffffff;
   border: none;
   border-radius: var(--radius-xl);
   padding: 12px;
   display: flex;
   flex-direction: column;
-  transition: none;
+  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
 }
@@ -2493,9 +2492,8 @@ input:focus-visible {
 }
 
 .plan-card:hover {
-  transform: none;
-  box-shadow: none;
-  border-color: var(--border-medium);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
 }
 
 .plan-card-header {
@@ -2519,23 +2517,17 @@ input:focus-visible {
 }
 
 .plan-name {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 900;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  color: white;
 }
 
-.plan-card.regular .plan-name {
-  color: var(--regular-color);
-}
-
-.plan-card.vip .plan-name {
-  color: var(--vip-color);
-}
-
+.plan-card.regular .plan-name,
+.plan-card.vip .plan-name,
 .plan-card.vvip .plan-name {
-  color: var(--vvip-color);
+  color: white;
 }
-
 .plan-status {
   padding: 6px 14px;
   border-radius: 20px;
@@ -2572,9 +2564,11 @@ input:focus-visible {
 }
 
 .plan-description {
-  color: var(--text-muted);
-  font-size: 13px;
-  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: 600;
+  text-align: center;
 }
 
 .activation-notice-text {
@@ -2607,12 +2601,16 @@ input:focus-visible {
 }
 
 .stat-label {
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.8px;
 }
 
 .stat-value {
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 800;
+  color: white;
 }
 
 .stat-value.earned {
@@ -2648,12 +2646,13 @@ input:focus-visible {
 }
 
 .feature-tag {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   padding: 4px 10px;
   border-radius: 12px;
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .plan-card-footer {

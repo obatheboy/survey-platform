@@ -1189,8 +1189,8 @@ return (
               
               return (
                 <div key={key} className={`plan-card ${key.toLowerCase()}`} style={{
-                  background: `linear-gradient(135deg, ${plan.bgColor}, rgba(255, 255, 255, 0.05)), var(--bg-surface)`,
-                  boxShadow: `0 10px 30px ${plan.color}20`
+                  background: plan.gradient,
+                  boxShadow: `0 10px 30px ${plan.color}40`
                 }}>
                   <div className="plan-card-header">
                     <div className="plan-badge">
