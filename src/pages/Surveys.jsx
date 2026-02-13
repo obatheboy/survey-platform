@@ -26,36 +26,10 @@ export default function Surveys() {
       return;
     }
 
-    // Check if survey is already completed - use localStorage FIRST for speed
-    const checkSurveyStatus = async () => {
-      try {
-        // Check localStorage first (INSTANT)
-        const localUserData = localStorage.getItem("userData");
-        if (localUserData) {
-          const parsed = JSON.parse(localUserData);
-          const userPlan = parsed.plans?.[plan];
-          
-          if (userPlan && userPlan.surveys_completed >= 10) {
-            navigate("/activation-notice", {
-              state: {
-                planType: plan,
-                amount: PLANS_CONFIG[plan]?.total || 0
-              }
-            });
-            return;
-          }
-        }
-
-        // If not in localStorage or incomplete, fetch from API
-        const res = await api.get("/auth/me");
+    // Check if survey is already completed to prevent re-doing
+    api.get("/auth/me")
+      .then((res) => {
         const userPlan = res.data.plans?.[plan];
-        
-        // Update localStorage cache
-        const userData = JSON.parse(localStorage.getItem("userData") || "{}");
-        userData.plans = res.data.plans;
-        userData.total_earned = res.data.total_earned;
-        localStorage.setItem("userData", JSON.stringify(userData));
-
         if (userPlan && userPlan.surveys_completed >= 10) {
           navigate("/activation-notice", {
             state: {
@@ -66,13 +40,8 @@ export default function Surveys() {
         } else {
           setActivePlan(plan);
         }
-      } catch {
-        // If API fails, allow survey anyway
-        setActivePlan(plan);
-      }
-    };
-
-    checkSurveyStatus();
+      })
+      .catch(() => navigate("/dashboard"));
   }, [navigate]);
 
   const questions = useMemo(() => {
@@ -95,22 +64,16 @@ export default function Surveys() {
     }
   };
 
-  // =========================================================
-  // 🚀 FIXED: BATCH SUBMIT - 11x FASTER! (NO ESLINT WARNINGS)
-  // =========================================================
   const handleComplete = async () => {
     setIsCompleting(true);
-    setSubmitProgress(10);
 
     try {
-      // 1. Get current count from localStorage FIRST (INSTANT - no API call!)
-      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
-      let currentCount = userData.plans?.[activePlan]?.surveys_completed || 0;
+      // 1. First get current count from backend
+      const userRes = await api.get(`/auth/me?_t=${Date.now()}`);
+      const currentCount = userRes.data.plans?.[activePlan]?.surveys_completed || 0;
       
-      setSubmitProgress(30);
-      
-      // 2. Calculate how many surveys we need
-      const surveysNeeded = Math.max(0, 10 - currentCount);
+      // 2. Calculate how many surveys we actually need to complete
+      const surveysNeeded = 10 - currentCount;
       
       if (surveysNeeded <= 0) {
         // Already completed, just navigate
@@ -123,105 +86,56 @@ export default function Surveys() {
         return;
       }
 
-      setSubmitProgress(50);
-
-      // =========================================================
-      // 🚀 KEY FIX: USE BATCH SUBMIT - 1 CALL INSTEAD OF 10!
-      // =========================================================
-      const response = await api.post("/surveys/batch-submit", { 
-        plan: activePlan,
-        count: surveysNeeded // Send how many surveys to add
-      });
-      
-      setSubmitProgress(80);
-      
-      // ✅ FIXED: Use the response data to confirm success
-      const { data } = response;
-      
-      // Log success for debugging (but don't block navigation)
-      if (data.success) {
-        console.log(`✅ Successfully submitted ${data.added || surveysNeeded} surveys`);
-        console.log(`📊 Total completed: ${data.surveys_completed || currentCount + surveysNeeded}`);
-        
-        // If backend returns activation_ready flag, use it
-        if (data.activation_ready) {
-          console.log("🎉 Plan completed and ready for activation!");
+      // 3. Send requests for the needed surveys only
+      for (let i = 0; i < surveysNeeded; i++) {
+        try {
+          await api.post("/surveys/submit", { plan: activePlan }); // FIXED: Changed to /submit
+          // Update progress UI
+          setSubmitProgress(Math.round(((i + 1) / surveysNeeded) * 100));
+        } catch (err) {
+          console.error(`Survey submission ${i} failed`, err);
         }
       }
+
+      // 4. Verify completion (optional but good for reliability)
+      const verifyRes = await api.get(`/auth/me?_t=${Date.now()}`);
+      const verifiedCount = verifyRes.data.plans?.[activePlan]?.surveys_completed || 0;
       
-      // 3. Calculate new values
-      const newCount = currentCount + surveysNeeded;
-      const reward = PLANS_CONFIG[activePlan]?.total || 0;
-      const currentBalance = Number(userData.total_earned || 0);
-      
-      // 4. Update localStorage IMMEDIATELY (OPTIMISTIC UPDATE)
+      // Update localStorage immediately for instant UI update
+      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
       const updatedData = {
         ...userData,
-        total_earned: currentBalance + reward,
         plans: {
           ...userData.plans,
           [activePlan]: {
-            surveys_completed: newCount,
-            completed: newCount >= 10,
+            surveys_completed: verifiedCount >= 10 ? 10 : verifiedCount,
             is_activated: userData.plans?.[activePlan]?.is_activated || false
           }
         }
       };
-      
       localStorage.setItem("userData", JSON.stringify(updatedData));
-      localStorage.setItem("cachedBalance", (currentBalance + reward).toString());
-      
-      setSubmitProgress(100);
-      
-      // 5. Navigate IMMEDIATELY - No verification call needed!
+
+      // Update balance in localStorage
+      if (verifiedCount >= 10) {
+        const currentBalance = Number(userData.total_earned || 0);
+        const surveyReward = PLANS_CONFIG[activePlan]?.total || 0;
+        localStorage.setItem("cachedBalance", (currentBalance + surveyReward).toString());
+      }
+
+      // 5. Navigate to activation notice
       navigate("/activation-notice", {
         state: {
           planType: activePlan,
-          amount: reward,
-          instant: true,
-          surveysAdded: data.added || surveysNeeded,
-          totalCompleted: data.surveys_completed || newCount
+          amount: PLANS_CONFIG[activePlan]?.total || 0
         }
       });
-      
     } catch (error) {
-      console.error("❌ Batch submission failed:", error);
-      
-      // =========================================================
-      // 🔥 FIXED: FALLBACK - OPTIMISTIC UPDATE
-      // User gets reward even if API fails!
-      // =========================================================
-      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
-      const currentCount = userData.plans?.[activePlan]?.surveys_completed || 0;
-      const surveysNeeded = Math.max(0, 10 - currentCount);
-      const newCount = currentCount + surveysNeeded;
-      const reward = PLANS_CONFIG[activePlan]?.total || 0;
-      const currentBalance = Number(userData.total_earned || 0);
-      
-      // Update localStorage optimistically
-      const updatedData = {
-        ...userData,
-        total_earned: currentBalance + reward,
-        plans: {
-          ...userData.plans,
-          [activePlan]: {
-            surveys_completed: newCount,
-            completed: true,
-            is_activated: userData.plans?.[activePlan]?.is_activated || false
-          }
-        }
-      };
-      
-      localStorage.setItem("userData", JSON.stringify(updatedData));
-      localStorage.setItem("cachedBalance", (currentBalance + reward).toString());
-      
-      // Navigate anyway - user gets their reward!
+      console.error("Failed to complete survey:", error);
+      // Proceed to activation notice even if submission fails (fallback flow)
       navigate("/activation-notice", {
         state: {
           planType: activePlan,
-          amount: reward,
-          offline: true,
-          error: error.message
+          amount: PLANS_CONFIG[activePlan]?.total || 0
         }
       });
     }
@@ -261,11 +175,7 @@ export default function Surveys() {
         {isCompleting ? (
           <div className="loading-container">
             <div className="loading-spinner"></div>
-            <p className="loading-text">
-              {submitProgress < 80 
-                ? `Completing your survey... ${submitProgress}%` 
-                : "Survey complete! Redirecting..."}
-            </p>
+            <p className="loading-text">Submitting your answers... {submitProgress}%</p>
           </div>
         ) : (
           <>
