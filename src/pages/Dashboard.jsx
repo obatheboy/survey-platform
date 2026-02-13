@@ -21,8 +21,9 @@ const PLANS = {
     borderColor: "rgba(56, 189, 248, 0.2)",
     bgColor: "rgba(56, 189, 248, 0.05)",
     description: "Perfect for beginners",
-    // 🔥 Bright orange for total earnings
-    totalColor: "#FF8C00"  // Dark Orange
+    // 🔥 BRIGHT ORANGE with !important
+    totalColor: "#FF4500 !important",  // Bright Orange Red
+    totalGlow: "0 0 20px #FF4500, 0 0 40px #FF8C00"  // Double glow
   },
   VIP: { 
     name: "VIP", 
@@ -34,8 +35,9 @@ const PLANS = {
     borderColor: "rgba(129, 140, 248, 0.2)",
     bgColor: "rgba(129, 140, 248, 0.05)",
     description: "For active earners",
-    // 🔥 Bright orange-yellow for total earnings
-    totalColor: "#FFA500"  // Orange
+    // 🔥 BRIGHT ORANGE-YELLOW with !important
+    totalColor: "#FFA500 !important",  // Bright Orange
+    totalGlow: "0 0 20px #FFA500, 0 0 40px #FFD700"  // Double glow
   },
   VVIP: { 
     name: "VVIP", 
@@ -47,11 +49,11 @@ const PLANS = {
     borderColor: "rgba(251, 191, 36, 0.2)",
     bgColor: "rgba(251, 191, 36, 0.05)",
     description: "Maximum earnings",
-    // 🔥 Bright yellow for total earnings
-    totalColor: "#FFD700"  // Gold
+    // 🔥 BRIGHT GOLD with !important
+    totalColor: "#FFD700 !important",  // Bright Gold
+    totalGlow: "0 0 20px #FFD700, 0 0 40px #FFA500"  // Double glow
   },
- };
-
+};
 const TOTAL_SURVEYS = 10;
 const APP_VERSION = "1.2.5"; // Bump this version to force clients to refresh on deploy
 
@@ -1185,7 +1187,18 @@ return (
                         </div>
                         <div className="progress-row">
                           <span>Earned:</span>
-                          <strong className="earned-amount">KES {earnedSoFar(key).toLocaleString()}</strong>
+                         
+
+<strong className="earned-amount" style={{ 
+  color: PLANS[key].totalColor,
+  fontWeight: '900',
+  textShadow: `0 0 10px ${PLANS[key].totalColor}`,
+  fontSize: '16px'
+}}>
+  KES {earnedSoFar(key).toLocaleString()}
+</strong>
+
+
                         </div>
                       </div>
                       <div className="progress-bar">
@@ -1373,7 +1386,17 @@ return (
                       </div>
                       <div className="stat-row">
                         <span className="stat-label">Total Plan</span>
-                        <span className="stat-value">KES {plan.total}</span>
+                        
+<span className="stat-value" style={{ 
+  color: PLANS[key].totalColor,
+  fontWeight: '900',
+  textShadow: `0 0 10px ${PLANS[key].totalColor}`,
+  fontSize: '18px'
+}}>
+  KES {plan.total}
+</span>
+
+
                       </div>
                       <div className="stat-row">
                         <span className="stat-label">Progress</span>
