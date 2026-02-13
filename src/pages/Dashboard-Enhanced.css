@@ -1638,15 +1638,14 @@ body {
 
 /* ----- EARNED AMOUNT - HIGHLIGHTED ----- */
 .earned-amount {
-  color: white !important;
-  font-weight: 800 !important;
+  font-weight: 900 !important;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
   background: rgba(0, 0, 0, 0.3) !important;
   padding: 4px 16px !important;
   border-radius: 100px !important;
   border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  /* REMOVED color: white !important - so your orange can show */
 }
-
 /* ----- PROGRESS BAR ----- */
 .progress-bar {
   height: 10px !important;
@@ -2876,14 +2875,14 @@ input:focus-visible {
 }
 
 .stat-value {
-  font-weight: 800 !important;
-  color: white !important;
-  font-size: 16px !important;
+  font-weight: 900 !important;
+  font-size: 18px !important;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
   background: rgba(0, 0, 0, 0.25) !important;
   padding: 5px 16px !important;
   border-radius: 100px !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  /* REMOVED color: white !important - so your orange can show */
 }
 
 .stat-value.earned {
