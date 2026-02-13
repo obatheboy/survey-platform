@@ -2,9 +2,11 @@
 
 /* =========================================================
    DASHBOARD.CSS - OPTIMIZED FOR MOBILE
-   UPDATED: Plan progress caption colors bright & visible
-   UPDATED: Welcome bonus card - red border + beautiful background
-   FIXED: Plan info heading color selectors with proper styles
+   UPDATED: Welcome Bonus Card - Premium Royal Purple with Red Border
+   UPDATED: Survey Plan Cards - Distinct Beautiful Colors
+   UPDATED: Plan Progress Captions - Bright, Bold, 100% Visible
+   FIXED: Plan info heading color selectors with proper styles - FORCED WITH !important
+   ALL CHANGES FORCED WITH !important - ORIGINAL CODE PRESERVED
 ========================================================= */
 
 /* FIX 1: Prevent white flash on scroll (low RAM phones) */
@@ -48,6 +50,7 @@ html, body {
 
 /* =========================================================
    CSS VARIABLES - FOUNDATION
+   UPDATED: Added premium colors for welcome bonus and survey plans
 ========================================================= */
 :root {
   /* Light Theme (Default) */
@@ -77,13 +80,31 @@ html, body {
   --primary-dark: #1e40af;
   --primary-light: #60a5fa;
   
-  --regular-gradient: linear-gradient(135deg, #10b981, #059669);
-  --vip-gradient: linear-gradient(135deg, #6366f1, #4f46e5);
-  --vvip-gradient: linear-gradient(135deg, #f59e0b, #d97706);
+  /* SURVEY PLAN CARD GRADIENTS - BEAUTIFUL & DISTINCT */
+  --regular-gradient: linear-gradient(135deg, #0f766e, #065f46, #064e3b);
+  --vip-gradient: linear-gradient(135deg, #5b21b6, #6d28d9, #7e22ce);
+  --vvip-gradient: linear-gradient(135deg, #b45309, #c2410c, #9a3412);
   
+  /* SURVEY PLAN COLORS - BOLD & VIBRANT */
   --regular-color: #059669;
   --vip-color: #4f46e5;
   --vvip-color: #d97706;
+  
+  /* WELCOME BONUS CARD - PREMIUM ROYAL THEME */
+  --welcome-gradient: linear-gradient(145deg, #5f0f40, #831843, #9d174d);
+  --welcome-accent: #fb7185;
+  --welcome-glow: #fda4af;
+  
+  /* BRIGHT CAPTION COLORS - MAXIMUM VISIBILITY */
+  --caption-white: #ffffff;
+  --caption-gold: #ffd700;
+  --caption-cyan: #00ffff;
+  --caption-lime: #ccff00;
+  --caption-pink: #ff69b4;
+  --caption-orange: #ffb347;
+  --caption-yellow: #ffee00;
+  --caption-blue: #00e5ff;
+  --caption-green: #a3ff47;
 }
 
 :root[data-theme="dark"] {
@@ -413,19 +434,19 @@ body {
 }
 
 /* =========================================================
-   3. ELITE WELCOME BONUS CARD - MODERN LIGHT THEME
-   UPDATED: Red border + beautiful blue-purple background
+   3. ELITE WELCOME BONUS CARD - PREMIUM ROYAL PURPLE THEME
+   UPDATED: Red border + beautiful royal purple background - FORCED WITH !important
 ========================================================= */
 .professional-bonus-card {
-  background: linear-gradient(145deg, #667eea, #764ba2, #6b8cff) !important;
+  background: var(--welcome-gradient) !important; /* Premium Royal Purple */
   border: 4px solid #ff3333 !important;
   border-radius: var(--radius-xl);
   padding: 20px;
   margin-bottom: var(--space-md);
   box-shadow: 
-    0 20px 25px -5px rgba(0, 0, 0, 0.15),
-    0 8px 10px -6px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(255, 200, 200, 0.3) inset;
+    0 20px 25px -5px rgba(95, 15, 64, 0.3),
+    0 8px 10px -6px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 215, 0, 0.3) inset !important;
   color: white;
   position: relative;
   overflow: hidden;
@@ -467,7 +488,7 @@ body {
 @media (hover: hover) and (pointer: fine) {
   .professional-bonus-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 25px 30px -10px rgba(255, 51, 51, 0.5);
+    box-shadow: 0 25px 30px -10px rgba(157, 23, 77, 0.6) !important;
     border-color: #ff6666 !important;
   }
 }
@@ -483,7 +504,7 @@ body {
 
 .bonus-icon {
   font-size: 32px;
-  color: white;
+  color: #ffd700 !important;
   background: rgba(255, 255, 255, 0.25);
   width: 56px;
   height: 56px;
@@ -491,8 +512,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3) !important;
+  border: 2px solid rgba(255, 215, 0, 0.5);
 }
 
 .bonus-header-text h3 {
@@ -501,7 +522,7 @@ body {
   color: white;
   margin: 0 0 4px;
   line-height: 1.2;
-  text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
 }
 
 .bonus-subtitle {
@@ -509,29 +530,30 @@ body {
   color: rgba(255, 255, 255, 0.95);
   margin: 0;
   font-weight: 600;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
 }
 
 .bonus-amount-display {
   text-align: center;
   margin: var(--space-xl) 0;
   padding: var(--space-xl);
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.25) !important;
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 215, 0, 0.4) !important;
   position: relative;
   z-index: 3;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
 }
 
 .bonus-amount-display .currency {
   font-size: 14px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
+  color: #ffd700 !important;
   display: block;
   margin-bottom: 8px;
   letter-spacing: 1px;
   text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5) !important;
 }
 
 .bonus-amount-display .amount {
@@ -540,7 +562,7 @@ body {
   color: white;
   display: block;
   line-height: 1;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  text-shadow: 0 0 20px #ffd700, 0 2px 8px rgba(0,0,0,0.4) !important;
 }
 
 .bonus-description p {
@@ -554,9 +576,9 @@ body {
 }
 
 .bonus-description strong {
-  color: white;
-  font-weight: 700;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  color: #ffd700 !important;
+  font-weight: 900 !important;
+  text-shadow: 0 0 10px #ffd700, 0 1px 4px rgba(0,0,0,0.4) !important;
 }
 
 .roi-summary {
@@ -564,11 +586,11 @@ body {
   align-items: center;
   justify-content: center;
   gap: var(--space-lg);
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.25) !important;
   padding: var(--space-lg);
   border-radius: var(--radius-lg);
   margin-bottom: var(--space-xl);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 215, 0, 0.3) !important;
   position: relative;
   z-index: 3;
   backdrop-filter: blur(4px);
@@ -577,23 +599,25 @@ body {
 .roi-item .label {
   display: block;
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.9) !important;
   margin-bottom: 4px;
-  font-weight: 700;
+  font-weight: 800 !important;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px #000000 !important;
 }
 
 .roi-item .value {
   display: block;
   font-size: 20px;
-  font-weight: 800;
-  color: white;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  font-weight: 900 !important;
+  color: #ffd700 !important;
+  text-shadow: 0 0 15px #ffa500, 0 1px 3px rgba(0,0,0,0.3) !important;
 }
 
 .roi-item.highlight .value {
-  color: #a7f3d0;
+  color: #ffffff !important;
+  text-shadow: 0 0 15px #ffd700 !important;
 }
 
 .roi-separator {
@@ -1080,7 +1104,7 @@ body {
 
 /* =========================================================
    6. PLAN PROGRESS (SIMPLIFIED)
-   UPDATED: Caption colors changed to bright, easily visible
+   UPDATED: Caption colors changed to BRIGHT, HIGHLY VISIBLE - FORCED WITH !important
 ========================================================= */
 .progress-cards {
   display: grid;
@@ -1123,62 +1147,105 @@ body {
   min-width: 100px;
 }
 
-/* BRIGHT, EASILY VISIBLE CAPTION COLORS FOR PLAN PROGRESS */
+/* BRIGHT, EASILY VISIBLE CAPTION COLORS FOR PLAN PROGRESS - FORCED WITH !important */
 .status-badge {
   padding: 6px 12px;
   border-radius: 30px;
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 900 !important;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   white-space: nowrap;
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid #ffffff !important;
   color: #ffffff !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
 }
 
 .status-badge.completed {
-  background: linear-gradient(145deg, #00c851, #007e33);
+  background: #00c851 !important;
   color: #ffffff !important;
-  border-color: #ffff00;
-  text-shadow: 0 1px 4px #000000;
+  border-color: #ffff00 !important;
+  text-shadow: 0 1px 4px #000000 !important;
 }
 
 .status-badge.in-progress {
-  background: linear-gradient(145deg, #ffbb33, #ff8800);
+  background: #ff8800 !important;
   color: #ffffff !important;
-  border-color: #fff700;
-  text-shadow: 0 1px 4px #000000;
+  border-color: #ffff00 !important;
+  text-shadow: 0 1px 4px #000000 !important;
 }
 
 .status-badge.not-started {
-  background: linear-gradient(145deg, #ff4444, #cc0000);
+  background: #cc0000 !important;
   color: #ffffff !important;
-  border-color: #ffdd00;
-  text-shadow: 0 1px 4px #000000;
+  border-color: #ffff00 !important;
+  text-shadow: 0 1px 4px #000000 !important;
 }
 
-.progress-info .progress-row span:not(.earned-amount) {
-  color: var(--text-main);
-  font-weight: 600;
+.progress-info .progress-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  margin-bottom: 8px;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.35) !important;
+  border-radius: 8px;
+  border-left: 4px solid #ffd700 !important;
+}
+
+.progress-info .progress-row span:first-child {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  text-transform: uppercase;
+  font-size: 12px;
+  text-shadow: 0 1px 2px #000000 !important;
 }
 
 .progress-info .progress-row strong {
-  color: var(--text-main);
-  font-weight: 900;
+  color: #ffd700 !important;
+  font-weight: 900 !important;
+  text-shadow: 0 0 8px #ffa500, 0 1px 3px #000000 !important;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 8px;
+  border-radius: 16px;
 }
 
 .earned-amount {
-  color: #d97706 !important;
-  font-weight: 900;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+  color: #ffd700 !important;
+  font-weight: 900 !important;
+  text-shadow: 0 0 10px #ffa500, 0 1px 3px #000000 !important;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 3px 10px;
+  border-radius: 20px;
 }
 
 .progress-text {
-  color: var(--text-main);
-  font-weight: 800;
+  color: #00ffff !important;
+  font-weight: 900 !important;
+  text-shadow: 0 0 8px #00ffff, 0 1px 3px #000000 !important;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 2px 8px;
+  border-radius: 16px;
+}
+
+/* Per Survey and Total Plan specific styling */
+.progress-card .progress-row:first-child strong {
+  color: #00ffff !important;
+  text-shadow: 0 0 10px #00ffff, 0 1px 3px #000000 !important;
+}
+
+/* Progress text */
+.progress-card .progress-row:nth-child(3) strong {
+  color: #ff69b4 !important;
+  text-shadow: 0 0 10px #ff69b4, 0 1px 3px #000000 !important;
+}
+
+/* Earned So Far */
+.progress-card .progress-row:last-child strong {
+  color: #ffd700 !important;
+  text-shadow: 0 0 15px #ff8c00, 0 1px 3px #000000 !important;
 }
 
 /* =========================================================
@@ -2066,12 +2133,15 @@ input:focus-visible {
 }
 
 .progress-row strong {
-  color: var(--text-main);
-  font-weight: 700;
+  color: #ffd700 !important;
+  font-weight: 900 !important;
+  text-shadow: 0 0 8px #ffa500, 0 1px 3px #000000 !important;
 }
 
 .earned-amount {
-  color: var(--primary) !important;
+  color: #ffd700 !important;
+  font-weight: 900 !important;
+  text-shadow: 0 0 10px #ffa500, 0 1px 3px #000000 !important;
 }
 
 .activation-notice {
@@ -2094,6 +2164,8 @@ input:focus-visible {
 .progress-bar-fill {
   height: 100%;
   border-radius: 4px;
+  background: linear-gradient(90deg, #ffd700, #ffb347) !important;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.8) !important;
   transition: width 0.5s ease;
 }
 
@@ -2161,6 +2233,7 @@ input:focus-visible {
 
 /* =========================================================
    PLAN CARDS (SURVEYS TAB) - REDUCED ANIMATIONS
+   UPDATED: Beautiful distinct colors for Regular, VIP, VVIP - FORCED WITH !important
 ========================================================= */
 .plan-cards-container {
   display: grid;
@@ -2194,27 +2267,39 @@ input:focus-visible {
   transition: opacity 0.2s ease;
 }
 
+/* REGULAR PLAN - EMERALD GREEN THEME */
 .plan-card.regular::before {
-  background: var(--regular-gradient);
+  background: var(--regular-gradient) !important;
   opacity: 1;
 }
-.plan-card.regular { background: linear-gradient(135deg, #f0fdf4, #dcfce7); }
+.plan-card.regular { 
+  background: linear-gradient(135deg, #0f766e, #065f46, #064e3b) !important; 
+  border: 2px solid #34d399 !important;
+}
 
+/* VIP PLAN - ROYAL PURPLE THEME */
 .plan-card.vip::before {
-  background: var(--vip-gradient);
+  background: var(--vip-gradient) !important;
   opacity: 1;
 }
-.plan-card.vip { background: linear-gradient(135deg, #eff6ff, #dbeafe); }
+.plan-card.vip { 
+  background: linear-gradient(135deg, #5b21b6, #6d28d9, #7e22ce) !important; 
+  border: 2px solid #c084fc !important;
+}
 
+/* VVIP PLAN - SUNSET ORANGE THEME */
 .plan-card.vvip::before {
-  background: var(--vvip-gradient);
+  background: var(--vvip-gradient) !important;
   opacity: 1;
 }
-.plan-card.vvip { background: linear-gradient(135deg, #fffbeb, #fef3c7); }
+.plan-card.vvip { 
+  background: linear-gradient(135deg, #b45309, #c2410c, #9a3412) !important; 
+  border: 2px solid #fdba74 !important;
+}
 
 .plan-card:hover {
   transform: translateY(-3px) scale(1.01);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4) !important;
   border-color: rgba(255, 255, 255, 0.3);
 }
 
@@ -2234,8 +2319,9 @@ input:focus-visible {
 }
 
 .plan-icon {
-  font-size: 28px;
+  font-size: 32px !important;
   animation: gentleFloat 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.5)) !important;
 }
 
 @keyframes gentleFloat {
@@ -2246,47 +2332,49 @@ input:focus-visible {
 .plan-name {
   font-size: 20px;
   font-weight: 900;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6) !important;
 }
 
 .plan-card.regular .plan-name {
-  color: var(--regular-color);
+  color: #ffffff !important;
 }
 
 .plan-card.vip .plan-name {
-  color: var(--vip-color);
+  color: #ffffff !important;
 }
 
 .plan-card.vvip .plan-name {
-  color: var(--vvip-color);
+  color: #ffffff !important;
 }
 
+/* PLAN STATUS BADGES - SUPER BRIGHT */
 .plan-status {
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  padding: 8px 16px !important;
+  border-radius: 40px !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
   white-space: nowrap;
+  border: 2px solid #ffffff !important;
+  color: #ffffff !important;
+  text-shadow: 0 1px 3px #000000 !important;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3) !important;
 }
 
 .plan-card.regular .plan-status {
-  background: rgba(74, 222, 128, 0.15);
-  color: #4ade80;
-  border: 1px solid rgba(74, 222, 128, 0.3);
+  background: #059669 !important;
+  border-color: #ffd700 !important;
 }
 
 .plan-card.vip .plan-status {
-  background: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: #6d28d9 !important;
+  border-color: #ffd700 !important;
 }
 
 .plan-card.vvip .plan-status {
-  background: rgba(245, 158, 11, 0.15);
-  color: #f59e0b;
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: #c2410c !important;
+  border-color: #ffd700 !important;
 }
 
 .plan-card-body {
@@ -2297,13 +2385,19 @@ input:focus-visible {
 }
 
 .plan-description {
-  color: var(--text-muted);
-  font-size: 13px;
-  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: 700 !important;
+  text-align: center;
+  text-shadow: 0 1px 3px #000000 !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+  padding: 8px 12px;
+  border-radius: 30px;
 }
 
 .activation-notice-text {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.1);
   padding: 8px 12px;
   border-radius: var(--radius-md);
   border-left: 3px solid currentColor;
@@ -2312,19 +2406,24 @@ input:focus-visible {
   animation: pulse 3s infinite;
 }
 
+/* PLAN STATS - ULTRA BRIGHT CAPTIONS */
 .plan-stats {
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.35) !important;
   border-radius: var(--radius-lg);
-  padding: var(--space-md);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(5px);
 }
 
 .stat-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-  font-size: 13px;
+  margin-bottom: 12px;
+  padding: 8px 16px !important;
+  background: rgba(0, 0, 0, 0.4) !important;
+  border-radius: 40px !important;
+  border-left: 5px solid #ffd700 !important;
 }
 
 .stat-row:last-child {
@@ -2332,17 +2431,43 @@ input:focus-visible {
 }
 
 .stat-label {
-  color: var(--text-muted);
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  font-size: 12px !important;
+  letter-spacing: 1px !important;
+  text-shadow: 0 1px 3px #000000 !important;
 }
 
 .stat-value {
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 900 !important;
+  color: #ffd700 !important;
+  font-size: 16px !important;
+  text-shadow: 0 0 12px #ffa500, 0 1px 3px #000000 !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  padding: 5px 16px !important;
+  border-radius: 40px !important;
 }
 
 .stat-value.earned {
-  color: var(--primary);
+  color: #ffd700 !important;
   font-size: 14px;
+}
+
+/* PER SURVEY - SPECIAL PLAN-SPECIFIC COLORS */
+.plan-card.regular .stat-row:first-child .stat-value {
+  color: #6ee7b7 !important;
+  text-shadow: 0 0 15px #10b981, 0 1px 3px #000000 !important;
+}
+
+.plan-card.vip .stat-row:first-child .stat-value {
+  color: #d8b4fe !important;
+  text-shadow: 0 0 15px #8b5cf6, 0 1px 3px #000000 !important;
+}
+
+.plan-card.vvip .stat-row:first-child .stat-value {
+  color: #fed7aa !important;
+  text-shadow: 0 0 15px #f59e0b, 0 1px 3px #000000 !important;
 }
 
 .progress-container {
@@ -2354,17 +2479,25 @@ input:focus-visible {
 
 .progress-container .progress-bar {
   flex: 1;
-  height: 6px;
+  height: 10px !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
 }
 
 .progress-text {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-muted);
-  min-width: 45px;
-  text-align: right;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  color: #ffffff !important;
+  text-shadow: 0 0 12px #00ffff, 0 1px 3px #000000 !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  padding: 5px 14px !important;
+  border-radius: 40px !important;
+  min-width: 60px;
+  text-align: center;
 }
 
+/* FEATURE TAGS - BRIGHT & BOLD */
 .plan-features {
   display: flex;
   flex-wrap: wrap;
@@ -2373,12 +2506,16 @@ input:focus-visible {
 }
 
 .feature-tag {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 11px;
-  color: var(--text-muted);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #000000 !important;
+  padding: 6px 16px !important;
+  border-radius: 40px !important;
+  font-size: 11px !important;
+  color: #ffffff !important;
+  font-weight: 900 !important;
+  border: 2px solid #ffd700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5) !important;
 }
 
 .plan-card-footer {
@@ -2393,12 +2530,12 @@ input:focus-visible {
 .withdraw-plan-btn {
   width: 100%;
   padding: 14px 20px;
-  border-radius: var(--radius-lg);
-  font-weight: 800;
-  font-size: 14px;
+  border-radius: 40px !important;
+  font-weight: 900 !important;
+  font-size: 15px !important;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: none;
+  border: 2px solid #ffd700 !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2407,6 +2544,12 @@ input:focus-visible {
   overflow: hidden;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.start-survey-btn {
+  background: linear-gradient(145deg, #2563eb, #1e40af) !important;
+  color: white !important;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4) !important;
 }
 
 .start-survey-btn::before,
@@ -2436,8 +2579,9 @@ input:focus-visible {
 .start-survey-btn:hover,
 .activation-notice-btn:hover,
 .withdraw-plan-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(255, 215, 0, 0.4) !important;
+  border-color: #ffffff !important;
 }
 
 .start-survey-btn:active,
@@ -2482,7 +2626,7 @@ input:focus-visible {
 
 /* =========================================================
    WITHDRAW CARDS - REDUCED ANIMATIONS
-   FIXED: Plan info heading color selectors with proper styles
+   FIXED: Plan info heading color selectors with proper styles - FORCED WITH !important
 ========================================================= */
 .withdraw-cards-container {
   display: grid;
@@ -2561,39 +2705,39 @@ input:focus-visible {
   font-weight: 900;
 }
 
-/* FIXED: Plan info heading color selectors with proper styles */
+/* FIXED: Plan info heading color selectors with proper styles - FORCED WITH !important */
 .plan-info h4[style*="color: var(--regular-color)"] {
   color: var(--regular-color) !important;
-  text-shadow: 0 2px 4px rgba(5, 150, 105, 0.3);
-  font-weight: 900;
+  text-shadow: 0 2px 8px rgba(5, 150, 105, 0.5) !important;
+  font-weight: 900 !important;
 }
 
 .plan-info h4[style*="color: var(--vip-color)"] {
   color: var(--vip-color) !important;
-  text-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
-  font-weight: 900;
+  text-shadow: 0 2px 8px rgba(79, 70, 229, 0.5) !important;
+  font-weight: 900 !important;
 }
 
 .plan-info h4[style*="color: var(--vvip-color)"] {
   color: var(--vvip-color) !important;
-  text-shadow: 0 2px 4px rgba(217, 119, 6, 0.3);
-  font-weight: 900;
+  text-shadow: 0 2px 8px rgba(217, 119, 6, 0.5) !important;
+  font-weight: 900 !important;
 }
 
 /* Dark mode support for plan info headings */
 [data-theme="dark"] .plan-info h4[style*="color: var(--regular-color)"] {
   color: var(--regular-color) !important;
-  text-shadow: 0 2px 8px rgba(52, 211, 153, 0.5);
+  text-shadow: 0 2px 8px rgba(52, 211, 153, 0.5) !important;
 }
 
 [data-theme="dark"] .plan-info h4[style*="color: var(--vip-color)"] {
   color: var(--vip-color) !important;
-  text-shadow: 0 2px 8px rgba(129, 140, 248, 0.5);
+  text-shadow: 0 2px 8px rgba(129, 140, 248, 0.5) !important;
 }
 
 [data-theme="dark"] .plan-info h4[style*="color: var(--vvip-color)"] {
   color: var(--vvip-color) !important;
-  text-shadow: 0 2px 8px rgba(251, 191, 36, 0.5);
+  text-shadow: 0 2px 8px rgba(251, 191, 36, 0.5) !important;
 }
 
 .plan-earnings {
@@ -2770,7 +2914,7 @@ input:focus-visible {
   
   /* Plan Cards */
   .plan-card {
-    padding: var(--space-md);
+    padding: var(--space-md) !important;
   }
   
   .plan-card:hover {
@@ -2778,12 +2922,16 @@ input:focus-visible {
   }
   
   .plan-name {
-    font-size: 18px;
+    font-size: 18px !important;
+  }
+  
+  .plan-icon {
+    font-size: 28px !important;
   }
   
   .plan-status {
-    font-size: 11px;
-    padding: 4px 10px;
+    font-size: 11px !important;
+    padding: 6px 12px !important;
   }
   
   .start-survey-btn,
@@ -2830,12 +2978,12 @@ input:focus-visible {
 /* Small phones */
 @media (max-width: 375px) {
   .plan-name {
-    font-size: 16px;
+    font-size: 16px !important;
   }
   
   .plan-status {
-    font-size: 10px;
-    padding: 3px 8px;
+    font-size: 10px !important;
+    padding: 5px 10px !important;
   }
   
   .withdraw-card-header .plan-icon {
@@ -2980,7 +3128,7 @@ body.no-scroll {
    6. FIXED: Chat button positioned at bottom
    7. FIXED: Scroll reminder positioned at bottom
    8. ADDED: Overscroll behavior to prevent white flash
-   9. FIXED: Plan info heading color selectors with proper styles
+   9. FIXED: Plan info heading color selectors with proper styles - FORCED WITH !important
 ========================================================= */
 
 /* =========================
