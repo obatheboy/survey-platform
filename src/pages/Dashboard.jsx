@@ -10,9 +10,6 @@ import Testimonials from "../components/Testimonials.jsx";
 import "./Dashboard.css";
 import "./Dashboard-Enhanced.css";
 
-/* =========================
-   PLAN CONFIG
-========================= */
 const PLANS = {
   REGULAR: { 
     name: "Regular", 
@@ -23,7 +20,9 @@ const PLANS = {
     gradient: "linear-gradient(135deg, #38bdf8, #0ea5e9)",
     borderColor: "rgba(56, 189, 248, 0.2)",
     bgColor: "rgba(56, 189, 248, 0.05)",
-    description: "Perfect for beginners"
+    description: "Perfect for beginners",
+    // 🔥 Bright orange for total earnings
+    totalColor: "#FF8C00"  // Dark Orange
   },
   VIP: { 
     name: "VIP", 
@@ -34,7 +33,9 @@ const PLANS = {
     gradient: "linear-gradient(135deg, #818cf8, #6366f1)",
     borderColor: "rgba(129, 140, 248, 0.2)",
     bgColor: "rgba(129, 140, 248, 0.05)",
-    description: "For active earners"
+    description: "For active earners",
+    // 🔥 Bright orange-yellow for total earnings
+    totalColor: "#FFA500"  // Orange
   },
   VVIP: { 
     name: "VVIP", 
@@ -45,9 +46,11 @@ const PLANS = {
     gradient: "linear-gradient(135deg, #fbbf24, #f59e0b)",
     borderColor: "rgba(251, 191, 36, 0.2)",
     bgColor: "rgba(251, 191, 36, 0.05)",
-    description: "Maximum earnings"
+    description: "Maximum earnings",
+    // 🔥 Bright yellow for total earnings
+    totalColor: "#FFD700"  // Gold
   },
-};
+ };
 
 const TOTAL_SURVEYS = 10;
 const APP_VERSION = "1.2.5"; // Bump this version to force clients to refresh on deploy
