@@ -5,6 +5,11 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
+    <!-- 🔥 CACHE CONTROL - Force fresh content -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
     <!-- Primary Meta Tags -->
     <title>Survey Platform - Earn Money by Completing Surveys</title>
     <meta name="title" content="Survey Platform - Earn Money by Completing Surveys" />
@@ -38,5 +43,37 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- 🔥 Simple version checker - No extra files needed -->
+    <script>
+      (function() {
+        // Use build time as version - updates every time you deploy
+        const BUILD_TIME = '2025-02-13-12-00'; // Update this when you deploy
+        const STORAGE_KEY = 'app_build_time';
+        
+        const lastBuild = localStorage.getItem(STORAGE_KEY);
+        
+        if (lastBuild && lastBuild !== BUILD_TIME) {
+          console.log('📱 New version detected! Refreshing...');
+          
+          // Clear Vite's cache
+          if ('caches' in window) {
+            caches.keys().then(function(names) {
+              names.forEach(name => {
+                if (name.includes('vite') || name.includes('survey')) {
+                  caches.delete(name);
+                }
+              });
+            });
+          }
+          
+          // Update stored version and reload
+          localStorage.setItem(STORAGE_KEY, BUILD_TIME);
+          window.location.reload(true);
+        } else if (!lastBuild) {
+          localStorage.setItem(STORAGE_KEY, BUILD_TIME);
+        }
+      })();
+    </script>
   </body>
 </html>
