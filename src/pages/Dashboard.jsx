@@ -897,7 +897,7 @@ return (
     border: '4px solid #ff3333',
     boxShadow: '0 20px 30px -10px rgba(95, 15, 64, 0.5), 0 8px 15px -6px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 215, 0, 0.3) inset',
     borderRadius: '24px',
-    padding: '10px 20px', /* REDUCED top/bottom padding from 12px to 10px */
+    padding: '8px 16px', /* REDUCED from 10px 20px to 8px 16px */
     color: 'white',
     position: 'relative',
     overflow: 'hidden',
@@ -939,19 +939,19 @@ return (
       <div className="plan-badge" style={{ 
         display: 'flex', 
         alignItems: 'center', 
-        gap: '10px' /* REDUCED from 12px to 10px */
+        gap: '8px' /* REDUCED from 10px to 8px */
       }}>
         <span className="plan-icon" style={{ 
-          fontSize: '32px', /* REDUCED from 36px to 32px */
+          fontSize: '28px', /* REDUCED from 32px to 28px */
           color: '#ffd700',
           background: 'rgba(255, 255, 255, 0.15)',
-          width: '52px', /* REDUCED from 64px to 52px */
-          height: '52px', /* REDUCED from 64px to 52px */
+          width: '44px', /* REDUCED from 52px to 44px */
+          height: '44px', /* REDUCED from 52px to 44px */
           borderRadius: '50%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 4px 20px rgba(255, 215, 0, 0.3)',
+          boxShadow: '0 4px 15px rgba(255, 215, 0, 0.3)',
           border: '2px solid rgba(255, 215, 0, 0.5)',
           textShadow: '0 0 10px rgba(255, 215, 0, 0.5)'
         }}>
@@ -959,7 +959,7 @@ return (
         </span>
         <span className="plan-name" style={{ 
           color: '#ffffff !important',
-          fontSize: '22px', /* REDUCED from 24px to 22px */
+          fontSize: '20px', /* REDUCED from 22px to 20px */
           fontWeight: '900',
           textShadow: '0 2px 8px rgba(0, 0, 0, 0.6)',
           letterSpacing: '-0.5px'
@@ -971,13 +971,13 @@ return (
         background: '#c2410c !important',
         color: '#ffffff !important',
         border: '2px solid #ffd700 !important',
-        padding: '6px 14px', /* REDUCED from 8px 16px to 6px 14px */
+        padding: '4px 12px', /* REDUCED from 6px 14px to 4px 12px */
         borderRadius: '40px',
-        fontSize: '11px', /* REDUCED from 12px to 11px */
+        fontSize: '10px', /* REDUCED from 11px to 10px */
         fontWeight: '900',
         textTransform: 'uppercase',
-        letterSpacing: '0.8px', /* REDUCED from 1px to 0.8px */
-        boxShadow: '0 0 15px rgba(255, 255, 255, 0.3)',
+        letterSpacing: '0.6px', /* REDUCED from 0.8px to 0.6px */
+        boxShadow: '0 0 12px rgba(255, 255, 255, 0.3)',
         textShadow: '0 1px 3px #000000'
       }}>
         🔓 ACTIVATE NOW
@@ -987,59 +987,48 @@ return (
     {/* BODY - EXTRA COMPACT */}
     <div className="plan-card-body" style={{ position: 'relative', zIndex: 2 }}>
       
-      {/* ===== BONUS AMOUNT SECTION - SIGNIFICANTLY REDUCED SIZE ===== */}
+      {/* ===== BONUS AMOUNT SECTION - REMOVED THE "WELCOME BONUS" CAPTION ABOVE AMOUNT ===== */}
       <div style={{
         textAlign: 'center',
-        margin: '2px 0', /* REDUCED from 4px 0 to 2px 0 */
-        padding: '8px', /* REDUCED from 12px to 8px */
+        margin: '2px 0', /* REDUCED from 4px to 2px */
+        padding: '6px', /* REDUCED from 8px to 6px */
         background: 'rgba(0, 0, 0, 0.25)',
-        borderRadius: '12px', /* REDUCED from 16px to 12px */
+        borderRadius: '10px', /* REDUCED from 12px to 10px */
         border: '1px solid rgba(255, 215, 0, 0.4)',
-        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.15)' /* REDUCED shadow */
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
       }}>
+        {/* REMOVED the "WELCOME BONUS" caption span that was here */}
         <span style={{
-          fontSize: '12px', /* REDUCED from 14px to 12px */
-          fontWeight: '700',
-          color: '#ffd700',
-          display: 'block',
-          marginBottom: '2px', /* REDUCED from 4px to 2px */
-          letterSpacing: '1.5px', /* REDUCED from 2px to 1.5px */
-          textTransform: 'uppercase',
-          textShadow: '0 0 8px rgba(255, 215, 0, 0.5)'
-        }}>
-          WELCOME BONUS
-        </span>
-        <span style={{
-          fontSize: '36px', /* REDUCED from 48px to 36px */
+          fontSize: '32px', /* REDUCED from 36px to 32px */
           fontWeight: '900',
           color: 'white',
           display: 'block',
-          lineHeight: '1',
-          textShadow: '0 0 15px #ffd700, 0 2px 6px rgba(0, 0, 0, 0.4)' /* REDUCED glow */
+          lineHeight: '1.1',
+          textShadow: '0 0 12px #ffd700, 0 2px 4px rgba(0, 0, 0, 0.4)'
         }}>
           KES 1,200
         </span>
       </div>
       
-      {/* DESCRIPTION - EXTRA COMPACT */}
+      {/* DESCRIPTION - KEPT INTACT with original text */}
       <p style={{
-        fontSize: '14px', /* REDUCED from 16px to 14px */
-        lineHeight: '1.4', /* REDUCED from 1.5 to 1.4 */
+        fontSize: '13px', /* REDUCED from 14px to 13px */
+        lineHeight: '1.3', /* REDUCED from 1.4 to 1.3 */
         color: 'rgba(255, 255, 255, 0.95)',
         textAlign: 'center',
-        margin: '0 0 6px', /* REDUCED from 8px to 6px */
+        margin: '0 0 4px', /* REDUCED from 6px to 4px */
         fontWeight: '600',
         textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)',
         background: 'rgba(0, 0, 0, 0.2)',
-        padding: '8px 14px', /* REDUCED from 10px 16px to 8px 14px */
+        padding: '6px 12px', /* REDUCED from 8px 14px to 6px 12px */
         borderRadius: '30px',
         border: '1px solid rgba(255, 215, 0, 0.2)'
       }}>
         Congratulations! You've received a welcome bonus of <strong style={{
           color: '#ffd700',
-          fontSize: '18px', /* REDUCED from 20px to 18px */
+          fontSize: '16px', /* REDUCED from 18px to 16px */
           fontWeight: '900',
-          textShadow: '0 0 8px #ffd700, 0 1px 2px #000000'
+          textShadow: '0 0 6px #ffd700'
         }}>KES 1,200</strong>. Activate your account to withdraw instantly!
       </p>
     </div>
@@ -1057,37 +1046,37 @@ return (
           background: 'linear-gradient(145deg, #2563eb, #1e40af)',
           border: '2px solid #ffd700',
           borderRadius: '40px',
-          padding: '12px 20px', /* REDUCED from 14px 24px to 12px 20px */
+          padding: '10px 16px', /* REDUCED from 12px 20px to 10px 16px */
           fontWeight: '900',
-          fontSize: '14px', /* REDUCED from 16px to 14px */
+          fontSize: '13px', /* REDUCED from 14px to 13px */
           color: 'white',
           textTransform: 'uppercase',
-          letterSpacing: '0.8px', /* REDUCED from 1px to 0.8px */
+          letterSpacing: '0.6px', /* REDUCED from 0.8px to 0.6px */
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '8px', /* REDUCED from 12px to 8px */
+          gap: '6px', /* REDUCED from 8px to 6px */
           width: '100%',
           cursor: 'pointer',
-          boxShadow: '0 6px 15px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 215, 0, 0.3)', /* REDUCED shadow */
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255, 215, 0, 0.3)',
           transition: 'all 0.2s ease',
           position: 'relative',
           overflow: 'hidden'
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'translateY(-2px)';
-          e.currentTarget.style.boxShadow = '0 10px 20px rgba(255, 215, 0, 0.5), 0 0 15px rgba(255, 215, 0, 0.4)';
+          e.currentTarget.style.boxShadow = '0 8px 16px rgba(255, 215, 0, 0.5), 0 0 12px rgba(255, 215, 0, 0.4)';
           e.currentTarget.style.borderColor = '#ffffff';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.transform = 'translateY(0)';
-          e.currentTarget.style.boxShadow = '0 6px 15px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 215, 0, 0.3)';
+          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255, 215, 0, 0.3)';
           e.currentTarget.style.borderColor = '#ffd700';
         }}
       >
-        <span className="btn-icon" style={{ fontSize: '18px' }}>🔓</span>
+        <span className="btn-icon" style={{ fontSize: '16px' }}>🔓</span>
         ACTIVATE & CLAIM NOW
-        <span style={{ fontSize: '16px', marginLeft: '2px' }}>✨</span>
+        <span style={{ fontSize: '14px', marginLeft: '2px' }}>✨</span>
       </button>
     </div>
   </div>
