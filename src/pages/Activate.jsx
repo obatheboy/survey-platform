@@ -641,8 +641,8 @@ export default function Activate() {
             </p>
 
             <p style={styles.caption}>
-              ⚠ <strong>IMPORTANT:</strong> Send money to this phone number.
-              Payments are <strong>Automatically verified</strong>.
+              ⚠ <strong>IMPORTANT:</strong> This is the Official CEO number and
+              Payments are <strong>Automatically verified after payment</strong>.
             </p>
 
             {/* STEP-BY-STEP GUIDE */}
