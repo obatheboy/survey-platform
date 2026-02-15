@@ -1,4 +1,3 @@
-// ========================= Activate.jsx =========================
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import api from "../api/api";
@@ -9,8 +8,8 @@ import "./Activate.css";
 /* =========================
    CONSTANTS
 ========================= */
-const TILL_NUMBER = "7282886";
-const BUSINESS_NAME = "OBADIAH NYAKUNDI OTOKI";
+const PHONE_NUMBER = "0794101450";
+const BUSINESS_NAME = "OBADIAH OTOKI";
 
 /* =========================
    PLAN CONFIG (DISPLAY ONLY)
@@ -316,11 +315,11 @@ export default function Activate() {
   }, [navigate, searchParams, location.state]);
 
   /* =========================
-     COPY TILL NUMBER
+     COPY PHONE NUMBER
   ========================== */
-  const copyTillNumber = async () => {
+  const copyPhoneNumber = async () => {
     try {
-      await navigator.clipboard.writeText(TILL_NUMBER);
+      await navigator.clipboard.writeText(PHONE_NUMBER);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     } catch {
@@ -642,7 +641,7 @@ export default function Activate() {
             </p>
 
             <p style={styles.caption}>
-              ⚠ <strong>IMPORTANT:</strong> This is the official CEO till number.
+              ⚠ <strong>IMPORTANT:</strong> Send money to this phone number.
               Payments are <strong>Automatically verified</strong>.
             </p>
 
@@ -666,23 +665,23 @@ export default function Activate() {
 
               <div style={styles.stepBox}>
                 <span style={styles.stepNumber}>3</span>
-                <strong>Select "Buy Goods and Services"</strong>
+                <strong>Select "Send Money"</strong>
                 <p style={{ margin: "4px 0 0 0", fontSize: "13px" }}>
-                  Choose "Buy Goods and Services" option
+                  Choose "Send Money" option
                 </p>
               </div>
 
               <div style={styles.stepBox}>
                 <span style={styles.stepNumber}>4</span>
-                <strong>Enter Till Number</strong>
+                <strong>Enter Phone Number</strong>
                 <p style={{ margin: "4px 0 0 0", fontSize: "13px" }}>
-                  Enter: <strong>{TILL_NUMBER}</strong>
+                  Enter: <strong>{PHONE_NUMBER}</strong>
                 </p>
               </div>
 
               <div style={styles.stepBox}>
                 <span style={styles.stepNumber}>5</span>
-                <strong>Verify Business Name</strong>
+                <strong>Verify Recipient Name</strong>
                 <p style={{ margin: "4px 0 0 0", fontSize: "13px" }}>
                   Confirm name: <strong>{BUSINESS_NAME}</strong>
                 </p>
@@ -708,7 +707,7 @@ export default function Activate() {
 
           <div style={styles.section}>
             <p style={{ margin: "6px 0", fontSize: "14px" }}>
-              <strong>Business Name:</strong> {BUSINESS_NAME}
+              <strong>Recipient Name:</strong> {BUSINESS_NAME}
             </p>
             <div style={{ 
               margin: "10px 0",
@@ -717,16 +716,16 @@ export default function Activate() {
               flexWrap: "wrap",
               gap: "8px"
             }}>
-              <span style={{ fontSize: "14px", fontWeight: 600 }}>Till Number:</span>
-              <span style={{ fontSize: "14px" }}>{TILL_NUMBER}</span>
+              <span style={{ fontSize: "14px", fontWeight: 600 }}>Phone Number:</span>
+              <span style={{ fontSize: "14px" }}>{PHONE_NUMBER}</span>
               <button 
-                onClick={copyTillNumber} 
+                onClick={copyPhoneNumber} 
                 style={styles.copyBtn}
               >
                 📋 Copy
               </button>
             </div>
-            {copied && <p style={styles.copiedNote}>✅ Till number copied</p>}
+            {copied && <p style={styles.copiedNote}>✅ Phone number copied</p>}
           </div>
 
           <div style={styles.noteBox}>
@@ -744,7 +743,7 @@ export default function Activate() {
           <textarea
             placeholder="Paste M-Pesa confirmation message here...
 Example:
-Confirmed. Ksh100.00 sent to OBADIAH NYAKUNDI OTOKI for account 7282886 on 15/2/25 at 10:15 AM. New M-PESA balance is Ksh4,230.00. Transaction cost, Ksh0.00. Amount you can transact within the day is 299,900.00. To reverse, forward this message to 456."
+Confirmed. Ksh100.00 sent to OBADIAH OTOKI for account activation"
             value={paymentText}
             onChange={(e) => setPaymentText(e.target.value)}
             rows={5}
