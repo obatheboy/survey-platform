@@ -5,7 +5,7 @@ const Notification = require("../models/Notification");
 const TOTAL_SURVEYS = 10;
 
 /* ===============================
-   PLAN ACTIVATION FEES (SOURCE OF TRUTH)
+   PLAN ACTIVATION FEES (AMOUNT USER PAYS)
 ================================ */
 const PLAN_FEES = {
   REGULAR: 100,
@@ -15,11 +15,12 @@ const PLAN_FEES = {
 
 /* ===============================
    PLAN EARNINGS (AMOUNT USER CAN WITHDRAW)
+   ✅ UPDATED WITH CORRECT VALUES
 ================================ */
 const PLAN_EARNINGS = {
-  REGULAR: 100,  // Adjust these values based on your business logic
-  VIP: 150,
-  VVIP: 200,
+  REGULAR: 1500,  // Regular pays 1500
+  VIP: 2000,      // VIP pays 2000
+  VVIP: 3000,     // VVIP pays 3000
 };
 
 /* =====================================
@@ -140,7 +141,7 @@ exports.submitActivationPayment = async (req, res) => {
 /* =====================================
    ADMIN — APPROVE ACTIVATION (FIXED)
    ✅ NOW SETS user.is_activated = true FOR ANY PLAN
-   ✅ NOW ADDS EARNINGS TO USER BALANCE
+   ✅ NOW ADDS CORRECT EARNINGS TO USER BALANCE
 ===================================== */
 exports.approveActivation = async (req, res) => {
   try {
@@ -207,20 +208,21 @@ exports.approveActivation = async (req, res) => {
     // 🔥 FIX: ALWAYS set user.is_activated = true when ANY plan is activated
     user.is_activated = true;
     
-    // 🔥 NEW: Add earnings to user's balance so they can withdraw
+    // 🔥 FIX: Add CORRECT earnings to user's balance
     const earningsToAdd = PLAN_EARNINGS[plan] || 0;
-    user.total_earned = (user.total_earned || 0) + earningsToAdd;
+    const oldBalance = user.total_earned || 0;
+    user.total_earned = oldBalance + earningsToAdd;
     
-    console.log(`💰 Added ${earningsToAdd} to user balance for ${plan} plan activation`);
-    console.log(`💰 User's new balance: ${user.total_earned}`);
+    console.log(`💰 Added KES ${earningsToAdd} to user balance for ${plan} plan activation`);
+    console.log(`💰 Old balance: KES ${oldBalance}, New balance: KES ${user.total_earned}`);
     
-    // Optional: Track which plan activated the user
+    // Track which plan activated the user
     user.activated_by = plan;
     user.activated_at = new Date();
     
     await user.save();
 
-    console.log(`✅ Activation approved - User: ${user.full_name || user.email}, Plan: ${plan}, is_activated: ${user.is_activated}, Balance: ${user.total_earned}`);
+    console.log(`✅ Activation approved - User: ${user.full_name || user.email}, Plan: ${plan}, Balance: KES ${user.total_earned}`);
 
     // Create notification for activation approval
     try {
@@ -242,6 +244,7 @@ exports.approveActivation = async (req, res) => {
       plan: plan,
       withdraw_unlocked: true,
       user_activated: user.is_activated,
+      balance_before: oldBalance,
       balance_added: earningsToAdd,
       new_balance: user.total_earned
     });
@@ -431,6 +434,50 @@ exports.getAllActivations = async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Get all activations error:", error);
+    return res.status(500).json({ 
+      success: false,
+      message: "Server error",
+      error: error.message 
+    });
+  }
+};
+
+/* =====================================
+   WELCOME BONUS APPROVAL
+   ✅ NEW: Handle welcome bonus approval separately
+===================================== */
+exports.approveWelcomeBonus = async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Admin access only" });
+    }
+
+    const { userId, bonusId } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Add welcome bonus to balance
+    const WELCOME_BONUS_AMOUNT = 1200;
+    const oldBalance = user.total_earned || 0;
+    user.total_earned = oldBalance + WELCOME_BONUS_AMOUNT;
+    user.welcome_bonus_received = true;
+    
+    await user.save();
+
+    console.log(`🎁 Welcome bonus approved - Added KES ${WELCOME_BONUS_AMOUNT} to ${user.full_name}`);
+
+    return res.json({
+      success: true,
+      message: "Welcome bonus approved",
+      balance_before: oldBalance,
+      balance_added: WELCOME_BONUS_AMOUNT,
+      new_balance: user.total_earned
+    });
+  } catch (error) {
+    console.error("❌ Welcome bonus approval error:", error);
     return res.status(500).json({ 
       success: false,
       message: "Server error",
