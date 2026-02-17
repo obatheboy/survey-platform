@@ -146,6 +146,11 @@ export default function Auth() {
 
   return (
     <div style={styles.page}>
+      {/* Animated Background Elements */}
+      <div style={styles.backgroundBlob1}></div>
+      <div style={styles.backgroundBlob2}></div>
+      <div style={styles.backgroundGrid}></div>
+
       <div
         style={{
           ...styles.card,
@@ -154,14 +159,25 @@ export default function Auth() {
           animation: shake ? "shake 0.5s ease-in-out" : "none",
         }}
       >
-        {/* Logo and greeting - more compact */}
+        {/* Logo and greeting - Premium Design */}
         <div style={styles.logoContainer}>
-          <div style={styles.logoIcon}>📊</div>
-          <h1 style={styles.logo}>OFFICIAL SURVEY APP</h1>
+          <div style={styles.logoWrapper}>
+            <div style={styles.logoGlow}></div>
+            <div style={styles.logoIcon}>📊</div>
+          </div>
+          <div style={styles.logoTextContainer}>
+            <h1 style={styles.logo}>Survey<span style={styles.logoAccent}>Earn</span></h1>
+            <p style={styles.tagline}>Turn your opinions into cash!</p>
+          </div>
         </div>
-        <p style={styles.tagline}>Share Your Opinions • Earn to Mpesa</p>
 
-        {/* Mode selector - compact */}
+        {/* Trust Badge */}
+        <div style={styles.trustBadge}>
+          <span style={styles.trustBadgeIcon}>✓</span>
+          <span style={styles.trustBadgeText}>Trusted by 10,000+ users</span>
+        </div>
+
+        {/* Mode selector - Premium Toggle */}
         <div style={styles.modeSelector}>
           <button
             style={{
@@ -171,6 +187,7 @@ export default function Auth() {
             onClick={() => setMode("login")}
             type="button"
           >
+            <span style={styles.modeButtonIcon}>🔐</span>
             Log In
           </button>
           <button
@@ -181,6 +198,7 @@ export default function Auth() {
             onClick={() => setMode("register")}
             type="button"
           >
+            <span style={styles.modeButtonIcon}>✨</span>
             Sign Up
           </button>
         </div>
@@ -223,7 +241,7 @@ export default function Auth() {
                 }
                 icon="✉️"
               />
-              <p style={styles.emailCaption}>💡 Skip this if you don't have an email address</p>
+              <p style={styles.emailCaption}>💡 Skip if no email</p>
             </div>
 
             <div style={styles.formGroup}>
@@ -277,7 +295,10 @@ export default function Auth() {
               {loading ? (
                 <div style={styles.loadingSpinner}></div>
               ) : (
-                "Create Account 🚀"
+                <>
+                  <span style={styles.buttonIcon}>🚀</span>
+                  Create Free Account
+                </>
               )}
             </button>
 
@@ -286,7 +307,7 @@ export default function Auth() {
             )}
 
             <p style={styles.switchText}>
-              Have an account?{" "}
+              Already have an account?{" "}
               <button
                 style={styles.switchButton}
                 onClick={() => setMode("login")}
@@ -346,7 +367,10 @@ export default function Auth() {
               {loading ? (
                 <div style={styles.loadingSpinner}></div>
               ) : (
-                "Sign In 🔐"
+                <>
+                  <span style={styles.buttonIcon}>🔐</span>
+                  Sign In
+                </>
               )}
             </button>
 
@@ -355,7 +379,7 @@ export default function Auth() {
             )}
 
             <p style={styles.switchText}>
-              New user?{" "}
+              New here?{" "}
               <button
                 style={styles.switchButton}
                 onClick={() => setMode("register")}
@@ -367,19 +391,27 @@ export default function Auth() {
           </form>
         )}
 
-        {/* Benefits showcase - more compact */}
+        {/* Benefits showcase - Premium */}
         <div style={styles.benefits}>
           <div style={styles.benefit}>
-            <span style={styles.benefitIcon}>💰</span>
-            <span>Earn Cash</span>
+            <div style={styles.benefitIconWrapper}>
+              <span style={styles.benefitIcon}>💰</span>
+            </div>
+            <span style={styles.benefitText}>Instant Cashout</span>
           </div>
+          <div style={styles.benefitDivider}></div>
           <div style={styles.benefit}>
-            <span style={styles.benefitIcon}>⚡</span>
-            <span>Quick</span>
+            <div style={styles.benefitIconWrapper}>
+              <span style={styles.benefitIcon}>⚡</span>
+            </div>
+            <span style={styles.benefitText}>Quick Surveys</span>
           </div>
+          <div style={styles.benefitDivider}></div>
           <div style={styles.benefit}>
-            <span style={styles.benefitIcon}>🔒</span>
-            <span>Secure</span>
+            <div style={styles.benefitIconWrapper}>
+              <span style={styles.benefitIcon}>🔒</span>
+            </div>
+            <span style={styles.benefitText}>Secure</span>
           </div>
         </div>
 
@@ -393,45 +425,55 @@ export default function Auth() {
             style={styles.termsCheckbox}
           />
           <label htmlFor="termsAccepted" style={styles.termsLabel}>
-            I accept the{" "}
+            I agree to the{" "}
             <button
               type="button"
               style={styles.termsLink}
               onClick={() => navigate("/terms")}
             >
-              Terms and Conditions
+              Terms & Privacy
             </button>
           </label>
         </div>
       </div>
 
+      {/* WhatsApp Support - Premium Floating Button */}
       <div style={styles.contactContainer}>
-        <p style={styles.contactCaption}>Need help? Chat us..</p>
+        <div style={styles.contactPulse}></div>
         <button
           style={styles.contactButton}
           onClick={() => {
             const message = encodeURIComponent(
-              "Hello, I'm having trouble with registration or login on the Survey App."
+              "Hello, I need help with the Survey App."
             );
             const whatsappUrl = `https://wa.me/254102074596?text=${message}`;
             window.open(whatsappUrl, "_blank", "noopener,noreferrer");
           }}
           title="Contact Support on WhatsApp"
         >
-          💬
+          <span style={styles.contactButtonIcon}>💬</span>
         </button>
+        <span style={styles.contactCaption}>Support</span>
       </div>
 
-      {/* Footer - compact */}
+      {/* Footer - Premium */}
       <div style={styles.footer}>
         <p>
-          By continuing, you agree to our{" "}
+          © 2024 SurveyEarn •{" "}
           <button
             style={styles.footerLink}
             onClick={() => navigate("/terms")}
             type="button"
           >
-            Terms and Privacy Policy
+            Terms
+          </button>
+          {" • "}
+          <button
+            style={styles.footerLink}
+            onClick={() => navigate("/privacy")}
+            type="button"
+          >
+            Privacy
           </button>
         </p>
       </div>
@@ -464,6 +506,22 @@ export default function Auth() {
             }
           }
           
+          @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.5); opacity: 0.8; }
+          }
+          
+          @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+          }
+          
+          @keyframes blob {
+            0%, 100% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+          }
+          
           input[type="checkbox"]:checked {
             animation: checkmark 0.4s ease-out;
           }
@@ -473,9 +531,17 @@ export default function Auth() {
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
           }
           
+          button {
+            transition: all 0.3s ease !important;
+          }
+          
           button:hover {
             transform: translateY(-2px);
-            transition: transform 0.2s ease;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+          }
+          
+          button:active {
+            transform: translateY(0px);
           }
 
           @media (max-height: 700px) {
@@ -494,7 +560,7 @@ export default function Auth() {
   );
 }
 
-// COMPACT STYLES FOR MOBILE
+// PREMIUM STYLES FOR ATTRACTIVE UI
 const styles = {
   page: {
     minHeight: "100vh",
@@ -502,19 +568,53 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     padding: "15px",
-    background: "#f8fafc",
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
     fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
     position: "relative",
     overflow: "hidden",
   },
+  backgroundBlob1: {
+    position: "absolute",
+    width: "300px",
+    height: "300px",
+    background: "rgba(255, 255, 255, 0.1)",
+    borderRadius: "50%",
+    top: "-100px",
+    left: "-100px",
+    animation: "blob 10s ease-in-out infinite",
+    zIndex: 0,
+  },
+  backgroundBlob2: {
+    position: "absolute",
+    width: "400px",
+    height: "400px",
+    background: "rgba(255, 255, 255, 0.08)",
+    borderRadius: "50%",
+    bottom: "-150px",
+    right: "-150px",
+    animation: "blob 15s ease-in-out infinite reverse",
+    zIndex: 0,
+  },
+  backgroundGrid: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    backgroundImage: `
+      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px)
+    `,
+    backgroundSize: "50px 50px",
+    zIndex: 0,
+  },
   card: {
     width: "100%",
     maxWidth: "420px",
-    padding: "32px 24px",
-    borderRadius: "24px",
-    background: "#ffffff",
-    boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)",
-    border: "1px solid #f1f5f9",
+    padding: "35px 28px",
+    borderRadius: "32px",
+    background: "rgba(255, 255, 255, 0.95)",
+    backdropFilter: "blur(20px)",
+    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+    border: "1px solid rgba(255, 255, 255, 0.3)",
     zIndex: 1,
     position: "relative",
     display: "flex",
@@ -523,35 +623,86 @@ const styles = {
   logoContainer: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
-    gap: "14px",
-    marginBottom: "8px",
+    gap: "16px",
+    marginBottom: "12px",
+  },
+  logoWrapper: {
+    position: "relative",
+    width: "60px",
+    height: "60px",
+  },
+  logoGlow: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    background: "linear-gradient(135deg, #667eea, #764ba2)",
+    borderRadius: "18px",
+    filter: "blur(15px)",
+    opacity: 0.5,
+    animation: "pulse 3s ease-in-out infinite",
   },
   logoIcon: {
+    position: "relative",
     fontSize: "32px",
-    background: "linear-gradient(135deg, #2563eb, #1e40af)",
-    padding: "12px",
-    borderRadius: "16px",
-    boxShadow: "0 8px 20px rgba(37, 99, 235, 0.2)",
+    background: "linear-gradient(135deg, #667eea, #764ba2)",
+    padding: "14px",
+    borderRadius: "18px",
+    boxShadow: "0 10px 25px -5px rgba(102, 126, 234, 0.4)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "white",
+  },
+  logoTextContainer: {
+    flex: 1,
   },
   logo: {
-    fontSize: "28px",
+    fontSize: "32px",
     fontWeight: "800",
-    color: "#0f172a",
     margin: 0,
+    color: "#1a1a1a",
     letterSpacing: "-0.5px",
   },
+  logoAccent: {
+    color: "#667eea",
+  },
   tagline: {
-    textAlign: "center",
-    color: "#64748b",
-    fontSize: "14px",
-    marginBottom: "24px",
+    color: "#666",
+    fontSize: "13px",
     fontWeight: "500",
+    marginTop: "2px",
+  },
+  trustBadge: {
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    background: "rgba(102, 126, 234, 0.1)",
+    padding: "8px 12px",
+    borderRadius: "30px",
+    marginBottom: "20px",
+    width: "fit-content",
+  },
+  trustBadgeIcon: {
+    background: "#10b981",
+    color: "white",
+    width: "18px",
+    height: "18px",
+    borderRadius: "50%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "12px",
+    fontWeight: "bold",
+  },
+  trustBadgeText: {
+    color: "#667eea",
+    fontSize: "12px",
+    fontWeight: "600",
   },
   modeSelector: {
     display: "flex",
-    background: "#f1f5f9",
-    borderRadius: "14px",
+    background: "rgba(0, 0, 0, 0.03)",
+    borderRadius: "16px",
     padding: "4px",
     marginBottom: "24px",
     gap: "4px",
@@ -564,14 +715,21 @@ const styles = {
     borderRadius: "12px",
     fontSize: "14px",
     fontWeight: "600",
-    color: "#64748b",
+    color: "#666",
     cursor: "pointer",
     transition: "all 0.2s ease",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+  },
+  modeButtonIcon: {
+    fontSize: "16px",
   },
   modeButtonActive: {
     background: "#ffffff",
-    color: "#2563eb",
-    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+    color: "#667eea",
+    boxShadow: "0 4px 10px -2px rgba(0, 0, 0, 0.1)",
   },
   formGroup: {
     marginBottom: "16px",
@@ -585,7 +743,7 @@ const styles = {
     top: "50%",
     transform: "translateY(-50%)",
     fontSize: "16px",
-    color: "#94a3b8",
+    color: "#999",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -594,11 +752,11 @@ const styles = {
     width: "100%",
     padding: "14px 16px 14px 44px",
     borderRadius: "16px",
-    border: "1.5px solid #e2e8f0",
+    border: "2px solid #e0e0e0",
     background: "#ffffff",
     fontSize: "15px",
     fontWeight: "500",
-    color: "#1e293b",
+    color: "#333",
     outline: "none",
     transition: "all 0.2s ease",
     boxSizing: "border-box",
@@ -615,7 +773,7 @@ const styles = {
     border: "none",
     fontSize: "18px",
     cursor: "pointer",
-    color: "#64748b",
+    color: "#666",
     padding: "8px",
     borderRadius: "8px",
     transition: "all 0.2s ease",
@@ -630,7 +788,7 @@ const styles = {
   forgotButton: {
     background: "none",
     border: "none",
-    color: "#2563eb",
+    color: "#667eea",
     fontSize: "13px",
     fontWeight: "600",
     cursor: "pointer",
@@ -643,18 +801,21 @@ const styles = {
     padding: "16px",
     borderRadius: "16px",
     border: "none",
-    background: "linear-gradient(135deg, #2563eb 0%, #1e40af 100%)",
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
     color: "white",
     fontSize: "16px",
     fontWeight: "700",
     cursor: "pointer",
     marginTop: "8px",
-    boxShadow: "0 10px 15px -3px rgba(37, 99, 235, 0.3)",
+    boxShadow: "0 10px 20px -5px rgba(102, 126, 234, 0.4)",
     transition: "all 0.2s ease",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     gap: "10px",
+  },
+  buttonIcon: {
+    fontSize: "18px",
   },
   loadingSpinner: {
     width: "20px",
@@ -678,14 +839,14 @@ const styles = {
   switchText: {
     textAlign: "center",
     marginTop: "20px",
-    color: "#64748b",
+    color: "#666",
     fontSize: "14px",
     fontWeight: "500",
   },
   switchButton: {
     background: "none",
     border: "none",
-    color: "#2563eb",
+    color: "#667eea",
     fontSize: "14px",
     fontWeight: "700",
     cursor: "pointer",
@@ -696,35 +857,49 @@ const styles = {
   benefits: {
     display: "flex",
     justifyContent: "space-between",
+    alignItems: "center",
     marginTop: "24px",
     paddingTop: "20px",
-    borderTop: "1px solid #f1f5f9",
+    borderTop: "2px solid rgba(0, 0, 0, 0.05)",
   },
   benefit: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     gap: "8px",
-    fontSize: "11px",
-    color: "#64748b",
-    fontWeight: "600",
+  },
+  benefitIconWrapper: {
+    background: "rgba(102, 126, 234, 0.1)",
+    padding: "10px",
+    borderRadius: "12px",
   },
   benefitIcon: {
     fontSize: "20px",
   },
+  benefitText: {
+    fontSize: "11px",
+    color: "#666",
+    fontWeight: "600",
+  },
+  benefitDivider: {
+    width: "1px",
+    height: "30px",
+    background: "rgba(0, 0, 0, 0.1)",
+  },
   footer: {
-    position: "absolute",
+    position: "fixed",
     bottom: "20px",
     width: "100%",
     textAlign: "center",
-    color: "#94a3b8",
+    color: "white",
     fontSize: "12px",
     padding: "0 15px",
     zIndex: 1,
+    textShadow: "0 2px 4px rgba(0,0,0,0.2)",
   },
   contactContainer: {
     position: "fixed",
-    bottom: "90px",
+    bottom: "100px",
     right: "20px",
     zIndex: 1000,
     display: 'flex',
@@ -732,65 +907,83 @@ const styles = {
     alignItems: 'center',
     gap: '8px',
   },
+  contactPulse: {
+    position: "absolute",
+    width: "60px",
+    height: "60px",
+    background: "#25D366",
+    borderRadius: "50%",
+    animation: "pulse 2s ease-in-out infinite",
+    opacity: 0.3,
+  },
   contactButton: {
+    position: "relative",
     background: "#25D366",
     borderRadius: "50%",
     width: "60px",
     height: "60px",
     fontSize: "28px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
+    boxShadow: "0 8px 20px rgba(37, 211, 102, 0.3)",
     cursor: "pointer",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    border: "none",
+    color: "white",
+    transition: "all 0.3s ease",
+  },
+  contactButtonIcon: {
+    fontSize: "28px",
   },
   contactCaption: {
-    background: 'rgba(0,0,0,0.75)',
+    background: 'rgba(0,0,0,0.8)',
     color: 'white',
     padding: '6px 12px',
-    borderRadius: '12px',
-    fontSize: '12px',
+    borderRadius: '20px',
+    fontSize: '11px',
     fontWeight: '600',
     margin: 0,
-    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+    boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
     whiteSpace: 'nowrap',
   },
   termsContainer: {
     display: "flex",
-    alignItems: "flex-start",
+    alignItems: "center",
     gap: "10px",
-    marginTop: "16px",
-    padding: "4px 0px",
+    marginTop: "20px",
+    padding: "12px 0",
+    background: "rgba(0, 0, 0, 0.02)",
+    borderRadius: "12px",
+    justifyContent: "center",
   },
   termsCheckbox: {
     width: "18px",
     height: "18px",
     minWidth: "18px",
-    marginTop: "2px",
     cursor: "pointer",
-    accentColor: "#2563eb",
+    accentColor: "#667eea",
     borderRadius: "6px",
   },
   termsLabel: {
     fontSize: "12px",
-    color: "#64748b",
-    fontWeight: "400",
+    color: "#666",
+    fontWeight: "500",
     cursor: "pointer",
     lineHeight: "1.5",
   },
   termsLink: {
     background: "none",
     border: "none",
-    color: "#2563eb",
+    color: "#667eea",
     fontSize: "12px",
-    fontWeight: "600",
+    fontWeight: "700",
     cursor: "pointer",
     padding: "0",
     textDecoration: "underline",
   },
   emailCaption: {
     fontSize: "11px",
-    color: "#94a3b8",
+    color: "#999",
     marginTop: "6px",
     fontWeight: "400",
     fontStyle: "italic",
@@ -799,11 +992,12 @@ const styles = {
   footerLink: {
     background: "none",
     border: "none",
-    color: "#64748b",
+    color: "white",
     fontSize: "12px",
-    fontWeight: "700",
+    fontWeight: "600",
     cursor: "pointer",
     padding: "0",
     textDecoration: "underline",
+    opacity: 0.9,
   },
 };
