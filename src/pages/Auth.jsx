@@ -206,9 +206,9 @@ export default function Auth() {
           </button>
         </div>
 
-        {/* SIMPLIFIED: Remove the problematic wrapper divs */}
+        {/* Form Section - Conditional */}
         {mode === "register" ? (
-          <form onSubmit={handleRegister} key="register">
+          <form onSubmit={handleRegister} key="register" style={styles.form}>
             <div style={styles.formGroup}>
               <Input
                 placeholder="Full Name"
@@ -320,7 +320,7 @@ export default function Auth() {
             </p>
           </form>
         ) : (
-          <form onSubmit={handleLogin} key="login">
+          <form onSubmit={handleLogin} key="login" style={styles.form}>
             <div style={styles.formGroup}>
               <Input
                 placeholder="Phone Number"
@@ -393,91 +393,83 @@ export default function Auth() {
           </form>
         )}
 
-        {/* Benefits showcase - Premium */}
-        <div style={styles.benefits}>
-          <div style={styles.benefit}>
-            <div style={{...styles.benefitIconWrapper, background: "linear-gradient(135deg, #FF6B6B, #FF8E53)"}}>
-              <span style={styles.benefitIcon}>💰</span>
+        {/* Bottom Section - All Inside Card */}
+        <div style={styles.bottomSection}>
+          {/* Benefits showcase - Premium */}
+          <div style={styles.benefits}>
+            <div style={styles.benefit}>
+              <div style={{...styles.benefitIconWrapper, background: "linear-gradient(135deg, #FF6B6B, #FF8E53)"}}>
+                <span style={styles.benefitIcon}>💰</span>
+              </div>
+              <span style={styles.benefitText}>Instant Cashout</span>
             </div>
-            <span style={styles.benefitText}>Instant Cashout</span>
-          </div>
-          <div style={styles.benefitDivider}></div>
-          <div style={styles.benefit}>
-            <div style={{...styles.benefitIconWrapper, background: "linear-gradient(135deg, #4ECDC4, #45B7D1)"}}>
-              <span style={styles.benefitIcon}>⚡</span>
+            <div style={styles.benefitDivider}></div>
+            <div style={styles.benefit}>
+              <div style={{...styles.benefitIconWrapper, background: "linear-gradient(135deg, #4ECDC4, #45B7D1)"}}>
+                <span style={styles.benefitIcon}>⚡</span>
+              </div>
+              <span style={styles.benefitText}>Quick Surveys</span>
             </div>
-            <span style={styles.benefitText}>Quick Surveys</span>
-          </div>
-          <div style={styles.benefitDivider}></div>
-          <div style={styles.benefit}>
-            <div style={{...styles.benefitIconWrapper, background: "linear-gradient(135deg, #A8E6CF, #56AB2F)"}}>
-              <span style={styles.benefitIcon}>🔒</span>
+            <div style={styles.benefitDivider}></div>
+            <div style={styles.benefit}>
+              <div style={{...styles.benefitIconWrapper, background: "linear-gradient(135deg, #A8E6CF, #56AB2F)"}}>
+                <span style={styles.benefitIcon}>🔒</span>
+              </div>
+              <span style={styles.benefitText}>Secure</span>
             </div>
-            <span style={styles.benefitText}>Secure</span>
           </div>
-        </div>
 
-        {/* Terms and Conditions - Auto Accepted */}
-        <div style={styles.termsContainer}>
-          <input
-            type="checkbox"
-            id="termsAccepted"
-            checked={termsChecked}
-            readOnly
-            style={styles.termsCheckbox}
-          />
-          <label htmlFor="termsAccepted" style={styles.termsLabel}>
-            I agree to the{" "}
+          {/* WhatsApp Support - Inside Card */}
+          <div style={styles.supportContainer}>
             <button
-              type="button"
-              style={styles.termsLink}
-              onClick={() => navigate("/terms")}
+              style={styles.supportButton}
+              onClick={() => {
+                const message = encodeURIComponent(
+                  "Hello, I need help with login/registering in Survey App."
+                );
+                const whatsappUrl = `https://wa.me/254102074596?text=${message}`;
+                window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+              }}
+              title="Contact Support on WhatsApp"
             >
-              Terms
+              <span style={styles.supportIcon}>💬</span>
+              <span style={styles.supportText}>Need Help? Chat with us</span>
             </button>
-            {" & "}
-            <button
-              type="button"
-              style={styles.termsLink}
-              onClick={() => navigate("/privacy")}
-            >
-              Privacy
-            </button>
-          </label>
-        </div>
-      </div>
+          </div>
 
-      {/* WhatsApp Support - Premium Floating Button */}
-      <div style={styles.contactContainer}>
-        <div style={styles.contactPulse}></div>
-        <button
-          style={styles.contactButton}
-          onClick={() => {
-            const message = encodeURIComponent(
-              "Hello, I need help with the Survey App."
-            );
-            const whatsappUrl = `https://wa.me/254102074596?text=${message}`;
-            window.open(whatsappUrl, "_blank", "noopener,noreferrer");
-          }}
-          title="Contact Support on WhatsApp"
-        >
-          <span style={styles.contactButtonIcon}>💬</span>
-        </button>
-        <span style={styles.contactCaption}>Support</span>
-      </div>
+          {/* Terms and Footer - All Inside */}
+          <div style={styles.termsContainer}>
+            <input
+              type="checkbox"
+              id="termsAccepted"
+              checked={termsChecked}
+              readOnly
+              style={styles.termsCheckbox}
+            />
+            <label htmlFor="termsAccepted" style={styles.termsLabel}>
+              I agree to the{" "}
+              <button
+                type="button"
+                style={styles.termsLink}
+                onClick={() => navigate("/terms")}
+              >
+                Terms
+              </button>
+              {" & "}
+              <button
+                type="button"
+                style={styles.termsLink}
+                onClick={() => navigate("/privacy")}
+              >
+                Privacy
+              </button>
+            </label>
+          </div>
 
-      {/* Footer - Perfectly Positioned */}
-      <div style={styles.footer}>
-        <div style={styles.footerContent}>
-          <span style={styles.footerCopyright}>© 2024 SurveyEarn</span>
-          <span style={styles.footerDot}>•</span>
-          <button style={styles.footerLink} onClick={() => navigate("/terms")}>
-            Terms
-          </button>
-          <span style={styles.footerDot}>•</span>
-          <button style={styles.footerLink} onClick={() => navigate("/privacy")}>
-            Privacy
-          </button>
+          {/* Copyright Inside Card */}
+          <div style={styles.copyright}>
+            <span style={styles.copyrightText}>© 2024 SurveyEarn</span>
+          </div>
         </div>
       </div>
 
@@ -545,31 +537,20 @@ export default function Auth() {
           button:active {
             transform: translateY(0px);
           }
-
-          @media (max-height: 700px) {
-            .compact-mode {
-              padding-top: 10px !important;
-              padding-bottom: 10px !important;
-            }
-            
-            .compact-form {
-              margin-top: 10px !important;
-            }
-          }
         `}
       </style>
     </div>
   );
 }
 
-// PREMIUM STYLES OPTIMIZED FOR MOBILE
+// PREMIUM STYLES - ALL ELEMENTS INSIDE CARD, NO SCROLLING
 const styles = {
   page: {
     minHeight: "100vh",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: "12px",
+    padding: "10px",
     background: "linear-gradient(145deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%)",
     fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
     position: "relative",
@@ -621,10 +602,10 @@ const styles = {
   },
   card: {
     width: "100%",
-    maxWidth: "380px",
-    padding: "24px 20px",
-    borderRadius: "28px",
-    background: "rgba(255, 255, 255, 0.95)",
+    maxWidth: "360px",
+    padding: "20px 16px",
+    borderRadius: "24px",
+    background: "linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
     backdropFilter: "blur(20px)",
     boxShadow: "0 20px 40px -12px rgba(0, 0, 0, 0.3)",
     border: "1px solid rgba(255, 255, 255, 0.4)",
@@ -633,37 +614,37 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     margin: "auto",
-    maxHeight: "calc(100vh - 100px)",
-    overflowY: "auto",
+    height: "fit-content",
+    maxHeight: "calc(100vh - 20px)",
   },
   logoContainer: {
     display: "flex",
     alignItems: "center",
-    gap: "12px",
-    marginBottom: "10px",
+    gap: "10px",
+    marginBottom: "8px",
   },
   logoWrapper: {
     position: "relative",
-    width: "48px",
-    height: "48px",
+    width: "44px",
+    height: "44px",
   },
   logoGlow: {
     position: "absolute",
     width: "100%",
     height: "100%",
     background: "linear-gradient(135deg, #FF6B6B, #4ECDC4)",
-    borderRadius: "14px",
-    filter: "blur(12px)",
+    borderRadius: "12px",
+    filter: "blur(10px)",
     opacity: 0.6,
     animation: "pulse 3s ease-in-out infinite",
   },
   logoIcon: {
     position: "relative",
-    fontSize: "26px",
+    fontSize: "24px",
     background: "linear-gradient(135deg, #FF6B6B, #4ECDC4)",
-    padding: "11px",
-    borderRadius: "14px",
-    boxShadow: "0 8px 20px -5px rgba(255, 107, 107, 0.4)",
+    padding: "10px",
+    borderRadius: "12px",
+    boxShadow: "0 8px 16px -5px rgba(255, 107, 107, 0.4)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -673,7 +654,7 @@ const styles = {
     flex: 1,
   },
   logo: {
-    fontSize: "26px",
+    fontSize: "24px",
     fontWeight: "800",
     margin: 0,
     color: "#1a1a1a",
@@ -687,56 +668,56 @@ const styles = {
   },
   tagline: {
     color: "#666",
-    fontSize: "12px",
+    fontSize: "11px",
     fontWeight: "500",
     marginTop: "2px",
   },
   trustBadge: {
     display: "flex",
     alignItems: "center",
-    gap: "6px",
+    gap: "4px",
     background: "rgba(255, 107, 107, 0.08)",
-    padding: "6px 10px",
+    padding: "4px 8px",
     borderRadius: "30px",
-    marginBottom: "16px",
+    marginBottom: "12px",
     width: "fit-content",
   },
   trustBadgeIcon: {
     background: "#10b981",
     color: "white",
-    width: "16px",
-    height: "16px",
+    width: "14px",
+    height: "14px",
     borderRadius: "50%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "10px",
+    fontSize: "9px",
     fontWeight: "bold",
   },
   trustBadgeText: {
     color: "#FF6B6B",
-    fontSize: "11px",
+    fontSize: "10px",
     fontWeight: "600",
   },
   trustBadgeDot: {
     color: "#FF6B6B",
-    fontSize: "12px",
+    fontSize: "10px",
   },
   modeSelector: {
     display: "flex",
     background: "rgba(0, 0, 0, 0.03)",
-    borderRadius: "14px",
-    padding: "4px",
-    marginBottom: "20px",
-    gap: "4px",
+    borderRadius: "12px",
+    padding: "3px",
+    marginBottom: "16px",
+    gap: "3px",
   },
   modeButton: {
     flex: 1,
-    padding: "10px",
+    padding: "8px",
     border: "none",
     background: "transparent",
-    borderRadius: "10px",
-    fontSize: "13px",
+    borderRadius: "9px",
+    fontSize: "12px",
     fontWeight: "600",
     color: "#666",
     cursor: "pointer",
@@ -744,33 +725,38 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "6px",
+    gap: "4px",
   },
   modeButtonIcon: {
-    fontSize: "14px",
+    fontSize: "13px",
   },
   modeButtonActiveLogin: {
     background: "#ffffff",
     color: "#FF6B6B",
-    boxShadow: "0 4px 10px -2px rgba(255, 107, 107, 0.2)",
+    boxShadow: "0 4px 8px -2px rgba(255, 107, 107, 0.2)",
   },
   modeButtonActiveRegister: {
     background: "#ffffff",
     color: "#4ECDC4",
-    boxShadow: "0 4px 10px -2px rgba(78, 205, 196, 0.2)",
+    boxShadow: "0 4px 8px -2px rgba(78, 205, 196, 0.2)",
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
   },
   formGroup: {
-    marginBottom: "12px",
+    marginBottom: "8px",
   },
   inputContainer: {
     position: "relative",
   },
   inputIcon: {
     position: "absolute",
-    left: "14px",
+    left: "12px",
     top: "50%",
     transform: "translateY(-50%)",
-    fontSize: "15px",
+    fontSize: "14px",
     color: "#999",
     display: "flex",
     alignItems: "center",
@@ -778,11 +764,11 @@ const styles = {
   },
   input: {
     width: "100%",
-    padding: "12px 16px 12px 42px",
-    borderRadius: "14px",
+    padding: "10px 12px 10px 38px",
+    borderRadius: "12px",
     border: "2px solid #f0f0f0",
     background: "#ffffff",
-    fontSize: "14px",
+    fontSize: "13px",
     fontWeight: "500",
     color: "#333",
     outline: "none",
@@ -794,16 +780,16 @@ const styles = {
   },
   passwordToggle: {
     position: "absolute",
-    right: "10px",
+    right: "8px",
     top: "50%",
     transform: "translateY(-50%)",
     background: "none",
     border: "none",
-    fontSize: "16px",
+    fontSize: "15px",
     cursor: "pointer",
     color: "#666",
-    padding: "6px",
-    borderRadius: "6px",
+    padding: "4px",
+    borderRadius: "4px",
     transition: "all 0.2s ease",
     display: "flex",
     alignItems: "center",
@@ -811,13 +797,13 @@ const styles = {
   },
   forgotPassword: {
     textAlign: "right",
-    marginBottom: "12px",
+    marginBottom: "8px",
   },
   forgotButton: {
     background: "none",
     border: "none",
     color: "#FF6B6B",
-    fontSize: "12px",
+    fontSize: "11px",
     fontWeight: "600",
     cursor: "pointer",
     padding: "4px 6px",
@@ -826,57 +812,57 @@ const styles = {
   },
   primaryButtonLogin: {
     width: "100%",
-    padding: "14px",
-    borderRadius: "14px",
+    padding: "12px",
+    borderRadius: "12px",
     border: "none",
     background: "linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)",
     color: "white",
-    fontSize: "15px",
+    fontSize: "14px",
     fontWeight: "700",
     cursor: "pointer",
-    marginTop: "4px",
-    boxShadow: "0 8px 16px -4px rgba(255, 107, 107, 0.3)",
+    marginTop: "2px",
+    boxShadow: "0 6px 12px -4px rgba(255, 107, 107, 0.3)",
     transition: "all 0.2s ease",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "8px",
+    gap: "6px",
   },
   primaryButtonRegister: {
     width: "100%",
-    padding: "14px",
-    borderRadius: "14px",
+    padding: "12px",
+    borderRadius: "12px",
     border: "none",
     background: "linear-gradient(135deg, #4ECDC4 0%, #45B7D1 100%)",
     color: "white",
-    fontSize: "15px",
+    fontSize: "14px",
     fontWeight: "700",
     cursor: "pointer",
-    marginTop: "4px",
-    boxShadow: "0 8px 16px -4px rgba(78, 205, 196, 0.3)",
+    marginTop: "2px",
+    boxShadow: "0 6px 12px -4px rgba(78, 205, 196, 0.3)",
     transition: "all 0.2s ease",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "8px",
+    gap: "6px",
   },
   buttonIcon: {
-    fontSize: "16px",
+    fontSize: "15px",
   },
   loadingSpinner: {
-    width: "18px",
-    height: "18px",
+    width: "16px",
+    height: "16px",
     border: "2px solid rgba(255,255,255,0.3)",
     borderTop: "2px solid white",
     borderRadius: "50%",
     animation: "spin 1s linear infinite",
   },
   message: {
-    marginTop: "12px",
-    padding: "10px",
-    borderRadius: "10px",
+    marginTop: "8px",
+    padding: "8px",
+    borderRadius: "8px",
     textAlign: "center",
-    fontSize: "12px",
+    fontSize: "11px",
     fontWeight: "600",
     background: "#fef2f2",
     color: "#dc2626",
@@ -884,180 +870,126 @@ const styles = {
   },
   switchText: {
     textAlign: "center",
-    marginTop: "16px",
+    marginTop: "10px",
     color: "#666",
-    fontSize: "13px",
+    fontSize: "12px",
     fontWeight: "500",
   },
   switchButton: {
     background: "none",
     border: "none",
     color: "#FF6B6B",
-    fontSize: "13px",
+    fontSize: "12px",
     fontWeight: "700",
     cursor: "pointer",
     padding: "2px 4px",
     borderRadius: "4px",
     transition: "all 0.2s ease",
   },
+  bottomSection: {
+    marginTop: "12px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+  },
   benefits: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: "20px",
-    paddingTop: "16px",
+    padding: "8px 0",
     borderTop: "2px solid rgba(0, 0, 0, 0.05)",
+    borderBottom: "2px solid rgba(0, 0, 0, 0.05)",
   },
   benefit: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: "6px",
+    gap: "4px",
   },
   benefitIconWrapper: {
-    padding: "8px",
-    borderRadius: "10px",
+    padding: "6px",
+    borderRadius: "8px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
   },
   benefitIcon: {
-    fontSize: "18px",
+    fontSize: "16px",
     color: "white",
   },
   benefitText: {
-    fontSize: "10px",
+    fontSize: "9px",
     color: "#666",
     fontWeight: "600",
   },
   benefitDivider: {
     width: "1px",
-    height: "25px",
+    height: "20px",
     background: "rgba(0, 0, 0, 0.1)",
   },
-  footer: {
-    position: "fixed",
-    bottom: "10px",
-    left: 0,
-    right: 0,
+  supportContainer: {
     display: "flex",
     justifyContent: "center",
-    zIndex: 2,
   },
-  footerContent: {
-    background: "rgba(0, 0, 0, 0.6)",
-    backdropFilter: "blur(10px)",
-    padding: "8px 18px",
-    borderRadius: "40px",
+  supportButton: {
+    background: "linear-gradient(135deg, #25D366, #128C7E)",
+    border: "none",
+    borderRadius: "30px",
+    padding: "8px 16px",
     display: "flex",
     alignItems: "center",
-    gap: "6px",
-    border: "1px solid rgba(255, 255, 255, 0.2)",
-    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.2)",
+    gap: "8px",
+    cursor: "pointer",
+    boxShadow: "0 4px 12px rgba(37, 211, 102, 0.3)",
+    transition: "all 0.3s ease",
+    width: "fit-content",
   },
-  footerCopyright: {
+  supportIcon: {
+    fontSize: "18px",
     color: "white",
-    fontSize: "11px",
-    fontWeight: "500",
-    opacity: 0.9,
   },
-  footerDot: {
-    color: "rgba(255, 255, 255, 0.5)",
-    fontSize: "11px",
-  },
-  footerLink: {
-    background: "none",
-    border: "none",
+  supportText: {
     color: "white",
     fontSize: "11px",
     fontWeight: "600",
-    cursor: "pointer",
-    padding: "0",
-    opacity: 0.9,
-    transition: "opacity 0.2s ease",
-  },
-  contactContainer: {
-    position: "fixed",
-    bottom: "80px",
-    right: "15px",
-    zIndex: 1000,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '6px',
-  },
-  contactPulse: {
-    position: "absolute",
-    width: "50px",
-    height: "50px",
-    background: "#25D366",
-    borderRadius: "50%",
-    animation: "pulse 2s ease-in-out infinite",
-    opacity: 0.3,
-  },
-  contactButton: {
-    position: "relative",
-    background: "#25D366",
-    borderRadius: "50%",
-    width: "50px",
-    height: "50px",
-    fontSize: "24px",
-    boxShadow: "0 6px 16px rgba(37, 211, 102, 0.3)",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    border: "none",
-    color: "white",
-    transition: "all 0.3s ease",
-  },
-  contactButtonIcon: {
-    fontSize: "24px",
-  },
-  contactCaption: {
-    background: 'rgba(0,0,0,0.8)',
-    color: 'white',
-    padding: '4px 10px',
-    borderRadius: '16px',
-    fontSize: '10px',
-    fontWeight: '600',
-    margin: 0,
-    boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-    whiteSpace: 'nowrap',
   },
   termsContainer: {
     display: "flex",
     alignItems: "center",
-    gap: "8px",
-    marginTop: "16px",
-    padding: "10px 0",
-    background: "rgba(0, 0, 0, 0.02)",
-    borderRadius: "10px",
+    gap: "6px",
     justifyContent: "center",
   },
   termsCheckbox: {
-    width: "16px",
-    height: "16px",
-    minWidth: "16px",
+    width: "14px",
+    height: "14px",
+    minWidth: "14px",
     cursor: "pointer",
     accentColor: "#FF6B6B",
-    borderRadius: "5px",
+    borderRadius: "4px",
   },
   termsLabel: {
-    fontSize: "11px",
+    fontSize: "10px",
     color: "#666",
     fontWeight: "500",
     cursor: "pointer",
-    lineHeight: "1.4",
+    lineHeight: "1.3",
   },
   termsLink: {
     background: "none",
     border: "none",
     color: "#FF6B6B",
-    fontSize: "11px",
+    fontSize: "10px",
     fontWeight: "700",
     cursor: "pointer",
     padding: "0",
     textDecoration: "underline",
+  },
+  copyright: {
+    textAlign: "center",
+  },
+  copyrightText: {
+    fontSize: "9px",
+    color: "#999",
+    fontWeight: "500",
   },
 };
