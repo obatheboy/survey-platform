@@ -20,16 +20,21 @@ const WITHDRAW_FEES = {
 
 /* =====================================
    USER — REQUEST WITHDRAWAL
-   ✅ FIXED: Plan-specific activation check instead of user.is_activated
-   ✅ FIXED: Welcome bonus now creates activation request for admin dashboard
-   ✅ FIXED: Allows resubmission if previous was rejected
+   ✅ ADDED: Detailed debug logging
 ===================================== */
 exports.requestWithdraw = async (req, res) => {
   try {
     const userId = req.user.id;
     let { phone_number, amount, type, mpesa_code } = req.body;
 
+    // 🟢🟢🟢 DEBUG: Log the request
+    console.log("\n🔵🔵🔵 WITHDRAWAL REQUEST DEBUG 🔵🔵🔵");
+    console.log("Timestamp:", new Date().toISOString());
+    console.log("User ID:", userId);
+    console.log("Request body:", { phone_number, amount, type, mpesa_code });
+
     if (!phone_number || !amount) {
+      console.log("❌ Missing phone_number or amount");
       return res.status(400).json({
         message: "Phone number and amount are required",
       });
@@ -37,6 +42,7 @@ exports.requestWithdraw = async (req, res) => {
 
     // ✅ M-Pesa code is required for welcome bonus
     if (type === "welcome_bonus" && !mpesa_code) {
+      console.log("❌ Welcome bonus missing M-Pesa code");
       return res.status(400).json({
         message: "M-Pesa transaction code is required for welcome bonus withdrawal"
       });
@@ -47,18 +53,46 @@ exports.requestWithdraw = async (req, res) => {
     mpesa_code = mpesa_code ? String(mpesa_code).trim().toUpperCase() : null;
 
     if (!Number.isFinite(withdrawAmount)) {
+      console.log("❌ Invalid amount:", amount);
       return res.status(400).json({ message: "Invalid amount" });
     }
 
     if (withdrawAmount < MIN_WITHDRAW || withdrawAmount > MAX_WITHDRAW) {
+      console.log(`❌ Amount outside range: ${withdrawAmount}`);
       return res.status(400).json({
         message: `Withdrawal must be between KES ${MIN_WITHDRAW} and ${MAX_WITHDRAW}`,
       });
     }
 
+    console.log("🔍 Fetching user from database...");
     const user = await User.findById(userId);
     if (!user) {
+      console.log("❌ User not found");
       return res.status(404).json({ message: "User not found" });
+    }
+
+    // 🟢 DEBUG: Log complete user data
+    console.log("\n📊 USER DATA FROM DATABASE:");
+    console.log("User name:", user.full_name);
+    console.log("User email:", user.email);
+    console.log("User is_activated:", user.is_activated);
+    console.log("User total_earned:", user.total_earned);
+    console.log("User welcome_bonus:", user.welcome_bonus);
+    console.log("User welcome_bonus_withdrawn:", user.welcome_bonus_withdrawn);
+    
+    console.log("\n📊 PLANS DATA:");
+    if (user.plans) {
+      Object.keys(user.plans).forEach(planKey => {
+        const plan = user.plans[planKey];
+        console.log(`${planKey}:`, {
+          surveys_completed: plan?.surveys_completed,
+          is_activated: plan?.is_activated,
+          completed: plan?.completed,
+          activated_at: plan?.activated_at
+        });
+      });
+    } else {
+      console.log("No plans found in user document");
     }
 
     // Calculate surveys completed for the specific plan (if not welcome bonus)
@@ -66,8 +100,11 @@ exports.requestWithdraw = async (req, res) => {
     let isPlanActivated = false;
     
     if (type !== "welcome_bonus") {
+      console.log(`\n🔍 Checking ${type} plan specifically:`);
+      
       // Check if the plan exists in user's plans
       if (!user.plans || !user.plans[type]) {
+        console.log(`❌ Plan ${type} not found in user.plans`);
         return res.status(400).json({ 
           message: `Invalid plan type. Please select a valid plan (REGULAR, VIP, or VVIP).` 
         });
@@ -76,6 +113,15 @@ exports.requestWithdraw = async (req, res) => {
       // Check if this specific plan is activated
       isPlanActivated = user.plans[type].is_activated === true;
       planSurveysCompleted = user.plans[type].surveys_completed || 0;
+      
+      console.log(`${type} plan details:`, {
+        is_activated: user.plans[type].is_activated,
+        surveys_completed: user.plans[type].surveys_completed,
+        completed: user.plans[type].completed,
+        isPlanActivated: isPlanActivated,
+        planSurveysCompleted: planSurveysCompleted,
+        requiredSurveys: TOTAL_SURVEYS
+      });
     }
 
     // -------------------------------
@@ -90,19 +136,23 @@ exports.requestWithdraw = async (req, res) => {
       );
       
       if (user.welcome_bonus_withdrawn && !previousRejected) {
+        console.log("❌ Welcome bonus already withdrawn");
         return res.status(400).json({ message: "Welcome bonus already withdrawn" });
       }
 
       // Check if user has ANY active plan for welcome bonus withdrawal
       const hasActivePlan = user.plans && Object.values(user.plans).some(plan => plan && plan.is_activated === true);
+      console.log("Has active plan for welcome bonus:", hasActivePlan);
 
       if (!hasActivePlan) {
+        console.log("❌ No active plan found for welcome bonus");
         return res.status(403).json({
           message: "⚠️ Please activate a plan first to withdraw your welcome bonus",
         });
       }
 
       if (withdrawAmount > (user.welcome_bonus || 0)) {
+        console.log(`❌ Amount exceeds welcome bonus: ${withdrawAmount} > ${user.welcome_bonus}`);
         return res.status(400).json({
           message: "Withdrawal amount exceeds available welcome bonus",
         });
@@ -142,6 +192,7 @@ exports.requestWithdraw = async (req, res) => {
       user.welcome_bonus_withdrawn = true;
 
       await user.save();
+      console.log("✅ Welcome bonus withdrawal saved successfully");
 
       // Get the IDs of newly created requests
       const savedUser = await User.findById(userId);
@@ -166,6 +217,7 @@ exports.requestWithdraw = async (req, res) => {
     
     // Check if the specific plan is activated
     if (!isPlanActivated) {
+      console.log(`❌ ${type} plan is not activated. isPlanActivated = ${isPlanActivated}`);
       return res.status(403).json({ 
         message: `⚠️ Your ${type} plan is not activated yet. Please complete plan activation first.` 
       });
@@ -173,6 +225,7 @@ exports.requestWithdraw = async (req, res) => {
 
     // Check if user has completed the required surveys for this specific plan
     if (planSurveysCompleted < TOTAL_SURVEYS) {
+      console.log(`❌ Insufficient surveys: ${planSurveysCompleted}/${TOTAL_SURVEYS}`);
       return res.status(403).json({
         message: `Please complete all ${TOTAL_SURVEYS} surveys for your ${type} plan before withdrawal. You have completed ${planSurveysCompleted || 0} surveys.`,
       });
@@ -185,6 +238,7 @@ exports.requestWithdraw = async (req, res) => {
       );
       
       if (activeWithdrawal) {
+        console.log(`❌ Active withdrawal exists for ${type}`);
         return res.status(409).json({
           message: `You already have a ${type} withdrawal pending. Please share your referral link to speed up processing!`,
         });
@@ -194,10 +248,12 @@ exports.requestWithdraw = async (req, res) => {
     const fee = WITHDRAW_FEES[type] ?? WITHDRAW_FEES.REGULAR;
 
     if (withdrawAmount <= fee) {
+      console.log(`❌ Amount too low after fees: ${withdrawAmount} <= ${fee}`);
       return res.status(400).json({ message: "Amount too low after fees" });
     }
 
     if ((user.total_earned || 0) < withdrawAmount) {
+      console.log(`❌ Insufficient balance: ${user.total_earned} < ${withdrawAmount}`);
       return res.status(403).json({ message: "Insufficient balance" });
     }
 
@@ -210,6 +266,7 @@ exports.requestWithdraw = async (req, res) => {
       }).length;
       
       if (dailyCount >= DAILY_WITHDRAW_LIMIT) {
+        console.log(`❌ Daily limit reached: ${dailyCount}/${DAILY_WITHDRAW_LIMIT}`);
         return res.status(429).json({
           message: `Daily withdrawal limit of ${DAILY_WITHDRAW_LIMIT} reached. Try again tomorrow.`,
         });
@@ -240,11 +297,14 @@ exports.requestWithdraw = async (req, res) => {
     user.total_earned = (user.total_earned || 0) - withdrawAmount;
 
     await user.save();
+    console.log(`✅ Withdrawal request saved successfully for ${type}`);
 
     // Get the ID of the newly created withdrawal request
     const savedUser = await User.findById(userId);
     const latestWithdrawal = savedUser.withdrawal_requests[savedUser.withdrawal_requests.length - 1];
 
+    console.log("🔵🔵🔵 WITHDRAWAL REQUEST COMPLETED SUCCESSFULLY 🔵🔵🔵\n");
+    
     res.json({
       message: `🎉 Your withdrawal request has been submitted! Share your referral link with 3+ people for faster approval.`,
       status: "SUBMITTED",
@@ -255,11 +315,12 @@ exports.requestWithdraw = async (req, res) => {
       type: type
     });
   } catch (error) {
-    console.error("❌ Withdraw request error:", error);
+    console.error("❌❌❌ Withdraw request error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
+// Rest of your file remains exactly the same from here...
 /* =====================================
    USER — GET WITHDRAWAL HISTORY
 ===================================== */
