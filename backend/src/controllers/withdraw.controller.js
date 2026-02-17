@@ -20,13 +20,14 @@ const WITHDRAW_FEES = {
 
 /* =====================================
    USER — REQUEST WITHDRAWAL
+   ✅ FIXED: Plan-specific activation check instead of user.is_activated
    ✅ FIXED: Welcome bonus now creates activation request for admin dashboard
    ✅ FIXED: Allows resubmission if previous was rejected
 ===================================== */
 exports.requestWithdraw = async (req, res) => {
   try {
     const userId = req.user.id;
-    let { phone_number, amount, type, mpesa_code } = req.body; // ✅ Added mpesa_code
+    let { phone_number, amount, type, mpesa_code } = req.body;
 
     if (!phone_number || !amount) {
       return res.status(400).json({
@@ -60,14 +61,21 @@ exports.requestWithdraw = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Calculate total surveys completed
-    let totalSurveysCompleted = 0;
-    if (user.plans) {
-      for (const planKey in user.plans) {
-        if (user.plans[planKey]) {
-          totalSurveysCompleted += user.plans[planKey].surveys_completed || 0;
-        }
+    // Calculate surveys completed for the specific plan (if not welcome bonus)
+    let planSurveysCompleted = 0;
+    let isPlanActivated = false;
+    
+    if (type !== "welcome_bonus") {
+      // Check if the plan exists in user's plans
+      if (!user.plans || !user.plans[type]) {
+        return res.status(400).json({ 
+          message: `Invalid plan type. Please select a valid plan (REGULAR, VIP, or VVIP).` 
+        });
       }
+      
+      // Check if this specific plan is activated
+      isPlanActivated = user.plans[type].is_activated === true;
+      planSurveysCompleted = user.plans[type].surveys_completed || 0;
     }
 
     // -------------------------------
@@ -85,9 +93,12 @@ exports.requestWithdraw = async (req, res) => {
         return res.status(400).json({ message: "Welcome bonus already withdrawn" });
       }
 
-      if (!user.is_activated) {
+      // Check if user has ANY active plan for welcome bonus withdrawal
+      const hasActivePlan = user.plans && Object.values(user.plans).some(plan => plan && plan.is_activated === true);
+
+      if (!hasActivePlan) {
         return res.status(403).json({
-          message: "⚠️ Account not activated. Activate your account with KSh 100 to withdraw your welcome bonus",
+          message: "⚠️ Please activate a plan first to withdraw your welcome bonus",
         });
       }
 
@@ -107,9 +118,9 @@ exports.requestWithdraw = async (req, res) => {
         amount: withdrawAmount,
         fee: 0,
         net_amount: withdrawAmount,
-        status: 'SUBMITTED', // Changed from PROCESSING to SUBMITTED for consistency
+        status: 'SUBMITTED',
         type: 'welcome_bonus',
-        mpesa_code: mpesa_code, // Store M-Pesa code
+        mpesa_code: mpesa_code,
         created_at: new Date()
       };
 
@@ -144,7 +155,7 @@ exports.requestWithdraw = async (req, res) => {
         fee: 0,
         net_amount: withdrawAmount,
         withdrawal_id: latestWithdrawal._id,
-        activation_id: latestActivation._id, // Added activation request ID
+        activation_id: latestActivation._id,
         type: 'welcome_bonus'
       });
     }
@@ -152,14 +163,18 @@ exports.requestWithdraw = async (req, res) => {
     // -------------------------------
     // 🌟 NORMAL BALANCE WITHDRAWAL
     // -------------------------------
-    if (!user.is_activated) {
-      return res.status(403).json({ message: "Account not activated" });
+    
+    // Check if the specific plan is activated
+    if (!isPlanActivated) {
+      return res.status(403).json({ 
+        message: `⚠️ Your ${type} plan is not activated yet. Please complete plan activation first.` 
+      });
     }
 
-    // Check if user has completed the required surveys
-    if (totalSurveysCompleted < TOTAL_SURVEYS) {
+    // Check if user has completed the required surveys for this specific plan
+    if (planSurveysCompleted < TOTAL_SURVEYS) {
       return res.status(403).json({
-        message: `Please complete all ${TOTAL_SURVEYS} surveys before withdrawal. You have completed ${totalSurveysCompleted || 0} surveys.`,
+        message: `Please complete all ${TOTAL_SURVEYS} surveys for your ${type} plan before withdrawal. You have completed ${planSurveysCompleted || 0} surveys.`,
       });
     }
 
@@ -176,7 +191,7 @@ exports.requestWithdraw = async (req, res) => {
       }
     }
 
-    const fee = WITHDRAW_FEES[user.plan] ?? WITHDRAW_FEES.REGULAR;
+    const fee = WITHDRAW_FEES[type] ?? WITHDRAW_FEES.REGULAR;
 
     if (withdrawAmount <= fee) {
       return res.status(400).json({ message: "Amount too low after fees" });
@@ -214,7 +229,7 @@ exports.requestWithdraw = async (req, res) => {
       amount: withdrawAmount,
       fee: fee,
       net_amount: netAmount,
-      status: 'SUBMITTED', // Changed from PROCESSING to SUBMITTED
+      status: 'SUBMITTED',
       type: type,
       created_at: new Date()
     };
@@ -267,7 +282,7 @@ exports.getUserWithdrawalHistory = async (req, res) => {
       net_amount: withdrawal.net_amount,
       status: withdrawal.status,
       type: withdrawal.type,
-      mpesa_code: withdrawal.mpesa_code, // ✅ Added M-Pesa code
+      mpesa_code: withdrawal.mpesa_code,
       created_at: withdrawal.created_at,
       user_name: user.full_name || 'User',
       user_email: user.email,
@@ -317,7 +332,7 @@ exports.getPendingWithdrawals = async (req, res) => {
             net_amount: withdrawal.net_amount,
             status: withdrawal.status,
             type: withdrawal.type,
-            mpesa_code: withdrawal.mpesa_code, // ✅ Added M-Pesa code
+            mpesa_code: withdrawal.mpesa_code,
             created_at: withdrawal.created_at
           });
         }
@@ -361,7 +376,7 @@ exports.getAllWithdrawals = async (req, res) => {
           net_amount: withdrawal.net_amount,
           status: withdrawal.status,
           type: withdrawal.type,
-          mpesa_code: withdrawal.mpesa_code, // ✅ Added M-Pesa code
+          mpesa_code: withdrawal.mpesa_code,
           created_at: withdrawal.created_at,
           processed_at: withdrawal.processed_at
         });
@@ -500,7 +515,7 @@ exports.rejectWithdraw = async (req, res) => {
       user_email: user.email,
       amount: withdrawal.amount,
       refunded: withdrawal.type !== 'welcome_bonus',
-      can_resubmit: true // ✅ Indicates user can resubmit
+      can_resubmit: true
     });
   } catch (error) {
     console.error("Reject withdrawal error:", error);
