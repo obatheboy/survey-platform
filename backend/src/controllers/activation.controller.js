@@ -130,6 +130,8 @@ exports.submitActivationPayment = async (req, res) => {
 
 /* =====================================
    ADMIN — APPROVE ACTIVATION
+   ✅ FIXED: Sets user.is_activated = true for ANY plan activation
+   This ensures withdrawals work for VIP and VVIP users too
 ===================================== */
 exports.approveActivation = async (req, res) => {
   try {
@@ -193,10 +195,9 @@ exports.approveActivation = async (req, res) => {
     user.plans[plan].is_activated = true;
     user.plans[plan].activated_at = new Date();
     
-    // If REGULAR plan is activated, also set user.is_activated = true
-    if (plan === "REGULAR") {
-      user.is_activated = true;
-    }
+    // ✅ FIXED: Set user.is_activated = true for ANY plan activation
+    // This ensures withdrawals work for VIP and VVIP users too
+    user.is_activated = true;
     
     await user.save();
 
