@@ -468,7 +468,7 @@ export default function Auth() {
 
           {/* Copyright Inside Card */}
           <div style={styles.copyright}>
-            <span style={styles.copyrightText}>© 2024 SurveyEarn</span>
+            <span style={styles.copyrightText}>© 2026 SurveyEarn. ✅ Approved by GOVT of Kenya</span>
           </div>
         </div>
       </div>
