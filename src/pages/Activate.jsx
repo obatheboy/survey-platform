@@ -823,3 +823,4 @@ Confirmed. Ksh100.00 sent to OBADIAH OTOKI for account activation"
     </>
   );
 }
+
