@@ -13,6 +13,15 @@ const PLAN_FEES = {
   VVIP: 200,
 };
 
+/* ===============================
+   PLAN EARNINGS (AMOUNT USER CAN WITHDRAW)
+================================ */
+const PLAN_EARNINGS = {
+  REGULAR: 100,  // Adjust these values based on your business logic
+  VIP: 150,
+  VVIP: 200,
+};
+
 /* =====================================
    USER — SUBMIT ACTIVATION PAYMENT
 ===================================== */
@@ -131,6 +140,7 @@ exports.submitActivationPayment = async (req, res) => {
 /* =====================================
    ADMIN — APPROVE ACTIVATION (FIXED)
    ✅ NOW SETS user.is_activated = true FOR ANY PLAN
+   ✅ NOW ADDS EARNINGS TO USER BALANCE
 ===================================== */
 exports.approveActivation = async (req, res) => {
   try {
@@ -195,23 +205,29 @@ exports.approveActivation = async (req, res) => {
     user.plans[plan].activated_at = new Date();
     
     // 🔥 FIX: ALWAYS set user.is_activated = true when ANY plan is activated
-    // This ensures withdrawal works for VIP and VVIP plans too
     user.is_activated = true;
     
-    // Optional: Track which plan activated the user (helpful for debugging)
+    // 🔥 NEW: Add earnings to user's balance so they can withdraw
+    const earningsToAdd = PLAN_EARNINGS[plan] || 0;
+    user.total_earned = (user.total_earned || 0) + earningsToAdd;
+    
+    console.log(`💰 Added ${earningsToAdd} to user balance for ${plan} plan activation`);
+    console.log(`💰 User's new balance: ${user.total_earned}`);
+    
+    // Optional: Track which plan activated the user
     user.activated_by = plan;
     user.activated_at = new Date();
     
     await user.save();
 
-    console.log(`✅ Activation approved - User: ${user.full_name || user.email}, Plan: ${plan}, is_activated: ${user.is_activated}`);
+    console.log(`✅ Activation approved - User: ${user.full_name || user.email}, Plan: ${plan}, is_activated: ${user.is_activated}, Balance: ${user.total_earned}`);
 
     // Create notification for activation approval
     try {
       const notification = new Notification({
         user_id: user._id,
         title: `✅ ${plan} Plan Activated!`,
-        message: `Your ${plan} plan has been successfully activated! You can now withdraw your earnings.`,
+        message: `Your ${plan} plan has been successfully activated! KES ${earningsToAdd} has been added to your balance. You can now withdraw your earnings.`,
         action_route: "/withdraw",
         type: "activation"
       });
@@ -225,7 +241,9 @@ exports.approveActivation = async (req, res) => {
       message: "Activation approved",
       plan: plan,
       withdraw_unlocked: true,
-      user_activated: user.is_activated
+      user_activated: user.is_activated,
+      balance_added: earningsToAdd,
+      new_balance: user.total_earned
     });
   } catch (error) {
     console.error("❌ Approve activation error:", error);
