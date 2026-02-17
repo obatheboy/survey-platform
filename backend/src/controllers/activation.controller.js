@@ -129,7 +129,8 @@ exports.submitActivationPayment = async (req, res) => {
 };
 
 /* =====================================
-   ADMIN — APPROVE ACTIVATION
+   ADMIN — APPROVE ACTIVATION (FIXED)
+   ✅ NOW SETS user.is_activated = true FOR ANY PLAN
 ===================================== */
 exports.approveActivation = async (req, res) => {
   try {
@@ -193,12 +194,17 @@ exports.approveActivation = async (req, res) => {
     user.plans[plan].is_activated = true;
     user.plans[plan].activated_at = new Date();
     
-    // If REGULAR plan is activated, also set user.is_activated = true
-    if (plan === "REGULAR") {
-      user.is_activated = true;
-    }
+    // 🔥 FIX: ALWAYS set user.is_activated = true when ANY plan is activated
+    // This ensures withdrawal works for VIP and VVIP plans too
+    user.is_activated = true;
+    
+    // Optional: Track which plan activated the user (helpful for debugging)
+    user.activated_by = plan;
+    user.activated_at = new Date();
     
     await user.save();
+
+    console.log(`✅ Activation approved - User: ${user.full_name || user.email}, Plan: ${plan}, is_activated: ${user.is_activated}`);
 
     // Create notification for activation approval
     try {
@@ -215,13 +221,19 @@ exports.approveActivation = async (req, res) => {
     }
 
     return res.json({
+      success: true,
       message: "Activation approved",
       plan: plan,
       withdraw_unlocked: true,
+      user_activated: user.is_activated
     });
   } catch (error) {
     console.error("❌ Approve activation error:", error);
-    return res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ 
+      success: false,
+      message: "Server error",
+      error: error.message 
+    });
   }
 };
 
@@ -282,13 +294,18 @@ exports.rejectActivation = async (req, res) => {
     }
 
     return res.json({ 
+      success: true,
       message: "Activation rejected",
       user_id: userId,
       activation_id: activationId
     });
   } catch (error) {
     console.error("❌ Reject activation error:", error);
-    return res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ 
+      success: false,
+      message: "Server error",
+      error: error.message 
+    });
   }
 };
 
@@ -313,9 +330,9 @@ exports.getPendingActivations = async (req, res) => {
       user.activation_requests.forEach(activation => {
         if (activation.status === 'SUBMITTED') {
           pendingActivations.push({
-            id: activation._id,  // Use 'id' for frontend
+            id: activation._id,
             user_id: user._id,
-            full_name: user.full_name,  // Use 'full_name' for frontend
+            full_name: user.full_name,
             phone: user.phone,
             email: user.email,
             plan: activation.plan,
@@ -328,18 +345,18 @@ exports.getPendingActivations = async (req, res) => {
       });
     });
 
-    // Return format that frontend expects
     return res.json({
       success: true,
       count: pendingActivations.length,
-      payments: pendingActivations,  // Use 'payments' for frontend
+      payments: pendingActivations,
       message: "Pending activations retrieved successfully"
     });
   } catch (error) {
     console.error("❌ Get pending activations error:", error);
     return res.status(500).json({ 
       success: false,
-      message: "Server error" 
+      message: "Server error",
+      error: error.message 
     });
   }
 };
@@ -368,9 +385,9 @@ exports.getAllActivations = async (req, res) => {
     users.forEach(user => {
       user.activation_requests.forEach(activation => {
         allActivations.push({
-          id: activation._id,  // Use 'id' for frontend
-          user_id: user._id,   // Include user_id for approve/reject
-          full_name: user.full_name,  // Use 'full_name' for frontend
+          id: activation._id,
+          user_id: user._id,
+          full_name: user.full_name,
           phone: user.phone,
           email: user.email,
           plan: activation.plan,
@@ -387,20 +404,19 @@ exports.getAllActivations = async (req, res) => {
     allActivations.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
     console.log(`📊 Returning ${allActivations.length} payments`);
-    console.log(`📝 Sample payment:`, allActivations[0] || 'No payments');
 
-    // Return format that frontend expects
     return res.json({
       success: true,
       count: allActivations.length,
-      payments: allActivations,  // Use 'payments' for frontend
+      payments: allActivations,
       message: "Activations retrieved successfully"
     });
   } catch (error) {
     console.error("❌ Get all activations error:", error);
     return res.status(500).json({ 
       success: false,
-      message: "Server error" 
+      message: "Server error",
+      error: error.message 
     });
   }
 };
@@ -416,7 +432,6 @@ exports.testActivationFormat = async (req, res) => {
 
     console.log("🧪 TEST: Checking getAllActivations format");
     
-    // Call the actual function to see what it returns
     const users = await User.find({
       'activation_requests.0': { $exists: true }
     }).limit(1).select('full_name phone email activation_requests');
@@ -441,8 +456,7 @@ exports.testActivationFormat = async (req, res) => {
       });
     });
 
-    console.log("🧪 TEST: Sample item keys:", Object.keys(allActivations[0] || {}));
-    console.log("🧪 TEST: Sample item:", allActivations[0]);
+    console.log("🧪 TEST: Sample item:", allActivations[0] || 'No items');
     
     return res.json({
       success: true,
@@ -454,7 +468,8 @@ exports.testActivationFormat = async (req, res) => {
     console.error("🧪 TEST Error:", error);
     return res.status(500).json({ 
       success: false,
-      message: "Test error" 
+      message: "Test error",
+      error: error.message 
     });
   }
 };
