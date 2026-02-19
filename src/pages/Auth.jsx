@@ -3,14 +3,17 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../api/api";
 
 // Move Input component outside to prevent recreation
-const Input = ({ type = "text", icon, ...props }) => (
+const Input = ({ type = "text", icon, readOnly, disabled, ...props }) => (
   <div style={styles.inputContainer}>
     {icon && <span style={styles.inputIcon}>{icon}</span>}
     <input
       type={type}
+      readOnly={readOnly}
+      disabled={disabled}
       style={{
         ...styles.input,
         paddingLeft: icon ? "45px" : "20px",
+        cursor: disabled ? 'not-allowed' : readOnly ? 'default' : 'text',
       }}
       {...props}
     />
