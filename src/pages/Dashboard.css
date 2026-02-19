@@ -3453,3 +3453,52 @@ body.no-scroll {
 .dashboard {
   padding-bottom: 80px !important;
 }
+
+/* =========================================================
+   DASHBOARD RESPONSIVE - SMALLER CARDS
+   ========================================================= */
+@media (max-width: 480px) {
+  .plan-card {
+    padding: 12px !important;
+    border-radius: 16px !important;
+    margin-bottom: 12px !important;
+  }
+  
+  .welcome-bonus {
+    padding: 10px 12px !important;
+    border-radius: 14px !important;
+  }
+  
+  .plan-icon {
+    font-size: 24px !important;
+    width: 36px !important;
+    height: 36px !important;
+  }
+  
+  .plan-name {
+    font-size: 18px !important;
+  }
+  
+  .plan-status {
+    padding: 4px 10px !important;
+    font-size: 10px !important;
+  }
+  
+  .stats-card {
+    padding: 12px !important;
+  }
+  
+  .stats-value {
+    font-size: 20px !important;
+  }
+  
+  .section-heading h3 {
+    font-size: 16px !important;
+  }
+}
+
+/* Caption colors - Bright and Visible */
+.plan-info h4 {
+  color: #00e5ff !important;
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.5) !important;
+}

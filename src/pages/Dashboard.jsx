@@ -889,7 +889,7 @@ return (
 <div className="user-notifications-section">
   <UserNotifications />
 </div>
-{/* WELCOME BONUS CARD - PREMIUM ROYAL PURPLE THEME WITH RED BORDER - ULTRA COMPACT */}
+{/* WELCOME BONUS CARD - COMPACT VERSION */}
 <section ref={welcomeRef}>
   <div className="plan-card welcome-bonus" style={{
     background: 'linear-gradient(145deg, #5f0f40, #831843, #9d174d)',

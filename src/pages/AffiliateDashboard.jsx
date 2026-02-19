@@ -27,6 +27,16 @@ export default function AffiliateDashboard() {
     }
   };
 
+  const handleWithdrawClick = () => {
+    const earnings = stats?.amount_earned || 0;
+    if (earnings < 50) {
+      setToast(`⚠️ Minimum withdrawal is KES 50. You have KES ${earnings} in referral earnings.`);
+      setTimeout(() => setToast(""), 4000);
+      return;
+    }
+    navigate("/withdraw-form?type=affiliate");
+  };
+
   const copyReferralLink = () => {
     if (stats?.referral_link) {
       navigator.clipboard.writeText(stats.referral_link);
@@ -75,7 +85,7 @@ export default function AffiliateDashboard() {
           <button className="back-btn" onClick={() => navigate("/dashboard")}>
             ← Dashboard
           </button>
-          <button className="withdraw-btn" onClick={() => navigate("/withdraw-form?type=affiliate")}>
+          <button className="withdraw-btn" onClick={handleWithdrawClick}>
               💰 Withdraw Referral Earnings
             </button>
         </div>
@@ -180,10 +190,10 @@ export default function AffiliateDashboard() {
         </div>
       </div>
 
-      {/* Referrals List */}
-      {stats?.referrals?.length > 0 && (
-        <div className="affiliate-referrals-list">
-          <h2>👥 Your Referrals</h2>
+      {/* Referrals List - Always Show */}
+      <div className="affiliate-referrals-list">
+        <h2>👥 Your Referrals</h2>
+        {stats?.referrals?.length > 0 ? (
           <div className="referrals-table">
             <div className="table-header">
               <span>Name</span>
@@ -202,16 +212,17 @@ export default function AffiliateDashboard() {
               </div>
             ))}
           </div>
-        </div>
-      )}
-
-      {stats?.referrals?.length === 0 && (
-        <div className="no-referrals">
-          <div className="empty-icon">🎁</div>
-          <h3>No Referrals Yet</h3>
-          <p>Share your referral link to start earning!</p>
-        </div>
-      )}
+        ) : (
+          <div className="no-referrals">
+            <div className="empty-icon">🎁</div>
+            <h3>No Referrals Yet</h3>
+            <p>Share your referral link to start earning!</p>
+            <p style={{fontSize: '12px', marginTop: '8px', opacity: 0.8}}>
+              When someone registers using your link, they will appear here as "Pending" until they activate their account.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
