@@ -75,11 +75,9 @@ export default function AffiliateDashboard() {
           <button className="back-btn" onClick={() => navigate("/dashboard")}>
             ← Dashboard
           </button>
-          {(stats?.amount_earned > 0) && (
-            <button className="withdraw-btn" onClick={() => navigate("/withdraw")}>
+          <button className="withdraw-btn" onClick={() => navigate("/withdraw")}>
               💰 Withdraw
             </button>
-          )}
         </div>
         <h1>🎯 Affiliate Program</h1>
         <p>Earn KES 50 for every friend you refer!</p>

@@ -8,7 +8,6 @@ import UserNotifications from "../components/UserNotifications.jsx";
 
 import Testimonials from "../components/Testimonials.jsx";
 import "./Dashboard.css";
-import "./Dashboard-Enhanced.css";
 
 const PLANS = {
   REGULAR: { 
@@ -1626,7 +1625,7 @@ return (
           border-top-color: rgba(255, 255, 255, 0.1);
         }
 
-        /* The .nav-btn styles are already in Dashboard-Enhanced.css */
+        /* The .nav-btn styles are in Dashboard.css */
         /* We can add overrides or new styles here if needed */
         .nav-btn {
           flex: 1;
