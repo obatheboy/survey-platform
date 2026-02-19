@@ -3406,19 +3406,32 @@ body.no-scroll {
 
 /* Make nav buttons smaller on mobile */
 @media (max-width: 400px) {
+  .bottom-nav-bar {
+    padding: 4px 2px !important;
+  }
+  
   .bottom-nav-bar .nav-btn {
-    padding: 6px 4px !important;
-    min-height: 50px !important;
+    padding: 4px 2px !important;
+    min-height: 45px !important;
     min-width: 0 !important;
     flex: 1 !important;
   }
   
   .bottom-nav-bar .nav-icon {
-    font-size: 16px !important;
+    font-size: 14px !important;
+    margin-bottom: 0 !important;
   }
   
   .bottom-nav-bar .nav-label {
-    font-size: 9px !important;
+    font-size: 8px !important;
+    display: none !important; /* Hide labels on very small screens */
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 320px) {
+  .bottom-nav-bar .nav-icon {
+    font-size: 12px !important;
   }
 }
 

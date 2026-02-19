@@ -1502,7 +1502,7 @@ return (
           onClick={() => setActiveTab("OVERVIEW")}
         >
           <span className="nav-icon">📊</span>
-          <span className="nav-label">Dashboard</span>
+          <span className="nav-label">Home</span>
         </button>
         <button
           className={`nav-btn ${activeTab === "SURVEYS" ? "active" : ""}`}
@@ -1513,13 +1513,6 @@ return (
         </button>
         <button
           className="nav-btn"
-          onClick={() => navigate("/withdraw-form")}
-        >
-          <span className="nav-icon">💸</span>
-          <span className="nav-label">Withdraw</span>
-        </button>
-        <button
-          className="nav-btn"
           onClick={() => navigate("/affiliate")}
         >
           <span className="nav-icon">🎯</span>
@@ -1527,10 +1520,10 @@ return (
         </button>
         <button
           className="nav-btn"
-          onClick={openWhatsAppSupport}
+          onClick={() => navigate("/withdraw-form")}
         >
-          <span className="nav-icon">💬</span>
-          <span className="nav-label">Chat Us</span>
+          <span className="nav-icon">💸</span>
+          <span className="nav-label">Withdraw</span>
         </button>
       </div>
 

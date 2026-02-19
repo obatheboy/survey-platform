@@ -75,8 +75,8 @@ export default function AffiliateDashboard() {
           <button className="back-btn" onClick={() => navigate("/dashboard")}>
             ← Dashboard
           </button>
-          <button className="withdraw-btn" onClick={() => navigate("/withdraw")}>
-              💰 Withdraw
+          <button className="withdraw-btn" onClick={() => navigate("/withdraw-form?type=affiliate")}>
+              💰 Withdraw Referral Earnings
             </button>
         </div>
         <h1>🎯 Affiliate Program</h1>
