@@ -171,7 +171,8 @@ const userSchema = new mongoose.Schema({
     referred_user_name: String,
     amount: { type: Number, default: 50 },
     status: { type: String, enum: ['PENDING', 'CREDITED'], default: 'CREDITED' },
-    created_at: { type: Date, default: Date.now }
+    created_at: { type: Date, default: Date.now },
+    from_activation: { type: Boolean, default: true }  // Track if from activation payment
   }]
 });
 

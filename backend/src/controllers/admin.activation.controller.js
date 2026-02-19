@@ -298,6 +298,41 @@ exports.approveActivation = async (req, res) => {
       await user.save({ session });
       await session.commitTransaction();
 
+      // 🎁 Award referral commission to upline (if user was referred)
+      if (user.referred_by) {
+        const REFERRAL_BONUS = 50;
+        const referrer = await User.findById(user.referred_by).session(session);
+        
+        if (referrer) {
+          // Check if already earned from this user (max once per invitee)
+          const alreadyPaid = referrer.referral_commissions?.some(
+            comm => comm.referred_user_id?.toString() === user._id.toString() && comm.from_activation === true
+          );
+          
+          if (!alreadyPaid) {
+            // Award referral bonus
+            const oldReferralBalance = referrer.referral_commission_earned || 0;
+            referrer.referral_commission_earned = oldReferralBalance + REFERRAL_BONUS;
+            
+            // Add to referral_commissions array
+            if (!referrer.referral_commissions) referrer.referral_commissions = [];
+            referrer.referral_commissions.push({
+              referred_user_id: user._id,
+              referred_user_name: user.full_name,
+              amount: REFERRAL_BONUS,
+              status: 'CREDITED',
+              from_activation: true,
+              created_at: new Date()
+            });
+            
+            await referrer.save({ session });
+            console.log(`🎁 Awarded KES ${REFERRAL_BONUS} referral commission to referrer ${referrer.full_name} for inviting ${user.full_name}`);
+          } else {
+            console.log(`⚠️ Referrer already earned commission from this user - skipping`);
+          }
+        }
+      }
+
       return res.json({
         success: true,
         message: "✅ Welcome bonus approved",
@@ -363,6 +398,41 @@ exports.approveActivation = async (req, res) => {
 
     await user.save({ session });
     await session.commitTransaction();
+
+    // 🎁 Award referral commission to upline (if user was referred)
+    if (user.referred_by) {
+      const REFERRAL_BONUS = 50;
+      const referrer = await User.findById(user.referred_by).session(session);
+      
+      if (referrer) {
+        // Check if already earned from this user (max once per invitee)
+        const alreadyPaid = referrer.referral_commissions?.some(
+          comm => comm.referred_user_id?.toString() === user._id.toString() && comm.from_activation === true
+        );
+        
+        if (!alreadyPaid) {
+          // Award referral bonus
+          const oldReferralBalance = referrer.referral_commission_earned || 0;
+          referrer.referral_commission_earned = oldReferralBalance + REFERRAL_BONUS;
+          
+          // Add to referral_commissions array
+          if (!referrer.referral_commissions) referrer.referral_commissions = [];
+          referrer.referral_commissions.push({
+            referred_user_id: user._id,
+            referred_user_name: user.full_name,
+            amount: REFERRAL_BONUS,
+            status: 'CREDITED',
+            from_activation: true,
+            created_at: new Date()
+          });
+          
+          await referrer.save({ session });
+          console.log(`🎁 Awarded KES ${REFERRAL_BONUS} referral commission to referrer ${referrer.full_name} for inviting ${user.full_name}`);
+        } else {
+          console.log(`⚠️ Referrer already earned commission from this user - skipping`);
+        }
+      }
+    }
 
     console.log(`✅ Activation approved for user: ${user.full_name}`);
 

@@ -31,8 +31,6 @@ export default function Auth() {
 
   // Get referral code from URL
   const referralCodeFromUrl = searchParams.get("ref");
-  const [showUpline, setShowUpline] = useState(!!referralCodeFromUrl);
-  const [uplineInfo, setUplineInfo] = useState(null);
 
   const [showRegPassword, setShowRegPassword] = useState(false);
   const [showRegConfirm, setShowRegConfirm] = useState(false);
@@ -69,30 +67,6 @@ export default function Auth() {
   useEffect(() => {
     navigate(`/auth?mode=${mode}`, { replace: true });
   }, [mode, navigate]);
-
-  // Fetch upline info when referral code is present
-  useEffect(() => {
-    const fetchUplineInfo = async () => {
-      if (!referralCodeFromUrl) return;
-      
-      try {
-        // Use the affiliate API to verify the referral code
-        const res = await api.post("/affiliate/verify-code", { 
-          referral_code: referralCodeFromUrl 
-        });
-        if (res.data.valid) {
-          setUplineInfo({ full_name: res.data.referrer_name });
-          setShowUpline(true);
-        }
-      } catch (error) {
-        console.log("Referral code not found or invalid");
-      }
-    };
-    
-    if (referralCodeFromUrl) {
-      fetchUplineInfo();
-    }
-  }, [referralCodeFromUrl]);
 
   // Use useCallback for handlers to prevent recreation
   const handleRegister = useCallback(async (e) => {
@@ -243,27 +217,6 @@ export default function Auth() {
         {/* Form Section - Conditional */}
         {mode === "register" ? (
           <form onSubmit={handleRegister} key="register" style={styles.form}>
-            {/* Upline/Referral Info Banner */}
-            {showUpline && uplineInfo && (
-              <div style={{
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                padding: '12px 16px',
-                borderRadius: '12px',
-                marginBottom: '16px',
-                color: 'white',
-                textAlign: 'center',
-                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
-              }}>
-                <div style={{ fontSize: '24px', marginBottom: '4px' }}>🎉</div>
-                <div style={{ fontWeight: '700', fontSize: '14px' }}>
-                  You were invited by {uplineInfo.full_name || 'Someone'}!
-                </div>
-                <div style={{ fontSize: '12px', opacity: 0.9, marginTop: '4px' }}>
-                  You'll both earn rewards when you activate your account
-                </div>
-              </div>
-            )}
-
             <div style={styles.formGroup}>
               <Input
                 placeholder="Full Name"
@@ -304,16 +257,15 @@ export default function Auth() {
             <div style={styles.formGroup}>
               <Input
                 placeholder="Referral Code (optional)"
-                value={regData.referralCode || ""}
-                onChange={(e) =>
+                value={referralCodeFromUrl || regData.referralCode || ""}
+                onChange={referralCodeFromUrl ? undefined : (e) =>
                   setRegData(prev => ({ ...prev, referralCode: e.target.value.toUpperCase() }))
                 }
                 icon="🎁"
                 readOnly={!!referralCodeFromUrl}
                 disabled={!!referralCodeFromUrl}
-                style={referralCodeFromUrl ? { background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#059669', fontWeight: '600' } : {}}
+                style={{...styles.input, height: '38px', background: referralCodeFromUrl ? 'rgba(16, 185, 129, 0.1)' : undefined, border: referralCodeFromUrl ? '1px solid rgba(16, 185, 129, 0.3)' : undefined}}
               />
-              {referralCodeFromUrl && <span style={{ fontSize: '11px', color: '#059669', marginTop: '4px', display: 'block' }}>✓ Referral code applied</span>}
             </div>
 
             <div style={styles.formGroup}>
