@@ -674,7 +674,7 @@ return (
             <span className="menu-icon">☰</span>
           </button>
           <h1 className="dashboard-main-title">Dashboard</h1>          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <button
               onClick={openWhatsAppSupport}
               style={{
@@ -682,15 +682,15 @@ return (
                 color: 'white',
                 border: 'none',
                 borderRadius: '50%',
-                width: '40px',
-                height: '40px',
-                fontSize: '20px',
+                width: '32px',
+                height: '32px',
+                fontSize: '16px',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 transition: 'all 0.3s ease',
-                boxShadow: '0 3px 8px rgba(37, 211, 102, 0.3)',
+                boxShadow: '0 2px 6px rgba(37, 211, 102, 0.3)',
                 padding: 0
               }}
               onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
@@ -734,14 +734,14 @@ return (
 
       {/* HERO SECTION - ULTRA COMPACT */}
       <div className="dashboard-section hero-section" style={{
-        borderRadius: '20px',
-        padding: '12px',
+        borderRadius: '14px',
+        padding: '10px',
         background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
-        boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.1)',
+        boxShadow: '0 6px 20px -5px rgba(0, 0, 0, 0.1)',
         border: 'none',
         position: 'relative',
         overflow: 'hidden',
-        marginTop: '10px'
+        marginTop: '8px'
       }}>
         <div style={{
           display: 'grid',
@@ -1636,17 +1636,25 @@ return (
           justify-content: center;
           background: transparent;
           border: none;
-          gap: 4px;
-          padding: 6px;
-          border-radius: 12px;
+          gap: 2px;
+          padding: 4px;
+          border-radius: 8px;
           transition: all 0.2s ease;
           color: var(--text-muted);
-          max-width: 80px; /* Prevent buttons from getting too wide */
+          max-width: 60px;
         }
 
         .nav-btn.active {
           color: var(--primary);
           background: rgba(37, 99, 235, 0.1);
+        }
+
+        .nav-icon {
+          font-size: 16px;
+        }
+
+        .nav-label {
+          font-size: 9px;
         }
 
         .nav-icon {

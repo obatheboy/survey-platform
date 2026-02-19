@@ -5,8 +5,8 @@
    UPDATED: Welcome Bonus Card - Premium Royal Purple with Red Border
    UPDATED: Survey Plan Cards - Distinct Beautiful Colors
    UPDATED: Plan Progress Captions - Bright, Bold, 100% Visible
-   FIXED: Plan info heading color selectors with proper styles - FORCED WITH !important
-   ALL CHANGES FORCED WITH !important - ORIGINAL CODE PRESERVED
+   FIXED: Plan info heading color selectors with proper styles
+   NOTE: !important kept only for essential overrides
 ========================================================= */
 
 /* FIX 1: Prevent white flash on scroll (low RAM phones) */
@@ -63,18 +63,18 @@ html, body {
   --border-soft: rgba(0, 0, 0, 0.08);
   --border-medium: rgba(0, 0, 0, 0.12);
   --border-strong: rgba(0, 0, 0, 0.2);
-  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --card-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  --card-shadow-hover: 0 6px 10px -3px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
   --transition-normal: all 0.2s ease;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 12px;
-  --space-lg: 16px;
-  --space-xl: 24px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --space-xs: 3px;
+  --space-sm: 6px;
+  --space-md: 10px;
+  --space-lg: 14px;
+  --space-xl: 18px;
   
   --primary: #2563eb;
   --primary-dark: #1e40af;
@@ -152,31 +152,31 @@ body {
 
 /* FIX 3: "Chat Us" button always at bottom of screen */
 .chat-us-button-container {
-  position: fixed !important;
-  bottom: 20px !important;
-  right: 20px !important;
-  z-index: 1000 !important;
-  width: 60px !important;
-  height: 60px !important;
-  pointer-events: auto !important;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  width: 50px;
+  height: 50px;
+  pointer-events: auto;
 }
 
 .chat-us-button {
-  width: 100% !important;
-  height: 100% !important;
-  border-radius: 50% !important;
-  background: linear-gradient(135deg, #25D366, #128C7E) !important;
-  color: white !important;
-  border: none !important;
-  font-size: 28px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4) !important;
-  cursor: pointer !important;
-  transition: transform 0.2s ease !important;
-  position: relative !important;
-  overflow: hidden !important;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  color: white;
+  border: none;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .chat-us-button:active {
@@ -185,24 +185,24 @@ body {
 
 /* FIX 4: Scroll reminder at bottom of screen */
 .scroll-reminder-notification {
-  position: fixed !important;
-  bottom: 90px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  z-index: 999 !important;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
-  color: white !important;
-  padding: 12px 20px !important;
-  border-radius: 30px !important;
-  font-weight: 700 !important;
-  font-size: 14px !important;
-  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4) !important;
-  animation: fadeInUp 0.3s ease !important;
-  max-width: 90% !important;
-  text-align: center !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 12px;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+  animation: fadeInUp 0.3s ease;
+  max-width: 85%;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 @keyframes fadeInUp {
@@ -399,9 +399,9 @@ body {
   background: rgba(255, 255, 255, 0.15);
   border: none;
   color: white;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-md);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -416,7 +416,7 @@ body {
 }
 
 .menu-icon {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: bold;
 }
 
@@ -435,18 +435,18 @@ body {
 
 /* =========================================================
    3. ELITE WELCOME BONUS CARD - PREMIUM ROYAL PURPLE THEME
-   UPDATED: Red border + beautiful royal purple background - FORCED WITH !important
+   UPDATED: Red border + beautiful royal purple background
 ========================================================= */
 .professional-bonus-card {
-  background: var(--welcome-gradient) !important; /* Premium Royal Purple */
-  border: 4px solid #ff3333 !important;
-  border-radius: var(--radius-xl);
-  padding: 20px;
+  background: var(--welcome-gradient);
+  border: 3px solid #ff3333;
+  border-radius: var(--radius-lg);
+  padding: 14px;
   margin-bottom: var(--space-md);
   box-shadow: 
-    0 20px 25px -5px rgba(95, 15, 64, 0.3),
-    0 8px 10px -6px rgba(0, 0, 0, 0.2),
-    0 0 0 1px rgba(255, 215, 0, 0.3) inset !important;
+    0 15px 20px -5px rgba(95, 15, 64, 0.3),
+    0 6px 8px -5px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 215, 0, 0.3) inset;
   color: white;
   position: relative;
   overflow: hidden;
