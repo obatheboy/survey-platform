@@ -14,6 +14,7 @@ const Input = ({ type = "text", icon, readOnly, disabled, ...props }) => (
         ...styles.input,
         paddingLeft: icon ? "45px" : "20px",
         cursor: disabled ? 'not-allowed' : readOnly ? 'default' : 'text',
+        pointerEvents: disabled ? 'none' : 'auto',
       }}
       {...props}
     />
@@ -254,19 +255,19 @@ export default function Auth() {
               />
             </div>
 
-            <div style={styles.formGroup}>
-              <Input
-                placeholder="Referral Code (optional)"
-                value={referralCodeFromUrl || regData.referralCode || ""}
-                onChange={referralCodeFromUrl ? undefined : (e) =>
-                  setRegData(prev => ({ ...prev, referralCode: e.target.value.toUpperCase() }))
-                }
-                icon="🎁"
-                readOnly={!!referralCodeFromUrl}
-                disabled={!!referralCodeFromUrl}
-                style={{...styles.input, height: '38px', background: referralCodeFromUrl ? 'rgba(16, 185, 129, 0.1)' : undefined, border: referralCodeFromUrl ? '1px solid rgba(16, 185, 129, 0.3)' : undefined}}
-              />
-            </div>
+            {/* Hide referral field when auto-filled from URL - show only when empty */}
+            {!referralCodeFromUrl && (
+              <div style={styles.formGroup}>
+                <Input
+                  placeholder="Referral Code (optional)"
+                  value={regData.referralCode || ""}
+                  onChange={(e) =>
+                    setRegData(prev => ({ ...prev, referralCode: e.target.value.toUpperCase() }))
+                  }
+                  icon="🎁"
+                />
+              </div>
+            )}
 
             <div style={styles.formGroup}>
               <div style={styles.passwordContainer}>

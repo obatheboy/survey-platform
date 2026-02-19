@@ -1,6 +1,6 @@
 // ========================= WithdrawForm.jsx =========================
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import api, { queueWithdrawRequest, canMakeRequest } from "../api/api";
 import "./WithdrawForm.css";
 
@@ -34,7 +34,10 @@ const PLANS = {
 export default function WithdrawForm() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const planFromState = location.state?.plan;
+  const withdrawType = searchParams.get("type"); // Get type from URL query params
+  const isAffiliateWithdraw = withdrawType === "affiliate";
   
   const [plan, setPlan] = useState(planFromState || "");
   const [amount, setAmount] = useState("");

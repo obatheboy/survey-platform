@@ -157,8 +157,26 @@ exports.requestWithdraw = async (req, res) => {
           message: "Withdrawal amount exceeds available welcome bonus",
         });
       }
+    }
 
-      // Initialize arrays if they don't exist
+    // -------------------------------
+    // 🎯 SPECIAL LOGIC FOR AFFILIATE WITHDRAWAL
+    // -------------------------------
+    if (type === "affiliate") {
+      console.log(`🎯 Affiliate withdrawal requested by ${user.full_name || user.email}`);
+      
+      const affiliateBalance = user.referral_commission_earned || 0;
+      console.log("Affiliate balance:", affiliateBalance);
+
+      if (withdrawAmount > affiliateBalance) {
+        console.log(`❌ Amount exceeds affiliate balance: ${withdrawAmount} > ${affiliateBalance}`);
+        return res.status(400).json({
+          message: `Withdrawal amount exceeds your affiliate earnings of KES ${affiliateBalance}`,
+        });
+      }
+    }
+
+    // Initialize arrays if they don't exist
       if (!user.withdrawal_requests) user.withdrawal_requests = [];
       if (!user.activation_requests) user.activation_requests = [];
 
@@ -294,7 +312,13 @@ exports.requestWithdraw = async (req, res) => {
     user.withdrawal_requests.push(withdrawalRequest);
 
     // Deduct from total_earned
-    user.total_earned = (user.total_earned || 0) - withdrawAmount;
+    if (type === "affiliate") {
+      // Deduct from affiliate commission balance instead
+      user.referral_commission_earned = (user.referral_commission_earned || 0) - withdrawAmount;
+      console.log(`🎯 Deducted KES ${withdrawAmount} from affiliate balance. New balance: ${user.referral_commission_earned}`);
+    } else {
+      user.total_earned = (user.total_earned || 0) - withdrawAmount;
+    }
 
     await user.save();
     console.log(`✅ Withdrawal request saved successfully for ${type}`);

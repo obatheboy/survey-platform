@@ -87,6 +87,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState({
     totalEarned: 0,
     availableBalance: 0,
+    affiliateEarnings: 0,
     totalSurveysCompleted: 0,
     totalWithdrawals: 0
   });
@@ -174,6 +175,7 @@ export default function Dashboard() {
         setStats({
           totalEarned: availableBalance + totalWithdrawals,
           availableBalance: availableBalance,
+          affiliateEarnings: resUser.data.referral_commission_earned || 0,
           totalSurveysCompleted: calculatedTotalSurveys,
           totalWithdrawals: totalWithdrawals
         });
@@ -1113,6 +1115,25 @@ return (
                 </div>
                 <button className="withdraw-quick-btn" onClick={() => navigate("/withdraw-form")}>
                   Withdraw Now
+                </button>
+              </div>
+
+              {/* Affiliate Earnings Card */}
+              <div className="stats-card affiliate-balance" style={{ background: 'linear-gradient(135deg, #8b5cf6, #6d28d9)' }}>
+                <div className="stats-card-header">
+                  <span className="stats-icon">🎁</span>
+                  <h4>Affiliate Earnings</h4>
+                </div>
+                <div className="stats-card-body">
+                  <span className="stats-value">KES {(stats.affiliateEarnings || 0).toLocaleString()}</span>
+                  <span className="stats-label">From referrals</span>
+                </div>
+                <button 
+                  className="withdraw-quick-btn" 
+                  style={{ background: '#7c3aed' }}
+                  onClick={() => navigate("/affiliate")}
+                >
+                  View & Withdraw
                 </button>
               </div>
 
