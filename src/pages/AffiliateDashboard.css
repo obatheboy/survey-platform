@@ -34,28 +34,52 @@
   margin-bottom: 24px;
 }
 
+.affiliate-header .header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 0 4px;
+}
+
 .affiliate-header .back-btn {
   background: white;
   border: 1px solid #e2e8f0;
-  padding: 8px 16px;
+  padding: 10px 16px;
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  margin-bottom: 16px;
+  font-size: 14px;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  color: #475569;
+}
+
+.affiliate-header .withdraw-btn {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
 }
 
 .affiliate-header h1 {
   color: #1e293b;
-  font-size: 28px;
-  margin-bottom: 8px;
+  font-size: 22px;
+  margin-bottom: 6px;
 }
 
 .affiliate-header p {
   color: #64748b;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 /* Stats Grid */
@@ -68,11 +92,11 @@
 
 .affiliate-stat-card {
   background: white;
-  border-radius: 16px;
-  padding: 20px;
+  border-radius: 12px;
+  padding: 14px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
@@ -97,19 +121,19 @@
 }
 
 .stat-icon {
-  font-size: 32px;
+  font-size: 24px;
 }
 
 .stat-content h3 {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 800;
   margin: 0;
 }
 
 .stat-content p {
-  font-size: 13px;
+  font-size: 11px;
   opacity: 0.9;
-  margin: 4px 0 0;
+  margin: 2px 0 0;
 }
 
 /* Referral Section */

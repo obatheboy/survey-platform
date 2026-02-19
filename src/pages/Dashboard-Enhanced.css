@@ -972,12 +972,7 @@ body {
     rgba(255, 255, 255, 0.3) 50%,
     transparent 100%
   );
-  animation: shimmer 2s infinite;
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  animation: none;
 }
 
 /* Active button indicator */
@@ -992,15 +987,13 @@ body {
   border-radius: 50%;
   border: 2px solid white;
   box-shadow: 0 0 0 2px #8b5cf6;
-  animation: pulse 1.5s infinite;
+  animation: none;
   z-index: 3;
 }
 
-@keyframes pulse {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.2); opacity: 0.8; }
-  100% { transform: scale(1); opacity: 1; }
-}
+/* Keyframes removed for performance */
+@keyframes shimmer {}
+@keyframes pulse {}
 
 .nav-icon {
   font-size: 22px;

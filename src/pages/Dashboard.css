@@ -377,7 +377,7 @@ body {
   font-size: 10px;
   font-weight: 800;
   cursor: pointer;
-  animation: pulse 2s infinite;
+  animation: none;
 }
 
 .header-subtitle {
@@ -503,11 +503,11 @@ body {
 }
 
 .bonus-icon {
-  font-size: 32px;
+  font-size: 26px;
   color: #ffd700 !important;
   background: rgba(255, 255, 255, 0.25);
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1169,10 +1169,10 @@ body {
 }
 
 .plan-icon {
-  font-size: 32px !important;
+  font-size: 26px !important;
   background: rgba(255, 255, 255, 0.15);
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1473,11 +1473,11 @@ body {
 }
 
 .feature-icon {
-  font-size: 36px;
+  font-size: 28px;
   margin-bottom: var(--space-sm);
   display: inline-block;
-  transition: all 0.3s ease;
-  transform: translateZ(0);
+  transition: none;
+  transform: none;
   backface-visibility: hidden;
 }
 
@@ -1693,7 +1693,7 @@ body {
 }
 
 .hero-text h1 {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 900;
   margin: 0 0 var(--space-sm);
   color: white;
@@ -2365,13 +2365,11 @@ input:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  animation: pulse 3s infinite;
+  animation: none;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.9; }
-}
+/* Keyframes removed for performance */
+@keyframes pulse {}
 
 .action-btn:hover {
   transform: translateY(-1px);
@@ -2828,8 +2826,8 @@ input:focus-visible {
 }
 
 .withdraw-card-header .plan-icon {
-  font-size: 32px;
-  animation: gentleFloat 4s ease-in-out infinite;
+  font-size: 28px;
+  animation: none;
 }
 
 .plan-info {
@@ -3033,7 +3031,7 @@ input:focus-visible {
   background: transparent;
   border: 2px solid;
   font-weight: 800;
-  animation: pulse 3s infinite;
+  animation: none;
 }
 
 /* =========================================================

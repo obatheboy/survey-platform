@@ -10,6 +10,7 @@ const filterConfig = {
   processing: { label: 'Processing', value: 'PROCESSING' },
   approved: { label: 'Approved', value: 'APPROVED' },
   rejected: { label: 'Rejected', value: 'REJECTED' },
+  affiliate: { label: 'Affiliate', value: 'affiliate' },
 };
 
 const statusMap = {
@@ -113,7 +114,7 @@ export default function AdminWithdrawals() {
                   </td>
                   <td>
                     <span className="type-badge">
-                      {w.type === "normal" ? "💵 Normal" : "🎁 Bonus"}
+                      {w.type === "affiliate" ? "🎯 Affiliate" : w.type === "normal" ? "💵 Normal" : "🎁 Bonus"}
                     </span>
                   </td>
                   <td>

@@ -130,7 +130,7 @@ const userSchema = new mongoose.Schema({
     },
     type: { 
       type: String, 
-      enum: ['welcome_bonus', 'REGULAR', 'VIP', 'VVIP', 'balance'],
+      enum: ['welcome_bonus', 'REGULAR', 'VIP', 'VVIP', 'balance', 'affiliate'],
       default: 'balance' 
     },
     created_at: { type: Date, default: Date.now },

@@ -1277,6 +1277,26 @@ return (
                 <h4>24/7 Support</h4>
                 <p>Our team is always here to help you earn more. Quick response guaranteed.</p>
               </div>
+              <div className="feature-card">
+                <div className="feature-icon">📊</div>
+                <h4>Real-time Tracking</h4>
+                <p>Monitor your earnings and progress in real-time. Full transparency.</p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">🎁</div>
+                <h4>Referral Bonuses</h4>
+                <p>Earn KES 50 for each friend you refer. Unlimited earning potential.</p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">📱</div>
+                <h4>Mobile Friendly</h4>
+                <p>Complete surveys on any device. Work from anywhere, anytime.</p>
+              </div>
+              <div className="feature-card">
+                <div className="feature-icon">💰</div>
+                <h4>Multiple Income Streams</h4>
+                <p>Activate different plans and maximize your earnings potential.</p>
+              </div>
             </div>
           </section>
 

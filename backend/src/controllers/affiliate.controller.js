@@ -48,7 +48,9 @@ exports.getAffiliateStats = async (req, res) => {
 
     // Generate referral link
     const referralCode = user.referral_code || generateReferralCode();
-    const referralLink = `${process.env.FRONTEND_URL || 'https://surveyearn.com'}/auth?ref=${referralCode}`;
+    // Use the vercel deployment URL or fallback to environment variable
+    const frontendUrl = process.env.FRONTEND_URL || 'https://survey-platform-three.vercel.app';
+    const referralLink = `${frontendUrl}/auth?ref=${referralCode}`;
 
     // If user doesn't have a referral code, generate one
     if (!user.referral_code) {
@@ -203,5 +205,61 @@ exports.registerWithReferral = async (userId, referralCode) => {
   } catch (error) {
     console.error("Register with referral error:", error);
     return { success: false, error: error.message };
+  }
+};
+
+/* =========================================
+   ADMIN: GET ALL AFFILIATES
+   Get all users with their referral data
+   ========================================= */
+exports.getAllAffiliates = async (req, res) => {
+  try {
+    // Get all users who have referrals or have been referred
+    const affiliates = await User.find({
+      $or: [
+        { referral_code: { $exists: true, $ne: null } },
+        { referred_by: { $exists: true, $ne: null } }
+      ]
+    })
+    .select('full_name phone email referral_code referred_by referral_commission_earned referrals created_at')
+    .populate('referrals', 'full_name phone is_activated created_at')
+    .lean();
+
+    // Transform data for admin view
+    const transformedAffiliates = affiliates.map(affiliate => {
+      const referralCount = affiliate.referrals?.length || 0;
+      const activeReferrals = affiliate.referrals?.filter(r => r.is_activated === true).length || 0;
+      
+      return {
+        id: affiliate._id,
+        full_name: affiliate.full_name,
+        phone: affiliate.phone,
+        email: affiliate.email,
+        referral_code: affiliate.referral_code,
+        referral_count: referralCount,
+        active_referrals: activeReferrals,
+        commission_earned: affiliate.referral_commission_earned || 0,
+        joined_at: affiliate.created_at,
+        referrals_list: (affiliate.referrals || []).map(r => ({
+          name: r.full_name,
+          phone: r.phone,
+          is_activated: r.is_activated,
+          joined_at: r.created_at
+        }))
+      };
+    });
+
+    // Sort by commission earned (highest first)
+    transformedAffiliates.sort((a, b) => b.commission_earned - a.commission_earned);
+
+    res.json({
+      success: true,
+      total_affiliates: transformedAffiliates.length,
+      total_commission_paid: transformedAffiliates.reduce((sum, a) => sum + a.commission_earned, 0),
+      affiliates: transformedAffiliates
+    });
+  } catch (error) {
+    console.error("Get all affiliates error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };

@@ -71,9 +71,16 @@ export default function AffiliateDashboard() {
 
       {/* Header */}
       <div className="affiliate-header">
-        <button className="back-btn" onClick={() => navigate("/dashboard")}>
-          ← Back
-        </button>
+        <div className="header-top">
+          <button className="back-btn" onClick={() => navigate("/dashboard")}>
+            ← Dashboard
+          </button>
+          {(stats?.amount_earned > 0) && (
+            <button className="withdraw-btn" onClick={() => navigate("/withdraw")}>
+              💰 Withdraw
+            </button>
+          )}
+        </div>
         <h1>🎯 Affiliate Program</h1>
         <p>Earn KES 50 for every friend you refer!</p>
       </div>

@@ -185,4 +185,7 @@ export default api;
 export const affiliateApi = {
   getStats: () => api.get("/affiliate/stats"),
   verifyCode: (code) => api.post("/affiliate/verify-code", { referral_code: code })
-};
+};  
+ 
+/* =====================================================   ?? ADMIN AFFILIATE API   ===================================================== */
+export const adminAffiliateApi = {  getAllAffiliates: () => adminApi.get("/affiliate/admin/all")};
