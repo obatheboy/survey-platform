@@ -22,13 +22,6 @@ export default function Auth() {
   const [searchParams] = useSearchParams();
   const initialMode = searchParams.get("mode") === "login" ? "login" : "register";
   const [mode, setMode] = useState(initialMode);
-  
-  // Auto-switch to register mode when referral code is in URL
-  useEffect(() => {
-    if (referralCodeFromUrl && initialMode === "login") {
-      setMode("register");
-    }
-  }, [referralCodeFromUrl, initialMode]);
   const [loading, setLoading] = useState(false);
   const [shake, setShake] = useState(false);
   const [termsChecked, setTermsChecked] = useState(false);
