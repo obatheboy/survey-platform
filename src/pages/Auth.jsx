@@ -41,7 +41,7 @@ export default function Auth() {
     email: "",
     password: "",
     confirmPassword: "",
-    referralCode: "",
+    referralCode: referralCodeFromUrl || "",
   });
   const [regMessage, setRegMessage] = useState("");
 
@@ -301,14 +301,16 @@ export default function Auth() {
             <div style={styles.formGroup}>
               <Input
                 placeholder="Referral Code (optional)"
-                value={regData.referralCode || referralCodeFromUrl || ""}
+                value={regData.referralCode || ""}
                 onChange={(e) =>
                   setRegData(prev => ({ ...prev, referralCode: e.target.value.toUpperCase() }))
                 }
                 icon="🎁"
                 readOnly={!!referralCodeFromUrl}
-                style={referralCodeFromUrl ? { background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)' } : {}}
+                disabled={!!referralCodeFromUrl}
+                style={referralCodeFromUrl ? { background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', color: '#059669', fontWeight: '600' } : {}}
               />
+              {referralCodeFromUrl && <span style={{ fontSize: '11px', color: '#059669', marginTop: '4px', display: 'block' }}>✓ Referral code applied</span>}
             </div>
 
             <div style={styles.formGroup}>
