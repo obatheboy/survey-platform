@@ -41,6 +41,7 @@ export default function Auth() {
     email: "",
     password: "",
     confirmPassword: "",
+    referralCode: "",
   });
   const [regMessage, setRegMessage] = useState("");
 
@@ -118,7 +119,7 @@ export default function Auth() {
         phone: regData.phone,
         email: regData.email || null,
         password: regData.password,
-        referral_code: referralCodeFromUrl || null,
+        referral_code: regData.referralCode || referralCodeFromUrl || null,
       });
 
       if (res.data.token) {
@@ -294,6 +295,17 @@ export default function Auth() {
                   setRegData(prev => ({ ...prev, email: e.target.value }))
                 }
                 icon="✉️"
+              />
+            </div>
+
+            <div style={styles.formGroup}>
+              <Input
+                placeholder="Referral Code (optional)"
+                value={regData.referralCode}
+                onChange={(e) =>
+                  setRegData(prev => ({ ...prev, referralCode: e.target.value.toUpperCase() }))
+                }
+                icon="🎁"
               />
             </div>
 
