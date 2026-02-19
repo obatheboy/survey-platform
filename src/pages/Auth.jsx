@@ -301,11 +301,13 @@ export default function Auth() {
             <div style={styles.formGroup}>
               <Input
                 placeholder="Referral Code (optional)"
-                value={regData.referralCode}
+                value={regData.referralCode || referralCodeFromUrl || ""}
                 onChange={(e) =>
                   setRegData(prev => ({ ...prev, referralCode: e.target.value.toUpperCase() }))
                 }
                 icon="🎁"
+                readOnly={!!referralCodeFromUrl}
+                style={referralCodeFromUrl ? { background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)' } : {}}
               />
             </div>
 
