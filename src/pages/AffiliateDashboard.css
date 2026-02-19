@@ -1,0 +1,338 @@
+.affiliate-dashboard {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 20px;
+  padding-bottom: 100px;
+}
+
+.affiliate-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 16px;
+}
+
+.affiliate-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #10b981;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  z-index: 1000;
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+}
+
+/* Header */
+.affiliate-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.affiliate-header .back-btn {
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.affiliate-header h1 {
+  color: #1e293b;
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.affiliate-header p {
+  color: #64748b;
+  font-size: 16px;
+}
+
+/* Stats Grid */
+.affiliate-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.affiliate-stat-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.affiliate-stat-card.earnings {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.affiliate-stat-card.referrals {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+}
+
+.affiliate-stat-card.active {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+}
+
+.affiliate-stat-card.inactive {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+}
+
+.stat-icon {
+  font-size: 32px;
+}
+
+.stat-content h3 {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.stat-content p {
+  font-size: 13px;
+  opacity: 0.9;
+  margin: 4px 0 0;
+}
+
+/* Referral Section */
+.affiliate-referral-section {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.affiliate-referral-section h2 {
+  color: #1e293b;
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+.referral-link-box {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.referral-input {
+  flex: 1;
+  padding: 14px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 14px;
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.copy-btn {
+  padding: 14px 24px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.copy-btn.copied {
+  background: #10b981;
+}
+
+.referral-code-display {
+  text-align: center;
+  color: #64748b;
+  margin-bottom: 16px;
+}
+
+.referral-code-display strong {
+  color: #3b82f6;
+  font-size: 18px;
+}
+
+.share-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.share-btn {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.share-btn.whatsapp {
+  background: #25d366;
+  color: white;
+}
+
+/* How It Works */
+.affiliate-how-it-works {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.affiliate-how-it-works h2 {
+  color: #1e293b;
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.step-number {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.step-content h4 {
+  color: #1e293b;
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.step-content p {
+  color: #64748b;
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Referrals List */
+.affiliate-referrals-list {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.affiliate-referrals-list h2 {
+  color: #1e293b;
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+.referrals-table {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 1.5fr 1.5fr 1fr 1fr;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  font-weight: 700;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1.5fr 1fr 1fr;
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  align-items: center;
+  font-size: 14px;
+  color: #1e293b;
+}
+
+.table-row .status {
+  font-weight: 600;
+}
+
+.table-row .status.active {
+  color: #10b981;
+}
+
+.table-row .status.inactive {
+  color: #f59e0b;
+}
+
+/* Empty State */
+.no-referrals {
+  text-align: center;
+  padding: 48px 24px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.no-referrals h3 {
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.no-referrals p {
+  color: #64748b;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .affiliate-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .table-header,
+  .table-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .table-header span:nth-child(3),
+  .table-header span:nth-child(4),
+  .table-row span:nth-child(3),
+  .table-row span:nth-child(4) {
+    display: none;
+  }
+}

@@ -176,3 +176,13 @@ export const canMakeRequest = (endpoint, cooldownMs = 10000) => {
    📦 EXPORTS
 ===================================================== */
 export default api;
+
+/* =====================================================
+   🏆 AFFILIATE API
+   - Get affiliate stats
+   - Verify referral code
+===================================================== */
+export const affiliateApi = {
+  getStats: () => api.get("/affiliate/stats"),
+  verifyCode: (code) => api.post("/affiliate/verify-code", { referral_code: code })
+};

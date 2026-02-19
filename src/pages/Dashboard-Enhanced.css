@@ -893,6 +893,17 @@ body {
   color: #dc2626;
 }
 
+/* Fifth button - Affiliate - Purple Theme */
+.nav-btn:nth-child(5) {
+  background: linear-gradient(145deg, #ede9fe, #ddd6fe);
+  border-color: #c4b5fd;
+  color: #5b21b6;
+}
+
+.nav-btn:nth-child(5) .nav-icon {
+  color: #7c3aed;
+}
+
 /* Hover state with red outline */
 .nav-btn:hover {
   border-color: #ef4444 !important;
@@ -923,6 +934,10 @@ body {
 
 .nav-btn:nth-child(4):hover {
   background: linear-gradient(145deg, #fee2e2, #fecaca, rgba(255, 255, 255, 0.9));
+}
+
+.nav-btn:nth-child(5):hover {
+  background: linear-gradient(145deg, #f3e8ff, #e9d5ff, rgba(255, 255, 255, 0.9));
 }
 
 /* Active state - Unified purple theme */
@@ -1152,6 +1167,16 @@ body {
   color: #f87171;
 }
 
+[data-theme='dark'] .nav-btn:nth-child(5) {
+  background: linear-gradient(145deg, rgba(109, 40, 217, 0.2), rgba(167, 139, 250, 0.15));
+  border-color: rgba(167, 139, 250, 0.3);
+  color: #c4b5fd;
+}
+
+[data-theme='dark'] .nav-btn:nth-child(5) .nav-icon {
+  color: #a78bfa;
+}
+
 [data-theme='dark'] .nav-btn:hover {
   border-color: #ef4444 !important;
   border-width: 3px;
@@ -1287,7 +1312,7 @@ body {
   background: #ffffff;
   border: none;
   border-radius: var(--radius-xl);
-  padding: 12px;
+  padding: 20px;
   position: relative;
   overflow: hidden;
   transition: none;
@@ -1295,6 +1320,7 @@ body {
   flex-direction: column;
   justify-content: space-between;
   box-shadow: var(--card-shadow);
+  min-height: 120px;
 }
 
 .stats-card:hover {

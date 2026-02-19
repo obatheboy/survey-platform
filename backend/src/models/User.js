@@ -144,7 +144,35 @@ const userSchema = new mongoose.Schema({
   updated_at: {  // ✅ ADDED: Updated at timestamp
     type: Date,
     default: Date.now
-  }
+  },
+  // ============================================
+  // AFFILIATE SYSTEM FIELDS
+  // ============================================
+  referral_code: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
+  referred_by: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
+  referral_commission_earned: {
+    type: Number,
+    default: 0
+  },
+  referrals: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  referral_commissions: [{
+    referred_user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    referred_user_name: String,
+    amount: { type: Number, default: 50 },
+    status: { type: String, enum: ['PENDING', 'CREDITED'], default: 'CREDITED' },
+    created_at: { type: Date, default: Date.now }
+  }]
 });
 
 // ✅ ADDED: Update timestamp before saving

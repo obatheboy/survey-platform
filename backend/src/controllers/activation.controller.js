@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const User = require("../models/User");
 const Notification = require("../models/Notification");
+const { awardReferralCommission } = require("./affiliate.controller");
 
 const TOTAL_SURVEYS = 10;
 
@@ -221,6 +222,19 @@ exports.approveActivation = async (req, res) => {
     user.activated_at = new Date();
     
     await user.save();
+
+    // ✅ Award referral commission to the referrer if this user was referred
+    if (user.referred_by) {
+      try {
+        const commissionResult = await awardReferralCommission(user._id);
+        if (commissionResult.success) {
+          console.log(`💰 Referral commission of KES ${commissionResult.amount} awarded for user ${user.full_name}`);
+        }
+      } catch (commError) {
+        console.error("Referral commission error:", commError);
+        // Don't fail activation if commission fails
+      }
+    }
 
     console.log(`✅ Activation approved - User: ${user.full_name || user.email}, Plan: ${plan}, Balance: KES ${user.total_earned}`);
 

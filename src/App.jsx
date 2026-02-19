@@ -15,6 +15,7 @@ import WithdrawSuccess from "./pages/WithdrawSuccess"; // Add this import
 import FAQ from "./pages/FAQ";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import NotFound from "./pages/NotFound";
+import AffiliateDashboard from "./pages/AffiliateDashboard";
 
 /* ================= ADMIN ================= */
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -167,6 +168,16 @@ export default function App() {
 
         {/* FAQ */}
         <Route path="/faq" element={<FAQ />} />
+
+        {/* Affiliate Dashboard */}
+        <Route
+          path="/affiliate"
+          element={
+            <ProtectedRoute>
+              <AffiliateDashboard />
+            </ProtectedRoute>
+          }
+        />
 
         {/* ADMIN */}
         <Route path="/admin/login" element={<AdminLogin />} />

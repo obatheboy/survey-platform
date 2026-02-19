@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Notification = require("../models/Notification"); // ✅ ADDED: Import Notification model
+const { registerWithReferral, awardReferralCommission } = require("./affiliate.controller");
 
 const TOTAL_SURVEYS = 10;
 
@@ -23,7 +24,7 @@ const COOKIE_OPTIONS = {
 exports.register = async (req, res) => {
   try {
     const fullName = req.body.fullName || req.body.name || req.body.full_name;
-    const { phone, email, password } = req.body;
+    const { phone, email, password, referral_code } = req.body;
 
     if (!fullName || !phone || !password) {
       return res.status(400).json({ message: "Required fields missing" });
@@ -37,6 +38,13 @@ exports.register = async (req, res) => {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
+    // Generate unique referral code
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let newReferralCode = '';
+    for (let i = 0; i < 8; i++) {
+      newReferralCode += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+
     // ✅ CHANGED: MongoDB create instead of pool.query
     const user = new User({
       full_name: fullName,
@@ -47,6 +55,7 @@ exports.register = async (req, res) => {
       total_earned: 1200,
       welcome_bonus_received: true,
       welcome_bonus: 1200, // Add this field
+      referral_code: newReferralCode, // ✅ Generate referral code
       // Initialize empty plans structure
       plans: {
         REGULAR: {
@@ -71,6 +80,16 @@ exports.register = async (req, res) => {
     });
 
     await user.save();
+
+    // ✅ Handle referral - associate new user with referrer
+    if (referral_code) {
+      try {
+        await registerWithReferral(user._id, referral_code);
+      } catch (refError) {
+        console.error("Referral registration error:", refError);
+        // Don't fail registration if referral fails
+      }
+    }
 
     // ---------------------------
     // 🌟 WELCOME BONUS LOGIC - UPDATED

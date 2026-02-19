@@ -1501,6 +1501,13 @@ return (
         </button>
         <button
           className="nav-btn"
+          onClick={() => navigate("/affiliate")}
+        >
+          <span className="nav-icon">🎯</span>
+          <span className="nav-label">Affiliate</span>
+        </button>
+        <button
+          className="nav-btn"
           onClick={openWhatsAppSupport}
         >
           <span className="nav-icon">💬</span>
