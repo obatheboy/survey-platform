@@ -308,14 +308,27 @@ body {
 
 .header-title-container {
   display: flex;
-  justify-content: space-between; /* Distribute space evenly */
-  flex-direction: row; /* Restore normal row direction */
-  gap: 15px;
-  padding: 0 10px;
-  align-items: center;
+  justify-content: center !important;
+  align-items: center !important;
+  flex-direction: row;
+  gap: 8px;
+  padding: 0 8px;
   margin-bottom: 5px;
   position: relative;
   z-index: 5;
+  width: 100% !important;
+}
+
+/* Menu button - absolute left */
+.menu-btn {
+  position: absolute !important;
+  left: 8px !important;
+}
+
+/* Action buttons - absolute right */
+.header-title-container > div:last-child {
+  position: absolute !important;
+  right: 8px !important;
 }
 
 .dashboard-main-title {
