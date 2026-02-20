@@ -1119,7 +1119,7 @@ return (
               </div>
 
               {/* Affiliate Earnings Card */}
-              <div className="stats-card affiliate-balance" style={{ background: 'linear-gradient(135deg, #8b5cf6, #6d28d9)' }}>
+              <div className="stats-card affiliate-balance" style={{ background: 'linear-gradient(135deg, #faf5ff, #f3e8ff)' }}>
                 <div className="stats-card-header">
                   <span className="stats-icon">🎁</span>
                   <h4>Affiliate Earnings</h4>
@@ -1129,8 +1129,7 @@ return (
                   <span className="stats-label">From referrals</span>
                 </div>
                 <button 
-                  className="withdraw-quick-btn" 
-                  style={{ background: '#7c3aed' }}
+                  className="withdraw-quick-btn affiliate-withdraw-btn" 
                   onClick={() => navigate("/withdraw-form?type=affiliate")}
                 >
                   Withdraw Now
