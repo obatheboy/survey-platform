@@ -1129,8 +1129,8 @@ body {
   justify-content: center;
   gap: 6px;
   padding: var(--space-lg) var(--space-md);
-  background: rgba(255, 255, 255, 0.08);
-  color: rgb(255, 166, 0);
+  background: rgba(147, 51, 234, 0.15);
+  color: #a855f7;
   font-weight: 800;
   font-size: 11px;
   cursor: pointer;
@@ -1142,25 +1142,25 @@ body {
   user-select: none;
   text-decoration: none;
   position: relative;
-  border: 2px solid rgb(255, 251, 0);
+  border: 2px solid rgba(147, 51, 234, 0.3);
   box-shadow: 
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 2px 8px rgba(0, 0, 0, 0.2);
+    0 2px 8px rgba(147, 51, 234, 0.2);
 }
 
 .nav-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgb(255, 217, 0);
+  background: rgba(147, 51, 234, 0.25);
+  border-color: #9333ea;
   transform: translateY(-1px);
   box-shadow: 
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    0 4px 12px rgba(0, 0, 0, 0.3);
+    0 4px 12px rgba(147, 51, 234, 0.3);
 }
 
 .nav-btn.active {
-  background: var(--primary);
-  color: #1a1a1a;
-  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+  background: linear-gradient(135deg, #9333ea, #a855f7);
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(147, 51, 234, 0.4);
   border: none;
   transform: translateY(-1px);
 }
