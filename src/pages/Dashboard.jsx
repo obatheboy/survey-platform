@@ -465,7 +465,7 @@ navigate("/activation-notice", {
   ========================= */
   const openWhatsAppSupport = () => {
     const message = encodeURIComponent("Hello SurveyEarn Support, I need help with my survey account.");
-    const whatsappUrl = `https://wa.me/254102074596?text=${message}`;
+    const whatsappUrl = `https://wa.me/254107799338?text=${message}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
 
