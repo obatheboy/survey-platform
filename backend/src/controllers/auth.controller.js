@@ -268,6 +268,7 @@ exports.getMe = async (req, res) => {
       email: user.email,
       is_activated: user.is_activated,
       total_earned: user.total_earned,
+      referral_commission_earned: user.referral_commission_earned || 0,
       welcome_bonus: user.welcome_bonus || 1200, // Include welcome_bonus field
       welcome_bonus_received: user.welcome_bonus_received,
       welcome_bonus_withdrawn: user.welcome_bonus_withdrawn || false,

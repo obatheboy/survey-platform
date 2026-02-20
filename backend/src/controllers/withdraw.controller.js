@@ -176,11 +176,24 @@ exports.requestWithdraw = async (req, res) => {
       }
     }
 
+    // -------------------------------
+    // 🎯 CREATE WITHDRAWAL REQUEST (Common for all types)
+    // -------------------------------
+    
     // Initialize arrays if they don't exist
-      if (!user.withdrawal_requests) user.withdrawal_requests = [];
-      if (!user.activation_requests) user.activation_requests = [];
+    if (!user.withdrawal_requests) user.withdrawal_requests = [];
+    if (!user.activation_requests) user.activation_requests = [];
 
-      // ✅ Create withdrawal request
+    // Determine fee based on type
+    let fee = 0;
+    let netAmount = withdrawAmount;
+    
+    if (type === "welcome_bonus") {
+      // Welcome bonus has no fee
+      fee = 0;
+      netAmount = withdrawAmount;
+      
+      // Create withdrawal request
       const withdrawalRequest = {
         phone_number: phone_number,
         amount: withdrawAmount,
@@ -192,7 +205,7 @@ exports.requestWithdraw = async (req, res) => {
         created_at: new Date()
       };
 
-      // ✅ ALSO create activation request for admin dashboard
+      // ALSO create activation request for admin dashboard
       const activationRequest = {
         plan: 'WELCOME_BONUS',
         amount: 1200,
@@ -228,13 +241,11 @@ exports.requestWithdraw = async (req, res) => {
         type: 'welcome_bonus'
       });
     }
-
-    // -------------------------------
-    // 🌟 NORMAL BALANCE WITHDRAWAL
-    // -------------------------------
+    
+    // For affiliate and normal withdrawals, check plan activation and surveys
     
     // Check if the specific plan is activated
-    if (!isPlanActivated) {
+    if (type !== "welcome_bonus" && !isPlanActivated) {
       console.log(`❌ ${type} plan is not activated. isPlanActivated = ${isPlanActivated}`);
       return res.status(403).json({ 
         message: `⚠️ Your ${type} plan is not activated yet. Please complete plan activation first.` 
@@ -242,7 +253,7 @@ exports.requestWithdraw = async (req, res) => {
     }
 
     // Check if user has completed the required surveys for this specific plan
-    if (planSurveysCompleted < TOTAL_SURVEYS) {
+    if (type !== "welcome_bonus" && planSurveysCompleted < TOTAL_SURVEYS) {
       console.log(`❌ Insufficient surveys: ${planSurveysCompleted}/${TOTAL_SURVEYS}`);
       return res.status(403).json({
         message: `Please complete all ${TOTAL_SURVEYS} surveys for your ${type} plan before withdrawal. You have completed ${planSurveysCompleted || 0} surveys.`,
@@ -263,16 +274,24 @@ exports.requestWithdraw = async (req, res) => {
       }
     }
 
-    const fee = WITHDRAW_FEES[type] ?? WITHDRAW_FEES.REGULAR;
+    fee = WITHDRAW_FEES[type] ?? WITHDRAW_FEES.REGULAR;
+    netAmount = withdrawAmount - fee;
 
     if (withdrawAmount <= fee) {
       console.log(`❌ Amount too low after fees: ${withdrawAmount} <= ${fee}`);
       return res.status(400).json({ message: "Amount too low after fees" });
     }
 
-    if ((user.total_earned || 0) < withdrawAmount) {
-      console.log(`❌ Insufficient balance: ${user.total_earned} < ${withdrawAmount}`);
-      return res.status(403).json({ message: "Insufficient balance" });
+    if (type === "affiliate") {
+      if ((user.referral_commission_earned || 0) < withdrawAmount) {
+        console.log(`❌ Insufficient affiliate balance: ${user.referral_commission_earned} < ${withdrawAmount}`);
+        return res.status(403).json({ message: "Insufficient affiliate balance" });
+      }
+    } else {
+      if ((user.total_earned || 0) < withdrawAmount) {
+        console.log(`❌ Insufficient balance: ${user.total_earned} < ${withdrawAmount}`);
+        return res.status(403).json({ message: "Insufficient balance" });
+      }
     }
 
     // Check daily withdrawal limit
@@ -291,13 +310,6 @@ exports.requestWithdraw = async (req, res) => {
       }
     }
 
-    const netAmount = withdrawAmount - fee;
-
-    // Initialize withdrawal_requests array if it doesn't exist
-    if (!user.withdrawal_requests) {
-      user.withdrawal_requests = [];
-    }
-
     // Add withdrawal request
     const withdrawalRequest = {
       phone_number: phone_number,
@@ -311,9 +323,9 @@ exports.requestWithdraw = async (req, res) => {
 
     user.withdrawal_requests.push(withdrawalRequest);
 
-    // Deduct from total_earned
+    // Deduct from balance
     if (type === "affiliate") {
-      // Deduct from affiliate commission balance instead
+      // Deduct from affiliate commission balance
       user.referral_commission_earned = (user.referral_commission_earned || 0) - withdrawAmount;
       console.log(`🎯 Deducted KES ${withdrawAmount} from affiliate balance. New balance: ${user.referral_commission_earned}`);
     } else {
