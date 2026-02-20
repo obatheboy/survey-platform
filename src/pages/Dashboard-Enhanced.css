@@ -5,6 +5,7 @@
    FIXED: Welcome Bonus Card - Premium Royal Purple with Red Border
    FIXED: Survey Plan Cards - Distinct Beautiful Colors
    FIXED: All Captions - Bright, Bold, 100% Visible
+   FIXED: Header - Properly centered with no cut-off text
    ALL CHANGES FORCED WITH !important - ORIGINAL CODE PRESERVED
 ========================================================= */
 
@@ -14,7 +15,7 @@ html, body {
   width: 100%;
   height: 100%;
   overflow-x: hidden;
-  background: var(--bg-main); /* Standardized light background */
+  background: var(--bg-main);
   -webkit-tap-highlight-color: transparent;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
@@ -41,10 +42,10 @@ html, body {
 
 /* Remove unnecessary hardware acceleration for better performance */
 .dashboard > div[style*="position: fixed"] * {
-  transform: none; /* REMOVED: translateZ(0) */
-  -webkit-transform: none; /* REMOVED: translateZ(0) */
-  backface-visibility: visible; /* REMOVED: hidden */
-  -webkit-backface-visibility: visible; /* REMOVED: hidden */
+  transform: none;
+  -webkit-transform: none;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
 }
 
 /* =========================================================
@@ -63,6 +64,16 @@ html, body {
   --border-medium: rgba(0, 0, 0, 0.12);
   --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
   --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --transition-normal: all 0.2s ease;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --space-xs: 3px;
+  --space-sm: 6px;
+  --space-md: 10px;
+  --space-lg: 14px;
+  --space-xl: 18px;
   
   --primary: #2563eb;
   --primary-dark: #1e40af;
@@ -132,7 +143,7 @@ html {
 }
 
 body {
-  background-color: var(--bg-main); /* Match html background */
+  background-color: var(--bg-main);
   color: var(--text-main);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   min-height: 100vh;
@@ -178,7 +189,7 @@ body {
 /* FIX 4: Scroll reminder at bottom of screen */
 .scroll-reminder-notification {
   position: fixed !important;
-  bottom: 90px !important; /* Position above chat button */
+  bottom: 90px !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
   z-index: 999 !important;
@@ -257,30 +268,27 @@ body {
   gap: var(--space-md);
   width: 100%;
   position: relative;
-  padding-top: 100px !important;
+  padding-top: 120px !important;
   padding-bottom: 80px !important;
   box-sizing: border-box !important;
 }
 
 /* =========================================================
-   1. MAIN MENU HEADER WITH DASHBOARD TITLE (AT TOP)
+   1. MAIN MENU HEADER WITH DASHBOARD TITLE (AT TOP) - FIXED
 ========================================================= */
 .dashboard-main-header {
   background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-  border-radius: var(--radius-xl);
-  padding: var(--space-lg);
-  margin-bottom: var(--space-md);
+  padding: 12px 16px !important;
   box-shadow: var(--card-shadow);
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
   right: 0 !important;
   width: 100% !important;
-  max-width: 100% !important;
   transform: none !important;
   border-radius: 0 0 var(--radius-xl) var(--radius-xl);
   z-index: 999;
-  overflow: hidden;
+  overflow: visible !important;
   box-sizing: border-box !important;
 }
 
@@ -293,6 +301,7 @@ body {
   height: 100px;
   background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
   border-radius: 50%;
+  pointer-events: none;
 }
 
 .dashboard-main-header::before {
@@ -304,19 +313,7 @@ body {
   height: 4px;
   background: linear-gradient(90deg, var(--primary), var(--primary-light));
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-}
-
-.header-title-container {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  flex-direction: row !important;
-  gap: 8px !important;
-  padding: 0 8px !important;
-  margin-bottom: 5px !important;
-  position: relative !important;
-  z-index: 5 !important;
-  width: 100% !important;
+  pointer-events: none;
 }
 
 /* FIXED: Header container with proper alignment */
@@ -326,7 +323,7 @@ body {
   align-items: center !important;
   flex-direction: row !important;
   gap: 8px !important;
-  padding: 0 16px !important;
+  padding: 0 4px !important;
   margin-bottom: 5px !important;
   position: relative !important;
   z-index: 5 !important;
@@ -337,191 +334,222 @@ body {
   box-sizing: border-box !important;
 }
 
-/* Menu button - left aligned (NOT absolute) */
+/* Menu button - left aligned with fixed size */
 .menu-btn {
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255,255,255,0.3);
-  color: white;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: var(--transition-normal);
-  backdrop-filter: blur(10px);
-  flex-shrink: 0 !important; /* Prevents button from shrinking */
-  position: relative !important; /* Changed from absolute */
-  left: auto !important; /* Reset left positioning */
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
+  color: white !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  border-radius: var(--radius-md) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: var(--transition-normal) !important;
+  backdrop-filter: blur(10px) !important;
+  flex-shrink: 0 !important;
+  position: relative !important;
+  left: auto !important;
   z-index: 100 !important;
+  padding: 0 !important;
 }
 
-/* Action buttons - right aligned (NOT absolute) */
+/* Action buttons container - right aligned */
 .header-title-container > div:last-child {
   display: flex !important;
   align-items: center !important;
-  gap: 8px !important;
-  flex-shrink: 0 !important; /* Prevents container from shrinking */
-  position: relative !important; /* Changed from absolute */
-  right: auto !important; /* Reset right positioning */
+  gap: 6px !important;
+  flex-shrink: 0 !important;
+  position: relative !important;
+  right: auto !important;
   z-index: 100 !important;
 }
 
-/* Title - centered automatically by flexbox space-between */
+/* Theme toggle button */
+.theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  font-size: 18px !important;
+  backdrop-filter: blur(10px) !important;
+  transition: all 0.2s ease !important;
+  flex-shrink: 0 !important;
+  padding: 0 !important;
+}
+
+/* FIXED: Title container - properly sized and centered */
 .dashboard-main-title {
-  font-size: 0 !important; /* Hide original title text */
-  font-weight: 900;
-  color: white;
-  margin: 0;
-  text-align: center;
-  letter-spacing: -0.5px;
-  flex: 1 !important; /* Takes available space */
-  min-width: 0; /* Allows shrinking if needed */
-  max-width: fit-content !important;
+  font-size: 0 !important;
+  font-weight: 900 !important;
+  color: white !important;
+  margin: 0 !important;
+  text-align: center !important;
+  letter-spacing: -0.5px !important;
+  flex: 0 1 auto !important;
+  min-width: auto !important;
+  max-width: 100% !important;
+  padding: 0 5px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: visible !important;
 }
 
+/* FIXED: Title text with responsive sizing */
 .dashboard-main-title::after {
-  content: "SurveyEarn";
-  font-size: 26px;
-  background: linear-gradient(to right, #ffffff 20%, #ffd700 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  text-shadow: 0 2px 10px rgba(255, 215, 0, 0.2);
-  display: block;
-  white-space: nowrap;
+  content: "SurveyEarn" !important;
+  font-size: clamp(18px, 4vw, 24px) !important;
+  background: linear-gradient(to right, #ffffff 20%, #ffd700 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+  text-shadow: 0 2px 10px rgba(255, 215, 0, 0.2) !important;
+  display: inline-block !important;
+  white-space: nowrap !important;
+  line-height: 1.2 !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.5px !important;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .dashboard-main-title::after {
-    font-size: 22px;
-  }
-  
-  .menu-btn {
-    width: 40px;
-    height: 40px;
-  }
-  
-  .theme-toggle-btn {
-    width: 36px;
-    height: 36px;
-  }
+/* FIXED: Subtitle styling */
+.header-subtitle {
+  font-size: clamp(11px, 3vw, 13px) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  margin: 2px 0 0 0 !important;
+  font-weight: 500 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  padding: 0 5px !important;
+  line-height: 1.3 !important;
 }
 
-@media (max-width: 480px) {
-  .dashboard-main-title::after {
-    font-size: 18px;
-  }
-  
-  .menu-btn {
-    width: 36px;
-    height: 36px;
-  }
-  
-  .header-title-container {
-    padding: 0 12px !important;
-  }
-}
-.dashboard-main-title {
-  font-size: 0 !important; /* Hide original title text */
-  font-weight: 900;
-  color: white;
-  margin: 0;
-  flex: 1;
-  text-align: center;
-  min-width: 0;
-  letter-spacing: -0.5px;
-}
-
-.dashboard-main-title::after {
-  content: "SurveyEarn";
-  font-size: 26px;
-  background: linear-gradient(to right, #ffffff 20%, #ffd700 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  text-shadow: 0 2px 10px rgba(255, 215, 0, 0.2);
-  display: block;
-}
-
-.header-activation-container{
-    position: relative;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    text-align: center;
+.header-activation-container {
+  position: relative !important;
+  margin-top: 2px !important;
+  margin-bottom: 2px !important;
+  text-align: center !important;
 }
 
 .header-activation-badge {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  font-size: 10px;
-  font-weight: 800;
-  cursor: pointer;
-  animation: pulse 2s infinite;
-}
-
-.header-subtitle {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.85);
-  margin: 0;
-  font-weight: 500;
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #ef4444 !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  cursor: pointer !important;
+  display: inline-block !important;
+  padding: 2px 8px !important;
+  border-radius: 12px !important;
 }
 
 .header-greeting-bottom {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.9);
-  text-align: center;
-  margin: 8px 0 0 0;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
-
-.menu-btn {
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255,255,255,0.3);
-  color: white;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: var(--transition-normal);
-  backdrop-filter: blur(10px);
-}
-
-.menu-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: scale(1.05);
+  font-size: 10px !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  text-align: center !important;
+  margin: 2px 0 0 0 !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.3px !important;
 }
 
 .menu-icon {
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 18px !important;
+  font-weight: bold !important;
 }
 
-.theme-toggle-btn {
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 20px;
-  backdrop-filter: blur(10px);
-  transition: all 0.2s ease;
+/* =========================================================
+   RESPONSIVE HEADER ADJUSTMENTS
+========================================================= */
+@media (max-width: 480px) {
+  .dashboard-main-header {
+    padding: 8px 12px !important;
+  }
+  
+  .header-title-container {
+    gap: 4px !important;
+    padding: 0 2px !important;
+  }
+  
+  .menu-btn {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+  }
+  
+  .theme-toggle-btn {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    font-size: 16px !important;
+  }
+  
+  .dashboard-main-title::after {
+    font-size: 18px !important;
+  }
+  
+  .header-subtitle {
+    font-size: 10px !important;
+  }
+  
+  .header-greeting-bottom {
+    font-size: 9px !important;
+  }
 }
 
+@media (max-width: 360px) {
+  .dashboard-main-header {
+    padding: 6px 8px !important;
+  }
+  
+  .menu-btn {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+  }
+  
+  .theme-toggle-btn {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    font-size: 14px !important;
+  }
+  
+  .dashboard-main-title::after {
+    font-size: 16px !important;
+  }
+  
+  .header-subtitle {
+    font-size: 9px !important;
+  }
+  
+  .header-title-container > div:last-child {
+    gap: 4px !important;
+  }
+}
+
+/* Fix for devices with notches */
+@supports (padding: max(0px)) {
+  .dashboard-main-header {
+    padding-left: max(12px, env(safe-area-inset-left)) !important;
+    padding-right: max(12px, env(safe-area-inset-right)) !important;
+  }
+}
+
+/* =========================================================
+   REST OF YOUR EXISTING CSS CONTINUES BELOW...
+   (Keep all your existing styles for other components)
+========================================================= */
 /* =========================================================
    2. LIVE WITHDRAWAL FEED (SIMPLIFIED)
 ========================================================= */

@@ -299,6 +299,25 @@ export default function Auth() {
               </div>
             </div>
 
+            {/* Referral Code - Read Only and Hidden by default, shown only when provided in URL */}
+            {referralCodeFromUrl && (
+              <div style={{...styles.formGroup, marginTop: '12px', padding: '10px', background: 'rgba(76, 175, 80, 0.1)', borderRadius: '8px', border: '1px solid rgba(76, 175, 80, 0.3)'}}>
+                <label style={{fontSize: '12px', color: '#4caf50', marginBottom: '4px', display: 'block'}}>
+                  ✓ Referral Code Applied
+                </label>
+                <Input
+                  placeholder="Referral Code"
+                  value={referralCodeFromUrl}
+                  readOnly
+                  icon="🎁"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.9)',
+                    cursor: 'not-allowed',
+                  }}
+                />
+              </div>
+            )}
+
             <button
               style={styles.primaryButtonRegister}
               type="submit"

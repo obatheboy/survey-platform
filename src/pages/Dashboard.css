@@ -1,12 +1,12 @@
-/* c:\Users\Obah\survey-platform-backend\src\pages\Dashboard.css */
+/* c:\Users\Obah\survey-platform-backend\src\pages\Dashboard-Enhanced.css */
 
 /* =========================================================
-   DASHBOARD.CSS - OPTIMIZED FOR MOBILE
-   UPDATED: Welcome Bonus Card - Premium Royal Purple with Red Border
-   UPDATED: Survey Plan Cards - Distinct Beautiful Colors
-   UPDATED: Plan Progress Captions - Bright, Bold, 100% Visible
-   FIXED: Plan info heading color selectors with proper styles
-   NOTE: !important kept only for essential overrides
+   DASHBOARD-ENHANCED.CSS - OPTIMIZED FOR MOBILE
+   FIXED: Welcome Bonus Card - Premium Royal Purple with Red Border
+   FIXED: Survey Plan Cards - Distinct Beautiful Colors
+   FIXED: All Captions - Bright, Bold, 100% Visible
+   FIXED: Header - Properly centered with no cut-off text
+   ALL CHANGES FORCED WITH !important - ORIGINAL CODE PRESERVED
 ========================================================= */
 
 /* FIX 1: Prevent white flash on scroll (low RAM phones) */
@@ -62,9 +62,8 @@ html, body {
   --text-light: #94a3b8;
   --border-soft: rgba(0, 0, 0, 0.08);
   --border-medium: rgba(0, 0, 0, 0.12);
-  --border-strong: rgba(0, 0, 0, 0.2);
-  --card-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
-  --card-shadow-hover: 0 6px 10px -3px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --transition-normal: all 0.2s ease;
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -90,21 +89,18 @@ html, body {
   --vip-color: #4f46e5;
   --vvip-color: #d97706;
   
+  /* Bright caption colors for progress cards */
+  --caption-bright-blue: #00e5ff;
+  --caption-bright-green: #a3ff47;
+  --caption-bright-yellow: #ffe600;
+  --caption-bright-pink: #ff7eb6;
+  --caption-bright-orange: #ffb86b;
+  --caption-bright-purple: #d683ff;
+  
   /* WELCOME BONUS CARD - PREMIUM ROYAL THEME */
   --welcome-gradient: linear-gradient(145deg, #5f0f40, #831843, #9d174d);
   --welcome-accent: #fb7185;
   --welcome-glow: #fda4af;
-  
-  /* BRIGHT CAPTION COLORS - MAXIMUM VISIBILITY */
-  --caption-white: #ffffff;
-  --caption-gold: #ffd700;
-  --caption-cyan: #00ffff;
-  --caption-lime: #ccff00;
-  --caption-pink: #ff69b4;
-  --caption-orange: #ffb347;
-  --caption-yellow: #ffee00;
-  --caption-blue: #00e5ff;
-  --caption-green: #a3ff47;
 }
 
 :root[data-theme="dark"] {
@@ -122,6 +118,14 @@ html, body {
   --regular-color: #34d399;
   --vip-color: #818cf8;
   --vvip-color: #fbbf24;
+  
+  /* Dark mode bright caption colors - even more vibrant */
+  --caption-bright-blue: #4df0ff;
+  --caption-bright-green: #c6ff8a;
+  --caption-bright-yellow: #ffee70;
+  --caption-bright-pink: #ffb3d9;
+  --caption-bright-orange: #ffcd94;
+  --caption-bright-purple: #e7b0ff;
 }
 
 /* =========================================================
@@ -139,7 +143,7 @@ html {
 }
 
 body {
-  background: var(--bg-main);
+  background-color: var(--bg-main);
   color: var(--text-main);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   min-height: 100vh;
@@ -147,36 +151,35 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  overscroll-behavior-y: contain;
 }
 
 /* FIX 3: "Chat Us" button always at bottom of screen */
 .chat-us-button-container {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
-  width: 50px;
-  height: 50px;
-  pointer-events: auto;
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  z-index: 1000 !important;
+  width: 60px !important;
+  height: 60px !important;
+  pointer-events: auto !important;
 }
 
 .chat-us-button {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #25D366, #128C7E);
-  color: white;
-  border: none;
-  font-size: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
-  cursor: pointer;
-  transition: transform 0.2s ease;
-  position: relative;
-  overflow: hidden;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #25D366, #128C7E) !important;
+  color: white !important;
+  border: none !important;
+  font-size: 28px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4) !important;
+  cursor: pointer !important;
+  transition: transform 0.2s ease !important;
+  position: relative !important;
+  overflow: hidden !important;
 }
 
 .chat-us-button:active {
@@ -185,35 +188,23 @@ body {
 
 /* FIX 4: Scroll reminder at bottom of screen */
 .scroll-reminder-notification {
-  position: fixed;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 999;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 12px;
-  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
-  animation: fadeInUp 0.3s ease;
-  max-width: 85%;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
+  position: fixed !important;
+  bottom: 90px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 999 !important;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+  color: white !important;
+  padding: 12px 20px !important;
+  border-radius: 30px !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4) !important;
+  max-width: 90% !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
 /* =========================================================
@@ -236,28 +227,6 @@ body {
   min-width: 44px;
   position: relative;
   overflow: hidden;
-}
-
-.primary-btn::before,
-.secondary-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  transition: 0.5s;
-}
-
-.primary-btn:hover::before,
-.secondary-btn:hover::before {
-  left: 100%;
 }
 
 .primary-btn {
@@ -299,29 +268,42 @@ body {
   gap: var(--space-md);
   width: 100%;
   position: relative;
-  padding-top: 140px;
+  padding-top: 120px !important;
+  padding-bottom: 80px !important;
+  box-sizing: border-box !important;
 }
 
 /* =========================================================
-   1. MAIN MENU HEADER WITH DASHBOARD TITLE (AT TOP)
+   1. MAIN MENU HEADER WITH DASHBOARD TITLE (AT TOP) - FIXED
 ========================================================= */
 .dashboard-main-header {
   background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-  border-radius: var(--radius-xl);
-  padding: var(--space-lg);
-  margin-bottom: var(--space-md);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.3);
-  position: fixed;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 1200px;
+  padding: 12px 16px !important;
+  box-shadow: var(--card-shadow);
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  transform: none !important;
   border-radius: 0 0 var(--radius-xl) var(--radius-xl);
   z-index: 999;
-  overflow: hidden;
+  overflow: visible !important;
+  box-sizing: border-box !important;
 }
+
+.dashboard-main-header::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  right: -20px;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
 .dashboard-main-header::before {
   content: '';
   position: absolute;
@@ -331,18 +313,7 @@ body {
   height: 4px;
   background: linear-gradient(90deg, var(--primary), var(--primary-light));
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-}
-
-.header-title-container {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  flex-direction: row !important;
-  gap: 8px !important;
-  padding: 0 8px !important;
-  margin-bottom: 5px !important;
-  width: 100% !important;
-  position: relative !important;
+  pointer-events: none;
 }
 
 /* FIXED: Header container with proper alignment */
@@ -352,7 +323,7 @@ body {
   align-items: center !important;
   flex-direction: row !important;
   gap: 8px !important;
-  padding: 0 16px !important;
+  padding: 0 4px !important;
   margin-bottom: 5px !important;
   position: relative !important;
   z-index: 5 !important;
@@ -363,171 +334,222 @@ body {
   box-sizing: border-box !important;
 }
 
-/* Menu button - left aligned (NOT absolute) */
+/* Menu button - left aligned with fixed size */
 .menu-btn {
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255,255,255,0.3);
-  color: white;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: var(--transition-normal);
-  backdrop-filter: blur(10px);
-  flex-shrink: 0 !important; /* Prevents button from shrinking */
-  position: relative !important; /* Changed from absolute */
-  left: auto !important; /* Reset left positioning */
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
+  color: white !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  border-radius: var(--radius-md) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: var(--transition-normal) !important;
+  backdrop-filter: blur(10px) !important;
+  flex-shrink: 0 !important;
+  position: relative !important;
+  left: auto !important;
   z-index: 100 !important;
+  padding: 0 !important;
 }
 
-/* Action buttons - right aligned (NOT absolute) */
+/* Action buttons container - right aligned */
 .header-title-container > div:last-child {
   display: flex !important;
   align-items: center !important;
-  gap: 8px !important;
-  flex-shrink: 0 !important; /* Prevents container from shrinking */
-  position: relative !important; /* Changed from absolute */
-  right: auto !important; /* Reset right positioning */
+  gap: 6px !important;
+  flex-shrink: 0 !important;
+  position: relative !important;
+  right: auto !important;
   z-index: 100 !important;
 }
 
-/* Title - centered automatically by flexbox space-between */
-.dashboard-main-title {
-  font-size: 0 !important; /* Hide original title text */
-  font-weight: 900;
-  color: white;
-  margin: 0;
-  text-align: center;
-  letter-spacing: -0.5px;
-  flex: 1 !important; /* Takes available space */
-  min-width: 0; /* Allows shrinking if needed */
-  max-width: fit-content !important;
+/* Theme toggle button */
+.theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  font-size: 18px !important;
+  backdrop-filter: blur(10px) !important;
+  transition: all 0.2s ease !important;
+  flex-shrink: 0 !important;
+  padding: 0 !important;
 }
 
-.dashboard-main-title::after {
-  content: "SurveyEarn";
-  font-size: 26px;
-  background: linear-gradient(to right, #ffffff 20%, #ffd700 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  text-shadow: 0 2px 10px rgba(255, 215, 0, 0.2);
-  display: block;
-  white-space: nowrap;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .dashboard-main-title::after {
-    font-size: 22px;
-  }
-  
-  .menu-btn {
-    width: 40px;
-    height: 40px;
-  }
-  
-  .theme-toggle-btn {
-    width: 36px;
-    height: 36px;
-  }
-}
-
-@media (max-width: 480px) {
-  .dashboard-main-title::after {
-    font-size: 18px;
-  }
-  
-  .menu-btn {
-    width: 36px;
-    height: 36px;
-  }
-  
-  .header-title-container {
-    padding: 0 12px !important;
-  }
-}
+/* FIXED: Title container - properly sized and centered */
 .dashboard-main-title {
   font-size: 0 !important;
-  font-weight: 900;
-  color: white;
-  margin: 0;
-  letter-spacing: -0.5px;
+  font-weight: 900 !important;
+  color: white !important;
+  margin: 0 !important;
+  text-align: center !important;
+  letter-spacing: -0.5px !important;
+  flex: 0 1 auto !important;
+  min-width: auto !important;
+  max-width: 100% !important;
+  padding: 0 5px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: visible !important;
 }
 
+/* FIXED: Title text with responsive sizing */
 .dashboard-main-title::after {
-  content: "SurveyEarn";
-  font-size: 26px;
-  background: linear-gradient(to right, #ffffff 20%, #ffd700 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  text-shadow: 0 2px 10px rgba(255, 215, 0, 0.2);
-  display: block;
+  content: "SurveyEarn" !important;
+  font-size: clamp(18px, 4vw, 24px) !important;
+  background: linear-gradient(to right, #ffffff 20%, #ffd700 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+  text-shadow: 0 2px 10px rgba(255, 215, 0, 0.2) !important;
+  display: inline-block !important;
+  white-space: nowrap !important;
+  line-height: 1.2 !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.5px !important;
 }
 
-.header-activation-container{
-  position: relative;
-  margin-top: 5px;
-  margin-bottom: 10px;
-  text-align: center;
+/* FIXED: Subtitle styling */
+.header-subtitle {
+  font-size: clamp(11px, 3vw, 13px) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  margin: 2px 0 0 0 !important;
+  font-weight: 500 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  padding: 0 5px !important;
+  line-height: 1.3 !important;
+}
+
+.header-activation-container {
+  position: relative !important;
+  margin-top: 2px !important;
+  margin-bottom: 2px !important;
+  text-align: center !important;
 }
 
 .header-activation-badge {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  font-size: 10px;
-  font-weight: 800;
-  cursor: pointer;
-  animation: none;
-}
-
-.header-subtitle {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.85);
-  margin: 0;
-  font-weight: 500;
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #ef4444 !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  cursor: pointer !important;
+  display: inline-block !important;
+  padding: 2px 8px !important;
+  border-radius: 12px !important;
 }
 
 .header-greeting-bottom {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.9);
-  text-align: center;
-  margin: 8px 0 0 0;
-  font-weight: 600;
-}
-
-.menu-btn {
-  background: rgba(255, 255, 255, 0.15);
-  border: none;
-  color: white;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: var(--transition-normal);
-  backdrop-filter: blur(10px);
-}
-
-.menu-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: scale(1.05);
+  font-size: 10px !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  text-align: center !important;
+  margin: 2px 0 0 0 !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.3px !important;
 }
 
 .menu-icon {
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 18px !important;
+  font-weight: bold !important;
 }
 
+/* =========================================================
+   RESPONSIVE HEADER ADJUSTMENTS
+========================================================= */
+@media (max-width: 480px) {
+  .dashboard-main-header {
+    padding: 8px 12px !important;
+  }
+  
+  .header-title-container {
+    gap: 4px !important;
+    padding: 0 2px !important;
+  }
+  
+  .menu-btn {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+  }
+  
+  .theme-toggle-btn {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    font-size: 16px !important;
+  }
+  
+  .dashboard-main-title::after {
+    font-size: 18px !important;
+  }
+  
+  .header-subtitle {
+    font-size: 10px !important;
+  }
+  
+  .header-greeting-bottom {
+    font-size: 9px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .dashboard-main-header {
+    padding: 6px 8px !important;
+  }
+  
+  .menu-btn {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+  }
+  
+  .theme-toggle-btn {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    font-size: 14px !important;
+  }
+  
+  .dashboard-main-title::after {
+    font-size: 16px !important;
+  }
+  
+  .header-subtitle {
+    font-size: 9px !important;
+  }
+  
+  .header-title-container > div:last-child {
+    gap: 4px !important;
+  }
+}
+
+/* Fix for devices with notches */
+@supports (padding: max(0px)) {
+  .dashboard-main-header {
+    padding-left: max(12px, env(safe-area-inset-left)) !important;
+    padding-right: max(12px, env(safe-area-inset-right)) !important;
+  }
+}
+
+/* =========================================================
+   REST OF YOUR EXISTING CSS CONTINUES BELOW...
+   (Keep all your existing styles for other components)
+========================================================= */
 /* =========================================================
    2. LIVE WITHDRAWAL FEED (SIMPLIFIED)
 ========================================================= */
