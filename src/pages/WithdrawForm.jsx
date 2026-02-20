@@ -615,14 +615,14 @@ export default function WithdrawForm() {
               <button 
                 type="submit" 
                 className="submit-btn"
-                disabled={submitting || autoRedirecting || !isPlanActivated(plan)}
+                disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && !isPlanActivated(plan))}
                 style={{ 
-                  background: PLANS[plan].gradient,
-                  opacity: !isPlanActivated(plan) ? 0.6 : 1,
-                  cursor: !isPlanActivated(plan) ? 'not-allowed' : 'pointer'
+                  background: isAffiliateWithdraw ? 'linear-gradient(135deg, #8b5cf6, #6d28d9)' : PLANS[plan]?.gradient,
+                  opacity: (!isAffiliateWithdraw && !isPlanActivated(plan)) ? 0.6 : 1,
+                  cursor: (!isAffiliateWithdraw && !isPlanActivated(plan)) ? 'not-allowed' : 'pointer'
                 }}
               >
-                {!isPlanActivated(plan) ? (
+                {(!isAffiliateWithdraw && !isPlanActivated(plan)) ? (
                   <>
                     <span className="btn-icon">🔒</span>
                     Plan Not Activated
@@ -661,7 +661,7 @@ export default function WithdrawForm() {
                 <strong>Important:</strong> By withdrawing, you agree to our terms. 
                 Processing may take 5-30 minutes. You'll receive an SMS confirmation from M-Pesa.
                 Ensure your phone number is correct.
-                {!isPlanActivated(plan) && (
+                {!isAffiliateWithdraw && !isPlanActivated(plan) && (
                   <span style={{ color: '#ef4444', fontWeight: 'bold' }}>
                     {" "}Plan activation is required for withdrawal.
                   </span>

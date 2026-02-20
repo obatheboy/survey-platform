@@ -299,35 +299,6 @@ export default function Auth() {
               </div>
             </div>
 
-            {/* Referral code section - now at bottom of form */}
-            {referralCodeFromUrl ? (
-              <div style={{
-                ...styles.formGroup,
-                background: '#e8f5e9',
-                padding: '10px 12px',
-                borderRadius: '8px',
-                border: '1px solid #4caf50',
-                marginTop: '4px'
-              }}>
-                <span style={{ fontSize: '12px', color: '#2e7d32', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span>✅</span> Referral Applied: <strong>{referralCodeFromUrl}</strong>
-                </span>
-              </div>
-            ) : (
-              <div style={styles.formGroup}>
-                <Input
-                  placeholder="Referral Code (optional)"
-                  value={regData.referralCode || ""}
-                  onChange={(e) =>
-                    setRegData(prev => ({ ...prev, referralCode: e.target.value.toUpperCase() }))
-                  }
-                  icon="🎁"
-                  readOnly
-                  style={{ cursor: 'default' }}
-                />
-              </div>
-            )}
-
             <button
               style={styles.primaryButtonRegister}
               type="submit"
@@ -356,6 +327,11 @@ export default function Auth() {
                 Sign In
               </button>
             </p>
+
+            {/* Copyright - Visible on Registration Page */}
+            <div style={{...styles.copyright, marginTop: '16px'}}>
+              <span style={styles.copyrightText}>© 2026 SurveyEarn. ✅ Approved by GOVT of Kenya</span>
+            </div>
           </form>
         ) : (
           <form onSubmit={handleLogin} key="login" style={styles.form}>
@@ -1031,10 +1007,13 @@ const styles = {
     marginBottom: "10px",
   },
   copyrightText: {
-    fontSize: "11px",
-    color: "#666",
-    fontWeight: "600",
+    fontSize: "12px",
+    color: "#1a1a1a",
+    fontWeight: "700",
     display: "block",
-    padding: "8px",
+    padding: "12px 8px",
+    background: "rgba(0, 0, 0, 0.03)",
+    borderRadius: "8px",
+    marginTop: "8px",
   },
 };
