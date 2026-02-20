@@ -335,7 +335,7 @@ body {
 
 .header-title-container {
   display: flex;
-  justify-content: center !important;
+  justify-content: space-between !important;
   flex-direction: row;
   gap: 15px;
   padding: 0 10px;
