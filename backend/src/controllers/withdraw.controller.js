@@ -17,6 +17,7 @@ const WITHDRAW_FEES = {
   REGULAR: 10,
   VIP: 5,
   VVIP: 0,
+  affiliate: 0,
 };
 
 /* =====================================
@@ -99,11 +100,11 @@ exports.requestWithdraw = async (req, res) => {
       console.log("No plans found in user document");
     }
 
-    // Calculate surveys completed for the specific plan (if not welcome bonus)
+    // Calculate surveys completed for the specific plan (if not affiliate or welcome bonus)
     let planSurveysCompleted = 0;
     let isPlanActivated = false;
     
-    if (type !== "welcome_bonus") {
+    if (type !== "affiliate" && type !== "welcome_bonus") {
       console.log(`\n🔍 Checking ${type} plan specifically:`);
       
       // Check if the plan exists in user's plans
