@@ -246,10 +246,10 @@ exports.requestWithdraw = async (req, res) => {
       });
     }
     
-    // For affiliate and normal withdrawals, check plan activation and surveys
+    // For normal withdrawals (not affiliate or welcome_bonus), check plan activation and surveys
     
     // Check if the specific plan is activated
-    if (type !== "welcome_bonus" && !isPlanActivated) {
+    if (type !== "affiliate" && type !== "welcome_bonus" && !isPlanActivated) {
       console.log(`❌ ${type} plan is not activated. isPlanActivated = ${isPlanActivated}`);
       return res.status(403).json({ 
         message: `⚠️ Your ${type} plan is not activated yet. Please complete plan activation first.` 
@@ -257,7 +257,7 @@ exports.requestWithdraw = async (req, res) => {
     }
 
     // Check if user has completed the required surveys for this specific plan
-    if (type !== "welcome_bonus" && planSurveysCompleted < TOTAL_SURVEYS) {
+    if (type !== "affiliate" && type !== "welcome_bonus" && planSurveysCompleted < TOTAL_SURVEYS) {
       console.log(`❌ Insufficient surveys: ${planSurveysCompleted}/${TOTAL_SURVEYS}`);
       return res.status(403).json({
         message: `Please complete all ${TOTAL_SURVEYS} surveys for your ${type} plan before withdrawal. You have completed ${planSurveysCompleted || 0} surveys.`,
