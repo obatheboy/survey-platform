@@ -105,9 +105,14 @@ export default function WithdrawForm() {
   // Set amount based on selected plan
   useEffect(() => {
     if (plan && PLANS[plan]) {
-      setAmount(PLANS[plan].total.toString());
+      // For affiliate, use affiliate balance as the amount
+      if (plan === 'affiliate') {
+        setAmount(affiliateBalance > 0 ? affiliateBalance.toString() : "");
+      } else {
+        setAmount(PLANS[plan].total.toString());
+      }
     }
-  }, [plan]);
+  }, [plan, affiliateBalance]);
 
   // Check if specific plan is activated
   const isPlanActivated = (planKey) => {
@@ -163,15 +168,15 @@ export default function WithdrawForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Double-check activation before submission
-    if (!isUserActivated) {
+    // Double-check activation before submission - Skip for affiliate
+    if (!isAffiliateWithdraw && !isUserActivated) {
       setError("Please activate your account before making a withdrawal.");
       setShowActivationModal(true);
       return;
     }
     
-    // Check specific plan activation
-    if (plan && !isPlanActivated(plan)) {
+    // Check specific plan activation - Skip for affiliate
+    if (!isAffiliateWithdraw && plan && !isPlanActivated(plan)) {
       setError(`Please activate your ${PLANS[plan].name} plan before withdrawing.`);
       setSelectedPlanForActivation(plan);
       setShowActivationModal(true);
@@ -194,13 +199,17 @@ export default function WithdrawForm() {
     }
 
     const amountNum = Number(amount);
-    if (amountNum < 100) {
-      setError("Minimum withdrawal amount is KES 100");
+    const minAmount = isAffiliateWithdraw ? 50 : 100;
+    if (amountNum < minAmount) {
+      setError(`Minimum withdrawal amount is KES ${minAmount}`);
       return;
     }
 
-    if (amountNum > PLANS[plan].total) {
-      setError(`Maximum amount for ${PLANS[plan].name} plan is KES ${PLANS[plan].total}`);
+    const maxAmount = isAffiliateWithdraw ? affiliateBalance : PLANS[plan]?.total;
+    if (amountNum > maxAmount) {
+      setError(isAffiliateWithdraw 
+        ? `Maximum amount is KES ${affiliateBalance}`
+        : `Maximum amount for ${PLANS[plan]?.name} plan is KES ${PLANS[plan]?.total}`);
       return;
     }
 
@@ -385,8 +394,8 @@ export default function WithdrawForm() {
       </header>
 
       <div className="form-container">
-        {/* Plan Selection Section */}
-        {!plan && (
+        {/* Plan Selection Section - Skip for affiliate withdraw */}
+        {!plan && !isAffiliateWithdraw && (
           <div className="plan-selection-section">
             <h2>{isAffiliateWithdraw ? "Withdraw Affiliate Earnings" : "Select Plan to Withdraw"}</h2>
             <p className="section-subtitle">{isAffiliateWithdraw ? "Enter the amount you want to withdraw from your affiliate earnings" : "Choose which plan you want to withdraw from"}</p>
@@ -406,8 +415,8 @@ export default function WithdrawForm() {
               </div>
             )}
             
-            {/* Activation Notice */}
-            {!isUserActivated && (
+            {/* Activation Notice - Skip for affiliate */}
+            {!isAffiliateWithdraw && !isUserActivated && (
               <div className="activation-notice">
                 <div className="notice-icon">🔒</div>
                 <div className="notice-content">
@@ -518,7 +527,7 @@ export default function WithdrawForm() {
             )}
 
             {/* Activation Warning for Non-activated Plans */}
-            {!isPlanActivated(plan) && (
+            {!isAffiliateWithdraw && !isPlanActivated(plan) && (
               <div className="activation-alert-in-form">
                 <div className="alert-header">
                   <span className="alert-icon">🔒</span>
@@ -552,19 +561,19 @@ export default function WithdrawForm() {
                   placeholder="Enter amount"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  min="100"
-                  max={PLANS[plan].total}
+                  min={isAffiliateWithdraw ? 50 : 100}
+                  max={isAffiliateWithdraw ? affiliateBalance : PLANS[plan]?.total}
                   required
-                  disabled={submitting || autoRedirecting || !isPlanActivated(plan)}
+                  disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && !isPlanActivated(plan))}
                 />
               </div>
               <div className="amount-helper">
-                <span>Available: KES {PLANS[plan].total.toLocaleString()}</span>
+                <span>Available: KES {isAffiliateWithdraw ? affiliateBalance.toLocaleString() : PLANS[plan]?.total.toLocaleString()}</span>
                 <button 
                   type="button" 
                   className="use-max-btn"
-                  onClick={() => setAmount(PLANS[plan].total.toString())}
-                  disabled={submitting || autoRedirecting || !isPlanActivated(plan)}
+                  onClick={() => setAmount(isAffiliateWithdraw ? (affiliateBalance || 0).toString() : (PLANS[plan]?.total || 0).toString())}
+                  disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && !isPlanActivated(plan))}
                 >
                   Use Max
                 </button>
@@ -580,7 +589,7 @@ export default function WithdrawForm() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 required
-                disabled={submitting || autoRedirecting || !isPlanActivated(plan)}
+                disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && !isPlanActivated(plan))}
               />
               <p className="input-helper">Enter your M-Pesa number (e.g., 0712345678 or 0112345678)</p>
             </div>
@@ -593,7 +602,7 @@ export default function WithdrawForm() {
               </div>
               <div className="info-item">
                 <span className="info-icon">💳</span>
-                <span>Minimum: KES 100</span>
+                <span>Minimum: KES {isAffiliateWithdraw ? 50 : 100}</span>
               </div>
               <div className="info-item">
                 <span className="info-icon">🔒</span>

@@ -255,35 +255,6 @@ export default function Auth() {
               />
             </div>
 
-            {/* Show referral code as hidden info when auto-filled from URL */}
-            {referralCodeFromUrl && (
-              <div style={{
-                ...styles.formGroup,
-                background: '#e8f5e9',
-                padding: '8px 12px',
-                borderRadius: '8px',
-                border: '1px solid #4caf50'
-              }}>
-                <span style={{ fontSize: '12px', color: '#2e7d32', fontWeight: '600' }}>
-                  ✅ Referral Applied: {referralCodeFromUrl}
-                </span>
-              </div>
-            )}
-
-            {/* Show referral input only when NO auto-filled code */}
-            {!referralCodeFromUrl && (
-              <div style={styles.formGroup}>
-                <Input
-                  placeholder="Referral Code (optional)"
-                  value={regData.referralCode || ""}
-                  onChange={(e) =>
-                    setRegData(prev => ({ ...prev, referralCode: e.target.value.toUpperCase() }))
-                  }
-                  icon="🎁"
-                />
-              </div>
-            )}
-
             <div style={styles.formGroup}>
               <div style={styles.passwordContainer}>
                 <Input
@@ -327,6 +298,35 @@ export default function Auth() {
                 </button>
               </div>
             </div>
+
+            {/* Referral code section - now at bottom of form */}
+            {referralCodeFromUrl ? (
+              <div style={{
+                ...styles.formGroup,
+                background: '#e8f5e9',
+                padding: '10px 12px',
+                borderRadius: '8px',
+                border: '1px solid #4caf50',
+                marginTop: '4px'
+              }}>
+                <span style={{ fontSize: '12px', color: '#2e7d32', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>✅</span> Referral Applied: <strong>{referralCodeFromUrl}</strong>
+                </span>
+              </div>
+            ) : (
+              <div style={styles.formGroup}>
+                <Input
+                  placeholder="Referral Code (optional)"
+                  value={regData.referralCode || ""}
+                  onChange={(e) =>
+                    setRegData(prev => ({ ...prev, referralCode: e.target.value.toUpperCase() }))
+                  }
+                  icon="🎁"
+                  readOnly
+                  style={{ cursor: 'default' }}
+                />
+              </div>
+            )}
 
             <button
               style={styles.primaryButtonRegister}
@@ -589,6 +589,7 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     padding: "10px",
+    paddingBottom: "40px",
     background: "linear-gradient(145deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%)",
     fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
     position: "relative",
@@ -654,6 +655,8 @@ const styles = {
     margin: "auto",
     height: "fit-content",
     maxHeight: "calc(100vh - 20px)",
+    overflowY: "auto",
+    overscrollBehavior: "contain",
   },
   logoContainer: {
     display: "flex",

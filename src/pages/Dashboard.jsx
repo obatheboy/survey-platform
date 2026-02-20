@@ -682,23 +682,23 @@ return (
                 background: '#25D366',
                 color: 'white',
                 border: 'none',
-                borderRadius: '50%',
-                width: '32px',
-                height: '32px',
-                fontSize: '16px',
+                borderRadius: '20px',
+                padding: '6px 12px',
+                fontSize: '12px',
+                fontWeight: '600',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
+                gap: '6px',
                 transition: 'all 0.3s ease',
                 boxShadow: '0 2px 6px rgba(37, 211, 102, 0.3)',
-                padding: 0
               }}
-              onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+              onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
               onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
               title="Contact Support on WhatsApp"
             >
-              💬
+              <span style={{ fontSize: '14px' }}>💬</span>
+              <span>CHAT US</span>
             </button>
             <button
               onClick={toggleTheme}
@@ -1131,9 +1131,9 @@ return (
                 <button 
                   className="withdraw-quick-btn" 
                   style={{ background: '#7c3aed' }}
-                  onClick={() => navigate("/affiliate")}
+                  onClick={() => navigate("/withdraw-form?type=affiliate")}
                 >
-                  View & Withdraw
+                  Withdraw Now
                 </button>
               </div>
 
