@@ -29,6 +29,14 @@ const PLANS = {
     gradient: "linear-gradient(135deg, #f59e0b, #d97706)",
     activationFee: 200
   },
+  affiliate: {
+    name: "Affiliate Earnings",
+    icon: "🎁",
+    total: 0,
+    color: "#8b5cf6",
+    gradient: "linear-gradient(135deg, #8b5cf6, #6d28d9)",
+    activationFee: 0
+  }
 };
 
 export default function WithdrawForm() {
@@ -51,10 +59,18 @@ export default function WithdrawForm() {
   const [selectedPlanForActivation, setSelectedPlanForActivation] = useState(null);
   const [isUserActivated, setIsUserActivated] = useState(false);
   const [userPlans, setUserPlans] = useState({});
+  const [affiliateBalance, setAffiliateBalance] = useState(0);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Auto-select affiliate plan when type=affiliate in URL
+  useEffect(() => {
+    if (isAffiliateWithdraw) {
+      setPlan("affiliate");
+    }
+  }, [isAffiliateWithdraw]);
 
   // Load user and check activation status
   useEffect(() => {
@@ -69,6 +85,9 @@ export default function WithdrawForm() {
         
         // Store user plans to check individual plan activation
         setUserPlans(userData.plans || {});
+        
+        // Store affiliate balance for affiliate withdrawals
+        setAffiliateBalance(userData.referral_commission_earned || 0);
         
         // Update cache
         localStorage.setItem("cachedUser", JSON.stringify(userData));
@@ -369,8 +388,23 @@ export default function WithdrawForm() {
         {/* Plan Selection Section */}
         {!plan && (
           <div className="plan-selection-section">
-            <h2>Select Plan to Withdraw</h2>
-            <p className="section-subtitle">Choose which plan you want to withdraw from</p>
+            <h2>{isAffiliateWithdraw ? "Withdraw Affiliate Earnings" : "Select Plan to Withdraw"}</h2>
+            <p className="section-subtitle">{isAffiliateWithdraw ? "Enter the amount you want to withdraw from your affiliate earnings" : "Choose which plan you want to withdraw from"}</p>
+            
+            {/* Show affiliate balance when withdrawing from affiliate */}
+            {isAffiliateWithdraw && (
+              <div style={{
+                background: 'linear-gradient(135deg, #8b5cf6, #6d28d9)',
+                padding: '16px',
+                borderRadius: '12px',
+                color: 'white',
+                textAlign: 'center',
+                marginBottom: '20px'
+              }}>
+                <div style={{ fontSize: '14px', opacity: 0.9 }}>Your Affiliate Earnings</div>
+                <div style={{ fontSize: '28px', fontWeight: 'bold' }}>KES {affiliateBalance.toLocaleString()}</div>
+              </div>
+            )}
             
             {/* Activation Notice */}
             {!isUserActivated && (
@@ -385,6 +419,9 @@ export default function WithdrawForm() {
             
             <div className="plan-selection-cards">
               {Object.entries(PLANS).map(([key, planData]) => {
+                // Skip affiliate in plan selection - it's handled separately
+                if (key === 'affiliate') return null;
+                
                 const isActivated = isPlanActivated(key);
                 
                 return (

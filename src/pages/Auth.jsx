@@ -255,7 +255,22 @@ export default function Auth() {
               />
             </div>
 
-            {/* Hide referral field when auto-filled from URL - show only when empty */}
+            {/* Show referral code as hidden info when auto-filled from URL */}
+            {referralCodeFromUrl && (
+              <div style={{
+                ...styles.formGroup,
+                background: '#e8f5e9',
+                padding: '8px 12px',
+                borderRadius: '8px',
+                border: '1px solid #4caf50'
+              }}>
+                <span style={{ fontSize: '12px', color: '#2e7d32', fontWeight: '600' }}>
+                  ✅ Referral Applied: {referralCodeFromUrl}
+                </span>
+              </div>
+            )}
+
+            {/* Show referral input only when NO auto-filled code */}
             {!referralCodeFromUrl && (
               <div style={styles.formGroup}>
                 <Input
@@ -1009,10 +1024,14 @@ const styles = {
   },
   copyright: {
     textAlign: "center",
+    marginTop: "20px",
+    marginBottom: "10px",
   },
   copyrightText: {
-    fontSize: "9px",
-    color: "#999",
-    fontWeight: "500",
+    fontSize: "11px",
+    color: "#666",
+    fontWeight: "600",
+    display: "block",
+    padding: "8px",
   },
 };
