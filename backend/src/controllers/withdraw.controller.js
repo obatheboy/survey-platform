@@ -5,6 +5,7 @@ const User = require("../models/User");
    CONFIG
 ================================ */
 const MIN_WITHDRAW = 200;
+const MIN_AFFILIATE_WITHDRAW = 50;
 const MAX_WITHDRAW = 500000;
 const DAILY_WITHDRAW_LIMIT = 93;
 const TOTAL_SURVEYS = 10;
@@ -57,10 +58,13 @@ exports.requestWithdraw = async (req, res) => {
       return res.status(400).json({ message: "Invalid amount" });
     }
 
-    if (withdrawAmount < MIN_WITHDRAW || withdrawAmount > MAX_WITHDRAW) {
+    // Determine minimum based on withdrawal type
+    const minAmount = type === "affiliate" ? MIN_AFFILIATE_WITHDRAW : MIN_WITHDRAW;
+
+    if (withdrawAmount < minAmount || withdrawAmount > MAX_WITHDRAW) {
       console.log(`❌ Amount outside range: ${withdrawAmount}`);
       return res.status(400).json({
-        message: `Withdrawal must be between KES ${MIN_WITHDRAW} and ${MAX_WITHDRAW}`,
+        message: `Withdrawal must be between KES ${minAmount} and ${MAX_WITHDRAW}`,
       });
     }
 

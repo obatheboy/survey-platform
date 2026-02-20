@@ -26,6 +26,7 @@ import AdminUsers from "./pages/admin/AdminUsers";
 import AdminNotifications from "./pages/admin/AdminNotifications";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminAffiliates from "./pages/admin/AdminAffiliates";
+import AdminAffiliateWithdrawals from "./pages/admin/AdminAffiliateWithdrawals";
 
 /* ================= COMPONENTS ================= */
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
@@ -195,6 +196,7 @@ export default function App() {
           <Route path="activations" element={<AdminActivations />} />
           <Route path="withdrawals" element={<AdminWithdrawals />} />
           <Route path="affiliates" element={<AdminAffiliates />} />
+          <Route path="affiliate-withdrawals" element={<AdminAffiliateWithdrawals />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="notifications" element={<AdminNotifications />} />
         </Route>

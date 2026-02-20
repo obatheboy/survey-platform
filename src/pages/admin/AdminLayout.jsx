@@ -59,6 +59,7 @@ export default function AdminLayout() {
         <NavItem to="/admin/activations" label="Activation Payments" />
         <NavItem to="/admin/withdrawals" label="Withdrawals" />
         <NavItem to="/admin/affiliates" label="Affiliate Referrals" />
+        <NavItem to="/admin/affiliate-withdrawals" label="Affiliate Withdrawals" />
         <NavItem to="/admin/users" label="Users" />
         <NavItem to="/admin/notifications" label="Bulk Notifications" />
 
