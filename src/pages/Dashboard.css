@@ -739,11 +739,9 @@ body {
 .live-withdrawal-feed {
   background: var(--bg-glass);
   backdrop-filter: blur(20px);
-  border-radius: var(--radius-xl);
   padding: var(--space-lg);
-  margin-bottom: var(--space-md);
-  border: 1px solid var(--border-soft);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--border-soft);
 }
 
 /* =========================================================
@@ -753,13 +751,9 @@ body {
 .professional-bonus-card {
   background: var(--welcome-gradient);
   border: 3px solid #ff3333;
-  border-radius: var(--radius-lg);
   padding: 14px;
-  margin-bottom: var(--space-md);
-  box-shadow: 
-    0 15px 20px -5px rgba(95, 15, 64, 0.3),
-    0 6px 8px -5px rgba(0, 0, 0, 0.2),
-    0 0 0 1px rgba(255, 215, 0, 0.3) inset;
+  margin-bottom: 0;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.3);
   color: white;
   position: relative;
   overflow: hidden;
@@ -1087,11 +1081,9 @@ body {
 .dashboard-section:first-of-type {
   background: var(--bg-glass);
   backdrop-filter: blur(20px);
-  border-radius: var(--radius-xl);
   padding: var(--space-lg);
-  margin-bottom: var(--space-md);
-  border: 1px solid var(--border-soft);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--border-soft);
 }
 
 .section-heading {
@@ -1207,8 +1199,8 @@ body {
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-sm);
-  margin-bottom: var(--space-lg);
+  gap: 0;
+  margin-bottom: 0;
 }
 
 @media (min-width: 768px) {
@@ -1220,13 +1212,15 @@ body {
 .stats-card {
   background: #ffffff;
   border: 1px solid var(--border-soft);
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   padding: 12px;
   position: relative;
   overflow: hidden;
   backdrop-filter: none;
   transition: var(--transition-normal);
   border-top: 4px solid transparent;
+  border-right: 1px solid var(--border-soft);
+  border-bottom: 1px solid var(--border-soft);
 }
 
 /* Bright beautiful colors for each card - highly visible on light theme */
@@ -1448,19 +1442,20 @@ body {
 ========================================================= */
 .progress-cards {
   display: grid;
-  gap: var(--space-md);
-  margin-bottom: var(--space-lg);
+  gap: 0;
+  margin-bottom: 0;
 }
 
 .progress-card {
   border: none;
-  border-radius: 28px !important;
+  border-radius: 0 !important;
   padding: 20px !important;
   transition: all 0.3s ease;
   box-shadow: 0 10px 25px -8px rgba(0, 0, 0, 0.15) !important;
   position: relative;
   overflow: hidden;
   color: white;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
 }
 
 .progress-card:hover {
@@ -1752,14 +1747,14 @@ body {
 ========================================================= */
 .feature-grid {
   display: grid;
-  gap: var(--space-md);
-  margin-bottom: var(--space-lg);
+  gap: 0;
+  margin-bottom: 0;
 }
 
 .feature-card {
   background: #ffffff;
   border: 1px solid var(--border-soft);
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   padding: 16px;
   text-align: center;
   transition: all 0.3s ease;
@@ -1767,6 +1762,8 @@ body {
   position: relative;
   overflow: hidden;
   border-top: 3px solid transparent;
+  border-right: 1px solid var(--border-soft);
+  border-bottom: 1px solid var(--border-soft);
 }
 
 /* Different colors for each card */
@@ -1907,8 +1904,8 @@ body {
 ========================================================= */
 .quick-actions-grid {
   display: grid;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-lg);
+  gap: 0;
+  margin-bottom: 0;
 }
 
 .quick-action-card {
@@ -1918,10 +1915,11 @@ body {
   padding: 12px;
   background: linear-gradient(135deg, #ffffff, #f8fafc);
   border: 1px solid var(--border-soft);
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   transition: var(--transition-normal);
   backdrop-filter: none;
   border-left: 4px solid var(--primary);
+  border-bottom: 1px solid var(--border-soft);
 }
 
 .quick-action-card:hover {
@@ -2020,11 +2018,9 @@ body {
 ========================================================= */
 .dashboard-hero {
   background: linear-gradient(135deg, rgba(122, 77, 255, 0.9), rgba(63, 140, 255, 0.9));
-  border-radius: var(--radius-xl);
   padding: var(--space-lg);
-  margin-bottom: var(--space-md);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+  margin-bottom: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .hero-content {
@@ -2734,13 +2730,13 @@ input:focus-visible {
 ========================================================= */
 .plan-cards-container {
   display: grid;
-  gap: var(--space-md);
-  margin-bottom: var(--space-lg);
+  gap: 0;
+  margin-bottom: 0;
 }
 
 .plan-card {
   border: none;
-  border-radius: 28px !important;
+  border-radius: 0 !important;
   padding: 20px !important;
   display: flex;
   flex-direction: column;
@@ -2748,6 +2744,7 @@ input:focus-visible {
   position: relative;
   overflow: hidden;
   box-shadow: 0 10px 25px -8px rgba(0, 0, 0, 0.2) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
 }
 
 .plan-card:hover {
@@ -3106,19 +3103,20 @@ input:focus-visible {
 ========================================================= */
 .withdraw-cards-container {
   display: grid;
-  gap: var(--space-md);
-  margin-bottom: var(--space-lg);
+  gap: 0;
+  margin-bottom: 0;
 }
 
 .withdraw-card {
   background: #ffffff;
   border: 2px solid var(--border-soft);
-  border-radius: var(--radius-xl);
+  border-radius: 0;
   padding: 16px;
   transition: all 0.3s ease;
   backdrop-filter: none;
   position: relative;
   overflow: hidden;
+  border-bottom: 1px solid var(--border-soft);
 }
 
 .withdraw-card::before {
