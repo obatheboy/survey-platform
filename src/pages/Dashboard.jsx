@@ -773,42 +773,26 @@ return (
 
         <div className="header-activation-container">
           {user && !user.is_activated && !user.account_activated && (
-            <div style={{ 
-              display: 'flex', 
-              gap: '8px', 
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-              marginTop: '4px'
-            }}>
-              <span className="header-activation-badge" onClick={() => navigate('/activate')} style={{
+            <button
+              onClick={() => navigate('/activate')}
+              style={{
+                background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '6px 14px',
+                color: 'white',
+                fontWeight: 'bold',
                 fontSize: '0.75rem',
-                padding: '4px 8px'
-              }}>
-                ⚠️ Not Activated
-              </span>
-              {/* ACTIVATE BUTTON - Compact size */}
-              <button
-                onClick={() => navigate('/activate')}
-                style={{
-                  background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                  border: 'none',
-                  borderRadius: '15px',
-                  padding: '6px 12px',
-                  color: 'white',
-                  fontWeight: 'bold',
-                  fontSize: '0.75rem',
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 6px rgba(239, 68, 68, 0.3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                🚀 Activate
-              </button>
-            </div>
+                cursor: 'pointer',
+                boxShadow: '0 2px 6px rgba(239, 68, 68, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              ⚠️ Activate Account
+            </button>
           )}
         </div>
         <p className="header-greeting-bottom">
