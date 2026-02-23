@@ -820,8 +820,8 @@ return (
         border: 'none',
         position: 'relative',
         overflow: 'hidden',
-        marginTop: '4px',
-        marginBottom: '4px'
+        marginTop: '20px',
+        marginBottom: '2px'
       }}>
         <div style={{
           display: 'grid',
@@ -962,7 +962,7 @@ return (
       
 
       {/* LIVE WITHDRAWAL FEED */}
-      <div className="live-withdrawal-feed" style={{ marginTop: '-10px' }}>
+      <div className="live-withdrawal-feed" style={{ marginTop: '-20px' }}>
         <LiveWithdrawalFeed />
       </div>
 
