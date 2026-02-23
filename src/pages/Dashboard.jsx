@@ -773,27 +773,33 @@ return (
 
         <div className="header-activation-container">
           {user && !user.is_activated && !user.account_activated && (
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <div style={{ 
+              display: 'flex', 
+              gap: '10px', 
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              justifyContent: 'center'
+            }}>
               <span className="header-activation-badge" onClick={() => navigate('/activate')}>
                 ⚠️ Account not Activated
               </span>
-              {/* PROMINENT ACTIVATE BUTTON */}
+              {/* PROMINENT ACTIVATE BUTTON - Smaller size */}
               <button
                 onClick={() => navigate('/activate')}
                 style={{
                   background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
                   border: 'none',
-                  borderRadius: '25px',
-                  padding: '12px 24px',
+                  borderRadius: '20px',
+                  padding: '8px 16px',
                   color: 'white',
                   fontWeight: 'bold',
-                  fontSize: '1rem',
+                  fontSize: '0.85rem',
                   cursor: 'pointer',
-                  boxShadow: '0 4px 15px rgba(239, 68, 68, 0.4)',
+                  boxShadow: '0 2px 8px rgba(239, 68, 68, 0.4)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '8px',
-                  animation: 'pulse 2s infinite'
+                  gap: '6px',
+                  whiteSpace: 'nowrap'
                 }}
               >
                 🚀 Activate Now
@@ -970,88 +976,6 @@ return (
       <div className="live-withdrawal-feed">
         <LiveWithdrawalFeed />
       </div>
-
-      {/* GAMIFICATION SECTION */}
-      <div className="gamification-section" style={{ marginTop: '20px' }}>
-        <div className="gamification-grid" style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: '16px'
-        }}>
-          {/* Level & Streak Card */}
-          <div className="level-streak-card" style={{
-            background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-            borderRadius: '16px',
-            padding: '20px',
-            color: 'white'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-              <div style={{
-                background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
-                borderRadius: '12px',
-                padding: '12px',
-                fontSize: '1.5rem'
-              }}>⭐</div>
-              <div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#fbbf24' }}>Level {gamificationStats.level}</div>
-                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)' }}>{gamificationStats.xp} / {gamificationStats.xpToNextLevel} XP</div>
-              </div>
-            </div>
-            <div style={{ marginBottom: '12px' }}>
-              <div style={{ height: '8px', background: 'rgba(255,255,255,0.2)', borderRadius: '4px', overflow: 'hidden' }}>
-                <div style={{
-                  height: '100%',
-                  width: `${(gamificationStats.xp / gamificationStats.xpToNextLevel) * 100}%`,
-                  background: 'linear-gradient(90deg, #8b5cf6, #a78bfa)',
-                  borderRadius: '4px'
-                }}></div>
-              </div>
-            </div>
-            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
-              <button
-                onClick={() => setShowDailyReward(true)}
-                style={{
-                  background: canClaimDailyReward ? 'linear-gradient(135deg, #fbbf24, #f59e0b)' : 'rgba(255,255,255,0.1)',
-                  border: 'none',
-                  padding: '10px 20px',
-                  borderRadius: '8px',
-                  cursor: canClaimDailyReward ? 'pointer' : 'default',
-                  color: 'white',
-                  fontWeight: 'bold',
-                  transition: 'all 0.3s'
-                }}
-              >
-                🎁 Daily Reward {canClaimDailyReward && '🔔'}
-              </button>
-              <div style={{
-                background: 'rgba(255,255,255,0.1)',
-                padding: '10px 16px',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}>
-                🔥 {gamificationStats.currentStreak} day streak
-              </div>
-            </div>
-          </div>
-          
-          {/* Leaderboard */}
-          <Leaderboard />
-        </div>
-      </div>
-
-      {/* ACHIEVEMENTS */}
-      <div style={{ marginTop: '20px' }}>
-        <Achievements />
-      </div>
-
-      {/* DAILY REWARD POPUP */}
-      <DailyRewardPopup
-        isOpen={showDailyReward}
-        onClose={() => setShowDailyReward(false)}
-        onRewardClaimed={handleDailyRewardClaimed}
-      />
 
 {/* ADD USER NOTIFICATIONS HERE - right after the withdrawal feed */}
 <div className="user-notifications-section">
@@ -1930,6 +1854,88 @@ return (
           }
         }
       `}</style>
+
+      {/* ===================== GAMIFICATION SECTION - AT BOTTOM ===================== */}
+      <div className="gamification-section" style={{ marginTop: '30px', marginBottom: '30px' }}>
+        <div className="gamification-grid" style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '16px'
+        }}>
+          {/* Level & Streak Card */}
+          <div className="level-streak-card" style={{
+            background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+            borderRadius: '16px',
+            padding: '20px',
+            color: 'white'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <div style={{
+                background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+                borderRadius: '12px',
+                padding: '12px',
+                fontSize: '1.5rem'
+              }}>⭐</div>
+              <div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#fbbf24' }}>Level {gamificationStats.level}</div>
+                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)' }}>{gamificationStats.xp} / {gamificationStats.xpToNextLevel} XP</div>
+              </div>
+            </div>
+            <div style={{ marginBottom: '12px' }}>
+              <div style={{ height: '8px', background: 'rgba(255,255,255,0.2)', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%',
+                  width: `${(gamificationStats.xp / gamificationStats.xpToNextLevel) * 100}%`,
+                  background: 'linear-gradient(90deg, #8b5cf6, #a78bfa)',
+                  borderRadius: '4px'
+                }}></div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => setShowDailyReward(true)}
+                style={{
+                  background: canClaimDailyReward ? 'linear-gradient(135deg, #fbbf24, #f59e0b)' : 'rgba(255,255,255,0.1)',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  cursor: canClaimDailyReward ? 'pointer' : 'default',
+                  color: 'white',
+                  fontWeight: 'bold',
+                  transition: 'all 0.3s'
+                }}
+              >
+                🎁 Daily Reward {canClaimDailyReward && '🔔'}
+              </button>
+              <div style={{
+                background: 'rgba(255,255,255,0.1)',
+                padding: '10px 16px',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                🔥 {gamificationStats.currentStreak} day streak
+              </div>
+            </div>
+          </div>
+          
+          {/* Leaderboard */}
+          <Leaderboard />
+        </div>
+      </div>
+
+      {/* ACHIEVEMENTS */}
+      <div style={{ marginBottom: '30px' }}>
+        <Achievements />
+      </div>
+
+      {/* DAILY REWARD POPUP */}
+      <DailyRewardPopup
+        isOpen={showDailyReward}
+        onClose={() => setShowDailyReward(false)}
+        onRewardClaimed={handleDailyRewardClaimed}
+      />
     </div>
   );
 }

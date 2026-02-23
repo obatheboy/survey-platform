@@ -273,7 +273,7 @@ export default function Activate() {
             highestPlan = "REGULAR";
           }
           
-          planFromQuery = highestPlan || res.data.active_plan || "REGULAR";
+          planFromQuery = highestPlan || null; // Don't auto-select, show plan selection
         }
 
         let plan;
@@ -283,8 +283,19 @@ export default function Activate() {
             completed: true, 
             total: res.data.welcome_bonus || 1200 
           };
+        } else if (!planFromQuery) {
+          // No specific plan selected - will show plan selection
+          plan = null;
         } else {
           plan = res.data.plans?.[planFromQuery];
+        }
+
+        // If no plan is selected, skip auto-navigation and show selection
+        if (!planFromQuery) {
+          setPlanKey(null);
+          setPlanState(null);
+          setLoading(false);
+          return;
         }
 
         if (!plan && PLAN_CONFIG[planFromQuery]) {
@@ -292,7 +303,10 @@ export default function Activate() {
         }
 
         if (!plan || (planFromQuery !== "WELCOME" && plan.is_activated)) {
-          navigate("/dashboard", { replace: true });
+          // Navigate to plan selection instead of dashboard
+          setPlanKey(null);
+          setPlanState(null);
+          setLoading(false);
           return;
         }
 
@@ -379,6 +393,108 @@ export default function Activate() {
             animation: "spin 1s linear infinite"
           }}></div>
           Loading activation details...
+        </div>
+      </div>
+    );
+  }
+
+  // Show plan selection when no plan is selected
+  if (!planKey && user) {
+    return (
+      <div style={{ 
+        minHeight: '100vh', 
+        background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+        padding: '20px'
+      }}>
+        <div style={{
+          maxWidth: '600px',
+          margin: '0 auto',
+          background: 'white',
+          borderRadius: '16px',
+          padding: '24px',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.1)'
+        }}>
+          <h2 style={{ 
+            textAlign: 'center', 
+            marginBottom: '8px',
+            color: '#1e293b'
+          }}>
+            🚀 Choose Your Plan
+          </h2>
+          <p style={{ 
+            textAlign: 'center', 
+            marginBottom: '24px',
+            color: '#64748b'
+          }}>
+            Select a plan to activate and start earning!
+          </p>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {['REGULAR', 'VIP', 'VVIP'].map((p) => {
+              const planData = user?.plans?.[p];
+              const isCompleted = planData?.completed;
+              const isActivated = planData?.is_activated;
+              const config = PLAN_CONFIG[p];
+              
+              return (
+                <button
+                  key={p}
+                  onClick={() => {
+                    if (isCompleted && !isActivated) {
+                      setPlanKey(p);
+                      setPlanState(planData);
+                    }
+                  }}
+                  disabled={!isCompleted || isActivated}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '16px 20px',
+                    border: 'none',
+                    borderRadius: '12px',
+                    background: isActivated 
+                      ? 'rgba(16, 185, 129, 0.1)' 
+                      : isCompleted 
+                        ? config.gradient 
+                        : 'rgba(100, 116, 139, 0.1)',
+                    color: isActivated ? '#10b981' : isCompleted ? 'white' : '#64748b',
+                    cursor: isCompleted && !isActivated ? 'pointer' : 'not-allowed',
+                    opacity: isCompleted && !isActivated ? 1 : 0.6,
+                    transition: 'all 0.2s',
+                    boxShadow: isCompleted && !isActivated ? '0 4px 15px rgba(0,0,0,0.1)' : 'none'
+                  }}
+                >
+                  <div style={{ textAlign: 'left' }}>
+                    <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
+                      {config?.label || p}
+                    </div>
+                    <div style={{ fontSize: '0.85rem', opacity: 0.9 }}>
+                      Earn up to KES {config?.total || 0}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    {isActivated ? (
+                      <span style={{ fontWeight: 'bold' }}>✅ Activated</span>
+                    ) : isCompleted ? (
+                      <span style={{ fontWeight: 'bold' }}>KES {config?.activationFee || 0}</span>
+                    ) : (
+                      <span>{planData?.surveys_completed || 0}/10 surveys</span>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+          
+          <p style={{ 
+            textAlign: 'center', 
+            marginTop: '20px',
+            fontSize: '0.85rem',
+            color: '#94a3b8'
+          }}>
+            Complete 10 surveys to unlock each plan
+          </p>
         </div>
       </div>
     );
