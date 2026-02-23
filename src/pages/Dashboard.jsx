@@ -962,12 +962,12 @@ return (
       
 
       {/* LIVE WITHDRAWAL FEED */}
-      <div className="live-withdrawal-feed" style={{ marginTop: '-25px', transform: 'scale(0.95)', transformOrigin: 'top center' }}>
+      <div className="live-withdrawal-feed" style={{ marginTop: '-25px', marginBottom: '0px', padding: '4px', transform: 'scale(0.92)', transformOrigin: 'top center' }}>
         <LiveWithdrawalFeed />
       </div>
 
 {/* ADD USER NOTIFICATIONS HERE - right after the withdrawal feed */}
-<div className="user-notifications-section">
+<div className="user-notifications-section" style={{ marginTop: '0px', marginBottom: '0px' }}>
   <UserNotifications />
 </div>
 {/* WELCOME BONUS CARD - COMPACT VERSION */}
@@ -977,11 +977,13 @@ return (
     border: '4px solid #ff3333',
     boxShadow: '0 20px 30px -10px rgba(95, 15, 64, 0.5), 0 8px 15px -6px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 215, 0, 0.3) inset',
     borderRadius: '24px',
-    padding: '8px 16px', /* REDUCED from 10px 20px to 8px 16px */
+    padding: '6px 12px',
     color: 'white',
     position: 'relative',
     overflow: 'hidden',
-    transition: 'all 0.3s ease'
+    transition: 'all 0.3s ease',
+    marginTop: '0px',
+    marginBottom: '0px'
   }}>
     {/* Diamond pattern overlay */}
     <div style={{
