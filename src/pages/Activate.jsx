@@ -419,14 +419,14 @@ export default function Activate() {
             marginBottom: '8px',
             color: '#1e293b'
           }}>
-            🚀 Choose Your Plan
+            🚀 Start Your Plan
           </h2>
           <p style={{ 
             textAlign: 'center', 
             marginBottom: '24px',
             color: '#64748b'
           }}>
-            Select a plan to activate and start earning!
+            Select a plan to start completing surveys and earn money!
           </p>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -441,8 +441,9 @@ export default function Activate() {
                   key={p}
                   onClick={() => {
                     if (isCompleted && !isActivated) {
-                      setPlanKey(p);
-                      setPlanState(planData);
+                      // Navigate to Surveys page with this plan selected
+                      localStorage.setItem('active_plan', p);
+                      navigate('/surveys');
                     }
                   }}
                   disabled={!isCompleted || isActivated}
@@ -477,7 +478,7 @@ export default function Activate() {
                     {isActivated ? (
                       <span style={{ fontWeight: 'bold' }}>✅ Activated</span>
                     ) : isCompleted ? (
-                      <span style={{ fontWeight: 'bold' }}>KES {config?.activationFee || 0}</span>
+                      <span style={{ fontWeight: 'bold' }}>▶ Start Surveys</span>
                     ) : (
                       <span>{planData?.surveys_completed || 0}/10 surveys</span>
                     )}
@@ -493,7 +494,7 @@ export default function Activate() {
             fontSize: '0.85rem',
             color: '#94a3b8'
           }}>
-            Complete 10 surveys to unlock each plan
+            Complete 10 surveys to unlock each plan, then start earning!
           </p>
         </div>
       </div>
