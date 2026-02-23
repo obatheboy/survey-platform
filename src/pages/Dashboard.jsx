@@ -821,7 +821,7 @@ return (
         borderBottom: '1px solid rgba(255,255,255,0.2)',
         position: 'relative',
         overflow: 'hidden',
-        marginTop: '0',
+        marginTop: '50px',
         marginBottom: '0'
       }}>
         <div style={{
