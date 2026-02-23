@@ -771,23 +771,23 @@ return (
           </div>
         </div>
 
-        <div className="header-activation-container">
+        <div className="header-activation-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {user && !user.is_activated && !user.account_activated && (
             <button
               onClick={() => navigate('/withdraw-form')}
               style={{
                 background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
                 border: 'none',
-                borderRadius: '8px',
-                padding: '6px 14px',
+                borderRadius: '6px',
+                padding: '4px 10px',
                 color: 'white',
                 fontWeight: 'bold',
-                fontSize: '0.75rem',
+                fontSize: '0.65rem',
                 cursor: 'pointer',
                 boxShadow: '0 2px 6px rgba(239, 68, 68, 0.3)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '4px',
+                gap: '3px',
                 whiteSpace: 'nowrap'
               }}
             >
@@ -820,7 +820,7 @@ return (
         border: 'none',
         position: 'relative',
         overflow: 'hidden',
-        marginTop: '20px',
+        marginTop: '30px',
         marginBottom: '2px'
       }}>
         <div style={{
@@ -962,7 +962,7 @@ return (
       
 
       {/* LIVE WITHDRAWAL FEED */}
-      <div className="live-withdrawal-feed" style={{ marginTop: '-20px' }}>
+      <div className="live-withdrawal-feed" style={{ marginTop: '-25px', transform: 'scale(0.95)', transformOrigin: 'top center' }}>
         <LiveWithdrawalFeed />
       </div>
 
