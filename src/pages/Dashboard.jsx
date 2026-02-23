@@ -773,9 +773,32 @@ return (
 
         <div className="header-activation-container">
           {user && !user.is_activated && !user.account_activated && (
-            <span className="header-activation-badge" onClick={() => navigate('/activate')}>
-              ⚠️ Account not Activated
-            </span>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <span className="header-activation-badge" onClick={() => navigate('/activate')}>
+                ⚠️ Account not Activated
+              </span>
+              {/* PROMINENT ACTIVATE BUTTON */}
+              <button
+                onClick={() => navigate('/activate')}
+                style={{
+                  background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                  border: 'none',
+                  borderRadius: '25px',
+                  padding: '12px 24px',
+                  color: 'white',
+                  fontWeight: 'bold',
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 15px rgba(239, 68, 68, 0.4)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  animation: 'pulse 2s infinite'
+                }}
+              >
+                🚀 Activate Now
+              </button>
+            </div>
           )}
         </div>
         <p className="header-greeting-bottom">

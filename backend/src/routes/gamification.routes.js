@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const gamificationController = require('../controllers/gamification.controller');
-const authMiddleware = require('../middlewares/auth.middleware');
+const { protect } = require('../middlewares/auth.middleware');
 
 // All routes require authentication
-router.use(authMiddleware);
+router.use(protect);
 
 // Get user achievements
 router.get('/achievements', gamificationController.getUserAchievements);
