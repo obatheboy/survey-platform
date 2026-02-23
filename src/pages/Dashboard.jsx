@@ -813,15 +813,16 @@ return (
 
       {/* HERO SECTION - ULTRA COMPACT */}
       <div className="dashboard-section hero-section" style={{
-        borderRadius: '14px',
+        borderRadius: '0',
         padding: '10px',
         background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
         boxShadow: '0 6px 20px -5px rgba(0, 0, 0, 0.1)',
         border: 'none',
+        borderBottom: '1px solid rgba(255,255,255,0.2)',
         position: 'relative',
         overflow: 'hidden',
-        marginTop: '30px',
-        marginBottom: '5px'
+        marginTop: '0',
+        marginBottom: '0'
       }}>
         <div style={{
           display: 'grid',
@@ -962,12 +963,12 @@ return (
       
 
       {/* LIVE WITHDRAWAL FEED */}
-      <div className="live-withdrawal-feed" style={{ marginTop: '5px', marginBottom: '5px', padding: '8px 12px' }}>
+      <div className="live-withdrawal-feed" style={{ marginTop: '0', marginBottom: '0', padding: '8px 12px', borderBottom: '1px solid var(--border-soft)' }}>
         <LiveWithdrawalFeed />
       </div>
 
 {/* ADD USER NOTIFICATIONS HERE - right after the withdrawal feed */}
-<div className="user-notifications-section" style={{ marginTop: '5px', marginBottom: '5px' }}>
+<div className="user-notifications-section" style={{ marginTop: '0', marginBottom: '0', borderBottom: '1px solid var(--border-soft)' }}>
   <UserNotifications />
 </div>
 {/* WELCOME BONUS CARD - COMPACT VERSION */}
@@ -976,14 +977,14 @@ return (
     background: 'linear-gradient(145deg, #5f0f40, #831843, #9d174d)',
     border: '4px solid #ff3333',
     boxShadow: '0 20px 30px -10px rgba(95, 15, 64, 0.5), 0 8px 15px -6px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 215, 0, 0.3) inset',
-    borderRadius: '24px',
+    borderRadius: '0',
     padding: '6px 12px',
     color: 'white',
     position: 'relative',
     overflow: 'hidden',
     transition: 'all 0.3s ease',
-    marginTop: '5px',
-    marginBottom: '5px'
+    marginTop: '0',
+    marginBottom: '0'
   }}>
     {/* Diamond pattern overlay */}
     <div style={{

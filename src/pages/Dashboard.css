@@ -478,11 +478,10 @@ body {
 .dashboard-section:first-of-type {
   background: var(--bg-glass);
   backdrop-filter: blur(20px);
-  border-radius: var(--radius-lg) !important; /* Slightly smaller radius */
-  padding: 12px !important; /* Reduced padding */
-  margin-bottom: 8px !important; /* Reduced margin */
-  border: 1px solid var(--border-soft);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  border-radius: 0 !important;
+  padding: 12px !important;
+  margin-bottom: 0 !important;
+  border-bottom: 1px solid var(--border-soft);
 }
 
 /* Welcome message container */
@@ -490,7 +489,7 @@ body {
   display: flex !important;
   align-items: center !important;
   gap: 8px !important;
-  margin-bottom: 8px !important; /* Reduced margin */
+  margin-bottom: 0 !important;
 }
 
 .welcome-avatar {
@@ -741,6 +740,13 @@ body {
   backdrop-filter: blur(20px);
   padding: var(--space-lg);
   margin-bottom: 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.user-notifications-section {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0;
   border-bottom: 1px solid var(--border-soft);
 }
 
@@ -1087,7 +1093,7 @@ body {
 }
 
 .section-heading {
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-sm);
 }
 
 .section-heading h3 {
@@ -2165,8 +2171,9 @@ body {
   /* Sections */
   .dashboard-section {
     padding: 16px 12px;
-    margin-bottom: 12px;
-    border-radius: 16px;
+    margin-bottom: 0;
+    border-radius: 0;
+    border-bottom: 1px solid var(--border-soft);
   }
   
   .section-heading h3 {
@@ -2180,8 +2187,8 @@ body {
   /* Stats Grid */
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    margin-bottom: var(--space-md);
+    gap: 0;
+    margin-bottom: 0;
   }
   
   .stats-card {
@@ -2194,8 +2201,8 @@ body {
   
   /* Progress Cards */
   .progress-cards {
-    gap: 10px;
-    margin-bottom: var(--space-md);
+    gap: 0;
+    margin-bottom: 0;
   }
   
   .progress-card {
@@ -2237,18 +2244,18 @@ body {
   
   /* Quick Actions */
   .quick-actions-grid {
-    gap: 8px;
-    margin-bottom: var(--space-md);
+    gap: 0;
+    margin-bottom: 0;
   }
-  
+
   .quick-action-card {
     padding: 14px 12px;
   }
-  
+
   /* Hero Section */
   .dashboard-hero {
     padding: 16px;
-    margin-bottom: 12px;
+    margin-bottom: 0;
   }
   
   .hero-text h1 {
@@ -3441,11 +3448,11 @@ input:focus-visible {
   
   /* Plan Cards Container */
   .plan-cards-container {
-    gap: var(--space-sm);
+    gap: 0;
   }
-  
+
   .withdraw-cards-container {
-    gap: var(--space-sm);
+    gap: 0;
   }
 }
 
