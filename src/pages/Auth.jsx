@@ -155,12 +155,6 @@ export default function Auth() {
 
   return (
     <div style={styles.page}>
-      {/* Animated Background Elements */}
-      <div style={styles.backgroundBlob1}></div>
-      <div style={styles.backgroundBlob2}></div>
-      <div style={styles.backgroundBlob3}></div>
-      <div style={styles.backgroundGrid}></div>
-
       <div
         style={{
           ...styles.card,
@@ -493,11 +487,6 @@ export default function Auth() {
               </button>
             </label>
           </div>
-
-          {/* Copyright Inside Card */}
-          <div style={styles.copyright}>
-            <span style={styles.copyrightText}>© 2026 SurveyEarn. ✅ Approved by GOVT of Kenya</span>
-          </div>
         </div>
       </div>
 
@@ -529,22 +518,6 @@ export default function Auth() {
             }
           }
           
-          @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.5); opacity: 0.8; }
-          }
-          
-          @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-          }
-          
-          @keyframes blob {
-            0%, 100% { transform: translate(0px, 0px) scale(1); }
-            33% { transform: translate(30px, -50px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
-          }
-          
           input[type="checkbox"]:checked {
             animation: checkmark 0.4s ease-out;
           }
@@ -571,7 +544,7 @@ export default function Auth() {
   );
 }
 
-// FULLY RESPONSIVE STYLES - ALWAYS FITS SCREEN
+// FULL SCREEN STYLES - CARD FITS ENTIRE SCREEN
 const styles = {
   page: {
     minHeight: "100vh",
@@ -579,104 +552,57 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: "clamp(8px, 2vw, 16px)",
     background: "linear-gradient(145deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%)",
     fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
     position: "relative",
     overflow: "hidden",
     boxSizing: "border-box",
-  },
-  backgroundBlob1: {
-    position: "absolute",
-    width: "clamp(150px, 30vw, 250px)",
-    height: "clamp(150px, 30vw, 250px)",
-    background: "rgba(255, 182, 193, 0.2)",
-    borderRadius: "50%",
-    top: "-10%",
-    left: "-10%",
-    animation: "blob 12s ease-in-out infinite",
-    zIndex: 0,
-  },
-  backgroundBlob2: {
-    position: "absolute",
-    width: "clamp(200px, 35vw, 300px)",
-    height: "clamp(200px, 35vw, 300px)",
-    background: "rgba(135, 206, 235, 0.15)",
-    borderRadius: "50%",
-    bottom: "-15%",
-    right: "-15%",
-    animation: "blob 15s ease-in-out infinite reverse",
-    zIndex: 0,
-  },
-  backgroundBlob3: {
-    position: "absolute",
-    width: "clamp(120px, 25vw, 200px)",
-    height: "clamp(120px, 25vw, 200px)",
-    background: "rgba(255, 215, 0, 0.1)",
-    borderRadius: "50%",
-    top: "40%",
-    left: "60%",
-    animation: "float 8s ease-in-out infinite",
-    zIndex: 0,
-  },
-  backgroundGrid: {
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    backgroundImage: `
-      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px)
-    `,
-    backgroundSize: "min(30px, 5vw) min(30px, 5vw)",
-    zIndex: 0,
+    padding: 0,
   },
   card: {
     width: "100%",
-    maxWidth: "min(400px, 90vw)",
-    padding: "clamp(16px, 4vw, 24px) clamp(12px, 3vw, 20px)",
-    borderRadius: "clamp(20px, 5vw, 32px)",
-    background: "linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9))",
+    height: "100%",
+    padding: "24px 20px",
+    background: "linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.95))",
     backdropFilter: "blur(20px)",
-    boxShadow: "0 20px 40px -12px rgba(0, 0, 0, 0.3)",
-    border: "1px solid rgba(255, 255, 255, 0.4)",
+    boxShadow: "none",
+    border: "none",
     zIndex: 1,
     position: "relative",
     display: "flex",
     flexDirection: "column",
-    margin: "auto",
-    height: "auto",
-    maxHeight: "calc(100vh - 32px)",
+    margin: 0,
     overflowY: "auto",
     overscrollBehavior: "contain",
     WebkitOverflowScrolling: "touch",
+    borderRadius: 0,
   },
   logoContainer: {
     display: "flex",
     alignItems: "center",
-    gap: "clamp(8px, 2vw, 12px)",
-    marginBottom: "clamp(4px, 1.5vh, 8px)",
+    gap: "12px",
+    marginBottom: "16px",
   },
   logoWrapper: {
     position: "relative",
-    width: "clamp(40px, 8vw, 48px)",
-    height: "clamp(40px, 8vw, 48px)",
+    width: "48px",
+    height: "48px",
   },
   logoGlow: {
     position: "absolute",
     width: "100%",
     height: "100%",
     background: "linear-gradient(135deg, #FF6B6B, #4ECDC4)",
-    borderRadius: "clamp(10px, 2vw, 14px)",
+    borderRadius: "14px",
     filter: "blur(10px)",
     opacity: 0.6,
-    animation: "pulse 3s ease-in-out infinite",
   },
   logoIcon: {
     position: "relative",
-    fontSize: "clamp(20px, 5vw, 26px)",
+    fontSize: "26px",
     background: "linear-gradient(135deg, #FF6B6B, #4ECDC4)",
-    padding: "clamp(8px, 2vw, 10px)",
-    borderRadius: "clamp(10px, 2vw, 14px)",
+    padding: "10px",
+    borderRadius: "14px",
     boxShadow: "0 8px 16px -5px rgba(255, 107, 107, 0.4)",
     display: "flex",
     alignItems: "center",
@@ -687,7 +613,7 @@ const styles = {
     flex: 1,
   },
   logo: {
-    fontSize: "clamp(20px, 5vw, 26px)",
+    fontSize: "26px",
     fontWeight: "800",
     margin: 0,
     color: "#1a1a1a",
@@ -701,56 +627,56 @@ const styles = {
   },
   tagline: {
     color: "#666",
-    fontSize: "clamp(10px, 2.5vw, 12px)",
+    fontSize: "12px",
     fontWeight: "500",
     marginTop: "2px",
   },
   trustBadge: {
     display: "flex",
     alignItems: "center",
-    gap: "clamp(3px, 1vw, 5px)",
+    gap: "5px",
     background: "rgba(255, 107, 107, 0.08)",
-    padding: "clamp(3px, 1vh, 5px) clamp(6px, 2vw, 10px)",
+    padding: "5px 10px",
     borderRadius: "30px",
-    marginBottom: "clamp(8px, 2vh, 14px)",
+    marginBottom: "16px",
     width: "fit-content",
   },
   trustBadgeIcon: {
     background: "#10b981",
     color: "white",
-    width: "clamp(12px, 3vw, 16px)",
-    height: "clamp(12px, 3vw, 16px)",
+    width: "16px",
+    height: "16px",
     borderRadius: "50%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "clamp(8px, 2vw, 10px)",
+    fontSize: "10px",
     fontWeight: "bold",
   },
   trustBadgeText: {
     color: "#FF6B6B",
-    fontSize: "clamp(9px, 2.5vw, 11px)",
+    fontSize: "11px",
     fontWeight: "600",
   },
   trustBadgeDot: {
     color: "#FF6B6B",
-    fontSize: "clamp(9px, 2.5vw, 11px)",
+    fontSize: "11px",
   },
   modeSelector: {
     display: "flex",
     background: "rgba(0, 0, 0, 0.03)",
-    borderRadius: "clamp(10px, 2.5vw, 14px)",
+    borderRadius: "14px",
     padding: "3px",
-    marginBottom: "clamp(12px, 3vh, 20px)",
+    marginBottom: "24px",
     gap: "3px",
   },
   modeButton: {
     flex: 1,
-    padding: "clamp(6px, 1.5vh, 10px)",
+    padding: "12px 8px",
     border: "none",
     background: "transparent",
-    borderRadius: "clamp(8px, 2vw, 12px)",
-    fontSize: "clamp(11px, 2.5vw, 13px)",
+    borderRadius: "12px",
+    fontSize: "14px",
     fontWeight: "600",
     color: "#666",
     cursor: "pointer",
@@ -758,10 +684,10 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "clamp(2px, 1vw, 5px)",
+    gap: "5px",
   },
   modeButtonIcon: {
-    fontSize: "clamp(12px, 3vw, 14px)",
+    fontSize: "15px",
   },
   modeButtonActiveLogin: {
     background: "#ffffff",
@@ -776,20 +702,21 @@ const styles = {
   form: {
     display: "flex",
     flexDirection: "column",
-    gap: "clamp(6px, 1.5vh, 10px)",
+    gap: "12px",
+    flex: 1,
   },
   formGroup: {
-    marginBottom: "clamp(6px, 1.5vh, 10px)",
+    marginBottom: "4px",
   },
   inputContainer: {
     position: "relative",
   },
   inputIcon: {
     position: "absolute",
-    left: "clamp(10px, 2.5vw, 14px)",
+    left: "14px",
     top: "50%",
     transform: "translateY(-50%)",
-    fontSize: "clamp(13px, 3vw, 15px)",
+    fontSize: "15px",
     color: "#999",
     display: "flex",
     alignItems: "center",
@@ -797,11 +724,11 @@ const styles = {
   },
   input: {
     width: "100%",
-    padding: "clamp(8px, 2vh, 12px) clamp(10px, 2.5vw, 14px) clamp(8px, 2vh, 12px) clamp(36px, 8vw, 42px)",
-    borderRadius: "clamp(10px, 2.5vw, 14px)",
+    padding: "14px 14px 14px 42px",
+    borderRadius: "14px",
     border: "2px solid #f0f0f0",
     background: "#ffffff",
-    fontSize: "clamp(12px, 2.5vw, 14px)",
+    fontSize: "14px",
     fontWeight: "500",
     color: "#333",
     outline: "none",
@@ -813,15 +740,15 @@ const styles = {
   },
   passwordToggle: {
     position: "absolute",
-    right: "clamp(6px, 1.5vw, 10px)",
+    right: "10px",
     top: "50%",
     transform: "translateY(-50%)",
     background: "none",
     border: "none",
-    fontSize: "clamp(14px, 3vw, 16px)",
+    fontSize: "16px",
     cursor: "pointer",
     color: "#666",
-    padding: "clamp(3px, 1vh, 5px)",
+    padding: "5px",
     borderRadius: "4px",
     transition: "all 0.2s ease",
     display: "flex",
@@ -830,72 +757,72 @@ const styles = {
   },
   forgotPassword: {
     textAlign: "right",
-    marginBottom: "clamp(6px, 1.5vh, 10px)",
+    marginBottom: "8px",
   },
   forgotButton: {
     background: "none",
     border: "none",
     color: "#FF6B6B",
-    fontSize: "clamp(10px, 2.5vw, 12px)",
+    fontSize: "12px",
     fontWeight: "600",
     cursor: "pointer",
-    padding: "clamp(3px, 1vh, 5px) clamp(5px, 1.5vw, 8px)",
+    padding: "5px 8px",
     borderRadius: "6px",
     transition: "all 0.2s ease",
   },
   primaryButtonLogin: {
     width: "100%",
-    padding: "clamp(10px, 2.5vh, 14px)",
-    borderRadius: "clamp(10px, 2.5vw, 14px)",
+    padding: "16px",
+    borderRadius: "14px",
     border: "none",
     background: "linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)",
     color: "white",
-    fontSize: "clamp(13px, 3vw, 15px)",
+    fontSize: "15px",
     fontWeight: "700",
     cursor: "pointer",
-    marginTop: "clamp(2px, 0.5vh, 4px)",
+    marginTop: "8px",
     boxShadow: "0 6px 12px -4px rgba(255, 107, 107, 0.3)",
     transition: "all 0.2s ease",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "clamp(4px, 1.5vw, 8px)",
+    gap: "8px",
   },
   primaryButtonRegister: {
     width: "100%",
-    padding: "clamp(10px, 2.5vh, 14px)",
-    borderRadius: "clamp(10px, 2.5vw, 14px)",
+    padding: "16px",
+    borderRadius: "14px",
     border: "none",
     background: "linear-gradient(135deg, #4ECDC4 0%, #45B7D1 100%)",
     color: "white",
-    fontSize: "clamp(13px, 3vw, 15px)",
+    fontSize: "15px",
     fontWeight: "700",
     cursor: "pointer",
-    marginTop: "clamp(2px, 0.5vh, 4px)",
+    marginTop: "8px",
     boxShadow: "0 6px 12px -4px rgba(78, 205, 196, 0.3)",
     transition: "all 0.2s ease",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "clamp(4px, 1.5vw, 8px)",
+    gap: "8px",
   },
   buttonIcon: {
-    fontSize: "clamp(14px, 3vw, 16px)",
+    fontSize: "16px",
   },
   loadingSpinner: {
-    width: "clamp(14px, 3.5vw, 18px)",
-    height: "clamp(14px, 3.5vw, 18px)",
+    width: "18px",
+    height: "18px",
     border: "2px solid rgba(255,255,255,0.3)",
     borderTop: "2px solid white",
     borderRadius: "50%",
     animation: "spin 1s linear infinite",
   },
   message: {
-    marginTop: "clamp(6px, 1.5vh, 10px)",
-    padding: "clamp(6px, 1.5vh, 10px)",
-    borderRadius: "clamp(6px, 1.5vw, 10px)",
+    marginTop: "12px",
+    padding: "12px",
+    borderRadius: "10px",
     textAlign: "center",
-    fontSize: "clamp(10px, 2.5vw, 12px)",
+    fontSize: "12px",
     fontWeight: "600",
     background: "#fef2f2",
     color: "#dc2626",
@@ -903,16 +830,16 @@ const styles = {
   },
   switchText: {
     textAlign: "center",
-    marginTop: "clamp(8px, 2vh, 12px)",
+    marginTop: "16px",
     color: "#666",
-    fontSize: "clamp(11px, 2.5vw, 13px)",
+    fontSize: "13px",
     fontWeight: "500",
   },
   switchButton: {
     background: "none",
     border: "none",
     color: "#FF6B6B",
-    fontSize: "clamp(11px, 2.5vw, 13px)",
+    fontSize: "13px",
     fontWeight: "700",
     cursor: "pointer",
     padding: "2px 4px",
@@ -920,16 +847,16 @@ const styles = {
     transition: "all 0.2s ease",
   },
   bottomSection: {
-    marginTop: "clamp(8px, 2vh, 14px)",
+    marginTop: "24px",
     display: "flex",
     flexDirection: "column",
-    gap: "clamp(6px, 1.5vh, 10px)",
+    gap: "16px",
   },
   benefits: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "clamp(6px, 1.5vh, 10px) 0",
+    padding: "12px 0",
     borderTop: "2px solid rgba(0, 0, 0, 0.05)",
     borderBottom: "2px solid rgba(0, 0, 0, 0.05)",
   },
@@ -937,27 +864,27 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: "clamp(3px, 1vh, 5px)",
+    gap: "5px",
   },
   benefitIconWrapper: {
-    padding: "clamp(5px, 1.5vw, 8px)",
-    borderRadius: "clamp(6px, 1.5vw, 10px)",
+    padding: "8px",
+    borderRadius: "10px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
   },
   benefitIcon: {
-    fontSize: "clamp(14px, 3.5vw, 18px)",
+    fontSize: "18px",
     color: "white",
   },
   benefitText: {
-    fontSize: "clamp(8px, 2vw, 10px)",
+    fontSize: "10px",
     color: "#666",
     fontWeight: "600",
   },
   benefitDivider: {
     width: "1px",
-    height: "clamp(18px, 4vh, 25px)",
+    height: "25px",
     background: "rgba(0, 0, 0, 0.1)",
   },
   supportContainer: {
@@ -968,41 +895,41 @@ const styles = {
     background: "linear-gradient(135deg, #25D366, #128C7E)",
     border: "none",
     borderRadius: "30px",
-    padding: "clamp(6px, 1.5vh, 10px) clamp(12px, 3vw, 20px)",
+    padding: "10px 20px",
     display: "flex",
     alignItems: "center",
-    gap: "clamp(6px, 1.5vw, 10px)",
+    gap: "10px",
     cursor: "pointer",
     boxShadow: "0 4px 12px rgba(37, 211, 102, 0.3)",
     transition: "all 0.3s ease",
     width: "fit-content",
   },
   supportIcon: {
-    fontSize: "clamp(16px, 4vw, 20px)",
+    fontSize: "20px",
     color: "white",
   },
   supportText: {
     color: "white",
-    fontSize: "clamp(10px, 2.5vw, 12px)",
+    fontSize: "12px",
     fontWeight: "600",
   },
   termsContainer: {
     display: "flex",
     alignItems: "center",
-    gap: "clamp(5px, 1.5vw, 8px)",
+    gap: "8px",
     justifyContent: "center",
     flexWrap: "wrap",
   },
   termsCheckbox: {
-    width: "clamp(12px, 3vw, 16px)",
-    height: "clamp(12px, 3vw, 16px)",
-    minWidth: "clamp(12px, 3vw, 16px)",
+    width: "16px",
+    height: "16px",
+    minWidth: "16px",
     cursor: "pointer",
     accentColor: "#FF6B6B",
     borderRadius: "4px",
   },
   termsLabel: {
-    fontSize: "clamp(9px, 2.2vw, 11px)",
+    fontSize: "11px",
     color: "#666",
     fontWeight: "500",
     cursor: "pointer",
@@ -1012,25 +939,10 @@ const styles = {
     background: "none",
     border: "none",
     color: "#FF6B6B",
-    fontSize: "clamp(9px, 2.2vw, 11px)",
+    fontSize: "11px",
     fontWeight: "700",
     cursor: "pointer",
     padding: "0",
     textDecoration: "underline",
-  },
-  copyright: {
-    textAlign: "center",
-    marginTop: "clamp(16px, 4vh, 24px)",
-    marginBottom: "clamp(8px, 2vh, 12px)",
-  },
-  copyrightText: {
-    fontSize: "clamp(10px, 2.5vw, 12px)",
-    color: "#1a1a1a",
-    fontWeight: "700",
-    display: "block",
-    padding: "clamp(8px, 2vh, 12px) clamp(6px, 1.5vw, 10px)",
-    background: "rgba(0, 0, 0, 0.03)",
-    borderRadius: "clamp(6px, 1.5vw, 10px)",
-    marginTop: "clamp(6px, 1.5vh, 10px)",
   },
 };
