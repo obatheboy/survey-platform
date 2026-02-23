@@ -662,8 +662,18 @@ export default function WithdrawForm() {
                 Processing may take 5-30 minutes. You'll receive an SMS confirmation from M-Pesa.
                 Ensure your phone number is correct.
                 {!isAffiliateWithdraw && !isPlanActivated(plan) && (
-                  <span style={{ color: '#ef4444', fontWeight: 'bold' }}>
-                    {" "}Plan activation is required for withdrawal.
+                  <span style={{ 
+                    color: '#ff0000', 
+                    fontWeight: 'bold',
+                    fontSize: '14px',
+                    backgroundColor: '#fee2e2',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    display: 'block',
+                    marginTop: '10px',
+                    border: '2px solid #ef4444'
+                  }}>
+                    ⚠️ Plan activation is required for withdrawal.
                   </span>
                 )}
               </p>
