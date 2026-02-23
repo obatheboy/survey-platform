@@ -9,7 +9,7 @@ import "./Activate.css";
    CONSTANTS
 ========================= */
 const PHONE_NUMBER = "0794101450";
-const BUSINESS_NAME = "OBADIAH OTOKI";
+const BUSINESS_NAME = "Obadiah Otoki";
 
 /* =========================
    PLAN CONFIG (DISPLAY ONLY)
@@ -743,7 +743,7 @@ export default function Activate() {
           <textarea
             placeholder="Paste M-Pesa confirmation message here...
 Example:
-Confirmed. Ksh100.00 sent to OBADIAH OTOKI for account activation"
+Confirmed. Ksh100.00 sent to Obadiah Otoki for account activation"
             value={paymentText}
             onChange={(e) => setPaymentText(e.target.value)}
             rows={5}

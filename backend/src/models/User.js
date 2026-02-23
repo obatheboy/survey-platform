@@ -173,7 +173,58 @@ const userSchema = new mongoose.Schema({
     status: { type: String, enum: ['PENDING', 'CREDITED'], default: 'CREDITED' },
     created_at: { type: Date, default: Date.now },
     from_activation: { type: Boolean, default: true }  // Track if from activation payment
-  }]
+  }],
+  // ============================================
+  // GAMIFICATION FIELDS
+  // ============================================
+  // Streak tracking
+  current_streak: {
+    type: Number,
+    default: 0
+  },
+  longest_streak: {
+    type: Number,
+    default: 0
+  },
+  last_survey_date: {
+    type: Date,
+    default: null
+  },
+  // Daily rewards
+  daily_reward_claimed: {
+    type: Date,
+    default: null
+  },
+  daily_reward_streak: {
+    type: Number,
+    default: 0
+  },
+  total_daily_rewards_claimed: {
+    type: Number,
+    default: 0
+  },
+  // Level and XP system
+  level: {
+    type: Number,
+    default: 1
+  },
+  xp: {
+    type: Number,
+    default: 0
+  },
+  xp_to_next_level: {
+    type: Number,
+    default: 100
+  },
+  // Total stats for achievements
+  total_surveys_completed: {
+    type: Number,
+    default: 0
+  },
+  total_withdrawals_completed: {
+    type: Number,
+    default: 0
+  }
 });
 
 // ✅ ADDED: Update timestamp before saving

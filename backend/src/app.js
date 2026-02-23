@@ -7,6 +7,7 @@ const surveyRoutes = require("./routes/survey.routes");
 const activationRoutes = require("./routes/activation.routes");
 const withdrawRoutes = require("./routes/withdraw.routes");
 const affiliateRoutes = require("./routes/affiliate.routes");
+const gamificationRoutes = require("./routes/gamification.routes");
 
 const adminRoutes = require("./routes/admin.routes");
 const adminActivationRoutes = require("./routes/admin.activation.routes");
@@ -87,6 +88,7 @@ app.use("/api/surveys", surveyRoutes);
 app.use("/api/activation", activationRoutes);
 app.use("/api/withdraw", withdrawRoutes);
 app.use("/api/affiliate", affiliateRoutes);
+app.use("/api/gamification", gamificationRoutes);
 app.use("/api/notifications", notificationRoutes); // ✅ USER NOTIFICATIONS HERE
 
 /* ===============================

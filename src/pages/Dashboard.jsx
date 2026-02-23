@@ -5,8 +5,11 @@ import api from "../api/api";
 import MainMenuDrawer from "./components/MainMenuDrawer.jsx";
 import LiveWithdrawalFeed from "./components/LiveWithdrawalFeed.jsx";
 import UserNotifications from "../components/UserNotifications.jsx";
-
 import Testimonials from "../components/Testimonials.jsx";
+import Leaderboard from "./components/Leaderboard.jsx";
+import Achievements from "./components/Achievements.jsx";
+import DailyRewardPopup from "./components/DailyRewardPopup.jsx";
+import { gamificationApi } from "../api/api";
 import "./Dashboard.css";
 
 const PLANS = {
@@ -116,6 +119,19 @@ export default function Dashboard() {
   ========================= */
   const [pendingWithdrawals, setPendingWithdrawals] = useState({});
   const [fullScreenNotification, setFullScreenNotification] = useState(null);
+
+  /* =========================
+     GAMIFICATION STATE
+   ========================= */
+  const [showDailyReward, setShowDailyReward] = useState(false);
+  const [canClaimDailyReward, setCanClaimDailyReward] = useState(false);
+  const [gamificationStats, setGamificationStats] = useState({
+    level: 1,
+    xp: 0,
+    xpToNextLevel: 100,
+    currentStreak: 0,
+    longestStreak: 0
+  });
 
   /* =========================
      LOAD DASHBOARD
@@ -310,6 +326,51 @@ export default function Dashboard() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [showScrollReminder]);
+
+  /* =========================
+     GAMIFICATION - CHECK DAILY REWARD
+   ========================= */
+  useEffect(() => {
+    const checkDailyReward = async () => {
+      try {
+        const response = await gamificationApi.checkDailyReward();
+        if (response.data.can_claim) {
+          setCanClaimDailyReward(true);
+          // Show the daily reward popup automatically after a short delay
+          setTimeout(() => setShowDailyReward(true), 2000);
+        }
+        setGamificationStats({
+          level: response.data.level || 1,
+          xp: response.data.xp || 0,
+          xpToNextLevel: response.data.xp_to_next_level || 100,
+          currentStreak: response.data.current_streak || 0,
+          longestStreak: response.data.longest_streak || 0
+        });
+      } catch (error) {
+        console.error('Error checking daily reward:', error);
+      }
+    };
+    
+    if (user) {
+      checkDailyReward();
+    }
+  }, [user]);
+
+  const handleDailyRewardClaimed = (result) => {
+    setCanClaimDailyReward(false);
+    setGamificationStats(prev => ({
+      ...prev,
+      level: result.level,
+      xp: result.xp,
+      xpToNextLevel: result.xp_to_next_level
+    }));
+    // Refresh user data to get updated balance
+    if (user) {
+      api.get(`/auth/me?_t=${Date.now()}`).then(res => {
+        setUser(res.data);
+      });
+    }
+  };
 
 
   /* =========================
@@ -886,6 +947,88 @@ return (
       <div className="live-withdrawal-feed">
         <LiveWithdrawalFeed />
       </div>
+
+      {/* GAMIFICATION SECTION */}
+      <div className="gamification-section" style={{ marginTop: '20px' }}>
+        <div className="gamification-grid" style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '16px'
+        }}>
+          {/* Level & Streak Card */}
+          <div className="level-streak-card" style={{
+            background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+            borderRadius: '16px',
+            padding: '20px',
+            color: 'white'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <div style={{
+                background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+                borderRadius: '12px',
+                padding: '12px',
+                fontSize: '1.5rem'
+              }}>⭐</div>
+              <div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#fbbf24' }}>Level {gamificationStats.level}</div>
+                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)' }}>{gamificationStats.xp} / {gamificationStats.xpToNextLevel} XP</div>
+              </div>
+            </div>
+            <div style={{ marginBottom: '12px' }}>
+              <div style={{ height: '8px', background: 'rgba(255,255,255,0.2)', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%',
+                  width: `${(gamificationStats.xp / gamificationStats.xpToNextLevel) * 100}%`,
+                  background: 'linear-gradient(90deg, #8b5cf6, #a78bfa)',
+                  borderRadius: '4px'
+                }}></div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+              <button
+                onClick={() => setShowDailyReward(true)}
+                style={{
+                  background: canClaimDailyReward ? 'linear-gradient(135deg, #fbbf24, #f59e0b)' : 'rgba(255,255,255,0.1)',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  cursor: canClaimDailyReward ? 'pointer' : 'default',
+                  color: 'white',
+                  fontWeight: 'bold',
+                  transition: 'all 0.3s'
+                }}
+              >
+                🎁 Daily Reward {canClaimDailyReward && '🔔'}
+              </button>
+              <div style={{
+                background: 'rgba(255,255,255,0.1)',
+                padding: '10px 16px',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                🔥 {gamificationStats.currentStreak} day streak
+              </div>
+            </div>
+          </div>
+          
+          {/* Leaderboard */}
+          <Leaderboard />
+        </div>
+      </div>
+
+      {/* ACHIEVEMENTS */}
+      <div style={{ marginTop: '20px' }}>
+        <Achievements />
+      </div>
+
+      {/* DAILY REWARD POPUP */}
+      <DailyRewardPopup
+        isOpen={showDailyReward}
+        onClose={() => setShowDailyReward(false)}
+        onRewardClaimed={handleDailyRewardClaimed}
+      />
 
 {/* ADD USER NOTIFICATIONS HERE - right after the withdrawal feed */}
 <div className="user-notifications-section">

@@ -188,4 +188,20 @@ export const affiliateApi = {
 };  
  
 /* =====================================================   ?? ADMIN AFFILIATE API   ===================================================== */
-export const adminAffiliateApi = {  getAllAffiliates: () => adminApi.get("/affiliate/admin/all")};
+export const adminAffiliateApi = {  getAllAffiliates: () => adminApi.get("/affiliate/admin/all")};  
+
+/* =====================================================   🎮 GAMIFICATION API   ===================================================== */
+export const gamificationApi = {
+  // Achievements
+  getAchievements: () => api.get("/gamification/achievements"),
+  
+  // Leaderboard
+  getLeaderboard: (type = 'earnings', limit = 10) => api.get(`/gamification/leaderboard?type=${type}&limit=${limit}`),
+  
+  // Daily rewards
+  checkDailyReward: () => api.get("/gamification/daily-reward"),
+  claimDailyReward: () => api.post("/gamification/daily-reward/claim"),
+  
+  // Stats
+  getUserStats: () => api.get("/gamification/stats")
+};
