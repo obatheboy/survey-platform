@@ -1594,6 +1594,9 @@ return (
               );
             })}
           </div>
+          
+          {/* Leaderboard - positioned after survey plans */}
+          <Leaderboard />
         </section>
       )}
 
@@ -1911,9 +1914,6 @@ return (
               </div>
             </div>
           </div>
-          
-          {/* Leaderboard */}
-          <Leaderboard />
         </div>
       </div>
 

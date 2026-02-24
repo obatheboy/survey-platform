@@ -417,11 +417,20 @@ export default function WithdrawForm() {
             
             {/* Activation Notice - Skip for affiliate */}
             {!isAffiliateWithdraw && !isUserActivated && (
-              <div className="activation-notice">
-                <div className="notice-icon">🔒</div>
+              <div className="activation-notice" style={{
+                backgroundColor: '#fee2e2',
+                border: '3px solid #ef4444',
+                borderRadius: '12px',
+                padding: '20px',
+                marginBottom: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '16px'
+              }}>
+                <div className="notice-icon" style={{ fontSize: '40px' }}>⚠️</div>
                 <div className="notice-content">
-                  <strong>Account Not Activated</strong>
-                  <p>You need to activate your account before withdrawing. Select a plan to proceed with activation.</p>
+                  <strong style={{ color: '#dc2626', fontSize: '18px' }}>ACCOUNT NOT ACTIVATED</strong>
+                  <p style={{ color: '#991b1b', fontSize: '14px', marginTop: '8px' }}>You need to activate your account before withdrawing. Select a plan to proceed with activation.</p>
                 </div>
               </div>
             )}
@@ -528,12 +537,18 @@ export default function WithdrawForm() {
 
             {/* Activation Warning for Non-activated Plans */}
             {!isAffiliateWithdraw && !isPlanActivated(plan) && (
-              <div className="activation-alert-in-form">
-                <div className="alert-header">
-                  <span className="alert-icon">🔒</span>
-                  <span className="alert-title">Plan Not Activated</span>
+              <div className="activation-alert-in-form" style={{
+                backgroundColor: '#fee2e2',
+                border: '3px solid #ef4444',
+                borderRadius: '8px',
+                padding: '16px',
+                marginBottom: '16px'
+              }}>
+                <div className="alert-header" style={{ color: '#dc2626' }}>
+                  <span className="alert-icon" style={{ fontSize: '24px' }}>⚠️</span>
+                  <span className="alert-title" style={{ fontSize: '18px', fontWeight: 'bold', color: '#dc2626' }}>PLAN NOT ACTIVATED</span>
                 </div>
-                <p className="alert-message">
+                <p className="alert-message" style={{ color: '#991b1b', fontSize: '16px', fontWeight: '600' }}>
                   You need to activate your <strong>{PLANS[plan].name} Plan</strong> before withdrawing. 
                   Activation fee: <strong>KES {PLANS[plan].activationFee}</strong>
                 </p>
@@ -544,9 +559,19 @@ export default function WithdrawForm() {
                     setSelectedPlanForActivation(plan);
                     setShowActivationModal(true);
                   }}
-                  style={{ background: PLANS[plan].gradient }}
+                  style={{ 
+                    background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+                    color: 'white',
+                    padding: '12px 24px',
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    marginTop: '10px'
+                  }}
                 >
-                  🔓 Activate {PLANS[plan].name} Plan
+                  🔓 ACTIVATE NOW - KES {PLANS[plan].activationFee}
                 </button>
               </div>
             )}
