@@ -374,7 +374,7 @@ export default function WithdrawForm() {
         </div>
       )}
 
-      {/* Header - FIXED STRUCTURE */}
+      {/* Header */}
       <header className="withdraw-header">
         <button 
           className="back-btn"
@@ -389,7 +389,6 @@ export default function WithdrawForm() {
             Activate Account
           </div>
         )}
-        {/* Empty div for alignment */}
         <div className="header-spacer"></div>
       </header>
 
@@ -417,20 +416,11 @@ export default function WithdrawForm() {
             
             {/* Activation Notice - Skip for affiliate */}
             {!isAffiliateWithdraw && !isUserActivated && (
-              <div className="activation-notice" style={{
-                backgroundColor: '#fee2e2',
-                border: '3px solid #ef4444',
-                borderRadius: '12px',
-                padding: '20px',
-                marginBottom: '20px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '16px'
-              }}>
-                <div className="notice-icon" style={{ fontSize: '40px' }}>⚠️</div>
+              <div className="activation-notice">
+                <div className="notice-icon">⚠️</div>
                 <div className="notice-content">
-                  <strong style={{ color: '#dc2626', fontSize: '18px' }}>ACCOUNT NOT ACTIVATED</strong>
-                  <p style={{ color: '#991b1b', fontSize: '14px', marginTop: '8px' }}>You need to activate your account before withdrawing. Select a plan to proceed with activation.</p>
+                  <strong>ACCOUNT NOT ACTIVATED</strong>
+                  <p>You need to activate your account before withdrawing. Select a plan to proceed with activation.</p>
                 </div>
               </div>
             )}
@@ -451,15 +441,12 @@ export default function WithdrawForm() {
                       borderColor: planData.color,
                       background: `linear-gradient(135deg, ${planData.color}20, transparent)`,
                       opacity: !isUserActivated ? 0.9 : 1,
-                      cursor: isActivated ? 'pointer' : 'not-allowed'
+                      cursor: isActivated ? 'pointer' : 'pointer'
                     }}
                   >
                     <div className="plan-selection-header">
                       <span className="plan-icon">{planData.icon}</span>
                       <h3>{planData.name} Plan</h3>
-                      {!isActivated && (
-                        <span className="activation-required-badge">🔒</span>
-                      )}
                     </div>
                     
                     <div className="plan-amount">
@@ -471,12 +458,30 @@ export default function WithdrawForm() {
                       {isActivated ? "Available for withdrawal" : "Activation required"}
                     </p>
                     
+                    {/* ===== FIXED: ACTIVATION REQUIRED CAPTION - BOLD RED ===== */}
                     {!isActivated && (
-                      <div className="activation-hint">
-                        <div className="activation-fee-small">
-                          Activation: KES {planData.activationFee}
+                      <>
+                        {/* Method 1: Full width activation required banner */}
+                        <div className="plan-activation-required">
+                          <span className="warning-icon">⚠️</span>
+                          <span>ACTIVATION REQUIRED</span>
                         </div>
-                      </div>
+                        
+                        {/* Method 2: Activation fee badge */}
+                        <div className="activation-fee-small">
+                          ⚠️ Fee: KES {planData.activationFee}
+                        </div>
+                        
+                        {/* Method 3: Activation hint */}
+                        <div className="activation-hint">
+                          <span>🔓 ACTIVATE TO WITHDRAW</span>
+                        </div>
+                        
+                        {/* Method 4: Inline activation required badge */}
+                        <span className="activation-required-badge">
+                          ⚠️ Required
+                        </span>
+                      </>
                     )}
                     
                     <button 
@@ -484,8 +489,8 @@ export default function WithdrawForm() {
                       style={{
                         background: isActivated 
                           ? planData.gradient 
-                          : 'linear-gradient(135deg, #f59e0b, #d97706)',
-                        cursor: isActivated ? 'pointer' : 'not-allowed'
+                          : 'linear-gradient(135deg, #ef4444, #dc2626)',
+                        cursor: 'pointer'
                       }}
                     >
                       {isActivated ? (
@@ -493,7 +498,7 @@ export default function WithdrawForm() {
                       ) : (
                         <>
                           <span className="btn-icon-small">🔓</span>
-                          Activate to Withdraw
+                          <span style={{ color: 'white', fontWeight: 'bold' }}>ACTIVATE NOW - KES {planData.activationFee}</span>
                         </>
                       )}
                     </button>
@@ -535,20 +540,14 @@ export default function WithdrawForm() {
               </div>
             )}
 
-            {/* Activation Warning for Non-activated Plans */}
+            {/* Activation Warning for Non-activated Plans - FIXED: BOLD RED */}
             {!isAffiliateWithdraw && !isPlanActivated(plan) && (
-              <div className="activation-alert-in-form" style={{
-                backgroundColor: '#fee2e2',
-                border: '3px solid #ef4444',
-                borderRadius: '8px',
-                padding: '16px',
-                marginBottom: '16px'
-              }}>
-                <div className="alert-header" style={{ color: '#dc2626' }}>
-                  <span className="alert-icon" style={{ fontSize: '24px' }}>⚠️</span>
-                  <span className="alert-title" style={{ fontSize: '18px', fontWeight: 'bold', color: '#dc2626' }}>PLAN NOT ACTIVATED</span>
+              <div className="activation-alert-in-form">
+                <div className="alert-header">
+                  <span className="alert-icon">⚠️</span>
+                  <span className="alert-title">PLAN NOT ACTIVATED</span>
                 </div>
-                <p className="alert-message" style={{ color: '#991b1b', fontSize: '16px', fontWeight: '600' }}>
+                <p className="alert-message">
                   You need to activate your <strong>{PLANS[plan].name} Plan</strong> before withdrawing. 
                   Activation fee: <strong>KES {PLANS[plan].activationFee}</strong>
                 </p>
@@ -560,18 +559,11 @@ export default function WithdrawForm() {
                     setShowActivationModal(true);
                   }}
                   style={{ 
-                    background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-                    color: 'white',
-                    padding: '12px 24px',
-                    fontSize: '16px',
-                    fontWeight: 'bold',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    marginTop: '10px'
+                    background: 'linear-gradient(135deg, #ef4444, #dc2626)'
                   }}
                 >
-                  🔓 ACTIVATE NOW - KES {PLANS[plan].activationFee}
+                  <span className="btn-icon">🔓</span>
+                  ACTIVATE NOW - KES {PLANS[plan].activationFee}
                 </button>
               </div>
             )}
@@ -650,7 +642,7 @@ export default function WithdrawForm() {
                 {(!isAffiliateWithdraw && !isPlanActivated(plan)) ? (
                   <>
                     <span className="btn-icon">🔒</span>
-                    Plan Not Activated
+                    <span style={{ color: 'white', fontWeight: 'bold' }}>ACTIVATION REQUIRED</span>
                   </>
                 ) : submitting ? (
                   <>
@@ -680,25 +672,15 @@ export default function WithdrawForm() {
               </button>
             </div>
 
-            {/* Terms */}
+            {/* Terms - FIXED: BOLD RED ACTIVATION MESSAGE */}
             <div className="terms-notice">
               <p>
                 <strong>Important:</strong> By withdrawing, you agree to our terms. 
                 Processing may take 5-30 minutes. You'll receive an SMS confirmation from M-Pesa.
                 Ensure your phone number is correct.
                 {!isAffiliateWithdraw && !isPlanActivated(plan) && (
-                  <span style={{ 
-                    color: '#ff0000', 
-                    fontWeight: 'bold',
-                    fontSize: '14px',
-                    backgroundColor: '#fee2e2',
-                    padding: '8px 12px',
-                    borderRadius: '6px',
-                    display: 'block',
-                    marginTop: '10px',
-                    border: '2px solid #ef4444'
-                  }}>
-                    ⚠️ Plan activation is required for withdrawal.
+                  <span className="activation-required-text">
+                    ⚠️ Plan activation is required for withdrawal. Fee: KES {PLANS[plan]?.activationFee}
                   </span>
                 )}
               </p>
