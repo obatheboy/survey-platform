@@ -157,114 +157,6 @@
   margin-bottom: 16px;
 }
 
-/* ===== FIXED: ACTIVATION REQUIRED CAPTION - BOLD RED ON EVERY PLAN ===== */
-.plan-activation-required {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin: 12px 0 8px;
-  padding: 8px 12px;
-  background: rgba(220, 38, 38, 0.05);
-  border-radius: 30px;
-  border-left: 3px solid #dc2626;
-}
-
-.plan-activation-required span {
-  color: #dc2626 !important;
-  font-weight: 700 !important;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  line-height: 1.4;
-}
-
-.plan-activation-required .warning-icon {
-  font-size: 14px;
-  color: #dc2626;
-  animation: warningPulse 2s infinite;
-}
-
-@keyframes warningPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.1); }
-}
-
-/* Alternative: For inline activation required text */
-.activation-required-text {
-  color: #dc2626 !important;
-  font-weight: 700 !important;
-  font-size: 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 8px;
-  padding: 4px 8px;
-  background: #fee2e2;
-  border-radius: 16px;
-  border: 1px solid #fecaca;
-}
-
-/* For the existing activation-required-badge - make it bold red */
-.activation-required-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: #fee2e2 !important;
-  color: #dc2626 !important;
-  font-weight: 700 !important;
-  padding: 6px 12px !important;
-  border-radius: 30px !important;
-  font-size: 11px !important;
-  border: 1px solid #fecaca !important;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.15);
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.activation-required-badge::before {
-  content: "⚠️";
-  font-size: 10px;
-  margin-right: 4px;
-}
-
-/* For activation hint text */
-.activation-hint {
-  margin: 10px 0;
-  text-align: center;
-}
-
-.activation-hint span {
-  color: #dc2626;
-  font-weight: 700;
-  font-size: 12px;
-  background: #fee2e2;
-  padding: 6px 16px;
-  border-radius: 30px;
-  display: inline-block;
-  border: 1px solid #fecaca;
-}
-
-/* For activation fee small badge */
-.activation-fee-small {
-  display: inline-block;
-  background: #fee2e2 !important;
-  color: #dc2626 !important;
-  font-weight: 700 !important;
-  padding: 6px 14px !important;
-  border-radius: 30px !important;
-  font-size: 11px !important;
-  margin-top: 8px;
-  border: 1px solid #fecaca !important;
-  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.1);
-}
-
-/* ===== END FIX ===== */
-
 .select-plan-btn {
   color: white;
   border: none;
@@ -999,31 +891,20 @@
   line-height: 1.4;
 }
 
-/* Plan Card Activation Status - FIXED: BOLD RED */
+/* Plan Card Activation Status */
 .activation-required-badge {
   position: absolute;
   top: 12px;
   right: 12px;
-  background: #fee2e2 !important;
-  color: #dc2626 !important;
-  font-weight: 700 !important;
-  padding: 6px 12px !important;
-  border-radius: 30px !important;
-  font-size: 11px !important;
-  border: 1px solid #fecaca !important;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.15);
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  padding: 5px 8px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  backdrop-filter: blur(4px);
   z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.activation-required-badge::before {
-  content: "⚠️";
-  font-size: 10px;
-  margin-right: 4px;
 }
 
 .activation-hint {
@@ -1031,28 +912,16 @@
   text-align: center;
 }
 
-.activation-hint span {
-  color: #dc2626;
-  font-weight: 700;
-  font-size: 12px;
-  background: #fee2e2;
-  padding: 6px 16px;
-  border-radius: 30px;
-  display: inline-block;
-  border: 1px solid #fecaca;
-}
-
 .activation-fee-small {
   display: inline-block;
-  background: #fee2e2 !important;
-  color: #dc2626 !important;
-  font-weight: 700 !important;
-  padding: 6px 14px !important;
-  border-radius: 30px !important;
-  font-size: 11px !important;
-  margin-top: 8px;
-  border: 1px solid #fecaca !important;
-  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.1);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 6px;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
 }
 
 /* In-form Activation Alert */
