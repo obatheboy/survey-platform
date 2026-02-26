@@ -373,6 +373,9 @@ export default function Dashboard() {
    ========================= */
   useEffect(() => {
     const checkDailyReward = async () => {
+      // Don't show daily reward if welcome bonus is being shown
+      if (showWelcomeBonus) return;
+      
       try {
         const response = await gamificationApi.checkDailyReward();
         if (response.data.can_claim) {
@@ -395,7 +398,7 @@ export default function Dashboard() {
     if (user) {
       checkDailyReward();
     }
-  }, [user]);
+  }, [user, showWelcomeBonus]);
 
   const handleDailyRewardClaimed = (result) => {
     setCanClaimDailyReward(false);
