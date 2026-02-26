@@ -1968,6 +1968,7 @@ return (
         isOpen={showWelcomeBonus}
         onClose={handleWelcomeBonusClose}
         bonusAmount={welcomeBonusAmount}
+        onActivate={() => navigate('/withdraw-form')}
       />
 
       {/* DAILY REWARD POPUP */}
