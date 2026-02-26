@@ -11,7 +11,8 @@ const PLANS = {
     total: 1500, 
     color: "#10b981",
     gradient: "linear-gradient(135deg, #10b981, #059669)",
-    activationFee: 100
+    activationFee: 100,
+    earningsLabel: "Total Earnings: KES 1,500"
   },
   VIP: { 
     name: "VIP", 
@@ -19,7 +20,8 @@ const PLANS = {
     total: 2000, 
     color: "#6366f1",
     gradient: "linear-gradient(135deg, #6366f1, #4f46e5)",
-    activationFee: 150
+    activationFee: 150,
+    earningsLabel: "Total Earnings: KES 2,000"
   },
   VVIP: { 
     name: "VVIP", 
@@ -27,7 +29,8 @@ const PLANS = {
     total: 3000, 
     color: "#f59e0b",
     gradient: "linear-gradient(135deg, #f59e0b, #d97706)",
-    activationFee: 200
+    activationFee: 200,
+    earningsLabel: "Total Earnings: KES 3,000"
   },
   affiliate: {
     name: "Affiliate Earnings",
@@ -35,7 +38,8 @@ const PLANS = {
     total: 0,
     color: "#8b5cf6",
     gradient: "linear-gradient(135deg, #8b5cf6, #6d28d9)",
-    activationFee: 0
+    activationFee: 0,
+    earningsLabel: "Commission Earnings"
   }
 };
 
@@ -401,16 +405,10 @@ export default function WithdrawForm() {
             
             {/* Show affiliate balance when withdrawing from affiliate */}
             {isAffiliateWithdraw && (
-              <div style={{
-                background: 'linear-gradient(135deg, #8b5cf6, #6d28d9)',
-                padding: '16px',
-                borderRadius: '12px',
-                color: 'white',
-                textAlign: 'center',
-                marginBottom: '20px'
-              }}>
-                <div style={{ fontSize: '14px', opacity: 0.9 }}>Your Affiliate Earnings</div>
-                <div style={{ fontSize: '28px', fontWeight: 'bold' }}>KES {affiliateBalance.toLocaleString()}</div>
+              <div className="affiliate-balance-card">
+                <div className="affiliate-balance-label">Your Affiliate Earnings</div>
+                <div className="affiliate-balance-amount">KES {affiliateBalance.toLocaleString()}</div>
+                <div className="affiliate-earnings-note">💰 You can withdraw any amount above KES 50</div>
               </div>
             )}
             
@@ -454,17 +452,28 @@ export default function WithdrawForm() {
                       <span className="amount">{planData.total.toLocaleString()}</span>
                     </div>
                     
+                    {/* Earnings Info Badge */}
+                    <div className="earnings-info-badge">
+                      <span className="earnings-icon">💰</span>
+                      <span className="earnings-text">You earned KES {planData.total.toLocaleString()}</span>
+                    </div>
+                    
                     <p className="plan-description">
                       {isActivated ? "Available for withdrawal" : "One-time activation required"}
                     </p>
                     
-                    {/* ===== FIXED: SINGLE CENTERED ACTIVATION FEE CAPTION ===== */}
+                    {/* ===== FIXED: BOLD ONE-TIME ACTIVATION CAPTION WITH !important ===== */}
                     {!isActivated && (
-                      <div className="activation-fee-centered">
-                        <span className="activation-fee-badge">
-                          🔓 Activation Fee: KES {planData.activationFee}
-                        </span>
-                      </div>
+                      <>
+                        <div className="activation-caption-bold">
+                          <span className="one-time-text">🔓 ONE-TIME ACTIVATION</span>
+                        </div>
+                        <div className="activation-fee-centered">
+                          <span className="activation-fee-badge">
+                            Fee: KES {planData.activationFee}
+                          </span>
+                        </div>
+                      </>
                     )}
                     
                     <button 
@@ -485,6 +494,11 @@ export default function WithdrawForm() {
                         </>
                       )}
                     </button>
+                    
+                    {/* Withdrawal Info */}
+                    <div className="withdrawal-info">
+                      <span>💸 Withdraw up to KES {planData.total.toLocaleString()}</span>
+                    </div>
                   </div>
                 );
               })}
@@ -502,6 +516,17 @@ export default function WithdrawForm() {
               </h2>
               <p>Enter your withdrawal details</p>
             </div>
+
+            {/* Earnings Summary */}
+            {!isAffiliateWithdraw && (
+              <div className="earnings-summary">
+                <div className="summary-icon">💰</div>
+                <div className="summary-content">
+                  <span className="summary-label">Your Total Earnings:</span>
+                  <span className="summary-amount">KES {PLANS[plan]?.total.toLocaleString()}</span>
+                </div>
+              </div>
+            )}
 
             {error && (
               <div className="error-message">
@@ -578,6 +603,11 @@ export default function WithdrawForm() {
                   Use Max
                 </button>
               </div>
+              {!isAffiliateWithdraw && (
+                <div className="earnings-note">
+                  💰 You can withdraw up to KES {PLANS[plan]?.total.toLocaleString()} from this plan
+                </div>
+              )}
             </div>
 
             {/* Phone Input */}
@@ -663,7 +693,7 @@ export default function WithdrawForm() {
                 Ensure your phone number is correct.
                 {!isAffiliateWithdraw && !isPlanActivated(plan) && (
                   <span className="activation-required-text">
-                    ⚠️ Plan activation is required for withdrawal. Fee: KES {PLANS[plan]?.activationFee}
+                    ⚠️ One-time activation required for this plan. Fee: KES {PLANS[plan]?.activationFee}
                   </span>
                 )}
               </p>
