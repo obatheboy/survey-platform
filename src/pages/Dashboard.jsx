@@ -545,7 +545,7 @@ navigate("/activation-notice", {
     
     setFullScreenNotification({
       message: "🎁 Activate your account with KES 100 to unlock your KES 1,200 welcome bonus!",
-      redirect: "/withdraw-form",
+      redirect: "/activate",
     });
   };
 
@@ -815,7 +815,7 @@ return (
         <div className="header-activation-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {user && !user.is_activated && !user.account_activated && (
             <button
-              onClick={() => navigate('/withdraw-form')}
+              onClick={() => navigate('/activate')}
               style={{
                 background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
                 border: 'none',
