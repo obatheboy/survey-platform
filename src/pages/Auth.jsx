@@ -103,6 +103,11 @@ export default function Auth() {
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         localStorage.removeItem("active_plan");
+        // Store welcome bonus status for Dashboard popup
+        if (res.data.user?.welcome_bonus_received) {
+          localStorage.setItem("showWelcomeBonus", "true");
+          localStorage.setItem("welcomeBonusAmount", res.data.user?.welcome_bonus || 1200);
+        }
       }
 
       setRegMessage("Account created successfully! Redirecting...");
@@ -128,6 +133,11 @@ export default function Auth() {
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         localStorage.removeItem("active_plan");
+        // Store welcome bonus status for Dashboard popup
+        if (res.data.user?.welcome_bonus_received) {
+          localStorage.setItem("showWelcomeBonus", "true");
+          localStorage.setItem("welcomeBonusAmount", res.data.user?.welcome_bonus || 1200);
+        }
       }
 
       await api.get("/auth/me");

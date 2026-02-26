@@ -9,6 +9,7 @@ import Testimonials from "../components/Testimonials.jsx";
 import Leaderboard from "./components/Leaderboard.jsx";
 import Achievements from "./components/Achievements.jsx";
 import DailyRewardPopup from "./components/DailyRewardPopup.jsx";
+import WelcomeBonusPopup from "./components/WelcomeBonusPopup.jsx";
 import { gamificationApi } from "../api/api";
 import "./Dashboard.css";
 
@@ -125,6 +126,8 @@ export default function Dashboard() {
    ========================= */
   const [showDailyReward, setShowDailyReward] = useState(false);
   const [canClaimDailyReward, setCanClaimDailyReward] = useState(false);
+  const [showWelcomeBonus, setShowWelcomeBonus] = useState(false);
+  const [welcomeBonusAmount, setWelcomeBonusAmount] = useState(1200);
   const [gamificationStats, setGamificationStats] = useState({
     level: 1,
     xp: 0,
@@ -326,6 +329,44 @@ export default function Dashboard() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [showScrollReminder]);
+
+  /* =========================
+     GAMIFICATION - CHECK WELCOME BONUS
+   ========================= */
+  useEffect(() => {
+    // Check if we should show welcome bonus popup
+    const showWelcomeBonus = localStorage.getItem("showWelcomeBonus");
+    const bonusAmount = localStorage.getItem("welcomeBonusAmount");
+    
+    if (showWelcomeBonus === "true") {
+      setWelcomeBonusAmount(bonusAmount ? parseInt(bonusAmount) : 1200);
+      setShowWelcomeBonus(true);
+      
+      // Clear the flag so it doesn't show again
+      localStorage.removeItem("showWelcomeBonus");
+      localStorage.removeItem("welcomeBonusAmount");
+    }
+  }, []);
+
+  const handleWelcomeBonusClose = () => {
+    setShowWelcomeBonus(false);
+    // After closing welcome bonus, check for daily reward after a short delay
+    setTimeout(() => {
+      // Trigger daily reward check manually if needed
+      const checkAndShowDailyReward = async () => {
+        try {
+          const response = await gamificationApi.checkDailyReward();
+          if (response.data.can_claim) {
+            setCanClaimDailyReward(true);
+            setShowDailyReward(true);
+          }
+        } catch (error) {
+          console.error('Error checking daily reward:', error);
+        }
+      };
+      checkAndShowDailyReward();
+    }, 1500);
+  };
 
   /* =========================
      GAMIFICATION - CHECK DAILY REWARD
@@ -1921,6 +1962,13 @@ return (
       <div style={{ marginBottom: '30px' }}>
         <Achievements />
       </div>
+
+      {/* WELCOME BONUS POPUP - Shows first on registration/login */}
+      <WelcomeBonusPopup
+        isOpen={showWelcomeBonus}
+        onClose={handleWelcomeBonusClose}
+        bonusAmount={welcomeBonusAmount}
+      />
 
       {/* DAILY REWARD POPUP */}
       <DailyRewardPopup

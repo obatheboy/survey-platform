@@ -123,7 +123,9 @@ exports.register = async (req, res) => {
         full_name: user.full_name,
         phone: user.phone,
         email: user.email,
-        is_activated: user.is_activated
+        is_activated: user.is_activated,
+        welcome_bonus_received: user.welcome_bonus_received,
+        welcome_bonus: user.welcome_bonus || 1200,
       },
     });
   } catch (error) {
@@ -161,6 +163,8 @@ exports.login = async (req, res) => {
         id: user._id, // ✅ CHANGED to _id
         phone: user.phone,
         is_activated: user.is_activated,
+        welcome_bonus_received: user.welcome_bonus_received || false,
+        welcome_bonus: user.welcome_bonus || 1200,
       },
     });
   } catch (error) {
