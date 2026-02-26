@@ -545,7 +545,7 @@ navigate("/activation-notice", {
     
     setFullScreenNotification({
       message: "🎁 Activate your account with KES 100 to unlock your KES 1,200 welcome bonus!",
-      redirect: "/activate",
+      redirect: "/activate?welcome_bonus=true",
     });
   };
 
@@ -815,7 +815,7 @@ return (
         <div className="header-activation-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {user && !user.is_activated && !user.account_activated && (
             <button
-              onClick={() => navigate('/activate')}
+              onClick={() => navigate('/activate?welcome_bonus=true')}
               style={{
                 background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
                 border: 'none',
@@ -1968,7 +1968,7 @@ return (
         isOpen={showWelcomeBonus}
         onClose={handleWelcomeBonusClose}
         bonusAmount={welcomeBonusAmount}
-        onActivate={() => navigate('/activate')}
+        onActivate={() => navigate('/activate?welcome_bonus=true')}
       />
 
       {/* DAILY REWARD POPUP */}
