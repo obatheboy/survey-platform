@@ -104,14 +104,6 @@ exports.checkInitialActivationStatus = async (req, res) => {
   }
 };
 
-/* ===============================
-   PLAN ACTIVATION FEES (AMOUNT USER PAYS)
-================================ */
-const PLAN_FEES = {
-  REGULAR: 100,
-  VIP: 150,
-  VVIP: 200,
-};
 
 /* ===============================
    PLAN EARNINGS (AMOUNT USER CAN WITHDRAW)
