@@ -74,8 +74,8 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: "16px",
-    paddingTop: "20px",
+    padding: "12px",
+    paddingTop: "12px",
     paddingBottom: "40px",
     fontFamily: "'Inter', sans-serif",
   },
@@ -83,107 +83,107 @@ const styles = {
     maxWidth: "100%",
     width: "100%",
     background: "var(--bg-surface)",
-    padding: "20px 16px",
+    padding: "16px 14px",
     borderRadius: "16px",
     color: "var(--text-main)",
     border: "1px solid var(--border-soft)",
     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
   },
   section: {
-    marginTop: "20px",
-    padding: "16px",
+    marginTop: "16px",
+    padding: "14px",
     borderRadius: "12px",
     background: "var(--bg-main)",
     border: "1px solid var(--border-soft)",
-    fontSize: "14px",
+    fontSize: "13px",
   },
   sectionHighlight: {
-    marginTop: "20px",
-    padding: "16px",
+    marginTop: "16px",
+    padding: "14px",
     borderRadius: "12px",
     background: "rgba(37, 99, 235, 0.05)",
     border: "1px solid rgba(37, 99, 235, 0.1)",
-    fontSize: "14px",
+    fontSize: "13px",
   },
   caption: {
-    fontSize: "13px",
+    fontSize: "12px",
     color: "var(--primary)",
     fontWeight: 700,
-    marginBottom: "10px",
+    marginBottom: "8px",
     lineHeight: "1.4",
   },
   noteBox: {
-    marginTop: "20px",
-    padding: "14px",
+    marginTop: "16px",
+    padding: "12px",
     borderRadius: "10px",
     background: "var(--bg-surface)",
-    fontSize: "13px",
+    fontSize: "12px",
     fontWeight: 600,
     border: "1px solid var(--border-medium)",
     color: "var(--text-muted)",
     lineHeight: "1.4",
   },
   notificationBox: {
-    marginTop: "16px",
-    padding: "14px",
+    marginTop: "12px",
+    padding: "12px",
     borderRadius: "10px",
     background: "rgba(16, 185, 129, 0.1)",
     color: "var(--regular-color)",
     fontWeight: 700,
     border: "1px solid var(--regular-color)",
-    fontSize: "13px",
+    fontSize: "12px",
   },
   activationFee: {
     color: "#dc2626",
     fontWeight: 800,
-    fontSize: "15px",
+    fontSize: "14px",
   },
   copiedNote: {
     color: "var(--regular-color)",
     fontWeight: 700,
-    fontSize: "12px",
-    marginTop: "8px",
+    fontSize: "11px",
+    marginTop: "6px",
   },
   input: {
     width: "100%",
-    padding: "14px",
-    marginTop: "16px",
+    padding: "12px",
+    marginTop: "12px",
     borderRadius: "10px",
     border: "2px solid var(--border-medium)",
     background: "var(--bg-surface)",
     color: "var(--text-main)",
-    fontSize: "14px",
+    fontSize: "13px",
     fontFamily: "inherit",
     resize: "vertical",
-    minHeight: "120px",
+    minHeight: "100px",
     boxSizing: "border-box",
   },
   button: {
     width: "100%",
-    marginTop: "16px",
-    padding: "16px",
+    marginTop: "12px",
+    padding: "14px",
     borderRadius: "12px",
     fontWeight: 700,
-    fontSize: "15px",
+    fontSize: "14px",
     cursor: "pointer",
     border: "none",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "8px",
-    minHeight: "50px",
+    gap: "6px",
+    minHeight: "48px",
     background: "var(--primary)",
     color: "#ffffff",
     boxShadow: "0 6px 12px -3px rgba(37, 99, 235, 0.3)",
   },
   copyBtn: {
-    padding: "8px 14px",
+    padding: "6px 12px",
     borderRadius: "8px",
     border: "none",
     background: "var(--primary)",
     color: "white",
     fontWeight: 700,
-    fontSize: "12px",
+    fontSize: "11px",
     cursor: "pointer",
     boxShadow: "0 3px 6px -1px rgba(37, 99, 235, 0.2)",
   },
@@ -201,21 +201,21 @@ const styles = {
   stepBox: {
     background: "rgba(59, 130, 246, 0.1)",
     border: "1px solid rgba(59, 130, 246, 0.2)",
-    borderRadius: "10px",
-    padding: "12px",
-    margin: "8px 0",
+    borderRadius: "8px",
+    padding: "10px",
+    margin: "6px 0",
   },
   stepNumber: {
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    width: "24px",
-    height: "24px",
+    width: "22px",
+    height: "22px",
     background: "#3b82f6",
     color: "white",
     borderRadius: "50%",
     fontWeight: 700,
-    fontSize: "12px",
+    fontSize: "11px",
     marginRight: "8px",
   },
 };
@@ -598,118 +598,75 @@ export default function Activate() {
           <h2 style={{ 
             textAlign: "center", 
             color: plan.color,
-            fontSize: "20px",
-            marginBottom: "6px"
+            fontSize: "18px",
+            marginBottom: "4px"
           }}>
             🔓 Account Activation
           </h2>
 
-          {/* COMPELLING CAPTION AT THE TOP */}
+          {/* COMPACT TOP CAPTION - EXACT FORMAT */}
           <div style={{
-            marginTop: "8px",
-            marginBottom: "20px",
-            padding: "24px 16px",
-            borderRadius: "20px",
-            background: `linear-gradient(135deg, ${plan.color}20, ${plan.color}08)`,
-            border: `2px solid ${plan.color}40`,
-            textAlign: "center",
-            position: "relative",
-            overflow: "hidden"
+            marginTop: "4px",
+            marginBottom: "16px",
+            padding: "16px 12px",
+            borderRadius: "14px",
+            background: `linear-gradient(135deg, ${plan.color}15, ${plan.color}05)`,
+            border: `1px solid ${plan.color}30`,
+            textAlign: "center"
           }}>
-            {/* Decorative elements */}
-            <div style={{
-              position: "absolute",
-              top: "-10px",
-              right: "-10px",
-              width: "80px",
-              height: "80px",
-              background: `radial-gradient(circle, ${plan.color}30, transparent 70%)`,
-              borderRadius: "50%"
-            }}></div>
-            
             <div style={{
               fontSize: "16px",
-              fontWeight: 600,
-              color: "#4b5563",
-              marginBottom: "8px",
-              textTransform: "uppercase",
-              letterSpacing: "1px"
+              fontWeight: 700,
+              color: "#1e293b",
+              marginBottom: "8px"
             }}>
               🎉 CONGRATULATIONS! 🎉
             </div>
             
             <div style={{
-              fontSize: "42px",
+              fontSize: "14px",
+              fontWeight: 500,
+              color: "#4b5563",
+              marginBottom: "4px"
+            }}>
+              You have earned
+            </div>
+            
+            <div style={{
+              fontSize: "32px",
               fontWeight: 900,
               color: plan.color,
-              lineHeight: "1",
+              lineHeight: "1.2",
               marginBottom: "8px",
-              textShadow: `0 2px 10px ${plan.color}40`
+              textShadow: `0 2px 8px ${plan.color}30`
             }}>
               KES {plan.total}
             </div>
             
             <div style={{
-              fontSize: "20px",
-              fontWeight: 700,
-              color: "#1e293b",
-              marginBottom: "16px"
-            }}>
-              You've earned this amount! 🎯
-            </div>
-            
-            <div style={{
-              fontSize: "18px",
+              fontSize: "14px",
               fontWeight: 600,
               color: "#2563eb",
               background: "white",
-              padding: "16px 20px",
-              borderRadius: "50px",
+              padding: "8px 16px",
+              borderRadius: "30px",
               border: "1px solid #e2e8f0",
-              boxShadow: "0 8px 20px rgba(0,0,0,0.05)",
-              marginBottom: "12px"
+              display: "inline-block",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.02)"
             }}>
-              🔥 Pay <span style={{ 
-                color: "#dc2626", 
-                fontWeight: 900,
-                fontSize: "24px"
-              }}>KES {plan.activationFee}</span> 
-              <br />
-              <span style={{ fontSize: "16px", color: "#4b5563" }}>
-                and withdraw <strong style={{ color: plan.color }}>KES {plan.total}</strong> to M-Pesa NOW!
-              </span>
-            </div>
-            
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
-              fontSize: "14px",
-              fontWeight: 600,
-              color: "#059669",
-              background: "rgba(5, 150, 105, 0.1)",
-              padding: "10px 16px",
-              borderRadius: "50px",
-              marginTop: "8px"
-            }}>
-              <span>⚡ Withdraw in 2 minutes</span>
-              <span>•</span>
-              <span>🔒 Secure</span>
-              <span>•</span>
-              <span>✅ Instant</span>
+              Pay <span style={{ color: "#dc2626", fontWeight: 800 }}>KES {plan.activationFee}</span> to withdraw
             </div>
           </div>
 
           {showPlanWarning && (
             <div style={{
-              marginTop: "16px",
-              padding: "12px",
-              borderRadius: "10px",
+              marginTop: "12px",
+              padding: "10px",
+              borderRadius: "8px",
               background: "rgba(245, 158, 11, 0.1)",
               border: "1px solid rgba(245, 158, 11, 0.3)",
               color: "#f59e0b",
-              fontSize: "13px",
+              fontSize: "12px",
               fontWeight: 600
             }}>
               ⚠️ <strong>Note:</strong> You have completed VVIP surveys. 
@@ -718,71 +675,42 @@ export default function Activate() {
           )}
 
           <div style={styles.section}>
-            <p style={{ fontWeight: 900, fontSize: "14px", marginBottom: "10px" }}>
-              📲 HOW TO PAY & ACTIVATE (LIPA NA M-PESA)
+            <p style={{ fontWeight: 900, fontSize: "14px", marginBottom: "8px" }}>
+              📲 HOW TO PAY & ACTIVATE
             </p>
 
             <p style={styles.caption}>
-              ⚠ <strong>IMPORTANT:</strong> This is the Official CEO number and
-              Payments are <strong>Automatically verified after payment</strong>.
+              ⚠ <strong>IMPORTANT:</strong> Official CEO number - payments verified instantly
             </p>
 
-            {/* STEP-BY-STEP GUIDE */}
-            <div style={{ marginTop: "16px" }}>
+            {/* STEP-BY-STEP GUIDE - COMPACT */}
+            <div style={{ marginTop: "8px" }}>
               <div style={styles.stepBox}>
                 <span style={styles.stepNumber}>1</span>
-                <strong>Open M-Pesa Menu</strong>
-                <p style={{ margin: "4px 0 0 0", fontSize: "13px" }}>
-                  Go to your phone's M-Pesa menu
-                </p>
+                <strong>Open M-Pesa</strong>
+                <span style={{ fontSize: "12px", marginLeft: "4px", color: "#4b5563" }}>→ Lipa na M-PESA</span>
               </div>
 
               <div style={styles.stepBox}>
                 <span style={styles.stepNumber}>2</span>
-                <strong>Select "Lipa na M-PESA"</strong>
-                <p style={{ margin: "4px 0 0 0", fontSize: "13px" }}>
-                  Choose the "Lipa na M-PESA" option
-                </p>
+                <strong>Send Money</strong>
+                <span style={{ fontSize: "12px", marginLeft: "4px", color: "#4b5563" }}>→ Enter {PHONE_NUMBER}</span>
               </div>
 
               <div style={styles.stepBox}>
                 <span style={styles.stepNumber}>3</span>
-                <strong>Select "Send Money"</strong>
-                <p style={{ margin: "4px 0 0 0", fontSize: "13px" }}>
-                  Choose "Send Money" option
-                </p>
+                <strong>Confirm: {BUSINESS_NAME}</strong>
               </div>
 
               <div style={styles.stepBox}>
                 <span style={styles.stepNumber}>4</span>
-                <strong>Enter Phone Number</strong>
-                <p style={{ margin: "4px 0 0 0", fontSize: "13px" }}>
-                  Enter: <strong>{PHONE_NUMBER}</strong>
-                </p>
+                <strong>Amount: </strong>
+                <span style={styles.activationFee}>KES {plan.activationFee}</span>
               </div>
 
               <div style={styles.stepBox}>
                 <span style={styles.stepNumber}>5</span>
-                <strong>Verify Recipient Name</strong>
-                <p style={{ margin: "4px 0 0 0", fontSize: "13px" }}>
-                  Confirm name: <strong>{BUSINESS_NAME}</strong>
-                </p>
-              </div>
-
-              <div style={styles.stepBox}>
-                <span style={styles.stepNumber}>6</span>
-                <strong>Enter Amount</strong>
-                <p style={{ margin: "4px 0 0 0", fontSize: "13px" }}>
-                  Amount: <span style={styles.activationFee}>KES {plan.activationFee}</span>
-                </p>
-              </div>
-
-              <div style={styles.stepBox}>
-                <span style={styles.stepNumber}>7</span>
-                <strong>Complete Payment</strong>
-                <p style={{ margin: "4px 0 0 0", fontSize: "13px" }}>
-                  Enter your M-PESA PIN and confirm
-                </p>
+                <strong>Enter PIN & Complete</strong>
               </div>
 
               <div style={{
@@ -790,57 +718,47 @@ export default function Activate() {
                 background: "rgba(16, 185, 129, 0.15)",
                 border: "1px solid rgba(16, 185, 129, 0.3)"
               }}>
-                <span style={{...styles.stepNumber, background: "#10b981"}}>8</span>
-                <strong style={{ color: "#10b981" }}>Paste Confirmation Below</strong>
-                <p style={{ margin: "4px 0 0 0", fontSize: "13px", color: "#047857" }}>
-                  Copy and paste the M-Pesa message to receive KES {plan.total} instantly!
-                </p>
+                <span style={{...styles.stepNumber, background: "#10b981"}}>6</span>
+                <strong style={{ color: "#10b981" }}>Paste confirmation below</strong>
+                <span style={{ fontSize: "11px", display: "block", marginTop: "2px", color: "#047857" }}>
+                  Get KES {plan.total} instantly!
+                </span>
               </div>
             </div>
           </div>
 
           <div style={styles.section}>
-            <p style={{ margin: "6px 0", fontSize: "14px" }}>
-              <strong>Recipient Name:</strong> {BUSINESS_NAME}
-            </p>
             <div style={{ 
-              margin: "10px 0",
               display: "flex",
               alignItems: "center",
+              justifyContent: "space-between",
               flexWrap: "wrap",
-              gap: "8px"
+              gap: "6px"
             }}>
-              <span style={{ fontSize: "14px", fontWeight: 600 }}>Phone Number:</span>
-              <span style={{ fontSize: "14px" }}>{PHONE_NUMBER}</span>
+              <span style={{ fontSize: "13px", fontWeight: 600 }}>📞 {PHONE_NUMBER}</span>
               <button 
                 onClick={copyPhoneNumber} 
                 style={styles.copyBtn}
               >
-                📋 Copy
+                📋 Copy Number
               </button>
             </div>
             {copied && <p style={styles.copiedNote}>✅ Phone number copied</p>}
           </div>
 
           <div style={styles.noteBox}>
-            📌 After payment, paste the <strong>FULL M-Pesa SMS</strong> below.
+            📌 Paste the <strong>FULL M-Pesa SMS</strong> below
             <br />
-            <span style={{ fontSize: "12px", color: "#dc2626", fontWeight: 700 }}>
-              ⚠ Must include: Transaction ID, Amount, Time, and Reference
-            </span>
-            <br />
-            <span style={{ fontSize: "12px", color: "#3b82f6", fontWeight: 700, marginTop: "4px", display: "block" }}>
-              ℹ️ Activating: <strong>{plan.label} Plan</strong> (KES {plan.activationFee}) → Get KES {plan.total}
+            <span style={{ fontSize: "11px", color: "#dc2626" }}>
+              ⚠ Include Transaction ID, Amount & Time
             </span>
           </div>
 
           <textarea
-            placeholder="Paste M-Pesa confirmation message here...
-Example:
-Confirmed. Ksh100.00 sent to Obadiah Otoki for account activation"
+            placeholder="Paste M-Pesa confirmation here..."
             value={paymentText}
             onChange={(e) => setPaymentText(e.target.value)}
-            rows={5}
+            rows={3}
             style={styles.input}
           />
 
@@ -852,10 +770,6 @@ Confirmed. Ksh100.00 sent to Obadiah Otoki for account activation"
               background: submitting
                 ? "#94a3b8"
                 : `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)`,
-              opacity: submitting ? 0.7 : 1,
-              cursor: submitting ? "not-allowed" : "pointer",
-              fontSize: "16px",
-              padding: "18px",
             }}
           >
             {submitting ? (
@@ -873,7 +787,7 @@ Confirmed. Ksh100.00 sent to Obadiah Otoki for account activation"
                 Submitting...
               </>
             ) : (
-              `🚀 ACTIVATE & WITHDRAW KES ${plan.total} NOW`
+              `🚀 ACTIVATE & GET KES ${plan.total}`
             )}
           </button>
 
@@ -890,33 +804,34 @@ Confirmed. Ksh100.00 sent to Obadiah Otoki for account activation"
               background: "transparent",
               border: "2px solid #2563eb",
               color: "#2563eb",
+              marginTop: "8px"
             }}
           >
             ⬅ Back to Dashboard
           </button>
 
-          {/* PLAN STATUS SECTION - MOVED TO BOTTOM */}
+          {/* PLAN STATUS SECTION - AT BOTTOM */}
           <div style={{
-            marginTop: "24px",
-            padding: "16px",
+            marginTop: "20px",
+            padding: "14px",
             borderRadius: "12px",
             background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
             border: "1px solid #e2e8f0",
-            fontSize: "13px"
+            fontSize: "12px"
           }}>
             <div style={{ 
               fontWeight: 700, 
               color: "#2563eb",
-              marginBottom: "12px",
+              marginBottom: "10px",
               display: "flex",
               alignItems: "center",
               gap: "6px",
-              fontSize: "14px"
+              fontSize: "13px"
             }}>
               📊 Plan Status
             </div>
             
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               {['REGULAR', 'VIP', 'VVIP'].map((p) => {
                 const planData = user?.plans?.[p];
                 const isCurrent = planKey === p || (planKey === 'WELCOME' && p === 'REGULAR');
@@ -925,84 +840,49 @@ Confirmed. Ksh100.00 sent to Obadiah Otoki for account activation"
                     display: "flex", 
                     justifyContent: "space-between",
                     alignItems: "center",
-                    padding: "10px 12px",
+                    padding: "8px 10px",
                     background: isCurrent ? "rgba(37, 99, 235, 0.08)" : "transparent",
-                    borderRadius: "8px",
-                    border: isCurrent ? "1px solid rgba(37, 99, 235, 0.2)" : "1px solid transparent",
-                    transition: "all 0.2s ease"
+                    borderRadius: "6px",
                   }}>
                     <span style={{ 
-                      fontWeight: 700, 
-                      fontSize: "13px",
+                      fontWeight: 600, 
+                      fontSize: "12px",
                       color: isCurrent ? "#2563eb" : "#334155"
                     }}>
                       {p}
                       {isCurrent && planKey === "WELCOME" && p === "REGULAR" && " (Welcome)"}
-                      {isCurrent && planKey !== "WELCOME" && " (Current)"}
                     </span>
-                    <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                       <span style={{ 
                         color: planData?.completed ? "#10b981" : "#94a3b8",
-                        fontWeight: 600,
-                        fontSize: "12px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "4px"
+                        fontSize: "11px",
                       }}>
-                        {planData?.completed ? "✓" : "✗"} Complete
+                        {planData?.completed ? "✓" : "✗"}
                       </span>
                       <span style={{ 
                         color: planData?.is_activated ? "#10b981" : "#f59e0b",
-                        fontWeight: 600,
-                        fontSize: "12px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "4px",
+                        fontSize: "11px",
                         background: planData?.is_activated ? "rgba(16, 185, 129, 0.1)" : "rgba(245, 158, 11, 0.1)",
-                        padding: "4px 10px",
+                        padding: "2px 8px",
                         borderRadius: "20px"
                       }}>
-                        {planData?.is_activated ? "✅ Activated" : "⏳ Pending"}
+                        {planData?.is_activated ? "Activated" : "Pending"}
                       </span>
                     </div>
                   </div>
                 );
               })}
             </div>
-            
-            <div style={{ 
-              marginTop: "16px", 
-              paddingTop: "12px", 
-              borderTop: "1px solid #e2e8f0",
-              fontWeight: 700,
-              fontSize: "13px",
-              color: plan.color,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between"
-            }}>
-              <span>🎯 Activating:</span>
-              <span style={{ 
-                background: plan.color,
-                color: "white",
-                padding: "4px 14px",
-                borderRadius: "20px",
-                fontSize: "12px",
-                fontWeight: 700
-              }}>
-                {plan.label} Plan
-              </span>
-            </div>
           </div>
         </div>
 
         {/* Trust Badges */}
-        <div style={{ marginTop: "30px", width: "100%" }}>
+        <div style={{ marginTop: "24px", width: "100%" }}>
           <TrustBadges variant="compact" />
         </div>
 
         {/* Testimonials */}
-        <div style={{ marginTop: "30px", width: "100%" }}>
+        <div style={{ marginTop: "24px", width: "100%" }}>
           <Testimonials variant="carousel" />
         </div>
       </div>
