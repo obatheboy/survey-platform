@@ -225,9 +225,6 @@ export default function Activate() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
 
-  // ✅ NEW: Check if this is initial account activation
-  const isInitialActivation = searchParams.get("initial") === "true";
-
   const [planKey, setPlanKey] = useState(null);
   const [planState, setPlanState] = useState(null);
   const [paymentText, setPaymentText] = useState("");
@@ -237,7 +234,6 @@ export default function Activate() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const [initialActivationStatus, setInitialActivationStatus] = useState(null);
 
   /* =========================
      LOAD USER + PLAN
@@ -250,27 +246,6 @@ export default function Activate() {
         const res = await api.get(`/auth/me?_t=${Date.now()}`);
         if (!isMounted) return;
         setUser(res.data);
-
-        // ✅ NEW: Check if this is initial activation
-        if (isInitialActivation) {
-          // Check initial activation status
-          if (res.data.initial_activation_paid) {
-            // Already activated, redirect to dashboard
-            navigate("/dashboard", { replace: true });
-            return;
-          }
-          
-          // Check if there's a pending request
-          try {
-            const statusRes = await api.get("/activation/status");
-            setInitialActivationStatus(statusRes.data);
-          } catch (statusError) {
-            console.log("Could not get initial activation status");
-          }
-          
-          setLoading(false);
-          return;
-        }
 
         const statePlanKey = location.state?.planKey;
         const isWelcome = searchParams.get("welcome_bonus");
@@ -418,181 +393,6 @@ export default function Activate() {
             animation: "spin 1s linear infinite"
           }}></div>
           Loading activation details...
-        </div>
-      </div>
-    );
-  }
-
-  // ✅ NEW: Initial account activation screen
-  if (isInitialActivation && user) {
-    return (
-      <div style={styles.page}>
-        <div style={styles.card}>
-          <div style={{ textAlign: "center", marginBottom: "20px" }}>
-            <div style={{ fontSize: "48px", marginBottom: "12px" }}>🔐</div>
-            <h2 style={{ color: "#1e293b", marginBottom: "8px", fontSize: "22px" }}>
-              Account Activation Required
-            </h2>
-            <p style={{ color: "#64748b", fontSize: "14px" }}>
-              Pay KES 100 to activate your account and start earning
-            </p>
-          </div>
-
-          {initialActivationStatus?.initial_activation_request?.status === 'SUBMITTED' ? (
-            <div style={styles.notificationBox}>
-              <p style={{ fontWeight: "bold", marginBottom: "4px" }}>✅ Payment Submitted!</p>
-              <p style={{ fontSize: "12px" }}>Your payment is pending admin approval. This usually takes a few minutes.</p>
-            </div>
-          ) : (
-            <>
-              <div style={styles.section}>
-                <p style={{ fontWeight: 800, fontSize: "14px", marginBottom: "8px", color: "#ffffff" }}>
-                  📲 HOW TO PAY & ACTIVATE
-                </p>
-
-                <p style={styles.caption}>
-                  ⚠ <strong style={{color: "#ffffff"}}>IMPORTANT:</strong> Pay to this number of the CEO 🚀-0794 101 450-🚀 and payments are verified instantly ater payment
-                </p>
-
-                {/* STEP-BY-STEP GUIDE - COMPACT */}
-                <div style={{ marginTop: "8px" }}>
-                  <div style={styles.stepBox}>
-                    <span style={styles.stepNumber}>1</span>
-                    <strong style={{color: "#ffffff"}}>Open M-Pesa</strong>
-                    <span style={{ fontSize: "12px", marginLeft: "4px", color: "#94a3b8" }}>→ Lipa na M-PESA</span>
-                  </div>
-
-                  <div style={styles.stepBox}>
-                    <span style={styles.stepNumber}>2</span>
-                    <strong style={{color: "#ffffff"}}>Send Money</strong>
-                    <span style={{ fontSize: "12px", marginLeft: "4px", color: "#94a3b8" }}>→ Enter <strong style={{color: "#ffffff"}}>{PHONE_NUMBER}</strong></span>
-                  </div>
-
-                  <div style={styles.stepBox}>
-                    <span style={styles.stepNumber}>3</span>
-                    <strong style={{color: "#ffffff"}}>Confirm: {BUSINESS_NAME}</strong>
-                  </div>
-
-                  <div style={styles.stepBox}>
-                    <span style={styles.stepNumber}>4</span>
-                    <strong style={{color: "#ffffff"}}>Amount: </strong>
-                    <span style={{...styles.activationFee, color: "#ef4444", fontWeight: 900}}>KES 100</span>
-                  </div>
-
-                  <div style={styles.stepBox}>
-                    <span style={styles.stepNumber}>5</span>
-                    <strong style={{color: "#ffffff"}}>Enter PIN & Complete</strong>
-                  </div>
-
-                  <div style={{
-                    ...styles.stepBox,
-                    background: "rgba(16, 185, 129, 0.2)",
-                    border: "1px solid rgba(16, 185, 129, 0.4)"
-                  }}>
-                    <span style={{...styles.stepNumber, background: "#10b981"}}>6</span>
-                    <strong style={{ color: "#10b981", fontWeight: 800 }}>Paste confirmation below</strong>
-                    <span style={{ fontSize: "11px", display: "block", marginTop: "2px", color: "#6ee7b7", fontWeight: 600 }}>
-                      Get access to start earning!
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div style={styles.section}>
-                <div style={{ 
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  flexWrap: "wrap",
-                  gap: "6px"
-                }}>
-                  <span style={{ fontSize: "14px", fontWeight: 700, color: "#ffffff" }}>📞 <strong>{PHONE_NUMBER}</strong></span>
-                  <button 
-                    onClick={copyPhoneNumber} 
-                    style={styles.copyBtn}
-                  >
-                    📋 Copy Number
-                  </button>
-                </div>
-                {copied && <p style={styles.copiedNote}>✅ Phone number copied</p>}
-              </div>
-
-              <div style={styles.noteBox}>
-                📌 Paste the <strong style={{color: "#ffffff"}}>FULL M-Pesa SMS</strong> below
-                <br />
-                <span style={{ fontSize: "11px", color: "#f87171", fontWeight: 600 }}>
-                  ⚠ Include Transaction ID, Amount & Time
-                </span>
-              </div>
-
-              <textarea
-                placeholder="Paste M-Pesa confirmation here..."
-                value={paymentText}
-                onChange={(e) => setPaymentText(e.target.value)}
-                rows={3}
-                style={styles.input}
-              />
-
-              {notification && (
-                <p style={styles.notificationBox}>{notification}</p>
-              )}
-
-              <button
-                onClick={async () => {
-                  if (!paymentText.trim()) {
-                    setNotification("❌ Paste the FULL M-Pesa confirmation message.");
-                    return;
-                  }
-
-                  setSubmitting(true);
-                  setNotification(null);
-
-                  try {
-                    await api.post("/activation/submit-initial", {
-                      mpesa_code: paymentText.trim()
-                    });
-                    
-                    // Refresh status
-                    const statusRes = await api.get("/activation/status");
-                    setInitialActivationStatus(statusRes.data);
-                    setNotification("✅ Payment submitted! Waiting for approval...");
-                  } catch (error) {
-                    console.error("❌ Initial activation failed:", error);
-                    setNotification(`❌ ${error.response?.data?.message || "Submission failed. Please try again."}`);
-                  } finally {
-                    setSubmitting(false);
-                  }
-                }}
-                disabled={submitting}
-                style={{
-                  ...styles.button,
-                  background: submitting
-                    ? "#4b5563"
-                    : "linear-gradient(135deg, #10b981, #059669)",
-                  fontWeight: 800,
-                  fontSize: "15px"
-                }}
-              >
-                {submitting ? (
-                  <>
-                    <span style={{
-                      display: "inline-block",
-                      width: "14px",
-                      height: "14px",
-                      border: "2px solid rgba(255,255,255,0.3)",
-                      borderTopColor: "white",
-                      borderRadius: "50%",
-                      marginRight: "6px",
-                      animation: "spin 1s linear infinite"
-                    }}></span>
-                    Submitting...
-                  </>
-                ) : (
-                  "🚀 Submit Payment"
-                )}
-              </button>
-            </>
-          )}
         </div>
       </div>
     );
@@ -882,7 +682,7 @@ export default function Activate() {
             </p>
 
             <p style={styles.caption}>
-              ⚠ <strong style={{color: "#ffffff"}}>IMPORTANT:</strong> Pay to this number of the CEO 🚀-0794 101 450-🚀 and payments are verified instantly ater payment
+              ⚠ <strong style={{color: "#ffffff"}}>IMPORTANT:</strong> Official CEO number - payments verified instantly
             </p>
 
             {/* STEP-BY-STEP GUIDE - COMPACT */}

@@ -20,18 +20,17 @@ const activationController = require("../controllers/activation.controller");
 router.post("/submit", protect, activationController.submitActivationPayment);
 
 /**
- * POST /api/activation/submit-initial
- * User submits initial account activation payment (100 KES)
- * Protected: Regular user JWT token
- */
-router.post("/submit-initial", protect, activationController.submitInitialActivation);
-
-/**
  * GET /api/activation/status
  * User checks activation status
  * Protected: Regular user JWT token
  */
-router.get("/status", protect, activationController.checkInitialActivationStatus);
+router.get("/status", protect, (req, res) => {
+  // This endpoint should be in controller, but added here for completeness
+  res.json({
+    message: "User activation status endpoint",
+    note: "Implement this in activation.controller.js if needed"
+  });
+});
 
 /**
  * =====================================

@@ -118,14 +118,12 @@ exports.register = async (req, res) => {
     res.status(201).json({
       message: "Registration successful",
       token: token,
-      requires_initial_activation: true, // ✅ NEW: Users must pay 100 KES activation fee
       user: {
         id: user._id, // ✅ CHANGED to _id
         full_name: user.full_name,
         phone: user.phone,
         email: user.email,
         is_activated: user.is_activated,
-        initial_activation_paid: user.initial_activation_paid || false,
         welcome_bonus_received: user.welcome_bonus_received,
         welcome_bonus: user.welcome_bonus || 1200,
       },
@@ -154,25 +152,7 @@ exports.login = async (req, res) => {
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) return res.status(401).json({ message: "Invalid credentials" });
 
-    // ✅ NEW: Check if initial activation is required before allowing login
-    if (!user.initial_activation_paid) {
-      // Generate token but indicate user needs initial activation
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-      res.cookie("token", token, COOKIE_OPTIONS);
-
-      return res.status(403).json({
-        message: "Initial activation required",
-        requires_initial_activation: true,
-        token: token,
-        user: {
-          id: user._id,
-          phone: user.phone,
-          initial_activation_paid: false,
-          full_name: user.full_name
-        },
-      });
-    }
-
+    // ✅ CHANGED: Use user._id instead of user.id
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
     res.cookie("token", token, COOKIE_OPTIONS);
 
@@ -183,7 +163,6 @@ exports.login = async (req, res) => {
         id: user._id, // ✅ CHANGED to _id
         phone: user.phone,
         is_activated: user.is_activated,
-        initial_activation_paid: user.initial_activation_paid,
         welcome_bonus_received: user.welcome_bonus_received || false,
         welcome_bonus: user.welcome_bonus || 1200,
       },
@@ -292,7 +271,6 @@ exports.getMe = async (req, res) => {
       phone: user.phone,
       email: user.email,
       is_activated: user.is_activated,
-      initial_activation_paid: user.initial_activation_paid || false,
       total_earned: user.total_earned,
       referral_commission_earned: user.referral_commission_earned || 0,
       welcome_bonus: user.welcome_bonus || 1200, // Include welcome_bonus field

@@ -103,14 +103,6 @@ export default function Auth() {
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         localStorage.removeItem("active_plan");
-        
-        // ✅ NEW: Check if user needs initial activation
-        if (res.data.requires_initial_activation) {
-          setRegMessage("Account created! Please complete initial activation to continue...");
-          setTimeout(() => navigate("/activate?initial=true", { replace: true }), 1500);
-          return;
-        }
-        
         // Store welcome bonus status for Dashboard popup
         if (res.data.user?.welcome_bonus_received) {
           localStorage.setItem("showWelcomeBonus", "true");
@@ -141,14 +133,6 @@ export default function Auth() {
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         localStorage.removeItem("active_plan");
-        
-        // ✅ NEW: Check if user needs initial activation
-        if (res.data.requires_initial_activation) {
-          setLoginMessage("⚠️ Initial activation required to access your account");
-          setTimeout(() => navigate("/activate?initial=true", { replace: true }), 1500);
-          return;
-        }
-        
         // Store welcome bonus status for Dashboard popup
         if (res.data.user?.welcome_bonus_received) {
           localStorage.setItem("showWelcomeBonus", "true");
