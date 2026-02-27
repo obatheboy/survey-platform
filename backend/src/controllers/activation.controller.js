@@ -4,6 +4,105 @@ const Notification = require("../models/Notification");
 const { awardReferralCommission } = require("./affiliate.controller");
 
 const TOTAL_SURVEYS = 10;
+const INITIAL_ACTIVATION_FEE = 100; // ✅ New: Initial account activation fee
+
+/* ===============================
+   PLAN ACTIVATION FEES (AMOUNT USER PAYS)
+=============================== */
+const PLAN_FEES = {
+  REGULAR: 100,
+  VIP: 150,
+  VVIP: 200,
+};
+
+/* ===============================
+   SUBMIT INITIAL ACCOUNT ACTIVATION PAYMENT
+   ✅ NEW ENDPOINT - Required before user can access dashboard/surveys
+===================================== */
+exports.submitInitialActivation = async (req, res) => {
+  try {
+    console.log("🔍 INITIAL ACTIVATION SUBMISSION DEBUG:");
+    console.log("User ID:", req.user.id);
+    console.log("Request body:", req.body);
+    
+    const userId = req.user.id;
+    const { mpesa_code } = req.body;
+    const paymentReference = String(mpesa_code || "").trim();
+
+    if (!paymentReference) {
+      return res.status(400).json({
+        message: "Please enter the M-Pesa payment reference",
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if already activated
+    if (user.initial_activation_paid) {
+      return res.status(400).json({
+        message: "Initial activation already completed",
+      });
+    }
+
+    // Check if there's a pending request
+    if (user.initial_activation_request && user.initial_activation_request.status === 'SUBMITTED') {
+      return res.status(400).json({
+        message: "Activation already submitted and pending approval",
+      });
+    }
+
+    // Create initial activation request
+    user.initial_activation_request = {
+      mpesa_code: paymentReference,
+      amount: INITIAL_ACTIVATION_FEE,
+      status: 'SUBMITTED',
+      created_at: new Date(),
+      is_initial: true  // Mark as initial account activation
+    };
+
+    await user.save();
+
+    console.log("✅ Initial activation request submitted for user:", userId);
+
+    res.status(201).json({
+      success: true,
+      message: "Initial activation submitted successfully! Waiting for admin approval.",
+      data: {
+        status: 'SUBMITTED',
+        amount: INITIAL_ACTIVATION_FEE
+      }
+    });
+  } catch (error) {
+    console.error("❌ Initial activation error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+/* ===============================
+   CHECK INITIAL ACTIVATION STATUS
+   ✅ NEW ENDPOINT - For frontend to check if user can access dashboard
+===================================== */
+exports.checkInitialActivationStatus = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({
+      initial_activation_paid: user.initial_activation_paid || false,
+      initial_activation_request: user.initial_activation_request || null
+    });
+  } catch (error) {
+    console.error("❌ Check initial activation status error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 /* ===============================
    PLAN ACTIVATION FEES (AMOUNT USER PAYS)

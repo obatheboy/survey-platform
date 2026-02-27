@@ -27,6 +27,13 @@ router.get("/activations", controller.getActivationPayments);
 
 /**
  * GET
+ * /api/admin/activations/initial
+ * ➜ View initial account activations (NEW)
+ */
+router.get("/activations/initial", controller.getInitialActivations);
+
+/**
+ * GET
  * /api/admin/activations/pending
  * ➜ View ONLY pending (SUBMITTED) payments
  */
@@ -53,6 +60,26 @@ router.patch(
 router.patch(
   "/activations/:id/reject",
   controller.rejectActivation
+);
+
+/**
+ * ✅ NEW: PATCH
+ * /api/admin/activations/initial/:userId/approve
+ * ➜ Approve initial account activation (100 KES)
+ */
+router.patch(
+  "/activations/initial/:userId/approve",
+  controller.approveInitialActivation
+);
+
+/**
+ * ✅ NEW: PATCH
+ * /api/admin/activations/initial/:userId/reject
+ * ➜ Reject initial account activation
+ */
+router.patch(
+  "/activations/initial/:userId/reject",
+  controller.rejectInitialActivation
 );
 
 module.exports = router;

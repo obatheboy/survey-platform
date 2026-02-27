@@ -35,6 +35,23 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  initial_activation_paid: {  // ✅ ADDED: Track initial 100 KES activation payment
+    type: Boolean,
+    default: false
+  },
+  initial_activation_request: {  // ✅ ADDED: Store initial activation request details
+    mpesa_code: { type: String, trim: true },
+    amount: { type: Number, default: 100 },
+    status: { 
+      type: String, 
+      enum: ['SUBMITTED', 'APPROVED', 'REJECTED'],
+      default: 'SUBMITTED' 
+    },
+    created_at: { type: Date, default: Date.now },
+    processed_at: { type: Date },
+    admin_notes: { type: String },
+    is_initial: { type: Boolean, default: true }  // Mark as initial account activation
+  },
   total_earned: {
     type: Number,
     default: 0

@@ -38,6 +38,24 @@ exports.getActivationPayments = async (req, res) => {
     const allPayments = [];
     
     users.forEach(user => {
+      // ✅ NEW: Initial account activation payments
+      if (user.initial_activation_request && user.initial_activation_request.is_initial) {
+        allPayments.push({
+          id: user._id + '_initial',
+          user_id: user._id,
+          full_name: user.full_name,
+          email: user.email,
+          phone: user.phone,
+          plan: 'INITIAL_ACTIVATION',
+          mpesa_code: user.initial_activation_request.mpesa_code,
+          amount: user.initial_activation_request.amount || 100,
+          status: user.initial_activation_request.status,
+          created_at: user.initial_activation_request.created_at,
+          type: 'initial_activation',
+          is_initial: true
+        });
+      }
+
       // 1. Regular activation payments
       if (user.activation_requests && user.activation_requests.length > 0) {
         user.activation_requests.forEach(payment => {
@@ -230,6 +248,19 @@ exports.approveActivation = async (req, res) => {
     
     let isWelcomeBonus = false;
     let isFromWithdrawal = false;
+    let isInitialActivation = false;
+    
+    // ✅ NEW: Check if this is initial activation
+    if (!payment && paymentId.includes('_initial')) {
+      const userId = paymentId.replace('_initial', '');
+      const initialUser = await User.findById(userId).session(session);
+      if (initialUser && initialUser.initial_activation_request) {
+        payment = initialUser.initial_activation_request;
+        isInitialActivation = true;
+        // Also update the user reference
+        user = initialUser;
+      }
+    }
     
     if (!payment) {
       payment = user.withdrawal_requests?.find(
@@ -660,5 +691,127 @@ exports.getActivationStats = async (req, res) => {
       message: "Failed to load activation stats",
       error: error.message 
     });
+  }
+};
+
+/* =====================================================
+   ✅ NEW: INITIAL ACCOUNT ACTIVATION CONTROLLERS
+===================================================== */
+
+/**
+ * 🔍 GET INITIAL ACTIVATION PAYMENTS
+ * Get all users who have submitted initial activation requests
+ */
+exports.getInitialActivations = async (req, res) => {
+  try {
+    console.log("📞 GET /admin/activations/initial called");
+    
+    const users = await User.find({
+      'initial_activation_request.0': { $exists: true }
+    })
+    .select('full_name email phone initial_activation_request created_at')
+    .lean();
+
+    console.log(`✅ Found ${users.length} users with initial activations`);
+
+    const activations = users.map(user => ({
+      id: user._id + '_initial',
+      user_id: user._id,
+      full_name: user.full_name,
+      email: user.email,
+      phone: user.phone,
+      mpesa_code: user.initial_activation_request?.mpesa_code,
+      amount: user.initial_activation_request?.amount || 100,
+      status: user.initial_activation_request?.status,
+      created_at: user.initial_activation_request?.created_at,
+      user_created_at: user.created_at
+    }));
+
+    res.json({
+      success: true,
+      activations
+    });
+  } catch (error) {
+    console.error("❌ Error fetching initial activations:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+/**
+ * ✅ APPROVE INITIAL ACTIVATION
+ */
+exports.approveInitialActivation = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    console.log(`✅ Approving initial activation for user: ${userId}`);
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    if (!user.initial_activation_request) {
+      return res.status(400).json({ success: false, message: "No initial activation request found" });
+    }
+
+    if (user.initial_activation_request.status !== "SUBMITTED") {
+      return res.status(400).json({ success: false, message: "Activation already processed" });
+    }
+
+    // Update the initial activation status
+    user.initial_activation_request.status = 'APPROVED';
+    user.initial_activation_request.processed_at = new Date();
+    user.initial_activation_paid = true; // ✅ Mark as paid
+
+    await user.save();
+
+    console.log(`✅ Initial activation approved for user: ${userId}`);
+
+    res.json({
+      success: true,
+      message: "Initial activation approved successfully"
+    });
+  } catch (error) {
+    console.error("❌ Error approving initial activation:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+/**
+ * ❌ REJECT INITIAL ACTIVATION
+ */
+exports.rejectInitialActivation = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { admin_notes } = req.body;
+    console.log(`❌ Rejecting initial activation for user: ${userId}`);
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    if (!user.initial_activation_request) {
+      return res.status(400).json({ success: false, message: "No initial activation request found" });
+    }
+
+    // Update the initial activation status
+    user.initial_activation_request.status = 'REJECTED';
+    user.initial_activation_request.processed_at = new Date();
+    user.initial_activation_request.admin_notes = admin_notes || 'Payment rejected';
+
+    await user.save();
+
+    console.log(`❌ Initial activation rejected for user: ${userId}`);
+
+    res.json({
+      success: true,
+      message: "Initial activation rejected"
+    });
+  } catch (error) {
+    console.error("❌ Error rejecting initial activation:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
