@@ -682,7 +682,7 @@ export default function Activate() {
             </p>
 
             <p style={styles.caption}>
-              ⚠ <strong style={{color: "#ffffff"}}>IMPORTANT:</strong> Official CEO number - payments verified instantly
+              ⚠ <strong style={{color: "#ffffff"}}>IMPORTANT:</strong> 0794101450 This is theOfficial CEO number -and payments are verified instantly ater payment
             </p>
 
             {/* STEP-BY-STEP GUIDE - COMPACT */}
