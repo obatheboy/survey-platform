@@ -604,131 +604,68 @@ export default function Activate() {
             🔓 Account Activation
           </h2>
 
-          <h3 style={{ 
-            textAlign: "center", 
-            marginTop: "10px",
-            fontSize: "18px",
-            fontWeight: 700
-          }}>
-            💰 Withdrawable:{" "}
-            <span style={{ color: plan.color }}>KES {plan.total}</span>
-          </h3>
-
-          {/* PLAN STATUS SECTION - CLEAN VERSION */}
+          {/* COMPELLING CAPTION AT THE TOP */}
           <div style={{
-            marginTop: "16px",
-            padding: "16px",
-            borderRadius: "12px",
-            background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
-            border: "1px solid #e2e8f0",
-            fontSize: "13px"
+            marginTop: "8px",
+            marginBottom: "20px",
+            padding: "18px 16px",
+            borderRadius: "16px",
+            background: `linear-gradient(135deg, ${plan.color}15, ${plan.color}05)`,
+            border: `2px solid ${plan.color}30`,
+            textAlign: "center"
           }}>
-            <div style={{ 
-              fontWeight: 700, 
-              color: "#2563eb",
-              marginBottom: "12px",
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              fontSize: "14px"
-            }}>
-              📊 Plan Status
-            </div>
-            
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              {['REGULAR', 'VIP', 'VVIP'].map((p) => {
-                const planData = user?.plans?.[p];
-                const isCurrent = planKey === p || (planKey === 'WELCOME' && p === 'REGULAR');
-                return (
-                  <div key={p} style={{ 
-                    display: "flex", 
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "10px 12px",
-                    background: isCurrent ? "rgba(37, 99, 235, 0.08)" : "transparent",
-                    borderRadius: "8px",
-                    border: isCurrent ? "1px solid rgba(37, 99, 235, 0.2)" : "1px solid transparent",
-                    transition: "all 0.2s ease"
-                  }}>
-                    <span style={{ 
-                      fontWeight: 700, 
-                      fontSize: "13px",
-                      color: isCurrent ? "#2563eb" : "#334155"
-                    }}>
-                      {p}
-                      {isCurrent && planKey === "WELCOME" && p === "REGULAR" && " (Welcome)"}
-                      {isCurrent && planKey !== "WELCOME" && " (Current)"}
-                    </span>
-                    <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                      <span style={{ 
-                        color: planData?.completed ? "#10b981" : "#94a3b8",
-                        fontWeight: 600,
-                        fontSize: "12px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "4px"
-                      }}>
-                        {planData?.completed ? "✓" : "✗"} Complete
-                      </span>
-                      <span style={{ 
-                        color: planData?.is_activated ? "#10b981" : "#f59e0b",
-                        fontWeight: 600,
-                        fontSize: "12px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "4px",
-                        background: planData?.is_activated ? "rgba(16, 185, 129, 0.1)" : "rgba(245, 158, 11, 0.1)",
-                        padding: "4px 10px",
-                        borderRadius: "20px"
-                      }}>
-                        {planData?.is_activated ? "✅ Activated" : "⏳ Pending"}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            
-            <div style={{ 
-              marginTop: "16px", 
-              paddingTop: "12px", 
-              borderTop: "1px solid #e2e8f0",
-              fontWeight: 700,
-              fontSize: "13px",
+            <div style={{
+              fontSize: "28px",
+              fontWeight: 800,
               color: plan.color,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between"
+              lineHeight: "1.2",
+              marginBottom: "4px"
             }}>
-              <span>🎯 Activating:</span>
-              <span style={{ 
-                background: plan.color,
-                color: "white",
-                padding: "4px 14px",
-                borderRadius: "20px",
-                fontSize: "12px",
-                fontWeight: 700
-              }}>
-                {plan.label} Plan
+              KES {plan.total}
+            </div>
+            <div style={{
+              fontSize: "16px",
+              fontWeight: 700,
+              color: "#334155",
+              marginBottom: "12px"
+            }}>
+              Ready to withdraw!
+            </div>
+            <div style={{
+              fontSize: "15px",
+              fontWeight: 600,
+              color: "#2563eb",
+              background: "white",
+              padding: "12px 14px",
+              borderRadius: "12px",
+              border: "1px solid #e2e8f0",
+              boxShadow: "0 4px 8px rgba(0,0,0,0.02)"
+            }}>
+              💡 Pay <span style={{ 
+                color: "#dc2626", 
+                fontWeight: 800,
+                fontSize: "18px"
+              }}>KES {plan.activationFee}</span> activation fee 
+              <br />
+              <span style={{ fontSize: "14px", color: "#4b5563" }}>
+                to unlock your <strong style={{ color: plan.color }}>{plan.label}</strong> earnings
               </span>
             </div>
-          </div>
-
-          {showPlanWarning && (
             <div style={{
-              marginTop: "16px",
-              padding: "12px",
-              borderRadius: "10px",
-              background: "rgba(245, 158, 11, 0.1)",
-              border: "1px solid rgba(245, 158, 11, 0.3)",
-              color: "#f59e0b",
+              marginTop: "12px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "16px",
               fontSize: "13px",
-              fontWeight: 600
+              fontWeight: 600,
+              color: "#059669"
             }}>
-              ⚠️ <strong>Note:</strong> You have completed VVIP surveys. 
-              Make sure you're activating the correct plan. Current: <strong>{plan.label}</strong>
+              <span>⚡ Instant verification</span>
+              <span>🔒 Secure payment</span>
+              <span>✅ Lifetime access</span>
             </div>
-          )}
+          </div>
 
           <div style={styles.sectionHighlight}>
             <p style={{ 
@@ -751,6 +688,22 @@ export default function Activate() {
               </p>
             ))}
           </div>
+
+          {showPlanWarning && (
+            <div style={{
+              marginTop: "16px",
+              padding: "12px",
+              borderRadius: "10px",
+              background: "rgba(245, 158, 11, 0.1)",
+              border: "1px solid rgba(245, 158, 11, 0.3)",
+              color: "#f59e0b",
+              fontSize: "13px",
+              fontWeight: 600
+            }}>
+              ⚠️ <strong>Note:</strong> You have completed VVIP surveys. 
+              Make sure you're activating the correct plan. Current: <strong>{plan.label}</strong>
+            </div>
+          )}
 
           <div style={styles.section}>
             <p style={{ fontWeight: 900, fontSize: "14px", marginBottom: "10px" }}>
@@ -915,6 +868,106 @@ Confirmed. Ksh100.00 sent to Obadiah Otoki for account activation"
           >
             ⬅ Back to Dashboard
           </button>
+
+          {/* PLAN STATUS SECTION - MOVED TO BOTTOM */}
+          <div style={{
+            marginTop: "24px",
+            padding: "16px",
+            borderRadius: "12px",
+            background: "linear-gradient(135deg, #f8fafc, #f1f5f9)",
+            border: "1px solid #e2e8f0",
+            fontSize: "13px"
+          }}>
+            <div style={{ 
+              fontWeight: 700, 
+              color: "#2563eb",
+              marginBottom: "12px",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontSize: "14px"
+            }}>
+              📊 Plan Status
+            </div>
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              {['REGULAR', 'VIP', 'VVIP'].map((p) => {
+                const planData = user?.plans?.[p];
+                const isCurrent = planKey === p || (planKey === 'WELCOME' && p === 'REGULAR');
+                return (
+                  <div key={p} style={{ 
+                    display: "flex", 
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "10px 12px",
+                    background: isCurrent ? "rgba(37, 99, 235, 0.08)" : "transparent",
+                    borderRadius: "8px",
+                    border: isCurrent ? "1px solid rgba(37, 99, 235, 0.2)" : "1px solid transparent",
+                    transition: "all 0.2s ease"
+                  }}>
+                    <span style={{ 
+                      fontWeight: 700, 
+                      fontSize: "13px",
+                      color: isCurrent ? "#2563eb" : "#334155"
+                    }}>
+                      {p}
+                      {isCurrent && planKey === "WELCOME" && p === "REGULAR" && " (Welcome)"}
+                      {isCurrent && planKey !== "WELCOME" && " (Current)"}
+                    </span>
+                    <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                      <span style={{ 
+                        color: planData?.completed ? "#10b981" : "#94a3b8",
+                        fontWeight: 600,
+                        fontSize: "12px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px"
+                      }}>
+                        {planData?.completed ? "✓" : "✗"} Complete
+                      </span>
+                      <span style={{ 
+                        color: planData?.is_activated ? "#10b981" : "#f59e0b",
+                        fontWeight: 600,
+                        fontSize: "12px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                        background: planData?.is_activated ? "rgba(16, 185, 129, 0.1)" : "rgba(245, 158, 11, 0.1)",
+                        padding: "4px 10px",
+                        borderRadius: "20px"
+                      }}>
+                        {planData?.is_activated ? "✅ Activated" : "⏳ Pending"}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            
+            <div style={{ 
+              marginTop: "16px", 
+              paddingTop: "12px", 
+              borderTop: "1px solid #e2e8f0",
+              fontWeight: 700,
+              fontSize: "13px",
+              color: plan.color,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between"
+            }}>
+              <span>🎯 Activating:</span>
+              <span style={{ 
+                background: plan.color,
+                color: "white",
+                padding: "4px 14px",
+                borderRadius: "20px",
+                fontSize: "12px",
+                fontWeight: 700
+              }}>
+                {plan.label} Plan
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Trust Badges */}
@@ -940,4 +993,3 @@ Confirmed. Ksh100.00 sent to Obadiah Otoki for account activation"
     </>
   );
 }
-
