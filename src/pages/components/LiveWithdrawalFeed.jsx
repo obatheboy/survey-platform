@@ -11,20 +11,20 @@ const KENYA_FLAG =
 ========================= */
 const useData = () => useMemo(() => ({
   NAMES: [
-    "James M.", "Brian K.", "Kevin O.", "Mary W.", "Lucy N.", "John M.", "Sarah A.", 
+    "James M.", "Brian K.", "Kevin O.", "Felix K.", "Dorcas M.", "Henry T.", "Mary W.", "Lucy N.", "John M.", "Sarah A.", 
     "Michael T.", "Faith W.", "Daniel K.", "Grace M.", "Peter O.", "Ann W.", 
     "Victor K.", "Joseph N.", "Mercy A.", "Paul M.", "Irene K.", "Samuel T.", 
     "Joy W.", "Dennis M.", "Brenda K.", "Collins O.", "Ruth M.", "Stephen N.", 
-    "Naomi W.", "Eric K.", "Susan M.", "George T.", "Linda K.", "Allan W.", 
+    "Naomi W.", "Eric K.", "Susan M.", "George T.", "Linda K.", "Allan W.",  "Joy W.", "Dennis M.", "Brenda K.",
     "Janet M.", "Frank K.", "Alice T.", "Martin O.", "Agnes M.", "Chris N.", 
     "Nancy K.", "Isaac M.", "Sharon W.", "Felix K.", "Dorcas M.", "Henry T.", 
     "Monica W.", "Nelson K.", "Carol M.", "Patricia W.", "Elijah K.", "Winnie M."
   ],
   
   AMOUNTS: [
-    1200, 1250, 1300, 1350, 1400, 1450, 1500, 1550, 1600, 1650, 1700, 1750, 1800,
+    1200,  2200, 2250, 2300, 2350, 1250, 1300, 1350, 1400, 1450, 1500, 1550, 1600, 1650, 1700, 1750, 1800,
     1850, 1900, 1950, 2000, 2050, 2100, 2150, 2200, 2250, 2300, 2350, 2400, 2450,
-    2500, 2550, 2600, 2650, 2700, 2750, 2800, 2850, 2900, 2950, 3000
+    2500, 2550, 2600, 2650, 2700, 2750, 2800, 2850, 2900, 2950, 3000, 1500, 1550, 1600, 1650,
   ],
   
   LOCATIONS: [
@@ -423,7 +423,7 @@ export default function LiveWithdrawalFeed() {
     
     // Get time-based interval (slower on mobile)
     const category = data.TIME_CATEGORIES[currentCategory];
-    const baseInterval = isMobile ? 5000 : 4000;
+    const baseInterval = isMobile ? 2500 : 2000;
     const interval = Math.round(baseInterval / category.frequency);
     
     // Use requestAnimationFrame for smoother updates on mobile

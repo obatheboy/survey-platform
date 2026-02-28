@@ -12,7 +12,7 @@ const Input = ({ type = "text", icon, readOnly, disabled, error, ...props }) => 
       disabled={disabled}
       style={{
         ...styles.input,
-        paddingLeft: icon ? "48px" : "20px",
+        paddingLeft: icon ? "40px" : "16px",
         cursor: disabled ? 'not-allowed' : readOnly ? 'default' : 'text',
         pointerEvents: disabled ? 'none' : 'auto',
         borderColor: error ? '#ef4444' : '#e2e8f0',
@@ -214,7 +214,7 @@ export default function Auth() {
           animation: shake ? "shake 0.5s ease-in-out" : "none",
         }}
       >
-        {/* Premium Header with Glass Effect */}
+        {/* Compact Header */}
         <div style={styles.header}>
           <div style={styles.logoContainer}>
             <div style={styles.logoWrapper}>
@@ -223,28 +223,18 @@ export default function Auth() {
             </div>
             <div style={styles.logoTextContainer}>
               <h1 style={styles.logo}>Survey<span style={styles.logoAccent}>Earn</span></h1>
-              <p style={styles.tagline}>Turn your opinions into cash</p>
             </div>
           </div>
 
-          {/* Trust Indicators */}
+          {/* Compact Trust Indicators */}
           <div style={styles.trustIndicators}>
-            <div style={styles.trustBadge}>
-              <span style={styles.trustBadgeIcon}>✓</span>
-              <span>10k+ Happy Users</span>
-            </div>
-            <div style={styles.trustBadge}>
-              <span style={styles.trustBadgeIcon}>⭐</span>
-              <span>4.8 Rating</span>
-            </div>
-            <div style={styles.trustBadge}>
-              <span style={styles.trustBadgeIcon}>🔒</span>
-              <span>Secure</span>
-            </div>
+            <span style={styles.trustBadge}>✓ 10k+</span>
+            <span style={styles.trustBadge}>⭐ 4.8</span>
+            <span style={styles.trustBadge}>🔒 Secure</span>
           </div>
         </div>
 
-        {/* Premium Mode Selector */}
+        {/* Mode Selector - More Compact */}
         <div style={styles.modeSelector}>
           <button
             style={{
@@ -254,7 +244,6 @@ export default function Auth() {
             onClick={() => setMode("login")}
             type="button"
           >
-            <span style={styles.modeButtonIcon}>🔐</span>
             <span>Sign In</span>
           </button>
           <button
@@ -265,146 +254,105 @@ export default function Auth() {
             onClick={() => setMode("register")}
             type="button"
           >
-            <span style={styles.modeButtonIcon}>✨</span>
             <span>Create Account</span>
           </button>
         </div>
 
-        {/* Form Section */}
+        {/* Form Section - More Compact */}
         {mode === "register" ? (
           <form onSubmit={handleRegister} key="register" style={styles.form}>
             <div style={styles.formGrid}>
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Full Name</label>
+              <Input
+                placeholder="Full Name"
+                value={regData.full_name}
+                onChange={(e) =>
+                  setRegData(prev => ({ ...prev, full_name: e.target.value }))
+                }
+                icon="👤"
+                error={errors.full_name}
+                required
+              />
+              {errors.full_name && <span style={styles.errorText}>{errors.full_name}</span>}
+
+              <Input
+                placeholder="Phone Number"
+                type="tel"
+                value={regData.phone}
+                onChange={(e) =>
+                  setRegData(prev => ({ ...prev, phone: e.target.value }))
+                }
+                icon="📱"
+                error={errors.phone}
+                required
+              />
+              {errors.phone && <span style={styles.errorText}>{errors.phone}</span>}
+
+              <Input
+                type="email"
+                placeholder="Email (optional)"
+                value={regData.email}
+                onChange={(e) =>
+                  setRegData(prev => ({ ...prev, email: e.target.value }))
+                }
+                icon="✉️"
+                error={errors.email}
+              />
+              {errors.email && <span style={styles.errorText}>{errors.email}</span>}
+
+              <div style={styles.passwordContainer}>
                 <Input
-                  placeholder="Enter your full name"
-                  value={regData.full_name}
+                  placeholder="Password"
+                  type={showRegPassword ? "text" : "password"}
+                  value={regData.password}
                   onChange={(e) =>
-                    setRegData(prev => ({ ...prev, full_name: e.target.value }))
+                    setRegData(prev => ({ ...prev, password: e.target.value }))
                   }
-                  icon="👤"
-                  error={errors.full_name}
+                  icon="🔒"
+                  error={errors.password}
                   required
                 />
-                {errors.full_name && <span style={styles.errorText}>{errors.full_name}</span>}
+                <button
+                  type="button"
+                  style={styles.passwordToggle}
+                  onClick={() => setShowRegPassword(!showRegPassword)}
+                >
+                  {showRegPassword ? "🙈" : "👁️"}
+                </button>
               </div>
+              {errors.password && <span style={styles.errorText}>{errors.password}</span>}
 
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Phone Number</label>
+              <div style={styles.passwordContainer}>
                 <Input
-                  placeholder="07XX XXX XXX"
-                  type="tel"
-                  value={regData.phone}
+                  placeholder="Confirm Password"
+                  type={showRegConfirm ? "text" : "password"}
+                  value={regData.confirmPassword}
                   onChange={(e) =>
-                    setRegData(prev => ({ ...prev, phone: e.target.value }))
+                    setRegData(prev => ({ ...prev, confirmPassword: e.target.value }))
                   }
-                  icon="📱"
-                  error={errors.phone}
+                  icon="✅"
+                  error={errors.confirmPassword}
                   required
                 />
-                {errors.phone && <span style={styles.errorText}>{errors.phone}</span>}
+                <button
+                  type="button"
+                  style={styles.passwordToggle}
+                  onClick={() => setShowRegConfirm(!showRegConfirm)}
+                >
+                  {showRegConfirm ? "🙈" : "👁️"}
+                </button>
               </div>
+              {errors.confirmPassword && <span style={styles.errorText}>{errors.confirmPassword}</span>}
 
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Email (Optional)</label>
-                <Input
-                  type="email"
-                  placeholder="you@example.com"
-                  value={regData.email}
-                  onChange={(e) =>
-                    setRegData(prev => ({ ...prev, email: e.target.value }))
-                  }
-                  icon="✉️"
-                  error={errors.email}
-                />
-                {errors.email && <span style={styles.errorText}>{errors.email}</span>}
-              </div>
-
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Password</label>
-                <div style={styles.passwordContainer}>
-                  <Input
-                    placeholder="Create a strong password"
-                    type={showRegPassword ? "text" : "password"}
-                    value={regData.password}
-                    onChange={(e) =>
-                      setRegData(prev => ({ ...prev, password: e.target.value }))
-                    }
-                    icon="🔒"
-                    error={errors.password}
-                    required
-                  />
-                  <button
-                    type="button"
-                    style={styles.passwordToggle}
-                    onClick={() => setShowRegPassword(!showRegPassword)}
-                  >
-                    {showRegPassword ? "🙈" : "👁️"}
-                  </button>
-                </div>
-                {errors.password && <span style={styles.errorText}>{errors.password}</span>}
-              </div>
-
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Confirm Password</label>
-                <div style={styles.passwordContainer}>
-                  <Input
-                    placeholder="Re-enter your password"
-                    type={showRegConfirm ? "text" : "password"}
-                    value={regData.confirmPassword}
-                    onChange={(e) =>
-                      setRegData(prev => ({ ...prev, confirmPassword: e.target.value }))
-                    }
-                    icon="✅"
-                    error={errors.confirmPassword}
-                    required
-                  />
-                  <button
-                    type="button"
-                    style={styles.passwordToggle}
-                    onClick={() => setShowRegConfirm(!showRegConfirm)}
-                  >
-                    {showRegConfirm ? "🙈" : "👁️"}
-                  </button>
-                </div>
-                {errors.confirmPassword && <span style={styles.errorText}>{errors.confirmPassword}</span>}
-              </div>
-
-              {/* Referral Code - Premium Display */}
+              {/* Referral Code - Compact */}
               {referralCodeFromUrl && (
                 <div style={styles.referralBadge}>
                   <span style={styles.referralIcon}>🎁</span>
-                  <div style={styles.referralContent}>
-                    <span style={styles.referralLabel}>Referral Applied</span>
-                    <span style={styles.referralCode}>{referralCodeFromUrl}</span>
-                  </div>
+                  <span style={styles.referralCode}>{referralCodeFromUrl}</span>
                 </div>
               )}
             </div>
 
-            {/* Auto-accepted Terms - Display only, no checkbox */}
-            <div style={styles.termsNotice}>
-              <span style={styles.termsNoticeIcon}>✓</span>
-              <span style={styles.termsNoticeText}>
-                By creating an account, you automatically agree to our{" "}
-                <button
-                  type="button"
-                  style={styles.termsLink}
-                  onClick={() => navigate("/terms")}
-                >
-                  Terms of Service
-                </button>
-                {" and "}
-                <button
-                  type="button"
-                  style={styles.termsLink}
-                  onClick={() => navigate("/privacy")}
-                >
-                  Privacy Policy
-                </button>
-              </span>
-            </div>
-
+            {/* Create Account Button - Moved UP */}
             <button
               style={styles.primaryButtonRegister}
               type="submit"
@@ -414,7 +362,7 @@ export default function Auth() {
                 <div style={styles.loadingSpinner}></div>
               ) : (
                 <>
-                  <span style={styles.buttonIcon}>🚀</span>
+                  <span>🚀</span>
                   Create Free Account
                 </>
               )}
@@ -428,6 +376,29 @@ export default function Auth() {
                 {regMessage}
               </div>
             )}
+
+            {/* Terms - Moved DOWN below buttons */}
+            <div style={styles.termsNotice}>
+              <span style={styles.termsNoticeIcon}>✓</span>
+              <span style={styles.termsNoticeText}>
+                By creating an account, you agree to our{" "}
+                <button
+                  type="button"
+                  style={styles.termsLink}
+                  onClick={() => navigate("/terms")}
+                >
+                  Terms
+                </button>
+                {" & "}
+                <button
+                  type="button"
+                  style={styles.termsLink}
+                  onClick={() => navigate("/privacy")}
+                >
+                  Privacy
+                </button>
+              </span>
+            </div>
 
             <p style={styles.switchText}>
               Already have an account?{" "}
@@ -443,41 +414,35 @@ export default function Auth() {
         ) : (
           <form onSubmit={handleLogin} key="login" style={styles.form}>
             <div style={styles.formGrid}>
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Phone Number</label>
+              <Input
+                placeholder="Phone Number"
+                type="tel"
+                value={loginData.phone}
+                onChange={(e) =>
+                  setLoginData(prev => ({ ...prev, phone: e.target.value }))
+                }
+                icon="📱"
+                required
+              />
+
+              <div style={styles.passwordContainer}>
                 <Input
-                  placeholder="Enter your phone number"
-                  type="tel"
-                  value={loginData.phone}
+                  placeholder="Password"
+                  type={showLoginPassword ? "text" : "password"}
+                  value={loginData.password}
                   onChange={(e) =>
-                    setLoginData(prev => ({ ...prev, phone: e.target.value }))
+                    setLoginData(prev => ({ ...prev, password: e.target.value }))
                   }
-                  icon="📱"
+                  icon="🔒"
                   required
                 />
-              </div>
-
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Password</label>
-                <div style={styles.passwordContainer}>
-                  <Input
-                    placeholder="Enter your password"
-                    type={showLoginPassword ? "text" : "password"}
-                    value={loginData.password}
-                    onChange={(e) =>
-                      setLoginData(prev => ({ ...prev, password: e.target.value }))
-                    }
-                    icon="🔒"
-                    required
-                  />
-                  <button
-                    type="button"
-                    style={styles.passwordToggle}
-                    onClick={() => setShowLoginPassword(!showLoginPassword)}
-                  >
-                    {showLoginPassword ? "🙈" : "👁️"}
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  style={styles.passwordToggle}
+                  onClick={() => setShowLoginPassword(!showLoginPassword)}
+                >
+                  {showLoginPassword ? "🙈" : "👁️"}
+                </button>
               </div>
             </div>
 
@@ -487,6 +452,7 @@ export default function Auth() {
               </button>
             </div>
 
+            {/* Sign In Button - Moved UP */}
             <button
               style={styles.primaryButtonLogin}
               type="submit"
@@ -496,7 +462,7 @@ export default function Auth() {
                 <div style={styles.loadingSpinner}></div>
               ) : (
                 <>
-                  <span style={styles.buttonIcon}>🔐</span>
+                  <span>🔐</span>
                   Sign In
                 </>
               )}
@@ -524,44 +490,7 @@ export default function Auth() {
           </form>
         )}
 
-        {/* Premium Features Section */}
-        <div style={styles.featuresSection}>
-          <div style={styles.feature}>
-            <div style={styles.featureIconWrapper}>
-              <span style={styles.featureIcon}>💰</span>
-            </div>
-            <div style={styles.featureContent}>
-              <span style={styles.featureTitle}>Instant Cashout</span>
-              <span style={styles.featureDesc}>Withdraw earnings instantly</span>
-            </div>
-          </div>
-
-          <div style={styles.featureDivider}></div>
-
-          <div style={styles.feature}>
-            <div style={styles.featureIconWrapper}>
-              <span style={styles.featureIcon}>⚡</span>
-            </div>
-            <div style={styles.featureContent}>
-              <span style={styles.featureTitle}>Quick Surveys</span>
-              <span style={styles.featureDesc}>5-10 minutes each</span>
-            </div>
-          </div>
-
-          <div style={styles.featureDivider}></div>
-
-          <div style={styles.feature}>
-            <div style={styles.featureIconWrapper}>
-              <span style={styles.featureIcon}>🔒</span>
-            </div>
-            <div style={styles.featureContent}>
-              <span style={styles.featureTitle}>Bank-Level Security</span>
-              <span style={styles.featureDesc}>Your data is safe</span>
-            </div>
-          </div>
-        </div>
-
-        {/* WhatsApp Support - Premium */}
+        {/* WhatsApp Support - Moved UP, more compact */}
         <div style={styles.supportSection}>
           <button
             style={styles.supportButton}
@@ -574,16 +503,31 @@ export default function Auth() {
             }}
           >
             <span style={styles.supportIcon}>💬</span>
-            <div style={styles.supportContent}>
-              <span style={styles.supportTitle}>Need Help?</span>
-              <span style={styles.supportText}>Chat with our support team</span>
-            </div>
+            <span style={styles.supportText}>Chat with us</span>
           </button>
+        </div>
+
+        {/* Features - Hidden on mobile to save space, shown on larger screens */}
+        <div style={styles.featuresSection}>
+          <div style={styles.feature}>
+            <span style={styles.featureIcon}>💰</span>
+            <span style={styles.featureText}>Instant Cashout</span>
+          </div>
+          <div style={styles.featureDivider}></div>
+          <div style={styles.feature}>
+            <span style={styles.featureIcon}>⚡</span>
+            <span style={styles.featureText}>Quick Surveys</span>
+          </div>
+          <div style={styles.featureDivider}></div>
+          <div style={styles.feature}>
+            <span style={styles.featureIcon}>🔒</span>
+            <span style={styles.featureText}>Secure</span>
+          </div>
         </div>
 
         {/* Footer */}
         <div style={styles.footer}>
-          <p style={styles.copyright}>© 2024 SurveyEarn. All rights reserved.</p>
+          <p style={styles.copyright}>© 2024 SurveyEarn</p>
         </div>
       </div>
 
@@ -634,13 +578,19 @@ export default function Auth() {
           button:active {
             transform: translateY(0px);
           }
+
+          @media (max-width: 480px) {
+            .features-section {
+              display: none !important;
+            }
+          }
         `}
       </style>
     </div>
   );
 }
 
-// Professional Styles
+// Compact Styles - Optimized for Mobile
 const styles = {
   page: {
     minHeight: "100vh",
@@ -652,87 +602,87 @@ const styles = {
     animation: "gradient 15s ease infinite",
     fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
     position: "relative",
-    padding: "20px",
+    padding: "10px",
     boxSizing: "border-box",
   },
   backgroundBlur1: {
-    position: "absolute",
-    width: "300px",
-    height: "300px",
-    background: "rgba(255, 255, 255, 0.1)",
-    borderRadius: "50%",
-    top: "-100px",
-    right: "-100px",
-    filter: "blur(100px)",
-    animation: "float 8s ease-in-out infinite",
-  },
-  backgroundBlur2: {
-    position: "absolute",
-    width: "400px",
-    height: "400px",
-    background: "rgba(255, 255, 255, 0.1)",
-    borderRadius: "50%",
-    bottom: "-150px",
-    left: "-150px",
-    filter: "blur(120px)",
-    animation: "float 10s ease-in-out infinite reverse",
-  },
-  backgroundBlur3: {
     position: "absolute",
     width: "200px",
     height: "200px",
     background: "rgba(255, 255, 255, 0.1)",
     borderRadius: "50%",
+    top: "-50px",
+    right: "-50px",
+    filter: "blur(60px)",
+    animation: "float 8s ease-in-out infinite",
+  },
+  backgroundBlur2: {
+    position: "absolute",
+    width: "250px",
+    height: "250px",
+    background: "rgba(255, 255, 255, 0.1)",
+    borderRadius: "50%",
+    bottom: "-80px",
+    left: "-80px",
+    filter: "blur(70px)",
+    animation: "float 10s ease-in-out infinite reverse",
+  },
+  backgroundBlur3: {
+    position: "absolute",
+    width: "150px",
+    height: "150px",
+    background: "rgba(255, 255, 255, 0.1)",
+    borderRadius: "50%",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    filter: "blur(80px)",
+    filter: "blur(50px)",
     animation: "pulse 4s ease-in-out infinite",
   },
   card: {
-    maxWidth: "520px",
+    maxWidth: "400px",
     width: "100%",
-    background: "rgba(255, 255, 255, 0.95)",
+    background: "rgba(255, 255, 255, 0.98)",
     backdropFilter: "blur(20px)",
-    borderRadius: "32px",
-    padding: "32px",
-    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+    borderRadius: "24px",
+    padding: "20px 16px",
+    boxShadow: "0 20px 40px -12px rgba(0, 0, 0, 0.3)",
     border: "1px solid rgba(255, 255, 255, 0.3)",
     position: "relative",
     zIndex: 1,
-    animation: "fadeIn 0.5s ease-out",
+    maxHeight: "95vh",
+    overflowY: "auto",
   },
   header: {
-    marginBottom: "24px",
+    marginBottom: "12px",
   },
   logoContainer: {
     display: "flex",
     alignItems: "center",
-    gap: "16px",
-    marginBottom: "20px",
+    gap: "10px",
+    marginBottom: "8px",
   },
   logoWrapper: {
     position: "relative",
-    width: "56px",
-    height: "56px",
+    width: "40px",
+    height: "40px",
   },
   logoGlow: {
     position: "absolute",
     width: "100%",
     height: "100%",
     background: "linear-gradient(135deg, #667eea, #764ba2)",
-    borderRadius: "16px",
-    filter: "blur(12px)",
+    borderRadius: "12px",
+    filter: "blur(8px)",
     opacity: 0.6,
-    animation: "pulse 3s ease-in-out infinite",
   },
   logoIcon: {
     position: "relative",
-    fontSize: "28px",
+    fontSize: "20px",
     background: "linear-gradient(135deg, #667eea, #764ba2)",
-    padding: "12px",
-    borderRadius: "16px",
-    boxShadow: "0 10px 20px -5px rgba(102, 126, 234, 0.4)",
+    padding: "8px",
+    borderRadius: "12px",
+    boxShadow: "0 8px 16px -4px rgba(102, 126, 234, 0.4)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -742,7 +692,7 @@ const styles = {
     flex: 1,
   },
   logo: {
-    fontSize: "28px",
+    fontSize: "22px",
     fontWeight: "800",
     margin: 0,
     color: "#1e293b",
@@ -754,107 +704,78 @@ const styles = {
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
   },
-  tagline: {
-    color: "#64748b",
-    fontSize: "13px",
-    fontWeight: "500",
-    marginTop: "4px",
-  },
   trustIndicators: {
     display: "flex",
-    gap: "16px",
-    padding: "12px 0",
-    borderTop: "1px solid rgba(0, 0, 0, 0.05)",
-    borderBottom: "1px solid rgba(0, 0, 0, 0.05)",
-  },
-  trustBadge: {
-    display: "flex",
-    alignItems: "center",
-    gap: "6px",
-    fontSize: "12px",
+    gap: "12px",
+    fontSize: "11px",
     fontWeight: "600",
     color: "#475569",
   },
-  trustBadgeIcon: {
-    color: "#10b981",
-    fontSize: "12px",
+  trustBadge: {
+    background: "rgba(255,255,255,0.8)",
+    padding: "4px 8px",
+    borderRadius: "20px",
+    boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
   },
   modeSelector: {
     display: "flex",
     background: "#f1f5f9",
-    borderRadius: "16px",
-    padding: "4px",
-    marginBottom: "28px",
-    gap: "4px",
+    borderRadius: "30px",
+    padding: "3px",
+    marginBottom: "16px",
+    gap: "3px",
   },
   modeButton: {
     flex: 1,
-    padding: "14px 8px",
+    padding: "10px 6px",
     border: "none",
     background: "transparent",
-    borderRadius: "12px",
-    fontSize: "14px",
+    borderRadius: "27px",
+    fontSize: "13px",
     fontWeight: "600",
     color: "#64748b",
     cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "8px",
-  },
-  modeButtonIcon: {
-    fontSize: "16px",
+    transition: "all 0.2s ease",
   },
   modeButtonActiveLogin: {
     background: "#ffffff",
     color: "#667eea",
-    boxShadow: "0 4px 10px -2px rgba(102, 126, 234, 0.2)",
+    boxShadow: "0 4px 8px -2px rgba(102, 126, 234, 0.2)",
   },
   modeButtonActiveRegister: {
     background: "#ffffff",
     color: "#764ba2",
-    boxShadow: "0 4px 10px -2px rgba(118, 75, 162, 0.2)",
+    boxShadow: "0 4px 8px -2px rgba(118, 75, 162, 0.2)",
   },
   form: {
     display: "flex",
     flexDirection: "column",
-    gap: "20px",
+    gap: "8px",
   },
   formGrid: {
     display: "flex",
     flexDirection: "column",
-    gap: "16px",
-  },
-  formGroup: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "4px",
-  },
-  label: {
-    fontSize: "13px",
-    fontWeight: "600",
-    color: "#334155",
-    marginLeft: "4px",
+    gap: "6px",
   },
   inputContainer: {
     position: "relative",
   },
   inputIcon: {
     position: "absolute",
-    left: "16px",
+    left: "12px",
     top: "50%",
     transform: "translateY(-50%)",
-    fontSize: "16px",
+    fontSize: "14px",
     color: "#94a3b8",
     zIndex: 1,
   },
   input: {
     width: "100%",
-    padding: "14px 14px 14px 48px",
-    borderRadius: "14px",
+    padding: "12px 12px 12px 40px",
+    borderRadius: "30px",
     border: "2px solid #e2e8f0",
     background: "#ffffff",
-    fontSize: "14px",
+    fontSize: "13px",
     fontWeight: "500",
     color: "#1e293b",
     outline: "none",
@@ -866,138 +787,95 @@ const styles = {
   },
   passwordToggle: {
     position: "absolute",
-    right: "12px",
+    right: "10px",
     top: "50%",
     transform: "translateY(-50%)",
     background: "none",
     border: "none",
-    fontSize: "18px",
+    fontSize: "16px",
     cursor: "pointer",
     color: "#64748b",
-    padding: "8px",
-    borderRadius: "8px",
+    padding: "6px",
+    borderRadius: "6px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     zIndex: 1,
   },
   errorText: {
-    fontSize: "11px",
+    fontSize: "10px",
     color: "#ef4444",
     fontWeight: "500",
-    marginLeft: "4px",
+    marginLeft: "8px",
+    marginTop: "-2px",
   },
   referralBadge: {
     display: "flex",
     alignItems: "center",
-    gap: "12px",
-    padding: "16px",
+    gap: "8px",
+    padding: "8px 12px",
     background: "linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1))",
-    borderRadius: "14px",
+    borderRadius: "30px",
     border: "1px solid rgba(16, 185, 129, 0.3)",
   },
   referralIcon: {
-    fontSize: "24px",
-  },
-  referralContent: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "2px",
-  },
-  referralLabel: {
-    fontSize: "11px",
-    color: "#10b981",
-    fontWeight: "600",
-    textTransform: "uppercase",
-    letterSpacing: "0.5px",
+    fontSize: "16px",
   },
   referralCode: {
-    fontSize: "14px",
+    fontSize: "12px",
     color: "#065f46",
     fontWeight: "700",
     fontFamily: "monospace",
   },
-  termsNotice: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    padding: "12px",
-    background: "rgba(99, 102, 241, 0.05)",
-    borderRadius: "12px",
-    border: "1px solid rgba(99, 102, 241, 0.1)",
-    marginTop: "8px",
-  },
-  termsNoticeIcon: {
-    color: "#10b981",
-    fontSize: "14px",
-    fontWeight: "bold",
-  },
-  termsNoticeText: {
-    fontSize: "12px",
-    color: "#475569",
-    fontWeight: "500",
-    lineHeight: "1.4",
-  },
-  termsLink: {
-    background: "none",
-    border: "none",
-    color: "#667eea",
-    fontSize: "12px",
-    fontWeight: "600",
-    cursor: "pointer",
-    padding: "0 2px",
-    textDecoration: "underline",
-  },
   primaryButtonLogin: {
     width: "100%",
-    padding: "16px",
-    borderRadius: "14px",
+    padding: "14px",
+    borderRadius: "30px",
     border: "none",
     background: "linear-gradient(135deg, #667eea, #764ba2)",
     color: "white",
-    fontSize: "15px",
+    fontSize: "14px",
     fontWeight: "700",
     cursor: "pointer",
-    boxShadow: "0 10px 20px -5px rgba(102, 126, 234, 0.4)",
+    boxShadow: "0 8px 16px -4px rgba(102, 126, 234, 0.4)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "8px",
+    gap: "6px",
     transition: "all 0.3s ease",
+    marginTop: "4px",
   },
   primaryButtonRegister: {
     width: "100%",
-    padding: "16px",
-    borderRadius: "14px",
+    padding: "14px",
+    borderRadius: "30px",
     border: "none",
     background: "linear-gradient(135deg, #764ba2, #667eea)",
     color: "white",
-    fontSize: "15px",
+    fontSize: "14px",
     fontWeight: "700",
     cursor: "pointer",
-    boxShadow: "0 10px 20px -5px rgba(118, 75, 162, 0.4)",
+    boxShadow: "0 8px 16px -4px rgba(118, 75, 162, 0.4)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "8px",
+    gap: "6px",
     transition: "all 0.3s ease",
-  },
-  buttonIcon: {
-    fontSize: "18px",
+    marginTop: "4px",
   },
   loadingSpinner: {
-    width: "20px",
-    height: "20px",
+    width: "16px",
+    height: "16px",
     border: "2px solid rgba(255,255,255,0.3)",
     borderTop: "2px solid white",
     borderRadius: "50%",
     animation: "spin 1s linear infinite",
   },
   message: {
-    padding: "12px",
-    borderRadius: "12px",
+    padding: "8px",
+    borderRadius: "30px",
     textAlign: "center",
-    fontSize: "13px",
+    fontSize: "11px",
     fontWeight: "500",
     background: "#fef2f2",
     color: "#dc2626",
@@ -1010,125 +888,123 @@ const styles = {
   },
   switchText: {
     textAlign: "center",
-    marginTop: "16px",
+    marginTop: "8px",
     color: "#64748b",
-    fontSize: "13px",
+    fontSize: "12px",
     fontWeight: "500",
   },
   switchButton: {
     background: "none",
     border: "none",
     color: "#667eea",
-    fontSize: "13px",
+    fontSize: "12px",
     fontWeight: "700",
     cursor: "pointer",
-    padding: "4px 8px",
-    borderRadius: "6px",
+    padding: "2px 4px",
+    borderRadius: "4px",
   },
   forgotPassword: {
     textAlign: "right",
-    marginBottom: "8px",
+    marginBottom: "4px",
   },
   forgotButton: {
     background: "none",
     border: "none",
     color: "#667eea",
-    fontSize: "12px",
+    fontSize: "11px",
     fontWeight: "600",
     cursor: "pointer",
-    padding: "5px 8px",
-    borderRadius: "6px",
+    padding: "4px 8px",
+  },
+  termsNotice: {
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    padding: "8px",
+    background: "rgba(99, 102, 241, 0.05)",
+    borderRadius: "30px",
+    border: "1px solid rgba(99, 102, 241, 0.1)",
+    marginTop: "8px",
+  },
+  termsNoticeIcon: {
+    color: "#10b981",
+    fontSize: "12px",
+    fontWeight: "bold",
+  },
+  termsNoticeText: {
+    fontSize: "10px",
+    color: "#475569",
+    fontWeight: "500",
+    lineHeight: "1.3",
+  },
+  termsLink: {
+    background: "none",
+    border: "none",
+    color: "#667eea",
+    fontSize: "10px",
+    fontWeight: "600",
+    cursor: "pointer",
+    padding: "0 2px",
+    textDecoration: "underline",
   },
   featuresSection: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: "28px",
-    padding: "20px 0",
-    borderTop: "2px solid rgba(0, 0, 0, 0.05)",
-    borderBottom: "2px solid rgba(0, 0, 0, 0.05)",
+    marginTop: "12px",
+    padding: "8px 0",
   },
   feature: {
     display: "flex",
     alignItems: "center",
-    gap: "8px",
+    gap: "4px",
     flex: 1,
-  },
-  featureIconWrapper: {
-    width: "36px",
-    height: "36px",
-    background: "linear-gradient(135deg, #667eea, #764ba2)",
-    borderRadius: "10px",
-    display: "flex",
-    alignItems: "center",
     justifyContent: "center",
   },
   featureIcon: {
-    fontSize: "18px",
-    color: "white",
+    fontSize: "14px",
   },
-  featureContent: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "2px",
-  },
-  featureTitle: {
-    fontSize: "11px",
-    fontWeight: "700",
-    color: "#1e293b",
-  },
-  featureDesc: {
+  featureText: {
     fontSize: "9px",
-    color: "#64748b",
-    fontWeight: "500",
+    fontWeight: "600",
+    color: "#475569",
   },
   featureDivider: {
     width: "1px",
-    height: "30px",
+    height: "20px",
     background: "rgba(0, 0, 0, 0.1)",
-    margin: "0 8px",
   },
   supportSection: {
-    marginTop: "24px",
+    marginTop: "8px",
   },
   supportButton: {
     width: "100%",
     background: "linear-gradient(135deg, #25D366, #128C7E)",
     border: "none",
-    borderRadius: "16px",
-    padding: "16px",
+    borderRadius: "30px",
+    padding: "10px",
     display: "flex",
     alignItems: "center",
-    gap: "12px",
+    justifyContent: "center",
+    gap: "8px",
     cursor: "pointer",
-    boxShadow: "0 10px 20px -5px rgba(37, 211, 102, 0.3)",
+    boxShadow: "0 8px 16px -4px rgba(37, 211, 102, 0.3)",
   },
   supportIcon: {
-    fontSize: "24px",
+    fontSize: "16px",
     color: "white",
-  },
-  supportContent: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
-    gap: "2px",
-  },
-  supportTitle: {
-    color: "white",
-    fontSize: "14px",
-    fontWeight: "700",
   },
   supportText: {
-    color: "rgba(255, 255, 255, 0.9)",
-    fontSize: "11px",
-    fontWeight: "500",
+    color: "white",
+    fontSize: "12px",
+    fontWeight: "600",
   },
   footer: {
-    marginTop: "20px",
+    marginTop: "8px",
     textAlign: "center",
   },
   copyright: {
-    fontSize: "10px",
+    fontSize: "9px",
     color: "#94a3b8",
     fontWeight: "500",
   },

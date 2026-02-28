@@ -127,15 +127,6 @@
   background: linear-gradient(135deg, #1a3a5c 0%, #0f2744 100%) !important;
 }
 
-/* Light mode hero section */
-.hero-section {
-  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 50%, #93c5fd 100%) !important;
-  margin-top: 90px;
-  padding: 24px;
-  border-radius: 16px;
-  margin-bottom: 20px;
-}
-
 /* =========================================================
    ANIMATIONS
    ========================================================= */
@@ -405,7 +396,7 @@ body {
    HEADER - MODERN & CLEAN
    ========================================================= */
 .dashboard-main-header {
-  background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%);
+  background: var(--gradient-hero);
   padding: var(--space-md) var(--space-lg);
   position: fixed;
   top: 0;
@@ -413,7 +404,7 @@ body {
   right: 0;
   width: 100%;
   z-index: 1000;
-  box-shadow: 0 4px 20px rgba(30, 64, 175, 0.4);
+  box-shadow: var(--shadow-lg);
 }
 
 .dashboard-main-header::before {
@@ -423,7 +414,7 @@ body {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6, #fbbf24);
+  background: linear-gradient(90deg, #4299e1, #9f7aea, #ed64a6, #f6ad55);
 }
 
 .dashboard-main-header::after {
@@ -433,7 +424,7 @@ body {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
 }
 
 .header-title-container {
@@ -569,7 +560,7 @@ body {
 }
 
 /* =========================================================
-   PLAN CARDS - VIBRANT & PROFESSIONAL
+   PLAN CARDS
    ========================================================= */
 .plan-card {
   background: var(--bg-surface);
@@ -588,7 +579,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 6px;
+  height: 5px;
   background: var(--plan-gradient, var(--gradient-primary));
 }
 
@@ -597,9 +588,9 @@ body {
   position: absolute;
   top: 0;
   right: 0;
-  width: 120px;
-  height: 120px;
-  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
   transform: translate(30%, -30%);
 }
 
@@ -609,31 +600,16 @@ body {
   border-color: var(--primary-light);
 }
 
-/* Plan Card Colors - VIBRANT */
 .plan-card.regular {
-  --plan-gradient: linear-gradient(135deg, #0284c7, #0ea5e9);
-  border-color: #7dd3fc;
+  --plan-gradient: linear-gradient(135deg, #2563eb, #3b82f6);
 }
 
 .plan-card.vip {
-  --plan-gradient: linear-gradient(135deg, #6d28d9, #8b5cf6);
-  border-color: #c4b5fd;
+  --plan-gradient: linear-gradient(135deg, #7c3aed, #8b5cf6);
 }
 
 .plan-card.vvip {
-  --plan-gradient: linear-gradient(135deg, #c2410c, #f97316);
-  border-color: #fdba74;
-}
-
-/* Dark mode plan cards */
-[data-theme="dark"] .plan-card.regular {
-  border-color: #0c4a6e;
-}
-[data-theme="dark"] .plan-card.vip {
-  border-color: #4c1d95;
-}
-[data-theme="dark"] .plan-card.vvip {
-  border-color: #7c2d12;
+  --plan-gradient: linear-gradient(135deg, #ea580c, #f59e0b);
 }
 
 /* Plan Status Badge */
@@ -1011,15 +987,15 @@ body {
    WELCOME BONUS CARD - PREMIUM DESIGN
    ========================================================= */
 .welcome-bonus {
-  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%) !important;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%) !important;
   border: 3px solid #fbbf24 !important;
-  border-radius: 20px !important;
-  padding: 20px 24px !important;
+  border-radius: 12px !important;
+  padding: 10px 14px !important;
   color: white !important;
   position: relative;
   overflow: hidden;
-  margin-bottom: 20px;
-  box-shadow: 0 10px 40px rgba(37, 99, 235, 0.5), 0 0 0 1px rgba(251, 191, 36, 0.3), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+  margin-bottom: 12px;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4), 0 0 0 1px rgba(251, 191, 36, 0.3) !important;
 }
 
 /* Animated shine */
@@ -1033,45 +1009,38 @@ body {
   background: linear-gradient(
     45deg,
     transparent 30%,
-    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.3) 50%,
     transparent 70%
   );
   pointer-events: none;
-  animation: shimmer 2.5s ease-in-out infinite;
+  animation: shimmer 1.5s ease-in-out infinite;
 }
 
 /* Sparkle dots */
 .welcome-bonus::after {
-  content: '✦ ✦ ✦';
+  content: '✦ ✦';
   position: absolute;
-  top: 10px;
-  right: 16px;
+  top: 4px;
+  right: 8px;
   color: #fbbf24;
-  font-size: 14px;
-  letter-spacing: 6px;
-  animation: float 1s ease-in-out infinite;
-  text-shadow: 0 0 10px #fbbf24;
+  font-size: 10px;
+  letter-spacing: 3px;
 }
 
 /* Floating gift animation */
 .welcome-bonus .gift-icon {
-  animation: bounce 1s ease-in-out infinite;
+  animation: bounce 0.8s ease-in-out infinite;
 }
 
 @keyframes bounce {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+  50% { transform: translateY(-3px); }
 }
 
-/* Dark mode bonus card - MORE VISIBLE */
+/* Dark mode bonus card */
 [data-theme="dark"] .welcome-bonus {
-  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #2563eb 100%) !important;
-  box-shadow: 0 10px 40px rgba(37, 99, 235, 0.6), 0 0 0 1px rgba(251, 191, 36, 0.4), inset 0 1px 0 rgba(255,255,255,0.15) !important;
-  border-color: #fbbf24 !important;
-}
-
-[data-theme="dark"] .welcome-bonus::after {
-  text-shadow: 0 0 15px #fbbf24, 0 0 30px #fbbf24;
+  background: linear-gradient(135deg, #172554 0%, #1e3a8a 100%) !important;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3), 0 0 0 1px rgba(251, 191, 36, 0.2) !important;
 }
 
 .plan-card-header {
@@ -1242,69 +1211,15 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
+  height: 3px;
 }
 
-/* Card color variations - VIBRANT & VISIBLE */
-.stats-card.total-earnings::before { 
-  background: linear-gradient(90deg, #f59e0b, #fbbf24); 
-}
-.stats-card.available-balance::before { 
-  background: linear-gradient(90deg, #0ea5e9, #38bdf8); 
-}
-.stats-card.affiliate-balance::before { 
-  background: linear-gradient(90deg, #10b981, #34d399); 
-}
-.stats-card.surveys-completed::before { 
-  background: linear-gradient(90deg, #6366f1, #818cf8); 
-}
-.stats-card.success-rate::before { 
-  background: linear-gradient(90deg, #8b5cf6, #a78bfa); 
-}
-
-/* Add colored backgrounds for light mode */
-.stats-card.total-earnings {
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-  border-color: #fcd34d;
-}
-.stats-card.available-balance {
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border-color: #7dd3fc;
-}
-.stats-card.affiliate-balance {
-  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-  border-color: #6ee7b7;
-}
-.stats-card.surveys-completed {
-  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
-  border-color: #a5b4fc;
-}
-.stats-card.success-rate {
-  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
-  border-color: #c4b5fd;
-}
-
-/* Dark mode backgrounds */
-[data-theme="dark"] .stats-card.total-earnings {
-  background: linear-gradient(135deg, #451a03 0%, #78350f 100%);
-  border-color: #92400e;
-}
-[data-theme="dark"] .stats-card.available-balance {
-  background: linear-gradient(135deg, #082f49 0%, #0c4a6e 100%);
-  border-color: #0369a1;
-}
-[data-theme="dark"] .stats-card.affiliate-balance {
-  background: linear-gradient(135deg, #022c22 0%, #064e3b 100%);
-  border-color: #047857;
-}
-[data-theme="dark"] .stats-card.surveys-completed {
-  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
-  border-color: #4338ca;
-}
-[data-theme="dark"] .stats-card.success-rate {
-  background: linear-gradient(135deg, #2e1065 0%, #4c1d95 100%);
-  border-color: #7c3aed;
-}
+/* Card color variations */
+.stats-card.total-earnings::before { background: var(--warning); }
+.stats-card.available-balance::before { background: var(--info); }
+.stats-card.affiliate-balance::before { background: var(--success); }
+.stats-card.surveys-completed::before { background: var(--primary); }
+.stats-card.success-rate::before { background: var(--purple); }
 
 /* Hover effects */
 .stats-card:hover {
@@ -1320,21 +1235,16 @@ body {
 }
 
 .stats-icon {
-  font-size: 28px;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  font-size: 24px;
 }
 
 .stats-card-header h4 {
-  font-size: 11px;
-  font-weight: 700;
-  color: #4b5563;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin: 0;
-}
-
-[data-theme="dark"] .stats-card-header h4 {
-  color: #9ca3af;
 }
 
 .stats-card-body {
@@ -1343,27 +1253,16 @@ body {
 }
 
 .stats-value {
-  font-size: 24px;
-  font-weight: 900;
-  color: #111827;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
   line-height: 1.2;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-
-[data-theme="dark"] .stats-value {
-  color: #f9fafb;
-  text-shadow: none;
 }
 
 .stats-label {
   font-size: 11px;
-  color: #6b7280;
+  color: var(--text-muted);
   margin-top: 2px;
-  font-weight: 500;
-}
-
-[data-theme="dark"] .stats-label {
-  color: #9ca3af;
 }
 
 /* Withdraw button */
@@ -1387,7 +1286,7 @@ body {
 }
 
 /* =========================================================
-   PLAN PROGRESS CARDS - VIBRANT
+   PLAN PROGRESS CARDS
    ========================================================= */
 .progress-cards {
   display: flex;
@@ -1408,33 +1307,10 @@ body {
   transform: translateY(-2px);
 }
 
-/* Plan-specific backgrounds - VIBRANT */
-.progress-card.REGULAR { 
-  border-left: 5px solid #0ea5e9;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-}
-.progress-card.VIP { 
-  border-left: 5px solid #8b5cf6;
-  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
-}
-.progress-card.VVIP { 
-  border-left: 5px solid #f97316;
-  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
-}
-
-/* Dark mode progress cards */
-[data-theme="dark"] .progress-card.REGULAR {
-  background: linear-gradient(135deg, #0c4a6e 0%, #082f49 100%);
-  border-left-color: #38bdf8;
-}
-[data-theme="dark"] .progress-card.VIP {
-  background: linear-gradient(135deg, #4c1d95 0%, #2e1065 100%);
-  border-left-color: #a78bfa;
-}
-[data-theme="dark"] .progress-card.VVIP {
-  background: linear-gradient(135deg, #7c2d12 0%, #431407 100%);
-  border-left-color: #fb923c;
-}
+/* Plan-specific backgrounds */
+.progress-card.REGULAR { border-left: 4px solid var(--plan-regular); }
+.progress-card.VIP { border-left: 4px solid var(--plan-vip); }
+.progress-card.VVIP { border-left: 4px solid var(--plan-vvip); }
 
 .progress-card-header {
   display: flex;
@@ -1444,19 +1320,11 @@ body {
 }
 
 .progress-card-header .plan-icon {
-  font-size: 28px;
-  width: 40px;
-  height: 40px;
-  background: rgba(255,255,255,0.5);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 24px;
+  width: 36px;
+  height: 36px;
+  background: transparent;
   border: none;
-}
-
-[data-theme="dark"] .progress-card-header .plan-icon {
-  background: rgba(255,255,255,0.1);
 }
 
 .progress-card-header h4 {
