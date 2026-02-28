@@ -46,9 +46,9 @@
   --gradient-purple: linear-gradient(135deg, #805ad5 0%, #6b46c1 100%);
   --gradient-hero: linear-gradient(135deg, #3182ce 0%, #2b6cb0 50%, #2c5282 100%);
   
-  /* Bonus Gradient - Beautiful Green */
-  --bonus-gradient: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #ec4899 100%);
-  --bonus-glow: rgba(139, 92, 246, 0.35);
+  /* Bonus Gradient - Orange */
+  --bonus-gradient: linear-gradient(135deg, #f97316 0%, #fb923c 50%, #fbbf24 100%);
+  --bonus-glow: rgba(249, 115, 22, 0.4);
   
   /* Layout */
   --radius-sm: 6px;
@@ -556,7 +556,7 @@ body {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--primary), var(--vip-color), var(--success));
+  background: linear-gradient(90deg, #f97316, #fb923c, #f59e0b);
 }
 
 /* =========================================================
@@ -601,15 +601,15 @@ body {
 }
 
 .plan-card.regular {
-  --plan-gradient: linear-gradient(135deg, #3182ce, #4299e1);
+  --plan-gradient: linear-gradient(135deg, #f97316, #fb923c);
 }
 
 .plan-card.vip {
-  --plan-gradient: linear-gradient(135deg, #805ad5, #9f7aea);
+  --plan-gradient: linear-gradient(135deg, #8b5cf6, #a78bfa);
 }
 
 .plan-card.vvip {
-  --plan-gradient: linear-gradient(135deg, #d69e2e, #ecc94b);
+  --plan-gradient: linear-gradient(135deg, #f59e0b, #fbbf24);
 }
 
 /* Plan Status Badge */
@@ -783,7 +783,7 @@ body {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #3182ce, #805ad5, #38a169);
+  background: linear-gradient(90deg, #f97316, #fb923c, #fbbf24);
 }
 
 .welcome-card::after {
@@ -965,7 +965,7 @@ body {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #38a169, #10b981, #34d399);
+  background: linear-gradient(90deg, #f97316, #fb923c, #fbbf24);
 }
 
 .live-withdrawal-feed::after {
@@ -987,15 +987,15 @@ body {
    WELCOME BONUS CARD - PREMIUM DESIGN
    ========================================================= */
 .welcome-bonus {
-  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #ec4899 100%) !important;
-  border: 2px solid rgba(255, 255, 255, 0.6) !important;
-  border-radius: 16px !important;
-  padding: 16px !important;
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 50%, #fbbf24 100%) !important;
+  border: 2px solid rgba(255, 255, 255, 0.7) !important;
+  border-radius: 12px !important;
+  padding: 12px 16px !important;
   color: white !important;
   position: relative;
   overflow: hidden;
-  margin-bottom: 16px;
-  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.4) !important;
+  margin-bottom: 12px;
+  box-shadow: 0 6px 24px rgba(249, 115, 22, 0.4) !important;
 }
 
 /* Shine effect overlay */
@@ -1006,9 +1006,9 @@ body {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255,255,255,0.35) 0%, transparent 70%);
   pointer-events: none;
-  animation: shimmer 3s infinite;
+  animation: shimmer 2s infinite;
 }
 
 .welcome-bonus::after {
@@ -1016,21 +1016,21 @@ body {
   position: absolute;
   top: 0;
   right: 0;
-  width: 120px;
-  height: 120px;
-  background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 70%);
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
   transform: translate(30%, -30%);
 }
 
 /* Floating gift animation */
 .welcome-bonus .gift-icon {
-  animation: float 2s ease-in-out infinite;
+  animation: float 1.5s ease-in-out infinite;
 }
 
 /* Dark mode bonus card */
 [data-theme="dark"] .welcome-bonus {
-  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%) !important;
-  box-shadow: 0 8px 32px rgba(124, 58, 237, 0.3) !important;
+  background: linear-gradient(135deg, #c2410c 0%, #ea580c 100%) !important;
+  box-shadow: 0 6px 24px rgba(249, 115, 22, 0.3) !important;
 }
 
 .plan-card-header {

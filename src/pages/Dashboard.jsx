@@ -851,7 +851,7 @@ return (
               }}
             >
               <span style={{ fontSize: '18px' }}>⚡</span>
-              ACTIVATE NOW
+              TAP TO ACTIVATE ACCOUNT
             </button>
           )}
         </div>
