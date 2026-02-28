@@ -107,7 +107,7 @@ const styles = {
   },
   caption: {
     fontSize: "12px",
-    color: "var(--primary)",
+    color: "#e2e8f0",
     fontWeight: 700,
     marginBottom: "8px",
     lineHeight: "1.4",
@@ -605,14 +605,14 @@ export default function Activate() {
             🔓 Account Activation
           </h2>
 
-          {/* COMPACT TOP CAPTION - BOLDED FOR DARK THEME */}
-          <div style={{
+          {/* COMPACT TOP CAPTION - BOLDED FOR BOTH THEMES */}
+          <div className="activate-top-caption" style={{
             marginTop: "4px",
             marginBottom: "16px",
             padding: "16px 12px",
             borderRadius: "14px",
-            background: `linear-gradient(135deg, ${plan.color}15, ${plan.color}05)`,
-            border: `1px solid ${plan.color}30`,
+            background: "#1e293b",
+            border: "1px solid #334155",
             textAlign: "center"
           }}>
             <div style={{
@@ -637,10 +637,10 @@ export default function Activate() {
             <div style={{
               fontSize: "38px",
               fontWeight: 900,
-              color: plan.color,
+              color: "#10b981",
               lineHeight: "1.2",
               marginBottom: "10px",
-              textShadow: `0 4px 12px ${plan.color}50`
+              textShadow: "0 4px 12px rgba(16, 185, 129, 0.5)"
             }}>
               KES {plan.total}
             </div>
@@ -676,60 +676,63 @@ export default function Activate() {
             </div>
           )}
 
-          <div style={styles.section}>
+          {/* HOW TO PAY & ACTIVATE SECTION */}
+          <div className="activate-section-dark" style={styles.section}>
             <p style={{ fontWeight: 800, fontSize: "14px", marginBottom: "8px", color: "#ffffff" }}>
               📲 HOW TO PAY & ACTIVATE
             </p>
 
-            <p style={styles.caption}>
-              ⚠ <strong style={{color: "#ffffff"}}>IMPORTANT:</strong> Pay to this number of the CEO 🚀-0794 101 450- and payments are verified instantly ater payment
+            <p style={{ ...styles.caption, color: "#e2e8f0" }}>
+              ⚠ <strong style={{color: "#ffffff", fontWeight: 800}}>IMPORTANT:</strong> Pay to this number of the CEO 🚀-0794 101 450- and payments are verified instantly ater payment
             </p>
 
             {/* STEP-BY-STEP GUIDE - COMPACT */}
             <div style={{ marginTop: "8px" }}>
-              <div style={styles.stepBox}>
+              <div className="activate-step-box" style={styles.stepBox}>
                 <span style={styles.stepNumber}>1</span>
-                <strong style={{color: "#ffffff"}}>Open M-Pesa</strong>
-                <span style={{ fontSize: "12px", marginLeft: "4px", color: "#94a3b8" }}>→ Lipa na M-PESA</span>
+                <strong style={{color: "#ffffff", fontWeight: 800}}>Open M-Pesa</strong>
+                <span style={{ fontSize: "12px", marginLeft: "4px", color: "#cbd5e1", fontWeight: 600 }}>→ Lipa na M-PESA</span>
               </div>
 
-              <div style={styles.stepBox}>
+              <div className="activate-step-box" style={styles.stepBox}>
                 <span style={styles.stepNumber}>2</span>
-                <strong style={{color: "#ffffff"}}>Send Money</strong>
-                <span style={{ fontSize: "12px", marginLeft: "4px", color: "#94a3b8" }}>→ Enter <strong style={{color: "#ffffff"}}>{PHONE_NUMBER}</strong></span>
+                <strong style={{color: "#ffffff", fontWeight: 800}}>Send Money</strong>
+                <span style={{ fontSize: "12px", marginLeft: "4px", color: "#cbd5e1", fontWeight: 600 }}>→ Enter <strong style={{color: "#ffffff", fontWeight: 800}}>{PHONE_NUMBER}</strong></span>
               </div>
 
-              <div style={styles.stepBox}>
+              <div className="activate-step-box" style={styles.stepBox}>
                 <span style={styles.stepNumber}>3</span>
-                <strong style={{color: "#ffffff"}}>Confirm: {BUSINESS_NAME}</strong>
+                <strong style={{color: "#ffffff", fontWeight: 800}}>Confirm: {BUSINESS_NAME}</strong>
               </div>
 
-              <div style={styles.stepBox}>
+              <div className="activate-step-box" style={styles.stepBox}>
                 <span style={styles.stepNumber}>4</span>
-                <strong style={{color: "#ffffff"}}>Amount: </strong>
-                <span style={{...styles.activationFee, color: "#ef4444", fontWeight: 900}}>KES {plan.activationFee}</span>
+                <strong style={{color: "#ffffff", fontWeight: 800}}>Amount: </strong>
+                <span style={{...styles.activationFee, color: "#fca5a5", fontWeight: 900}}>KES {plan.activationFee}</span>
               </div>
 
-              <div style={styles.stepBox}>
+              <div className="activate-step-box" style={styles.stepBox}>
                 <span style={styles.stepNumber}>5</span>
-                <strong style={{color: "#ffffff"}}>Enter PIN & Complete</strong>
+                <strong style={{color: "#ffffff", fontWeight: 800}}>Enter PIN & Complete</strong>
               </div>
 
-              <div style={{
+              <div className="activate-step-box activate-step-box-success" style={{
                 ...styles.stepBox,
-                background: "rgba(16, 185, 129, 0.2)",
-                border: "1px solid rgba(16, 185, 129, 0.4)"
+                background: "rgba(16, 185, 129, 0.25)",
+                border: "1px solid rgba(16, 185, 129, 0.5)"
               }}>
                 <span style={{...styles.stepNumber, background: "#10b981"}}>6</span>
-                <strong style={{ color: "#10b981", fontWeight: 800 }}>Paste confirmation below</strong>
-                <span style={{ fontSize: "11px", display: "block", marginTop: "2px", color: "#6ee7b7", fontWeight: 600 }}>
+                <strong style={{ color: "#6ee7b7", fontWeight: 800 }}>Paste confirmation below</strong>
+                <span style={{ fontSize: "11px", display: "block", marginTop: "2px", color: "#a7f3d0", fontWeight: 600 }}>
                   Get KES {plan.total} instantly!
                 </span>
               </div>
             </div>
           </div>
 
-          <div style={styles.section}>
+          {/* PHONE NUMBER SECTION */}
+          {/* PHONE NUMBER SECTION */}
+          <div className="activate-section-dark" style={styles.section}>
             <div style={{ 
               display: "flex",
               alignItems: "center",
@@ -737,7 +740,7 @@ export default function Activate() {
               flexWrap: "wrap",
               gap: "6px"
             }}>
-              <span style={{ fontSize: "14px", fontWeight: 700, color: "#ffffff" }}>📞 <strong>{PHONE_NUMBER}</strong></span>
+              <span style={{ fontSize: "14px", fontWeight: 800, color: "#ffffff" }}>📞 <strong>{PHONE_NUMBER}</strong></span>
               <button 
                 onClick={copyPhoneNumber} 
                 style={styles.copyBtn}
@@ -745,13 +748,14 @@ export default function Activate() {
                 📋 Copy Number
               </button>
             </div>
-            {copied && <p style={styles.copiedNote}>✅ Phone number copied</p>}
+            {copied && <p style={{...styles.copiedNote, color: "#6ee7b7", fontWeight: 700}}>✅ Phone number copied</p>}
           </div>
 
-          <div style={styles.noteBox}>
-            📌 Paste the <strong style={{color: "#ffffff"}}>FULL M-Pesa SMS</strong> below
+          {/* M-Pesa SMS Input Note */}
+          <div className="activate-note-box" style={{...styles.noteBox, background: "#1e293b", borderColor: "#334155"}}>
+            📌 Paste the <strong style={{color: "#ffffff", fontWeight: 800}}>FULL M-Pesa SMS</strong> below
             <br />
-            <span style={{ fontSize: "11px", color: "#f87171", fontWeight: 600 }}>
+            <span style={{ fontSize: "11px", color: "#f87171", fontWeight: 700 }}>
               ⚠ Include Transaction ID, Amount & Time
             </span>
           </div>
@@ -816,11 +820,11 @@ export default function Activate() {
           </button>
 
           {/* PLAN STATUS SECTION - AT BOTTOM */}
-          <div style={{
+          <div className="activate-plan-status" style={{
             marginTop: "20px",
             padding: "14px",
             borderRadius: "12px",
-            background: "rgba(30, 41, 59, 0.8)",
+            background: "rgba(30, 41, 59, 0.95)",
             border: "1px solid #334155",
             fontSize: "12px"
           }}>
@@ -851,9 +855,9 @@ export default function Activate() {
                     border: isCurrent ? "1px solid rgba(59, 130, 246, 0.3)" : "none"
                   }}>
                     <span style={{ 
-                      fontWeight: 700, 
-                      fontSize: "12px",
-                      color: isCurrent ? "#93c5fd" : "#cbd5e1"
+                      fontWeight: 800, 
+                      fontSize: "13px",
+                      color: isCurrent ? "#60a5fa" : "#e2e8f0"
                     }}>
                       {p}
                       {isCurrent && planKey === "WELCOME" && p === "REGULAR" && " (Welcome)"}

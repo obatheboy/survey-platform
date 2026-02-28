@@ -28,6 +28,105 @@
   width: 100%;
 }
 
+/* Top Caption Section - Dark for visibility */
+.activate-top-caption {
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+}
+
+.activate-top-caption span,
+.activate-top-caption div {
+  color: #f1f5f9 !important;
+}
+
+/* Dark section for features - always dark background for visibility */
+.activate-section-dark {
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+}
+
+.activate-section-dark p,
+.activate-section-dark span,
+.activate-section-dark strong {
+  color: #f1f5f9 !important;
+}
+
+.activate-step-box {
+  background: #334155;
+  border: 1px solid #475569;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 6px 0;
+}
+
+.activate-step-box strong {
+  font-weight: 800;
+}
+
+.activate-step-box-success {
+  background: rgba(16, 185, 129, 0.25) !important;
+  border: 1px solid rgba(16, 185, 129, 0.5) !important;
+}
+
+.activate-note-box {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.activate-note-box strong {
+  font-weight: 800;
+  color: #ffffff;
+}
+
+/* Plan Status Dark Theme */
+.activate-plan-status {
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid #334155;
+}
+
+.activate-plan-status span {
+  color: #e2e8f0;
+}
+
+/* Dark Mode Support for Activate Page */
+@media (prefers-color-scheme: dark) {
+  .activate-page {
+    background: #0f172a;
+  }
+  
+  .activate-main-card {
+    background: #1e293b;
+    color: #f1f5f9;
+    border-color: #334155;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  }
+  
+  .activate-top-caption {
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+  }
+  
+  .activate-section-dark {
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+  }
+  
+  .activate-note-box {
+    background: #1e293b;
+    border: 1px solid #334155;
+  }
+  
+  .activate-plan-status {
+    background: rgba(30, 41, 59, 0.95);
+    border: 1px solid #334155;
+  }
+  
+  .activate-step-box {
+    background: #334155;
+    border: 1px solid #475569;
+  }
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
