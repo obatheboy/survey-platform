@@ -823,35 +823,36 @@ return (
               className="activate-btn-pulse"
               style={{
                 background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                border: '2px solid rgba(255,255,255,0.3)',
-                borderRadius: '12px',
-                padding: '12px 24px',
+                border: '3px solid rgba(255,255,255,0.5)',
+                borderRadius: '16px',
+                padding: '18px 36px',
                 color: 'white',
-                fontWeight: '800',
-                fontSize: '14px',
+                fontWeight: '900',
+                fontSize: '18px',
                 cursor: 'pointer',
-                boxShadow: '0 4px 15px rgba(239, 68, 68, 0.5), 0 0 30px rgba(239, 68, 68, 0.3)',
+                boxShadow: '0 6px 25px rgba(239, 68, 68, 0.6), 0 0 50px rgba(239, 68, 68, 0.4), inset 0 1px 0 rgba(255,255,255,0.3)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '8px',
+                gap: '12px',
                 whiteSpace: 'nowrap',
                 animation: 'pulse-glow 2s infinite',
                 transition: 'all 0.3s ease',
                 textTransform: 'uppercase',
-                letterSpacing: '0.5px'
+                letterSpacing: '1px',
+                minWidth: '240px'
               }}
               onMouseOver={(e) => {
-                e.currentTarget.style.transform = 'scale(1.05)';
-                e.currentTarget.style.boxShadow = '0 6px 25px rgba(239, 68, 68, 0.7), 0 0 50px rgba(239, 68, 68, 0.4)';
+                e.currentTarget.style.transform = 'scale(1.08)';
+                e.currentTarget.style.boxShadow = '0 8px 35px rgba(239, 68, 68, 0.8), 0 0 70px rgba(239, 68, 68, 0.5), inset 0 1px 0 rgba(255,255,255,0.4)';
               }}
               onMouseOut={(e) => {
                 e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.boxShadow = '0 4px 15px rgba(239, 68, 68, 0.5), 0 0 30px rgba(239, 68, 68, 0.3)';
+                e.currentTarget.style.boxShadow = '0 6px 25px rgba(239, 68, 68, 0.6), 0 0 50px rgba(239, 68, 68, 0.4), inset 0 1px 0 rgba(255,255,255,0.3)';
               }}
             >
-              <span style={{ fontSize: '18px' }}>⚡</span>
-              TAP TO ACTIVATE ACCOUNT
+              <span style={{ fontSize: '24px' }}>⚡</span>
+              TAP TO ACTIVATE
             </button>
           )}
         </div>
@@ -1110,18 +1111,23 @@ return (
           Welcome Bonus
         </span>
       </div>
-      <span className="plan-status" style={{ 
-        background: '#c2410c !important',
+      <span 
+        onClick={() => navigate('/activate?welcome_bonus=true')}
+        className="plan-status" style={{ 
+        background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important',
         color: '#ffffff !important',
-        border: '2px solid #ffd700 !important',
-        padding: '4px 12px', /* REDUCED from 6px 14px to 4px 12px */
-        borderRadius: '40px',
-        fontSize: '10px', /* REDUCED from 11px to 10px */
+        border: '3px solid #ffd700 !important',
+        padding: '8px 20px',
+        borderRadius: '50px',
+        fontSize: '14px',
         fontWeight: '900',
         textTransform: 'uppercase',
-        letterSpacing: '0.6px', /* REDUCED from 0.8px to 0.6px */
-        boxShadow: '0 0 12px rgba(255, 255, 255, 0.3)',
-        textShadow: '0 1px 3px #000000'
+        letterSpacing: '1px',
+        boxShadow: '0 0 20px rgba(255, 215, 0, 0.5), 0 4px 15px rgba(220, 38, 38, 0.4)',
+        textShadow: '0 1px 3px #000000',
+        cursor: 'pointer',
+        animation: 'pulse-glow 2s infinite',
+        display: 'inline-block'
       }}>
         🔓 ACTIVATE NOW
       </span>

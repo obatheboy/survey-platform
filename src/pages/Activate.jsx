@@ -648,15 +648,15 @@ export default function Activate() {
             <div style={{
               fontSize: "15px",
               fontWeight: 700,
-              color: "#2563eb",
-              background: "rgba(255,255,255,0.95)",
-              padding: "10px 20px",
+              color: "#1e293b",
+              background: "#fef3c7",
+              padding: "12px 24px",
               borderRadius: "40px",
-              border: "1px solid rgba(255,255,255,0.2)",
+              border: "2px solid #f59e0b",
               display: "inline-block",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+              boxShadow: "0 4px 12px rgba(245, 158, 11, 0.3)"
             }}>
-              Pay <span style={{ color: "#dc2626", fontWeight: 900, fontSize: "20px", background: "#fef2f2", padding: "4px 12px", borderRadius: "8px", border: "2px solid #ef4444", display: "inline-block" }}>KES {plan.activationFee}</span> to withdraw
+              ⚡ <span style={{ color: "#b91c1c", fontWeight: 900, fontSize: "22px", background: "#fee2e2", padding: "4px 10px", borderRadius: "8px", border: "2px solid #dc2626" }}>KES {plan.activationFee}</span> activation fee
             </div>
           </div>
 
