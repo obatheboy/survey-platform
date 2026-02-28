@@ -102,11 +102,6 @@ export default function Dashboard() {
     totalWithdrawals: 0
   });
 
-  // WHATSAPP CAPTION BLINKING EFFECT
-  const [_showCaption, setShowCaption] = useState(true);
-  const [showScrollReminder, setShowScrollReminder] = useState(false);
-  const [reminderShown, setReminderShown] = useState(false);
-
   // DATA STATE
   const [user, setUser] = useState(null);
   const [plans, setPlans] = useState({});
@@ -289,17 +284,6 @@ export default function Dashboard() {
       }, 300);
     });
   }, [plans]);
-
-  /* =========================
-     WHATSAPP CAPTION BLINKING EFFECT
-   ========================= */
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setShowCaption(prev => !prev);
-    }, 800);
-
-    return () => clearInterval(interval);
-  }, []);
 
   /* =========================
      GAMIFICATION - CHECK WELCOME BONUS
@@ -764,7 +748,12 @@ export default function Dashboard() {
                       <span className="earned">KSh {earnedSoFar(planKey).toLocaleString()}</span>
                       <span className="total">/ KSh {plan.total.toLocaleString()}</span>
                     </div>
-                    {!isCompleted(planKey) && (
+                    {!isCompleted(planKey) && !isActivated(planKey) && (
+                      <button className="activate-btn" onClick={() => navigate(`/activate?plan=${planKey}`)}>
+                        🔓 Activate - KSh {PLANS[planKey].perSurvey * 10}
+                      </button>
+                    )}
+                    {!isCompleted(planKey) && isActivated(planKey) && (
                       <button className="continue-btn" onClick={() => startSurvey(planKey)}>
                         Continue Survey →
                       </button>

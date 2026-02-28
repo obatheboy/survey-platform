@@ -39,187 +39,184 @@ const PLAN_CONFIG = {
 };
 
 /* =========================
-   INLINE STYLES WITH !important FOR VISIBILITY
+   INLINE STYLES (OPTIMIZED FOR MOBILE)
 ========================= */
 const styles = {
   overlay: {
-    position: "fixed !important",
-    top: "0 !important",
-    left: "0 !important",
-    right: "0 !important",
-    bottom: "0 !important",
-    background: "rgba(15, 23, 42, 0.95) !important",
-    display: "flex !important",
-    alignItems: "center !important",
-    justifyContent: "center !important",
-    zIndex: "99999 !important",
-    padding: "16px !important",
-    backdropFilter: "blur(4px) !important",
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: "rgba(15, 23, 42, 0.95)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 99999,
+    padding: "16px",
+    backdropFilter: "blur(4px)",
   },
   overlayCard: {
-    maxWidth: "100% !important",
-    width: "100% !important",
-    background: "var(--bg-surface) !important",
-    padding: "24px 20px !important",
-    borderRadius: "16px !important",
-    color: "var(--text-main) !important",
-    textAlign: "center !important",
-    boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3) !important",
-    border: "1px solid var(--border-soft) !important",
-    margin: "0 16px !important",
+    maxWidth: "100%",
+    width: "100%",
+    background: "var(--bg-surface)",
+    padding: "24px 20px",
+    borderRadius: "16px",
+    color: "var(--text-main)",
+    textAlign: "center",
+    boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3)",
+    border: "1px solid var(--border-soft)",
+    margin: "0 16px",
   },
   page: {
-    minHeight: "100vh !important",
-    background: "var(--bg-main) !important",
-    display: "flex !important",
-    flexDirection: "column !important",
-    alignItems: "center !important",
-    padding: "12px !important",
-    paddingTop: "12px !important",
-    paddingBottom: "40px !important",
-    fontFamily: "'Inter', sans-serif !important",
+    minHeight: "100vh",
+    background: "var(--bg-main)",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    padding: "12px",
+    paddingTop: "12px",
+    paddingBottom: "40px",
+    fontFamily: "'Inter', sans-serif",
   },
   card: {
-    maxWidth: "100% !important",
-    width: "100% !important",
-    background: "var(--bg-surface) !important",
-    padding: "16px 14px !important",
-    borderRadius: "16px !important",
-    color: "var(--text-main) !important",
-    border: "1px solid var(--border-soft) !important",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08) !important",
+    maxWidth: "100%",
+    width: "100%",
+    background: "var(--bg-surface)",
+    padding: "16px 14px",
+    borderRadius: "16px",
+    color: "var(--text-main)",
+    border: "1px solid var(--border-soft)",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
   },
   section: {
-    marginTop: "16px !important",
-    padding: "14px !important",
-    borderRadius: "12px !important",
-    background: "var(--bg-main) !important",
-    border: "1px solid var(--border-soft) !important",
-    fontSize: "13px !important",
-    color: "var(--text-primary) !important",
+    marginTop: "16px",
+    padding: "14px",
+    borderRadius: "12px",
+    background: "var(--bg-main)",
+    border: "1px solid var(--border-soft)",
+    fontSize: "13px",
   },
   sectionHighlight: {
-    marginTop: "16px !important",
-    padding: "14px !important",
-    borderRadius: "12px !important",
-    background: "rgba(37, 99, 235, 0.05) !important",
-    border: "1px solid rgba(37, 99, 235, 0.1) !important",
-    fontSize: "13px !important",
-    color: "var(--text-primary) !important",
+    marginTop: "16px",
+    padding: "14px",
+    borderRadius: "12px",
+    background: "rgba(37, 99, 235, 0.05)",
+    border: "1px solid rgba(37, 99, 235, 0.1)",
+    fontSize: "13px",
   },
   caption: {
-    fontSize: "12px !important",
-    color: "var(--primary) !important",
-    fontWeight: "700 !important",
-    marginBottom: "8px !important",
-    lineHeight: "1.4 !important",
+    fontSize: "12px",
+    color: "var(--primary)",
+    fontWeight: 700,
+    marginBottom: "8px",
+    lineHeight: "1.4",
   },
   noteBox: {
-    marginTop: "16px !important",
-    padding: "12px !important",
-    borderRadius: "10px !important",
-    background: "var(--bg-surface) !important",
-    fontSize: "12px !important",
-    fontWeight: "600 !important",
-    border: "1px solid var(--border-medium) !important",
-    color: "var(--text-muted) !important",
-    lineHeight: "1.4 !important",
+    marginTop: "16px",
+    padding: "12px",
+    borderRadius: "10px",
+    background: "var(--bg-surface)",
+    fontSize: "12px",
+    fontWeight: 600,
+    border: "1px solid var(--border-medium)",
+    color: "var(--text-muted)",
+    lineHeight: "1.4",
   },
   notificationBox: {
-    marginTop: "12px !important",
-    padding: "12px !important",
-    borderRadius: "10px !important",
-    background: "rgba(16, 185, 129, 0.1) !important",
-    color: "var(--regular-color) !important",
-    fontWeight: "700 !important",
-    border: "1px solid var(--regular-color) !important",
-    fontSize: "12px !important",
+    marginTop: "12px",
+    padding: "12px",
+    borderRadius: "10px",
+    background: "rgba(16, 185, 129, 0.1)",
+    color: "var(--regular-color)",
+    fontWeight: 700,
+    border: "1px solid var(--regular-color)",
+    fontSize: "12px",
   },
   activationFee: {
-    color: "#dc2626 !important",
-    fontWeight: "800 !important",
-    fontSize: "14px !important",
+    color: "#dc2626",
+    fontWeight: 800,
+    fontSize: "14px",
   },
   copiedNote: {
-    color: "var(--regular-color) !important",
-    fontWeight: "700 !important",
-    fontSize: "11px !important",
-    marginTop: "6px !important",
+    color: "var(--regular-color)",
+    fontWeight: 700,
+    fontSize: "11px",
+    marginTop: "6px",
   },
   input: {
-    width: "100% !important",
-    padding: "12px !important",
-    marginTop: "12px !important",
-    borderRadius: "10px !important",
-    border: "2px solid var(--border-medium) !important",
-    background: "var(--bg-surface) !important",
-    color: "var(--text-main) !important",
-    fontSize: "13px !important",
-    fontFamily: "inherit !important",
-    resize: "vertical !important",
-    minHeight: "100px !important",
-    boxSizing: "border-box !important",
+    width: "100%",
+    padding: "12px",
+    marginTop: "12px",
+    borderRadius: "10px",
+    border: "2px solid var(--border-medium)",
+    background: "var(--bg-surface)",
+    color: "var(--text-main)",
+    fontSize: "13px",
+    fontFamily: "inherit",
+    resize: "vertical",
+    minHeight: "100px",
+    boxSizing: "border-box",
   },
   button: {
-    width: "100% !important",
-    marginTop: "12px !important",
-    padding: "14px !important",
-    borderRadius: "12px !important",
-    fontWeight: "700 !important",
-    fontSize: "14px !important",
-    cursor: "pointer !important",
-    border: "none !important",
-    display: "flex !important",
-    alignItems: "center !important",
-    justifyContent: "center !important",
-    gap: "6px !important",
-    minHeight: "48px !important",
-    background: "var(--primary) !important",
-    color: "#ffffff !important",
-    boxShadow: "0 6px 12px -3px rgba(37, 99, 235, 0.3) !important",
+    width: "100%",
+    marginTop: "12px",
+    padding: "14px",
+    borderRadius: "12px",
+    fontWeight: 700,
+    fontSize: "14px",
+    cursor: "pointer",
+    border: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "6px",
+    minHeight: "48px",
+    background: "var(--primary)",
+    color: "#ffffff",
+    boxShadow: "0 6px 12px -3px rgba(37, 99, 235, 0.3)",
   },
   copyBtn: {
-    padding: "6px 12px !important",
-    borderRadius: "8px !important",
-    border: "none !important",
-    background: "var(--primary) !important",
-    color: "white !important",
-    fontWeight: "700 !important",
-    fontSize: "11px !important",
-    cursor: "pointer !important",
-    boxShadow: "0 3px 6px -1px rgba(37, 99, 235, 0.2) !important",
+    padding: "6px 12px",
+    borderRadius: "8px",
+    border: "none",
+    background: "var(--primary)",
+    color: "white",
+    fontWeight: 700,
+    fontSize: "11px",
+    cursor: "pointer",
+    boxShadow: "0 3px 6px -1px rgba(37, 99, 235, 0.2)",
   },
   loadingContainer: {
-    display: "flex !important",
-    justifyContent: "center !important",
-    alignItems: "center !important",
-    minHeight: "100vh !important",
-    fontSize: "14px !important",
-    fontWeight: "600 !important",
-    color: "var(--text-muted) !important",
-    background: "var(--bg-main) !important",
-    padding: "20px !important",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "100vh",
+    fontSize: "14px",
+    fontWeight: 600,
+    color: "var(--text-muted)",
+    background: "var(--bg-main)",
+    padding: "20px",
   },
   stepBox: {
-    background: "rgba(59, 130, 246, 0.1) !important",
-    border: "1px solid rgba(59, 130, 246, 0.2) !important",
-    borderRadius: "8px !important",
-    padding: "10px !important",
-    margin: "6px 0 !important",
-    color: "var(--text-primary) !important",
+    background: "rgba(59, 130, 246, 0.1)",
+    border: "1px solid rgba(59, 130, 246, 0.2)",
+    borderRadius: "8px",
+    padding: "10px",
+    margin: "6px 0",
   },
   stepNumber: {
-    display: "inline-flex !important",
-    alignItems: "center !important",
-    justifyContent: "center !important",
-    width: "22px !important",
-    height: "22px !important",
-    background: "#3b82f6 !important",
-    color: "white !important",
-    borderRadius: "50% !important",
-    fontWeight: "700 !important",
-    fontSize: "11px !important",
-    marginRight: "8px !important",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "22px",
+    height: "22px",
+    background: "#3b82f6",
+    color: "white",
+    borderRadius: "50%",
+    fontWeight: 700,
+    fontSize: "11px",
+    marginRight: "8px",
   },
 };
 
@@ -385,19 +382,17 @@ export default function Activate() {
   if (loading) {
     return (
       <div style={styles.loadingContainer}>
-        <div style={{ textAlign: "center !important" }}>
+        <div style={{ textAlign: "center" }}>
           <div style={{
-            width: "36px !important",
-            height: "36px !important",
-            border: "3px solid rgba(255, 255, 255, 0.1) !important",
-            borderTopColor: "#00ff99 !important",
-            borderRadius: "50% !important",
-            margin: "0 auto 12px !important",
-            animation: "spin 1s linear infinite !important"
+            width: "36px",
+            height: "36px",
+            border: "3px solid rgba(255, 255, 255, 0.1)",
+            borderTopColor: "#00ff99",
+            borderRadius: "50%",
+            margin: "0 auto 12px",
+            animation: "spin 1s linear infinite"
           }}></div>
-          <span style={{ color: "var(--text-primary) !important", fontWeight: "600 !important" }}>
-            Loading activation details...
-          </span>
+          Loading activation details...
         </div>
       </div>
     );
@@ -407,36 +402,34 @@ export default function Activate() {
   if (!planKey && user) {
     return (
       <div style={{ 
-        minHeight: '100vh !important', 
-        background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important',
-        padding: '20px !important'
+        minHeight: '100vh', 
+        background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+        padding: '20px'
       }}>
         <div style={{
-          maxWidth: '600px !important',
-          margin: '0 auto !important',
-          background: 'white !important',
-          borderRadius: '16px !important',
-          padding: '24px !important',
-          boxShadow: '0 10px 40px rgba(0,0,0,0.1) !important'
+          maxWidth: '600px',
+          margin: '0 auto',
+          background: 'white',
+          borderRadius: '16px',
+          padding: '24px',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.1)'
         }}>
           <h2 style={{ 
-            textAlign: 'center !important', 
-            marginBottom: '8px !important',
-            color: '#1e293b !important',
-            fontWeight: '700 !important'
+            textAlign: 'center', 
+            marginBottom: '8px',
+            color: '#1e293b'
           }}>
             🚀 Start Your Plan
           </h2>
           <p style={{ 
-            textAlign: 'center !important', 
-            marginBottom: '24px !important',
-            color: '#64748b !important',
-            fontWeight: '500 !important'
+            textAlign: 'center', 
+            marginBottom: '24px',
+            color: '#64748b'
           }}>
             Select a plan to start completing surveys and earn money!
           </p>
           
-          <div style={{ display: 'flex !important', flexDirection: 'column !important', gap: '12px !important' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {['REGULAR', 'VIP', 'VVIP'].map((p) => {
               const planData = user?.plans?.[p];
               const isCompleted = planData?.completed;
@@ -455,40 +448,39 @@ export default function Activate() {
                   }}
                   disabled={!isCompleted || isActivated}
                   style={{
-                    display: 'flex !important',
-                    justifyContent: 'space-between !important',
-                    alignItems: 'center !important',
-                    padding: '16px 20px !important',
-                    border: 'none !important',
-                    borderRadius: '12px !important',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '16px 20px',
+                    border: 'none',
+                    borderRadius: '12px',
                     background: isActivated 
-                      ? 'rgba(16, 185, 129, 0.1) !important' 
+                      ? 'rgba(16, 185, 129, 0.1)' 
                       : isCompleted 
-                        ? `linear-gradient(135deg, ${config.color}, ${config.color}dd) !important`
-                        : 'rgba(100, 116, 139, 0.1) !important',
-                    color: isActivated ? '#10b981 !important' : isCompleted ? 'white !important' : '#64748b !important',
-                    cursor: isCompleted && !isActivated ? 'pointer !important' : 'not-allowed !important',
-                    opacity: isCompleted && !isActivated ? '1 !important' : '0.6 !important',
-                    transition: 'all 0.2s !important',
-                    boxShadow: isCompleted && !isActivated ? '0 4px 15px rgba(0,0,0,0.1) !important' : 'none !important',
-                    fontWeight: '600 !important'
+                        ? config.gradient 
+                        : 'rgba(100, 116, 139, 0.1)',
+                    color: isActivated ? '#10b981' : isCompleted ? 'white' : '#64748b',
+                    cursor: isCompleted && !isActivated ? 'pointer' : 'not-allowed',
+                    opacity: isCompleted && !isActivated ? 1 : 0.6,
+                    transition: 'all 0.2s',
+                    boxShadow: isCompleted && !isActivated ? '0 4px 15px rgba(0,0,0,0.1)' : 'none'
                   }}
                 >
-                  <div style={{ textAlign: 'left !important' }}>
-                    <div style={{ fontWeight: 'bold !important', fontSize: '1.1rem !important' }}>
+                  <div style={{ textAlign: 'left' }}>
+                    <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
                       {config?.label || p}
                     </div>
-                    <div style={{ fontSize: '0.85rem !important', opacity: '0.9 !important' }}>
+                    <div style={{ fontSize: '0.85rem', opacity: 0.9 }}>
                       Earn up to KES {config?.total || 0}
                     </div>
                   </div>
-                  <div style={{ textAlign: 'right !important' }}>
+                  <div style={{ textAlign: 'right' }}>
                     {isActivated ? (
-                      <span style={{ fontWeight: 'bold !important' }}>✅ Activated</span>
+                      <span style={{ fontWeight: 'bold' }}>✅ Activated</span>
                     ) : isCompleted ? (
-                      <span style={{ fontWeight: 'bold !important' }}>▶ Start Surveys</span>
+                      <span style={{ fontWeight: 'bold' }}>▶ Start Surveys</span>
                     ) : (
-                      <span style={{ fontWeight: '500 !important' }}>{planData?.surveys_completed || 0}/10 surveys</span>
+                      <span>{planData?.surveys_completed || 0}/10 surveys</span>
                     )}
                   </div>
                 </button>
@@ -497,11 +489,10 @@ export default function Activate() {
           </div>
           
           <p style={{ 
-            textAlign: 'center !important', 
-            marginTop: '20px !important',
-            fontSize: '0.85rem !important',
-            color: '#94a3b8 !important',
-            fontWeight: '500 !important'
+            textAlign: 'center', 
+            marginTop: '20px',
+            fontSize: '0.85rem',
+            color: '#94a3b8'
           }}>
             Complete 10 surveys to unlock each plan, then start earning!
           </p>
@@ -536,35 +527,35 @@ export default function Activate() {
         <div style={styles.overlay}>
           <div style={styles.overlayCard}>
             <div style={{
-              fontSize: "48px !important",
-              marginBottom: "16px !important",
-              animation: "bounce 1s infinite !important"
+              fontSize: "48px",
+              marginBottom: "16px",
+              animation: "bounce 1s infinite"
             }}>
               ✅
             </div>
             
             <h2 style={{ 
-              color: "#10b981 !important", 
-              textAlign: "center !important",
-              fontSize: "20px !important",
-              fontWeight: "800 !important",
-              marginBottom: "12px !important"
+              color: "#10b981", 
+              textAlign: "center",
+              fontSize: "20px",
+              fontWeight: 800,
+              marginBottom: "12px"
             }}>
               PAYMENT SUBMITTED
             </h2>
 
             <p style={{ 
-              marginTop: "12px !important", 
-              lineHeight: "1.6 !important", 
-              fontWeight: "500 !important",
-              fontSize: "14px !important",
-              color: "#475569 !important"
+              marginTop: "12px", 
+              lineHeight: "1.6", 
+              fontWeight: 500,
+              fontSize: "14px",
+              color: "#475569"
             }}>
               Your payment has been submitted for approval.
               <br /><br />
               Our team will verify your transaction and activate your account shortly.
               <br /><br />
-              <strong style={{ fontWeight: "700 !important", color: "#1e293b !important" }}>Next Steps:</strong>
+              <strong>Next Steps:</strong>
               <br />
               1. Go back to dashboard
               <br />
@@ -587,8 +578,8 @@ export default function Activate() {
               onClick={() => navigate("/dashboard", { replace: true })}
               style={{
                 ...styles.button,
-                marginTop: "20px !important",
-                background: "#2563eb !important",
+                marginTop: "20px",
+                background: "#2563eb",
               }}
             >
               Go to Dashboard
@@ -602,136 +593,136 @@ export default function Activate() {
         {/* Main Activation Card */}
         <div style={{ 
           ...styles.card, 
-          boxShadow: `0 0 20px ${plan.glow} !important` 
+          boxShadow: `0 0 20px ${plan.glow}` 
         }}>
           <h2 style={{ 
-            textAlign: "center !important", 
-            color: `${plan.color} !important`,
-            fontSize: "18px !important",
-            marginBottom: "4px !important",
-            fontWeight: "700 !important"
+            textAlign: "center", 
+            color: plan.color,
+            fontSize: "18px",
+            marginBottom: "4px",
+            fontWeight: 700
           }}>
             🔓 Account Activation
           </h2>
 
           {/* COMPACT TOP CAPTION - BOLDED FOR DARK THEME */}
           <div style={{
-            marginTop: "4px !important",
-            marginBottom: "16px !important",
-            padding: "16px 12px !important",
-            borderRadius: "14px !important",
-            background: `linear-gradient(135deg, ${plan.color}15, ${plan.color}05) !important`,
-            border: `1px solid ${plan.color}30 !important`,
-            textAlign: "center !important"
+            marginTop: "4px",
+            marginBottom: "16px",
+            padding: "16px 12px",
+            borderRadius: "14px",
+            background: `linear-gradient(135deg, ${plan.color}15, ${plan.color}05)`,
+            border: `1px solid ${plan.color}30`,
+            textAlign: "center"
           }}>
             <div style={{
-              fontSize: "18px !important",
-              fontWeight: "800 !important",
-              color: "#ffffff !important",
-              marginBottom: "8px !important",
-              textShadow: "0 2px 4px rgba(0,0,0,0.3) !important"
+              fontSize: "18px",
+              fontWeight: 800,
+              color: "#ffffff",
+              marginBottom: "8px",
+              textShadow: "0 2px 4px rgba(0,0,0,0.3)"
             }}>
               🎉 CONGRATULATIONS! 🎉
             </div>
             
             <div style={{
-              fontSize: "16px !important",
-              fontWeight: "700 !important",
-              color: "#e2e8f0 !important",
-              marginBottom: "4px !important"
+              fontSize: "16px",
+              fontWeight: 700,
+              color: "#e2e8f0",
+              marginBottom: "4px"
             }}>
               You have earned
             </div>
             
             <div style={{
-              fontSize: "38px !important",
-              fontWeight: "900 !important",
-              color: `${plan.color} !important`,
-              lineHeight: "1.2 !important",
-              marginBottom: "10px !important",
-              textShadow: `0 4px 12px ${plan.color}50 !important`
+              fontSize: "38px",
+              fontWeight: 900,
+              color: plan.color,
+              lineHeight: "1.2",
+              marginBottom: "10px",
+              textShadow: `0 4px 12px ${plan.color}50`
             }}>
               KES {plan.total}
             </div>
             
             <div style={{
-              fontSize: "15px !important",
-              fontWeight: "700 !important",
-              color: "#2563eb !important",
-              background: "rgba(255,255,255,0.95) !important",
-              padding: "10px 20px !important",
-              borderRadius: "40px !important",
-              border: "1px solid rgba(255,255,255,0.2) !important",
-              display: "inline-block !important",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.15) !important"
+              fontSize: "15px",
+              fontWeight: 700,
+              color: "#2563eb",
+              background: "rgba(255,255,255,0.95)",
+              padding: "10px 20px",
+              borderRadius: "40px",
+              border: "1px solid rgba(255,255,255,0.2)",
+              display: "inline-block",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
             }}>
-              Pay <span style={{ color: "#dc2626 !important", fontWeight: "900 !important", fontSize: "16px !important" }}>KES {plan.activationFee}</span> to withdraw
+              Pay <span style={{ color: "#dc2626", fontWeight: 900, fontSize: "16px" }}>KES {plan.activationFee}</span> to withdraw
             </div>
           </div>
 
           {showPlanWarning && (
             <div style={{
-              marginTop: "12px !important",
-              padding: "10px !important",
-              borderRadius: "8px !important",
-              background: "rgba(245, 158, 11, 0.15) !important",
-              border: "1px solid rgba(245, 158, 11, 0.4) !important",
-              color: "#fbbf24 !important",
-              fontSize: "12px !important",
-              fontWeight: "700 !important"
+              marginTop: "12px",
+              padding: "10px",
+              borderRadius: "8px",
+              background: "rgba(245, 158, 11, 0.15)",
+              border: "1px solid rgba(245, 158, 11, 0.4)",
+              color: "#fbbf24",
+              fontSize: "12px",
+              fontWeight: 700
             }}>
-              ⚠️ <strong style={{ fontWeight: "800 !important", color: "#ffffff !important" }}>Note:</strong> You have completed VVIP surveys. 
-              Make sure you're activating the correct plan. Current: <strong style={{color: "#ffffff !important", fontWeight: "800 !important"}}>{plan.label}</strong>
+              ⚠️ <strong>Note:</strong> You have completed VVIP surveys. 
+              Make sure you're activating the correct plan. Current: <strong style={{color: "#ffffff"}}>{plan.label}</strong>
             </div>
           )}
 
           <div style={styles.section}>
-            <p style={{ fontWeight: "800 !important", fontSize: "14px !important", marginBottom: "8px !important", color: "#ffffff !important" }}>
+            <p style={{ fontWeight: 800, fontSize: "14px", marginBottom: "8px", color: "#ffffff" }}>
               📲 HOW TO PAY & ACTIVATE
             </p>
 
             <p style={styles.caption}>
-              ⚠ <strong style={{color: "#ffffff !important", fontWeight: "800 !important"}}>IMPORTANT:</strong> Official CEO number - payments verified instantly
+              ⚠ <strong style={{color: "#ffffff"}}>IMPORTANT:</strong> Pay to this number of the CEO 🚀-0794 101 450- and payments are verified instantly ater payment
             </p>
 
             {/* STEP-BY-STEP GUIDE - COMPACT */}
-            <div style={{ marginTop: "8px !important" }}>
+            <div style={{ marginTop: "8px" }}>
               <div style={styles.stepBox}>
                 <span style={styles.stepNumber}>1</span>
-                <strong style={{color: "#ffffff !important", fontWeight: "800 !important"}}>Open M-Pesa</strong>
-                <span style={{ fontSize: "12px !important", marginLeft: "4px !important", color: "#94a3b8 !important", fontWeight: "600 !important" }}>→ Lipa na M-PESA</span>
+                <strong style={{color: "#ffffff"}}>Open M-Pesa</strong>
+                <span style={{ fontSize: "12px", marginLeft: "4px", color: "#94a3b8" }}>→ Lipa na M-PESA</span>
               </div>
 
               <div style={styles.stepBox}>
                 <span style={styles.stepNumber}>2</span>
-                <strong style={{color: "#ffffff !important", fontWeight: "800 !important"}}>Send Money</strong>
-                <span style={{ fontSize: "12px !important", marginLeft: "4px !important", color: "#94a3b8 !important", fontWeight: "600 !important" }}>→ Enter <strong style={{color: "#ffffff !important", fontWeight: "800 !important"}}>{PHONE_NUMBER}</strong></span>
+                <strong style={{color: "#ffffff"}}>Send Money</strong>
+                <span style={{ fontSize: "12px", marginLeft: "4px", color: "#94a3b8" }}>→ Enter <strong style={{color: "#ffffff"}}>{PHONE_NUMBER}</strong></span>
               </div>
 
               <div style={styles.stepBox}>
                 <span style={styles.stepNumber}>3</span>
-                <strong style={{color: "#ffffff !important", fontWeight: "800 !important"}}>Confirm: {BUSINESS_NAME}</strong>
+                <strong style={{color: "#ffffff"}}>Confirm: {BUSINESS_NAME}</strong>
               </div>
 
               <div style={styles.stepBox}>
                 <span style={styles.stepNumber}>4</span>
-                <strong style={{color: "#ffffff !important", fontWeight: "800 !important"}}>Amount: </strong>
-                <span style={{...styles.activationFee, color: "#ef4444 !important", fontWeight: "900 !important"}}>KES {plan.activationFee}</span>
+                <strong style={{color: "#ffffff"}}>Amount: </strong>
+                <span style={{...styles.activationFee, color: "#ef4444", fontWeight: 900}}>KES {plan.activationFee}</span>
               </div>
 
               <div style={styles.stepBox}>
                 <span style={styles.stepNumber}>5</span>
-                <strong style={{color: "#ffffff !important", fontWeight: "800 !important"}}>Enter PIN & Complete</strong>
+                <strong style={{color: "#ffffff"}}>Enter PIN & Complete</strong>
               </div>
 
               <div style={{
                 ...styles.stepBox,
-                background: "rgba(16, 185, 129, 0.2) !important",
-                border: "1px solid rgba(16, 185, 129, 0.4) !important"
+                background: "rgba(16, 185, 129, 0.2)",
+                border: "1px solid rgba(16, 185, 129, 0.4)"
               }}>
-                <span style={{...styles.stepNumber, background: "#10b981 !important"}}>6</span>
-                <strong style={{ color: "#10b981 !important", fontWeight: "800 !important" }}>Paste confirmation below</strong>
-                <span style={{ fontSize: "11px !important", display: "block !important", marginTop: "2px !important", color: "#6ee7b7 !important", fontWeight: "600 !important" }}>
+                <span style={{...styles.stepNumber, background: "#10b981"}}>6</span>
+                <strong style={{ color: "#10b981", fontWeight: 800 }}>Paste confirmation below</strong>
+                <span style={{ fontSize: "11px", display: "block", marginTop: "2px", color: "#6ee7b7", fontWeight: 600 }}>
                   Get KES {plan.total} instantly!
                 </span>
               </div>
@@ -740,13 +731,13 @@ export default function Activate() {
 
           <div style={styles.section}>
             <div style={{ 
-              display: "flex !important",
-              alignItems: "center !important",
-              justifyContent: "space-between !important",
-              flexWrap: "wrap !important",
-              gap: "6px !important"
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: "6px"
             }}>
-              <span style={{ fontSize: "14px !important", fontWeight: "700 !important", color: "#ffffff !important" }}>📞 <strong style={{ fontWeight: "800 !important", color: "#ffffff !important" }}>{PHONE_NUMBER}</strong></span>
+              <span style={{ fontSize: "14px", fontWeight: 700, color: "#ffffff" }}>📞 <strong>{PHONE_NUMBER}</strong></span>
               <button 
                 onClick={copyPhoneNumber} 
                 style={styles.copyBtn}
@@ -758,9 +749,9 @@ export default function Activate() {
           </div>
 
           <div style={styles.noteBox}>
-            📌 Paste the <strong style={{color: "#ffffff !important", fontWeight: "800 !important"}}>FULL M-Pesa SMS</strong> below
+            📌 Paste the <strong style={{color: "#ffffff"}}>FULL M-Pesa SMS</strong> below
             <br />
-            <span style={{ fontSize: "11px !important", color: "#f87171 !important", fontWeight: "600 !important" }}>
+            <span style={{ fontSize: "11px", color: "#f87171", fontWeight: 600 }}>
               ⚠ Include Transaction ID, Amount & Time
             </span>
           </div>
@@ -779,23 +770,23 @@ export default function Activate() {
             style={{
               ...styles.button,
               background: submitting
-                ? "#4b5563 !important"
-                : `linear-gradient(135deg, ${plan.color}, ${plan.color}dd) !important`,
-              fontWeight: "800 !important",
-              fontSize: "15px !important"
+                ? "#4b5563"
+                : `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)`,
+              fontWeight: 800,
+              fontSize: "15px"
             }}
           >
             {submitting ? (
               <>
                 <span style={{
-                  display: "inline-block !important",
-                  width: "14px !important",
-                  height: "14px !important",
-                  border: "2px solid rgba(255,255,255,0.3) !important",
-                  borderTopColor: "white !important",
-                  borderRadius: "50% !important",
-                  marginRight: "6px !important",
-                  animation: "spin 1s linear infinite !important"
+                  display: "inline-block",
+                  width: "14px",
+                  height: "14px",
+                  border: "2px solid rgba(255,255,255,0.3)",
+                  borderTopColor: "white",
+                  borderRadius: "50%",
+                  marginRight: "6px",
+                  animation: "spin 1s linear infinite"
                 }}></span>
                 Submitting...
               </>
@@ -814,11 +805,11 @@ export default function Activate() {
             onClick={() => navigate("/dashboard")}
             style={{
               ...styles.button,
-              background: "transparent !important",
-              border: "2px solid #3b82f6 !important",
-              color: "#3b82f6 !important",
-              marginTop: "8px !important",
-              fontWeight: "700 !important"
+              background: "transparent",
+              border: "2px solid #3b82f6",
+              color: "#3b82f6",
+              marginTop: "8px",
+              fontWeight: 700
             }}
           >
             ⬅ Back to Dashboard
@@ -826,62 +817,62 @@ export default function Activate() {
 
           {/* PLAN STATUS SECTION - AT BOTTOM */}
           <div style={{
-            marginTop: "20px !important",
-            padding: "14px !important",
-            borderRadius: "12px !important",
-            background: "rgba(30, 41, 59, 0.8) !important",
-            border: "1px solid #334155 !important",
-            fontSize: "12px !important"
+            marginTop: "20px",
+            padding: "14px",
+            borderRadius: "12px",
+            background: "rgba(30, 41, 59, 0.8)",
+            border: "1px solid #334155",
+            fontSize: "12px"
           }}>
             <div style={{ 
-              fontWeight: "800 !important", 
-              color: "#60a5fa !important",
-              marginBottom: "10px !important",
-              display: "flex !important",
-              alignItems: "center !important",
-              gap: "6px !important",
-              fontSize: "14px !important"
+              fontWeight: 800, 
+              color: "#60a5fa",
+              marginBottom: "10px",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontSize: "14px"
             }}>
               📊 Plan Status
             </div>
             
-            <div style={{ display: "flex !important", flexDirection: "column !important", gap: "6px !important" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               {['REGULAR', 'VIP', 'VVIP'].map((p) => {
                 const planData = user?.plans?.[p];
                 const isCurrent = planKey === p || (planKey === 'WELCOME' && p === 'REGULAR');
                 return (
                   <div key={p} style={{ 
-                    display: "flex !important", 
-                    justifyContent: "space-between !important",
-                    alignItems: "center !important",
-                    padding: "8px 10px !important",
-                    background: isCurrent ? "rgba(59, 130, 246, 0.15) !important" : "transparent !important",
-                    borderRadius: "6px !important",
-                    border: isCurrent ? "1px solid rgba(59, 130, 246, 0.3) !important" : "none !important"
+                    display: "flex", 
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "8px 10px",
+                    background: isCurrent ? "rgba(59, 130, 246, 0.15)" : "transparent",
+                    borderRadius: "6px",
+                    border: isCurrent ? "1px solid rgba(59, 130, 246, 0.3)" : "none"
                   }}>
                     <span style={{ 
-                      fontWeight: "700 !important", 
-                      fontSize: "12px !important",
-                      color: isCurrent ? "#93c5fd !important" : "#cbd5e1 !important"
+                      fontWeight: 700, 
+                      fontSize: "12px",
+                      color: isCurrent ? "#93c5fd" : "#cbd5e1"
                     }}>
                       {p}
                       {isCurrent && planKey === "WELCOME" && p === "REGULAR" && " (Welcome)"}
                     </span>
-                    <div style={{ display: "flex !important", gap: "8px !important", alignItems: "center !important" }}>
+                    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                       <span style={{ 
-                        color: planData?.completed ? "#4ade80 !important" : "#94a3b8 !important",
-                        fontSize: "11px !important",
-                        fontWeight: "600 !important"
+                        color: planData?.completed ? "#4ade80" : "#94a3b8",
+                        fontSize: "11px",
+                        fontWeight: 600
                       }}>
                         {planData?.completed ? "✓" : "✗"}
                       </span>
                       <span style={{ 
-                        color: planData?.is_activated ? "#4ade80 !important" : "#fbbf24 !important",
-                        fontSize: "11px !important",
-                        fontWeight: "700 !important",
-                        background: planData?.is_activated ? "rgba(74, 222, 128, 0.15) !important" : "rgba(251, 191, 36, 0.15) !important",
-                        padding: "2px 8px !important",
-                        borderRadius: "20px !important"
+                        color: planData?.is_activated ? "#4ade80" : "#fbbf24",
+                        fontSize: "11px",
+                        fontWeight: 700,
+                        background: planData?.is_activated ? "rgba(74, 222, 128, 0.15)" : "rgba(251, 191, 36, 0.15)",
+                        padding: "2px 8px",
+                        borderRadius: "20px"
                       }}>
                         {planData?.is_activated ? "Activated" : "Pending"}
                       </span>
@@ -894,12 +885,12 @@ export default function Activate() {
         </div>
 
         {/* Trust Badges */}
-        <div style={{ marginTop: "24px !important", width: "100% !important" }}>
+        <div style={{ marginTop: "24px", width: "100%" }}>
           <TrustBadges variant="compact" />
         </div>
 
         {/* Testimonials */}
-        <div style={{ marginTop: "24px !important", width: "100% !important" }}>
+        <div style={{ marginTop: "24px", width: "100%" }}>
           <Testimonials variant="carousel" />
         </div>
       </div>

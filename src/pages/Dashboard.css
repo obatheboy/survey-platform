@@ -933,7 +933,8 @@ body {
 }
 
 .continue-btn,
-.withdraw-btn {
+.withdraw-btn,
+.activate-btn {
   width: 100%;
   padding: 12px 16px;
   border: none;
@@ -953,6 +954,17 @@ body {
 .continue-btn:hover {
   background: var(--primary);
   color: white;
+}
+
+.activate-btn {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+}
+
+.activate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
 }
 
 .withdraw-btn {
