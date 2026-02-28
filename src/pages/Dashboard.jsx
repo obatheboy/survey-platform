@@ -820,23 +820,38 @@ return (
           {user && !user.is_activated && !user.account_activated && (
             <button
               onClick={() => navigate('/activate?welcome_bonus=true')}
+              className="activate-btn-pulse"
               style={{
                 background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                border: 'none',
-                borderRadius: '6px',
-                padding: '4px 10px',
+                border: '2px solid rgba(255,255,255,0.3)',
+                borderRadius: '12px',
+                padding: '12px 24px',
                 color: 'white',
-                fontWeight: 'bold',
-                fontSize: '0.65rem',
+                fontWeight: '800',
+                fontSize: '14px',
                 cursor: 'pointer',
-                boxShadow: '0 2px 6px rgba(239, 68, 68, 0.3)',
+                boxShadow: '0 4px 15px rgba(239, 68, 68, 0.5), 0 0 30px rgba(239, 68, 68, 0.3)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '3px',
-                whiteSpace: 'nowrap'
+                justifyContent: 'center',
+                gap: '8px',
+                whiteSpace: 'nowrap',
+                animation: 'pulse-glow 2s infinite',
+                transition: 'all 0.3s ease',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'scale(1.05)';
+                e.currentTarget.style.boxShadow = '0 6px 25px rgba(239, 68, 68, 0.7), 0 0 50px rgba(239, 68, 68, 0.4)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.boxShadow = '0 4px 15px rgba(239, 68, 68, 0.5), 0 0 30px rgba(239, 68, 68, 0.3)';
               }}
             >
-              ⚠️ Activate Account
+              <span style={{ fontSize: '18px' }}>⚡</span>
+              ACTIVATE NOW
             </button>
           )}
         </div>
