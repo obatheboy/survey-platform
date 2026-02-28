@@ -773,75 +773,42 @@ return (
       </div>
     )}
 
-      {/* MAIN MENU HEADER WITH DASHBOARD TITLE */}
+      {/* MAIN MENU HEADER WITH DASHBOARD TITLE - Gradient Header Card */}
       <header className="dashboard-main-header">
         <div className="header-title-container">
           <button className="menu-btn" onClick={() => setMenuOpen(true)}>
             <span className="menu-icon">☰</span>
           </button>
-          <h1 className="dashboard-main-title">Dashboard</h1>          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button
-              onClick={openWhatsAppSupport}
-              style={{
-                background: '#25D366',
-                color: 'white',
-                border: 'none',
-                borderRadius: '20px',
-                padding: '6px 12px',
-                fontSize: '12px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                transition: 'all 0.3s ease',
-                boxShadow: '0 2px 6px rgba(37, 211, 102, 0.3)',
-              }}
-              onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-              onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-              title="Contact Support on WhatsApp"
-            >
-              <span style={{ fontSize: '14px' }}>💬</span>
-              <span>CHAT US</span>
-            </button>
-            <button
-              onClick={toggleTheme}
-              className="theme-toggle-btn"
-              title="Toggle Theme"
-            >
-              {theme === 'light' ? '🌙' : '☀️'}
-            </button>
-          </div>
+          <h1 className="dashboard-main-title">Survey</h1>          
+          <button
+            onClick={toggleTheme}
+            className="theme-toggle-btn"
+            title="Toggle Theme"
+          >
+            {theme === 'light' ? '🌙' : '☀️'}
+          </button>
         </div>
 
-        <div className="header-activation-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        {/* Profile Section inside header */}
+        <div className="profile-section">
+          <div className="profile-info">
+            <div className="profile-avatar">
+              {user?.full_name?.charAt(0) || 'U'}
+            </div>
+            <div className="profile-greeting">
+              <span className="greeting-text">Good Morning,</span>
+              <span className="profile-name">{user?.full_name?.split(' ')[0] || 'Earner'}</span>
+            </div>
+          </div>
           {user && !user.is_activated && !user.account_activated && (
             <button
               onClick={() => navigate('/activate?welcome_bonus=true')}
-              style={{
-                background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                border: 'none',
-                borderRadius: '6px',
-                padding: '4px 10px',
-                color: 'white',
-                fontWeight: 'bold',
-                fontSize: '0.65rem',
-                cursor: 'pointer',
-                boxShadow: '0 2px 6px rgba(239, 68, 68, 0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '3px',
-                whiteSpace: 'nowrap'
-              }}
+              className="verify-btn"
             >
-              ⚠️ Activate Account
+              ⚠️ Verify Account
             </button>
           )}
         </div>
-        <p className="header-greeting-bottom">
-          Hello, {user?.full_name?.split(' ')[0] || 'Earner'}! 👋 Let's make money today!
-        </p>
       </header>
 
       {/* MAIN MENU DRAWER */}
@@ -855,156 +822,30 @@ return (
         }}
       />
 
-      {/* HERO SECTION - ULTRA COMPACT */}
-      <div className="dashboard-section hero-section" style={{
-        borderRadius: '0',
-        padding: '10px',
-        background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
-        boxShadow: '0 6px 20px -5px rgba(0, 0, 0, 0.1)',
-        border: 'none',
-        borderBottom: '1px solid rgba(255,255,255,0.2)',
-        position: 'relative',
-        overflow: 'hidden',
-        marginTop: '50px',
-        marginBottom: '0'
-      }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '10px',
-          alignItems: 'stretch'
-        }}>
-          {/* LEFT COLUMN: BUTTONS */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <button 
-                onClick={goToSurveys}
-                style={{
-                  background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '12px',
-                  padding: '10px',
-                  fontSize: '13px',
-                  fontWeight: '800',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px',
-                  flex: 1
-                }}
-              >
-                <span style={{fontSize: '18px'}}>🚀</span> Start Survey
-              </button>
-              
-              <button 
-                onClick={goToWelcome}
-                style={{
-                  background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '12px',
-                  padding: '10px',
-                  fontSize: '13px',
-                  fontWeight: '800',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 15px rgba(245, 158, 11, 0.3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px',
-                  flex: 1
-                }}
-              >
-                <span style={{fontSize: '18px'}}>🎁</span> Get Bonus
-              </button>
+      {/* BALANCE CARD - Below header */}
+      <div className="balance-card-wrapper">
+        <div className="balance-card">
+          <div className="balance-label">Total Balance</div>
+          <div className="balance-amount">
+            <span className="balance-currency">KES</span>
+            {stats.availableBalance.toLocaleString()}
           </div>
-          
-          {/* RIGHT COLUMN: BALANCE */}
-          <div style={{
-            background: 'linear-gradient(145deg, #1e293b, #0f172a)',
-            borderRadius: '16px',
-            padding: '10px',
-            textAlign: 'center',
-            boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            color: 'white',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            <div style={{
-              position: 'absolute',
-              top: '-50%',
-              right: '-50%',
-              width: '100%',
-              height: '100%',
-              background: 'radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%)',
-              transform: 'rotate(45deg)'
-            }}></div>
-
-            <div style={{
-              color: 'rgba(255,255,255,0.7)',
-              fontSize: '10px',
-              fontWeight: '800',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-              marginBottom: '2px'
-            }}>
-              Total Balance
-            </div>
-
-            <div style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              justifyContent: 'center',
-              gap: '2px',
-              marginBottom: '6px'
-            }}>
-              <span style={{
-                color: 'white',
-                fontSize: '12px',
-                fontWeight: '700',
-                marginTop: '4px'
-              }}>
-                KES
-              </span>
-              <div style={{
-                background: 'linear-gradient(to right, #34d399, #10b981)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                fontSize: '22px',
-                fontWeight: '900',
-                lineHeight: '1'
-              }}>
-                {stats.availableBalance.toLocaleString()}
-              </div>
-            </div>
-            
+          <div className="balance-actions">
             <button 
-              onClick={() => navigate("/withdraw-form")}
-              style={{
-                background: 'rgba(16, 185, 129, 0.2)',
-                color: '#34d399',
-                border: '1px solid rgba(16, 185, 129, 0.3)',
-                borderRadius: '8px',
-                padding: '6px 12px',
-                fontSize: '11px',
-                fontWeight: '700',
-                cursor: 'pointer',
-                width: '100%',
-                transition: 'all 0.2s'
-              }}
+              className="balance-btn deposit"
+              onClick={goToSurveys}
             >
-              Withdraw
+              💰 Deposit
+            </button>
+            <button 
+              className="balance-btn withdraw"
+              onClick={() => navigate("/withdraw-form")}
+            >
+              💸 Withdraw
             </button>
           </div>
         </div>
       </div>
-      
 
       {/* LIVE WITHDRAWAL FEED */}
       <div className="live-withdrawal-feed" style={{ marginTop: '0', marginBottom: '0', padding: '8px 12px', borderBottom: '1px solid var(--border-soft)' }}>
