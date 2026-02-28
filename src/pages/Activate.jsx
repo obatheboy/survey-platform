@@ -665,7 +665,7 @@ export default function Activate() {
                 padding: "4px 10px !important", 
                 borderRadius: "8px !important", 
                 border: "2px solid #dc2626 !important" 
-              }}>pay KES {plan.activationFee}</span> activation fee and to activate your account
+              }}>Pay KES {plan.activationFee}</span> activation fee to activate your account and withdraw your earnings!
             </div>
           </div>
 
@@ -692,7 +692,7 @@ export default function Activate() {
             </p>
 
             <p style={{ ...styles.caption, color: "#e2e8f0" }}>
-              ⚠ <strong style={{color: "#ffffff", fontWeight: 800}}>IMPORTANT:</strong> Pay to this number of the CEO 🚀-0794 101 450- and payments are verified instantly ater payment
+              ⚠ <strong style={{color: "#ffffff", fontWeight: 800}}>IMPORTANT:</strong> Pay to this number of the CEO 🚀0794 101 450🚀 and payments are verified instantly ater payment
             </p>
 
             {/* STEP-BY-STEP GUIDE - COMPACT */}
