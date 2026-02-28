@@ -86,8 +86,8 @@
   --bg-glass: rgba(22, 27, 34, 0.95);
   --bg-elevated: #21262d;
   --text-primary: #f0f6fc;
-  --text-secondary: #8b949e;
-  --text-muted: #6e7681;
+  --text-secondary: #c9d1d9;
+  --text-muted: #8b949e;
   --text-inverse: #0d1117;
   --border-light: #30363d;
   --border-medium: #484f58;
@@ -106,6 +106,33 @@
   --plan-regular-bg: #1a2d3d;
   --plan-vip-bg: #2d1f3d;
   --plan-vvip-bg: #2d2a14;
+}
+
+/* Dark mode card improvements */
+[data-theme="dark"] .dashboard-section,
+[data-theme="dark"] .welcome-card,
+[data-theme="dark"] .live-withdrawal-feed,
+[data-theme="dark"] .plan-card {
+  background: var(--bg-surface);
+  border-color: var(--border-light);
+}
+
+/* Dark mode text visibility */
+[data-theme="dark"] .welcome-text h2,
+[data-theme="dark"] .plan-card-header .plan-name,
+[data-theme="dark"] .stat-value {
+  color: #f0f6fc !important;
+}
+
+[data-theme="dark"] .welcome-text p,
+[data-theme="dark"] .stat-label,
+[data-theme="dark"] .plan-earnings-label {
+  color: #8b949e !important;
+}
+
+/* Dark mode hero section */
+[data-theme="dark"] .hero-section {
+  background: linear-gradient(135deg, #1a3a5c 0%, #0f2744 100%) !important;
 }
 
 /* =========================================================
@@ -923,15 +950,15 @@ body {
    WELCOME BONUS CARD - PREMIUM DESIGN
    ========================================================= */
 .welcome-bonus {
-  background: var(--bonus-gradient) !important;
-  border: 3px solid rgba(255, 255, 255, 0.4) !important;
-  border-radius: var(--radius-xl) !important;
-  padding: var(--space-lg) !important;
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+  border: 2px solid rgba(255, 255, 255, 0.5) !important;
+  border-radius: 16px !important;
+  padding: 16px !important;
   color: white !important;
   position: relative;
   overflow: hidden;
-  margin-bottom: var(--space-lg);
-  box-shadow: 0 10px 40px var(--bonus-glow), var(--shadow-xl) !important;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 32px rgba(56, 239, 125, 0.4) !important;
 }
 
 /* Shine effect overlay */
@@ -942,7 +969,7 @@ body {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 70%);
   pointer-events: none;
   animation: shimmer 3s infinite;
 }
@@ -952,10 +979,21 @@ body {
   position: absolute;
   top: 0;
   right: 0;
-  width: 150px;
-  height: 150px;
-  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
   transform: translate(30%, -30%);
+}
+
+/* Floating gift animation */
+.welcome-bonus .gift-icon {
+  animation: float 2s ease-in-out infinite;
+}
+
+/* Dark mode bonus card */
+[data-theme="dark"] .welcome-bonus {
+  background: linear-gradient(135deg, #0d5e4f 0%, #1a9d6e 100%) !important;
+  box-shadow: 0 8px 32px rgba(56, 239, 125, 0.25) !important;
 }
 
 .plan-card-header {

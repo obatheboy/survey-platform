@@ -874,14 +874,14 @@ return (
       {/* HERO SECTION - ULTRA COMPACT */}
       <div className="dashboard-section hero-section" style={{
         borderRadius: '0',
-        padding: '10px',
+        padding: '12px',
         background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
-        boxShadow: '0 6px 20px -5px rgba(0, 0, 0, 0.1)',
+        boxShadow: '0 6px 20px -5px rgba(0, 0, 0, 0.15)',
         border: 'none',
         borderBottom: '1px solid rgba(255,255,255,0.2)',
         position: 'relative',
         overflow: 'hidden',
-        marginTop: '50px',
+        marginTop: '90px',
         marginBottom: '0'
       }}>
         <div style={{

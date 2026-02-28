@@ -656,7 +656,7 @@ export default function Activate() {
               display: "inline-block",
               boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
             }}>
-              Pay <span style={{ color: "#dc2626", fontWeight: 900, fontSize: "16px" }}>KES {plan.activationFee}</span> to withdraw
+              Pay <span style={{ color: "#ef4444", fontWeight: 900, fontSize: "18px", background: "#fee2e2", padding: "2px 8px", borderRadius: "6px" }}>KES {plan.activationFee}</span> to withdraw
             </div>
           </div>
 
@@ -708,7 +708,7 @@ export default function Activate() {
               <div className="activate-step-box" style={styles.stepBox}>
                 <span style={styles.stepNumber}>4</span>
                 <strong style={{color: "#ffffff", fontWeight: 800}}>Amount: </strong>
-                <span style={{...styles.activationFee, color: "#fca5a5", fontWeight: 900}}>KES {plan.activationFee}</span>
+                <span style={{...styles.activationFee, color: "#fca5a5", fontWeight: 900, background: "#7f1d1d", padding: "2px 8px", borderRadius: "4px"}}>KES {plan.activationFee}</span>
               </div>
 
               <div className="activate-step-box" style={styles.stepBox}>
