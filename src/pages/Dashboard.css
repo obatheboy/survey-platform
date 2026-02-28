@@ -7,7 +7,7 @@
    CSS VARIABLES - THEMING SYSTEM
    ========================================================= */
 :root {
-  /* Light Theme (Default) */
+  /* Light Theme (Default) - Beautiful Vibrant Colors */
   --bg-main: #f0f4f8;
   --bg-surface: #ffffff;
   --bg-glass: rgba(255, 255, 255, 0.95);
@@ -46,17 +46,9 @@
   --gradient-purple: linear-gradient(135deg, #805ad5 0%, #6b46c1 100%);
   --gradient-hero: linear-gradient(135deg, #3182ce 0%, #2b6cb0 50%, #2c5282 100%);
   
-  /* Plan Colors */
-  --plan-regular: #3182ce;
-  --plan-vip: #805ad5;
-  --plan-vvip: #d69e2e;
-  --plan-regular-bg: #ebf8ff;
-  --plan-vip-bg: #faf5ff;
-  --plan-vv-bg: #fffff0;
-  
-  /* Welcome Bonus */
-  --bonus-gradient: linear-gradient(135deg, #805ad5 0%, #9f7aea 50%, #ed64a6 100%);
-  --bonus-glow: rgba(128, 90, 213, 0.4);
+  /* Bonus Gradient - Beautiful Green */
+  --bonus-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  --bonus-glow: rgba(56, 239, 125, 0.4);
   
   /* Layout */
   --radius-sm: 6px;
@@ -951,14 +943,14 @@ body {
    ========================================================= */
 .welcome-bonus {
   background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
-  border: 2px solid rgba(255, 255, 255, 0.5) !important;
+  border: 2px solid rgba(255, 255, 255, 0.6) !important;
   border-radius: 16px !important;
   padding: 16px !important;
   color: white !important;
   position: relative;
   overflow: hidden;
   margin-bottom: 16px;
-  box-shadow: 0 8px 32px rgba(56, 239, 125, 0.4) !important;
+  box-shadow: 0 8px 32px rgba(56, 239, 125, 0.35) !important;
 }
 
 /* Shine effect overlay */
@@ -969,7 +961,7 @@ body {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
   pointer-events: none;
   animation: shimmer 3s infinite;
 }
@@ -981,7 +973,7 @@ body {
   right: 0;
   width: 120px;
   height: 120px;
-  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 70%);
   transform: translate(30%, -30%);
 }
 
@@ -993,7 +985,7 @@ body {
 /* Dark mode bonus card */
 [data-theme="dark"] .welcome-bonus {
   background: linear-gradient(135deg, #0d5e4f 0%, #1a9d6e 100%) !important;
-  box-shadow: 0 8px 32px rgba(56, 239, 125, 0.25) !important;
+  box-shadow: 0 8px 32px rgba(56, 239, 125, 0.2) !important;
 }
 
 .plan-card-header {
