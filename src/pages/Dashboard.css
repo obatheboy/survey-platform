@@ -625,31 +625,21 @@ body {
 }
 
 /* Section Headers */
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+.section-heading {
+  margin-bottom: 24px;
 }
 
-.section-title {
-  font-size: 18px;
-  font-weight: 700;
+.section-heading h3 {
+  font-size: 22px;
+  font-weight: 800;
   color: var(--text-primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
 }
 
-.view-all-btn {
-  background: none;
-  border: none;
-  color: var(--primary);
+.section-heading p {
   font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: color var(--transition-fast);
-}
-
-.view-all-btn:hover {
-  color: var(--primary-dark);
+  color: var(--text-secondary);
 }
 
 /* Recent Activity */
@@ -836,10 +826,34 @@ body {
 }
 
 .plan-progress-card {
-  background: var(--bg-secondary);
-  border-radius: var(--radius-lg);
-  padding: 20px;
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 24px;
   border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.plan-progress-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.plan-progress-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.plan-progress-card:hover::before {
+  opacity: 1;
 }
 
 .plan-header {
@@ -1286,4 +1300,355 @@ body {
 
 .level-btn:hover {
   transform: translateY(-2px);
+}
+
+/* =========================================================
+    PREMIUM WELCOME BONUS CARD - FLOATING CARD STYLE
+    ========================================================= */
+.plan-card.welcome-bonus {
+  background: linear-gradient(145deg, #5f0f40, #831843, #9d174d) !important;
+  border: none !important;
+  border-radius: 24px !important;
+  padding: 24px !important;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  margin: 16px;
+  box-shadow: 
+    0 20px 40px rgba(95, 15, 64, 0.4),
+    0 0 0 1px rgba(255, 215, 0, 0.2) inset,
+    0 -4px 20px rgba(255, 215, 0, 0.1) inset;
+  animation: welcomeCardFloat 3s ease-in-out infinite;
+}
+
+@keyframes welcomeCardFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.plan-card.welcome-bonus:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 
+    0 30px 60px rgba(95, 15, 64, 0.5),
+    0 0 0 2px rgba(255, 215, 0, 0.4) inset,
+    0 -6px 30px rgba(255, 215, 0, 0.15) inset;
+}
+
+/* Decorative elements */
+.plan-card.welcome-bonus::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.plan-card.welcome-bonus::after {
+  content: '';
+  position: absolute;
+  bottom: -50px;
+  left: -50px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Premium badge with glow */
+.plan-card.welcome-bonus .plan-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 10px 20px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.plan-card.welcome-bonus .plan-icon {
+  font-size: 32px;
+  color: #ffd700;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+  border: 2px solid rgba(255, 215, 0, 0.5);
+}
+
+.plan-card.welcome-bonus .plan-name {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 900;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  letter-spacing: -0.5px;
+}
+
+/* Premium amount display */
+.plan-card.welcome-bonus .bonus-amount-container {
+  text-align: center;
+  margin: 20px 0;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
+  border-radius: 20px;
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.2),
+    0 0 30px rgba(255, 215, 0, 0.1) inset;
+}
+
+.plan-card.welcome-bonus .bonus-amount {
+  font-size: 42px;
+  font-weight: 900;
+  color: white;
+  display: block;
+  line-height: 1.1;
+  text-shadow: 0 0 20px #ffd700, 0 2px 4px rgba(0, 0, 0, 0.4);
+  animation: amountPulse 2s ease-in-out infinite;
+}
+
+@keyframes amountPulse {
+  0%, 100% { text-shadow: 0 0 20px #ffd700, 0 2px 4px rgba(0, 0, 0, 0.4); }
+  50% { text-shadow: 0 0 30px #ffd700, 0 0 40px rgba(255, 215, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.4); }
+}
+
+/* Premium button */
+.plan-card.welcome-bonus .start-survey-btn {
+  background: linear-gradient(145deg, #2563eb, #1e40af) !important;
+  border: 2px solid #ffd700 !important;
+  border-radius: 50px !important;
+  padding: 16px 28px !important;
+  font-weight: 900 !important;
+  font-size: 15px !important;
+  color: white !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  cursor: pointer;
+  box-shadow: 
+    0 6px 20px rgba(37, 99, 235, 0.4),
+    0 0 15px rgba(255, 215, 0, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.plan-card.welcome-bonus .start-survey-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.plan-card.welcome-bonus .start-survey-btn:hover::before {
+  left: 100%;
+}
+
+.plan-card.welcome-bonus .start-survey-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 12px 30px rgba(37, 99, 235, 0.5),
+    0 0 25px rgba(255, 215, 0, 0.4);
+}
+
+/* Premium status tag */
+.plan-card.welcome-bonus .plan-status {
+  background: linear-gradient(135deg, #c2410c, #ea580c) !important;
+  color: #ffffff !important;
+  border: 2px solid #ffd700 !important;
+  padding: 8px 18px !important;
+  border-radius: 50px !important;
+  font-size: 11px !important;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Description text styling */
+.plan-card.welcome-bonus .bonus-description {
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.95);
+  text-align: center;
+  margin: 16px 0;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.2);
+  padding: 12px 20px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.plan-card.welcome-bonus .bonus-description strong {
+  color: #ffd700;
+  font-size: 18px;
+  font-weight: 900;
+  text-shadow: 0 0 6px #ffd700;
+}
+
+/* =========================================================
+    PROFESSIONAL STATS CARDS STYLING
+    ========================================================= */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+}
+
+.stats-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.stats-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary-light);
+}
+
+.stats-card:hover::before {
+  opacity: 1;
+}
+
+.stats-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stats-card-header .stats-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--border-color));
+}
+
+.stats-card h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.stats-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stats-card-body .stats-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.stats-card-body .stats-label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Card color variants */
+.stats-card.total-earnings {
+  background: linear-gradient(145deg, #fffbeb, #fef3c7);
+  border-color: #fde68a;
+}
+
+.stats-card.available-balance {
+  background: linear-gradient(145deg, #ecfdf5, #d1fae5);
+  border-color: #a7f3d0;
+}
+
+.stats-card.affiliate-balance {
+  background: linear-gradient(145deg, #faf5ff, #f3e8ff);
+  border-color: #e9d5ff;
+}
+
+.stats-card.surveys-completed {
+  background: linear-gradient(145deg, #eff6ff, #dbeafe);
+  border-color: #bfdbfe;
+}
+
+.stats-card.success-rate {
+  background: linear-gradient(145deg, #fefce8, #fef9c3);
+  border-color: #fef08a;
+}
+
+/* =========================================================
+    RESPONSIVE STYLES
+    ========================================================= */
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .progress-cards, 
+  .plans-progress-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .progress-cards, 
+  .plans-progress-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .plan-card.welcome-bonus {
+    margin: 12px;
+    padding: 20px !important;
+    border-radius: 20px !important;
+  }
+  
+  .plan-card.welcome-bonus .bonus-amount {
+    font-size: 32px;
+  }
+  
+  .plan-card.welcome-bonus .bonus-amount-container {
+    padding: 16px;
+  }
 }
