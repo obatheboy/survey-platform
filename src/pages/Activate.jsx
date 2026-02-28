@@ -656,7 +656,7 @@ export default function Activate() {
               display: "inline-block",
               boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
             }}>
-              Pay <span style={{ color: "#ef4444", fontWeight: 900, fontSize: "18px", background: "#fee2e2", padding: "2px 8px", borderRadius: "6px" }}>KES {plan.activationFee}</span> to withdraw
+              Pay <span style={{ color: "#dc2626", fontWeight: 900, fontSize: "20px", background: "#fef2f2", padding: "4px 12px", borderRadius: "8px", border: "2px solid #ef4444", display: "inline-block" }}>KES {plan.activationFee}</span> to withdraw
             </div>
           </div>
 

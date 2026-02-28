@@ -20,11 +20,11 @@
   --border-medium: #cbd5e0;
   
   /* Brand Colors - Enhanced */
-  --primary: #3182ce;
-  --primary-dark: #2c5282;
-  --primary-light: #4299e1;
+  --primary: #3b82f6;
+  --primary-dark: #1d4ed8;
+  --primary-light: #60a5fa;
   --primary-50: #ebf8ff;
-  --success: #38a169;
+  --success: #10b981;
   --success-light: #c6f6d5;
   --warning: #d69e2e;
   --warning-light: #fefcbf;
@@ -47,8 +47,8 @@
   --gradient-hero: linear-gradient(135deg, #3182ce 0%, #2b6cb0 50%, #2c5282 100%);
   
   /* Bonus Gradient - Beautiful Green */
-  --bonus-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  --bonus-glow: rgba(56, 239, 125, 0.4);
+  --bonus-gradient: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #ec4899 100%);
+  --bonus-glow: rgba(139, 92, 246, 0.35);
   
   /* Layout */
   --radius-sm: 6px;
@@ -71,15 +71,15 @@
   --transition-slow: 350ms ease;
 }
 
-/* Dark Theme - Enhanced */
+/* Dark Theme - Beautiful & Easy on Eyes */
 [data-theme="dark"] {
-  --bg-main: #0d1117;
-  --bg-surface: #161b22;
-  --bg-glass: rgba(22, 27, 34, 0.95);
-  --bg-elevated: #21262d;
-  --text-primary: #f0f6fc;
-  --text-secondary: #c9d1d9;
-  --text-muted: #8b949e;
+  --bg-main: #0f1419;
+  --bg-surface: #15202b;
+  --bg-glass: rgba(21, 32, 43, 0.98);
+  --bg-elevated: #1c2733;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
   --text-inverse: #0d1117;
   --border-light: #30363d;
   --border-medium: #484f58;
@@ -987,7 +987,7 @@ body {
    WELCOME BONUS CARD - PREMIUM DESIGN
    ========================================================= */
 .welcome-bonus {
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #ec4899 100%) !important;
   border: 2px solid rgba(255, 255, 255, 0.6) !important;
   border-radius: 16px !important;
   padding: 16px !important;
@@ -995,7 +995,7 @@ body {
   position: relative;
   overflow: hidden;
   margin-bottom: 16px;
-  box-shadow: 0 8px 32px rgba(56, 239, 125, 0.35) !important;
+  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.4) !important;
 }
 
 /* Shine effect overlay */
@@ -1029,8 +1029,8 @@ body {
 
 /* Dark mode bonus card */
 [data-theme="dark"] .welcome-bonus {
-  background: linear-gradient(135deg, #0d5e4f 0%, #1a9d6e 100%) !important;
-  box-shadow: 0 8px 32px rgba(56, 239, 125, 0.2) !important;
+  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%) !important;
+  box-shadow: 0 8px 32px rgba(124, 58, 237, 0.3) !important;
 }
 
 .plan-card-header {
