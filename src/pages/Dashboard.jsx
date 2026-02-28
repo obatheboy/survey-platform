@@ -12,7 +12,6 @@ import DailyRewardPopup from "./components/DailyRewardPopup.jsx";
 import WelcomeBonusPopup from "./components/WelcomeBonusPopup.jsx";
 import { gamificationApi } from "../api/api";
 import "./Dashboard.css";
-import "./Dashboard-Enhanced.css";
 
 const PLANS = {
   REGULAR: { 
@@ -823,7 +822,7 @@ return (
               style={{
                 background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
                 border: 'none',
-                borderRadius: '50px',
+                borderRadius: '6px',
                 padding: '4px 10px',
                 color: 'white',
                 fontWeight: 'bold',
@@ -1399,49 +1398,49 @@ return (
           {/* WHY USERS LOVE OUR PLATFORM */}
           <section className="dashboard-section">
             <div className="section-heading">
-              <h3>🚀 Why Choose SurveyPro?</h3>
-              <p>Join thousands of verified earners who trust us with their earnings</p>
+              <h3>Why Users Love Our Platform</h3>
+              <p>Discover what makes us the best choice for earning online</p>
             </div>
             <div className="feature-grid">
               <div className="feature-card">
                 <div className="feature-icon">⚡</div>
-                <h4>🚀 Instant Withdrawals</h4>
-                <p>Get paid within MINUTES of completing surveys. No waiting days - your earnings hit your account immediately!</p>
+                <h4>Instant Withdrawals</h4>
+                <p>Request cash anytime and get paid within minutes. No waiting periods.</p>
               </div>
               <div className="feature-card">
-                <div className="feature-icon">🛡️</div>
-                <h4>✅ Verified Surveys</h4>
-                <p>Every survey is quality-verified. We filter out spam so you only earn from legitimate opportunities.</p>
+                <div className="feature-icon">✅</div>
+                <h4>Verified Surveys</h4>
+                <p>Only high-quality surveys that pay on time. No spam, no scams.</p>
               </div>
               <div className="feature-card">
-                <div className="feature-icon">💎</div>
-                <h4>🔒 Secure Payments</h4>
-                <p>Bank-level encryption protects every transaction. Your money is safe with enterprise security.</p>
+                <div className="feature-icon">🔒</div>
+                <h4>Secure Payments</h4>
+                <p>Bank-level encryption secures all transactions. Your earnings are safe with us.</p>
               </div>
               <div className="feature-card">
-                <div className="feature-icon">👥</div>
-                <h4>💬 24/7 Support</h4>
-                <p>Our dedicated team is ALWAYS online to help. Get answers fast - average response time: 2 minutes!</p>
+                <div className="feature-icon">💬</div>
+                <h4>24/7 Support</h4>
+                <p>Our team is always here to help. Quick response guaranteed!</p>
               </div>
               <div className="feature-card">
                 <div className="feature-icon">📊</div>
-                <h4>📈 Real-time Tracking</h4>
-                <p>Watch your earnings grow live! Complete transparency - every cent is tracked in real-time.</p>
+                <h4>Real-time Tracking</h4>
+                <p>Monitor your earnings and progress in real-time. Full transparency.</p>
               </div>
               <div className="feature-card">
                 <div className="feature-icon">🎁</div>
-                <h4>💰 Referral Bonuses</h4>
-                <p>Earn KES 100 for each friend! Build your network and earn passive income on their activity.</p>
+                <h4>Referral Bonuses</h4>
+                <p>Earn KES 105 for each friend! Unlimited earning potential.</p>
               </div>
               <div className="feature-card">
                 <div className="feature-icon">📱</div>
-                <h4>🌐 Mobile Friendly</h4>
-                <p>Work from anywhere! Complete surveys on your phone, tablet, or computer - any device works.</p>
+                <h4>Mobile Friendly</h4>
+                <p>Complete surveys on your phone or computer. Work from anywhere.</p>
               </div>
               <div className="feature-card">
-                <div className="feature-icon">💵</div>
-                <h4>💎 Multiple Income Streams</h4>
-                <p>Activate premium plans and unlock up to 2X earnings! More ways to earn = more money in your pocket.</p>
+                <div className="feature-icon">💰</div>
+                <h4>Multiple Income Streams</h4>
+                <p>Activate different plans and maximize your earnings.</p>
               </div>
             </div>
           </section>
@@ -1984,3 +1983,5 @@ return (
     </div>
   );
 }
+
+
