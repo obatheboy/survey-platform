@@ -1,3 +1,4 @@
+
 // ========================= Dashboard.jsx =========================
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -1015,17 +1016,21 @@ return (
 <div className="user-notifications-section" style={{ marginTop: '0', marginBottom: '0', borderBottom: '1px solid var(--border-soft)' }}>
   <UserNotifications />
 </div>
-{/* WELCOME BONUS CARD - PREMIUM FLOATING CARD STYLE */}
+{/* WELCOME BONUS CARD - COMPACT VERSION */}
 <section ref={welcomeRef}>
-  <div 
-    className="plan-card welcome-bonus"
-    style={{
-      position: 'relative',
-      overflow: 'hidden',
-      marginTop: '0',
-      marginBottom: '0'
-    }}
-  >
+  <div className="plan-card welcome-bonus" style={{
+    background: 'linear-gradient(145deg, #5f0f40, #831843, #9d174d)',
+    border: '4px solid #ff3333',
+    boxShadow: '0 20px 30px -10px rgba(95, 15, 64, 0.5), 0 8px 15px -6px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 215, 0, 0.3) inset',
+    borderRadius: '0',
+    padding: '6px 12px',
+    color: 'white',
+    position: 'relative',
+    overflow: 'hidden',
+    transition: 'all 0.3s ease',
+    marginTop: '0',
+    marginBottom: '0'
+  }}>
     {/* Diamond pattern overlay */}
     <div style={{
       position: 'absolute',
@@ -1053,63 +1058,153 @@ return (
       zIndex: 1
     }} />
     
-    {/* HEADER */}
+    {/* HEADER - EXTRA COMPACT */}
     <div className="plan-card-header" style={{ 
       position: 'relative', 
       zIndex: 2,
-      marginBottom: '16px',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      flexWrap: 'wrap',
-      gap: '12px'
+      marginBottom: '2px' /* REDUCED from 4px to 2px */
     }}>
       <div className="plan-badge" style={{ 
         display: 'flex', 
         alignItems: 'center', 
-        gap: '12px'
+        gap: '8px' /* REDUCED from 10px to 8px */
       }}>
-        <span className="plan-icon">
+        <span className="plan-icon" style={{ 
+          fontSize: '28px', /* REDUCED from 32px to 28px */
+          color: '#ffd700',
+          background: 'rgba(255, 255, 255, 0.15)',
+          width: '44px', /* REDUCED from 52px to 44px */
+          height: '44px', /* REDUCED from 52px to 44px */
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 4px 15px rgba(255, 215, 0, 0.3)',
+          border: '2px solid rgba(255, 215, 0, 0.5)',
+          textShadow: '0 0 10px rgba(255, 215, 0, 0.5)'
+        }}>
           🎁
         </span>
-        <span className="plan-name">
+        <span className="plan-name" style={{ 
+          color: '#ffffff !important',
+          fontSize: '20px', /* REDUCED from 22px to 20px */
+          fontWeight: '900',
+          textShadow: '0 2px 8px rgba(0, 0, 0, 0.6)',
+          letterSpacing: '-0.5px'
+        }}>
           Welcome Bonus
         </span>
       </div>
-      <span className="plan-status">
+      <span className="plan-status" style={{ 
+        background: '#c2410c !important',
+        color: '#ffffff !important',
+        border: '2px solid #ffd700 !important',
+        padding: '4px 12px', /* REDUCED from 6px 14px to 4px 12px */
+        borderRadius: '40px',
+        fontSize: '10px', /* REDUCED from 11px to 10px */
+        fontWeight: '900',
+        textTransform: 'uppercase',
+        letterSpacing: '0.6px', /* REDUCED from 0.8px to 0.6px */
+        boxShadow: '0 0 12px rgba(255, 255, 255, 0.3)',
+        textShadow: '0 1px 3px #000000'
+      }}>
         🔓 ACTIVATE NOW
       </span>
     </div>
     
-    {/* BODY */}
+    {/* BODY - EXTRA COMPACT */}
     <div className="plan-card-body" style={{ position: 'relative', zIndex: 2 }}>
       
-      {/* BONUS AMOUNT SECTION */}
-      <div className="bonus-amount-container">
-        <span className="bonus-amount">
+      {/* ===== BONUS AMOUNT SECTION - REMOVED THE "WELCOME BONUS" CAPTION ABOVE AMOUNT ===== */}
+      <div style={{
+        textAlign: 'center',
+        margin: '2px 0', /* REDUCED from 4px to 2px */
+        padding: '6px', /* REDUCED from 8px to 6px */
+        background: 'rgba(0, 0, 0, 0.25)',
+        borderRadius: '10px', /* REDUCED from 12px to 10px */
+        border: '1px solid rgba(255, 215, 0, 0.4)',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
+      }}>
+        {/* REMOVED the "WELCOME BONUS" caption span that was here */}
+        <span style={{
+          fontSize: '32px', /* REDUCED from 36px to 32px */
+          fontWeight: '900',
+          color: 'white',
+          display: 'block',
+          lineHeight: '1.1',
+          textShadow: '0 0 12px #ffd700, 0 2px 4px rgba(0, 0, 0, 0.4)'
+        }}>
           KES 1,200
         </span>
       </div>
       
-      {/* DESCRIPTION */}
-      <p className="bonus-description">
-        Congratulations! You've received a welcome bonus of <strong>KES 1,200</strong>. Activate your account to withdraw instantly!
+      {/* DESCRIPTION - KEPT INTACT with original text */}
+      <p style={{
+        fontSize: '13px', /* REDUCED from 14px to 13px */
+        lineHeight: '1.3', /* REDUCED from 1.4 to 1.3 */
+        color: 'rgba(255, 255, 255, 0.95)',
+        textAlign: 'center',
+        margin: '0 0 4px', /* REDUCED from 6px to 4px */
+        fontWeight: '600',
+        textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)',
+        background: 'rgba(0, 0, 0, 0.2)',
+        padding: '6px 12px', /* REDUCED from 8px 14px to 6px 12px */
+        borderRadius: '30px',
+        border: '1px solid rgba(255, 215, 0, 0.2)'
+      }}>
+        Congratulations! You've received a welcome bonus of <strong style={{
+          color: '#ffd700',
+          fontSize: '16px', /* REDUCED from 18px to 16px */
+          fontWeight: '900',
+          textShadow: '0 0 6px #ffd700'
+        }}>KES 1,200</strong>. Activate your account to withdraw instantly!
       </p>
     </div>
     
-    {/* FOOTER */}
+    {/* FOOTER - EXTRA COMPACT */}
     <div className="plan-card-footer" style={{ 
       position: 'relative', 
       zIndex: 2,
-      marginTop: '20px'
+      marginTop: '0'
     }}>
       <button 
         className="start-survey-btn"
         onClick={handleWelcomeBonusWithdraw}
+        style={{
+          background: 'linear-gradient(145deg, #2563eb, #1e40af)',
+          border: '2px solid #ffd700',
+          borderRadius: '40px',
+          padding: '10px 16px', /* REDUCED from 12px 20px to 10px 16px */
+          fontWeight: '900',
+          fontSize: '13px', /* REDUCED from 14px to 13px */
+          color: 'white',
+          textTransform: 'uppercase',
+          letterSpacing: '0.6px', /* REDUCED from 0.8px to 0.6px */
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '6px', /* REDUCED from 8px to 6px */
+          width: '100%',
+          cursor: 'pointer',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255, 215, 0, 0.3)',
+          transition: 'all 0.2s ease',
+          position: 'relative',
+          overflow: 'hidden'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'translateY(-2px)';
+          e.currentTarget.style.boxShadow = '0 8px 16px rgba(255, 215, 0, 0.5), 0 0 12px rgba(255, 215, 0, 0.4)';
+          e.currentTarget.style.borderColor = '#ffffff';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255, 215, 0, 0.3)';
+          e.currentTarget.style.borderColor = '#ffd700';
+        }}
       >
-        <span className="btn-icon" style={{ fontSize: '18px' }}>🔓</span>
+        <span className="btn-icon" style={{ fontSize: '16px' }}>🔓</span>
         ACTIVATE & CLAIM NOW
-        <span style={{ fontSize: '16px', marginLeft: '4px' }}>✨</span>
+        <span style={{ fontSize: '14px', marginLeft: '2px' }}>✨</span>
       </button>
     </div>
   </div>
@@ -1151,7 +1246,7 @@ return (
               </div>
 
               {/* Affiliate Earnings Card */}
-              <div className="stats-card affiliate-balance">
+              <div className="stats-card affiliate-balance" style={{ background: 'linear-gradient(135deg, #faf5ff, #f3e8ff)' }}>
                 <div className="stats-card-header">
                   <span className="stats-icon">🎁</span>
                   <h4>Affiliate Earnings</h4>
@@ -1161,7 +1256,7 @@ return (
                   <span className="stats-label">From referrals</span>
                 </div>
                 <button 
-                  className="withdraw-quick-btn" 
+                  className="withdraw-quick-btn affiliate-withdraw-btn" 
                   onClick={() => navigate("/withdraw-form?type=affiliate")}
                 >
                   Withdraw Now
@@ -1889,5 +1984,4 @@ return (
     </div>
   );
 }
-
 
