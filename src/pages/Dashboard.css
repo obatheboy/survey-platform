@@ -545,6 +545,18 @@ body {
   padding: var(--space-lg);
   border: 1px solid var(--border-light);
   box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--vip-color), var(--success));
 }
 
 /* =========================================================
@@ -567,8 +579,19 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
+  height: 5px;
   background: var(--plan-gradient, var(--gradient-primary));
+}
+
+.plan-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+  transform: translate(30%, -30%);
 }
 
 .plan-card:hover {
@@ -578,15 +601,15 @@ body {
 }
 
 .plan-card.regular {
-  --plan-gradient: linear-gradient(135deg, #3182ce, #2b6cb0);
+  --plan-gradient: linear-gradient(135deg, #3182ce, #4299e1);
 }
 
 .plan-card.vip {
-  --plan-gradient: linear-gradient(135deg, #805ad5, #6b46c1);
+  --plan-gradient: linear-gradient(135deg, #805ad5, #9f7aea);
 }
 
 .plan-card.vvip {
-  --plan-gradient: linear-gradient(135deg, #d69e2e, #b7791f);
+  --plan-gradient: linear-gradient(135deg, #d69e2e, #ecc94b);
 }
 
 /* Plan Status Badge */
@@ -760,7 +783,18 @@ body {
   left: 0;
   right: 0;
   height: 4px;
-  background: var(--gradient-primary);
+  background: linear-gradient(90deg, #3182ce, #805ad5, #38a169);
+}
+
+.welcome-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(49, 130, 206, 0.1) 0%, transparent 70%);
+  transform: translate(30%, -30%);
 }
 
 .welcome-card-content {
@@ -931,7 +965,18 @@ body {
   left: 0;
   right: 0;
   height: 3px;
-  background: var(--gradient-success);
+  background: linear-gradient(90deg, #38a169, #10b981, #34d399);
+}
+
+.live-withdrawal-feed::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(56, 161, 105, 0.1) 0%, transparent 70%);
+  transform: translate(30%, -30%);
 }
 
 .user-notifications-section {
