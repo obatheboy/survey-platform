@@ -543,8 +543,12 @@ export default function Dashboard() {
           {navItems.map((item) => (
             <button
               key={item.id}
+              type="button"
               className={`nav-item ${activeNav === item.id ? 'active' : ''}`}
-              onClick={() => handleNavClick(item.id)}
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavClick(item.id);
+              }}
             >
               <span className="nav-icon">{item.icon}</span>
               {sidebarOpen && <span className="nav-label">{item.label}</span>}
@@ -565,7 +569,7 @@ export default function Dashboard() {
         {/* Top Header */}
         <header className="dashboard-header">
           <div className="header-left">
-            <button className="menu-toggle" onClick={toggleSidebar}>
+            <button type="button" className="menu-toggle" onClick={toggleSidebar}>
               <span className="hamburger">☰</span>
             </button>
             <h1 className="header-title">Dashboard</h1>
@@ -582,7 +586,7 @@ export default function Dashboard() {
                 <span className="stat-value">🔥 {gamificationStats.currentStreak}</span>
               </div>
             </div>
-            <button className="notification-btn">
+            <button type="button" className="notification-btn">
               <span>🔔</span>
               <span className="notification-badge">3</span>
             </button>
@@ -652,15 +656,15 @@ export default function Dashboard() {
           <section className="quick-actions-section">
             <h3 className="section-title">Quick Actions</h3>
             <div className="quick-actions-row">
-              <button className="quick-action-btn primary" onClick={goToSurveys}>
+              <button type="button" className="quick-action-btn primary" onClick={(e) => { e.preventDefault(); goToSurveys(); }}>
                 <span className="action-icon">📝</span>
                 <span className="action-text">Start Survey</span>
               </button>
-              <button className="quick-action-btn success" onClick={() => navigate('/withdraw')}>
+              <button type="button" className="quick-action-btn success" onClick={(e) => { e.preventDefault(); navigate('/withdraw'); }}>
                 <span className="action-icon">💳</span>
                 <span className="action-text">Withdraw</span>
               </button>
-              <button className="quick-action-btn accent" onClick={() => navigate('/affiliate')}>
+              <button type="button" className="quick-action-btn accent" onClick={(e) => { e.preventDefault(); navigate('/affiliate'); }}>
                 <span className="action-icon">📤</span>
                 <span className="action-text">Invite Friends</span>
               </button>
@@ -673,7 +677,7 @@ export default function Dashboard() {
             <section className="recent-activity-section">
               <div className="section-header">
                 <h3 className="section-title">Recent Activity</h3>
-                <button className="view-all-btn">View All →</button>
+                <button type="button" className="view-all-btn">View All →</button>
               </div>
               <div className="activity-list">
                 {recentActivity.map((activity) => (
@@ -698,7 +702,7 @@ export default function Dashboard() {
             <section className="leaderboard-section">
               <div className="section-header">
                 <h3 className="section-title">🏆 Top Surveyors</h3>
-                <button className="view-all-btn">View All →</button>
+                <button type="button" className="view-all-btn">View All →</button>
               </div>
               <div className="leaderboard-list">
                 {topSurveyors.map((surveyor, index) => (
@@ -749,17 +753,17 @@ export default function Dashboard() {
                       <span className="total">/ KSh {plan.total.toLocaleString()}</span>
                     </div>
                     {!isCompleted(planKey) && !isActivated(planKey) && (
-                      <button className="activate-btn" onClick={() => navigate(`/activate?plan=${planKey}`)}>
+                      <button type="button" className="activate-btn" onClick={(e) => { e.preventDefault(); navigate(`/activate?plan=${planKey}`); }}>
                         🔓 Activate - KSh {PLANS[planKey].perSurvey * 10}
                       </button>
                     )}
                     {!isCompleted(planKey) && isActivated(planKey) && (
-                      <button className="continue-btn" onClick={() => startSurvey(planKey)}>
+                      <button type="button" className="continue-btn" onClick={(e) => { e.preventDefault(); startSurvey(planKey); }}>
                         Continue Survey →
                       </button>
                     )}
                     {isCompleted(planKey) && (
-                      <button className="withdraw-btn" onClick={() => handleWithdrawClick(planKey)}>
+                      <button type="button" className="withdraw-btn" onClick={(e) => { e.preventDefault(); handleWithdrawClick(planKey); }}>
                         💰 Withdraw KSh {earnedSoFar(planKey).toLocaleString()}
                       </button>
                     )}
