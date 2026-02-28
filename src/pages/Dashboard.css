@@ -984,63 +984,135 @@ body {
 }
 
 /* =========================================================
-   WELCOME BONUS CARD - PREMIUM DESIGN
+   WELCOME BONUS CARD - PREMIUM MOBILE DESIGN
    ========================================================= */
 .welcome-bonus {
   background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%) !important;
   border: 3px solid #fbbf24 !important;
-  border-radius: 12px !important;
-  padding: 10px 14px !important;
+  border-radius: 16px !important;
+  padding: 14px 16px !important;
   color: white !important;
   position: relative;
   overflow: hidden;
   margin-bottom: 12px;
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4), 0 0 0 1px rgba(251, 191, 36, 0.3) !important;
+  box-shadow: 
+    0 8px 32px rgba(37, 99, 235, 0.4), 
+    0 0 0 1px rgba(251, 191, 36, 0.3) !important;
 }
 
-/* Animated shine */
+/* Animated shimmer background */
 .welcome-bonus::before {
   content: '';
   position: absolute;
-  top: -100%;
-  left: -100%;
-  width: 300%;
-  height: 300%;
+  top: -150%;
+  left: -150%;
+  width: 400%;
+  height: 400%;
   background: linear-gradient(
     45deg,
     transparent 30%,
-    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.25) 50%,
     transparent 70%
   );
   pointer-events: none;
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: shimmer 2s ease-in-out infinite;
 }
 
-/* Sparkle dots */
+@keyframes shimmer {
+  0% { transform: translateX(-30%) translateY(-30%) rotate(45deg); }
+  100% { transform: translateX(30%) translateY(30%) rotate(45deg); }
+}
+
+/* Multi sparkle effect */
 .welcome-bonus::after {
-  content: '✦ ✦';
+  content: '✦ ✦ ✦';
   position: absolute;
-  top: 4px;
-  right: 8px;
+  top: 6px;
+  right: 10px;
   color: #fbbf24;
-  font-size: 10px;
-  letter-spacing: 3px;
+  font-size: 12px;
+  letter-spacing: 4px;
+  animation: sparkleTwinkle 1.5s ease-in-out infinite;
+}
+
+@keyframes sparkleTwinkle {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
 }
 
 /* Floating gift animation */
 .welcome-bonus .gift-icon {
-  animation: bounce 0.8s ease-in-out infinite;
+  animation: giftBounce 1s ease-in-out infinite;
 }
 
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+@keyframes giftBounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-4px) rotate(-5deg); }
+  50% { transform: translateY(0) rotate(0deg); }
+  75% { transform: translateY(-4px) rotate(5deg); }
+}
+
+/* Glow pulse effect */
+.welcome-bonus::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 50%, rgba(251, 191, 36, 0.2) 0%, transparent 60%);
+  animation: glowPulse 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
 
 /* Dark mode bonus card */
 [data-theme="dark"] .welcome-bonus {
   background: linear-gradient(135deg, #172554 0%, #1e3a8a 100%) !important;
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3), 0 0 0 1px rgba(251, 191, 36, 0.2) !important;
+  box-shadow: 0 8px 32px rgba(37, 99, 235, 0.3), 0 0 0 1px rgba(251, 191, 36, 0.2) !important;
+}
+
+/* =========================================================
+   WELCOME BONUS CARD - MOBILE OPTIMIZATIONS
+   ========================================================= */
+@media (max-width: 480px) {
+  .welcome-bonus {
+    padding: 12px 14px !important;
+    border-radius: 14px !important;
+    border-width: 2px !important;
+    margin-bottom: 10px;
+  }
+
+  .welcome-bonus::after {
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+}
+
+@media (max-width: 380px) {
+  .welcome-bonus {
+    padding: 10px 12px !important;
+    border-radius: 12px !important;
+    border-width: 2px !important;
+  }
+
+  .welcome-bonus::after {
+    content: '✦';
+    font-size: 9px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .welcome-bonus::before,
+  .welcome-bonus::after,
+  .welcome-bonus .gift-icon {
+    animation: none;
+  }
 }
 
 .plan-card-header {

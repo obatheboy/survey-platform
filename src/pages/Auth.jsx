@@ -12,7 +12,7 @@ const Input = ({ type = "text", icon, readOnly, disabled, error, ...props }) => 
       disabled={disabled}
       style={{
         ...styles.input,
-        paddingLeft: icon ? "40px" : "16px",
+        paddingLeft: icon ? "48px" : "20px",
         cursor: disabled ? 'not-allowed' : readOnly ? 'default' : 'text',
         pointerEvents: disabled ? 'none' : 'auto',
         borderColor: error ? '#ef4444' : '#e2e8f0',
@@ -214,7 +214,7 @@ export default function Auth() {
           animation: shake ? "shake 0.5s ease-in-out" : "none",
         }}
       >
-        {/* Compact Header */}
+        {/* Bold Large Logo Header */}
         <div style={styles.header}>
           <div style={styles.logoContainer}>
             <div style={styles.logoWrapper}>
@@ -223,18 +223,19 @@ export default function Auth() {
             </div>
             <div style={styles.logoTextContainer}>
               <h1 style={styles.logo}>Survey<span style={styles.logoAccent}>Earn</span></h1>
+              <p style={styles.tagline}>Turn opinions into cash</p>
             </div>
           </div>
 
-          {/* Compact Trust Indicators */}
+          {/* Trust Indicators */}
           <div style={styles.trustIndicators}>
-            <span style={styles.trustBadge}>✓ 10k+</span>
-            <span style={styles.trustBadge}>⭐ 4.8</span>
+            <span style={styles.trustBadge}>✓ 10k+ Earners</span>
+            <span style={styles.trustBadge}>⭐ 4.8 Rating</span>
             <span style={styles.trustBadge}>🔒 Secure</span>
           </div>
         </div>
 
-        {/* Mode Selector - More Compact */}
+        {/* Mode Selector */}
         <div style={styles.modeSelector}>
           <button
             style={{
@@ -258,7 +259,7 @@ export default function Auth() {
           </button>
         </div>
 
-        {/* Form Section - More Compact */}
+        {/* Form Section */}
         {mode === "register" ? (
           <form onSubmit={handleRegister} key="register" style={styles.form}>
             <div style={styles.formGrid}>
@@ -343,16 +344,16 @@ export default function Auth() {
               </div>
               {errors.confirmPassword && <span style={styles.errorText}>{errors.confirmPassword}</span>}
 
-              {/* Referral Code - Compact */}
+              {/* Referral Code */}
               {referralCodeFromUrl && (
                 <div style={styles.referralBadge}>
                   <span style={styles.referralIcon}>🎁</span>
-                  <span style={styles.referralCode}>{referralCodeFromUrl}</span>
+                  <span style={styles.referralCode}>Referral: {referralCodeFromUrl}</span>
                 </div>
               )}
             </div>
 
-            {/* Create Account Button - Moved UP */}
+            {/* Create Account Button - Prominent */}
             <button
               style={styles.primaryButtonRegister}
               type="submit"
@@ -362,7 +363,7 @@ export default function Auth() {
                 <div style={styles.loadingSpinner}></div>
               ) : (
                 <>
-                  <span>🚀</span>
+                  <span style={styles.buttonIcon}>🚀</span>
                   Create Free Account
                 </>
               )}
@@ -377,7 +378,7 @@ export default function Auth() {
               </div>
             )}
 
-            {/* Terms - Moved DOWN below buttons */}
+            {/* Terms Notice */}
             <div style={styles.termsNotice}>
               <span style={styles.termsNoticeIcon}>✓</span>
               <span style={styles.termsNoticeText}>
@@ -452,7 +453,7 @@ export default function Auth() {
               </button>
             </div>
 
-            {/* Sign In Button - Moved UP */}
+            {/* Sign In Button */}
             <button
               style={styles.primaryButtonLogin}
               type="submit"
@@ -462,7 +463,7 @@ export default function Auth() {
                 <div style={styles.loadingSpinner}></div>
               ) : (
                 <>
-                  <span>🔐</span>
+                  <span style={styles.buttonIcon}>🔐</span>
                   Sign In
                 </>
               )}
@@ -490,7 +491,7 @@ export default function Auth() {
           </form>
         )}
 
-        {/* WhatsApp Support - Moved UP, more compact */}
+        {/* WhatsApp Support - Prominent */}
         <div style={styles.supportSection}>
           <button
             style={styles.supportButton}
@@ -503,11 +504,12 @@ export default function Auth() {
             }}
           >
             <span style={styles.supportIcon}>💬</span>
-            <span style={styles.supportText}>Chat with us</span>
+            <span style={styles.supportText}>Chat with Support</span>
+            <span style={styles.supportArrow}>→</span>
           </button>
         </div>
 
-        {/* Features - Hidden on mobile to save space, shown on larger screens */}
+        {/* Features */}
         <div style={styles.featuresSection}>
           <div style={styles.feature}>
             <span style={styles.featureIcon}>💰</span>
@@ -521,13 +523,13 @@ export default function Auth() {
           <div style={styles.featureDivider}></div>
           <div style={styles.feature}>
             <span style={styles.featureIcon}>🔒</span>
-            <span style={styles.featureText}>Secure</span>
+            <span style={styles.featureText}>Bank-Level Security</span>
           </div>
         </div>
 
         {/* Footer */}
         <div style={styles.footer}>
-          <p style={styles.copyright}>© 2024 SurveyEarn</p>
+          <p style={styles.copyright}>© 2024 SurveyEarn. All rights reserved.</p>
         </div>
       </div>
 
@@ -578,19 +580,13 @@ export default function Auth() {
           button:active {
             transform: translateY(0px);
           }
-
-          @media (max-width: 480px) {
-            .features-section {
-              display: none !important;
-            }
-          }
         `}
       </style>
     </div>
   );
 }
 
-// Compact Styles - Optimized for Mobile
+// Balanced Styles - Not too compact, not too large
 const styles = {
   page: {
     minHeight: "100vh",
@@ -602,87 +598,88 @@ const styles = {
     animation: "gradient 15s ease infinite",
     fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
     position: "relative",
-    padding: "10px",
+    padding: "16px",
     boxSizing: "border-box",
   },
   backgroundBlur1: {
+    position: "absolute",
+    width: "300px",
+    height: "300px",
+    background: "rgba(255, 255, 255, 0.1)",
+    borderRadius: "50%",
+    top: "-80px",
+    right: "-80px",
+    filter: "blur(80px)",
+    animation: "float 8s ease-in-out infinite",
+  },
+  backgroundBlur2: {
+    position: "absolute",
+    width: "350px",
+    height: "350px",
+    background: "rgba(255, 255, 255, 0.1)",
+    borderRadius: "50%",
+    bottom: "-100px",
+    left: "-100px",
+    filter: "blur(90px)",
+    animation: "float 10s ease-in-out infinite reverse",
+  },
+  backgroundBlur3: {
     position: "absolute",
     width: "200px",
     height: "200px",
     background: "rgba(255, 255, 255, 0.1)",
     borderRadius: "50%",
-    top: "-50px",
-    right: "-50px",
-    filter: "blur(60px)",
-    animation: "float 8s ease-in-out infinite",
-  },
-  backgroundBlur2: {
-    position: "absolute",
-    width: "250px",
-    height: "250px",
-    background: "rgba(255, 255, 255, 0.1)",
-    borderRadius: "50%",
-    bottom: "-80px",
-    left: "-80px",
-    filter: "blur(70px)",
-    animation: "float 10s ease-in-out infinite reverse",
-  },
-  backgroundBlur3: {
-    position: "absolute",
-    width: "150px",
-    height: "150px",
-    background: "rgba(255, 255, 255, 0.1)",
-    borderRadius: "50%",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    filter: "blur(50px)",
+    filter: "blur(70px)",
     animation: "pulse 4s ease-in-out infinite",
   },
   card: {
-    maxWidth: "400px",
+    maxWidth: "480px",
     width: "100%",
     background: "rgba(255, 255, 255, 0.98)",
     backdropFilter: "blur(20px)",
-    borderRadius: "24px",
-    padding: "20px 16px",
-    boxShadow: "0 20px 40px -12px rgba(0, 0, 0, 0.3)",
+    borderRadius: "32px",
+    padding: "28px 24px",
+    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)",
     border: "1px solid rgba(255, 255, 255, 0.3)",
     position: "relative",
     zIndex: 1,
-    maxHeight: "95vh",
+    maxHeight: "98vh",
     overflowY: "auto",
   },
   header: {
-    marginBottom: "12px",
+    marginBottom: "20px",
   },
   logoContainer: {
     display: "flex",
     alignItems: "center",
-    gap: "10px",
-    marginBottom: "8px",
+    gap: "16px",
+    marginBottom: "12px",
   },
   logoWrapper: {
     position: "relative",
-    width: "40px",
-    height: "40px",
+    width: "60px",
+    height: "60px",
   },
   logoGlow: {
     position: "absolute",
     width: "100%",
     height: "100%",
     background: "linear-gradient(135deg, #667eea, #764ba2)",
-    borderRadius: "12px",
-    filter: "blur(8px)",
+    borderRadius: "16px",
+    filter: "blur(12px)",
     opacity: 0.6,
+    animation: "pulse 3s ease-in-out infinite",
   },
   logoIcon: {
     position: "relative",
-    fontSize: "20px",
+    fontSize: "32px",
     background: "linear-gradient(135deg, #667eea, #764ba2)",
-    padding: "8px",
-    borderRadius: "12px",
-    boxShadow: "0 8px 16px -4px rgba(102, 126, 234, 0.4)",
+    padding: "14px",
+    borderRadius: "16px",
+    boxShadow: "0 10px 20px -5px rgba(102, 126, 234, 0.4)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -692,7 +689,7 @@ const styles = {
     flex: 1,
   },
   logo: {
-    fontSize: "22px",
+    fontSize: "32px",
     fontWeight: "800",
     margin: 0,
     color: "#1e293b",
@@ -704,34 +701,41 @@ const styles = {
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
   },
+  tagline: {
+    color: "#64748b",
+    fontSize: "13px",
+    fontWeight: "500",
+    marginTop: "4px",
+  },
   trustIndicators: {
     display: "flex",
     gap: "12px",
-    fontSize: "11px",
-    fontWeight: "600",
-    color: "#475569",
+    flexWrap: "wrap",
   },
   trustBadge: {
-    background: "rgba(255,255,255,0.8)",
-    padding: "4px 8px",
-    borderRadius: "20px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+    background: "rgba(255,255,255,0.9)",
+    padding: "6px 12px",
+    borderRadius: "30px",
+    fontSize: "12px",
+    fontWeight: "600",
+    color: "#475569",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
   },
   modeSelector: {
     display: "flex",
     background: "#f1f5f9",
-    borderRadius: "30px",
-    padding: "3px",
-    marginBottom: "16px",
-    gap: "3px",
+    borderRadius: "40px",
+    padding: "4px",
+    marginBottom: "24px",
+    gap: "4px",
   },
   modeButton: {
     flex: 1,
-    padding: "10px 6px",
+    padding: "12px 8px",
     border: "none",
     background: "transparent",
-    borderRadius: "27px",
-    fontSize: "13px",
+    borderRadius: "36px",
+    fontSize: "14px",
     fontWeight: "600",
     color: "#64748b",
     cursor: "pointer",
@@ -740,42 +744,42 @@ const styles = {
   modeButtonActiveLogin: {
     background: "#ffffff",
     color: "#667eea",
-    boxShadow: "0 4px 8px -2px rgba(102, 126, 234, 0.2)",
+    boxShadow: "0 4px 10px -2px rgba(102, 126, 234, 0.2)",
   },
   modeButtonActiveRegister: {
     background: "#ffffff",
     color: "#764ba2",
-    boxShadow: "0 4px 8px -2px rgba(118, 75, 162, 0.2)",
+    boxShadow: "0 4px 10px -2px rgba(118, 75, 162, 0.2)",
   },
   form: {
     display: "flex",
     flexDirection: "column",
-    gap: "8px",
+    gap: "12px",
   },
   formGrid: {
     display: "flex",
     flexDirection: "column",
-    gap: "6px",
+    gap: "10px",
   },
   inputContainer: {
     position: "relative",
   },
   inputIcon: {
     position: "absolute",
-    left: "12px",
+    left: "16px",
     top: "50%",
     transform: "translateY(-50%)",
-    fontSize: "14px",
+    fontSize: "16px",
     color: "#94a3b8",
     zIndex: 1,
   },
   input: {
     width: "100%",
-    padding: "12px 12px 12px 40px",
-    borderRadius: "30px",
+    padding: "14px 14px 14px 48px",
+    borderRadius: "40px",
     border: "2px solid #e2e8f0",
     background: "#ffffff",
-    fontSize: "13px",
+    fontSize: "14px",
     fontWeight: "500",
     color: "#1e293b",
     outline: "none",
@@ -787,95 +791,97 @@ const styles = {
   },
   passwordToggle: {
     position: "absolute",
-    right: "10px",
+    right: "14px",
     top: "50%",
     transform: "translateY(-50%)",
     background: "none",
     border: "none",
-    fontSize: "16px",
+    fontSize: "18px",
     cursor: "pointer",
     color: "#64748b",
-    padding: "6px",
-    borderRadius: "6px",
+    padding: "8px",
+    borderRadius: "8px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     zIndex: 1,
   },
   errorText: {
-    fontSize: "10px",
+    fontSize: "11px",
     color: "#ef4444",
     fontWeight: "500",
-    marginLeft: "8px",
-    marginTop: "-2px",
+    marginLeft: "12px",
+    marginTop: "2px",
   },
   referralBadge: {
     display: "flex",
     alignItems: "center",
-    gap: "8px",
-    padding: "8px 12px",
+    gap: "10px",
+    padding: "12px 16px",
     background: "linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1))",
-    borderRadius: "30px",
+    borderRadius: "40px",
     border: "1px solid rgba(16, 185, 129, 0.3)",
   },
   referralIcon: {
-    fontSize: "16px",
+    fontSize: "18px",
   },
   referralCode: {
-    fontSize: "12px",
+    fontSize: "13px",
     color: "#065f46",
     fontWeight: "700",
-    fontFamily: "monospace",
   },
   primaryButtonLogin: {
     width: "100%",
-    padding: "14px",
-    borderRadius: "30px",
+    padding: "16px",
+    borderRadius: "40px",
     border: "none",
     background: "linear-gradient(135deg, #667eea, #764ba2)",
     color: "white",
-    fontSize: "14px",
+    fontSize: "15px",
     fontWeight: "700",
     cursor: "pointer",
-    boxShadow: "0 8px 16px -4px rgba(102, 126, 234, 0.4)",
+    boxShadow: "0 10px 20px -5px rgba(102, 126, 234, 0.4)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "6px",
+    gap: "8px",
     transition: "all 0.3s ease",
-    marginTop: "4px",
+    marginTop: "8px",
   },
   primaryButtonRegister: {
     width: "100%",
-    padding: "14px",
-    borderRadius: "30px",
+    padding: "16px",
+    borderRadius: "40px",
     border: "none",
     background: "linear-gradient(135deg, #764ba2, #667eea)",
     color: "white",
-    fontSize: "14px",
+    fontSize: "15px",
     fontWeight: "700",
     cursor: "pointer",
-    boxShadow: "0 8px 16px -4px rgba(118, 75, 162, 0.4)",
+    boxShadow: "0 10px 20px -5px rgba(118, 75, 162, 0.4)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "6px",
+    gap: "8px",
     transition: "all 0.3s ease",
-    marginTop: "4px",
+    marginTop: "8px",
+  },
+  buttonIcon: {
+    fontSize: "18px",
   },
   loadingSpinner: {
-    width: "16px",
-    height: "16px",
+    width: "18px",
+    height: "18px",
     border: "2px solid rgba(255,255,255,0.3)",
     borderTop: "2px solid white",
     borderRadius: "50%",
     animation: "spin 1s linear infinite",
   },
   message: {
-    padding: "8px",
-    borderRadius: "30px",
+    padding: "10px",
+    borderRadius: "40px",
     textAlign: "center",
-    fontSize: "11px",
+    fontSize: "12px",
     fontWeight: "500",
     background: "#fef2f2",
     color: "#dc2626",
@@ -888,60 +894,61 @@ const styles = {
   },
   switchText: {
     textAlign: "center",
-    marginTop: "8px",
+    marginTop: "12px",
     color: "#64748b",
-    fontSize: "12px",
+    fontSize: "13px",
     fontWeight: "500",
   },
   switchButton: {
     background: "none",
     border: "none",
     color: "#667eea",
-    fontSize: "12px",
+    fontSize: "13px",
     fontWeight: "700",
     cursor: "pointer",
-    padding: "2px 4px",
-    borderRadius: "4px",
+    padding: "4px 8px",
+    borderRadius: "6px",
   },
   forgotPassword: {
     textAlign: "right",
-    marginBottom: "4px",
+    marginBottom: "8px",
   },
   forgotButton: {
     background: "none",
     border: "none",
     color: "#667eea",
-    fontSize: "11px",
+    fontSize: "12px",
     fontWeight: "600",
     cursor: "pointer",
-    padding: "4px 8px",
+    padding: "6px 10px",
+    borderRadius: "6px",
   },
   termsNotice: {
     display: "flex",
     alignItems: "center",
-    gap: "6px",
-    padding: "8px",
+    gap: "8px",
+    padding: "12px",
     background: "rgba(99, 102, 241, 0.05)",
-    borderRadius: "30px",
+    borderRadius: "40px",
     border: "1px solid rgba(99, 102, 241, 0.1)",
     marginTop: "8px",
   },
   termsNoticeIcon: {
     color: "#10b981",
-    fontSize: "12px",
+    fontSize: "14px",
     fontWeight: "bold",
   },
   termsNoticeText: {
-    fontSize: "10px",
+    fontSize: "11px",
     color: "#475569",
     fontWeight: "500",
-    lineHeight: "1.3",
+    lineHeight: "1.4",
   },
   termsLink: {
     background: "none",
     border: "none",
     color: "#667eea",
-    fontSize: "10px",
+    fontSize: "11px",
     fontWeight: "600",
     cursor: "pointer",
     padding: "0 2px",
@@ -951,60 +958,68 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: "12px",
-    padding: "8px 0",
+    marginTop: "20px",
+    padding: "16px 0",
+    borderTop: "1px solid rgba(0, 0, 0, 0.05)",
+    borderBottom: "1px solid rgba(0, 0, 0, 0.05)",
   },
   feature: {
     display: "flex",
+    flexDirection: "column",
     alignItems: "center",
     gap: "4px",
     flex: 1,
-    justifyContent: "center",
   },
   featureIcon: {
-    fontSize: "14px",
+    fontSize: "20px",
   },
   featureText: {
-    fontSize: "9px",
+    fontSize: "10px",
     fontWeight: "600",
     color: "#475569",
+    textAlign: "center",
   },
   featureDivider: {
     width: "1px",
-    height: "20px",
+    height: "30px",
     background: "rgba(0, 0, 0, 0.1)",
   },
   supportSection: {
-    marginTop: "8px",
+    marginTop: "16px",
   },
   supportButton: {
     width: "100%",
     background: "linear-gradient(135deg, #25D366, #128C7E)",
     border: "none",
-    borderRadius: "30px",
-    padding: "10px",
+    borderRadius: "40px",
+    padding: "14px 20px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "8px",
+    gap: "10px",
     cursor: "pointer",
-    boxShadow: "0 8px 16px -4px rgba(37, 211, 102, 0.3)",
+    boxShadow: "0 10px 20px -5px rgba(37, 211, 102, 0.3)",
   },
   supportIcon: {
-    fontSize: "16px",
+    fontSize: "20px",
     color: "white",
   },
   supportText: {
     color: "white",
-    fontSize: "12px",
+    fontSize: "14px",
     fontWeight: "600",
   },
+  supportArrow: {
+    color: "white",
+    fontSize: "16px",
+    opacity: 0.8,
+  },
   footer: {
-    marginTop: "8px",
+    marginTop: "16px",
     textAlign: "center",
   },
   copyright: {
-    fontSize: "9px",
+    fontSize: "10px",
     color: "#94a3b8",
     fontWeight: "500",
   },
