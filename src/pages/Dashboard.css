@@ -987,8 +987,8 @@ body {
    WELCOME BONUS CARD - PREMIUM MOBILE DESIGN
    ========================================================= */
 .welcome-bonus {
-  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%) !important;
-  border: 3px solid #fbbf24 !important;
+  background: linear-gradient(145deg, #5f0f40, #831843, #9d174d) !important;
+  border: 3px solid #ff3333 !important;
   border-radius: 16px !important;
   padding: 14px 16px !important;
   color: white !important;
@@ -996,8 +996,9 @@ body {
   overflow: hidden;
   margin-bottom: 12px;
   box-shadow: 
-    0 8px 32px rgba(37, 99, 235, 0.4), 
-    0 0 0 1px rgba(251, 191, 36, 0.3) !important;
+    0 20px 30px -10px rgba(95, 15, 64, 0.5),
+    0 8px 15px -6px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(255, 51, 51, 0.3) !important;
 }
 
 /* Animated shimmer background */
@@ -1011,11 +1012,12 @@ body {
   background: linear-gradient(
     45deg,
     transparent 30%,
-    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0.2) 50%,
     transparent 70%
   );
   pointer-events: none;
   animation: shimmer 2s ease-in-out infinite;
+  z-index: 1;
 }
 
 @keyframes shimmer {
@@ -1023,21 +1025,23 @@ body {
   100% { transform: translateX(30%) translateY(30%) rotate(45deg); }
 }
 
-/* Multi sparkle effect */
+/* Sparkle dots */
 .welcome-bonus::after {
   content: '✦ ✦ ✦';
   position: absolute;
-  top: 6px;
-  right: 10px;
-  color: #fbbf24;
-  font-size: 12px;
+  top: 8px;
+  right: 12px;
+  color: #ffd700;
+  font-size: 14px;
   letter-spacing: 4px;
   animation: sparkleTwinkle 1.5s ease-in-out infinite;
+  z-index: 2;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
 }
 
 @keyframes sparkleTwinkle {
   0%, 100% { opacity: 0.6; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.1); }
+  50% { opacity: 1; transform: scale(1.15); }
 }
 
 /* Floating gift animation */
@@ -1047,20 +1051,19 @@ body {
 
 @keyframes giftBounce {
   0%, 100% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(-4px) rotate(-5deg); }
+  25% { transform: translateY(-5px) rotate(-5deg); }
   50% { transform: translateY(0) rotate(0deg); }
-  75% { transform: translateY(-4px) rotate(5deg); }
+  75% { transform: translateY(-5px) rotate(5deg); }
 }
 
-/* Glow pulse effect */
-.welcome-bonus::after {
-  content: '';
+/* Premium glow effect */
+.welcome-bonus-glow {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 30% 50%, rgba(251, 191, 36, 0.2) 0%, transparent 60%);
+  background: radial-gradient(circle at 30% 50%, rgba(255, 215, 0, 0.15) 0%, transparent 60%);
   animation: glowPulse 2s ease-in-out infinite;
   pointer-events: none;
 }
@@ -1068,6 +1071,45 @@ body {
 @keyframes glowPulse {
   0%, 100% { opacity: 0.5; }
   50% { opacity: 1; }
+}
+
+/* Premium border glow */
+.welcome-bonus-border-glow {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #ff3333, #ffd700, #ff3333, #ffd700);
+  background-size: 400% 400%;
+  border-radius: 18px;
+  z-index: -1;
+  animation: borderGradient 3s ease infinite;
+  opacity: 0.6;
+}
+
+@keyframes borderGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Amount shine animation */
+@keyframes amountShine {
+  0% { left: -100%; }
+  50%, 100% { left: 100%; }
+}
+
+/* Bonus pulse animation */
+@keyframes bonusPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+}
+
+/* Status pulse animation */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(255, 107, 53, 0.5); }
+  50% { transform: scale(1.02); box-shadow: 0 0 25px rgba(255, 107, 53, 0.8); }
 }
 
 /* Dark mode bonus card */

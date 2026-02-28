@@ -1031,13 +1031,13 @@ return (
 <div className="user-notifications-section" style={{ marginTop: '0', marginBottom: '0', borderBottom: '1px solid var(--border-soft)' }}>
   <UserNotifications />
 </div>
-{/* WELCOME BONUS CARD - COMPACT VERSION */}
+{/* WELCOME BONUS CARD - PREMIUM VERSION */}
 <section ref={welcomeRef}>
   <div className="plan-card welcome-bonus" style={{
-    background: 'linear-gradient(145deg, #5f0f40, #831843, #9d174d)',
-    border: '4px solid #ff3333',
-    boxShadow: '0 20px 30px -10px rgba(95, 15, 64, 0.5), 0 8px 15px -6px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 215, 0, 0.3) inset',
-    borderRadius: '0',
+    background: 'linear-gradient(145deg, #5f0f40, #9d174d, #be185d)',
+    border: '3px solid #ffd700',
+    boxShadow: '0 20px 30px -10px rgba(95, 15, 64, 0.5), 0 8px 15px -6px rgba(0, 0, 0, 0.3), 0 0 30px rgba(255, 51, 51, 0.3)',
+    borderRadius: '16px',
     padding: '6px 12px',
     color: 'white',
     position: 'relative',
@@ -1046,6 +1046,9 @@ return (
     marginTop: '0',
     marginBottom: '0'
   }}>
+    {/* Premium animated border */}
+    <div className="welcome-bonus-border-glow" />
+    
     {/* Diamond pattern overlay */}
     <div style={{
       position: 'absolute',
@@ -1060,6 +1063,9 @@ return (
       zIndex: 1
     }} />
     
+    {/* Glow effect */}
+    <div className="welcome-bonus-glow" />
+    
     {/* Shine effect */}
     <div style={{
       position: 'absolute',
@@ -1067,61 +1073,63 @@ return (
       left: '-50%',
       width: '200%',
       height: '200%',
-      background: 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 80%)',
-      opacity: 0.4,
+      background: 'radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 80%)',
+      opacity: 0.5,
       pointerEvents: 'none',
-      zIndex: 1
+      zIndex: 1,
+      animation: 'shimmer 2s ease-in-out infinite'
     }} />
     
     {/* HEADER - EXTRA COMPACT */}
     <div className="plan-card-header" style={{ 
       position: 'relative', 
       zIndex: 2,
-      marginBottom: '2px' /* REDUCED from 4px to 2px */
+      marginBottom: '2px'
     }}>
       <div className="plan-badge" style={{ 
         display: 'flex', 
         alignItems: 'center', 
-        gap: '8px' /* REDUCED from 10px to 8px */
+        gap: '8px'
       }}>
-        <span className="plan-icon" style={{ 
-          fontSize: '28px', /* REDUCED from 32px to 28px */
+        <span className="plan-icon gift-icon" style={{ 
+          fontSize: '28px',
           color: '#ffd700',
           background: 'rgba(255, 255, 255, 0.15)',
-          width: '44px', /* REDUCED from 52px to 44px */
-          height: '44px', /* REDUCED from 52px to 44px */
+          width: '44px',
+          height: '44px',
           borderRadius: '50%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 4px 15px rgba(255, 215, 0, 0.3)',
-          border: '2px solid rgba(255, 215, 0, 0.5)',
-          textShadow: '0 0 10px rgba(255, 215, 0, 0.5)'
+          boxShadow: '0 4px 15px rgba(255, 215, 0, 0.4), inset 0 0 15px rgba(255, 215, 0, 0.2)',
+          border: '2px solid rgba(255, 215, 0, 0.6)',
+          textShadow: '0 0 15px rgba(255, 215, 0, 0.8)'
         }}>
           🎁
         </span>
         <span className="plan-name" style={{ 
           color: '#ffffff !important',
-          fontSize: '20px', /* REDUCED from 22px to 20px */
+          fontSize: '20px',
           fontWeight: '900',
-          textShadow: '0 2px 8px rgba(0, 0, 0, 0.6)',
+          textShadow: '0 2px 10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.3)',
           letterSpacing: '-0.5px'
         }}>
           Welcome Bonus
         </span>
       </div>
       <span className="plan-status" style={{ 
-        background: '#c2410c !important',
+        background: 'linear-gradient(135deg, #dc2626, #f97316) !important',
         color: '#ffffff !important',
         border: '2px solid #ffd700 !important',
-        padding: '4px 12px', /* REDUCED from 6px 14px to 4px 12px */
+        padding: '4px 12px',
         borderRadius: '40px',
-        fontSize: '10px', /* REDUCED from 11px to 10px */
+        fontSize: '10px',
         fontWeight: '900',
         textTransform: 'uppercase',
-        letterSpacing: '0.6px', /* REDUCED from 0.8px to 0.6px */
-        boxShadow: '0 0 12px rgba(255, 255, 255, 0.3)',
-        textShadow: '0 1px 3px #000000'
+        letterSpacing: '0.6px',
+        boxShadow: '0 0 15px rgba(255, 107, 53, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3)',
+        textShadow: '0 1px 3px #000000',
+        animation: 'pulse 2s ease-in-out infinite'
       }}>
         🔓 ACTIVATE NOW
       </span>
@@ -1130,48 +1138,82 @@ return (
     {/* BODY - EXTRA COMPACT */}
     <div className="plan-card-body" style={{ position: 'relative', zIndex: 2 }}>
       
-      {/* ===== BONUS AMOUNT SECTION - REMOVED THE "WELCOME BONUS" CAPTION ABOVE AMOUNT ===== */}
+      {/* ===== BONUS AMOUNT SECTION - PREMIUM STYLE ===== */}
       <div style={{
         textAlign: 'center',
-        margin: '2px 0', /* REDUCED from 4px to 2px */
-        padding: '6px', /* REDUCED from 8px to 6px */
-        background: 'rgba(0, 0, 0, 0.25)',
-        borderRadius: '10px', /* REDUCED from 12px to 10px */
-        border: '1px solid rgba(255, 215, 0, 0.4)',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
+        margin: '2px 0',
+        padding: '8px',
+        background: 'rgba(0, 0, 0, 0.3)',
+        borderRadius: '12px',
+        border: '2px solid rgba(255, 215, 0, 0.5)',
+        boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+        position: 'relative',
+        overflow: 'hidden'
       }}>
-        {/* REMOVED the "WELCOME BONUS" caption span that was here */}
+        {/* Animated glow */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: '-100%',
+          width: '200%',
+          height: '100%',
+          background: 'linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent)',
+          animation: 'amountShine 2.5s ease-in-out infinite',
+          pointerEvents: 'none'
+        }} />
+        
+        {/* Sparkles around amount */}
         <span style={{
-          fontSize: '32px', /* REDUCED from 36px to 32px */
+          position: 'absolute',
+          top: '4px',
+          left: '8px',
+          fontSize: '12px',
+          animation: 'sparkleTwinkle 1.5s ease-in-out infinite'
+        }}>✨</span>
+        <span style={{
+          position: 'absolute',
+          top: '4px',
+          right: '8px',
+          fontSize: '12px',
+          animation: 'sparkleTwinkle 1.5s ease-in-out infinite 0.75s'
+        }}>✨</span>
+        
+        <span style={{
+          fontSize: '32px',
           fontWeight: '900',
           color: 'white',
           display: 'block',
           lineHeight: '1.1',
-          textShadow: '0 0 12px #ffd700, 0 2px 4px rgba(0, 0, 0, 0.4)'
+          textShadow: '0 0 20px #ffd700, 0 2px 8px rgba(0, 0, 0, 0.6)',
+          position: 'relative',
+          zIndex: 1
         }}>
           KES 1,200
         </span>
       </div>
       
-      {/* DESCRIPTION - KEPT INTACT with original text */}
+      {/* DESCRIPTION - PREMIUM STYLE */}
       <p style={{
-        fontSize: '13px', /* REDUCED from 14px to 13px */
-        lineHeight: '1.3', /* REDUCED from 1.4 to 1.3 */
+        fontSize: '13px',
+        lineHeight: '1.3',
         color: 'rgba(255, 255, 255, 0.95)',
         textAlign: 'center',
-        margin: '0 0 4px', /* REDUCED from 6px to 4px */
+        margin: '0 0 4px',
         fontWeight: '600',
-        textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)',
-        background: 'rgba(0, 0, 0, 0.2)',
-        padding: '6px 12px', /* REDUCED from 8px 14px to 6px 12px */
+        textShadow: '0 1px 3px rgba(0, 0, 0, 0.6)',
+        background: 'rgba(0, 0, 0, 0.25)',
+        padding: '8px 14px',
         borderRadius: '30px',
-        border: '1px solid rgba(255, 215, 0, 0.2)'
+        border: '1px solid rgba(255, 215, 0, 0.3)',
+        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)'
       }}>
         Congratulations! You've received a welcome bonus of <strong style={{
           color: '#ffd700',
-          fontSize: '16px', /* REDUCED from 18px to 16px */
+          fontSize: '16px',
           fontWeight: '900',
-          textShadow: '0 0 6px #ffd700'
+          textShadow: '0 0 10px #ffd700',
+          display: 'inline-block',
+          animation: 'bonusPulse 2s ease-in-out infinite'
         }}>KES 1,200</strong>. Activate your account to withdraw instantly!
       </p>
     </div>
