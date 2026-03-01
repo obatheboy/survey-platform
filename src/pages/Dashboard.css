@@ -1,7 +1,8 @@
 /* =========================================================
    SURVEYEARN DASHBOARD - ULTRA BRIGHT & UNIFORM REDESIGN
    Colors that POP! Cards that SHOUT! Zero space between cards!
-   Complete Unified CSS with All Components - FULL 2800+ LOC VERSION
+   Complete Unified CSS with All Components - FULL VERSION
+   Based on your original 3000+ LOC structure
    ========================================================= */
 
 /* =========================================================
@@ -68,6 +69,7 @@
   --gradient-danger: linear-gradient(135deg, #ef4444, #dc2626, #b91c1c);
   --gradient-purple: linear-gradient(135deg, #8b5cf6, #7c3aed, #6d28d9);
   --gradient-hero: linear-gradient(135deg, #2563eb, #1e40af, #1e3a8a);
+  --gradient-bonus: linear-gradient(145deg, #5f0f40, #831843, #9d174d, #be185d);
   
   /* Shadows - Stronger for depth */
   --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.8);
@@ -91,7 +93,6 @@
   --space-md: 8px;
   --space-lg: 12px;
   --space-xl: 16px;
-  --space-2xl: 20px;
   
   /* Transitions */
   --transition-fast: 150ms ease;
@@ -99,7 +100,7 @@
   --transition-slow: 350ms ease;
 }
 
-/* Dark Theme - Even Deeper */
+/* Dark Theme - Even Deeper and Richer */
 [data-theme="dark"] {
   --bg-main: #050508;
   --bg-surface: #0a0a12;
@@ -127,7 +128,7 @@
   --info-light: #1e3a8a;
   --purple-light: #2e1065;
   
-  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 1);
+  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.9);
   --shadow-md: 0 6px 12px rgba(0, 0, 0, 1);
   --shadow-lg: 0 10px 25px rgba(0, 0, 0, 1);
   --shadow-xl: 0 20px 40px rgba(0, 0, 0, 1);
@@ -146,14 +147,21 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.8), 0 0 30px rgba(239, 68, 68, 0.6);
+  }
+  50% {
+    box-shadow: 0 4px 25px rgba(239, 68, 68, 1), 0 0 50px rgba(239, 68, 68, 0.8);
+  }
+  100% {
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.8), 0 0 30px rgba(239, 68, 68, 0.6);
+  }
 }
 
-@keyframes glowPulse {
-  0%, 100% { box-shadow: 0 0 30px currentColor; }
-  50% { box-shadow: 0 0 60px currentColor; }
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
 @keyframes shimmer {
@@ -161,29 +169,46 @@
   100% { transform: translateX(100%); }
 }
 
-@keyframes sparkle {
-  0%, 100% { opacity: 0.5; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.3); }
-}
-
-@keyframes sparkleBurst {
-  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
-  50% { transform: scale(1.3) rotate(10deg); opacity: 1; }
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 30px currentColor; }
+  50% { box-shadow: 0 0 60px currentColor; }
+}
+
+@keyframes sparkleTwinkle {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes giftBounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-8px) rotate(-5deg); }
+  50% { transform: translateY(0) rotate(0deg); }
+  75% { transform: translateY(-8px) rotate(5deg); }
 }
 
 @keyframes borderGradient {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+@keyframes amountShine {
+  0% { left: -100%; }
+  50%, 100% { left: 100%; }
+}
+
+@keyframes bonusPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
 }
 
 @keyframes slideDown {
@@ -202,9 +227,9 @@
   100% { filter: hue-rotate(360deg); }
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+@keyframes sparkleBurst {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+  50% { transform: scale(1.3) rotate(10deg); opacity: 1; }
 }
 
 /* =========================================================
@@ -226,9 +251,9 @@ html {
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  background: var(--bg-main);
+  background-color: var(--bg-main);
   color: var(--text-primary);
-  line-height: 1.4;
+  line-height: 1.5;
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -254,7 +279,7 @@ body {
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: var(--space-lg);
-  box-shadow: 0 0 40px var(--primary);
+  box-shadow: 0 0 30px var(--primary);
 }
 
 .loading-text {
@@ -287,7 +312,6 @@ body {
   color: var(--text-muted);
   font-size: 16px;
   margin-bottom: var(--space-xl);
-  font-weight: 600;
 }
 
 .no-user-container .primary-btn {
@@ -300,13 +324,13 @@ body {
   font-weight: 900;
   cursor: pointer;
   transition: var(--transition-fast);
-  box-shadow: 0 0 40px var(--primary);
+  box-shadow: 0 0 30px var(--primary);
   text-transform: uppercase;
 }
 
 .no-user-container .primary-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 60px var(--primary);
+  box-shadow: 0 0 50px var(--primary);
 }
 
 /* =========================================================
@@ -322,14 +346,16 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0;
+  width: 100%;
+  position: relative;
   animation: fadeIn 0.5s ease-out;
 }
 
 /* =========================================================
-   HEADER - MODERN & CRYSTAL CLEAR with TAP TO ACTIVATE
+   HEADER - MODERN & CRYSTAL CLEAR with TAP TO ACTIVATE BUTTON
    ========================================================= */
 .dashboard-main-header {
-  background: linear-gradient(135deg, #ff0055, #ff4400, #ffaa00, #44ff00, #00ffaa, #0055ff, #aa00ff);
+  background: linear-gradient(135deg, #ff0055, #ff4400, #ffaa00, #44ff00, #00ffaa, #0055ff);
   background-size: 400% 400%;
   animation: rainbowWave 10s infinite;
   padding: var(--space-xs) var(--space-sm);
@@ -415,6 +441,13 @@ body {
   text-shadow: 3px 3px 0 #000, 0 0 40px white;
 }
 
+.header-subtitle {
+  font-size: 12px;
+  color: white;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
 /* Header Actions */
 .header-title-container > div:last-child {
   display: flex;
@@ -452,12 +485,12 @@ body {
   color: white;
   border: 2px solid white;
   border-radius: var(--radius-full);
-  padding: 8px 16px;
-  font-size: 14px;
+  padding: 6px 12px;
+  font-size: 13px;
   font-weight: 900;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   cursor: pointer;
   transition: var(--transition-fast);
   box-shadow: 0 0 30px #25D366;
@@ -479,9 +512,7 @@ body {
 }
 
 .activate-btn-pulse {
-  background: linear-gradient(135deg, #ff0000, #ff4400, #ffaa00, #ffff00);
-  background-size: 300% 300%;
-  animation: rainbowWave 3s infinite;
+  background: linear-gradient(135deg, #ff0000, #ff4400, #ffaa00);
   border: 3px solid white;
   border-radius: var(--radius-lg);
   padding: 12px 24px;
@@ -495,12 +526,12 @@ body {
   gap: 8px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  animation: glowPulse 1s infinite;
+  animation: pulse-glow 1s infinite;
   transition: var(--transition-fast);
 }
 
 .activate-btn-pulse:hover {
-  transform: scale(1.05);
+  transform: scale(1.02);
   box-shadow: 0 0 80px #ff0000;
 }
 
@@ -514,17 +545,17 @@ body {
   background: rgba(0, 0, 0, 0.3);
   border-radius: var(--radius-md);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid white;
 }
 
 /* =========================================================
-   HERO SECTION - EXACTLY LIKE THE IMAGE - ZERO MARGIN
+   HERO SECTION - EXACTLY LIKE THE IMAGE BUT BRIGHTER
    ========================================================= */
 .hero-section {
   border-radius: 0;
   padding: var(--space-xs);
-  background: linear-gradient(135deg, #2563eb 0%, #8b5cf6 50%, #ec4899 100%);
-  box-shadow: 0 0 40px #8b5cf6;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+  box-shadow: 0 0 50px #8b5cf6;
   border: 2px solid white;
   position: relative;
   overflow: hidden;
@@ -551,33 +582,31 @@ body {
 }
 
 .hero-section .hero-btn {
-  background: rgba(255, 255, 255, 0.25);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
   border: 2px solid white;
   border-radius: var(--radius-md);
   padding: var(--space-xs);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 900;
   cursor: pointer;
-  box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   transition: var(--transition-fast);
-  backdrop-filter: blur(5px);
   text-transform: uppercase;
 }
 
 .hero-section .hero-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 50px white;
-  background: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 50px rgba(59, 130, 246, 0.8);
 }
 
 .hero-section .hero-btn.bonus {
-  background: rgba(255, 200, 0, 0.3);
-  border-color: #ff0;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.5);
 }
 
 .hero-section .balance-card {
@@ -633,7 +662,7 @@ body {
 
 .hero-section .balance-number {
   color: #00ff88;
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 900;
   line-height: 1;
   text-shadow: 0 0 30px #00ff88;
@@ -659,12 +688,13 @@ body {
 }
 
 /* =========================================================
-   LIVE WITHDRAWAL FEED - ZERO MARGIN
+   LIVE WITHDRAWAL FEED
    ========================================================= */
 .live-withdrawal-feed {
   background: var(--bg-surface);
   backdrop-filter: blur(20px);
   padding: var(--space-xs);
+  border-radius: var(--radius-md);
   border: 2px solid var(--vvip-color);
   margin: 0;
   box-shadow: 0 0 30px var(--vvip-color);
@@ -682,8 +712,19 @@ body {
   background: linear-gradient(90deg, #ea580c, #f59e0b, #fbbf24);
 }
 
+.live-withdrawal-feed::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(56, 161, 105, 0.2) 0%, transparent 70%);
+  transform: translate(30%, -30%);
+}
+
 /* =========================================================
-   USER NOTIFICATIONS - ZERO MARGIN
+   USER NOTIFICATIONS
    ========================================================= */
 .user-notifications-section {
   margin: 0;
@@ -701,9 +742,11 @@ body {
   animation: rainbowWave 5s infinite !important;
   border: 4px solid white !important;
   border-radius: 50px 50px 50px 50px !important; /* New pill shape! */
-  padding: var(--space-xs) !important;
+  padding: var(--space-sm) !important;
   margin: 0 !important;
+  color: white !important;
   position: relative;
+  overflow: hidden;
   box-shadow: var(--bonus-glow) !important;
   transform: scale(1);
   transition: all 0.3s ease;
@@ -715,22 +758,6 @@ body {
 }
 
 /* Diamond pattern overlay */
-.welcome-bonus .diamond-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: 
-    linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%),
-    linear-gradient(-45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%);
-  background-size: 30px 30px;
-  opacity: 0.3;
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* Floating emojis all around */
 .welcome-bonus::before {
   content: '❤️ 💙 💛 💫 💚 💛 ❤️ 💙 💛 💫 💚 💛 ❤️ 💙 💛 💫 💚 💛';
   position: absolute;
@@ -745,8 +772,9 @@ body {
   text-shadow: 0 0 30px white;
 }
 
+/* Sparkles */
 .welcome-bonus::after {
-  content: '✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐';
+  content: '✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐';
   position: absolute;
   bottom: -25px;
   left: 0;
@@ -765,7 +793,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 30% 50%, rgba(255, 215, 0, 0.2) 0%, transparent 60%);
+  background: radial-gradient(circle at 30% 50%, rgba(255, 215, 0, 0.3) 0%, transparent 60%);
   animation: glowPulse 2s ease-in-out infinite;
   pointer-events: none;
   z-index: 1;
@@ -800,7 +828,7 @@ body {
   animation: shimmer 3s ease-in-out infinite;
 }
 
-/* Gift icon - bigger and bouncier */
+/* Gift icon */
 .welcome-bonus .gift-icon {
   font-size: 48px;
   color: #ffd700;
@@ -813,7 +841,7 @@ body {
   justify-content: center;
   box-shadow: 0 0 50px #ffd700, inset 0 0 20px rgba(255, 255, 255, 0.5);
   border: 3px solid white;
-  animation: bounce 0.5s infinite;
+  animation: giftBounce 0.5s infinite;
 }
 
 /* Bonus amount container */
@@ -838,7 +866,7 @@ body {
   width: 200%;
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  animation: shimmer 2s infinite;
+  animation: amountShine 2s infinite;
   pointer-events: none;
 }
 
@@ -858,7 +886,7 @@ body {
 .bonus-sparkle-right {
   position: absolute;
   font-size: 16px;
-  animation: sparkle 1.5s ease-in-out infinite;
+  animation: sparkleTwinkle 1.5s ease-in-out infinite;
   z-index: 2;
 }
 
@@ -894,7 +922,7 @@ body {
   font-weight: 900;
   text-shadow: 0 0 30px yellow, 0 0 60px orange;
   display: inline-block;
-  animation: pulse 1s infinite;
+  animation: bonusPulse 1s infinite;
 }
 
 /* Activate button */
@@ -915,7 +943,7 @@ body {
   gap: 8px;
   width: 100%;
   cursor: pointer;
-  box-shadow: 0 0 50px cyan, 0 0 100px magenta !important;
+  box-shadow: 0 0 40px cyan, 0 0 80px magenta !important;
   transition: var(--transition-fast);
   position: relative;
   overflow: hidden;
@@ -923,92 +951,13 @@ body {
 
 .activate-bonus-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 80px cyan, 0 0 120px magenta !important;
+  box-shadow: 0 0 60px cyan, 0 0 100px magenta !important;
 }
 
 /* Dark mode bonus card */
 [data-theme="dark"] .welcome-bonus {
   background: linear-gradient(135deg, #1a1a4a, #2a1a5a, #1a4a4a) !important;
-  box-shadow: 0 0 60px #4a1a6a !important;
-}
-
-/* =========================================================
-   UNIFIED CARD STYLES - ALL CARDS EXACTLY THE SAME!
-   ========================================================= */
-
-/* Base card style for EVERY SINGLE CARD */
-.stats-card,
-.progress-card,
-.plan-card,
-.feature-card,
-.quick-action-card,
-.level-streak-card,
-.testimonial-cta,
-.dashboard-section,
-.live-withdrawal-feed,
-.user-notifications-section,
-.gamification-section {
-  background: linear-gradient(145deg, #12121a, #0a0a12) !important;
-  border: 2px solid transparent !important;
-  border-radius: 20px !important; /* ALL cards same shape! */
-  padding: var(--space-xs) !important;
-  margin: 0 !important; /* ZERO margin between cards */
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.5) !important;
-  transition: all 0.2s ease;
-}
-
-/* Color-coded borders for different card types */
-.stats-card.total-earnings {
-  border-color: #f59e0b !important;
-  box-shadow: 0 0 40px #f59e0b !important;
-}
-
-.stats-card.available-balance {
-  border-color: #3b82f6 !important;
-  box-shadow: 0 0 40px #3b82f6 !important;
-}
-
-.stats-card.affiliate-balance {
-  border-color: #10b981 !important;
-  box-shadow: 0 0 40px #10b981 !important;
-}
-
-.stats-card.surveys-completed {
-  border-color: #8b5cf6 !important;
-  box-shadow: 0 0 40px #8b5cf6 !important;
-}
-
-.stats-card.success-rate {
-  border-color: #f97316 !important;
-  box-shadow: 0 0 40px #f97316 !important;
-}
-
-.progress-card.regular {
-  border-color: var(--regular-color) !important;
-  box-shadow: 0 0 40px var(--regular-color) !important;
-}
-
-.progress-card.vip {
-  border-color: var(--vip-color) !important;
-  box-shadow: 0 0 40px var(--vip-color) !important;
-}
-
-.progress-card.vvip {
-  border-color: var(--vvip-color) !important;
-  box-shadow: 0 0 40px var(--vvip-color) !important;
-}
-
-/* Hover effect for ALL cards */
-.stats-card:hover,
-.progress-card:hover,
-.plan-card:hover,
-.feature-card:hover,
-.quick-action-card:hover,
-.level-streak-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 60px currentColor !important;
+  box-shadow: 0 0 50px #4a1a6a !important;
 }
 
 /* =========================================================
@@ -1017,7 +966,7 @@ body {
 .dashboard-section {
   margin-bottom: 0;
   background: var(--bg-surface);
-  border-radius: 20px;
+  border-radius: var(--radius-md);
   padding: var(--space-xs);
   border: 2px solid var(--primary);
   box-shadow: 0 0 30px var(--primary);
@@ -1057,12 +1006,12 @@ body {
 }
 
 /* =========================================================
-   STATS GRID - EARNINGS DASHBOARD - ZERO GAP
+   STATS GRID - EARNINGS DASHBOARD
    ========================================================= */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0;
+  gap: 0; /* ZERO gap between cards */
 }
 
 @media (min-width: 768px) {
@@ -1072,6 +1021,14 @@ body {
 }
 
 .stats-card {
+  background: linear-gradient(145deg, #12121a, #0a0a12) !important;
+  border: 2px solid transparent !important;
+  border-radius: var(--radius-md) !important;
+  padding: var(--space-xs) !important;
+  margin: 0 !important;
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition-normal);
   animation: slideUp 0.4s ease;
   animation-fill-mode: both;
 }
@@ -1090,6 +1047,36 @@ body {
   right: 0;
   height: 4px;
   background: currentColor;
+}
+
+.stats-card.total-earnings {
+  border-color: var(--warning) !important;
+  box-shadow: 0 0 30px var(--warning) !important;
+}
+
+.stats-card.available-balance {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 30px var(--primary) !important;
+}
+
+.stats-card.affiliate-balance {
+  border-color: var(--success) !important;
+  box-shadow: 0 0 30px var(--success) !important;
+}
+
+.stats-card.surveys-completed {
+  border-color: var(--purple) !important;
+  box-shadow: 0 0 30px var(--purple) !important;
+}
+
+.stats-card.success-rate {
+  border-color: #f97316 !important;
+  box-shadow: 0 0 30px #f97316 !important;
+}
+
+.stats-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 50px currentColor !important;
 }
 
 .stats-card-header {
@@ -1130,7 +1117,7 @@ body {
   font-weight: 900;
   color: white;
   line-height: 1.2;
-  text-shadow: 0 0 30px currentColor;
+  text-shadow: 0 0 20px currentColor;
 }
 
 .stats-label {
@@ -1166,23 +1153,49 @@ body {
 .withdraw-quick-btn.affiliate-withdraw-btn {
   border-color: var(--success);
   color: var(--success);
-  box-shadow: 0 0 30px var(--success);
+  box-shadow: 0 0 20px var(--success);
 }
 
 /* =========================================================
-   PLAN PROGRESS CARDS - ZERO GAP
+   PLAN PROGRESS CARDS
    ========================================================= */
 .progress-cards {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 0; /* ZERO gap between cards */
 }
 
 .progress-card {
+  background: linear-gradient(145deg, #12121a, #0a0a12) !important;
+  border: 2px solid transparent !important;
+  border-radius: var(--radius-md) !important;
+  padding: var(--space-xs) !important;
+  margin: 0 !important;
   transition: var(--transition-normal);
   animation: slideUp 0.4s ease;
   position: relative;
   overflow: hidden;
+}
+
+.progress-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 50px currentColor !important;
+}
+
+/* Plan-specific styling */
+.progress-card.regular {
+  border-color: var(--regular-color) !important;
+  box-shadow: 0 0 30px var(--regular-color) !important;
+}
+
+.progress-card.vip {
+  border-color: var(--vip-color) !important;
+  box-shadow: 0 0 30px var(--vip-color) !important;
+}
+
+.progress-card.vvip {
+  border-color: var(--vvip-color) !important;
+  box-shadow: 0 0 30px var(--vvip-color) !important;
 }
 
 .progress-card-header {
@@ -1197,7 +1210,7 @@ body {
   font-size: 32px;
   width: 44px;
   height: 44px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1313,15 +1326,15 @@ body {
 }
 
 .progress-card.regular .progress-bar-fill {
-  background: linear-gradient(90deg, var(--regular-color), #0ea5e9, #0284c7);
+  background: var(--regular-gradient);
 }
 
 .progress-card.vip .progress-bar-fill {
-  background: linear-gradient(90deg, var(--vip-color), #6366f1, #4f46e5);
+  background: var(--vip-gradient);
 }
 
 .progress-card.vvip .progress-bar-fill {
-  background: linear-gradient(90deg, var(--vvip-color), #f59e0b, #d97706);
+  background: var(--vvip-gradient);
 }
 
 .progress-bar-fill::after {
@@ -1338,13 +1351,13 @@ body {
 /* Progress Card Actions */
 .progress-card-actions {
   display: flex;
-  gap: 2px;
+  gap: var(--space-xs);
   margin-top: var(--space-xs);
 }
 
 .progress-card-actions .action-btn {
   flex: 1;
-  padding: 6px;
+  padding: var(--space-xs);
   font-size: 12px;
   font-weight: 900;
   border-radius: var(--radius-md);
@@ -1397,12 +1410,12 @@ body {
 
 /* Withdrawal pending badge */
 .withdrawal-pending-badge {
-  margin-top: 4px;
-  padding: 4px;
+  margin-top: var(--space-xs);
+  padding: var(--space-xs);
   background: rgba(251, 191, 36, 0.2);
   border: 2px solid #f59e0b;
   border-radius: var(--radius-md);
-  font-size: 11px;
+  font-size: 12px;
   color: #f59e0b;
   font-weight: 900;
   text-align: center;
@@ -1411,51 +1424,57 @@ body {
 }
 
 /* =========================================================
-   PLAN CARDS (SURVEYS TAB) - BRIGHT GRADIENTS - ZERO GAP
+   PLAN CARDS (SURVEYS TAB)
    ========================================================= */
 .plan-cards-container {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 0; /* ZERO gap between cards */
 }
 
 .plan-card {
+  border: 2px solid transparent !important;
+  border-radius: var(--radius-md) !important;
+  padding: var(--space-xs) !important;
+  margin: 0 !important;
   overflow: hidden;
   transition: var(--transition-normal);
   animation: slideUp 0.4s ease;
-  border: none !important;
 }
 
 .plan-card:hover {
+  transform: translateY(-2px);
   box-shadow: 0 0 60px currentColor !important;
-  transform: translateY(-3px);
 }
 
 /* Plan card gradients - exactly from images */
 .plan-card.regular,
 .plan-card[data-plan="REGULAR"] {
   background: linear-gradient(135deg, #38bdf8, #0ea5e9, #0284c7) !important;
-  box-shadow: 0 0 50px #38bdf8 !important;
+  border-color: white !important;
+  box-shadow: 0 0 40px #38bdf8 !important;
 }
 
 .plan-card.vip,
 .plan-card[data-plan="VIP"] {
   background: linear-gradient(135deg, #818cf8, #6366f1, #4f46e5) !important;
-  box-shadow: 0 0 50px #818cf8 !important;
+  border-color: white !important;
+  box-shadow: 0 0 40px #818cf8 !important;
 }
 
 .plan-card.vvip,
 .plan-card[data-plan="VVIP"] {
   background: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706) !important;
-  box-shadow: 0 0 50px #fbbf24 !important;
+  border-color: white !important;
+  box-shadow: 0 0 40px #fbbf24 !important;
 }
 
 .plan-card-header {
-  padding: var(--space-xs);
+  padding: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  margin-bottom: var(--space-xs);
 }
 
 .plan-badge {
@@ -1481,7 +1500,7 @@ body {
   font-size: 24px;
   font-weight: 900;
   color: white;
-  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5), 0 0 30px white;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3), 0 0 30px white;
 }
 
 .plan-status {
@@ -1499,7 +1518,7 @@ body {
 }
 
 .plan-card-body {
-  padding: var(--space-xs);
+  padding: 0;
 }
 
 .plan-description {
@@ -1599,7 +1618,7 @@ body {
 }
 
 .plan-card-footer {
-  padding: var(--space-xs);
+  padding: var(--space-xs) 0 0;
   border-top: 2px solid rgba(255, 255, 255, 0.3);
 }
 
@@ -1671,12 +1690,12 @@ body {
 }
 
 /* =========================================================
-   FEATURE GRID - WHY USERS LOVE US - ZERO GAP
+   FEATURE GRID - WHY USERS LOVE US
    ========================================================= */
 .feature-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0;
+  gap: 0; /* ZERO gap between cards */
 }
 
 @media (min-width: 768px) {
@@ -1686,14 +1705,19 @@ body {
 }
 
 .feature-card {
+  background: linear-gradient(145deg, #12121a, #0a0a12) !important;
+  border: 2px solid #8b5cf6 !important;
+  border-radius: var(--radius-md) !important;
+  padding: var(--space-xs) !important;
+  margin: 0 !important;
   text-align: center;
-  border-color: #8b5cf6 !important;
-  box-shadow: 0 0 30px #8b5cf6 !important;
+  transition: var(--transition-normal);
   animation: slideUp 0.4s ease;
+  box-shadow: 0 0 30px #8b5cf6 !important;
 }
 
 .feature-card:hover {
-  border-color: #a78bfa !important;
+  transform: translateY(-2px);
   box-shadow: 0 0 50px #8b5cf6 !important;
 }
 
@@ -1720,25 +1744,30 @@ body {
 }
 
 /* =========================================================
-   QUICK ACTIONS - ZERO GAP
+   QUICK ACTIONS
    ========================================================= */
 .quick-actions-grid {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 0; /* ZERO gap between cards */
 }
 
 .quick-action-card {
   display: flex;
   align-items: center;
   gap: var(--space-xs);
-  border-color: #ec4899 !important;
-  box-shadow: 0 0 30px #ec4899 !important;
+  background: linear-gradient(145deg, #12121a, #0a0a12) !important;
+  border: 2px solid #ec4899 !important;
+  border-radius: var(--radius-md) !important;
+  padding: var(--space-xs) !important;
+  margin: 0 !important;
+  transition: var(--transition-normal);
   animation: slideUp 0.4s ease;
+  box-shadow: 0 0 30px #ec4899 !important;
 }
 
 .quick-action-card:hover {
-  border-color: #f472b6 !important;
+  transform: translateY(-2px);
   box-shadow: 0 0 50px #ec4899 !important;
 }
 
@@ -1752,7 +1781,7 @@ body {
   font-size: 32px;
   width: 48px;
   height: 48px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1796,7 +1825,6 @@ body {
 .quick-action-card .action-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 0 50px #ec4899;
-  background: linear-gradient(135deg, #f472b6, #ec4899);
 }
 
 .quick-action-card .action-btn.completed {
@@ -1812,7 +1840,7 @@ body {
 }
 
 /* =========================================================
-   BOTTOM NAVIGATION BAR - SUPER BRIGHT
+   BOTTOM NAVIGATION BAR
    ========================================================= */
 .bottom-nav-bar {
   position: fixed;
@@ -1826,7 +1854,7 @@ body {
   backdrop-filter: blur(20px);
   padding: var(--space-xs) var(--space-sm);
   padding-bottom: calc(var(--space-xs) + env(safe-area-inset-bottom));
-  box-shadow: 0 -5px 40px #00ffff;
+  box-shadow: 0 -5px 30px #00ffff;
   z-index: 1000;
   border-top: 3px solid #00ffff;
 }
@@ -1866,7 +1894,7 @@ body {
 }
 
 /* =========================================================
-   GAMIFICATION SECTION - ZERO MARGIN
+   GAMIFICATION SECTION
    ========================================================= */
 .gamification-section {
   margin: 0;
@@ -1875,25 +1903,27 @@ body {
 .gamification-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 0;
+  gap: 0; /* ZERO gap between cards */
 }
 
 .level-streak-card {
-  background: linear-gradient(135deg, #1e293b, #0f172a) !important;
-  border-color: #fbbf24 !important;
-  box-shadow: 0 0 40px #fbbf24 !important;
-  border-radius: 20px;
-  padding: var(--space-sm);
+  background: linear-gradient(145deg, #12121a, #0a0a12) !important;
+  border: 2px solid #fbbf24 !important;
+  border-radius: var(--radius-md) !important;
+  padding: var(--space-xs) !important;
+  margin: 0 !important;
   color: white;
+  box-shadow: 0 0 30px #fbbf24 !important;
 }
 
 .level-streak-card .level-icon {
   background: linear-gradient(135deg, #8b5cf6, #7c3aed);
   border-radius: var(--radius-md);
-  padding: var(--space-sm);
+  padding: var(--space-xs);
   font-size: 1.5rem;
   border: 2px solid white;
   box-shadow: 0 0 30px #8b5cf6;
+  display: inline-block;
 }
 
 .level-streak-card .level-title {
@@ -1973,13 +2003,13 @@ body {
 }
 
 /* =========================================================
-   TESTIMONIAL CTA - ZERO MARGIN
+   TESTIMONIAL CTA
    ========================================================= */
 .testimonial-cta {
   text-align: center;
   padding: var(--space-sm);
-  background: var(--bg-surface);
-  border-radius: 20px;
+  background: linear-gradient(145deg, #12121a, #0a0a12) !important;
+  border-radius: var(--radius-md);
   border: 2px solid var(--primary);
   box-shadow: 0 0 30px var(--primary);
   margin: 0;
@@ -1998,8 +2028,8 @@ body {
    ========================================================= */
 .dashboard-footer {
   text-align: center;
-  padding: var(--space-sm) var(--space-md);
-  margin-top: 0;
+  padding: var(--space-sm);
+  margin-top: auto;
   border-top: 2px solid #00ffff;
   box-shadow: 0 -5px 30px #00ffff;
 }
@@ -2092,8 +2122,8 @@ body {
   max-width: 420px;
   width: 100%;
   text-align: center;
-  box-shadow: 0 0 100px rgba(102, 126, 234, 0.8);
-  border: 4px solid white;
+  box-shadow: 0 0 80px rgba(102, 126, 234, 0.8);
+  border: 3px solid white;
   position: relative;
   animation: float 3s infinite;
 }
@@ -2101,7 +2131,7 @@ body {
 .fullscreen-notification-icon {
   font-size: 70px;
   margin-bottom: var(--space-sm);
-  animation: bounce 1s infinite;
+  animation: giftBounce 1s infinite;
   filter: drop-shadow(0 0 30px white);
 }
 
@@ -2212,7 +2242,7 @@ body {
   z-index: 998;
   box-shadow: 0 0 40px #3b82f6;
   border: 2px solid white;
-  animation: glowPulse 1s infinite;
+  animation: pulse-glow 1s infinite;
   text-transform: uppercase;
 }
 
@@ -2240,7 +2270,7 @@ body {
   box-shadow: 0 0 50px #25D366;
   cursor: pointer;
   transition: var(--transition-fast);
-  animation: bounce 2s infinite;
+  animation: float 2s infinite;
 }
 
 .chat-us-button:hover {
@@ -2254,8 +2284,9 @@ body {
 [data-theme="dark"] .stats-card,
 [data-theme="dark"] .progress-card,
 [data-theme="dark"] .feature-card,
-[data-theme="dark"] .quick-action-card {
-  background: linear-gradient(145deg, #0a0f1a, #030712) !important;
+[data-theme="dark"] .quick-action-card,
+[data-theme="dark"] .plan-card:not(.regular):not(.vip):not(.vvip) {
+  background: linear-gradient(145deg, #0a0a12, #05050a) !important;
 }
 
 [data-theme="dark"] .affiliate-balance {
@@ -2318,19 +2349,9 @@ body {
   .feature-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
-  .welcome-bonus::before,
-  .welcome-bonus::after {
-    font-size: 16px;
-  }
 }
 
 @media (max-width: 480px) {
-  .dashboard {
-    padding-top: var(--header-height);
-    padding-bottom: var(--nav-height);
-  }
-  
   .dashboard-main-header {
     padding: 2px var(--space-xs);
   }
@@ -2365,7 +2386,7 @@ body {
   
   .welcome-bonus::before,
   .welcome-bonus::after {
-    font-size: 12px;
+    font-size: 14px;
   }
   
   .bonus-amount {
@@ -2407,7 +2428,7 @@ body {
   
   .welcome-bonus::before,
   .welcome-bonus::after {
-    font-size: 8px;
+    font-size: 10px;
   }
 }
 
