@@ -1,51 +1,51 @@
 /* =========================================================
    SURVEYEARN DASHBOARD - ULTRA BRIGHT & UNIFORM REDESIGN
-   Colors that POP! Cards that SHOUT! Zero wasted space!
-   Complete Unified CSS with All Components - FULL VERSION
+   Colors that POP! Cards that SHOUT! Zero space between cards!
+   Complete Unified CSS with All Components - FULL 2800+ LOC VERSION
    ========================================================= */
 
 /* =========================================================
-   CSS VARIABLES - SUPER BRIGHT COLOR PALETTE
+   CSS VARIABLES - SUPER BRIGHT COLOR PALETTE - NO WHITE!
    ========================================================= */
 :root {
-  /* Dark Rich Backgrounds - NO WHITE! */
-  --bg-main: #0a0f1c;
-  --bg-surface: #141b2b;
-  --bg-glass: rgba(20, 27, 43, 0.98);
-  --bg-elevated: #1e293b;
+  /* Dark Rich Backgrounds - ABSOLUTELY NO WHITE! */
+  --bg-main: #0a0a0f;
+  --bg-surface: #12121a;
+  --bg-glass: rgba(18, 18, 26, 0.98);
+  --bg-elevated: #1a1a24;
   --text-primary: #ffffff;
-  --text-secondary: #e2e8f0;
-  --text-muted: #cbd5e1;
-  --text-inverse: #0f172a;
-  --border-light: #334155;
-  --border-medium: #475569;
+  --text-secondary: #f0f0ff;
+  --text-muted: #d0d0ff;
+  --text-inverse: #000000;
+  --border-light: #2a2a3a;
+  --border-medium: #3a3a4a;
   
   /* PLAN COLORS - SUPER BRIGHT like the images! */
   --regular-color: #38bdf8;
   --regular-gradient: linear-gradient(135deg, #38bdf8, #0ea5e9, #0284c7);
-  --regular-bg: linear-gradient(145deg, #0f2b3d, #1a4058);
+  --regular-bg: linear-gradient(145deg, #0a1a2a, #0f2f4a);
   --regular-total: #FF4500;  /* BRIGHT ORANGE RED */
-  --regular-total-glow: 0 0 15px #FF4500, 0 0 30px #FF8C00, 0 0 45px #FF4500;
+  --regular-total-glow: 0 0 20px #FF4500, 0 0 40px #FF8C00, 0 0 60px #FF4500;
   
   --vip-color: #818cf8;
   --vip-gradient: linear-gradient(135deg, #818cf8, #6366f1, #4f46e5);
-  --vip-bg: linear-gradient(145deg, #1e1f4a, #2d2b6e);
+  --vip-bg: linear-gradient(145deg, #1a1a3a, #25255a);
   --vip-total: #FFA500;      /* BRIGHT ORANGE */
-  --vip-total-glow: 0 0 15px #FFA500, 0 0 30px #FFD700, 0 0 45px #FFA500;
+  --vip-total-glow: 0 0 20px #FFA500, 0 0 40px #FFD700, 0 0 60px #FFA500;
   
   --vvip-color: #fbbf24;
   --vvip-gradient: linear-gradient(135deg, #fbbf24, #f59e0b, #d97706);
-  --vvip-bg: linear-gradient(145deg, #3d2e0f, #5c4516);
+  --vvip-bg: linear-gradient(145deg, #2a1f0a, #3f2f0f);
   --vvip-total: #FFD700;     /* BRIGHT GOLD */
-  --vvip-total-glow: 0 0 15px #FFD700, 0 0 30px #FFA500, 0 0 45px #FFD700;
+  --vvip-total-glow: 0 0 20px #FFD700, 0 0 40px #FFA500, 0 0 60px #FFD700;
   
   /* WELCOME BONUS - RAINBOW EXPLOSION like ❤️💙💛💫💚💛 */
   --bonus-gradient: linear-gradient(145deg, 
     #ff0055, #ff4400, #ffaa00, #44ff00, 
     #00ffaa, #0055ff, #aa00ff, #ff00aa, #ff0055);
-  --bonus-glow: 0 0 40px #ff00aa, 0 0 80px #ffaa00, 0 0 120px #00ffaa;
+  --bonus-glow: 0 0 50px #ff00aa, 0 0 100px #ffaa00, 0 0 150px #00ffaa;
   
-  /* Brand Colors */
+  /* Brand Colors - Ultra Bright */
   --primary: #3b82f6;
   --primary-dark: #2563eb;
   --primary-light: #60a5fa;
@@ -70,12 +70,12 @@
   --gradient-hero: linear-gradient(135deg, #2563eb, #1e40af, #1e3a8a);
   
   /* Shadows - Stronger for depth */
-  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.6);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.7);
-  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.8);
+  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.8);
+  --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.9);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 1);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 1);
   
-  /* Layout - ULTRA TIGHT! */
+  /* Layout - ZERO SPACE between cards! */
   --radius-sm: 16px;
   --radius-md: 20px;
   --radius-lg: 24px;
@@ -85,6 +85,7 @@
   
   --header-height: 70px;
   --nav-height: 70px;
+  --space-none: 0px;
   --space-xs: 2px;
   --space-sm: 4px;
   --space-md: 8px;
@@ -98,22 +99,22 @@
   --transition-slow: 350ms ease;
 }
 
-/* Dark Theme - Rich & Sophisticated */
+/* Dark Theme - Even Deeper */
 [data-theme="dark"] {
-  --bg-main: #030712;
-  --bg-surface: #0f172a;
-  --bg-glass: rgba(15, 23, 42, 0.98);
-  --bg-elevated: #1e293b;
+  --bg-main: #050508;
+  --bg-surface: #0a0a12;
+  --bg-glass: rgba(10, 10, 18, 0.98);
+  --bg-elevated: #12121a;
   --text-primary: #ffffff;
-  --text-secondary: #e2e8f0;
-  --text-muted: #cbd5e1;
+  --text-secondary: #e0e0ff;
+  --text-muted: #c0c0ff;
   --text-inverse: #000000;
-  --border-light: #1e293b;
-  --border-medium: #334155;
+  --border-light: #1a1a2a;
+  --border-medium: #2a2a3a;
   
-  --regular-bg: linear-gradient(145deg, #0a1a2a, #0f2f4a);
-  --vip-bg: linear-gradient(145deg, #1a1a3a, #25255a);
-  --vvip-bg: linear-gradient(145deg, #2a1f0a, #3f2f0f);
+  --regular-bg: linear-gradient(145deg, #050f1a, #0a1f2a);
+  --vip-bg: linear-gradient(145deg, #0f0f2a, #1a1a3a);
+  --vvip-bg: linear-gradient(145deg, #1a140a, #2a1f0a);
   
   --regular-total: #FF6B4A;
   --vip-total: #FFB347;
@@ -126,8 +127,8 @@
   --info-light: #1e3a8a;
   --purple-light: #2e1065;
   
-  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.8);
-  --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.9);
+  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 1);
+  --shadow-md: 0 6px 12px rgba(0, 0, 0, 1);
   --shadow-lg: 0 10px 25px rgba(0, 0, 0, 1);
   --shadow-xl: 0 20px 40px rgba(0, 0, 0, 1);
 }
@@ -151,8 +152,8 @@
 }
 
 @keyframes glowPulse {
-  0%, 100% { box-shadow: 0 0 20px currentColor; }
-  50% { box-shadow: 0 0 40px currentColor; }
+  0%, 100% { box-shadow: 0 0 30px currentColor; }
+  50% { box-shadow: 0 0 60px currentColor; }
 }
 
 @keyframes shimmer {
@@ -165,9 +166,14 @@
   50% { opacity: 1; transform: scale(1.3); }
 }
 
+@keyframes sparkleBurst {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+  50% { transform: scale(1.3) rotate(10deg); opacity: 1; }
+}
+
 @keyframes bounce {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-10px); }
 }
 
 @keyframes spin {
@@ -194,11 +200,6 @@
 @keyframes rainbowWave {
   0% { filter: hue-rotate(0deg); }
   100% { filter: hue-rotate(360deg); }
-}
-
-@keyframes sparkleBurst {
-  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
-  50% { transform: scale(1.3) rotate(10deg); opacity: 1; }
 }
 
 @keyframes float {
@@ -253,7 +254,7 @@ body {
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: var(--space-lg);
-  box-shadow: 0 0 30px var(--primary);
+  box-shadow: 0 0 40px var(--primary);
 }
 
 .loading-text {
@@ -286,6 +287,7 @@ body {
   color: var(--text-muted);
   font-size: 16px;
   margin-bottom: var(--space-xl);
+  font-weight: 600;
 }
 
 .no-user-container .primary-btn {
@@ -298,33 +300,33 @@ body {
   font-weight: 900;
   cursor: pointer;
   transition: var(--transition-fast);
-  box-shadow: 0 0 30px var(--primary);
+  box-shadow: 0 0 40px var(--primary);
   text-transform: uppercase;
 }
 
 .no-user-container .primary-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 50px var(--primary);
+  box-shadow: 0 0 60px var(--primary);
 }
 
 /* =========================================================
-   DASHBOARD CONTAINER
+   DASHBOARD CONTAINER - ZERO SPACE!
    ========================================================= */
 .dashboard {
   max-width: 1200px;
   margin: 0 auto;
-  padding: var(--space-xs);
-  padding-top: calc(var(--header-height) + var(--space-xs));
-  padding-bottom: calc(var(--nav-height) + var(--space-xs));
+  padding: 0;
+  padding-top: calc(var(--header-height));
+  padding-bottom: calc(var(--nav-height));
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: 0;
   animation: fadeIn 0.5s ease-out;
 }
 
 /* =========================================================
-   HEADER - SUPER BRIGHT
+   HEADER - MODERN & CRYSTAL CLEAR with TAP TO ACTIVATE
    ========================================================= */
 .dashboard-main-header {
   background: linear-gradient(135deg, #ff0055, #ff4400, #ffaa00, #44ff00, #00ffaa, #0055ff, #aa00ff);
@@ -468,7 +470,7 @@ body {
   box-shadow: 0 0 50px #25D366;
 }
 
-/* Header Activation Container */
+/* Header Activation Container - TAP TO ACTIVATE BUTTON PRESERVED! */
 .header-activation-container {
   display: flex;
   justify-content: center;
@@ -477,15 +479,17 @@ body {
 }
 
 .activate-btn-pulse {
-  background: linear-gradient(135deg, #ff0000, #ff4400, #ffaa00);
+  background: linear-gradient(135deg, #ff0000, #ff4400, #ffaa00, #ffff00);
+  background-size: 300% 300%;
+  animation: rainbowWave 3s infinite;
   border: 3px solid white;
   border-radius: var(--radius-lg);
-  padding: 10px 20px;
+  padding: 12px 24px;
   color: white;
   font-weight: 900;
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
-  box-shadow: 0 0 40px #ff0000;
+  box-shadow: 0 0 50px #ff0000;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -497,7 +501,7 @@ body {
 
 .activate-btn-pulse:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 60px #ff0000;
+  box-shadow: 0 0 80px #ff0000;
 }
 
 .header-greeting-bottom {
@@ -514,18 +518,17 @@ body {
 }
 
 /* =========================================================
-   HERO SECTION - COMPACT & POWERFUL
+   HERO SECTION - EXACTLY LIKE THE IMAGE - ZERO MARGIN
    ========================================================= */
 .hero-section {
-  border-radius: var(--radius-md);
+  border-radius: 0;
   padding: var(--space-xs);
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+  background: linear-gradient(135deg, #2563eb 0%, #8b5cf6 50%, #ec4899 100%);
   box-shadow: 0 0 40px #8b5cf6;
   border: 2px solid white;
   position: relative;
   overflow: hidden;
-  margin-top: 80px;
-  margin-bottom: 0;
+  margin: 0;
 }
 
 .hero-section::before {
@@ -656,13 +659,12 @@ body {
 }
 
 /* =========================================================
-   LIVE WITHDRAWAL FEED
+   LIVE WITHDRAWAL FEED - ZERO MARGIN
    ========================================================= */
 .live-withdrawal-feed {
-  background: var(--bg-glass);
+  background: var(--bg-surface);
   backdrop-filter: blur(20px);
   padding: var(--space-xs);
-  border-radius: var(--radius-md);
   border: 2px solid var(--vvip-color);
   margin: 0;
   box-shadow: 0 0 30px var(--vvip-color);
@@ -681,133 +683,35 @@ body {
 }
 
 /* =========================================================
-   USER NOTIFICATIONS
+   USER NOTIFICATIONS - ZERO MARGIN
    ========================================================= */
 .user-notifications-section {
   margin: 0;
-  border-bottom: 2px solid var(--vip-color);
-  padding: var(--space-xs) 0;
+  padding: var(--space-xs);
+  border: 2px solid var(--vip-color);
   box-shadow: 0 0 30px var(--vip-color);
 }
 
 /* =========================================================
-   UNIFIED CARD STYLES - ALL CARDS LOOK THE SAME!
-   ========================================================= */
-
-/* Base card style for ALL cards */
-.stats-card,
-.progress-card,
-.plan-card,
-.feature-card,
-.quick-action-card,
-.level-streak-card,
-.testimonial-cta,
-.live-withdrawal-feed,
-.welcome-bonus {
-  background: linear-gradient(145deg, #141b2b, #0f172a) !important;
-  border: 2px solid transparent !important;
-  border-radius: var(--radius-md) !important;
-  padding: var(--space-xs) !important;
-  margin: var(--space-xs) 0 !important;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.3) !important;
-  transition: all 0.2s ease;
-}
-
-/* Colored borders for different card types */
-.stats-card.total-earnings {
-  border-color: #f59e0b !important;
-  box-shadow: 0 0 30px #f59e0b !important;
-}
-
-.stats-card.available-balance {
-  border-color: #3b82f6 !important;
-  box-shadow: 0 0 30px #3b82f6 !important;
-}
-
-.stats-card.affiliate-balance {
-  border-color: #10b981 !important;
-  box-shadow: 0 0 30px #10b981 !important;
-}
-
-.stats-card.surveys-completed {
-  border-color: #8b5cf6 !important;
-  box-shadow: 0 0 30px #8b5cf6 !important;
-}
-
-.stats-card.success-rate {
-  border-color: #f97316 !important;
-  box-shadow: 0 0 30px #f97316 !important;
-}
-
-.progress-card.regular {
-  border-color: var(--regular-color) !important;
-  box-shadow: 0 0 30px var(--regular-color) !important;
-}
-
-.progress-card.vip {
-  border-color: var(--vip-color) !important;
-  box-shadow: 0 0 30px var(--vip-color) !important;
-}
-
-.progress-card.vvip {
-  border-color: var(--vvip-color) !important;
-  box-shadow: 0 0 30px var(--vvip-color) !important;
-}
-
-/* Hover effect for ALL cards */
-.stats-card:hover,
-.progress-card:hover,
-.plan-card:hover,
-.feature-card:hover,
-.quick-action-card:hover,
-.level-streak-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 50px currentColor !important;
-}
-
-/* =========================================================
-   WELCOME BONUS CARD - ULTRA BRIGHT with EMOJIS
+   WELCOME BONUS CARD - COMPLETELY REDESIGNED SHAPE!
    ========================================================= */
 .welcome-bonus {
   background: var(--bonus-gradient) !important;
   background-size: 300% 300% !important;
   animation: rainbowWave 5s infinite !important;
   border: 4px solid white !important;
-  border-radius: var(--radius-lg) !important;
+  border-radius: 50px 50px 50px 50px !important; /* New pill shape! */
   padding: var(--space-xs) !important;
-  margin: var(--space-xs) 0 !important;
+  margin: 0 !important;
   position: relative;
   box-shadow: var(--bonus-glow) !important;
+  transform: scale(1);
+  transition: all 0.3s ease;
 }
 
-/* Floating emojis all around */
-.welcome-bonus::before {
-  content: '❤️ 💙 💛 💫 💚 💛 ❤️ 💙 💛 💫 💚 💛 ❤️ 💙 💛 💫 💚 💛';
-  position: absolute;
-  top: -20px;
-  left: 0;
-  right: 0;
-  font-size: 20px;
-  text-align: center;
-  animation: sparkleBurst 2s infinite;
-  white-space: nowrap;
-  z-index: 10;
-  text-shadow: 0 0 30px white;
-}
-
-.welcome-bonus::after {
-  content: '✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐';
-  position: absolute;
-  bottom: -20px;
-  left: 0;
-  right: 0;
-  font-size: 20px;
-  text-align: center;
-  animation: sparkleBurst 2s infinite reverse;
-  z-index: 10;
-  text-shadow: 0 0 30px white;
+.welcome-bonus:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 80px #ff00aa, 0 0 120px #ffaa00 !important;
 }
 
 /* Diamond pattern overlay */
@@ -824,6 +728,34 @@ body {
   opacity: 0.3;
   pointer-events: none;
   z-index: 1;
+}
+
+/* Floating emojis all around */
+.welcome-bonus::before {
+  content: '❤️ 💙 💛 💫 💚 💛 ❤️ 💙 💛 💫 💚 💛 ❤️ 💙 💛 💫 💚 💛';
+  position: absolute;
+  top: -25px;
+  left: 0;
+  right: 0;
+  font-size: 24px;
+  text-align: center;
+  animation: sparkleBurst 2s infinite;
+  white-space: nowrap;
+  z-index: 10;
+  text-shadow: 0 0 30px white;
+}
+
+.welcome-bonus::after {
+  content: '✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐ ✨ ⭐';
+  position: absolute;
+  bottom: -25px;
+  left: 0;
+  right: 0;
+  font-size: 24px;
+  text-align: center;
+  animation: sparkleBurst 2s infinite reverse;
+  z-index: 10;
+  text-shadow: 0 0 30px white;
 }
 
 /* Glow effect */
@@ -848,7 +780,7 @@ body {
   bottom: -2px;
   background: linear-gradient(45deg, #ff3333, #ffd700, #ff3333, #ffd700);
   background-size: 400% 400%;
-  border-radius: calc(var(--radius-lg) + 2px);
+  border-radius: 52px;
   z-index: -1;
   animation: borderGradient 3s ease infinite;
   opacity: 0.8;
@@ -868,18 +800,18 @@ body {
   animation: shimmer 3s ease-in-out infinite;
 }
 
-/* Gift icon */
+/* Gift icon - bigger and bouncier */
 .welcome-bonus .gift-icon {
-  font-size: 36px;
+  font-size: 48px;
   color: #ffd700;
-  background: rgba(255, 255, 255, 0.25);
-  width: 52px;
-  height: 52px;
+  background: rgba(255, 255, 255, 0.3);
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 40px #ffd700, inset 0 0 20px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 50px #ffd700, inset 0 0 20px rgba(255, 255, 255, 0.5);
   border: 3px solid white;
   animation: bounce 0.5s infinite;
 }
@@ -890,12 +822,12 @@ body {
   margin: 2px 0;
   padding: var(--space-xs);
   background: rgba(0, 0, 0, 0.5);
-  border-radius: var(--radius-md);
+  border-radius: 40px;
   border: 3px solid white;
-  box-shadow: 0 0 30px rgba(255, 255, 255, 0.3), inset 0 0 20px rgba(255, 215, 0, 0.3);
+  box-shadow: 0 0 50px rgba(255, 255, 255, 0.5);
   position: relative;
   overflow: hidden;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(10px);
 }
 
 .bonus-amount-container::before {
@@ -911,12 +843,12 @@ body {
 }
 
 .bonus-amount {
-  font-size: 40px;
+  font-size: 48px;
   font-weight: 900;
   color: white;
   display: block;
   line-height: 1;
-  text-shadow: 0 0 30px white, 0 0 60px #ffd700, 0 0 90px #ffaa00;
+  text-shadow: 0 0 40px white, 0 0 80px #ffd700, 0 0 120px #ffaa00;
   position: relative;
   z-index: 1;
 }
@@ -983,7 +915,7 @@ body {
   gap: 8px;
   width: 100%;
   cursor: pointer;
-  box-shadow: 0 0 40px cyan, 0 0 80px magenta !important;
+  box-shadow: 0 0 50px cyan, 0 0 100px magenta !important;
   transition: var(--transition-fast);
   position: relative;
   overflow: hidden;
@@ -991,22 +923,101 @@ body {
 
 .activate-bonus-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 60px cyan, 0 0 100px magenta !important;
+  box-shadow: 0 0 80px cyan, 0 0 120px magenta !important;
 }
 
 /* Dark mode bonus card */
 [data-theme="dark"] .welcome-bonus {
   background: linear-gradient(135deg, #1a1a4a, #2a1a5a, #1a4a4a) !important;
-  box-shadow: 0 0 50px #4a1a6a !important;
+  box-shadow: 0 0 60px #4a1a6a !important;
+}
+
+/* =========================================================
+   UNIFIED CARD STYLES - ALL CARDS EXACTLY THE SAME!
+   ========================================================= */
+
+/* Base card style for EVERY SINGLE CARD */
+.stats-card,
+.progress-card,
+.plan-card,
+.feature-card,
+.quick-action-card,
+.level-streak-card,
+.testimonial-cta,
+.dashboard-section,
+.live-withdrawal-feed,
+.user-notifications-section,
+.gamification-section {
+  background: linear-gradient(145deg, #12121a, #0a0a12) !important;
+  border: 2px solid transparent !important;
+  border-radius: 20px !important; /* ALL cards same shape! */
+  padding: var(--space-xs) !important;
+  margin: 0 !important; /* ZERO margin between cards */
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.5) !important;
+  transition: all 0.2s ease;
+}
+
+/* Color-coded borders for different card types */
+.stats-card.total-earnings {
+  border-color: #f59e0b !important;
+  box-shadow: 0 0 40px #f59e0b !important;
+}
+
+.stats-card.available-balance {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 40px #3b82f6 !important;
+}
+
+.stats-card.affiliate-balance {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 40px #10b981 !important;
+}
+
+.stats-card.surveys-completed {
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 40px #8b5cf6 !important;
+}
+
+.stats-card.success-rate {
+  border-color: #f97316 !important;
+  box-shadow: 0 0 40px #f97316 !important;
+}
+
+.progress-card.regular {
+  border-color: var(--regular-color) !important;
+  box-shadow: 0 0 40px var(--regular-color) !important;
+}
+
+.progress-card.vip {
+  border-color: var(--vip-color) !important;
+  box-shadow: 0 0 40px var(--vip-color) !important;
+}
+
+.progress-card.vvip {
+  border-color: var(--vvip-color) !important;
+  box-shadow: 0 0 40px var(--vvip-color) !important;
+}
+
+/* Hover effect for ALL cards */
+.stats-card:hover,
+.progress-card:hover,
+.plan-card:hover,
+.feature-card:hover,
+.quick-action-card:hover,
+.level-streak-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 60px currentColor !important;
 }
 
 /* =========================================================
    SECTION HEADINGS
    ========================================================= */
 .dashboard-section {
-  margin-bottom: var(--space-xs);
+  margin-bottom: 0;
   background: var(--bg-surface);
-  border-radius: var(--radius-md);
+  border-radius: 20px;
   padding: var(--space-xs);
   border: 2px solid var(--primary);
   box-shadow: 0 0 30px var(--primary);
@@ -1046,12 +1057,12 @@ body {
 }
 
 /* =========================================================
-   STATS GRID - EARNINGS DASHBOARD
+   STATS GRID - EARNINGS DASHBOARD - ZERO GAP
    ========================================================= */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-xs);
+  gap: 0;
 }
 
 @media (min-width: 768px) {
@@ -1119,7 +1130,7 @@ body {
   font-weight: 900;
   color: white;
   line-height: 1.2;
-  text-shadow: 0 0 20px currentColor;
+  text-shadow: 0 0 30px currentColor;
 }
 
 .stats-label {
@@ -1155,16 +1166,16 @@ body {
 .withdraw-quick-btn.affiliate-withdraw-btn {
   border-color: var(--success);
   color: var(--success);
-  box-shadow: 0 0 20px var(--success);
+  box-shadow: 0 0 30px var(--success);
 }
 
 /* =========================================================
-   PLAN PROGRESS CARDS
+   PLAN PROGRESS CARDS - ZERO GAP
    ========================================================= */
 .progress-cards {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: 0;
 }
 
 .progress-card {
@@ -1265,7 +1276,7 @@ body {
 /* Earned amount with glow - exactly from images */
 .earned-amount {
   font-weight: 900 !important;
-  font-size: 20px !important;
+  font-size: 22px !important;
 }
 
 .progress-card.regular .earned-amount {
@@ -1327,13 +1338,13 @@ body {
 /* Progress Card Actions */
 .progress-card-actions {
   display: flex;
-  gap: var(--space-xs);
+  gap: 2px;
   margin-top: var(--space-xs);
 }
 
 .progress-card-actions .action-btn {
   flex: 1;
-  padding: var(--space-xs);
+  padding: 6px;
   font-size: 12px;
   font-weight: 900;
   border-radius: var(--radius-md);
@@ -1386,12 +1397,12 @@ body {
 
 /* Withdrawal pending badge */
 .withdrawal-pending-badge {
-  margin-top: var(--space-xs);
-  padding: var(--space-xs);
+  margin-top: 4px;
+  padding: 4px;
   background: rgba(251, 191, 36, 0.2);
   border: 2px solid #f59e0b;
   border-radius: var(--radius-md);
-  font-size: 12px;
+  font-size: 11px;
   color: #f59e0b;
   font-weight: 900;
   text-align: center;
@@ -1400,12 +1411,12 @@ body {
 }
 
 /* =========================================================
-   PLAN CARDS (SURVEYS TAB)
+   PLAN CARDS (SURVEYS TAB) - BRIGHT GRADIENTS - ZERO GAP
    ========================================================= */
 .plan-cards-container {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: 0;
 }
 
 .plan-card {
@@ -1660,12 +1671,12 @@ body {
 }
 
 /* =========================================================
-   FEATURE GRID - WHY USERS LOVE US
+   FEATURE GRID - WHY USERS LOVE US - ZERO GAP
    ========================================================= */
 .feature-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-xs);
+  gap: 0;
 }
 
 @media (min-width: 768px) {
@@ -1709,12 +1720,12 @@ body {
 }
 
 /* =========================================================
-   QUICK ACTIONS
+   QUICK ACTIONS - ZERO GAP
    ========================================================= */
 .quick-actions-grid {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: 0;
 }
 
 .quick-action-card {
@@ -1801,7 +1812,7 @@ body {
 }
 
 /* =========================================================
-   BOTTOM NAVIGATION BAR
+   BOTTOM NAVIGATION BAR - SUPER BRIGHT
    ========================================================= */
 .bottom-nav-bar {
   position: fixed;
@@ -1815,7 +1826,7 @@ body {
   backdrop-filter: blur(20px);
   padding: var(--space-xs) var(--space-sm);
   padding-bottom: calc(var(--space-xs) + env(safe-area-inset-bottom));
-  box-shadow: 0 -5px 30px #00ffff;
+  box-shadow: 0 -5px 40px #00ffff;
   z-index: 1000;
   border-top: 3px solid #00ffff;
 }
@@ -1855,24 +1866,23 @@ body {
 }
 
 /* =========================================================
-   GAMIFICATION SECTION
+   GAMIFICATION SECTION - ZERO MARGIN
    ========================================================= */
 .gamification-section {
-  margin-top: var(--space-xs);
-  margin-bottom: var(--space-xs);
+  margin: 0;
 }
 
 .gamification-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--space-xs);
+  gap: 0;
 }
 
 .level-streak-card {
   background: linear-gradient(135deg, #1e293b, #0f172a) !important;
   border-color: #fbbf24 !important;
-  box-shadow: 0 0 30px #fbbf24 !important;
-  border-radius: var(--radius-md);
+  box-shadow: 0 0 40px #fbbf24 !important;
+  border-radius: 20px;
   padding: var(--space-sm);
   color: white;
 }
@@ -1963,16 +1973,16 @@ body {
 }
 
 /* =========================================================
-   TESTIMONIAL CTA
+   TESTIMONIAL CTA - ZERO MARGIN
    ========================================================= */
 .testimonial-cta {
   text-align: center;
   padding: var(--space-sm);
   background: var(--bg-surface);
-  border-radius: var(--radius-md);
+  border-radius: 20px;
   border: 2px solid var(--primary);
   box-shadow: 0 0 30px var(--primary);
-  margin-top: var(--space-xs);
+  margin: 0;
 }
 
 .testimonial-cta p {
@@ -1989,7 +1999,7 @@ body {
 .dashboard-footer {
   text-align: center;
   padding: var(--space-sm) var(--space-md);
-  margin-top: auto;
+  margin-top: 0;
   border-top: 2px solid #00ffff;
   box-shadow: 0 -5px 30px #00ffff;
 }
@@ -2077,13 +2087,13 @@ body {
 
 .fullscreen-notification-card {
   background: linear-gradient(135deg, #667eea, #764ba2, #9f7aea);
-  border-radius: var(--radius-lg);
+  border-radius: 50px;
   padding: var(--space-lg);
   max-width: 420px;
   width: 100%;
   text-align: center;
-  box-shadow: 0 0 80px rgba(102, 126, 234, 0.8);
-  border: 3px solid white;
+  box-shadow: 0 0 100px rgba(102, 126, 234, 0.8);
+  border: 4px solid white;
   position: relative;
   animation: float 3s infinite;
 }
@@ -2252,14 +2262,20 @@ body {
   background: linear-gradient(135deg, #1e293b, #0f172a) !important;
 }
 
+[data-theme="dark"] .stats-card h4,
+[data-theme="dark"] .feature-card h4,
+[data-theme="dark"] .quick-action-card h4,
+[data-theme="dark"] .progress-card-header h4 {
+  color: var(--text-primary);
+}
+
 /* =========================================================
-   RESPONSIVE DESIGN
+   RESPONSIVE DESIGN - KEEPING ZERO SPACE
    ========================================================= */
 @media (max-width: 768px) {
   .dashboard {
-    padding: 2px;
-    padding-top: calc(var(--header-height) + 2px);
-    padding-bottom: calc(var(--nav-height) + 2px);
+    padding-top: var(--header-height);
+    padding-bottom: var(--nav-height);
   }
   
   .header-title-container {
@@ -2302,13 +2318,17 @@ body {
   .feature-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+  
+  .welcome-bonus::before,
+  .welcome-bonus::after {
+    font-size: 16px;
+  }
 }
 
 @media (max-width: 480px) {
   .dashboard {
-    padding: 2px;
-    padding-top: calc(var(--header-height) + 2px);
-    padding-bottom: calc(var(--nav-height) + 2px);
+    padding-top: var(--header-height);
+    padding-bottom: var(--nav-height);
   }
   
   .dashboard-main-header {
@@ -2349,7 +2369,7 @@ body {
   }
   
   .bonus-amount {
-    font-size: 32px;
+    font-size: 36px;
   }
   
   .activate-bonus-btn {
