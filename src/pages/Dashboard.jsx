@@ -13,7 +13,7 @@ import DailyRewardPopup from "./components/DailyRewardPopup.jsx";
 import WelcomeBonusPopup from "./components/WelcomeBonusPopup.jsx";
 import { gamificationApi } from "../api/api";
 import "./Dashboard.css";
-import "./Dashboard-mobile.css";
+
 
 const PLANS = {
   REGULAR: { 
