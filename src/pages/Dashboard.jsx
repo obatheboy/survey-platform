@@ -904,7 +904,7 @@ return (
         borderBottom: '1px solid rgba(255,255,255,0.2)',
         position: 'relative',
         overflow: 'hidden',
-        marginTop: '80px',
+        marginTop: '76px',
         marginBottom: '0'
       }}>
         <div style={{
@@ -1062,18 +1062,18 @@ return (
     <div className="plan-card-header" style={{ 
       position: 'relative', 
       zIndex: 2,
-      marginBottom: '4px'
+      marginBottom: '2px'
     }}>
       <div className="plan-badge" style={{ 
         display: 'flex', 
         alignItems: 'center', 
-        gap: '10px'
+        gap: '4px'
       }}>
         <span className="plan-icon gift-icon" style={{ 
-          fontSize: '32px',
+          fontSize: '20px',
           background: 'linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.1))',
-          width: '50px',
-          height: '50px',
+          width: '32px',
+          height: '32px',
           borderRadius: '50%',
           display: 'flex',
           alignItems: 'center',
@@ -1086,7 +1086,7 @@ return (
         </span>
         <span className="plan-name" style={{ 
           color: '#FF6B00 !important',
-          fontSize: '20px',
+          fontSize: '14px',
           fontWeight: '900',
           textShadow: '0 2px 15px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 107, 0, 0.5)',
           letterSpacing: '-0.5px'
