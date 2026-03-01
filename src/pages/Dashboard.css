@@ -525,30 +525,30 @@ body {
 }
 
 /* =========================================================
-   WELCOME BONUS CARD - OBSIDIAN & AMBER
+   WELCOME BONUS CARD - COMPACT SIZE
    ========================================================= */
 .welcome-bonus {
   background: linear-gradient(145deg, #060606, #1a1a0a, #FF8C00) !important;
   border: var(--wireframe-border) !important;
-  border-radius: var(--radius-md) !important;
-  padding: var(--space-xs) var(--space-sm) !important;
-  margin: var(--space-xs) 0 !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 4px 8px !important;
+  margin: 4px 0 !important;
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-lg), var(--glow-card) !important;
   color: white;
+  min-height: auto;
 }
 
 /* Emoji decorations */
 .welcome-bonus::before {
-  content: '🎁 ✨ 💎';
+  content: '🎁';
   position: absolute;
-  top: 4px;
-  right: 8px;
-  font-size: 14px;
+  top: 2px;
+  right: 6px;
+  font-size: 12px;
   opacity: 0.9;
   z-index: 2;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 .welcome-bonus::after {
@@ -558,43 +558,42 @@ body {
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--button-primary), var(--button-purple), var(--button-pink));
+  background: linear-gradient(90deg, #FF8C00, #ff9d2e, #FF8C00);
 }
 
-/* Gift icon */
+/* Gift icon - smaller */
 .welcome-bonus .gift-icon {
-  font-size: 24px;
+  font-size: 18px;
   background: rgba(255, 255, 255, 0.25);
-  width: 40px;
-  height: 40px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid rgba(255,255,255,0.4);
-  box-shadow: 0 0 20px rgba(255,255,255,0.3);
+  border: 1px solid rgba(255,255,255,0.4);
+  box-shadow: 0 0 10px rgba(255,255,255,0.2);
 }
 
-/* Bonus amount */
+/* Bonus amount - smaller */
 .bonus-amount {
-  font-size: 24px;
+  font-size: 16px;
   font-weight: 900;
   color: white;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
   line-height: 1.1;
 }
 
-/* Description */
+/* Description - smaller */
 .bonus-description {
   color: #FF8C00;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 700;
-  margin: 2px 0;
+  margin: 0;
   background: rgba(255, 140, 0, 0.1);
-  padding: 4px 12px;
+  padding: 2px 8px;
   border-radius: var(--radius-full);
   display: inline-block;
-  backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 140, 0, 0.3);
 }
 
@@ -776,20 +775,12 @@ body {
   color: white;
 }
 
-/* Different border colors to distinguish plans, but backgrounds all obsidian */
-.progress-card.regular {
-  background: var(--card-obsidian);
-  border-left: 8px solid var(--regular-color);
-}
-
-.progress-card.vip {
-  background: var(--card-obsidian-medium);
-  border-left: 8px solid var(--vip-color);
-}
-
+/* UNIFORM border colors - all amber for progress cards */
+.progress-card.regular,
+.progress-card.vip,
 .progress-card.vvip {
-  background: var(--card-obsidian-light);
-  border-left: 8px solid var(--vvip-color);
+  background: var(--card-obsidian) !important;
+  border-left: 8px solid #FF8C00 !important;  /* Amber - same for all */
 }
 
 .progress-card:hover {
@@ -815,7 +806,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid rgba(255,255,255,0.3);
+  border: 1px solid rgba(226, 176, 74, 0.3);
 }
 
 .progress-card-header h4 {
@@ -970,21 +961,19 @@ body {
   box-shadow: 0 0 25px rgba(255, 140, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
-/* Secondary buttons - outline style */
+/* Secondary buttons - UNIFORM amber outline */
 .action-btn.secondary {
   background: transparent;
-  border: 2px solid;
+  border: 1px solid;
   color: white;
 }
 
-.progress-card.regular .action-btn.secondary {
-  border-color: var(--regular-color);
-  color: var(--regular-color);
-}
-
-.progress-card.vip .action-btn.secondary {
-  border-color: var(--vip-color);
-  color: var(--vip-color);
+/* All secondary buttons use amber */
+.progress-card.regular .action-btn.secondary,
+.progress-card.vip .action-btn.secondary,
+.progress-card.vvip .action-btn.secondary {
+  border-color: #FF8C00 !important;
+  color: #FF8C00 !important;
 }
 
 .progress-card.vvip .action-btn.secondary {
@@ -1032,26 +1021,20 @@ body {
   border: 2px solid rgba(255,255,255,0.2);
 }
 
-/* ALL survey plan cards - OBSIDIAN backgrounds */
+/* ALL survey plan cards - UNIFORM OBSIDIAN backgrounds */
 .plan-card.regular,
 .plan-card.vip,
 .plan-card.vvip {
   background: var(--card-obsidian) !important;
-  border: var(--wireframe-border);
-  box-shadow: var(--shadow-md), var(--glow-card);
+  border: var(--wireframe-border) !important;
+  box-shadow: var(--shadow-md), var(--glow-card) !important;
 }
 
-/* Slight variation for depth, but all obsidian */
-.plan-card.regular {
-  background: var(--card-obsidian-dark) !important;
-}
-
-.plan-card.vip {
-  background: var(--card-obsidian) !important;
-}
-
+/* All same background - uniform look */
+.plan-card.regular,
+.plan-card.vip,
 .plan-card.vvip {
-  background: var(--card-obsidian-light) !important;
+  background: var(--card-obsidian) !important;
 }
 
 .plan-card:hover {
@@ -1268,32 +1251,23 @@ body {
   text-transform: uppercase;
 }
 
-.plan-card.regular .withdraw-plan-btn {
-  background: var(--button-primary);
-  color: white;
-  box-shadow: 0 0 20px var(--button-primary);
-}
-
-.plan-card.vip .withdraw-plan-btn {
-  background: var(--button-purple);
-  color: white;
-  box-shadow: 0 0 20px var(--button-purple);
-}
-
+/* Withdraw plan buttons - UNIFORM AMBER */
+.plan-card.regular .withdraw-plan-btn,
+.plan-card.vip .withdraw-plan-btn,
 .plan-card.vvip .withdraw-plan-btn {
-  background: var(--button-warning);
+  background: var(--button-gradient) !important;
   color: white;
-  box-shadow: 0 0 20px var(--button-warning);
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
 }
 
 .withdraw-plan-btn:hover {
   transform: translateY(-2px);
-  filter: brightness(1.1);
-  box-shadow: 0 0 30px currentColor;
+  background: var(--button-gradient-hover) !important;
+  box-shadow: 0 0 25px rgba(255, 140, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
 }
 
 /* =========================================================
-   FEATURE GRID - ALL DEEP BLUE
+   FEATURE GRID - ALL OBSIDIAN
    ========================================================= */
 .feature-grid {
   display: grid;
