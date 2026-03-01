@@ -1,535 +1,309 @@
-/* =========================================================
-   AFFILIATE DASHBOARD - PROFESSIONAL REDESIGN
-   Clean, trustworthy, modern design
-   ========================================================= */
-
-/* =========================================================
-   CSS VARIABLES - CONSISTENT WITH DASHBOARD
-   ========================================================= */
-:root {
-  /* Base Colors */
-  --bg-main: #f8fafc;
-  --bg-surface: #ffffff;
-  --bg-elevated: #ffffff;
-  --bg-muted: #f1f5f9;
-  --text-primary: #0f172a;
-  --text-secondary: #334155;
-  --text-muted: #64748b;
-  --text-light: #94a3b8;
-  --border-light: #e2e8f0;
-  --border-medium: #cbd5e1;
-  
-  /* Primary - Professional Blue */
-  --primary: #2563eb;
-  --primary-light: #3b82f6;
-  --primary-dark: #1d4ed8;
-  
-  /* Success - Green */
-  --success: #059669;
-  --success-light: #10b981;
-  
-  /* Purple for VIP */
-  --purple: #7c3aed;
-  --purple-light: #8b5cf6;
-  
-  /* Warning */
-  --warning: #d97706;
-  --warning-light: #f59e0b;
-  
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  
-  /* Layout */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-full: 9999px;
-  
-  /* Spacing */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
-  
-  /* Screen Margins */
-  --screen-margin: 16px;
-  --card-gap: 20px;
-  
-  /* Transitions */
-  --transition-fast: 150ms ease;
-  --transition-normal: 250ms ease;
-}
-
-/* Dark Theme */
-[data-theme="dark"] {
-  --bg-main: #0f172a;
-  --bg-surface: #1e293b;
-  --bg-elevated: #334155;
-  --bg-muted: #1e293b;
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
-  --text-light: #64748b;
-  --border-light: #334155;
-  --border-medium: #475569;
-}
-
-/* =========================================================
-   ANIMATIONS
-   ========================================================= */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* =========================================================
-   GLOBAL STYLES
-   ========================================================= */
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-}
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  background: var(--bg-main);
-  color: var(--text-primary);
-  line-height: 1.5;
-  min-height: 100vh;
-}
-
-/* =========================================================
-   MAIN CONTAINER
-   ========================================================= */
 .affiliate-dashboard {
   min-height: 100vh;
-  background: var(--bg-main);
-  padding: var(--space-lg) var(--screen-margin);
+  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 20px;
   padding-bottom: 100px;
-  animation: fadeIn 0.4s ease-out;
 }
 
-/* =========================================================
-   LOADING STATE
-   ========================================================= */
 .affiliate-loading {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  gap: var(--space-md);
+  gap: 16px;
 }
 
-.affiliate-loading-spinner {
-  width: 48px;
-  height: 48px;
-  border: 3px solid var(--border-light);
-  border-top-color: var(--primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* =========================================================
-   TOAST NOTIFICATION
-   ========================================================= */
 .affiliate-toast {
   position: fixed;
   top: 24px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--success);
+  background: #10b981;
   color: white;
   padding: 12px 24px;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  font-size: 14px;
+  border-radius: 12px;
+  font-weight: 700;
   z-index: 1000;
-  box-shadow: var(--shadow-lg);
-  animation: fadeIn 0.3s ease;
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
 }
 
-/* =========================================================
-   HEADER
-   ========================================================= */
+/* Header */
 .affiliate-header {
   text-align: center;
-  margin-bottom: var(--space-lg);
+  margin-bottom: 24px;
 }
 
 .affiliate-header .header-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-md);
-  padding: 0 var(--space-xs);
+  margin-bottom: 16px;
+  padding: 0 4px;
 }
 
 .affiliate-header .back-btn {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-light);
-  padding: 12px 16px;
-  border-radius: var(--radius-md);
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 10px 16px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
   font-size: 14px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: var(--text-secondary);
-  transition: var(--transition-fast);
-  min-height: 44px;
-}
-
-.affiliate-header .back-btn:hover {
-  background: var(--bg-muted);
-  border-color: var(--border-medium);
+  color: #475569;
 }
 
 .affiliate-header .withdraw-btn {
-  background: var(--success);
+  background: linear-gradient(135deg, #10b981, #059669);
   border: none;
-  padding: 12px 20px;
-  border-radius: var(--radius-md);
+  padding: 10px 16px;
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 14px;
   color: white;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3);
-  transition: var(--transition-normal);
-  min-height: 44px;
-}
-
-.affiliate-header .withdraw-btn:hover {
-  background: #047857;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
 }
 
 .affiliate-header h1 {
-  color: var(--text-primary);
-  font-size: 24px;
-  font-weight: 700;
+  color: #1e293b;
+  font-size: 22px;
   margin-bottom: 6px;
 }
 
 .affiliate-header p {
-  color: var(--text-muted);
+  color: #64748b;
   font-size: 14px;
 }
 
-/* =========================================================
-   STATS GRID
-   ========================================================= */
+/* Stats Grid */
 .affiliate-stats-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--card-gap);
-  margin-bottom: var(--space-lg);
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .affiliate-stat-card {
-  background: var(--bg-surface);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg);
+  background: white;
+  border-radius: 12px;
+  padding: 14px;
   display: flex;
   align-items: center;
-  gap: var(--space-md);
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border-light);
-  transition: var(--transition-normal);
-}
-
-.affiliate-stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .affiliate-stat-card.earnings {
-  background: linear-gradient(135deg, var(--success), #047857);
+  background: linear-gradient(135deg, #10b981, #059669);
   color: white;
-  border: none;
 }
 
 .affiliate-stat-card.referrals {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: white;
-  border: none;
 }
 
 .affiliate-stat-card.active {
-  background: linear-gradient(135deg, var(--purple), #6d28d9);
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
   color: white;
-  border: none;
 }
 
 .affiliate-stat-card.inactive {
-  background: linear-gradient(135deg, var(--warning), #b45309);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
   color: white;
-  border: none;
 }
 
 .stat-icon {
-  font-size: 28px;
+  font-size: 24px;
 }
 
 .stat-content h3 {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 800;
   margin: 0;
 }
 
 .stat-content p {
-  font-size: 13px;
+  font-size: 11px;
   opacity: 0.9;
   margin: 2px 0 0;
-  font-weight: 500;
 }
 
-/* =========================================================
-   REFERRAL SECTION
-   ========================================================= */
+/* Referral Section */
 .affiliate-referral-section {
-  background: var(--bg-surface);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg);
-  margin-bottom: var(--space-lg);
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border-light);
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .affiliate-referral-section h2 {
-  color: var(--text-primary);
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: var(--space-md);
+  color: #1e293b;
+  font-size: 20px;
+  margin-bottom: 16px;
 }
 
 .referral-link-box {
   display: flex;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-md);
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .referral-input {
   flex: 1;
   padding: 14px 16px;
-  border: 2px solid var(--border-light);
-  border-radius: var(--radius-md);
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
   font-size: 14px;
-  background: var(--bg-muted);
-  color: var(--text-primary);
-  transition: var(--transition-fast);
-  min-height: 48px;
-}
-
-.referral-input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  background: #f8fafc;
+  color: #64748b;
 }
 
 .copy-btn {
   padding: 14px 24px;
-  background: var(--primary);
+  background: #3b82f6;
   color: white;
   border: none;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  font-size: 14px;
+  border-radius: 12px;
+  font-weight: 700;
   cursor: pointer;
-  transition: var(--transition-normal);
-  min-height: 48px;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
-}
-
-.copy-btn:hover {
-  background: var(--primary-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+  transition: all 0.2s;
 }
 
 .copy-btn.copied {
-  background: var(--success);
+  background: #10b981;
 }
 
 .referral-code-display {
   text-align: center;
-  color: var(--text-muted);
-  margin-bottom: var(--space-md);
-  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 16px;
 }
 
 .referral-code-display strong {
-  color: var(--primary);
-  font-size: 20px;
-  font-weight: 700;
+  color: #3b82f6;
+  font-size: 18px;
 }
 
 .share-buttons {
   display: flex;
-  gap: var(--space-sm);
+  gap: 12px;
 }
 
 .share-btn {
   flex: 1;
   padding: 14px;
   border: none;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  font-size: 14px;
+  border-radius: 12px;
+  font-weight: 700;
   cursor: pointer;
-  transition: var(--transition-normal);
-  min-height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  transition: all 0.2s;
 }
 
 .share-btn.whatsapp {
-  background: #25D366;
+  background: #25d366;
   color: white;
-  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3);
 }
 
-.share-btn.whatsapp:hover {
-  background: #20BD5A;
-  transform: translateY(-2px);
-}
-
-/* =========================================================
-   HOW IT WORKS
-   ========================================================= */
+/* How It Works */
 .affiliate-how-it-works {
-  background: var(--bg-surface);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg);
-  margin-bottom: var(--space-lg);
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border-light);
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .affiliate-how-it-works h2 {
-  color: var(--text-primary);
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: var(--space-lg);
+  color: #1e293b;
+  font-size: 20px;
+  margin-bottom: 20px;
 }
 
 .steps {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: 16px;
 }
 
 .step {
   display: flex;
   align-items: flex-start;
-  gap: var(--space-md);
+  gap: 16px;
 }
 
 .step-number {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: white;
-  border-radius: var(--radius-full);
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  font-size: 16px;
+  font-weight: 800;
   flex-shrink: 0;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
 }
 
 .step-content h4 {
-  color: var(--text-primary);
+  color: #1e293b;
   margin: 0 0 4px;
   font-size: 16px;
-  font-weight: 600;
 }
 
 .step-content p {
-  color: var(--text-muted);
+  color: #64748b;
   margin: 0;
   font-size: 14px;
-  line-height: 1.5;
 }
 
-/* =========================================================
-   REFERRALS LIST
-   ========================================================= */
+/* Referrals List */
 .affiliate-referrals-list {
-  background: var(--bg-surface);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg);
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border-light);
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .affiliate-referrals-list h2 {
-  color: var(--text-primary);
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: var(--space-md);
+  color: #1e293b;
+  font-size: 20px;
+  margin-bottom: 16px;
 }
 
 .referrals-table {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: 8px;
 }
 
 .table-header {
   display: grid;
   grid-template-columns: 1.5fr 1.5fr 1fr 1fr;
-  padding: 12px 16px;
-  background: var(--bg-muted);
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  color: var(--text-muted);
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  font-weight: 700;
+  color: #64748b;
   font-size: 13px;
 }
 
 .table-row {
   display: grid;
   grid-template-columns: 1.5fr 1.5fr 1fr 1fr;
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--border-light);
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
   align-items: center;
   font-size: 14px;
-  color: var(--text-primary);
-}
-
-.table-row:last-child {
-  border-bottom: none;
+  color: #1e293b;
 }
 
 .table-row .status {
@@ -537,107 +311,52 @@ body {
 }
 
 .table-row .status.active {
-  color: var(--success);
+  color: #10b981;
 }
 
 .table-row .status.inactive {
-  color: var(--warning);
+  color: #f59e0b;
 }
 
-/* =========================================================
-   EMPTY STATE
-   ========================================================= */
+/* Empty State */
 .no-referrals {
   text-align: center;
   padding: 48px 24px;
-  background: var(--bg-surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border-light);
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .empty-icon {
   font-size: 64px;
-  margin-bottom: var(--space-md);
+  margin-bottom: 16px;
 }
 
 .no-referrals h3 {
-  color: var(--text-primary);
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: var(--space-sm);
+  color: #1e293b;
+  margin-bottom: 8px;
 }
 
 .no-referrals p {
-  color: var(--text-muted);
-  font-size: 14px;
+  color: #64748b;
 }
 
-/* =========================================================
-   RESPONSIVE DESIGN
-   ========================================================= */
-@media (max-width: 768px) {
-  .affiliate-dashboard {
-    padding: var(--space-md) var(--screen-margin);
-    padding-bottom: 100px;
-  }
-  
+/* Responsive */
+@media (max-width: 480px) {
   .affiliate-stats-grid {
     grid-template-columns: 1fr;
   }
-  
-  .affiliate-header h1 {
-    font-size: 22px;
-  }
-  
-  .referral-link-box {
-    flex-direction: column;
-  }
-  
-  .share-buttons {
-    flex-direction: column;
-  }
-  
+
   .table-header,
   .table-row {
     grid-template-columns: 1fr 1fr;
-    gap: var(--space-sm);
+    gap: 8px;
   }
-  
+
   .table-header span:nth-child(3),
   .table-header span:nth-child(4),
   .table-row span:nth-child(3),
   .table-row span:nth-child(4) {
     display: none;
-  }
-  
-  .affiliate-stat-card {
-    padding: var(--space-md);
-  }
-  
-  .stat-content h3 {
-    font-size: 20px;
-  }
-}
-
-@media (max-width: 480px) {
-  .affiliate-header .header-top {
-    flex-wrap: wrap;
-    gap: var(--space-sm);
-  }
-  
-  .affiliate-header .back-btn,
-  .affiliate-header .withdraw-btn {
-    flex: 1;
-    justify-content: center;
-  }
-  
-  .affiliate-header .back-btn span,
-  .affiliate-header .withdraw-btn span {
-    display: none;
-  }
-  
-  .copy-btn {
-    width: 100%;
   }
 }
