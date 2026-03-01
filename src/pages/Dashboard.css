@@ -34,39 +34,39 @@
   --card-blue-medium: linear-gradient(145deg, #1a3a6b, #254f8a);
   --card-blue-light: linear-gradient(145deg, #254f8a, #2d60a3);
   
-  /* BUTTON COLORS - Distinctive for clickable elements */
-  --button-primary: #3b82f6;      /* Bright Blue */
-  --button-success: #10b981;      /* Emerald Green */
-  --button-warning: #f59e0b;      /* Amber */
+  /* BUTTON COLORS - Red for all clickable elements */
+  --button-primary: #ef4444;      /* Red */
+  --button-success: #ef4444;       /* Red */
+  --button-warning: #ef4444;      /* Red */
   --button-danger: #ef4444;        /* Red */
-  --button-purple: #8b5cf6;        /* Purple */
-  --button-pink: #ec4899;          /* Pink */
-  --button-cyan: #06b6d4;          /* Cyan */
-  --button-orange: #f97316;        /* Orange */
+  --button-purple: #ef4444;        /* Red */
+  --button-pink: #ef4444;         /* Red */
+  --button-cyan: #ef4444;         /* Red */
+  --button-orange: #ef4444;       /* Red */
   
-  /* PLAN COLORS - For text accents only */
-  --regular-color: #60a5fa;
-  --vip-color: #c084fc;
-  --vvip-color: #fcd34d;
+  /* PLAN COLORS - Red for text accents (captions) */
+  --regular-color: #ef4444;
+  --vip-color: #dc2626;
+  --vvip-color: #b91c1c;
   
   /* WELCOME BONUS - Special but still blue-based */
   --bonus-gradient: linear-gradient(145deg, #0f2b4f, #1e3a8a, #2563eb, #3b82f6);
   
   /* Brand Colors */
-  --primary: #3b82f6;
-  --primary-dark: #2563eb;
-  --primary-light: #60a5fa;
-  --success: #10b981;
-  --warning: #f59e0b;
+  --primary: #ef4444;
+  --primary-dark: #dc2626;
+  --primary-light: #f87171;
+  --success: #ef4444;
+  --warning: #dc2626;
   --danger: #ef4444;
-  --purple: #8b5cf6;
+  --purple: #dc2626;
   
   /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #2563eb, #3b82f6);
-  --gradient-success: linear-gradient(135deg, #10b981, #059669);
-  --gradient-warning: linear-gradient(135deg, #f59e0b, #d97706);
+  --gradient-primary: linear-gradient(135deg, #dc2626, #ef4444);
+  --gradient-success: linear-gradient(135deg, #dc2626, #ef4444);
+  --gradient-warning: linear-gradient(135deg, #dc2626, #b91c1c);
   --gradient-danger: linear-gradient(135deg, #ef4444, #dc2626);
-  --gradient-purple: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  --gradient-purple: linear-gradient(135deg, #dc2626, #b91c1c);
   --gradient-hero: linear-gradient(135deg, #0f2b4f, #1e3a8a, #2563eb);
   
   /* Shadows */
@@ -375,7 +375,7 @@ body {
    ========================================================= */
 .header-greeting-bottom {
   text-align: center;
-  color: white;
+  color: #ef4444;
   font-size: 15px;
   font-weight: 700;
   margin-top: 4px;
@@ -446,7 +446,7 @@ body {
 }
 
 .balance-label {
-  color: rgba(255,255,255,0.8);
+  color: #ef4444;
   font-size: 11px;
   font-weight: 900;
   text-transform: uppercase;
@@ -568,7 +568,7 @@ body {
 
 /* Description */
 .bonus-description {
-  color: white;
+  color: #ef4444;
   font-size: 12px;
   font-weight: 700;
   margin: 2px 0;
@@ -616,7 +616,7 @@ body {
 }
 
 .section-heading h3 {
-  color: var(--text-primary);
+  color: #ef4444;
   font-size: 22px;
   font-weight: 900;
   margin: 0 0 4px;
@@ -684,7 +684,7 @@ body {
 .stats-card-header h4 {
   font-size: 13px;
   font-weight: 900;
-  color: rgba(255,255,255,0.8);
+  color: #ef4444;
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
@@ -699,7 +699,7 @@ body {
 
 .stats-label {
   font-size: 12px;
-  color: rgba(255,255,255,0.7);
+  color: #ef4444;
   margin-top: 2px;
 }
 
@@ -801,7 +801,7 @@ body {
   flex: 1;
   font-size: 20px;
   font-weight: 900;
-  color: white;
+  color: #ef4444;
   margin: 0;
 }
 
@@ -849,7 +849,7 @@ body {
 }
 
 .progress-row span {
-  color: rgba(255,255,255,0.7);
+  color: #ef4444;
 }
 
 .progress-row strong {
@@ -1059,7 +1059,7 @@ body {
 .plan-badge .plan-name {
   font-size: 24px;
   font-weight: 900;
-  color: white;
+  color: #ef4444;
 }
 
 .plan-status {
@@ -1079,7 +1079,7 @@ body {
 
 .plan-description {
   margin-bottom: var(--space-md);
-  color: rgba(255, 255, 255, 0.95);
+  color: #ef4444;
   font-size: 14px;
   font-weight: 600;
 }
@@ -1106,7 +1106,7 @@ body {
 }
 
 .plan-stats .stat-label {
-  color: rgba(255, 255, 255, 0.8);
+  color: #ef4444;
   font-size: 13px;
 }
 
@@ -1164,9 +1164,9 @@ body {
   background: rgba(0, 0, 0, 0.2);
   border-radius: var(--radius-full);
   font-size: 11px;
-  color: white;
+  color: #ef4444;
   font-weight: 700;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid #ef4444;
 }
 
 .plan-card-footer {
@@ -1302,13 +1302,13 @@ body {
 .feature-card h4 {
   font-size: 16px;
   font-weight: 900;
-  color: white;
+  color: #ef4444;
   margin-bottom: var(--space-xs);
 }
 
 .feature-card p {
   font-size: 13px;
-  color: rgba(255,255,255,0.7);
+  color: #ef4444;
   line-height: 1.5;
 }
 
@@ -1364,13 +1364,13 @@ body {
 .quick-action-card .action-content h4 {
   font-size: 16px;
   font-weight: 900;
-  color: white;
+  color: #ef4444;
   margin-bottom: 4px;
 }
 
 .quick-action-card .action-content p {
   font-size: 13px;
-  color: rgba(255,255,255,0.7);
+  color: #ef4444;
 }
 
 /* Action button - DISTINCTIVE COLOR */
@@ -1491,7 +1491,7 @@ body {
 .level-streak-card .level-title {
   font-size: 1.5rem;
   font-weight: 900;
-  color: var(--button-warning);
+  color: #ef4444;
 }
 
 .level-streak-card .xp-bar {
