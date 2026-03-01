@@ -844,7 +844,7 @@ return (
               onClick={() => navigate('/activate?welcome_bonus=true')}
               className="activate-btn-pulse"
               style={{
-                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%)',
+                background: 'linear-gradient(135deg, #f97316 0%, #ea580c 50%, #c2410c 100%)',
                 border: '2px solid rgba(255,255,255,0.4)',
                 borderRadius: '25px',
                 padding: '10px 20px',
@@ -852,7 +852,7 @@ return (
                 fontWeight: '800',
                 fontSize: '13px',
                 cursor: 'pointer',
-                boxShadow: '0 4px 20px rgba(139, 92, 246, 0.5), 0 0 40px rgba(217, 70, 239, 0.3)',
+                boxShadow: '0 4px 20px rgba(249, 115, 22, 0.5), 0 0 40px rgba(234, 88, 12, 0.3)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -865,11 +865,11 @@ return (
               }}
               onMouseOver={(e) => {
                 e.currentTarget.style.transform = 'scale(1.05)';
-                e.currentTarget.style.boxShadow = '0 6px 30px rgba(139, 92, 246, 0.7), 0 0 60px rgba(217, 70, 239, 0.5)';
+                e.currentTarget.style.boxShadow = '0 6px 30px rgba(249, 115, 22, 0.7), 0 0 60px rgba(234, 88, 12, 0.5)';
               }}
               onMouseOut={(e) => {
                 e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.boxShadow = '0 4px 20px rgba(139, 92, 246, 0.5), 0 0 40px rgba(217, 70, 239, 0.3)';
+                e.currentTarget.style.boxShadow = '0 4px 20px rgba(249, 115, 22, 0.5), 0 0 40px rgba(234, 88, 12, 0.3)';
               }}
             >
               <span className="btn-icon" style={{ fontSize: '16px' }}>🔓</span>
@@ -904,7 +904,7 @@ return (
         borderBottom: '1px solid rgba(255,255,255,0.2)',
         position: 'relative',
         overflow: 'hidden',
-        marginTop: '12px',
+        marginTop: '80px',
         marginBottom: '0'
       }}>
         <div style={{
@@ -1205,7 +1205,7 @@ return (
         onClick={handleWelcomeBonusWithdraw}
         style={{
           background: 'linear-gradient(145deg, #FF6B00, #cc5500)',
-          border: '2px solid #3B82F6',
+          border: '2px solid #FF6B00',
           borderRadius: '40px',
           padding: '10px 16px', /* REDUCED from 12px 20px to 10px 16px */
           fontWeight: '900',
@@ -1226,13 +1226,13 @@ return (
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'translateY(-2px)';
-          e.currentTarget.style.boxShadow = '0 8px 16px rgba(59, 130, 246, 0.5), 0 0 12px rgba(59, 130, 246, 0.4)';
-          e.currentTarget.style.borderColor = '#3B82F6';
+          e.currentTarget.style.boxShadow = '0 8px 16px rgba(255, 107, 0, 0.5), 0 0 12px rgba(255, 107, 0, 0.4)';
+          e.currentTarget.style.borderColor = '#FF6B00';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.transform = 'translateY(0)';
-          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.4), 0 0 10px rgba(59, 130, 246, 0.3)';
-          e.currentTarget.style.borderColor = '#3B82F6';
+          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255, 107, 0, 0.3)';
+          e.currentTarget.style.borderColor = '#FF6B00';
         }}
       >
         <span className="btn-icon" style={{ fontSize: '16px' }}>🔓</span>
