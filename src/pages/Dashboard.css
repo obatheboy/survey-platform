@@ -1,73 +1,91 @@
 /* =========================================================
-   SURVEYEARN DASHBOARD - UNIFIED DEEP BLUE DESIGN
-   All cards in deep blue for perfect uniformity
-   Clickable buttons in distinctive colors
-   Complete 3000+ LOC
+   SURVEYEARN DASHBOARD - OBSIDIAN & AMBER DESIGN
+   Dark obsidian background with amber/gold accents
+   Metallic wireframe cards with glow effects
    ========================================================= */
 
 /* =========================================================
-   CSS VARIABLES - DEEP BLUE UNIFIED COLOR PALETTE
+   CSS VARIABLES - OBSIDIAN & AMBER UNIFIED COLOR PALETTE
    ========================================================= */
 :root {
-  /* Dark Rich Backgrounds */
-  --bg-main: #0a0c15;
-  --bg-surface: #121624;
-  --bg-glass: rgba(18, 22, 36, 0.98);
-  --bg-elevated: #1e2335;
+  /* Dark Rich Backgrounds - Obsidian */
+  --bg-main: #060606;
+  --bg-surface: #0a0a0a;
+  --bg-glass: rgba(10, 10, 10, 0.98);
+  --bg-elevated: #121212;
   --text-primary: #ffffff;
-  --text-secondary: #e2e8f0;
-  --text-muted: #a0afc0;
-  --text-inverse: #0a0c15;
-  --border-light: #2a3145;
-  --border-medium: #3a445c;
+  --text-secondary: #e2b04a;  /* Gold for labels */
+  --text-muted: #a0a0a0;
+  --text-inverse: #060606;
+  --border-light: rgba(226, 176, 74, 0.2);
+  --border-medium: rgba(226, 176, 74, 0.3);
   
-  /* DEEP BLUE - Unified color for ALL cards */
-  --deep-blue-dark: #0f2b4f;
-  --deep-blue: #1a3a6b;
-  --deep-blue-medium: #254f8a;
-  --deep-blue-light: #2d60a3;
-  --deep-blue-bright: #3b82f6;
+  /* OBSIDIAN - Unified color for ALL cards */
+  --obsidian-dark: #030303;
+  --obsidian: #060606;
+  --obsidian-medium: #0a0a0a;
+  --obsidian-light: #121212;
+  --obsidian-bright: #1a1a1a;
   
-  /* Card Gradients - All deep blue variations */
-  --card-blue-dark: linear-gradient(145deg, #0a1a3a, #0f2b4f);
-  --card-blue: linear-gradient(145deg, #0f2b4f, #1a3a6b);
-  --card-blue-medium: linear-gradient(145deg, #1a3a6b, #254f8a);
-  --card-blue-light: linear-gradient(145deg, #254f8a, #2d60a3);
+  /* AMBER - Primary accent color */
+  --amber-dark: #cc7000;
+  --amber: #FF8C00;
+  --amber-light: #ff9d2e;
+  --amber-bright: #ffb347;
   
-  /* BUTTON COLORS - Red for all clickable elements */
-  --button-primary: #ef4444;      /* Red */
-  --button-success: #ef4444;       /* Red */
-  --button-warning: #ef4444;      /* Red */
-  --button-danger: #ef4444;        /* Red */
-  --button-purple: #ef4444;        /* Red */
-  --button-pink: #ef4444;         /* Red */
-  --button-cyan: #ef4444;         /* Red */
-  --button-orange: #ef4444;       /* Red */
+  /* Card Gradients - All obsidian variations */
+  --card-obsidian-dark: linear-gradient(145deg, #030303, #060606);
+  --card-obsidian: linear-gradient(145deg, #060606, #0a0a0a);
+  --card-obsidian-medium: linear-gradient(145deg, #0a0a0a, #121212);
+  --card-obsidian-light: linear-gradient(145deg, #121212, #1a1a1a);
   
-  /* PLAN COLORS - Red for text accents (captions) */
-  --regular-color: #ef4444;
-  --vip-color: #dc2626;
-  --vvip-color: #b91c1c;
+  /* METALLIC WIREFRAME BORDERS */
+  --wireframe-border: 1px solid rgba(226, 176, 74, 0.3);
+  --wireframe-glow: 0 0 10px rgba(226, 176, 74, 0.1);
   
-  /* WELCOME BONUS - Special but still blue-based */
-  --bonus-gradient: linear-gradient(145deg, #0f2b4f, #1e3a8a, #2563eb, #3b82f6);
+  /* BUTTON COLORS - Amber gradient for skeuomorphic look */
+  --button-primary: #FF8C00;      /* Amber */
+  --button-success: #FF8C00;       /* Amber */
+  --button-warning: #FF8C00;      /* Amber */
+  --button-danger: #FF8C00;        /* Amber */
+  --button-purple: #FF8C00;        /* Amber */
+  --button-pink: #FF8C00;         /* Amber */
+  --button-cyan: #FF8C00;         /* Amber */
+  --button-orange: #FF8C00;       /* Amber */
+  
+  /* Skeuomorphic Button Gradient */
+  --button-gradient: linear-gradient(180deg, #ff9d2e 0%, #d45d00 100%);
+  --button-gradient-hover: linear-gradient(180deg, #ffb347 0%, #e67300 100%);
+  
+  /* PLAN COLORS - Amber for text accents */
+  --regular-color: #FF8C00;
+  --vip-color: #e67300;
+  --vvip-color: #cc7000;
+  
+  /* WELCOME BONUS - Amber gradient */
+  --bonus-gradient: linear-gradient(145deg, #060606, #1a1a0a, #FF8C00, #ff9d2e);
   
   /* Brand Colors */
-  --primary: #ef4444;
-  --primary-dark: #dc2626;
-  --primary-light: #f87171;
-  --success: #ef4444;
-  --warning: #dc2626;
-  --danger: #ef4444;
-  --purple: #dc2626;
+  --primary: #FF8C00;
+  --primary-dark: #cc7000;
+  --primary-light: #ff9d2e;
+  --success: #FF8C00;
+  --warning: #e67300;
+  --danger: #FF8C00;
+  --purple: #e67300;
   
   /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #dc2626, #ef4444);
-  --gradient-success: linear-gradient(135deg, #dc2626, #ef4444);
-  --gradient-warning: linear-gradient(135deg, #dc2626, #b91c1c);
-  --gradient-danger: linear-gradient(135deg, #ef4444, #dc2626);
-  --gradient-purple: linear-gradient(135deg, #dc2626, #b91c1c);
-  --gradient-hero: linear-gradient(135deg, #0f2b4f, #1e3a8a, #2563eb);
+  --gradient-primary: linear-gradient(135deg, #cc7000, #FF8C00);
+  --gradient-success: linear-gradient(135deg, #cc7000, #FF8C00);
+  --gradient-warning: linear-gradient(135deg, #cc7000, #996600);
+  --gradient-danger: linear-gradient(135deg, #FF8C00, #cc7000);
+  --gradient-purple: linear-gradient(135deg, #cc7000, #996600);
+  --gradient-hero: linear-gradient(135deg, #030303, #1a1a0a, #FF8C00);
+  
+  /* Glow Effects */
+  --glow-money: 0 0 10px rgba(255, 140, 0, 0.5), 0 0 20px rgba(255, 140, 0, 0.3);
+  --glow-progress: 0 0 8px rgba(255, 140, 0, 0.4);
+  --glow-card: 0 0 15px rgba(226, 176, 74, 0.15);
   
   /* Shadows */
   --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.5);
@@ -245,10 +263,10 @@ body {
 }
 
 /* =========================================================
-   HEADER
+   HEADER - OBSIDIAN WITH AMBER ACCENTS
    ========================================================= */
 .dashboard-main-header {
-  background: linear-gradient(135deg, var(--deep-blue-dark), var(--deep-blue), var(--deep-blue-medium));
+  background: linear-gradient(135deg, var(--obsidian-dark), var(--obsidian), var(--obsidian-medium));
   padding: var(--space-sm) var(--space-lg);
   position: fixed;
   top: 0;
@@ -256,7 +274,7 @@ body {
   right: 0;
   z-index: 1000;
   box-shadow: var(--shadow-lg);
-  border-bottom: 2px solid rgba(255,255,255,0.2);
+  border-bottom: var(--wireframe-border);
 }
 
 .header-title-container {
@@ -349,15 +367,15 @@ body {
 }
 
 .activate-btn-pulse {
-  background: var(--button-danger);
-  border: 2px solid rgba(255,255,255,0.3);
+  background: var(--button-gradient);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: var(--radius-full);
   padding: 10px 24px;
   color: white;
   font-weight: 900;
   font-size: 14px;
   cursor: pointer;
-  box-shadow: 0 0 30px var(--button-danger);
+  box-shadow: 0 0 20px rgba(255, 140, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -367,7 +385,7 @@ body {
 
 .activate-btn-pulse:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 40px var(--button-danger);
+  box-shadow: 0 0 30px rgba(255, 140, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 /* =========================================================
@@ -375,7 +393,7 @@ body {
    ========================================================= */
 .header-greeting-bottom {
   text-align: center;
-  color: #ef4444;
+  color: #FF8C00;
   font-size: 15px;
   font-weight: 700;
   margin-top: 4px;
@@ -386,19 +404,19 @@ body {
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(226, 176, 74, 0.3);
 }
 
 /* =========================================================
-   HERO SECTION - DEEP BLUE
+   HERO SECTION - OBSIDIAN
    ========================================================= */
 .hero-section {
-  background: linear-gradient(135deg, var(--deep-blue-dark), var(--deep-blue), var(--deep-blue-medium));
+  background: linear-gradient(135deg, var(--obsidian-dark), var(--obsidian), var(--obsidian-medium));
   border-radius: var(--radius-lg);
   padding: var(--space-md);
   margin-top: 0;
-  border: 2px solid rgba(255,255,255,0.2);
-  box-shadow: var(--shadow-lg);
+  border: var(--wireframe-border);
+  box-shadow: var(--shadow-lg), var(--glow-card);
 }
 
 .hero-grid {
@@ -408,11 +426,11 @@ body {
 }
 
 .hero-btn {
-  background: rgba(0, 0, 0, 0.3);
-  border: 2px solid rgba(255,255,255,0.3);
+  background: rgba(255, 140, 0, 0.2);
+  border: var(--wireframe-border);
   border-radius: var(--radius-md);
   padding: var(--space-sm);
-  color: white;
+  color: #FF8C00;
   font-weight: 900;
   font-size: 14px;
   display: flex;
@@ -426,27 +444,28 @@ body {
 }
 
 .hero-btn:hover {
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(255, 140, 0, 0.3);
   transform: translateY(-2px);
-  box-shadow: 0 0 30px rgba(255,255,255,0.2);
+  box-shadow: 0 0 20px rgba(255, 140, 0, 0.3);
 }
 
 .hero-btn.bonus {
-  background: var(--button-warning);
-  border-color: rgba(255,255,255,0.4);
+  background: var(--button-gradient);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: white;
 }
 
 .balance-card {
-  background: var(--card-blue-dark);
-  border: 2px solid rgba(255,255,255,0.2);
+  background: var(--card-obsidian-dark);
+  border: var(--wireframe-border);
   border-radius: var(--radius-md);
   padding: var(--space-sm);
   text-align: center;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-md), var(--glow-card);
 }
 
 .balance-label {
-  color: #ef4444;
+  color: #e2b04a;  /* Gold */
   font-size: 11px;
   font-weight: 900;
   text-transform: uppercase;
@@ -456,15 +475,15 @@ body {
 .balance-number {
   font-size: 28px;
   font-weight: 900;
-  color: var(--button-success);
-  text-shadow: 0 0 20px var(--button-success);
+  color: #FF8C00;  /* Amber - with glow */
+  text-shadow: var(--glow-money);
   line-height: 1.2;
 }
 
 .balance-withdraw-btn {
-  background: var(--button-success);
+  background: var(--button-gradient);  /* Skeuomorphic gradient */
   color: white;
-  border: 2px solid rgba(255,255,255,0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: var(--radius-full);
   padding: 6px 12px;
   font-size: 12px;
@@ -474,23 +493,24 @@ body {
   margin-top: var(--space-xs);
   transition: var(--transition-fast);
   text-transform: uppercase;
-  box-shadow: 0 0 20px var(--button-success);
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .balance-withdraw-btn:hover {
+  background: var(--button-gradient-hover);
   transform: translateY(-2px);
-  box-shadow: 0 0 30px var(--button-success);
+  box-shadow: 0 0 25px rgba(255, 140, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 /* =========================================================
-   LIVE WITHDRAWAL FEED - DEEP BLUE
+   LIVE WITHDRAWAL FEED - OBSIDIAN
    ========================================================= */
 .live-withdrawal-feed {
-  background: var(--card-blue);
+  background: var(--card-obsidian);
   border-radius: var(--radius-lg);
   padding: var(--space-sm);
-  border: 2px solid rgba(255,255,255,0.2);
-  box-shadow: var(--shadow-md);
+  border: var(--wireframe-border);
+  box-shadow: var(--shadow-md), var(--glow-card);
   color: white;
 }
 
@@ -498,26 +518,24 @@ body {
    USER NOTIFICATIONS - DEEP BLUE
    ========================================================= */
 .user-notifications-section {
-  background: var(--card-blue-medium);
+  background: var(--card-obsidian-medium);
   border-radius: var(--radius-lg);
-  padding: var(--space-sm);
-  border: 2px solid rgba(255,255,255,0.2);
-  box-shadow: var(--shadow-md);
-  color: white;
+  border: var(--wireframe-border);
+  box-shadow: var(--shadow-md), var(--glow-card);
 }
 
 /* =========================================================
-   WELCOME BONUS CARD - DEEP BLUE BASED
+   WELCOME BONUS CARD - OBSIDIAN & AMBER
    ========================================================= */
 .welcome-bonus {
-  background: linear-gradient(145deg, #0f2b4f, #1e3a8a, #2563eb) !important;
-  border: 3px solid rgba(255,255,255,0.3) !important;
+  background: linear-gradient(145deg, #060606, #1a1a0a, #FF8C00) !important;
+  border: var(--wireframe-border) !important;
   border-radius: var(--radius-md) !important;
   padding: var(--space-xs) var(--space-sm) !important;
   margin: var(--space-xs) 0 !important;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-lg) !important;
+  box-shadow: var(--shadow-lg), var(--glow-card) !important;
   color: white;
 }
 
@@ -568,21 +586,22 @@ body {
 
 /* Description */
 .bonus-description {
-  color: #ef4444;
+  color: #FF8C00;
   font-size: 12px;
   font-weight: 700;
   margin: 2px 0;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(255, 140, 0, 0.1);
   padding: 4px 12px;
   border-radius: var(--radius-full);
   display: inline-block;
   backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 140, 0, 0.3);
 }
 
-/* Activate button - DISTINCTIVE COLOR */
+/* Activate button - AMBER GRADIENT */
 .activate-bonus-btn {
-  background: var(--button-warning) !important;
-  border: 2px solid rgba(255,255,255,0.3) !important;
+  background: var(--button-gradient) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
   border-radius: var(--radius-full) !important;
   padding: 6px 12px !important;
   font-weight: 900 !important;
@@ -594,14 +613,15 @@ body {
   gap: 6px !important;
   width: 100% !important;
   cursor: pointer !important;
-  box-shadow: 0 0 20px var(--button-warning) !important;
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
   transition: var(--transition-fast) !important;
   margin-top: 2px !important;
 }
 
 .activate-bonus-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 0 30px var(--button-warning) !important;
+  background: var(--button-gradient-hover) !important;
+  box-shadow: 0 0 25px rgba(255, 140, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
 }
 
 .activate-bonus-btn .btn-icon {
@@ -616,7 +636,7 @@ body {
 }
 
 .section-heading h3 {
-  color: #ef4444;
+  color: #FF8C00;
   font-size: 22px;
   font-weight: 900;
   margin: 0 0 4px;
@@ -630,7 +650,7 @@ body {
 }
 
 /* =========================================================
-   STATS CARDS - ALL DEEP BLUE
+   STATS CARDS - ALL OBSIDIAN
    ========================================================= */
 .stats-grid {
   display: grid;
@@ -644,28 +664,28 @@ body {
   }
 }
 
-/* ALL STATS CARDS - UNIFIED DEEP BLUE */
+/* ALL STATS CARDS - UNIFIED OBSIDIAN */
 .stats-card {
-  background: var(--card-blue);
-  border: 2px solid rgba(255,255,255,0.2);
+  background: var(--card-obsidian);
+  border: var(--wireframe-border);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
   transition: var(--transition-fast);
   animation: slideUp 0.4s ease;
   animation-fill-mode: both;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-md), var(--glow-card);
   color: white;
 }
 
-/* Slight variation for depth, but all blue */
-.stats-card:nth-child(1) { background: var(--card-blue-dark); }
-.stats-card:nth-child(2) { background: var(--card-blue); }
-.stats-card:nth-child(3) { background: var(--card-blue-medium); }
-.stats-card:nth-child(4) { background: var(--card-blue-light); }
+/* Slight variation for depth, but all obsidian */
+.stats-card:nth-child(1) { background: var(--card-obsidian-dark); }
+.stats-card:nth-child(2) { background: var(--card-obsidian); }
+.stats-card:nth-child(3) { background: var(--card-obsidian-medium); }
+.stats-card:nth-child(4) { background: var(--card-obsidian-light); }
 
 .stats-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-xl), var(--glow-card);
   filter: brightness(1.1);
 }
 
@@ -684,7 +704,7 @@ body {
 .stats-card-header h4 {
   font-size: 13px;
   font-weight: 900;
-  color: #ef4444;
+  color: #e2b04a;  /* Gold */
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
@@ -694,48 +714,49 @@ body {
   font-weight: 900;
   color: white;
   line-height: 1.2;
-  text-shadow: 0 0 20px rgba(255,255,255,0.3);
+  text-shadow: 0 0 15px rgba(255, 140, 0, 0.4);  /* Amber glow */
 }
 
 .stats-label {
   font-size: 12px;
-  color: #ef4444;
+  color: #e2b04a;  /* Gold */
   margin-top: 2px;
 }
 
-/* Withdraw button - DISTINCTIVE COLOR */
+/* Withdraw button - AMBER GRADIENT */
 .withdraw-quick-btn {
   margin-top: var(--space-sm);
   padding: 10px;
   font-size: 13px;
   font-weight: 900;
-  background: var(--button-primary);
+  background: var(--button-gradient);
   color: white;
-  border: 2px solid rgba(255,255,255,0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: var(--radius-md);
   cursor: pointer;
   width: 100%;
   transition: var(--transition-fast);
   text-transform: uppercase;
-  box-shadow: 0 0 20px var(--button-primary);
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .withdraw-quick-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 30px var(--button-primary);
+  background: var(--button-gradient-hover);
+  box-shadow: 0 0 25px rgba(255, 140, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .withdraw-quick-btn.affiliate-withdraw-btn {
-  background: var(--button-purple);
-  box-shadow: 0 0 20px var(--button-purple);
+  background: var(--button-gradient);
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .withdraw-quick-btn.affiliate-withdraw-btn:hover {
-  box-shadow: 0 0 30px var(--button-purple);
+  box-shadow: 0 0 25px rgba(255, 140, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 /* =========================================================
-   PLAN PROGRESS CARDS (DASHBOARD VIEW) - ALL DEEP BLUE
+   PLAN PROGRESS CARDS (DASHBOARD VIEW) - ALL OBSIDIAN
    These are the cards visible when scrolling down the dashboard
    ========================================================= */
 .progress-cards {
@@ -745,35 +766,35 @@ body {
 }
 
 .progress-card {
-  background: var(--card-blue);
-  border: 2px solid rgba(255,255,255,0.2);
+  background: var(--card-obsidian);
+  border: var(--wireframe-border);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
   transition: var(--transition-fast);
   animation: slideUp 0.4s ease;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-md), var(--glow-card);
   color: white;
 }
 
-/* Different border colors to distinguish plans, but backgrounds all blue */
+/* Different border colors to distinguish plans, but backgrounds all obsidian */
 .progress-card.regular {
-  background: var(--card-blue);
+  background: var(--card-obsidian);
   border-left: 8px solid var(--regular-color);
 }
 
 .progress-card.vip {
-  background: var(--card-blue-medium);
+  background: var(--card-obsidian-medium);
   border-left: 8px solid var(--vip-color);
 }
 
 .progress-card.vvip {
-  background: var(--card-blue-light);
+  background: var(--card-obsidian-light);
   border-left: 8px solid var(--vvip-color);
 }
 
 .progress-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-xl), var(--glow-card);
   filter: brightness(1.1);
 }
 
@@ -801,7 +822,7 @@ body {
   flex: 1;
   font-size: 20px;
   font-weight: 900;
-  color: #ef4444;
+  color: #FF8C00;  /* Amber */
   margin: 0;
 }
 
@@ -849,7 +870,7 @@ body {
 }
 
 .progress-row span {
-  color: #ef4444;
+  color: #FF8C00;  /* Amber */
 }
 
 .progress-row strong {
@@ -876,20 +897,21 @@ body {
   font-size: 18px !important;
 }
 
-/* Progress Bar */
+/* Progress Bar - WITH GLOW EFFECT */
 .progress-bar {
   height: 8px;
   background: rgba(0, 0, 0, 0.3);
   border-radius: var(--radius-full);
   overflow: hidden;
   margin: var(--space-xs) 0;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(226, 176, 74, 0.2);
 }
 
 .progress-bar-fill {
   height: 100%;
   border-radius: var(--radius-full);
   transition: width 0.5s ease;
+  box-shadow: var(--glow-progress);  /* Glow effect */
 }
 
 .progress-card.regular .progress-bar-fill {
@@ -904,7 +926,7 @@ body {
   background: linear-gradient(90deg, var(--vvip-color), var(--button-warning));
 }
 
-/* Action Buttons - DISTINCTIVE COLORS */
+/* Action Buttons - AMBER GRADIENT */
 .progress-card-actions {
   display: flex;
   gap: var(--space-sm);
@@ -919,27 +941,33 @@ body {
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: var(--transition-fast);
-  border: 2px solid rgba(255,255,255,0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   text-transform: uppercase;
 }
 
-/* Primary action buttons - DISTINCTIVE per plan */
+/* Primary action buttons - AMBER GRADIENT */
 .progress-card.regular .action-btn.primary {
-  background: var(--button-primary);
+  background: var(--button-gradient);
   color: white;
-  box-shadow: 0 0 20px var(--button-primary);
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .progress-card.vip .action-btn.primary {
-  background: var(--button-purple);
+  background: var(--button-gradient);
   color: white;
-  box-shadow: 0 0 20px var(--button-purple);
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .progress-card.vvip .action-btn.primary {
-  background: var(--button-warning);
+  background: var(--button-gradient);
   color: white;
-  box-shadow: 0 0 20px var(--button-warning);
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  background: var(--button-gradient-hover);
+  box-shadow: 0 0 25px rgba(255, 140, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 /* Secondary buttons - outline style */
@@ -1004,29 +1032,31 @@ body {
   border: 2px solid rgba(255,255,255,0.2);
 }
 
-/* ALL survey plan cards - DEEP BLUE backgrounds */
+/* ALL survey plan cards - OBSIDIAN backgrounds */
 .plan-card.regular,
 .plan-card.vip,
 .plan-card.vvip {
-  background: var(--card-blue) !important;
+  background: var(--card-obsidian) !important;
+  border: var(--wireframe-border);
+  box-shadow: var(--shadow-md), var(--glow-card);
 }
 
-/* Slight variation for depth, but all blue */
+/* Slight variation for depth, but all obsidian */
 .plan-card.regular {
-  background: var(--card-blue-dark) !important;
+  background: var(--card-obsidian-dark) !important;
 }
 
 .plan-card.vip {
-  background: var(--card-blue) !important;
+  background: var(--card-obsidian) !important;
 }
 
 .plan-card.vvip {
-  background: var(--card-blue-light) !important;
+  background: var(--card-obsidian-light) !important;
 }
 
 .plan-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-xl), var(--glow-card);
   filter: brightness(1.1);
 }
 
@@ -1035,7 +1065,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(226, 176, 74, 0.2);
 }
 
 .plan-badge {
@@ -1059,7 +1089,7 @@ body {
 .plan-badge .plan-name {
   font-size: 24px;
   font-weight: 900;
-  color: #ef4444;
+  color: #FF8C00;  /* Amber */
 }
 
 .plan-status {
@@ -1069,7 +1099,7 @@ body {
   font-weight: 900;
   background: rgba(0, 0, 0, 0.3);
   color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(226, 176, 74, 0.3);
   backdrop-filter: blur(5px);
 }
 
@@ -1079,7 +1109,7 @@ body {
 
 .plan-description {
   margin-bottom: var(--space-md);
-  color: #ef4444;
+  color: #FF8C00;  /* Amber */
   font-size: 14px;
   font-weight: 600;
 }
@@ -1090,14 +1120,14 @@ body {
   border-radius: var(--radius-md);
   padding: var(--space-md);
   margin: var(--space-md) 0;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(226, 176, 74, 0.2);
 }
 
 .plan-stats .stat-row {
   display: flex;
   justify-content: space-between;
   padding: var(--space-xs) 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(226, 176, 74, 0.1);
   font-size: 14px;
 }
 
@@ -1106,13 +1136,14 @@ body {
 }
 
 .plan-stats .stat-label {
-  color: #ef4444;
+  color: #e2b04a;  /* Gold */
   font-size: 13px;
 }
 
 .plan-stats .stat-value {
   color: white;
   font-weight: 900;
+  text-shadow: var(--glow-money);
   font-size: 16px;
 }
 
@@ -1161,26 +1192,26 @@ body {
 
 .feature-tag {
   padding: 4px 12px;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(255, 140, 0, 0.1);
   border-radius: var(--radius-full);
   font-size: 11px;
-  color: #ef4444;
+  color: #FF8C00;
   font-weight: 700;
-  border: 1px solid #ef4444;
+  border: 1px solid rgba(255, 140, 0, 0.3);
 }
 
 .plan-card-footer {
   padding: var(--space-md);
-  border-top: 2px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid rgba(226, 176, 74, 0.2);
 }
 
-/* START SURVEY BUTTON - DISTINCTIVE per plan */
+/* START SURVEY BUTTON - AMBER GRADIENT */
 .start-survey-btn {
   width: 100%;
   padding: 14px;
   font-size: 15px;
   font-weight: 900;
-  border: 2px solid rgba(255,255,255,0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: var(--transition-fast);
@@ -1189,19 +1220,19 @@ body {
 }
 
 .plan-card.regular .start-survey-btn {
-  background: var(--button-primary);
+  background: var(--button-gradient);
   color: white;
-  box-shadow: 0 0 20px var(--button-primary);
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .plan-card.vip .start-survey-btn {
-  background: var(--button-purple);
+  background: var(--button-gradient);
   color: white;
-  box-shadow: 0 0 20px var(--button-purple);
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .plan-card.vvip .start-survey-btn {
-  background: var(--button-warning);
+  background: var(--button-gradient);
   color: white;
   box-shadow: 0 0 20px var(--button-warning);
 }
@@ -1277,19 +1308,19 @@ body {
 }
 
 .feature-card {
-  background: var(--card-blue);
-  border: 2px solid rgba(255,255,255,0.2);
+  background: var(--card-obsidian);
+  border: var(--wireframe-border);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
   text-align: center;
   transition: var(--transition-fast);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-md), var(--glow-card);
   color: white;
 }
 
 .feature-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-xl), var(--glow-card);
   filter: brightness(1.1);
 }
 
@@ -1302,18 +1333,18 @@ body {
 .feature-card h4 {
   font-size: 16px;
   font-weight: 900;
-  color: #ef4444;
+  color: #FF8C00;  /* Amber */
   margin-bottom: var(--space-xs);
 }
 
 .feature-card p {
   font-size: 13px;
-  color: #ef4444;
+  color: #e2b04a;  /* Gold */
   line-height: 1.5;
 }
 
 /* =========================================================
-   QUICK ACTIONS - ALL DEEP BLUE
+   QUICK ACTIONS - ALL OBSIDIAN
    ========================================================= */
 .quick-actions-grid {
   display: flex;
@@ -1325,24 +1356,24 @@ body {
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  background: var(--card-blue);
-  border: 2px solid rgba(255,255,255,0.2);
+  background: var(--card-obsidian);
+  border: var(--wireframe-border);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
   transition: var(--transition-fast);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-md), var(--glow-card);
   color: white;
 }
 
 .quick-action-card:hover {
   transform: translateX(4px);
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-xl), var(--glow-card);
   filter: brightness(1.1);
 }
 
 .quick-action-card.completed {
   opacity: 0.8;
-  background: var(--card-blue-dark);
+  background: var(--card-obsidian-dark);
 }
 
 .quick-action-card .action-icon {
@@ -1354,7 +1385,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid rgba(255,255,255,0.3);
+  border: 1px solid rgba(226, 176, 74, 0.3);
 }
 
 .quick-action-card .action-content {
@@ -1364,29 +1395,29 @@ body {
 .quick-action-card .action-content h4 {
   font-size: 16px;
   font-weight: 900;
-  color: #ef4444;
+  color: #FF8C00;  /* Amber */
   margin-bottom: 4px;
 }
 
 .quick-action-card .action-content p {
   font-size: 13px;
-  color: #ef4444;
+  color: #e2b04a;  /* Gold */
 }
 
-/* Action button - DISTINCTIVE COLOR */
+/* Action button - AMBER GRADIENT */
 .quick-action-card .action-btn {
   padding: 10px 20px;
   font-size: 13px;
   font-weight: 900;
   border-radius: var(--radius-md);
-  border: 2px solid rgba(255,255,255,0.3);
-  background: var(--button-primary);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: var(--button-gradient);
   color: white;
   cursor: pointer;
   white-space: nowrap;
   transition: var(--transition-fast);
   text-transform: uppercase;
-  box-shadow: 0 0 20px var(--button-primary);
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .quick-action-card .action-btn:hover {
@@ -1471,12 +1502,12 @@ body {
 }
 
 .level-streak-card {
-  background: var(--card-blue);
+  background: var(--card-obsidian);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
   color: white;
-  box-shadow: var(--shadow-lg);
-  border: 2px solid rgba(255,255,255,0.2);
+  box-shadow: var(--shadow-lg), var(--glow-card);
+  border: var(--wireframe-border);
 }
 
 .level-streak-card .level-icon {
@@ -1485,13 +1516,13 @@ body {
   padding: var(--space-sm);
   font-size: 1.5rem;
   display: inline-block;
-  border: 2px solid rgba(255,255,255,0.3);
+  border: 1px solid rgba(226, 176, 74, 0.3);
 }
 
 .level-streak-card .level-title {
   font-size: 1.5rem;
   font-weight: 900;
-  color: #ef4444;
+  color: #FF8C00;  /* Amber */
 }
 
 .level-streak-card .xp-bar {
@@ -1500,19 +1531,20 @@ body {
   border-radius: var(--radius-full);
   overflow: hidden;
   margin: var(--space-sm) 0;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(226, 176, 74, 0.2);
 }
 
 .level-streak-card .xp-progress {
   height: 100%;
   background: linear-gradient(90deg, var(--button-primary), var(--button-purple));
   border-radius: var(--radius-full);
+  box-shadow: var(--glow-progress);  /* Glow effect */
 }
 
-/* Daily reward button - DISTINCTIVE */
+/* Daily reward button - AMBER GRADIENT */
 .level-streak-card .daily-reward-btn {
-  background: var(--button-warning);
-  border: 2px solid rgba(255,255,255,0.3);
+  background: var(--button-gradient);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -1520,11 +1552,13 @@ body {
   font-weight: 900;
   transition: var(--transition-fast);
   text-transform: uppercase;
-  box-shadow: 0 0 20px var(--button-warning);
+  box-shadow: 0 0 15px rgba(255, 140, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .level-streak-card .daily-reward-btn:hover {
   transform: translateY(-2px);
+  background: var(--button-gradient-hover);
+  box-shadow: 0 0 25px rgba(255, 140, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3);
   box-shadow: 0 0 30px var(--button-warning);
 }
 
@@ -1539,16 +1573,16 @@ body {
 }
 
 /* =========================================================
-   TESTIMONIAL CTA - DEEP BLUE
+   TESTIMONIAL CTA - OBSIDIAN
    ========================================================= */
 .testimonial-cta {
   text-align: center;
   padding: var(--space-xl);
-  background: var(--card-blue);
+  background: var(--card-obsidian);
   border-radius: var(--radius-lg);
-  border: 2px solid rgba(255,255,255,0.2);
+  border: var(--wireframe-border);
   margin: 0;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-lg), var(--glow-card);
   color: white;
 }
 
@@ -1643,14 +1677,14 @@ body {
 }
 
 .fullscreen-notification-card {
-  background: var(--card-blue);
+  background: var(--card-obsidian);
   border-radius: var(--radius-xl);
   padding: var(--space-xl);
   max-width: 420px;
   width: 100%;
   text-align: center;
-  box-shadow: var(--shadow-xl);
-  border: 3px solid rgba(255,255,255,0.3);
+  box-shadow: var(--shadow-xl), var(--glow-card);
+  border: var(--wireframe-border);
 }
 
 .fullscreen-notification-icon {
