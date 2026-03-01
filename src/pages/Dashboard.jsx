@@ -838,7 +838,7 @@ return (
         </div>
 
         <div className="header-activation-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          {user && !user.is_activated && !user.account_activated && (
+          {user && (
             <button
               onClick={() => navigate('/activate?welcome_bonus=true')}
               className="activate-btn-pulse"
