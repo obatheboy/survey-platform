@@ -341,16 +341,37 @@ export default function Dashboard() {
     
     if (showWelcomeBonus === "true") {
       setWelcomeBonusAmount(bonusAmount ? parseInt(bonusAmount) : 1200);
-      setShowWelcomeBonus(true);
       
-      // Clear the flag so it doesn't show again
+      // Show popup after 2 seconds delay
+      const showAfterDelay = setTimeout(() => {
+        setShowWelcomeBonus(true);
+      }, 2000);
+      
+      // Also schedule to show again after 10 seconds (reminder)
+      // This will show if user hasn't closed the first popup
+      const showAgainAfter = setTimeout(() => {
+        const dismissed = localStorage.getItem("welcomeBonusDismissed");
+        if (!dismissed) {
+          setShowWelcomeBonus(true);
+        }
+      }, 12000); // 12 seconds total (2 + 10)
+      
+      // Clear the flag but don't mark as dismissed yet
       localStorage.removeItem("showWelcomeBonus");
       localStorage.removeItem("welcomeBonusAmount");
+      
+      return () => {
+        clearTimeout(showAfterDelay);
+        clearTimeout(showAgainAfter);
+      };
     }
   }, []);
 
   const handleWelcomeBonusClose = () => {
     setShowWelcomeBonus(false);
+    // Mark that the user has dismissed the welcome bonus (won't show again)
+    localStorage.setItem("welcomeBonusDismissed", "true");
+    
     // After closing welcome bonus, check for daily reward after a short delay
     setTimeout(() => {
       // Trigger daily reward check manually if needed
