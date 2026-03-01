@@ -20,42 +20,45 @@ const PLANS = {
     icon: "⭐", 
     total: 1500, 
     perSurvey: 150,
-    color: "#38bdf8",
-    gradient: "linear-gradient(135deg, #38bdf8, #0ea5e9)",
-    borderColor: "rgba(56, 189, 248, 0.2)",
-    bgColor: "rgba(56, 189, 248, 0.05)",
+    // UNIFORM AMBER colors
+    color: "#FF8C00",
+    gradient: "linear-gradient(135deg, #060606, #0a0a0a)",
+    borderColor: "rgba(226, 176, 74, 0.3)",
+    bgColor: "#060606",
     description: "Perfect for beginners",
-    // 🔥 BRIGHT ORANGE with !important
-    totalColor: "#FF4500 !important",  // Bright Orange Red
-    totalGlow: "0 0 20px #FF4500, 0 0 40px #FF8C00"  // Double glow
+    // Amber with glow
+    totalColor: "#FF8C00",
+    totalGlow: "0 0 10px rgba(255, 140, 0, 0.5), 0 0 20px rgba(255, 140, 0, 0.3)"
   },
   VIP: { 
     name: "VIP", 
     icon: "💎", 
     total: 2000, 
     perSurvey: 200,
-    color: "#818cf8",
-    gradient: "linear-gradient(135deg, #818cf8, #6366f1)",
-    borderColor: "rgba(129, 140, 248, 0.2)",
-    bgColor: "rgba(129, 140, 248, 0.05)",
+    // UNIFORM AMBER colors
+    color: "#FF8C00",
+    gradient: "linear-gradient(135deg, #060606, #0a0a0a)",
+    borderColor: "rgba(226, 176, 74, 0.3)",
+    bgColor: "#060606",
     description: "For active earners",
-    // 🔥 BRIGHT ORANGE-YELLOW with !important
-    totalColor: "#FFA500 !important",  // Bright Orange
-    totalGlow: "0 0 20px #FFA500, 0 0 40px #FFD700"  // Double glow
+    // Amber with glow
+    totalColor: "#FF8C00",
+    totalGlow: "0 0 10px rgba(255, 140, 0, 0.5), 0 0 20px rgba(255, 140, 0, 0.3)"
   },
   VVIP: { 
     name: "VVIP", 
     icon: "👑", 
     total: 3000, 
     perSurvey: 300,
-    color: "#fbbf24",
-    gradient: "linear-gradient(135deg, #fbbf24, #f59e0b)",
-    borderColor: "rgba(251, 191, 36, 0.2)",
-    bgColor: "rgba(251, 191, 36, 0.05)",
+    // UNIFORM AMBER colors
+    color: "#FF8C00",
+    gradient: "linear-gradient(135deg, #060606, #0a0a0a)",
+    borderColor: "rgba(226, 176, 74, 0.3)",
+    bgColor: "#060606",
     description: "Maximum earnings",
-    // 🔥 BRIGHT GOLD with !important
-    totalColor: "#FFD700 !important",  // Bright Gold
-    totalGlow: "0 0 20px #FFD700, 0 0 40px #FFA500"  // Double glow
+    // Amber with glow
+    totalColor: "#FF8C00",
+    totalGlow: "0 0 10px rgba(255, 140, 0, 0.5), 0 0 20px rgba(255, 140, 0, 0.3)"
   },
 };
 const TOTAL_SURVEYS = 10;
@@ -1056,20 +1059,6 @@ return (
 {/* WELCOME BONUS CARD - PREMIUM GIFT VERSION */}
 <section ref={welcomeRef}>
   <div className="plan-card welcome-bonus" style={{
-    background: 'linear-gradient(135deg, #7c3aed 0%, #db2777 25%, #f59e0b 50%, #10b981 75%, #3b82f6 100%) !important',
-    backgroundSize: '400% 400%',
-    animation: 'gradientShift 5s ease infinite',
-    border: '3px solid #fbbf24 !important',
-    boxShadow: '0 10px 40px rgba(124, 58, 237, 0.4), 0 0 60px rgba(251, 191, 36, 0.3), inset 0 1px 0 rgba(255,255,255,0.3)',
-    borderRadius: '20px',
-    padding: '12px 16px',
-    color: 'white',
-    position: 'relative',
-    overflow: 'hidden',
-    transition: 'all 0.3s ease',
-    marginTop: '0',
-    marginBottom: '0'
-  }}>
     {/* Premium animated border */}
     <div className="welcome-bonus-border-glow" />
     

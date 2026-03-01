@@ -525,28 +525,29 @@ body {
 }
 
 /* =========================================================
-   WELCOME BONUS CARD - COMPACT SIZE
+   WELCOME BONUS CARD - VERY COMPACT
    ========================================================= */
 .welcome-bonus {
   background: linear-gradient(145deg, #060606, #1a1a0a, #FF8C00) !important;
   border: var(--wireframe-border) !important;
-  border-radius: var(--radius-sm) !important;
-  padding: 4px 8px !important;
-  margin: 4px 0 !important;
+  border-radius: 6px !important;
+  padding: 2px 6px !important;
+  margin: 2px 0 !important;
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-lg), var(--glow-card) !important;
   color: white;
-  min-height: auto;
+  min-height: 20px;
+  line-height: 1.2;
 }
 
 /* Emoji decorations */
 .welcome-bonus::before {
   content: '🎁';
   position: absolute;
-  top: 2px;
-  right: 6px;
-  font-size: 12px;
+  top: 1px;
+  right: 4px;
+  font-size: 10px;
   opacity: 0.9;
   z-index: 2;
 }
@@ -557,44 +558,44 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 2px;
+  height: 1px;
   background: linear-gradient(90deg, #FF8C00, #ff9d2e, #FF8C00);
 }
 
-/* Gift icon - smaller */
+/* Gift icon - very small */
 .welcome-bonus .gift-icon {
-  font-size: 18px;
-  background: rgba(255, 255, 255, 0.25);
-  width: 28px;
-  height: 28px;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255,255,255,0.4);
-  box-shadow: 0 0 10px rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+  box-shadow: none;
 }
 
-/* Bonus amount - smaller */
+/* Bonus amount - very small */
 .bonus-amount {
-  font-size: 16px;
+  font-size: 11px;
   font-weight: 900;
   color: white;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-  line-height: 1.1;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  line-height: 1;
 }
 
-/* Description - smaller */
+/* Description - very small */
 .bonus-description {
   color: #FF8C00;
-  font-size: 10px;
+  font-size: 8px;
   font-weight: 700;
   margin: 0;
-  background: rgba(255, 140, 0, 0.1);
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  display: inline-block;
-  border: 1px solid rgba(255, 140, 0, 0.3);
+  background: transparent;
+  padding: 0 4px;
+  border-radius: 0;
+  display: inline;
+  border: none;
 }
 
 /* Activate button - AMBER GRADIENT */
