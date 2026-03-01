@@ -13,6 +13,7 @@ import DailyRewardPopup from "./components/DailyRewardPopup.jsx";
 import WelcomeBonusPopup from "./components/WelcomeBonusPopup.jsx";
 import { gamificationApi } from "../api/api";
 import "./Dashboard.css";
+import "./Dashboard-mobile.css";
 
 const PLANS = {
   REGULAR: { 
@@ -1106,7 +1107,7 @@ return (
         boxShadow: '0 4px 15px rgba(59, 130, 246, 0.5)',
         textShadow: '0 1px 2px rgba(0,0,0,0.2)'
       }}>
-        🔓 ACTIVATE NOW
+
       </span>
     </div>
     

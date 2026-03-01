@@ -1870,8 +1870,18 @@ body {
     display: none !important;
   }
 }
-    width: 36px !important;
-    height: 36px !important;
+  .welcome-bonus .plan-icon.gift-icon {
+    width: 24px !important;
+    height: 24px !important;
+  }
+  
+  /* Welcome bonus card dark background */
+  .welcome-bonus {
+    background: #0a0f1a !important;
+  }
+  
+  .welcome-bonus .plan-card-body {
+    background: #0a0f1a !important;
   }
   
   .welcome-bonus .plan-name {
@@ -1909,11 +1919,31 @@ body {
     padding: 8px 12px !important;
     font-size: 12px !important;
   }
-}
+
 
 /* =========================================================
-   REDUCED MOTION
+   FORCE DARK BACKGROUNDS - OVERRIDE LIGHT THEME
    ========================================================= */
+.quick-action-card,
+.stats-card,
+.welcome-bonus,
+.plan-card,
+.plan-card-body {
+  background: #0a0f1a !important;
+  background-color: #0a0f1a !important;
+}
+
+.quick-action-card .action-icon,
+.stats-card-icon {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border-color: #1a2744 !important;
+}
+
+/* Success Rate stats card */
+.stats-card:has(.stats-value) {
+  background: linear-gradient(135deg, #0a0f1a 0%, #1a2744 100%) !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
