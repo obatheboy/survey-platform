@@ -1,15 +1,15 @@
 /* =========================================================
-   SURVEYEARN DASHBOARD - DEEP RICH COLOR DESIGN
-   All cards colored with deep, bold ink-like tones
-   Welcome bonus card - COMPACT size
+   SURVEYEARN DASHBOARD - UNIFIED DEEP BLUE DESIGN
+   All cards in deep blue for perfect uniformity
+   Clickable buttons in distinctive colors
    Complete 3000+ LOC
    ========================================================= */
 
 /* =========================================================
-   CSS VARIABLES - DEEP RICH COLOR PALETTE
+   CSS VARIABLES - DEEP BLUE UNIFIED COLOR PALETTE
    ========================================================= */
 :root {
-  /* Dark Rich Backgrounds - Deep & Moody */
+  /* Dark Rich Backgrounds */
   --bg-main: #0a0c15;
   --bg-surface: #121624;
   --bg-glass: rgba(18, 22, 36, 0.98);
@@ -21,86 +21,61 @@
   --border-light: #2a3145;
   --border-medium: #3a445c;
   
-  /* DEEP RICH COLORS - Bold, ink-like, no white! */
-  --deep-blue: #1e3a8a;
-  --deep-indigo: #312e81;
-  --deep-purple: #4c1d95;
-  --deep-red: #991b1b;
-  --deep-orange: #9a3412;
-  --deep-amber: #92400e;
-  --deep-green: #166534;
-  --deep-emerald: #065f46;
-  --deep-teal: #115e59;
-  --deep-pink: #831843;
-  --deep-cyan: #155e75;
-  --deep-yellow: #854d0e;
-  --deep-gold: #78350f;
+  /* DEEP BLUE - Unified color for ALL cards */
+  --deep-blue-dark: #0f2b4f;
+  --deep-blue: #1a3a6b;
+  --deep-blue-medium: #254f8a;
+  --deep-blue-light: #2d60a3;
+  --deep-blue-bright: #3b82f6;
   
-  /* PLAN COLORS - Deep & Distinct */
-  --regular-color: #2563eb;
-  --regular-gradient: linear-gradient(135deg, #1e3a8a, #2563eb, #3b82f6);
-  --regular-bg: linear-gradient(145deg, #1e3a8a, #1e40af);
-  --regular-total: #60a5fa;
+  /* Card Gradients - All deep blue variations */
+  --card-blue-dark: linear-gradient(145deg, #0a1a3a, #0f2b4f);
+  --card-blue: linear-gradient(145deg, #0f2b4f, #1a3a6b);
+  --card-blue-medium: linear-gradient(145deg, #1a3a6b, #254f8a);
+  --card-blue-light: linear-gradient(145deg, #254f8a, #2d60a3);
   
-  --vip-color: #7c3aed;
-  --vip-gradient: linear-gradient(135deg, #4c1d95, #6d28d9, #8b5cf6);
-  --vip-bg: linear-gradient(145deg, #4c1d95, #5b21b6);
-  --vip-total: #a78bfa;
+  /* BUTTON COLORS - Distinctive for clickable elements */
+  --button-primary: #3b82f6;      /* Bright Blue */
+  --button-success: #10b981;      /* Emerald Green */
+  --button-warning: #f59e0b;      /* Amber */
+  --button-danger: #ef4444;        /* Red */
+  --button-purple: #8b5cf6;        /* Purple */
+  --button-pink: #ec4899;          /* Pink */
+  --button-cyan: #06b6d4;          /* Cyan */
+  --button-orange: #f97316;        /* Orange */
   
-  --vvip-color: #b45309;
-  --vvip-gradient: linear-gradient(135deg, #78350f, #92400e, #b45309);
-  --vvip-bg: linear-gradient(145deg, #78350f, #92400e);
-  --vvip-total: #fbbf24;
+  /* PLAN COLORS - For text accents only */
+  --regular-color: #60a5fa;
+  --vip-color: #c084fc;
+  --vvip-color: #fcd34d;
   
-  /* Card Background Colors - Deep & Rich */
-  --card-blue: linear-gradient(145deg, #1e3a8a, #2563eb);
-  --card-indigo: linear-gradient(145deg, #312e81, #4f46e5);
-  --card-purple: linear-gradient(145deg, #4c1d95, #7c3aed);
-  --card-red: linear-gradient(145deg, #991b1b, #dc2626);
-  --card-orange: linear-gradient(145deg, #9a3412, #ea580c);
-  --card-amber: linear-gradient(145deg, #92400e, #d97706);
-  --card-green: linear-gradient(145deg, #166534, #059669);
-  --card-emerald: linear-gradient(145deg, #065f46, #10b981);
-  --card-teal: linear-gradient(145deg, #115e59, #14b8a6);
-  --card-pink: linear-gradient(145deg, #831843, #db2777);
-  --card-cyan: linear-gradient(145deg, #155e75, #0891b2);
-  --card-yellow: linear-gradient(145deg, #854d0e, #ca8a04);
+  /* WELCOME BONUS - Special but still blue-based */
+  --bonus-gradient: linear-gradient(145deg, #0f2b4f, #1e3a8a, #2563eb, #3b82f6);
   
-  /* WELCOME BONUS - Compact size, deep colors */
-  --bonus-gradient: linear-gradient(145deg, #991b1b, #b45309, #854d0e, #166534, #155e75, #4c1d95);
-  --bonus-glow: 0 10px 20px -5px rgba(0, 0, 0, 0.5);
-  
-  /* Brand Colors - Deep */
-  --primary: #2563eb;
-  --primary-dark: #1e3a8a;
-  --primary-light: #3b82f6;
-  --primary-50: #1e3a8a;
-  --success: #059669;
-  --success-light: #065f46;
-  --warning: #d97706;
-  --warning-light: #92400e;
-  --danger: #dc2626;
-  --danger-light: #991b1b;
-  --info: #2563eb;
-  --info-light: #1e3a8a;
-  --purple: #7c3aed;
-  --purple-light: #4c1d95;
+  /* Brand Colors */
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --primary-light: #60a5fa;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --purple: #8b5cf6;
   
   /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #1e3a8a, #2563eb);
-  --gradient-success: linear-gradient(135deg, #166534, #059669);
-  --gradient-warning: linear-gradient(135deg, #92400e, #d97706);
-  --gradient-danger: linear-gradient(135deg, #991b1b, #dc2626);
-  --gradient-purple: linear-gradient(135deg, #4c1d95, #7c3aed);
-  --gradient-hero: linear-gradient(135deg, #1e3a8a, #4c1d95, #92400e);
+  --gradient-primary: linear-gradient(135deg, #2563eb, #3b82f6);
+  --gradient-success: linear-gradient(135deg, #10b981, #059669);
+  --gradient-warning: linear-gradient(135deg, #f59e0b, #d97706);
+  --gradient-danger: linear-gradient(135deg, #ef4444, #dc2626);
+  --gradient-purple: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  --gradient-hero: linear-gradient(135deg, #0f2b4f, #1e3a8a, #2563eb);
   
-  /* Shadows - Deep */
+  /* Shadows */
   --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.5);
   --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.6);
   --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.7);
   --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.8);
   
-  /* Layout - Reduced spacing */
+  /* Layout */
   --radius-sm: 12px;
   --radius-md: 16px;
   --radius-lg: 20px;
@@ -236,21 +211,21 @@ body {
 }
 
 .no-user-container .primary-btn {
-  background: var(--gradient-primary);
+  background: var(--button-primary);
   color: white;
-  border: 2px solid rgba(255,255,255,0.3);
+  border: none;
   border-radius: var(--radius-md);
   padding: 12px 24px;
   font-size: 14px;
   font-weight: 900;
   cursor: pointer;
   transition: var(--transition-fast);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 0 20px var(--button-primary);
 }
 
 .no-user-container .primary-btn:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 0 30px var(--button-primary);
 }
 
 /* =========================================================
@@ -273,7 +248,7 @@ body {
    HEADER
    ========================================================= */
 .dashboard-main-header {
-  background: linear-gradient(135deg, var(--deep-blue), var(--deep-purple), var(--deep-orange));
+  background: linear-gradient(135deg, var(--deep-blue-dark), var(--deep-blue), var(--deep-blue-medium));
   padding: var(--space-sm) var(--space-lg);
   position: fixed;
   top: 0;
@@ -374,7 +349,7 @@ body {
 }
 
 .activate-btn-pulse {
-  background: var(--deep-red);
+  background: var(--button-danger);
   border: 2px solid rgba(255,255,255,0.3);
   border-radius: var(--radius-full);
   padding: 10px 24px;
@@ -382,7 +357,7 @@ body {
   font-weight: 900;
   font-size: 14px;
   cursor: pointer;
-  box-shadow: 0 0 30px var(--deep-red);
+  box-shadow: 0 0 30px var(--button-danger);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -392,7 +367,7 @@ body {
 
 .activate-btn-pulse:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 40px var(--deep-red);
+  box-shadow: 0 0 40px var(--button-danger);
 }
 
 /* =========================================================
@@ -415,10 +390,10 @@ body {
 }
 
 /* =========================================================
-   HERO SECTION - DEEP COLORS
+   HERO SECTION - DEEP BLUE
    ========================================================= */
 .hero-section {
-  background: linear-gradient(135deg, var(--deep-blue), var(--deep-purple), var(--deep-orange));
+  background: linear-gradient(135deg, var(--deep-blue-dark), var(--deep-blue), var(--deep-blue-medium));
   border-radius: var(--radius-lg);
   padding: var(--space-md);
   margin-top: 0;
@@ -457,17 +432,17 @@ body {
 }
 
 .hero-btn.bonus {
-  background: rgba(133, 77, 14, 0.4);
-  border-color: var(--deep-yellow);
+  background: var(--button-warning);
+  border-color: rgba(255,255,255,0.4);
 }
 
 .balance-card {
-  background: var(--bg-surface);
-  border: 2px solid var(--deep-green);
+  background: var(--card-blue-dark);
+  border: 2px solid rgba(255,255,255,0.2);
   border-radius: var(--radius-md);
   padding: var(--space-sm);
   text-align: center;
-  box-shadow: 0 0 30px var(--deep-green);
+  box-shadow: var(--shadow-md);
 }
 
 .balance-label {
@@ -481,13 +456,13 @@ body {
 .balance-number {
   font-size: 28px;
   font-weight: 900;
-  color: var(--deep-green);
-  text-shadow: 0 0 20px var(--deep-green);
+  color: var(--button-success);
+  text-shadow: 0 0 20px var(--button-success);
   line-height: 1.2;
 }
 
 .balance-withdraw-btn {
-  background: var(--deep-green);
+  background: var(--button-success);
   color: white;
   border: 2px solid rgba(255,255,255,0.3);
   border-radius: var(--radius-full);
@@ -499,19 +474,19 @@ body {
   margin-top: var(--space-xs);
   transition: var(--transition-fast);
   text-transform: uppercase;
-  box-shadow: 0 0 20px var(--deep-green);
+  box-shadow: 0 0 20px var(--button-success);
 }
 
 .balance-withdraw-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 30px var(--deep-green);
+  box-shadow: 0 0 30px var(--button-success);
 }
 
 /* =========================================================
-   LIVE WITHDRAWAL FEED - DEEP COLOR
+   LIVE WITHDRAWAL FEED - DEEP BLUE
    ========================================================= */
 .live-withdrawal-feed {
-  background: var(--card-teal);
+  background: var(--card-blue);
   border-radius: var(--radius-lg);
   padding: var(--space-sm);
   border: 2px solid rgba(255,255,255,0.2);
@@ -520,10 +495,10 @@ body {
 }
 
 /* =========================================================
-   USER NOTIFICATIONS - DEEP COLOR
+   USER NOTIFICATIONS - DEEP BLUE
    ========================================================= */
 .user-notifications-section {
-  background: var(--card-purple);
+  background: var(--card-blue-medium);
   border-radius: var(--radius-lg);
   padding: var(--space-sm);
   border: 2px solid rgba(255,255,255,0.2);
@@ -532,30 +507,27 @@ body {
 }
 
 /* =========================================================
-   WELCOME BONUS CARD - COMPACT SIZE!
+   WELCOME BONUS CARD - DEEP BLUE BASED
    ========================================================= */
 .welcome-bonus {
-  background: var(--bonus-gradient) !important;
-  background-size: 300% 300% !important;
+  background: linear-gradient(145deg, #0f2b4f, #1e3a8a, #2563eb) !important;
   border: 3px solid rgba(255,255,255,0.3) !important;
-  border-radius: var(--radius-md) !important; /* SMALLER radius */
-  padding: var(--space-xs) var(--space-sm) !important; /* MUCH SMALLER padding */
-  margin: var(--space-xs) 0 !important; /* REDUCED margin */
+  border-radius: var(--radius-md) !important;
+  padding: var(--space-xs) var(--space-sm) !important;
+  margin: var(--space-xs) 0 !important;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--bonus-glow) !important;
+  box-shadow: var(--shadow-lg) !important;
   color: white;
-  min-height: auto !important; /* REMOVE any min-height */
-  height: auto !important; /* Let content determine height */
 }
 
-/* Emoji decorations - smaller */
+/* Emoji decorations */
 .welcome-bonus::before {
-  content: '❤️ 💙 💛 💫 💚 💛';
+  content: '🎁 ✨ 💎';
   position: absolute;
   top: 4px;
   right: 8px;
-  font-size: 14px; /* MUCH SMALLER */
+  font-size: 14px;
   opacity: 0.9;
   z-index: 2;
   text-shadow: 0 2px 4px rgba(0,0,0,0.3);
@@ -568,15 +540,15 @@ body {
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--deep-red), var(--deep-yellow), var(--deep-green), var(--deep-blue));
+  background: linear-gradient(90deg, var(--button-primary), var(--button-purple), var(--button-pink));
 }
 
-/* Gift icon - smaller */
+/* Gift icon */
 .welcome-bonus .gift-icon {
-  font-size: 24px !important; /* SMALLER */
+  font-size: 24px;
   background: rgba(255, 255, 255, 0.25);
-  width: 40px !important; /* SMALLER */
-  height: 40px !important; /* SMALLER */
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -585,36 +557,36 @@ body {
   box-shadow: 0 0 20px rgba(255,255,255,0.3);
 }
 
-/* Bonus amount - smaller */
+/* Bonus amount */
 .bonus-amount {
-  font-size: 24px !important; /* MUCH SMALLER */
+  font-size: 24px;
   font-weight: 900;
   color: white;
   text-shadow: 0 2px 4px rgba(0,0,0,0.3);
   line-height: 1.1;
 }
 
-/* Description - smaller */
+/* Description */
 .bonus-description {
   color: white;
-  font-size: 12px !important; /* SMALLER */
+  font-size: 12px;
   font-weight: 700;
-  margin: 2px 0 !important;
+  margin: 2px 0;
   background: rgba(0, 0, 0, 0.2);
-  padding: 4px 12px !important; /* SMALLER */
+  padding: 4px 12px;
   border-radius: var(--radius-full);
   display: inline-block;
   backdrop-filter: blur(5px);
 }
 
-/* Activate button - smaller */
+/* Activate button - DISTINCTIVE COLOR */
 .activate-bonus-btn {
-  background: var(--deep-yellow) !important;
+  background: var(--button-warning) !important;
   border: 2px solid rgba(255,255,255,0.3) !important;
   border-radius: var(--radius-full) !important;
-  padding: 6px 12px !important; /* MUCH SMALLER */
+  padding: 6px 12px !important;
   font-weight: 900 !important;
-  font-size: 12px !important; /* SMALLER */
+  font-size: 12px !important;
   color: white !important;
   display: flex !important;
   align-items: center !important;
@@ -622,14 +594,14 @@ body {
   gap: 6px !important;
   width: 100% !important;
   cursor: pointer !important;
-  box-shadow: 0 0 20px var(--deep-yellow) !important;
+  box-shadow: 0 0 20px var(--button-warning) !important;
   transition: var(--transition-fast) !important;
-  margin-top: 2px !important; /* TIGHTER */
+  margin-top: 2px !important;
 }
 
 .activate-bonus-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 0 30px var(--deep-yellow) !important;
+  box-shadow: 0 0 30px var(--button-warning) !important;
 }
 
 .activate-bonus-btn .btn-icon {
@@ -637,7 +609,7 @@ body {
 }
 
 /* =========================================================
-   SECTION HEADINGS - BOLD
+   SECTION HEADINGS
    ========================================================= */
 .section-heading {
   margin-bottom: var(--space-sm);
@@ -649,7 +621,6 @@ body {
   font-weight: 900;
   margin: 0 0 4px;
   letter-spacing: -0.3px;
-  text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
 }
 
 .section-heading p {
@@ -659,7 +630,7 @@ body {
 }
 
 /* =========================================================
-   STATS CARDS - ALL DEEP COLORS!
+   STATS CARDS - ALL DEEP BLUE
    ========================================================= */
 .stats-grid {
   display: grid;
@@ -673,8 +644,9 @@ body {
   }
 }
 
-/* ALL STATS CARDS - NO WHITE! */
+/* ALL STATS CARDS - UNIFIED DEEP BLUE */
 .stats-card {
+  background: var(--card-blue);
   border: 2px solid rgba(255,255,255,0.2);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
@@ -685,22 +657,11 @@ body {
   color: white;
 }
 
-.stats-card:nth-child(1) { 
-  background: var(--card-blue);
-  border-color: var(--deep-blue);
-}
-.stats-card:nth-child(2) { 
-  background: var(--card-green);
-  border-color: var(--deep-green);
-}
-.stats-card:nth-child(3) { 
-  background: var(--card-purple);
-  border-color: var(--deep-purple);
-}
-.stats-card:nth-child(4) { 
-  background: var(--card-orange);
-  border-color: var(--deep-orange);
-}
+/* Slight variation for depth, but all blue */
+.stats-card:nth-child(1) { background: var(--card-blue-dark); }
+.stats-card:nth-child(2) { background: var(--card-blue); }
+.stats-card:nth-child(3) { background: var(--card-blue-medium); }
+.stats-card:nth-child(4) { background: var(--card-blue-light); }
 
 .stats-card:hover {
   transform: translateY(-4px);
@@ -742,12 +703,13 @@ body {
   margin-top: 2px;
 }
 
+/* Withdraw button - DISTINCTIVE COLOR */
 .withdraw-quick-btn {
   margin-top: var(--space-sm);
   padding: 10px;
   font-size: 13px;
   font-weight: 900;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--button-primary);
   color: white;
   border: 2px solid rgba(255,255,255,0.3);
   border-radius: var(--radius-md);
@@ -755,17 +717,26 @@ body {
   width: 100%;
   transition: var(--transition-fast);
   text-transform: uppercase;
-  backdrop-filter: blur(5px);
+  box-shadow: 0 0 20px var(--button-primary);
 }
 
 .withdraw-quick-btn:hover {
   transform: translateY(-2px);
-  background: rgba(0, 0, 0, 0.4);
-  box-shadow: 0 0 30px rgba(255,255,255,0.2);
+  box-shadow: 0 0 30px var(--button-primary);
+}
+
+.withdraw-quick-btn.affiliate-withdraw-btn {
+  background: var(--button-purple);
+  box-shadow: 0 0 20px var(--button-purple);
+}
+
+.withdraw-quick-btn.affiliate-withdraw-btn:hover {
+  box-shadow: 0 0 30px var(--button-purple);
 }
 
 /* =========================================================
-   PLAN PROGRESS CARDS - DEEP COLORS
+   PLAN PROGRESS CARDS (DASHBOARD VIEW) - ALL DEEP BLUE
+   These are the cards visible when scrolling down the dashboard
    ========================================================= */
 .progress-cards {
   display: flex;
@@ -774,6 +745,7 @@ body {
 }
 
 .progress-card {
+  background: var(--card-blue);
   border: 2px solid rgba(255,255,255,0.2);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
@@ -783,28 +755,26 @@ body {
   color: white;
 }
 
+/* Different border colors to distinguish plans, but backgrounds all blue */
+.progress-card.regular {
+  background: var(--card-blue);
+  border-left: 8px solid var(--regular-color);
+}
+
+.progress-card.vip {
+  background: var(--card-blue-medium);
+  border-left: 8px solid var(--vip-color);
+}
+
+.progress-card.vvip {
+  background: var(--card-blue-light);
+  border-left: 8px solid var(--vvip-color);
+}
+
 .progress-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-xl);
   filter: brightness(1.1);
-}
-
-/* Regular Plan - Deep Blue */
-.progress-card.regular {
-  background: var(--card-blue);
-  border-left: 8px solid #60a5fa;
-}
-
-/* VIP Plan - Deep Purple */
-.progress-card.vip {
-  background: var(--card-purple);
-  border-left: 8px solid #a78bfa;
-}
-
-/* VVIP Plan - Deep Amber */
-.progress-card.vvip {
-  background: var(--card-amber);
-  border-left: 8px solid #fbbf24;
 }
 
 .progress-card-header {
@@ -847,13 +817,13 @@ body {
 }
 
 .status-badge.completed {
-  border-color: #4ade80;
-  color: #4ade80;
+  border-color: var(--button-success);
+  color: var(--button-success);
 }
 
 .status-badge.in-progress {
-  border-color: #fbbf24;
-  color: #fbbf24;
+  border-color: var(--button-warning);
+  color: var(--button-warning);
 }
 
 .status-badge.not-started {
@@ -887,11 +857,23 @@ body {
   font-weight: 900;
 }
 
-.earned-amount {
+/* Earned amount colors - accent only, not backgrounds */
+.progress-card.regular .earned-amount {
+  color: var(--regular-color) !important;
   font-weight: 900 !important;
   font-size: 18px !important;
-  color: white !important;
-  text-shadow: 0 0 20px rgba(255,255,255,0.3) !important;
+}
+
+.progress-card.vip .earned-amount {
+  color: var(--vip-color) !important;
+  font-weight: 900 !important;
+  font-size: 18px !important;
+}
+
+.progress-card.vvip .earned-amount {
+  color: var(--vvip-color) !important;
+  font-weight: 900 !important;
+  font-size: 18px !important;
 }
 
 /* Progress Bar */
@@ -911,18 +893,18 @@ body {
 }
 
 .progress-card.regular .progress-bar-fill {
-  background: linear-gradient(90deg, #60a5fa, #3b82f6);
+  background: linear-gradient(90deg, var(--regular-color), var(--button-primary));
 }
 
 .progress-card.vip .progress-bar-fill {
-  background: linear-gradient(90deg, #a78bfa, #8b5cf6);
+  background: linear-gradient(90deg, var(--vip-color), var(--button-purple));
 }
 
 .progress-card.vvip .progress-bar-fill {
-  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  background: linear-gradient(90deg, var(--vvip-color), var(--button-warning));
 }
 
-/* Action Buttons */
+/* Action Buttons - DISTINCTIVE COLORS */
 .progress-card-actions {
   display: flex;
   gap: var(--space-sm);
@@ -941,12 +923,26 @@ body {
   text-transform: uppercase;
 }
 
-.action-btn.primary {
-  background: rgba(0, 0, 0, 0.3);
+/* Primary action buttons - DISTINCTIVE per plan */
+.progress-card.regular .action-btn.primary {
+  background: var(--button-primary);
   color: white;
-  backdrop-filter: blur(5px);
+  box-shadow: 0 0 20px var(--button-primary);
 }
 
+.progress-card.vip .action-btn.primary {
+  background: var(--button-purple);
+  color: white;
+  box-shadow: 0 0 20px var(--button-purple);
+}
+
+.progress-card.vvip .action-btn.primary {
+  background: var(--button-warning);
+  color: white;
+  box-shadow: 0 0 20px var(--button-warning);
+}
+
+/* Secondary buttons - outline style */
 .action-btn.secondary {
   background: transparent;
   border: 2px solid;
@@ -954,42 +950,43 @@ body {
 }
 
 .progress-card.regular .action-btn.secondary {
-  border-color: #60a5fa;
-  color: #60a5fa;
+  border-color: var(--regular-color);
+  color: var(--regular-color);
 }
 
 .progress-card.vip .action-btn.secondary {
-  border-color: #a78bfa;
-  color: #a78bfa;
+  border-color: var(--vip-color);
+  color: var(--vip-color);
 }
 
 .progress-card.vvip .action-btn.secondary {
-  border-color: #fbbf24;
-  color: #fbbf24;
+  border-color: var(--vvip-color);
+  color: var(--vvip-color);
 }
 
 .action-btn:hover {
   transform: translateY(-2px);
-  background: rgba(0, 0, 0, 0.4);
-  box-shadow: 0 0 30px rgba(255,255,255,0.2);
+  filter: brightness(1.1);
+  box-shadow: 0 0 30px currentColor;
 }
 
 /* Withdrawal pending badge */
 .withdrawal-pending-badge {
   margin-top: var(--space-sm);
   padding: var(--space-sm);
-  background: rgba(251, 191, 36, 0.2);
-  border: 2px solid #fbbf24;
+  background: rgba(245, 158, 11, 0.2);
+  border: 2px solid var(--button-warning);
   border-radius: var(--radius-md);
   font-size: 12px;
-  color: #fbbf24;
+  color: var(--button-warning);
   font-weight: 900;
   text-align: center;
-  box-shadow: 0 0 20px #fbbf24;
+  box-shadow: 0 0 20px var(--button-warning);
 }
 
 /* =========================================================
-   PLAN CARDS (SURVEYS TAB) - DEEP GRADIENTS
+   PLAN CARDS (SURVEYS TAB) - ALL DEEP BLUE
+   These appear when clicking the Survey button
    ========================================================= */
 .plan-cards-container {
   display: flex;
@@ -1007,22 +1004,30 @@ body {
   border: 2px solid rgba(255,255,255,0.2);
 }
 
+/* ALL survey plan cards - DEEP BLUE backgrounds */
+.plan-card.regular,
+.plan-card.vip,
+.plan-card.vvip {
+  background: var(--card-blue) !important;
+}
+
+/* Slight variation for depth, but all blue */
+.plan-card.regular {
+  background: var(--card-blue-dark) !important;
+}
+
+.plan-card.vip {
+  background: var(--card-blue) !important;
+}
+
+.plan-card.vvip {
+  background: var(--card-blue-light) !important;
+}
+
 .plan-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-xl);
   filter: brightness(1.1);
-}
-
-.plan-card.regular {
-  background: linear-gradient(135deg, #1e3a8a, #2563eb, #3b82f6);
-}
-
-.plan-card.vip {
-  background: linear-gradient(135deg, #4c1d95, #6d28d9, #8b5cf6);
-}
-
-.plan-card.vvip {
-  background: linear-gradient(135deg, #78350f, #92400e, #b45309);
 }
 
 .plan-card-header {
@@ -1111,6 +1116,19 @@ body {
   font-size: 16px;
 }
 
+/* Accent colors for plan totals */
+.plan-card.regular .plan-stats .stat-value.earned {
+  color: var(--regular-color);
+}
+
+.plan-card.vip .plan-stats .stat-value.earned {
+  color: var(--vip-color);
+}
+
+.plan-card.vvip .plan-stats .stat-value.earned {
+  color: var(--vvip-color);
+}
+
 .progress-container {
   display: flex;
   align-items: center;
@@ -1156,6 +1174,7 @@ body {
   border-top: 2px solid rgba(255, 255, 255, 0.2);
 }
 
+/* START SURVEY BUTTON - DISTINCTIVE per plan */
 .start-survey-btn {
   width: 100%;
   padding: 14px;
@@ -1164,32 +1183,48 @@ body {
   border: 2px solid rgba(255,255,255,0.3);
   border-radius: var(--radius-md);
   cursor: pointer;
-  background: rgba(0, 0, 0, 0.3);
-  color: white;
   transition: var(--transition-fast);
   text-transform: uppercase;
   box-shadow: var(--shadow-md);
-  backdrop-filter: blur(5px);
+}
+
+.plan-card.regular .start-survey-btn {
+  background: var(--button-primary);
+  color: white;
+  box-shadow: 0 0 20px var(--button-primary);
+}
+
+.plan-card.vip .start-survey-btn {
+  background: var(--button-purple);
+  color: white;
+  box-shadow: 0 0 20px var(--button-purple);
+}
+
+.plan-card.vvip .start-survey-btn {
+  background: var(--button-warning);
+  color: white;
+  box-shadow: 0 0 20px var(--button-warning);
 }
 
 .start-survey-btn:hover {
   transform: translateY(-2px);
-  background: rgba(0, 0, 0, 0.4);
-  box-shadow: var(--shadow-lg);
+  filter: brightness(1.1);
+  box-shadow: 0 0 30px currentColor;
 }
 
 .completed-badge {
   text-align: center;
   padding: var(--space-sm);
   background: rgba(16, 185, 129, 0.2);
-  color: #4ade80;
+  color: var(--button-success);
   border-radius: var(--radius-md);
   font-size: 14px;
   font-weight: 900;
-  border: 2px solid #4ade80;
-  box-shadow: 0 0 20px #4ade80;
+  border: 2px solid var(--button-success);
+  box-shadow: 0 0 20px var(--button-success);
 }
 
+/* WITHDRAW PLAN BUTTON - DISTINCTIVE per plan */
 .withdraw-plan-btn {
   width: 100%;
   padding: 14px;
@@ -1198,21 +1233,36 @@ body {
   border: 2px solid rgba(255,255,255,0.3);
   border-radius: var(--radius-md);
   cursor: pointer;
-  background: rgba(0, 0, 0, 0.2);
-  color: white;
-  backdrop-filter: blur(10px);
   transition: var(--transition-fast);
   text-transform: uppercase;
 }
 
+.plan-card.regular .withdraw-plan-btn {
+  background: var(--button-primary);
+  color: white;
+  box-shadow: 0 0 20px var(--button-primary);
+}
+
+.plan-card.vip .withdraw-plan-btn {
+  background: var(--button-purple);
+  color: white;
+  box-shadow: 0 0 20px var(--button-purple);
+}
+
+.plan-card.vvip .withdraw-plan-btn {
+  background: var(--button-warning);
+  color: white;
+  box-shadow: 0 0 20px var(--button-warning);
+}
+
 .withdraw-plan-btn:hover {
-  background: rgba(0, 0, 0, 0.3);
   transform: translateY(-2px);
-  box-shadow: 0 0 30px rgba(255,255,255,0.2);
+  filter: brightness(1.1);
+  box-shadow: 0 0 30px currentColor;
 }
 
 /* =========================================================
-   FEATURE GRID - DEEP COLORS
+   FEATURE GRID - ALL DEEP BLUE
    ========================================================= */
 .feature-grid {
   display: grid;
@@ -1227,7 +1277,7 @@ body {
 }
 
 .feature-card {
-  background: var(--card-indigo);
+  background: var(--card-blue);
   border: 2px solid rgba(255,255,255,0.2);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
@@ -1263,7 +1313,7 @@ body {
 }
 
 /* =========================================================
-   QUICK ACTIONS - DEEP COLORS
+   QUICK ACTIONS - ALL DEEP BLUE
    ========================================================= */
 .quick-actions-grid {
   display: flex;
@@ -1275,7 +1325,7 @@ body {
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  background: var(--card-pink);
+  background: var(--card-blue);
   border: 2px solid rgba(255,255,255,0.2);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
@@ -1292,7 +1342,7 @@ body {
 
 .quick-action-card.completed {
   opacity: 0.8;
-  background: var(--card-green);
+  background: var(--card-blue-dark);
 }
 
 .quick-action-card .action-icon {
@@ -1323,33 +1373,38 @@ body {
   color: rgba(255,255,255,0.7);
 }
 
+/* Action button - DISTINCTIVE COLOR */
 .quick-action-card .action-btn {
   padding: 10px 20px;
   font-size: 13px;
   font-weight: 900;
   border-radius: var(--radius-md);
   border: 2px solid rgba(255,255,255,0.3);
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--button-primary);
   color: white;
   cursor: pointer;
   white-space: nowrap;
   transition: var(--transition-fast);
   text-transform: uppercase;
-  backdrop-filter: blur(5px);
+  box-shadow: 0 0 20px var(--button-primary);
 }
 
 .quick-action-card .action-btn:hover {
   transform: translateY(-2px);
-  background: rgba(0, 0, 0, 0.3);
-  box-shadow: 0 0 30px rgba(255,255,255,0.2);
+  box-shadow: 0 0 30px var(--button-primary);
 }
 
 .quick-action-card .action-btn.completed {
-  background: var(--deep-green);
+  background: var(--button-success);
+  box-shadow: 0 0 20px var(--button-success);
+}
+
+.quick-action-card .action-btn.completed:hover {
+  box-shadow: 0 0 30px var(--button-success);
 }
 
 /* =========================================================
-   BOTTOM NAVIGATION - DEEP
+   BOTTOM NAVIGATION
    ========================================================= */
 .bottom-nav-bar {
   position: fixed;
@@ -1403,7 +1458,7 @@ body {
 }
 
 /* =========================================================
-   GAMIFICATION SECTION - DEEP
+   GAMIFICATION SECTION - DEEP BLUE
    ========================================================= */
 .gamification-section {
   margin: 0;
@@ -1416,7 +1471,7 @@ body {
 }
 
 .level-streak-card {
-  background: var(--card-cyan);
+  background: var(--card-blue);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
   color: white;
@@ -1436,7 +1491,7 @@ body {
 .level-streak-card .level-title {
   font-size: 1.5rem;
   font-weight: 900;
-  color: #fbbf24;
+  color: var(--button-warning);
 }
 
 .level-streak-card .xp-bar {
@@ -1450,13 +1505,14 @@ body {
 
 .level-streak-card .xp-progress {
   height: 100%;
-  background: linear-gradient(90deg, #a78bfa, #f472b6);
+  background: linear-gradient(90deg, var(--button-primary), var(--button-purple));
   border-radius: var(--radius-full);
 }
 
+/* Daily reward button - DISTINCTIVE */
 .level-streak-card .daily-reward-btn {
-  background: rgba(0, 0, 0, 0.2);
-  border: 2px solid #fbbf24;
+  background: var(--button-warning);
+  border: 2px solid rgba(255,255,255,0.3);
   padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -1464,22 +1520,31 @@ body {
   font-weight: 900;
   transition: var(--transition-fast);
   text-transform: uppercase;
-  box-shadow: 0 0 20px #fbbf24;
+  box-shadow: 0 0 20px var(--button-warning);
 }
 
 .level-streak-card .daily-reward-btn:hover {
   transform: translateY(-2px);
-  background: rgba(0, 0, 0, 0.3);
-  box-shadow: 0 0 30px #fbbf24;
+  box-shadow: 0 0 30px var(--button-warning);
+}
+
+.level-streak-card .streak-badge {
+  background: rgba(0, 0, 0, 0.2);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  border: 2px solid rgba(255,255,255,0.2);
 }
 
 /* =========================================================
-   TESTIMONIAL CTA - DEEP
+   TESTIMONIAL CTA - DEEP BLUE
    ========================================================= */
 .testimonial-cta {
   text-align: center;
   padding: var(--space-xl);
-  background: var(--card-teal);
+  background: var(--card-blue);
   border-radius: var(--radius-lg);
   border: 2px solid rgba(255,255,255,0.2);
   margin: 0;
@@ -1513,7 +1578,7 @@ body {
 .dashboard-footer button {
   background: none;
   border: none;
-  color: var(--primary-light);
+  color: var(--button-primary);
   text-decoration: underline;
   cursor: pointer;
   font-size: inherit;
@@ -1524,7 +1589,7 @@ body {
 }
 
 .dashboard-footer a {
-  color: var(--primary-light);
+  color: var(--button-primary);
   text-decoration: none;
   font-weight: 700;
 }
@@ -1578,7 +1643,7 @@ body {
 }
 
 .fullscreen-notification-card {
-  background: var(--card-purple);
+  background: var(--card-blue);
   border-radius: var(--radius-xl);
   padding: var(--space-xl);
   max-width: 420px;
@@ -1613,8 +1678,9 @@ body {
   gap: var(--space-sm);
 }
 
+/* Fullscreen buttons - DISTINCTIVE */
 .fullscreen-notification-btn-primary {
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--button-primary);
   color: white;
   border: 2px solid rgba(255,255,255,0.3);
   border-radius: var(--radius-md);
@@ -1623,17 +1689,16 @@ body {
   font-weight: 900;
   cursor: pointer;
   transition: var(--transition-fast);
-  backdrop-filter: blur(5px);
+  box-shadow: 0 0 20px var(--button-primary);
 }
 
 .fullscreen-notification-btn-primary:hover {
   transform: translateY(-2px);
-  background: rgba(0, 0, 0, 0.4);
-  box-shadow: 0 0 30px rgba(255,255,255,0.2);
+  box-shadow: 0 0 30px var(--button-primary);
 }
 
 .fullscreen-notification-btn-secondary {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.3);
   color: white;
   border: 2px solid rgba(255,255,255,0.3);
   border-radius: var(--radius-md);
@@ -1646,7 +1711,7 @@ body {
 }
 
 .fullscreen-notification-btn-secondary:hover {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.4);
 }
 
 /* =========================================================
@@ -1657,7 +1722,7 @@ body {
   bottom: 100px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--deep-orange);
+  background: var(--button-warning);
   color: white;
   padding: var(--space-sm) var(--space-lg);
   border-radius: var(--radius-full);
@@ -1683,21 +1748,21 @@ body {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: var(--deep-green);
+  background: var(--button-success);
   color: white;
   border: 3px solid rgba(255,255,255,0.3);
   font-size: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 30px var(--deep-green);
+  box-shadow: 0 0 30px var(--button-success);
   cursor: pointer;
   transition: var(--transition-fast);
 }
 
 .chat-us-button:hover {
   transform: scale(1.1);
-  box-shadow: 0 0 40px var(--deep-green);
+  box-shadow: 0 0 40px var(--button-success);
 }
 
 /* =========================================================
@@ -1760,18 +1825,15 @@ body {
   }
   
   .bonus-amount {
-    font-size: 20px !important;
+    font-size: 20px;
   }
   
   .welcome-bonus::before {
     font-size: 10px;
-    top: 2px;
-    right: 4px;
   }
   
   .activate-bonus-btn {
     font-size: 11px !important;
-    padding: 4px 8px !important;
   }
   
   .nav-btn {
@@ -1787,10 +1849,6 @@ body {
   .header-greeting-bottom {
     font-size: 13px;
     padding: 6px 16px;
-  }
-  
-  .welcome-bonus::before {
-    font-size: 8px;
   }
 }
 
