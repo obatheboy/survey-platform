@@ -1103,7 +1103,7 @@ return (
         fontWeight: '900',
         textTransform: 'uppercase',
         letterSpacing: '0.5px',
-        boxShadow: '0 4px 15px rgba(245, 158, 11, 0.5)',
+        boxShadow: '0 4px 15px rgba(59, 130, 246, 0.5)',
         textShadow: '0 1px 2px rgba(0,0,0,0.2)'
       }}>
         🔓 ACTIVATE NOW
@@ -1278,7 +1278,7 @@ return (
               </div>
 
               {/* Affiliate Earnings Card */}
-              <div className="stats-card affiliate-balance" style={{ background: 'linear-gradient(135deg, #faf5ff, #f3e8ff)' }}>
+              <div className="stats-card affiliate-balance" style={{ background: 'linear-gradient(135deg, #0a0f1a, #1e293b)' }}>
                 <div className="stats-card-header">
                   <span className="stats-icon">🎁</span>
                   <h4>Affiliate Earnings</h4>
