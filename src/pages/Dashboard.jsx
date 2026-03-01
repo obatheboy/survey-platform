@@ -843,15 +843,15 @@ return (
               onClick={() => navigate('/activate?welcome_bonus=true')}
               className="activate-btn-pulse"
               style={{
-                background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                border: '2px solid rgba(255,255,255,0.3)',
-                borderRadius: '12px',
-                padding: '12px 24px',
+                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%)',
+                border: '2px solid rgba(255,255,255,0.4)',
+                borderRadius: '25px',
+                padding: '10px 20px',
                 color: 'white',
                 fontWeight: '800',
-                fontSize: '14px',
+                fontSize: '13px',
                 cursor: 'pointer',
-                boxShadow: '0 4px 15px rgba(239, 68, 68, 0.5), 0 0 30px rgba(239, 68, 68, 0.3)',
+                boxShadow: '0 4px 20px rgba(139, 92, 246, 0.5), 0 0 40px rgba(217, 70, 239, 0.3)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -864,15 +864,16 @@ return (
               }}
               onMouseOver={(e) => {
                 e.currentTarget.style.transform = 'scale(1.05)';
-                e.currentTarget.style.boxShadow = '0 6px 25px rgba(239, 68, 68, 0.7), 0 0 50px rgba(239, 68, 68, 0.4)';
+                e.currentTarget.style.boxShadow = '0 6px 30px rgba(139, 92, 246, 0.7), 0 0 60px rgba(217, 70, 239, 0.5)';
               }}
               onMouseOut={(e) => {
                 e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.boxShadow = '0 4px 15px rgba(239, 68, 68, 0.5), 0 0 30px rgba(239, 68, 68, 0.3)';
+                e.currentTarget.style.boxShadow = '0 4px 20px rgba(139, 92, 246, 0.5), 0 0 40px rgba(217, 70, 239, 0.3)';
               }}
             >
-              <span style={{ fontSize: '18px' }}>⚡</span>
-              TAP TO ACTIVATE ACCOUNT
+              <span className="btn-icon" style={{ fontSize: '16px' }}>🔓</span>
+              ACTIVATE & CLAIM NOW
+              <span style={{ fontSize: '14px', marginLeft: '2px' }}>✨</span>
             </button>
           )}
         </div>
@@ -1052,14 +1053,16 @@ return (
 <div className="user-notifications-section" style={{ marginTop: '0', marginBottom: '0', borderBottom: '1px solid var(--border-soft)' }}>
   <UserNotifications />
 </div>
-{/* WELCOME BONUS CARD - PREMIUM VERSION */}
+{/* WELCOME BONUS CARD - PREMIUM GIFT VERSION */}
 <section ref={welcomeRef}>
   <div className="plan-card welcome-bonus" style={{
-    background: 'linear-gradient(145deg, #5f0f40, #9d174d, #be185d)',
-    border: '3px solid #ffd700',
-    boxShadow: '0 20px 30px -10px rgba(95, 15, 64, 0.5), 0 8px 15px -6px rgba(0, 0, 0, 0.3), 0 0 30px rgba(255, 51, 51, 0.3)',
-    borderRadius: '16px',
-    padding: '6px 12px',
+    background: 'linear-gradient(135deg, #7c3aed 0%, #db2777 25%, #f59e0b 50%, #10b981 75%, #3b82f6 100%) !important',
+    backgroundSize: '400% 400%',
+    animation: 'gradientShift 5s ease infinite',
+    border: '3px solid #fbbf24 !important',
+    boxShadow: '0 10px 40px rgba(124, 58, 237, 0.4), 0 0 60px rgba(251, 191, 36, 0.3), inset 0 1px 0 rgba(255,255,255,0.3)',
+    borderRadius: '20px',
+    padding: '12px 16px',
     color: 'white',
     position: 'relative',
     overflow: 'hidden',
@@ -1077,9 +1080,9 @@ return (
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundImage: 'linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%), linear-gradient(-45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%)',
-      backgroundSize: '30px 30px',
-      opacity: 0.3,
+      backgroundImage: 'linear-gradient(45deg, rgba(255, 255, 255, 0.08) 25%, transparent 25%), linear-gradient(-45deg, rgba(255, 255, 255, 0.08) 25%, transparent 25%)',
+      backgroundSize: '20px 20px',
+      opacity: 0.5,
       pointerEvents: 'none',
       zIndex: 1
     }} />
@@ -1094,8 +1097,8 @@ return (
       left: '-50%',
       width: '200%',
       height: '200%',
-      background: 'radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 80%)',
-      opacity: 0.5,
+      background: 'radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%)',
+      opacity: 0.6,
       pointerEvents: 'none',
       zIndex: 1,
       animation: 'shimmer 2s ease-in-out infinite'
@@ -1105,52 +1108,50 @@ return (
     <div className="plan-card-header" style={{ 
       position: 'relative', 
       zIndex: 2,
-      marginBottom: '2px'
+      marginBottom: '4px'
     }}>
       <div className="plan-badge" style={{ 
         display: 'flex', 
         alignItems: 'center', 
-        gap: '8px'
+        gap: '10px'
       }}>
         <span className="plan-icon gift-icon" style={{ 
-          fontSize: '28px',
-          color: '#ffd700',
-          background: 'rgba(255, 255, 255, 0.15)',
-          width: '44px',
-          height: '44px',
+          fontSize: '32px',
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.1))',
+          width: '50px',
+          height: '50px',
           borderRadius: '50%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 4px 15px rgba(255, 215, 0, 0.4), inset 0 0 15px rgba(255, 215, 0, 0.2)',
-          border: '2px solid rgba(255, 215, 0, 0.6)',
-          textShadow: '0 0 15px rgba(255, 215, 0, 0.8)'
+          boxShadow: '0 4px 20px rgba(0,0,0,0.3), inset 0 0 20px rgba(255,255,255,0.2)',
+          border: '2px solid rgba(255,255,255,0.4)',
+          animation: 'bounce 1s ease-in-out infinite'
         }}>
-          🎁
+          🎁💝✨
         </span>
         <span className="plan-name" style={{ 
           color: '#ffffff !important',
-          fontSize: '20px',
+          fontSize: '22px',
           fontWeight: '900',
-          textShadow: '0 2px 10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.3)',
+          textShadow: '0 2px 15px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 215, 0, 0.5)',
           letterSpacing: '-0.5px'
         }}>
-          Welcome Bonus
+          🎉 WELCOME BONUS 🎉
         </span>
       </div>
       <span className="plan-status" style={{ 
-        background: 'linear-gradient(135deg, #dc2626, #f97316) !important',
-        color: '#ffffff !important',
-        border: '2px solid #ffd700 !important',
-        padding: '4px 12px',
-        borderRadius: '40px',
-        fontSize: '10px',
+        background: 'linear-gradient(135deg, #f59e0b, #fbbf24) !important',
+        color: '#1f2937 !important',
+        border: '2px solid #ffffff !important',
+        padding: '6px 14px',
+        borderRadius: '30px',
+        fontSize: '11px',
         fontWeight: '900',
         textTransform: 'uppercase',
-        letterSpacing: '0.6px',
-        boxShadow: '0 0 15px rgba(255, 107, 53, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3)',
-        textShadow: '0 1px 3px #000000',
-        animation: 'pulse 2s ease-in-out infinite'
+        letterSpacing: '0.5px',
+        boxShadow: '0 4px 15px rgba(245, 158, 11, 0.5)',
+        textShadow: '0 1px 2px rgba(0,0,0,0.2)'
       }}>
         🔓 ACTIVATE NOW
       </span>

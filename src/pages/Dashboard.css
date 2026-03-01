@@ -187,6 +187,12 @@
   100% { background-position: 0% 50%; }
 }
 
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -937,7 +943,7 @@ body {
    UNIFIED CARD STYLES - ALL CARDS EXACTLY THE SAME!
    ========================================================= */
 
-/* Base card style for EVERY SINGLE CARD */
+/* Base card style for EVERY SINGLE CARD - COLORFUL */
 .stats-card,
 .progress-card,
 .plan-card,
@@ -949,41 +955,61 @@ body {
 .live-withdrawal-feed,
 .user-notifications-section,
 .gamification-section {
-  background: linear-gradient(145deg, #12121a, #0a0a12) !important;
+  background: linear-gradient(145deg, #1e1b4b, #312e81, #4c1d95) !important;
   border: 2px solid transparent !important;
-  border-radius: 20px !important; /* ALL cards same shape! */
+  border-radius: 16px !important;
   padding: var(--space-xs) !important;
-  margin: 0 !important; /* ZERO margin between cards */
+  margin: 0 !important;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.5) !important;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3) !important;
   transition: all 0.2s ease;
 }
 
-/* Color-coded borders for different card types */
+/* Glow overlay for all cards */
+.stats-card::before,
+.progress-card::before,
+.plan-card::before,
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Color-coded backgrounds for different card types */
 .stats-card.total-earnings {
+  background: linear-gradient(145deg, #451a03, #78350f, #92400e) !important;
   border-color: #f59e0b !important;
-  box-shadow: 0 0 40px #f59e0b !important;
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.4) !important;
 }
 
 .stats-card.available-balance {
+  background: linear-gradient(145deg, #1e3a5f, #1e40af, #1d4ed8) !important;
   border-color: #3b82f6 !important;
-  box-shadow: 0 0 40px #3b82f6 !important;
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.4) !important;
 }
 
 .stats-card.affiliate-balance {
+  background: linear-gradient(145deg, #042f2e, #115e59, #0d9488) !important;
   border-color: #10b981 !important;
-  box-shadow: 0 0 40px #10b981 !important;
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.4) !important;
 }
 
 .stats-card.surveys-completed {
+  background: linear-gradient(145deg, #2e1065, #4c1d95, #5b21b6) !important;
   border-color: #8b5cf6 !important;
-  box-shadow: 0 0 40px #8b5cf6 !important;
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.4) !important;
 }
 
 .stats-card.success-rate {
+  background: linear-gradient(145deg, #7c2d12, #9a3412, #c2410c) !important;
   border-color: #f97316 !important;
-  box-shadow: 0 0 40px #f97316 !important;
+  box-shadow: 0 0 30px rgba(249, 115, 22, 0.4) !important;
 }
 
 .progress-card.regular {
