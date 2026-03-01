@@ -1,91 +1,96 @@
 /* =========================================================
-   SURVEYEARN DASHBOARD - OBSIDIAN & AMBER DESIGN
-   Dark obsidian background with amber/gold accents
-   Metallic wireframe cards with glow effects
+   SURVEYEARN DASHBOARD - ORANGE & BLUE DESIGN
+   Professional dark theme with orange and blue accents
    ========================================================= */
 
 /* =========================================================
-   CSS VARIABLES - OBSIDIAN & AMBER UNIFIED COLOR PALETTE
+   CSS VARIABLES - ORANGE & BLUE UNIFIED COLOR PALETTE
    ========================================================= */
 :root {
-  /* Dark Rich Backgrounds - Obsidian */
-  --bg-main: #060606;
-  --bg-surface: #0a0a0a;
-  --bg-glass: rgba(10, 10, 10, 0.98);
-  --bg-elevated: #121212;
+  /* Dark Rich Backgrounds */
+  --bg-main: #0a0f1a;
+  --bg-surface: #0f172a;
+  --bg-glass: rgba(15, 23, 42, 0.98);
+  --bg-elevated: #1e293b;
   --text-primary: #ffffff;
-  --text-secondary: #e2b04a;  /* Gold for labels */
-  --text-muted: #a0a0a0;
-  --text-inverse: #060606;
-  --border-light: rgba(226, 176, 74, 0.2);
-  --border-medium: rgba(226, 176, 74, 0.3);
+  --text-secondary: #3B82F6;  /* Blue for labels */
+  --text-muted: #94a3b8;
+  --text-inverse: #0a0f1a;
+  --border-light: rgba(59, 130, 246, 0.2);
+  --border-medium: rgba(59, 130, 246, 0.3);
   
-  /* OBSIDIAN - Unified color for ALL cards */
-  --obsidian-dark: #030303;
-  --obsidian: #060606;
-  --obsidian-medium: #0a0a0a;
-  --obsidian-light: #121212;
-  --obsidian-bright: #1a1a1a;
+  /* Dark backgrounds - unified */
+  --obsidian-dark: #050911;
+  --obsidian: #0a0f1a;
+  --obsidian-medium: #0f172a;
+  --obsidian-light: #1e293b;
+  --obsidian-bright: #334155;
   
-  /* AMBER - Primary accent color */
-  --amber-dark: #cc7000;
-  --amber: #FF8C00;
-  --amber-light: #ff9d2e;
-  --amber-bright: #ffb347;
+  /* ORANGE - Primary accent color */
+  --orange-dark: #cc5500;
+  --orange: #FF6B00;
+  --orange-light: #ff8c33;
+  --orange-bright: #ffa366;
   
-  /* Card Gradients - All obsidian variations */
-  --card-obsidian-dark: linear-gradient(145deg, #030303, #060606);
-  --card-obsidian: linear-gradient(145deg, #060606, #0a0a0a);
-  --card-obsidian-medium: linear-gradient(145deg, #0a0a0a, #121212);
-  --card-obsidian-light: linear-gradient(145deg, #121212, #1a1a1a);
+  /* BLUE - Secondary accent color */
+  --blue-dark: #1e40af;
+  --blue: #3B82F6;
+  --blue-light: #60a5fa;
+  --blue-bright: #93c5fd;
   
-  /* METALLIC WIREFRAME BORDERS */
-  --wireframe-border: 1px solid rgba(226, 176, 74, 0.3);
-  --wireframe-glow: 0 0 10px rgba(226, 176, 74, 0.1);
+  /* Card Gradients - All dark variations */
+  --card-obsidian-dark: linear-gradient(145deg, #050911, #0a0f1a);
+  --card-obsidian: linear-gradient(145deg, #0a0f1a, #0f172a);
+  --card-obsidian-medium: linear-gradient(145deg, #0f172a, #1e293b);
+  --card-obsidian-light: linear-gradient(145deg, #1e293b, #334155);
   
-  /* BUTTON COLORS - Amber gradient for skeuomorphic look */
-  --button-primary: #FF8C00;      /* Amber */
-  --button-success: #FF8C00;       /* Amber */
-  --button-warning: #FF8C00;      /* Amber */
-  --button-danger: #FF8C00;        /* Amber */
-  --button-purple: #FF8C00;        /* Amber */
-  --button-pink: #FF8C00;         /* Amber */
-  --button-cyan: #FF8C00;         /* Amber */
-  --button-orange: #FF8C00;       /* Amber */
+  /* WIREFRAME BORDERS */
+  --wireframe-border: 1px solid rgba(59, 130, 246, 0.3);
+  --wireframe-glow: 0 0 10px rgba(59, 130, 246, 0.1);
+  
+  /* BUTTON COLORS - Orange/Blue */
+  --button-primary: #FF6B00;
+  --button-success: #3B82F6;
+  --button-warning: #FF6B00;
+  --button-danger: #FF6B00;
+  --button-purple: #3B82F6;
+  --button-pink: #FF6B00;
+  --button-cyan: #3B82F6;
+  --button-orange: #FF6B00;
   
   /* Skeuomorphic Button Gradient */
-  --button-gradient: linear-gradient(180deg, #ff9d2e 0%, #d45d00 100%);
-  --button-gradient-hover: linear-gradient(180deg, #ffb347 0%, #e67300 100%);
+  --button-gradient: linear-gradient(180deg, #ff8c33 0%, #cc5500 100%);
+  --button-gradient-hover: linear-gradient(180deg, #ffa366 0%, #e67300 100%);
   
-  /* PLAN COLORS - Amber for text accents */
-  --regular-color: #FF8C00;
-  --vip-color: #e67300;
-  --vvip-color: #cc7000;
+  /* PLAN COLORS - Orange for text accents */
+  --regular-color: #FF6B00;
+  --vip-color: #3B82F6;
+  --vvip-color: #FF6B00;
   
-  /* WELCOME BONUS - Amber gradient */
-  --bonus-gradient: linear-gradient(145deg, #060606, #1a1a0a, #FF8C00, #ff9d2e);
+  /* WELCOME BONUS - Orange/Blue gradient */
+  --bonus-gradient: linear-gradient(145deg, #0a0f1a, #1e293b, #FF6B00, #3B82F6);
   
   /* Brand Colors */
-  --primary: #FF8C00;
-  --primary-dark: #cc7000;
-  --primary-light: #ff9d2e;
-  --success: #FF8C00;
-  --warning: #e67300;
-  --danger: #FF8C00;
-  --purple: #e67300;
+  --primary: #FF6B00;
+  --primary-dark: #cc5500;
+  --primary-light: #ff8c33;
+  --success: #3B82F6;
+  --warning: #FF6B00;
+  --danger: #FF6B00;
+  --purple: #3B82F6;
   
   /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #cc7000, #FF8C00);
-  --gradient-success: linear-gradient(135deg, #cc7000, #FF8C00);
-  --gradient-warning: linear-gradient(135deg, #cc7000, #996600);
-  --gradient-danger: linear-gradient(135deg, #FF8C00, #cc7000);
-  --gradient-purple: linear-gradient(135deg, #cc7000, #996600);
-  --gradient-hero: linear-gradient(135deg, #030303, #1a1a0a, #FF8C00);
+  --gradient-primary: linear-gradient(135deg, #cc5500, #FF6B00);
+  --gradient-success: linear-gradient(135deg, #1e40af, #3B82F6);
+  --gradient-warning: linear-gradient(135deg, #cc5500, #995500);
+  --gradient-danger: linear-gradient(135deg, #FF6B00, #cc5500);
+  --gradient-purple: linear-gradient(135deg, #1e40af, #1e3a8a);
+  --gradient-hero: linear-gradient(135deg, #050911, #1e293b, #FF6B00);
   
   /* Glow Effects */
-  --glow-money: 0 0 10px rgba(255, 140, 0, 0.5), 0 0 20px rgba(255, 140, 0, 0.3);
-  --glow-progress: 0 0 8px rgba(255, 140, 0, 0.4);
-  --glow-card: 0 0 15px rgba(226, 176, 74, 0.15);
+  --glow-money: 0 0 10px rgba(255, 107, 0, 0.5), 0 0 20px rgba(255, 107, 0, 0.3);
+  --glow-progress: 0 0 8px rgba(59, 130, 246, 0.4);
+  --glow-card: 0 0 15px rgba(59, 130, 246, 0.15);
   
   /* Shadows */
   --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.5);
@@ -393,7 +398,7 @@ body {
    ========================================================= */
 .header-greeting-bottom {
   text-align: center;
-  color: #FF8C00;
+  color: #FF6B00;
   font-size: 15px;
   font-weight: 700;
   margin-top: 4px;
@@ -426,11 +431,11 @@ body {
 }
 
 .hero-btn {
-  background: rgba(255, 140, 0, 0.2);
+  background: rgba(255, 107, 0, 0.2);
   border: var(--wireframe-border);
   border-radius: var(--radius-md);
   padding: var(--space-sm);
-  color: #FF8C00;
+  color: #FF6B00;
   font-weight: 900;
   font-size: 14px;
   display: flex;
@@ -465,7 +470,7 @@ body {
 }
 
 .balance-label {
-  color: #e2b04a;  /* Gold */
+  color: #3B82F6;  /* Blue */
   font-size: 11px;
   font-weight: 900;
   text-transform: uppercase;
@@ -475,7 +480,7 @@ body {
 .balance-number {
   font-size: 28px;
   font-weight: 900;
-  color: #FF8C00;  /* Amber - with glow */
+  color: #FF6B00;  /* Orange - with glow */
   text-shadow: var(--glow-money);
   line-height: 1.2;
 }
@@ -528,7 +533,7 @@ body {
    WELCOME BONUS CARD - VERY COMPACT
    ========================================================= */
 .welcome-bonus {
-  background: linear-gradient(145deg, #060606, #1a1a0a, #FF8C00) !important;
+  background: linear-gradient(145deg, #0a0f1a, #1e293b, #FF6B00) !important;
   border: var(--wireframe-border) !important;
   border-radius: 6px !important;
   padding: 2px 6px !important;
@@ -559,7 +564,7 @@ body {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, #FF8C00, #ff9d2e, #FF8C00);
+  background: linear-gradient(90deg, #FF6B00, #ff8c33, #FF6B00);
 }
 
 /* Gift icon - very small */
@@ -587,7 +592,7 @@ body {
 
 /* Description - very small */
 .bonus-description {
-  color: #FF8C00;
+  color: #FF6B00;
   font-size: 8px;
   font-weight: 700;
   margin: 0;
@@ -636,7 +641,7 @@ body {
 }
 
 .section-heading h3 {
-  color: #FF8C00;
+  color: #FF6B00;
   font-size: 22px;
   font-weight: 900;
   margin: 0 0 4px;
@@ -704,7 +709,7 @@ body {
 .stats-card-header h4 {
   font-size: 13px;
   font-weight: 900;
-  color: #e2b04a;  /* Gold */
+  color: #3B82F6;  /* Blue */
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
@@ -714,12 +719,12 @@ body {
   font-weight: 900;
   color: white;
   line-height: 1.2;
-  text-shadow: 0 0 15px rgba(255, 140, 0, 0.4);  /* Amber glow */
+  text-shadow: 0 0 15px rgba(59, 130, 246, 0.4);  /* Blue glow */
 }
 
 .stats-label {
   font-size: 12px;
-  color: #e2b04a;  /* Gold */
+  color: #3B82F6;  /* Blue */
   margin-top: 2px;
 }
 
@@ -781,7 +786,7 @@ body {
 .progress-card.vip,
 .progress-card.vvip {
   background: var(--card-obsidian) !important;
-  border-left: 8px solid #FF8C00 !important;  /* Amber - same for all */
+  border-left: 8px solid #FF6B00 !important;  /* Orange - same for all */
 }
 
 .progress-card:hover {
@@ -814,7 +819,7 @@ body {
   flex: 1;
   font-size: 20px;
   font-weight: 900;
-  color: #FF8C00;  /* Amber */
+  color: #FF6B00;  /* Orange */
   margin: 0;
 }
 
@@ -862,7 +867,7 @@ body {
 }
 
 .progress-row span {
-  color: #FF8C00;  /* Amber */
+  color: #FF6B00;  /* Orange */
 }
 
 .progress-row strong {
@@ -973,8 +978,8 @@ body {
 .progress-card.regular .action-btn.secondary,
 .progress-card.vip .action-btn.secondary,
 .progress-card.vvip .action-btn.secondary {
-  border-color: #FF8C00 !important;
-  color: #FF8C00 !important;
+  border-color: #FF6B00 !important;
+  color: #FF6B00 !important;
 }
 
 .progress-card.vvip .action-btn.secondary {
@@ -1073,7 +1078,7 @@ body {
 .plan-badge .plan-name {
   font-size: 24px;
   font-weight: 900;
-  color: #FF8C00;  /* Amber */
+  color: #FF6B00;  /* Orange */
 }
 
 .plan-status {
@@ -1093,7 +1098,7 @@ body {
 
 .plan-description {
   margin-bottom: var(--space-md);
-  color: #FF8C00;  /* Amber */
+  color: #FF6B00;  /* Orange */
   font-size: 14px;
   font-weight: 600;
 }
@@ -1120,7 +1125,7 @@ body {
 }
 
 .plan-stats .stat-label {
-  color: #e2b04a;  /* Gold */
+  color: #3B82F6;  /* Blue */
   font-size: 13px;
 }
 
@@ -1176,12 +1181,12 @@ body {
 
 .feature-tag {
   padding: 4px 12px;
-  background: rgba(255, 140, 0, 0.1);
+  background: rgba(59, 130, 246, 0.1);
   border-radius: var(--radius-full);
   font-size: 11px;
-  color: #FF8C00;
+  color: #FF6B00;
   font-weight: 700;
-  border: 1px solid rgba(255, 140, 0, 0.3);
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .plan-card-footer {
@@ -1308,13 +1313,13 @@ body {
 .feature-card h4 {
   font-size: 16px;
   font-weight: 900;
-  color: #FF8C00;  /* Amber */
+  color: #FF6B00;  /* Orange */
   margin-bottom: var(--space-xs);
 }
 
 .feature-card p {
   font-size: 13px;
-  color: #e2b04a;  /* Gold */
+  color: #3B82F6;  /* Blue */
   line-height: 1.5;
 }
 
@@ -1370,13 +1375,13 @@ body {
 .quick-action-card .action-content h4 {
   font-size: 16px;
   font-weight: 900;
-  color: #FF8C00;  /* Amber */
+  color: #FF6B00;  /* Orange */
   margin-bottom: 4px;
 }
 
 .quick-action-card .action-content p {
   font-size: 13px;
-  color: #e2b04a;  /* Gold */
+  color: #3B82F6;  /* Blue */
 }
 
 /* Action button - AMBER GRADIENT */
@@ -1497,7 +1502,7 @@ body {
 .level-streak-card .level-title {
   font-size: 1.5rem;
   font-weight: 900;
-  color: #FF8C00;  /* Amber */
+  color: #FF6B00;  /* Orange */
 }
 
 .level-streak-card .xp-bar {
@@ -1858,6 +1863,59 @@ body {
   .header-greeting-bottom {
     font-size: 13px;
     padding: 6px 16px;
+  }
+  
+  /* Welcome Bonus Card - Reduced height for mobile */
+  .welcome-bonus {
+    padding: 8px !important;
+    min-height: auto !important;
+  }
+  
+  .welcome-bonus .plan-card-header {
+    margin-bottom: 2px !important;
+    padding: 4px !important;
+  }
+  
+  .welcome-bonus .plan-icon.gift-icon {
+    font-size: 24px !important;
+    width: 36px !important;
+    height: 36px !important;
+  }
+  
+  .welcome-bonus .plan-name {
+    font-size: 16px !important;
+  }
+  
+  .welcome-bonus .plan-status {
+    padding: 4px 10px !important;
+    font-size: 10px !important;
+  }
+  
+  .welcome-bonus .plan-card-body {
+    padding: 6px !important;
+  }
+  
+  .welcome-bonus .plan-card-body > div {
+    padding: 6px !important;
+    margin: 2px 0 !important;
+  }
+  
+  .welcome-bonus .plan-card-body span {
+    font-size: 24px !important;
+  }
+  
+  .welcome-bonus .plan-card-body p {
+    font-size: 11px !important;
+    padding: 6px 10px !important;
+  }
+  
+  .welcome-bonus .plan-card-footer {
+    padding: 4px !important;
+  }
+  
+  .welcome-bonus button {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
   }
 }
 

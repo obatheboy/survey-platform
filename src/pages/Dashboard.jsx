@@ -20,45 +20,42 @@ const PLANS = {
     icon: "⭐", 
     total: 1500, 
     perSurvey: 150,
-    // UNIFORM AMBER colors
-    color: "#FF8C00",
-    gradient: "linear-gradient(135deg, #060606, #0a0a0a)",
-    borderColor: "rgba(226, 176, 74, 0.3)",
-    bgColor: "#060606",
+    // Orange/Blue theme
+    color: "#FF6B00",
+    gradient: "linear-gradient(135deg, #0a0f1a, #0f172a)",
+    borderColor: "rgba(59, 130, 246, 0.3)",
+    bgColor: "#0a0f1a",
     description: "Perfect for beginners",
-    // Amber with glow
-    totalColor: "#FF8C00",
-    totalGlow: "0 0 10px rgba(255, 140, 0, 0.5), 0 0 20px rgba(255, 140, 0, 0.3)"
+    totalColor: "#FF6B00",
+    totalGlow: "0 0 10px rgba(255, 107, 0, 0.5), 0 0 20px rgba(255, 107, 0, 0.3)"
   },
   VIP: { 
     name: "VIP", 
     icon: "💎", 
     total: 2000, 
     perSurvey: 200,
-    // UNIFORM AMBER colors
-    color: "#FF8C00",
-    gradient: "linear-gradient(135deg, #060606, #0a0a0a)",
-    borderColor: "rgba(226, 176, 74, 0.3)",
-    bgColor: "#060606",
+    // Orange/Blue theme
+    color: "#3B82F6",
+    gradient: "linear-gradient(135deg, #0a0f1a, #0f172a)",
+    borderColor: "rgba(59, 130, 246, 0.3)",
+    bgColor: "#0a0f1a",
     description: "For active earners",
-    // Amber with glow
-    totalColor: "#FF8C00",
-    totalGlow: "0 0 10px rgba(255, 140, 0, 0.5), 0 0 20px rgba(255, 140, 0, 0.3)"
+    totalColor: "#3B82F6",
+    totalGlow: "0 0 10px rgba(59, 130, 246, 0.5), 0 0 20px rgba(59, 130, 246, 0.3)"
   },
   VVIP: { 
     name: "VVIP", 
     icon: "👑", 
     total: 3000, 
     perSurvey: 300,
-    // UNIFORM AMBER colors
-    color: "#FF8C00",
-    gradient: "linear-gradient(135deg, #060606, #0a0a0a)",
-    borderColor: "rgba(226, 176, 74, 0.3)",
-    bgColor: "#060606",
+    // Orange/Blue theme
+    color: "#FF6B00",
+    gradient: "linear-gradient(135deg, #0a0f1a, #0f172a)",
+    borderColor: "rgba(59, 130, 246, 0.3)",
+    bgColor: "#0a0f1a",
     description: "Maximum earnings",
-    // Amber with glow
-    totalColor: "#FF8C00",
-    totalGlow: "0 0 10px rgba(255, 140, 0, 0.5), 0 0 20px rgba(255, 140, 0, 0.3)"
+    totalColor: "#FF6B00",
+    totalGlow: "0 0 10px rgba(255, 107, 0, 0.5), 0 0 20px rgba(255, 107, 0, 0.3)"
   },
 };
 const TOTAL_SURVEYS = 10;
@@ -1056,44 +1053,11 @@ return (
 <div className="user-notifications-section" style={{ marginTop: '0', marginBottom: '0', borderBottom: '1px solid var(--border-soft)' }}>
   <UserNotifications />
 </div>
-{/* WELCOME BONUS CARD - PREMIUM GIFT VERSION */}
+{/* WELCOME BONUS CARD */}
 <section ref={welcomeRef}>
-  <div className="plan-card welcome-bonus" style={{
-    {/* Premium animated border */}
-    <div className="welcome-bonus-border-glow" />
+  <div className="plan-card welcome-bonus">
     
-    {/* Diamond pattern overlay */}
-    <div style={{
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundImage: 'linear-gradient(45deg, rgba(255, 255, 255, 0.08) 25%, transparent 25%), linear-gradient(-45deg, rgba(255, 255, 255, 0.08) 25%, transparent 25%)',
-      backgroundSize: '20px 20px',
-      opacity: 0.5,
-      pointerEvents: 'none',
-      zIndex: 1
-    }} />
-    
-    {/* Glow effect */}
-    <div className="welcome-bonus-glow" />
-    
-    {/* Shine effect */}
-    <div style={{
-      position: 'absolute',
-      top: '-50%',
-      left: '-50%',
-      width: '200%',
-      height: '200%',
-      background: 'radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%)',
-      opacity: 0.6,
-      pointerEvents: 'none',
-      zIndex: 1,
-      animation: 'shimmer 2s ease-in-out infinite'
-    }} />
-    
-    {/* HEADER - EXTRA COMPACT */}
+    {/* HEADER - COMPACT */}
     <div className="plan-card-header" style={{ 
       position: 'relative', 
       zIndex: 2,
@@ -1120,19 +1084,19 @@ return (
           🎁💝✨
         </span>
         <span className="plan-name" style={{ 
-          color: '#ffffff !important',
-          fontSize: '22px',
+          color: '#FF6B00 !important',
+          fontSize: '20px',
           fontWeight: '900',
-          textShadow: '0 2px 15px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 215, 0, 0.5)',
+          textShadow: '0 2px 15px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 107, 0, 0.5)',
           letterSpacing: '-0.5px'
         }}>
           🎉 WELCOME BONUS 🎉
         </span>
       </div>
       <span className="plan-status" style={{ 
-        background: 'linear-gradient(135deg, #f59e0b, #fbbf24) !important',
-        color: '#1f2937 !important',
-        border: '2px solid #ffffff !important',
+        background: 'linear-gradient(135deg, #FF6B00, #ff8c33) !important',
+        color: '#ffffff !important',
+        border: '2px solid #3B82F6 !important',
         padding: '6px 14px',
         borderRadius: '30px',
         fontSize: '11px',
@@ -1156,7 +1120,7 @@ return (
         padding: '8px',
         background: 'rgba(0, 0, 0, 0.3)',
         borderRadius: '12px',
-        border: '2px solid rgba(255, 215, 0, 0.5)',
+        border: '2px solid rgba(59, 130, 246, 0.5)',
         boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
         position: 'relative',
         overflow: 'hidden'
@@ -1168,7 +1132,7 @@ return (
           left: '-100%',
           width: '200%',
           height: '100%',
-          background: 'linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent)',
+          background: 'linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), transparent)',
           animation: 'amountShine 2.5s ease-in-out infinite',
           pointerEvents: 'none'
         }} />
@@ -1195,7 +1159,7 @@ return (
           color: 'white',
           display: 'block',
           lineHeight: '1.1',
-          textShadow: '0 0 20px #ffd700, 0 2px 8px rgba(0, 0, 0, 0.6)',
+          textShadow: '0 0 20px #FF6B00, 0 2px 8px rgba(0, 0, 0, 0.6)',
           position: 'relative',
           zIndex: 1
         }}>
@@ -1215,14 +1179,14 @@ return (
         background: 'rgba(0, 0, 0, 0.25)',
         padding: '8px 14px',
         borderRadius: '30px',
-        border: '1px solid rgba(255, 215, 0, 0.3)',
+        border: '1px solid rgba(59, 130, 246, 0.3)',
         boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)'
       }}>
         Congratulations! You've received a welcome bonus of <strong style={{
-          color: '#ffd700',
+          color: '#FF6B00',
           fontSize: '16px',
           fontWeight: '900',
-          textShadow: '0 0 10px #ffd700',
+          textShadow: '0 0 10px #FF6B00',
           display: 'inline-block',
           animation: 'bonusPulse 2s ease-in-out infinite'
         }}>KES 1,200</strong>. Activate your account to withdraw instantly!
@@ -1239,8 +1203,8 @@ return (
         className="start-survey-btn"
         onClick={handleWelcomeBonusWithdraw}
         style={{
-          background: 'linear-gradient(145deg, #2563eb, #1e40af)',
-          border: '2px solid #ffd700',
+          background: 'linear-gradient(145deg, #FF6B00, #cc5500)',
+          border: '2px solid #3B82F6',
           borderRadius: '40px',
           padding: '10px 16px', /* REDUCED from 12px 20px to 10px 16px */
           fontWeight: '900',
@@ -1254,20 +1218,20 @@ return (
           gap: '6px', /* REDUCED from 8px to 6px */
           width: '100%',
           cursor: 'pointer',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255, 215, 0, 0.3)',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4), 0 0 10px rgba(59, 130, 246, 0.3)',
           transition: 'all 0.2s ease',
           position: 'relative',
           overflow: 'hidden'
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'translateY(-2px)';
-          e.currentTarget.style.boxShadow = '0 8px 16px rgba(255, 215, 0, 0.5), 0 0 12px rgba(255, 215, 0, 0.4)';
-          e.currentTarget.style.borderColor = '#ffffff';
+          e.currentTarget.style.boxShadow = '0 8px 16px rgba(59, 130, 246, 0.5), 0 0 12px rgba(59, 130, 246, 0.4)';
+          e.currentTarget.style.borderColor = '#3B82F6';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.transform = 'translateY(0)';
-          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255, 215, 0, 0.3)';
-          e.currentTarget.style.borderColor = '#ffd700';
+          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.4), 0 0 10px rgba(59, 130, 246, 0.3)';
+          e.currentTarget.style.borderColor = '#3B82F6';
         }}
       >
         <span className="btn-icon" style={{ fontSize: '16px' }}>🔓</span>
