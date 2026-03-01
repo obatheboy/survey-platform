@@ -1865,19 +1865,11 @@ body {
     padding: 6px 16px;
   }
   
-  /* Welcome Bonus Card - Reduced height for mobile */
+  /* Welcome Bonus Card - Hide on mobile */
   .welcome-bonus {
-    padding: 8px !important;
-    min-height: auto !important;
+    display: none !important;
   }
-  
-  .welcome-bonus .plan-card-header {
-    margin-bottom: 2px !important;
-    padding: 4px !important;
-  }
-  
-  .welcome-bonus .plan-icon.gift-icon {
-    font-size: 24px !important;
+}
     width: 36px !important;
     height: 36px !important;
   }
