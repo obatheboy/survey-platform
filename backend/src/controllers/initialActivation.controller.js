@@ -267,8 +267,12 @@ exports.getAllInitialActivations = async (req, res) => {
     }
 
     // Find all users with initial activation data
+    // Check for both: users with initial_activation field AND new users who just registered
     const users = await User.find({
-      'initial_activation.0': { $exists: true }
+      $or: [
+        { 'initial_activation.0': { $exists: true } },
+        { initial_activation: { $exists: true } }
+      ]
     }).select('full_name phone email initial_activation created_at');
 
     const allActivations = users.map(user => ({
