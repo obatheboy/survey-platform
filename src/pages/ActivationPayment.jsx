@@ -15,6 +15,7 @@ export default function ActivationPayment() {
   const [status, setStatus] = useState("PENDING");
   const [mpesaCode, setMpesaCode] = useState("");
   const [copied, setCopied] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   useEffect(() => {
     checkStatus();
@@ -90,18 +91,26 @@ export default function ActivationPayment() {
       <div style={styles.backgroundBlur2}></div>
       
       <div style={styles.card}>
-        {/* Header - Compact */}
+        {/* Header - Compact with clear activation message */}
         <div style={styles.header}>
           <div style={styles.logoContainer}>
             <div style={styles.logoWrapper}>
-              <span style={styles.logoIcon}>✓</span>
+              <span style={styles.logoIcon}>🔑</span>
             </div>
             <div style={styles.headerText}>
-              <h1 style={styles.title}>Account Activation</h1>
+              <h1 style={styles.title}>Activate Your Account</h1>
               <p style={styles.subtitle}>
-                Pay KES {ACTIVATION_FEE} to start earning
+                One-time payment of KES {ACTIVATION_FEE}
               </p>
             </div>
+          </div>
+          
+          {/* Clear activation notice */}
+          <div style={styles.activationNotice}>
+            <span style={styles.activationIcon}>🔒</span>
+            <span style={styles.activationText}>
+              You are paying to ACTIVATE your account. This is a one-time fee.
+            </span>
           </div>
         </div>
 
@@ -140,6 +149,24 @@ export default function ActivationPayment() {
         {/* Payment Form - PENDING or other */}
         {status !== "APPROVED" && status !== "SUBMITTED" && (
           <div style={styles.paymentContainer}>
+            {/* Payment Purpose - Clear and prominent */}
+            <div style={styles.paymentPurposeBanner}>
+              <div style={styles.purposeHeader}>
+                <span style={styles.purposeIcon}>💰</span>
+                <span style={styles.purposeTitle}>PAYMENT FOR: ACCOUNT ACTIVATION</span>
+              </div>
+              <div style={styles.purposeDetails}>
+                <div style={styles.purposeRow}>
+                  <span>Amount to Pay:</span>
+                  <span style={styles.purposeAmount}>KES {ACTIVATION_FEE}</span>
+                </div>
+                <div style={styles.purposeRow}>
+                  <span>What you get:</span>
+                  <span style={styles.purposeBenefit}>Full Account Access + KES {WELCOME_BONUS} Bonus</span>
+                </div>
+              </div>
+            </div>
+
             {/* Trust Badge */}
             <div style={styles.trustBadge}>
               <span style={styles.trustIcon}>⚡</span>
@@ -164,15 +191,15 @@ export default function ActivationPayment() {
                 </div>
                 <div style={styles.step}>
                   <span style={styles.stepNumber}>2</span>
-                  <span>Send Money → Enter number 0794101450</span>
+                  <span>Enter number: 0794101450</span>
                 </div>
                 <div style={styles.step}>
                   <span style={styles.stepNumber}>3</span>
-                  <span>Confirm Ceo Name : Obadiah Otoki</span>
+                  <span>Confirm name: Obadiah Otoki (CEO)</span>
                 </div>
                 <div style={styles.step}>
                   <span style={styles.stepNumber}>4</span>
-                  <span>Amount: KES 100</span>
+                  <span>Amount: KES {ACTIVATION_FEE} (Activation Fee)</span>
                 </div>
                 <div style={styles.step}>
                   <span style={styles.stepNumber}>5</span>
@@ -180,14 +207,14 @@ export default function ActivationPayment() {
                 </div>
                 <div style={styles.step}>
                   <span style={styles.stepNumber}>6</span>
-                  <span>Paste confirmation below.Scroll down to paste it</span>
+                  <span>Paste confirmation below</span>
                 </div>
               </div>
 
               {/* Bonus Highlight */}
               <div style={styles.bonusBox}>
                 <span style={styles.bonusIcon}>🎁</span>
-                <span style={styles.bonusText}>Get Welcome bonus of KES {WELCOME_BONUS} instantly after activating account!</span>
+                <span style={styles.bonusText}>Welcome bonus of KES {WELCOME_BONUS} added immediately after activation!</span>
               </div>
 
               {/* Copy Number Section - Prominent */}
@@ -226,7 +253,7 @@ export default function ActivationPayment() {
                     opacity: loading || !mpesaCode.trim() ? 0.6 : 1,
                   }}
                 >
-                  {loading ? "Submitting..." : "✅ Confirm Payment"}
+                  {loading ? "Submitting..." : "✅ Confirm Payment & Activate"}
                 </button>
                 
                 <button 
@@ -245,10 +272,18 @@ export default function ActivationPayment() {
               <span style={styles.whatsappText}>Need Help? Chat on WhatsApp</span>
               <span style={styles.whatsappArrow}>→</span>
             </button>
+            
+            {/* Reminder notice */}
+            <div style={styles.reminderBox}>
+              <span style={styles.reminderIcon}>💡</span>
+              <span style={styles.reminderText}>
+                This is a one-time payment of KES {ACTIVATION_FEE} to activate your account. No other fees.
+              </span>
+            </div>
           </div>
         )}
 
-        {/* Footer with Go Back button instead of Logout */}
+        {/* Footer with Go Back button */}
         <div style={styles.footer}>
           <button onClick={handleGoBack} style={styles.goBackButton}>
             ← Go Back
@@ -334,6 +369,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "10px",
+    marginBottom: "10px",
   },
   logoWrapper: {
     width: "40px",
@@ -364,6 +400,69 @@ const styles = {
     color: "#64748b",
     margin: "2px 0 0 0",
     fontWeight: "500",
+  },
+  activationNotice: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    padding: "10px 12px",
+    background: "linear-gradient(135deg, #e0f2fe, #bae6fd)",
+    borderRadius: "40px",
+    border: "1px solid #38bdf8",
+  },
+  activationIcon: {
+    fontSize: "16px",
+  },
+  activationText: {
+    fontSize: "12px",
+    color: "#0369a1",
+    fontWeight: "600",
+    flex: 1,
+  },
+  paymentPurposeBanner: {
+    background: "linear-gradient(135deg, #1e293b, #0f172a)",
+    borderRadius: "16px",
+    padding: "14px",
+    marginBottom: "8px",
+  },
+  purposeHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    marginBottom: "10px",
+    paddingBottom: "8px",
+    borderBottom: "1px solid #334155",
+  },
+  purposeIcon: {
+    fontSize: "18px",
+  },
+  purposeTitle: {
+    fontSize: "13px",
+    fontWeight: "700",
+    color: "#fbbf24",
+    letterSpacing: "0.5px",
+  },
+  purposeDetails: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "6px",
+  },
+  purposeRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    fontSize: "12px",
+    color: "#cbd5e1",
+  },
+  purposeAmount: {
+    fontSize: "16px",
+    fontWeight: "800",
+    color: "#fbbf24",
+  },
+  purposeBenefit: {
+    fontSize: "12px",
+    fontWeight: "600",
+    color: "#4ade80",
   },
   approvedBanner: {
     background: "linear-gradient(135deg, #10b981, #059669)",
@@ -518,9 +617,10 @@ const styles = {
     fontSize: "18px",
   },
   bonusText: {
-    fontSize: "14px",
+    fontSize: "12px",
     fontWeight: "700",
     color: "#15803d",
+    textAlign: "center",
   },
   copySection: {
     display: "flex",
@@ -657,6 +757,19 @@ const styles = {
   whatsappArrow: {
     fontSize: "14px",
     opacity: 0.8,
+  },
+  reminderBox: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    padding: "10px",
+    background: "#f1f5f9",
+    borderRadius: "30px",
+    fontSize: "11px",
+    color: "#475569",
+  },
+  reminderIcon: {
+    fontSize: "14px",
   },
   footer: {
     marginTop: "16px",
