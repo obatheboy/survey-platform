@@ -77,26 +77,31 @@ export default function ActivationPayment() {
 
   return (
     <div style={styles.page}>
+      {/* Simplified background for mobile */}
       <div style={styles.backgroundBlur1}></div>
       <div style={styles.backgroundBlur2}></div>
       
       <div style={styles.card}>
-        {/* Header */}
+        {/* Header - Compact */}
         <div style={styles.header}>
           <div style={styles.logoContainer}>
-            <div style={styles.logoIcon}>🔒</div>
-            <h1 style={styles.title}>Account Activation</h1>
+            <div style={styles.logoWrapper}>
+              <span style={styles.logoIcon}>✓</span>
+            </div>
+            <div style={styles.headerText}>
+              <h1 style={styles.title}>Account Activation</h1>
+              <p style={styles.subtitle}>
+                Pay KES {ACTIVATION_FEE} to start earning
+              </p>
+            </div>
           </div>
-          <p style={styles.subtitle}>
-            Pay KES {ACTIVATION_FEE} to activate your account
-          </p>
         </div>
 
         {/* Status Banner - APPROVED */}
         {status === "APPROVED" && (
           <div style={styles.approvedBanner}>
             <span style={styles.approvedIcon}>✓</span>
-            <span>Your account is activated!</span>
+            <span style={styles.approvedText}>Your account is activated!</span>
             <button 
               onClick={() => navigate("/dashboard")}
               style={styles.goToDashboardBtn}
@@ -110,366 +115,487 @@ export default function ActivationPayment() {
         {status === "SUBMITTED" && (
           <div style={styles.pendingBanner}>
             <span style={styles.pendingIcon}>⏳</span>
-            <span>Payment submitted! Waiting for admin approval.</span>
-            <p style={styles.pendingNote}>
-              This usually takes a few minutes. Please wait or contact support.
-            </p>
+            <span style={styles.pendingText}>Payment submitted!</span>
+            <p style={styles.pendingNote}>Waiting for admin approval (usually 2-5 min)</p>
             <button onClick={checkStatus} style={styles.refreshButton}>
-              🔄 Refresh Status
+              Refresh Status
             </button>
           </div>
         )}
 
-        {/* Status Banner - PENDING or other */}
+        {/* Payment Form - PENDING or other */}
         {status !== "APPROVED" && status !== "SUBMITTED" && (
-          <div>
-            {/* Payment Instructions */}
-            <div style={styles.instructionSection}>
-              <h2 style={styles.sectionTitle}>📲 HOW TO PAY & ACTIVATE</h2>
+          <div style={styles.paymentContainer}>
+            {/* Trust Badge */}
+            <div style={styles.trustBadge}>
+              <span style={styles.trustIcon}>🔒</span>
+              <span style={styles.trustText}>Secured by M-Pesa</span>
+            </div>
+
+            {/* Payment Instructions - Simplified */}
+            <div style={styles.instructionBox}>
+              <div style={styles.instructionHeader}>
+                <span style={styles.instructionIcon}>📱</span>
+                <span style={styles.instructionTitle}>Pay via M-Pesa</span>
+              </div>
               
-              <div style={styles.warningBox}>
-                <span style={styles.warningIcon}>⚠️</span>
-                <span style={styles.warningText}>IMPORTANT: Pay to this number of the CEO</span>
-                <span style={styles.ceoNumber}>🚀{MPESA_NUMBER}🚀</span>
-              </div>
-
-              <div style={styles.stepsContainer}>
-                <div style={styles.step}>
-                  <span style={styles.stepNumber}>1</span>
-                  <span>Open M-Pesa → Lipa na M-PESA</span>
+              <div style={styles.paymentDetails}>
+                <div style={styles.detailRow}>
+                  <span style={styles.detailLabel}>Business No:</span>
+                  <div style={styles.numberContainer}>
+                    <span style={styles.detailValue}>{MPESA_NUMBER}</span>
+                    <button onClick={copyNumber} style={styles.copySmallBtn}>
+                      {copied ? "✓" : "📋"}
+                    </button>
+                  </div>
                 </div>
-                <div style={styles.step}>
-                  <span style={styles.stepNumber}>2</span>
-                  <span>Send Money → Enter {MPESA_NUMBER}</span>
+                
+                <div style={styles.detailRow}>
+                  <span style={styles.detailLabel}>Account:</span>
+                  <span style={styles.detailValue}>{CEO_NAME}</span>
                 </div>
-                <div style={styles.step}>
-                  <span style={styles.stepNumber}>3</span>
-                  <span>Confirm: {CEO_NAME}</span>
-                </div>
-                <div style={styles.step}>
-                  <span style={styles.stepNumber}>4</span>
-                  <span>Amount: KES {ACTIVATION_FEE}</span>
-                </div>
-                <div style={styles.step}>
-                  <span style={styles.stepNumber}>5</span>
-                  <span>Enter PIN & Complete</span>
+                
+                <div style={styles.detailRow}>
+                  <span style={styles.detailLabel}>Amount:</span>
+                  <span style={styles.detailValue}>KES {ACTIVATION_FEE}</span>
                 </div>
               </div>
 
-              {/* Copy Number Section */}
-              <div style={styles.copySection}>
-                <div style={styles.phoneDisplay}>
-                  <span style={styles.phoneIcon}>📞</span>
-                  <span style={styles.phoneNumber}>{MPESA_NUMBER}</span>
+              {/* Quick Steps */}
+              <div style={styles.stepsGrid}>
+                <div style={styles.step}>
+                  <span style={styles.stepDot}>1</span>
+                  <span style={styles.stepText}>Lipa na M-PESA</span>
                 </div>
-                <button onClick={copyNumber} style={styles.copyButton}>
-                  {copied ? "✓ Copied!" : "📋 Copy Number"}
-                </button>
+                <div style={styles.step}>
+                  <span style={styles.stepDot}>2</span>
+                  <span style={styles.stepText}>Enter PIN</span>
+                </div>
+                <div style={styles.step}>
+                  <span style={styles.stepDot}>3</span>
+                  <span style={styles.stepText}>Confirm</span>
+                </div>
               </div>
             </div>
 
-            {/* Submission Form */}
+            {/* Form Section - Compact */}
             <form onSubmit={handleSubmit} style={styles.formSection}>
-              <h3 style={styles.formTitle}>📌 Paste the FULL M-Pesa SMS below</h3>
-              <p style={styles.formNote}>
-                ⚠ Include Transaction ID, Amount & Time
-              </p>
+              <label style={styles.formLabel}>
+                <span style={styles.labelIcon}>📋</span>
+                Paste M-Pesa confirmation
+              </label>
               
               <textarea
                 value={mpesaCode}
                 onChange={(e) => setMpesaCode(e.target.value)}
-                placeholder="Paste your M-Pesa confirmation message here..."
+                placeholder="Paste the full M-Pesa SMS here..."
                 style={styles.textarea}
-                rows={4}
+                rows={3}
               />
 
-              <button 
-                type="submit" 
-                disabled={loading || !mpesaCode.trim()}
-                style={{
-                  ...styles.submitButton,
-                  opacity: loading || !mpesaCode.trim() ? 0.7 : 1,
-                }}
-              >
-                {loading ? "Submitting..." : "✅ Submit Payment"}
-              </button>
+              <div style={styles.buttonGroup}>
+                <button 
+                  type="submit" 
+                  disabled={loading || !mpesaCode.trim()}
+                  style={{
+                    ...styles.submitButton,
+                    opacity: loading || !mpesaCode.trim() ? 0.6 : 1,
+                  }}
+                >
+                  {loading ? "Submitting..." : "✅ Confirm Payment"}
+                </button>
+                
+                <button 
+                  type="button" 
+                  onClick={checkStatus} 
+                  style={styles.checkButton}
+                >
+                  🔄 Check Status
+                </button>
+              </div>
             </form>
+
+            {/* Support Info */}
+            <div style={styles.supportSection}>
+              <span style={styles.supportIcon}>💬</span>
+              <span style={styles.supportText}>
+                Having issues? Contact support
+              </span>
+            </div>
           </div>
         )}
 
-        {/* Logout Button */}
-        <button onClick={handleLogout} style={styles.logoutButton}>
-          Logout
-        </button>
+        {/* Footer */}
+        <div style={styles.footer}>
+          <button onClick={handleLogout} style={styles.logoutButton}>
+            ← Logout
+          </button>
+          <span style={styles.footerText}>© 2024 SurveyEarn</span>
+        </div>
       </div>
+
+      {/* CSS Animations */}
+      <style>
+        {`
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `}
+      </style>
     </div>
   );
 }
 
+// Mobile-optimized styles
 const styles = {
   page: {
     minHeight: "100vh",
-    backgroundColor: "#0f172a",
-    padding: "20px",
+    background: "linear-gradient(145deg, #0f172a 0%, #1e293b 100%)",
+    padding: "12px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
     position: "relative",
-    overflow: "hidden",
   },
   backgroundBlur1: {
     position: "fixed",
-    top: "-20%",
-    left: "-10%",
-    width: "500px",
-    height: "500px",
-    backgroundColor: "rgba(99, 102, 241, 0.15)",
+    top: "-30%",
+    right: "-20%",
+    width: "300px",
+    height: "300px",
+    background: "rgba(99, 102, 241, 0.2)",
     borderRadius: "50%",
-    filter: "blur(80px)",
+    filter: "blur(60px)",
     zIndex: 0,
   },
   backgroundBlur2: {
     position: "fixed",
-    bottom: "-20%",
-    right: "-10%",
-    width: "400px",
-    height: "400px",
-    backgroundColor: "rgba(236, 72, 153, 0.1)",
+    bottom: "-30%",
+    left: "-20%",
+    width: "250px",
+    height: "250px",
+    background: "rgba(236, 72, 153, 0.15)",
     borderRadius: "50%",
-    filter: "blur(80px)",
+    filter: "blur(50px)",
     zIndex: 0,
   },
   card: {
-    maxWidth: "500px",
-    margin: "40px auto",
-    backgroundColor: "#ffffff",
-    borderRadius: "20px",
-    padding: "30px",
-    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+    width: "100%",
+    maxWidth: "400px",
+    background: "#ffffff",
+    borderRadius: "28px",
+    padding: "20px 16px",
+    boxShadow: "0 20px 40px -12px rgba(0, 0, 0, 0.4)",
     position: "relative",
     zIndex: 1,
+    animation: "fadeIn 0.3s ease-out",
   },
   header: {
-    textAlign: "center",
-    marginBottom: "25px",
+    marginBottom: "16px",
   },
   logoContainer: {
     display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "10px",
-  },
-  logoIcon: {
-    fontSize: "48px",
-  },
-  title: {
-    fontSize: "28px",
-    fontWeight: "700",
-    color: "#1e293b",
-    margin: 0,
-  },
-  subtitle: {
-    fontSize: "16px",
-    color: "#64748b",
-    marginTop: "8px",
-  },
-  approvedBanner: {
-    backgroundColor: "#dcfce7",
-    border: "1px solid #22c55e",
-    borderRadius: "12px",
-    padding: "16px",
-    display: "flex",
-    flexDirection: "column",
     alignItems: "center",
     gap: "12px",
-    marginBottom: "20px",
-    color: "#166534",
-    fontWeight: "600",
   },
-  approvedIcon: {
-    fontSize: "24px",
-    color: "#22c55e",
-  },
-  pendingBanner: {
-    backgroundColor: "#fef3c7",
-    border: "1px solid #f59e0b",
-    borderRadius: "12px",
-    padding: "16px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "8px",
-    marginBottom: "20px",
-    color: "#92400e",
-    fontWeight: "600",
-  },
-  pendingIcon: {
-    fontSize: "24px",
-  },
-  pendingNote: {
-    fontSize: "14px",
-    fontWeight: "400",
-    margin: 0,
-  },
-  instructionSection: {
-    marginBottom: "25px",
-  },
-  sectionTitle: {
-    fontSize: "18px",
-    fontWeight: "700",
-    color: "#1e293b",
-    marginBottom: "16px",
-    textAlign: "center",
-  },
-  warningBox: {
-    backgroundColor: "#fef2f2",
-    border: "2px solid #ef4444",
-    borderRadius: "12px",
-    padding: "16px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "8px",
-    marginBottom: "20px",
-  },
-  warningIcon: {
-    fontSize: "20px",
-  },
-  warningText: {
-    fontSize: "14px",
-    fontWeight: "600",
-    color: "#dc2626",
-  },
-  ceoNumber: {
-    fontSize: "20px",
-    fontWeight: "700",
-    color: "#dc2626",
-  },
-  stepsContainer: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px",
-    marginBottom: "20px",
-  },
-  step: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    fontSize: "14px",
-    color: "#374151",
-  },
-  stepNumber: {
-    width: "28px",
-    height: "28px",
-    backgroundColor: "#6366f1",
-    color: "#ffffff",
-    borderRadius: "50%",
+  logoWrapper: {
+    width: "44px",
+    height: "44px",
+    background: "linear-gradient(135deg, #667eea, #764ba2)",
+    borderRadius: "14px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontWeight: "600",
-    fontSize: "14px",
+    boxShadow: "0 8px 16px -4px rgba(102, 126, 234, 0.3)",
   },
-  copySection: {
+  logoIcon: {
+    fontSize: "24px",
+    color: "#ffffff",
+  },
+  headerText: {
+    flex: 1,
+  },
+  title: {
+    fontSize: "22px",
+    fontWeight: "700",
+    color: "#0f172a",
+    margin: 0,
+    lineHeight: 1.2,
+  },
+  subtitle: {
+    fontSize: "13px",
+    color: "#64748b",
+    margin: "2px 0 0 0",
+    fontWeight: "500",
+  },
+  approvedBanner: {
+    background: "linear-gradient(135deg, #10b981, #059669)",
+    borderRadius: "16px",
+    padding: "16px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "8px",
+    marginBottom: "16px",
+  },
+  approvedIcon: {
+    fontSize: "24px",
+    color: "#ffffff",
+  },
+  approvedText: {
+    color: "#ffffff",
+    fontWeight: "600",
+    fontSize: "15px",
+  },
+  pendingBanner: {
+    background: "#fef3c7",
+    borderRadius: "16px",
+    padding: "16px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "6px",
+    marginBottom: "16px",
+    border: "1px solid #fbbf24",
+  },
+  pendingIcon: {
+    fontSize: "22px",
+  },
+  pendingText: {
+    color: "#92400e",
+    fontWeight: "600",
+    fontSize: "15px",
+  },
+  pendingNote: {
+    fontSize: "12px",
+    color: "#b45309",
+    margin: 0,
+    textAlign: "center",
+  },
+  paymentContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+  },
+  trustBadge: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#f1f5f9",
-    borderRadius: "12px",
-    padding: "12px 16px",
-    marginBottom: "10px",
+    justifyContent: "center",
+    gap: "6px",
+    padding: "6px",
+    background: "#f1f5f9",
+    borderRadius: "30px",
+    fontSize: "12px",
+    color: "#334155",
+    fontWeight: "600",
+    marginBottom: "4px",
   },
-  phoneDisplay: {
+  trustIcon: {
+    fontSize: "14px",
+  },
+  instructionBox: {
+    background: "#f8fafc",
+    borderRadius: "20px",
+    padding: "16px",
+    border: "1px solid #e2e8f0",
+  },
+  instructionHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    marginBottom: "16px",
+  },
+  instructionIcon: {
+    fontSize: "20px",
+  },
+  instructionTitle: {
+    fontSize: "16px",
+    fontWeight: "600",
+    color: "#0f172a",
+  },
+  paymentDetails: {
+    background: "#ffffff",
+    borderRadius: "14px",
+    padding: "12px",
+    marginBottom: "16px",
+    border: "1px solid #e2e8f0",
+  },
+  detailRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "8px 0",
+    borderBottom: "1px solid #f1f5f9",
+  },
+  detailLabel: {
+    fontSize: "13px",
+    color: "#64748b",
+    fontWeight: "500",
+  },
+  detailValue: {
+    fontSize: "14px",
+    fontWeight: "600",
+    color: "#0f172a",
+  },
+  numberContainer: {
     display: "flex",
     alignItems: "center",
     gap: "8px",
   },
-  phoneIcon: {
-    fontSize: "20px",
-  },
-  phoneNumber: {
-    fontSize: "18px",
-    fontWeight: "700",
-    color: "#1e293b",
-  },
-  copyButton: {
-    backgroundColor: "#6366f1",
-    color: "#ffffff",
+  copySmallBtn: {
+    background: "#e2e8f0",
     border: "none",
-    borderRadius: "8px",
-    padding: "10px 16px",
-    fontSize: "14px",
-    fontWeight: "600",
+    borderRadius: "6px",
+    padding: "4px 8px",
+    fontSize: "12px",
     cursor: "pointer",
+    color: "#334155",
+  },
+  stepsGrid: {
+    display: "flex",
+    justifyContent: "space-between",
+    gap: "6px",
+  },
+  step: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "4px",
+  },
+  stepDot: {
+    width: "24px",
+    height: "24px",
+    background: "#e2e8f0",
+    borderRadius: "12px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "11px",
+    fontWeight: "700",
+    color: "#334155",
+  },
+  stepText: {
+    fontSize: "9px",
+    color: "#64748b",
+    fontWeight: "500",
+    textAlign: "center",
   },
   formSection: {
-    borderTop: "1px solid #e2e8f0",
-    paddingTop: "20px",
+    background: "#ffffff",
+    borderRadius: "20px",
+    padding: "16px",
+    border: "1px solid #e2e8f0",
   },
-  formTitle: {
-    fontSize: "16px",
+  formLabel: {
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    fontSize: "14px",
     fontWeight: "600",
-    color: "#1e293b",
-    marginBottom: "4px",
-    textAlign: "center",
+    color: "#0f172a",
+    marginBottom: "8px",
   },
-  formNote: {
-    fontSize: "13px",
-    color: "#ef4444",
-    marginBottom: "16px",
-    textAlign: "center",
-    marginTop: 0,
+  labelIcon: {
+    fontSize: "16px",
   },
   textarea: {
     width: "100%",
-    padding: "14px",
+    padding: "12px",
     border: "2px solid #e2e8f0",
-    borderRadius: "12px",
-    fontSize: "14px",
-    resize: "vertical",
+    borderRadius: "14px",
+    fontSize: "13px",
     fontFamily: "inherit",
+    resize: "none",
     boxSizing: "border-box",
-    marginBottom: "16px",
+    marginBottom: "12px",
+    outline: "none",
+    transition: "border-color 0.2s",
+  },
+  buttonGroup: {
+    display: "flex",
+    gap: "8px",
   },
   submitButton: {
-    width: "100%",
-    padding: "16px",
-    backgroundColor: "#22c55e",
+    flex: 2,
+    padding: "14px",
+    background: "linear-gradient(135deg, #10b981, #059669)",
     color: "#ffffff",
     border: "none",
-    borderRadius: "12px",
-    fontSize: "16px",
+    borderRadius: "40px",
+    fontSize: "14px",
     fontWeight: "600",
     cursor: "pointer",
+    transition: "opacity 0.2s",
+  },
+  checkButton: {
+    flex: 1,
+    padding: "14px",
+    background: "#ffffff",
+    color: "#334155",
+    border: "2px solid #e2e8f0",
+    borderRadius: "40px",
+    fontSize: "13px",
+    fontWeight: "600",
+    cursor: "pointer",
+  },
+  supportSection: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "6px",
+    padding: "10px",
+    background: "#f1f5f9",
+    borderRadius: "30px",
+    fontSize: "12px",
+    color: "#334155",
+  },
+  supportIcon: {
+    fontSize: "14px",
+  },
+  footer: {
+    marginTop: "20px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderTop: "1px solid #f1f5f9",
+    paddingTop: "12px",
   },
   logoutButton: {
-    width: "100%",
-    marginTop: "16px",
-    padding: "12px",
-    backgroundColor: "transparent",
+    background: "none",
+    border: "none",
     color: "#64748b",
-    border: "1px solid #e2e8f0",
-    borderRadius: "12px",
-    fontSize: "14px",
+    fontSize: "13px",
     fontWeight: "500",
     cursor: "pointer",
+    padding: "4px 0",
+  },
+  footerText: {
+    fontSize: "11px",
+    color: "#94a3b8",
   },
   goToDashboardBtn: {
-    backgroundColor: "#22c55e",
-    color: "#ffffff",
+    background: "#ffffff",
+    color: "#10b981",
     border: "none",
-    borderRadius: "8px",
-    padding: "10px 20px",
-    fontSize: "14px",
+    borderRadius: "30px",
+    padding: "8px 16px",
+    fontSize: "13px",
     fontWeight: "600",
     cursor: "pointer",
+    marginTop: "4px",
   },
   refreshButton: {
-    backgroundColor: "#f59e0b",
-    color: "#ffffff",
+    background: "#fbbf24",
+    color: "#92400e",
     border: "none",
-    borderRadius: "8px",
-    padding: "10px 20px",
-    fontSize: "14px",
+    borderRadius: "30px",
+    padding: "8px 16px",
+    fontSize: "12px",
     fontWeight: "600",
     cursor: "pointer",
-    marginTop: "8px",
+    marginTop: "6px",
   },
 };
