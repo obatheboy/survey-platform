@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 import toast from "react-hot-toast";
@@ -15,18 +15,53 @@ export default function ActivationPayment() {
   const [status, setStatus] = useState("PENDING");
   const [mpesaCode, setMpesaCode] = useState("");
   const [copied, setCopied] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
+  const hasInteracted = useRef(false);
+
+  useEffect(() => {
+    // Auto-scroll after 2 seconds if user hasn't interacted
+    const scrollTimer = setTimeout(() => {
+      if (!hasInteracted.current) {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }
+    }, 2000);
+
+    // Listen for user interaction
+    const handleInteraction = () => {
+      hasInteracted.current = true;
+    };
+    window.addEventListener('scroll', handleInteraction);
+    window.addEventListener('click', handleInteraction);
+    window.addEventListener('touchstart', handleInteraction);
+
+    return () => {
+      clearTimeout(scrollTimer);
+      window.removeEventListener('scroll', handleInteraction);
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
+    };
+  }, []);
 
   useEffect(() => {
     checkStatus();
     
-    // Poll for status updates every 10 seconds
+    // Poll for status updates every 5 seconds (faster for auto-redirect)
     const interval = setInterval(() => {
       checkStatus();
-    }, 10000);
+    }, 5000);
     
     return () => clearInterval(interval);
   }, []);
+
+  // Auto-redirect when approved
+  useEffect(() => {
+    if (status === "APPROVED") {
+      toast.success("Your account has been activated!");
+      // Short delay before redirect
+      setTimeout(() => {
+        navigate("/dashboard", { replace: true });
+      }, 1500);
+    }
+  }, [status, navigate]);
 
   const checkStatus = async () => {
     try {
