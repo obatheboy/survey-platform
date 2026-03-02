@@ -700,7 +700,7 @@ export default function Activate() {
               <div className="activate-step-box" style={styles.stepBox}>
                 <span style={styles.stepNumber}>1</span>
                 <strong style={{color: "#ffffff", fontWeight: 800}}>Open M-Pesa</strong>
-                <span style={{ fontSize: "12px", marginLeft: "4px", color: "#cbd5e1", fontWeight: 600 }}>→ Lipa na M-PESA</span>
+                <span style={{ fontSize: "12px", marginLeft: "4px", color: "#cbd5e1", fontWeight: 600 }}>→ Send Money</span>
               </div>
 
               <div className="activate-step-box" style={styles.stepBox}>

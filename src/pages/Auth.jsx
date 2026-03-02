@@ -85,9 +85,8 @@ export default function Auth() {
     
     if (!regData.phone.trim()) {
       newErrors.phone = "Phone number is required";
-    } else if (!/^[0-9+\-\s]{10,}$/.test(regData.phone.replace(/\D/g, ''))) {
-      newErrors.phone = "Enter a valid phone number";
     }
+    // Phone number validation removed - any phone number format is accepted
     
     if (regData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(regData.email)) {
       newErrors.email = "Enter a valid email address";
