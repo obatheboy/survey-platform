@@ -710,7 +710,7 @@ return (
                   navigate(fullScreenNotification.redirect);
                 }}
                 style={{
-                  background: 'linear-gradient(135deg, #2563eb, #1e40af)',
+                  background: 'linear-gradient(135deg, #dc2626, #991b1b)',
                   color: 'white',
                   border: 'none',
                   borderRadius: '12px',
@@ -720,7 +720,7 @@ return (
                   cursor: 'pointer',
                   transition: 'all 0.3s ease',
                   width: '100%',
-                  boxShadow: '0 8px 25px rgba(37, 99, 235, 0.4)',
+                  boxShadow: '0 8px 25px rgba(220, 38, 38, 0.4)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -728,11 +728,11 @@ return (
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 12px 30px rgba(37, 99, 235, 0.6)';
+                  e.currentTarget.style.boxShadow = '0 12px 30px rgba(220, 38, 38, 0.6)';
                 }}
                 onMouseOut={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(37, 99, 235, 0.4)';
+                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(220, 38, 38, 0.4)';
                 }}
               >
                 <span style={{ fontSize: '20px' }}>🔓</span>
@@ -1062,12 +1062,12 @@ return (
     <div className="plan-card-header" style={{ 
       position: 'relative', 
       zIndex: 2,
-      marginBottom: '2px'
+      marginBottom: '0px'
     }}>
       <div className="plan-badge" style={{ 
         display: 'flex', 
         alignItems: 'center', 
-        gap: '6px'
+        gap: '0px'
       }}>
         <span className="plan-name" style={{ 
           color: '#FF6B00 !important',
@@ -1097,13 +1097,13 @@ return (
     </div>
     
     {/* BODY - EXTRA COMPACT */}
-    <div className="plan-card-body" style={{ position: 'relative', zIndex: 2 }}>
+    <div className="plan-card-body" style={{ position: 'relative', zIndex: 2, marginTop: '0px' }}>
       
       {/* ===== BONUS AMOUNT SECTION - PREMIUM STYLE ===== */}
       <div style={{
         textAlign: 'center',
-        margin: '2px 0',
-        padding: '8px',
+        margin: '0px 0',
+        padding: '2px',
         background: 'rgba(0, 0, 0, 0.3)',
         borderRadius: '12px',
         border: '2px solid rgba(59, 130, 246, 0.5)',
