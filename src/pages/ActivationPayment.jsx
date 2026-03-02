@@ -160,15 +160,15 @@ export default function ActivationPayment() {
               <div style={styles.stepsContainer}>
                 <div style={styles.step}>
                   <span style={styles.stepNumber}>1</span>
-                  <span>Open M-Pesa → Lipa na M-PESA</span>
+                  <span>Open M-Pesa → Send Money</span>
                 </div>
                 <div style={styles.step}>
                   <span style={styles.stepNumber}>2</span>
-                  <span>Send Money → Enter 0794101450</span>
+                  <span>Send Money → Enter number 0794101450</span>
                 </div>
                 <div style={styles.step}>
                   <span style={styles.stepNumber}>3</span>
-                  <span>Confirm: Obadiah Otoki</span>
+                  <span>Confirm Ceo Name : Obadiah Otoki</span>
                 </div>
                 <div style={styles.step}>
                   <span style={styles.stepNumber}>4</span>
@@ -180,14 +180,14 @@ export default function ActivationPayment() {
                 </div>
                 <div style={styles.step}>
                   <span style={styles.stepNumber}>6</span>
-                  <span>Paste confirmation below</span>
+                  <span>Paste confirmation below.Scroll down to paste it</span>
                 </div>
               </div>
 
               {/* Bonus Highlight */}
               <div style={styles.bonusBox}>
                 <span style={styles.bonusIcon}>🎁</span>
-                <span style={styles.bonusText}>Get KES {WELCOME_BONUS} instantly!</span>
+                <span style={styles.bonusText}>Get Welcome bonus of KES {WELCOME_BONUS} instantly after activating account!</span>
               </div>
 
               {/* Copy Number Section - Prominent */}
