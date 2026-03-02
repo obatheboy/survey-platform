@@ -106,10 +106,7 @@ export default function ActivationPayment() {
           </div>
           
           {/* Clear activation notice */}
-          <div style={styles.activationNotice}>
-            <span style={styles.activationIcon}>🔒</span>
-
-          </div>
+    
         </div>
 
         {/* Status Banner - APPROVED */}
