@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 import toast from "react-hot-toast";
@@ -15,36 +15,11 @@ export default function ActivationPayment() {
   const [status, setStatus] = useState("PENDING");
   const [mpesaCode, setMpesaCode] = useState("");
   const [copied, setCopied] = useState(false);
-  const hasInteracted = useRef(false);
-
-  useEffect(() => {
-    // Auto-scroll after 2 seconds if user hasn't interacted
-    const scrollTimer = setTimeout(() => {
-      if (!hasInteracted.current) {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-      }
-    }, 2000);
-
-    // Listen for user interaction
-    const handleInteraction = () => {
-      hasInteracted.current = true;
-    };
-    window.addEventListener('scroll', handleInteraction);
-    window.addEventListener('click', handleInteraction);
-    window.addEventListener('touchstart', handleInteraction);
-
-    return () => {
-      clearTimeout(scrollTimer);
-      window.removeEventListener('scroll', handleInteraction);
-      window.removeEventListener('click', handleInteraction);
-      window.removeEventListener('touchstart', handleInteraction);
-    };
-  }, []);
 
   useEffect(() => {
     checkStatus();
     
-    // Poll for status updates every 5 seconds (faster for auto-redirect)
+    // Poll for status updates every 5 seconds
     const interval = setInterval(() => {
       checkStatus();
     }, 5000);
@@ -52,14 +27,13 @@ export default function ActivationPayment() {
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-redirect when approved
+  // Auto-redirect when status becomes APPROVED
   useEffect(() => {
     if (status === "APPROVED") {
-      toast.success("Your account has been activated!");
-      // Short delay before redirect
+      toast.success("Account activated! Redirecting to dashboard...");
       setTimeout(() => {
         navigate("/dashboard", { replace: true });
-      }, 1500);
+      }, 2000);
     }
   }, [status, navigate]);
 
@@ -126,22 +100,19 @@ export default function ActivationPayment() {
       <div style={styles.backgroundBlur2}></div>
       
       <div style={styles.card}>
-        {/* Header - Compact with clear activation message */}
+        {/* Header - Compact */}
         <div style={styles.header}>
           <div style={styles.logoContainer}>
             <div style={styles.logoWrapper}>
-              <span style={styles.logoIcon}>🔑</span>
+              <span style={styles.logoIcon}>✓</span>
             </div>
             <div style={styles.headerText}>
-              <h1 style={styles.title}>ACTIVATE YOUR ACCOUNT NOW🔑</h1>
+              <h1 style={styles.title}>Account Activation</h1>
               <p style={styles.subtitle}>
-                Activation fee is KES {ACTIVATION_FEE}
+                Pay KES {ACTIVATION_FEE} to start earning
               </p>
             </div>
           </div>
-          
-          {/* Clear activation notice */}
-    
         </div>
 
         {/* Status Banner - APPROVED */}
@@ -179,24 +150,6 @@ export default function ActivationPayment() {
         {/* Payment Form - PENDING or other */}
         {status !== "APPROVED" && status !== "SUBMITTED" && (
           <div style={styles.paymentContainer}>
-            {/* Payment Purpose - Clear and prominent */}
-            <div style={styles.paymentPurposeBanner}>
-              <div style={styles.purposeHeader}>
-                <span style={styles.purposeIcon}>💰</span>
-                <span style={styles.purposeTitle}>PAYMENT FOR: ACCOUNT ACTIVATION</span>
-              </div>
-              <div style={styles.purposeDetails}>
-                <div style={styles.purposeRow}>
-                  <span>Amount to Pay:</span>
-                  <span style={styles.purposeAmount}>KES {ACTIVATION_FEE}</span>
-                </div>
-                <div style={styles.purposeRow}>
-                  <span>What you get:</span>
-                  <span style={styles.purposeBenefit}>Full Account Access + KES {WELCOME_BONUS} Bonus</span>
-                </div>
-              </div>
-            </div>
-
             {/* Trust Badge */}
             <div style={styles.trustBadge}>
               <span style={styles.trustIcon}>⚡</span>
@@ -217,19 +170,19 @@ export default function ActivationPayment() {
               <div style={styles.stepsContainer}>
                 <div style={styles.step}>
                   <span style={styles.stepNumber}>1</span>
-                  <span>Open M-Pesa → Send Money</span>
+                  <span>Open M-Pesa → Lipa na M-PESA</span>
                 </div>
                 <div style={styles.step}>
                   <span style={styles.stepNumber}>2</span>
-                  <span>Enter number: 0794101450</span>
+                  <span>Send Money → Enter 0794101450</span>
                 </div>
                 <div style={styles.step}>
                   <span style={styles.stepNumber}>3</span>
-                  <span>Confirm name: Obadiah Otoki (CEO)</span>
+                  <span>Confirm: Obadiah Otoki</span>
                 </div>
                 <div style={styles.step}>
                   <span style={styles.stepNumber}>4</span>
-                  <span>Amount: KES {ACTIVATION_FEE} (Activation Fee)</span>
+                  <span>Amount: KES 100</span>
                 </div>
                 <div style={styles.step}>
                   <span style={styles.stepNumber}>5</span>
@@ -244,7 +197,7 @@ export default function ActivationPayment() {
               {/* Bonus Highlight */}
               <div style={styles.bonusBox}>
                 <span style={styles.bonusIcon}>🎁</span>
-                <span style={styles.bonusText}>Welcome bonus of KES {WELCOME_BONUS} added immediately after activation!</span>
+                <span style={styles.bonusText}>Get KES {WELCOME_BONUS} instantly!</span>
               </div>
 
               {/* Copy Number Section - Prominent */}
@@ -283,7 +236,7 @@ export default function ActivationPayment() {
                     opacity: loading || !mpesaCode.trim() ? 0.6 : 1,
                   }}
                 >
-                  {loading ? "Submitting..." : "✅ Confirm Payment & Activate"}
+                  {loading ? "Submitting..." : "✅ Confirm Payment"}
                 </button>
                 
                 <button 
@@ -302,18 +255,10 @@ export default function ActivationPayment() {
               <span style={styles.whatsappText}>Need Help? Chat on WhatsApp</span>
               <span style={styles.whatsappArrow}>→</span>
             </button>
-            
-            {/* Reminder notice */}
-            <div style={styles.reminderBox}>
-              <span style={styles.reminderIcon}>💡</span>
-              <span style={styles.reminderText}>
-                This is a one-time payment of KES {ACTIVATION_FEE} to activate your account. No other fees.
-              </span>
-            </div>
           </div>
         )}
 
-        {/* Footer with Go Back button */}
+        {/* Footer with Go Back button instead of Logout */}
         <div style={styles.footer}>
           <button onClick={handleGoBack} style={styles.goBackButton}>
             ← Go Back
@@ -399,7 +344,6 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "10px",
-    marginBottom: "10px",
   },
   logoWrapper: {
     width: "40px",
@@ -430,69 +374,6 @@ const styles = {
     color: "#64748b",
     margin: "2px 0 0 0",
     fontWeight: "500",
-  },
-  activationNotice: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    padding: "10px 12px",
-    background: "linear-gradient(135deg, #e0f2fe, #bae6fd)",
-    borderRadius: "40px",
-    border: "1px solid #38bdf8",
-  },
-  activationIcon: {
-    fontSize: "16px",
-  },
-  activationText: {
-    fontSize: "12px",
-    color: "#0369a1",
-    fontWeight: "600",
-    flex: 1,
-  },
-  paymentPurposeBanner: {
-    background: "linear-gradient(135deg, #1e293b, #0f172a)",
-    borderRadius: "16px",
-    padding: "14px",
-    marginBottom: "8px",
-  },
-  purposeHeader: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    marginBottom: "10px",
-    paddingBottom: "8px",
-    borderBottom: "1px solid #334155",
-  },
-  purposeIcon: {
-    fontSize: "18px",
-  },
-  purposeTitle: {
-    fontSize: "13px",
-    fontWeight: "700",
-    color: "#fbbf24",
-    letterSpacing: "0.5px",
-  },
-  purposeDetails: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "6px",
-  },
-  purposeRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    fontSize: "12px",
-    color: "#cbd5e1",
-  },
-  purposeAmount: {
-    fontSize: "16px",
-    fontWeight: "800",
-    color: "#fbbf24",
-  },
-  purposeBenefit: {
-    fontSize: "12px",
-    fontWeight: "600",
-    color: "#4ade80",
   },
   approvedBanner: {
     background: "linear-gradient(135deg, #10b981, #059669)",
@@ -647,10 +528,9 @@ const styles = {
     fontSize: "18px",
   },
   bonusText: {
-    fontSize: "12px",
+    fontSize: "14px",
     fontWeight: "700",
     color: "#15803d",
-    textAlign: "center",
   },
   copySection: {
     display: "flex",
@@ -787,19 +667,6 @@ const styles = {
   whatsappArrow: {
     fontSize: "14px",
     opacity: 0.8,
-  },
-  reminderBox: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    padding: "10px",
-    background: "#f1f5f9",
-    borderRadius: "30px",
-    fontSize: "11px",
-    color: "#475569",
-  },
-  reminderIcon: {
-    fontSize: "14px",
   },
   footer: {
     marginTop: "16px",
