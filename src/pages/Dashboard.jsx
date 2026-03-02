@@ -343,10 +343,10 @@ export default function Dashboard() {
     if (showWelcomeBonus === "true") {
       setWelcomeBonusAmount(bonusAmount ? parseInt(bonusAmount) : 1200);
       
-      // Show popup after 2 seconds delay
+      // Show popup after 5 seconds delay
       const showAfterDelay = setTimeout(() => {
         setShowWelcomeBonus(true);
-      }, 2000);
+      }, 5000);
       
       // Also schedule to show again after 10 seconds (reminder)
       // This will show if user hasn't closed the first popup
@@ -355,7 +355,7 @@ export default function Dashboard() {
         if (!dismissed) {
           setShowWelcomeBonus(true);
         }
-      }, 12000); // 12 seconds total (2 + 10)
+      }, 15000); // 15 seconds total (5 + 10)
       
       // Clear the flag but don't mark as dismissed yet
       localStorage.removeItem("showWelcomeBonus");
@@ -1067,31 +1067,16 @@ return (
       <div className="plan-badge" style={{ 
         display: 'flex', 
         alignItems: 'center', 
-        gap: '4px'
+        gap: '6px'
       }}>
-        <span className="plan-icon gift-icon" style={{ 
-          fontSize: '20px',
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.1))',
-          width: '32px',
-          height: '32px',
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.3), inset 0 0 20px rgba(255,255,255,0.2)',
-          border: '2px solid rgba(255,255,255,0.4)',
-          animation: 'bounce 1s ease-in-out infinite'
-        }}>
-          🎁💝✨
-        </span>
         <span className="plan-name" style={{ 
           color: '#FF6B00 !important',
-          fontSize: '14px',
+          fontSize: '16px',
           fontWeight: '900',
-          textShadow: '0 2px 15px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 107, 0, 0.5)',
-          letterSpacing: '-0.5px'
+          textTransform: 'uppercase',
+          letterSpacing: '0.5px'
         }}>
-          🎉 WELCOME BONUS 🎉
+          WELCOME BONUS
         </span>
       </div>
       <span className="plan-status" style={{ 
@@ -1188,8 +1173,7 @@ return (
           fontSize: '16px',
           fontWeight: '900',
           textShadow: '0 0 10px #FF6B00',
-          display: 'inline-block',
-          animation: 'bonusPulse 2s ease-in-out infinite'
+          display: 'inline-block'
         }}>KES 1,200</strong>. Activate your account to withdraw instantly!
       </p>
     </div>
