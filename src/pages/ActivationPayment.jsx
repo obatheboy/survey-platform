@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
@@ -8,7 +7,6 @@ const MPESA_NUMBER = "0794101450";
 const CEO_NAME = "Obadiah Otoki";
 const ACTIVATION_FEE = 100;
 const WELCOME_BONUS = 1200;
-const WHATSAPP_NUMBER = "254786357584";
 
 export default function ActivationPayment() {
   const navigate = useNavigate();
@@ -16,7 +14,6 @@ export default function ActivationPayment() {
   const [status, setStatus] = useState("PENDING");
   const [mpesaCode, setMpesaCode] = useState("");
   const [copied, setCopied] = useState(false);
-  const [checkingStatus, setCheckingStatus] = useState(false);
 
   useEffect(() => {
     checkStatus();
@@ -29,20 +26,7 @@ export default function ActivationPayment() {
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-redirect when status becomes APPROVED
-  useEffect(() => {
-    if (status === "APPROVED") {
-      toast.success("Account activated successfully! Redirecting to dashboard...");
-      setTimeout(() => {
-        navigate("/dashboard", { replace: true });
-      }, 2000);
-    }
-  }, [status, navigate]);
-
   const checkStatus = async () => {
-    if (checkingStatus) return;
-    
-    setCheckingStatus(true);
     try {
       const res = await api.get("/initial-activation/status");
       setStatus(res.data.status);
@@ -51,8 +35,6 @@ export default function ActivationPayment() {
       }
     } catch (err) {
       console.error("Error checking status:", err);
-    } finally {
-      setCheckingStatus(false);
     }
   };
 
@@ -61,14 +43,6 @@ export default function ActivationPayment() {
     setCopied(true);
     toast.success("Number copied!");
     setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleWhatsApp = () => {
-    const message = encodeURIComponent(
-      "Hello, I need help with my account activation. I have made a payment of KES 100 to 0794101450."
-    );
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
-    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
   };
 
   const handleSubmit = async (e) => {
@@ -96,19 +70,20 @@ export default function ActivationPayment() {
     }
   };
 
-  const handleGoBack = () => {
-    navigate("/auth?mode=register");
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("cachedUser");
+    navigate("/auth?mode=login");
   };
 
   return (
     <div style={styles.page}>
-      {/* Professional gradient background */}
+      {/* Simplified background for mobile */}
       <div style={styles.backgroundBlur1}></div>
       <div style={styles.backgroundBlur2}></div>
-      <div style={styles.backgroundBlur3}></div>
       
       <div style={styles.card}>
-        {/* Header - Professional */}
+        {/* Header - Compact */}
         <div style={styles.header}>
           <div style={styles.logoContainer}>
             <div style={styles.logoWrapper}>
@@ -117,7 +92,7 @@ export default function ActivationPayment() {
             <div style={styles.headerText}>
               <h1 style={styles.title}>Account Activation</h1>
               <p style={styles.subtitle}>
-                One-time payment of <span style={styles.highlight}>KES {ACTIVATION_FEE}</span>
+                Pay KES {ACTIVATION_FEE} to start earning
               </p>
             </div>
           </div>
@@ -126,185 +101,147 @@ export default function ActivationPayment() {
         {/* Status Banner - APPROVED */}
         {status === "APPROVED" && (
           <div style={styles.approvedBanner}>
-            <div style={styles.approvedIconWrapper}>
-              <span style={styles.approvedIcon}>✓</span>
-            </div>
-            <div style={styles.approvedContent}>
-              <span style={styles.approvedText}>Account Activated Successfully!</span>
-              <span style={styles.approvedSubtext}>Redirecting to dashboard...</span>
-            </div>
+            <span style={styles.approvedIcon}>✓</span>
+            <span style={styles.approvedText}>Your account is activated!</span>
+            <button 
+              onClick={() => navigate("/dashboard")}
+              style={styles.goToDashboardBtn}
+            >
+              Go to Dashboard →
+            </button>
           </div>
         )}
 
         {/* Status Banner - SUBMITTED */}
         {status === "SUBMITTED" && (
           <div style={styles.pendingBanner}>
-            <div style={styles.pendingIconWrapper}>
-              <span style={styles.pendingIcon}>⏳</span>
-            </div>
-            <div style={styles.pendingContent}>
-              <span style={styles.pendingText}>Payment Submitted</span>
-              <span style={styles.pendingNote}>Awaiting verification (2-5 min)</span>
-            </div>
-            <div style={styles.pendingActions}>
-              <button onClick={checkStatus} style={styles.refreshButton} disabled={checkingStatus}>
-                {checkingStatus ? "Checking..." : "↻ Refresh"}
-              </button>
-              <button onClick={handleWhatsApp} style={styles.whatsappPendingButton}>
-                💬 Support
-              </button>
-            </div>
+            <span style={styles.pendingIcon}>⏳</span>
+            <span style={styles.pendingText}>Payment submitted!</span>
+            <p style={styles.pendingNote}>Waiting for admin approval (usually 2-5 min)</p>
+            <button onClick={checkStatus} style={styles.refreshButton}>
+              Refresh Status
+            </button>
           </div>
         )}
 
         {/* Payment Form - PENDING or other */}
         {status !== "APPROVED" && status !== "SUBMITTED" && (
           <div style={styles.paymentContainer}>
-            {/* Payment Summary Card */}
-            <div style={styles.summaryCard}>
-              <div style={styles.summaryHeader}>
-                <span style={styles.summaryIcon}>🔒</span>
-                <span style={styles.summaryTitle}>Activation Payment Required</span>
-              </div>
-              <div style={styles.summaryContent}>
-                <div style={styles.summaryRow}>
-                  <span style={styles.summaryLabel}>Amount:</span>
-                  <span style={styles.summaryValue}>KES {ACTIVATION_FEE}</span>
-                </div>
-                <div style={styles.summaryRow}>
-                  <span style={styles.summaryLabel}>You'll receive:</span>
-                  <span style={styles.summaryBonus}>KES {WELCOME_BONUS} Welcome Bonus</span>
-                </div>
-              </div>
+            {/* Trust Badge */}
+            <div style={styles.trustBadge}>
+              <span style={styles.trustIcon}>⚡</span>
+              <span style={styles.trustText}>Get KES {WELCOME_BONUS} instantly after activation!</span>
             </div>
 
-            {/* Instructions Card */}
-            <div style={styles.instructionsCard}>
-              <h2 style={styles.instructionsTitle}>📲 How to Pay via M-Pesa</h2>
+            {/* HOW TO PAY section - exactly as requested */}
+            <div style={styles.instructionSection}>
+              <h2 style={styles.sectionTitle}>📲 HOW TO PAY & ACTIVATE</h2>
               
-              {/* Important Notice */}
-              <div style={styles.importantNotice}>
-                <span style={styles.importantIcon}>⚠️</span>
-                <span style={styles.importantText}>
-                  Pay to CEO's number only: <strong>{MPESA_NUMBER}</strong>
-                </span>
+              <div style={styles.warningBox}>
+                <span style={styles.warningIcon}>⚠️</span>
+                <span style={styles.warningText}>IMPORTANT: Pay to this number of the CEO</span>
+                <span style={styles.ceoNumber}>🚀0794 101 450🚀</span>
+                <span style={styles.verifiedText}>and payments are verified instantly after payment</span>
               </div>
 
-              {/* Steps Grid */}
-              <div style={styles.stepsGrid}>
-                <div style={styles.stepItem}>
+              <div style={styles.stepsContainer}>
+                <div style={styles.step}>
                   <span style={styles.stepNumber}>1</span>
-                  <span style={styles.stepText}>Open M-Pesa</span>
+                  <span>Open M-Pesa → Lipa na M-PESA</span>
                 </div>
-                <div style={styles.stepItem}>
+                <div style={styles.step}>
                   <span style={styles.stepNumber}>2</span>
-                  <span style={styles.stepText}>Send Money</span>
+                  <span>Send Money → Enter 0794101450</span>
                 </div>
-                <div style={styles.stepItem}>
+                <div style={styles.step}>
                   <span style={styles.stepNumber}>3</span>
-                  <span style={styles.stepText}>Enter <strong>0794101450</strong></span>
+                  <span>Confirm: Obadiah Otoki</span>
                 </div>
-                <div style={styles.stepItem}>
+                <div style={styles.step}>
                   <span style={styles.stepNumber}>4</span>
-                  <span style={styles.stepText}>Confirm <strong>{CEO_NAME}</strong></span>
+                  <span>Amount: KES 100</span>
                 </div>
-                <div style={styles.stepItem}>
+                <div style={styles.step}>
                   <span style={styles.stepNumber}>5</span>
-                  <span style={styles.stepText}>Amount <strong>KES {ACTIVATION_FEE}</strong></span>
+                  <span>Enter PIN & Complete</span>
                 </div>
-                <div style={styles.stepItem}>
+                <div style={styles.step}>
                   <span style={styles.stepNumber}>6</span>
-                  <span style={styles.stepText}>Enter PIN</span>
+                  <span>Paste confirmation below</span>
                 </div>
-                <div style={styles.stepItem}>
-                  <span style={styles.stepNumber}>7</span>
-                  <span style={styles.stepText}>Copy SMS</span>
-                </div>
-                <div style={styles.stepItem}>
-                  <span style={styles.stepNumber}>8</span>
-                  <span style={styles.stepText}>Paste below</span>
-                </div>
-              </div>
-
-              {/* Copy Number */}
-              <div style={styles.copyNumberCard}>
-                <div style={styles.numberDisplay}>
-                  <span style={styles.numberIcon}>📞</span>
-                  <span style={styles.numberText}>{MPESA_NUMBER}</span>
-                </div>
-                <button onClick={copyNumber} style={styles.copyNumberButton}>
-                  {copied ? "✓ Copied" : "📋 Copy"}
-                </button>
               </div>
 
               {/* Bonus Highlight */}
-              <div style={styles.bonusCard}>
+              <div style={styles.bonusBox}>
                 <span style={styles.bonusIcon}>🎁</span>
-                <span style={styles.bonusText}>
-                  Get KES {WELCOME_BONUS} welcome bonus immediately after activation!
-                </span>
+                <span style={styles.bonusText}>Get KES {WELCOME_BONUS} instantly!</span>
+              </div>
+
+              {/* Copy Number Section - Prominent */}
+              <div style={styles.copySection}>
+                <div style={styles.phoneDisplay}>
+                  <span style={styles.phoneIcon}>📞</span>
+                  <span style={styles.phoneNumber}>0794101450</span>
+                </div>
+                <button onClick={copyNumber} style={styles.copyButton}>
+                  {copied ? "✓ Copied!" : "📋 Copy Number"}
+                </button>
               </div>
             </div>
 
-            {/* Form Card */}
-            <div style={styles.formCard}>
-              <h3 style={styles.formTitle}>Confirm Your Payment</h3>
-              <p style={styles.formSubtitle}>
-                Paste the complete M-Pesa confirmation message
+            {/* Form Section - with requested text */}
+            <form onSubmit={handleSubmit} style={styles.formSection}>
+              <h3 style={styles.formTitle}>📌 Paste the FULL M-Pesa SMS below</h3>
+              <p style={styles.formNote}>
+                ⚠ Include Transaction ID, Amount & Time
               </p>
               
               <textarea
                 value={mpesaCode}
                 onChange={(e) => setMpesaCode(e.target.value)}
-                placeholder="Paste your M-Pesa confirmation SMS here..."
+                placeholder="Paste your M-Pesa confirmation message here..."
                 style={styles.textarea}
                 rows={3}
               />
 
-              <div style={styles.formActions}>
+              <div style={styles.buttonGroup}>
                 <button 
                   type="submit" 
-                  onClick={handleSubmit}
                   disabled={loading || !mpesaCode.trim()}
                   style={{
                     ...styles.submitButton,
                     opacity: loading || !mpesaCode.trim() ? 0.6 : 1,
                   }}
                 >
-                  {loading ? "Processing..." : "Confirm Payment"}
+                  {loading ? "Submitting..." : "✅ Confirm Payment"}
                 </button>
                 
                 <button 
                   type="button" 
                   onClick={checkStatus} 
-                  style={styles.statusButton}
-                  disabled={checkingStatus}
+                  style={styles.checkButton}
                 >
-                  {checkingStatus ? "..." : "↻ Status"}
+                  🔄 Check
                 </button>
               </div>
-            </div>
+            </form>
 
-            {/* Support Card */}
-            <div style={styles.supportCard}>
-              <button onClick={handleWhatsApp} style={styles.whatsappButton}>
-                <span style={styles.whatsappIcon}>💬</span>
-                <span style={styles.whatsappText}>Need Help? Chat with Support</span>
-                <span style={styles.whatsappArrow}>→</span>
-              </button>
+            {/* Support Info */}
+            <div style={styles.supportSection}>
+              <span style={styles.supportIcon}>💬</span>
+              <span style={styles.supportText}>
+                Having issues? Contact support
+              </span>
             </div>
           </div>
         )}
 
         {/* Footer */}
         <div style={styles.footer}>
-          <button onClick={handleGoBack} style={styles.goBackButton}>
-            ← Back to Registration
+          <button onClick={handleLogout} style={styles.logoutButton}>
+            ← Logout
           </button>
-          <div style={styles.footerBadge}>
-            <span style={styles.footerBadgeIcon}>✓</span>
-            <span style={styles.footerBadgeText}>Secured by M-Pesa</span>
-          </div>
+          <span style={styles.footerText}>© 2024 SurveyEarn</span>
         </div>
       </div>
 
@@ -316,11 +253,6 @@ export default function ActivationPayment() {
             to { opacity: 1; transform: translateY(0); }
           }
           
-          @keyframes slideIn {
-            from { transform: translateX(-10px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-          }
-
           @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
@@ -331,12 +263,12 @@ export default function ActivationPayment() {
   );
 }
 
-// Professional, well-spaced styles
+// Mobile-optimized styles
 const styles = {
   page: {
     minHeight: "100vh",
-    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-    padding: "16px",
+    background: "linear-gradient(145deg, #0f172a 0%, #1e293b 100%)",
+    padding: "10px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -345,488 +277,383 @@ const styles = {
   },
   backgroundBlur1: {
     position: "fixed",
-    top: "-20%",
-    right: "-10%",
-    width: "400px",
-    height: "400px",
-    background: "rgba(255, 255, 255, 0.1)",
+    top: "-30%",
+    right: "-20%",
+    width: "300px",
+    height: "300px",
+    background: "rgba(99, 102, 241, 0.2)",
     borderRadius: "50%",
     filter: "blur(60px)",
     zIndex: 0,
   },
   backgroundBlur2: {
     position: "fixed",
-    bottom: "-20%",
-    left: "-10%",
-    width: "350px",
-    height: "350px",
-    background: "rgba(255, 255, 255, 0.1)",
+    bottom: "-30%",
+    left: "-20%",
+    width: "250px",
+    height: "250px",
+    background: "rgba(236, 72, 153, 0.15)",
     borderRadius: "50%",
     filter: "blur(50px)",
     zIndex: 0,
   },
-  backgroundBlur3: {
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: "300px",
-    height: "300px",
-    background: "rgba(255, 255, 255, 0.05)",
-    borderRadius: "50%",
-    filter: "blur(40px)",
-    zIndex: 0,
-  },
   card: {
     width: "100%",
-    maxWidth: "480px",
+    maxWidth: "400px",
     background: "#ffffff",
-    borderRadius: "32px",
-    padding: "28px 24px",
-    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+    borderRadius: "28px",
+    padding: "18px 14px",
+    boxShadow: "0 20px 40px -12px rgba(0, 0, 0, 0.4)",
     position: "relative",
     zIndex: 1,
-    animation: "fadeIn 0.4s ease-out",
-    maxHeight: "95vh",
+    animation: "fadeIn 0.3s ease-out",
+    maxHeight: "98vh",
     overflowY: "auto",
   },
   header: {
-    marginBottom: "28px",
+    marginBottom: "14px",
   },
   logoContainer: {
     display: "flex",
     alignItems: "center",
-    gap: "16px",
+    gap: "10px",
   },
   logoWrapper: {
-    width: "56px",
-    height: "56px",
+    width: "40px",
+    height: "40px",
     background: "linear-gradient(135deg, #667eea, #764ba2)",
-    borderRadius: "16px",
+    borderRadius: "12px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    boxShadow: "0 10px 20px -5px rgba(102, 126, 234, 0.4)",
+    boxShadow: "0 8px 16px -4px rgba(102, 126, 234, 0.3)",
   },
   logoIcon: {
-    fontSize: "28px",
+    fontSize: "20px",
     color: "#ffffff",
   },
   headerText: {
     flex: 1,
   },
   title: {
-    fontSize: "26px",
+    fontSize: "20px",
     fontWeight: "700",
-    color: "#1e293b",
-    margin: "0 0 4px 0",
-    letterSpacing: "-0.5px",
+    color: "#0f172a",
+    margin: 0,
+    lineHeight: 1.2,
   },
   subtitle: {
-    fontSize: "15px",
+    fontSize: "12px",
     color: "#64748b",
-    margin: 0,
+    margin: "2px 0 0 0",
     fontWeight: "500",
-  },
-  highlight: {
-    color: "#667eea",
-    fontWeight: "700",
   },
   approvedBanner: {
     background: "linear-gradient(135deg, #10b981, #059669)",
-    borderRadius: "20px",
-    padding: "20px",
+    borderRadius: "16px",
+    padding: "14px",
     display: "flex",
+    flexDirection: "column",
     alignItems: "center",
-    gap: "16px",
-    marginBottom: "24px",
-    animation: "slideIn 0.3s ease-out",
-  },
-  approvedIconWrapper: {
-    width: "48px",
-    height: "48px",
-    background: "rgba(255, 255, 255, 0.2)",
-    borderRadius: "50%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    gap: "6px",
+    marginBottom: "14px",
   },
   approvedIcon: {
-    fontSize: "28px",
+    fontSize: "22px",
     color: "#ffffff",
-  },
-  approvedContent: {
-    flex: 1,
   },
   approvedText: {
-    display: "block",
     color: "#ffffff",
-    fontSize: "18px",
-    fontWeight: "700",
-    marginBottom: "4px",
-  },
-  approvedSubtext: {
-    display: "block",
-    color: "rgba(255, 255, 255, 0.9)",
+    fontWeight: "600",
     fontSize: "14px",
   },
   pendingBanner: {
     background: "#fef3c7",
-    borderRadius: "20px",
-    padding: "20px",
+    borderRadius: "16px",
+    padding: "14px",
     display: "flex",
+    flexDirection: "column",
     alignItems: "center",
-    gap: "16px",
-    marginBottom: "24px",
+    gap: "4px",
+    marginBottom: "14px",
     border: "1px solid #fbbf24",
-    flexWrap: "wrap",
-  },
-  pendingIconWrapper: {
-    width: "40px",
-    height: "40px",
-    background: "#fbbf24",
-    borderRadius: "50%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
   },
   pendingIcon: {
-    fontSize: "22px",
-  },
-  pendingContent: {
-    flex: 1,
+    fontSize: "20px",
   },
   pendingText: {
-    display: "block",
     color: "#92400e",
-    fontSize: "16px",
-    fontWeight: "700",
-    marginBottom: "2px",
+    fontWeight: "600",
+    fontSize: "14px",
   },
   pendingNote: {
-    display: "block",
+    fontSize: "11px",
     color: "#b45309",
-    fontSize: "13px",
-  },
-  pendingActions: {
-    display: "flex",
-    gap: "8px",
-    width: "100%",
-    marginTop: "8px",
+    margin: 0,
+    textAlign: "center",
   },
   paymentContainer: {
     display: "flex",
     flexDirection: "column",
-    gap: "20px",
-  },
-  summaryCard: {
-    background: "linear-gradient(135deg, #1e293b, #0f172a)",
-    borderRadius: "20px",
-    padding: "20px",
-  },
-  summaryHeader: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    marginBottom: "16px",
-    paddingBottom: "12px",
-    borderBottom: "1px solid #334155",
-  },
-  summaryIcon: {
-    fontSize: "20px",
-  },
-  summaryTitle: {
-    fontSize: "15px",
-    fontWeight: "600",
-    color: "#fbbf24",
-    letterSpacing: "0.5px",
-  },
-  summaryContent: {
-    display: "flex",
-    flexDirection: "column",
     gap: "12px",
   },
-  summaryRow: {
+  trustBadge: {
     display: "flex",
-    justifyContent: "space-between",
     alignItems: "center",
+    justifyContent: "center",
+    gap: "6px",
+    padding: "8px",
+    background: "linear-gradient(135deg, #fef3c7, #fde68a)",
+    borderRadius: "30px",
+    fontSize: "12px",
+    color: "#92400e",
+    fontWeight: "700",
+    marginBottom: "2px",
+    border: "1px solid #fbbf24",
+    animation: "pulse 2s ease-in-out infinite",
   },
-  summaryLabel: {
+  trustIcon: {
     fontSize: "14px",
-    color: "#94a3b8",
   },
-  summaryValue: {
-    fontSize: "20px",
-    fontWeight: "800",
-    color: "#fbbf24",
-  },
-  summaryBonus: {
-    fontSize: "15px",
-    fontWeight: "600",
-    color: "#4ade80",
-  },
-  instructionsCard: {
+  instructionSection: {
     background: "#f8fafc",
     borderRadius: "20px",
-    padding: "24px",
+    padding: "14px",
     border: "1px solid #e2e8f0",
   },
-  instructionsTitle: {
-    fontSize: "18px",
+  sectionTitle: {
+    fontSize: "16px",
     fontWeight: "700",
-    color: "#1e293b",
-    margin: "0 0 20px 0",
+    color: "#0f172a",
+    margin: "0 0 12px 0",
     textAlign: "center",
   },
-  importantNotice: {
-    background: "#fef2f2",
-    border: "1px solid #fecaca",
-    borderRadius: "12px",
-    padding: "14px",
+  warningBox: {
+    backgroundColor: "#fef2f2",
+    border: "2px solid #ef4444",
+    borderRadius: "14px",
+    padding: "12px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "6px",
+    marginBottom: "14px",
+  },
+  warningIcon: {
+    fontSize: "18px",
+  },
+  warningText: {
+    fontSize: "13px",
+    fontWeight: "600",
+    color: "#dc2626",
+    textAlign: "center",
+  },
+  ceoNumber: {
+    fontSize: "18px",
+    fontWeight: "800",
+    color: "#dc2626",
+    letterSpacing: "1px",
+  },
+  verifiedText: {
+    fontSize: "12px",
+    color: "#059669",
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  stepsContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    marginBottom: "14px",
+  },
+  step: {
     display: "flex",
     alignItems: "center",
-    gap: "12px",
-    marginBottom: "24px",
-  },
-  importantIcon: {
-    fontSize: "20px",
-  },
-  importantText: {
-    fontSize: "14px",
-    color: "#b91c1c",
-    fontWeight: "500",
-    flex: 1,
-  },
-  stepsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(2, 1fr)",
-    gap: "16px",
-    marginBottom: "24px",
-  },
-  stepItem: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
+    gap: "10px",
+    fontSize: "13px",
+    color: "#374151",
   },
   stepNumber: {
-    width: "32px",
-    height: "32px",
-    background: "#e2e8f0",
+    width: "24px",
+    height: "24px",
+    backgroundColor: "#6366f1",
+    color: "#ffffff",
     borderRadius: "50%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "14px",
-    fontWeight: "700",
-    color: "#475569",
-  },
-  stepText: {
-    fontSize: "13px",
-    color: "#334155",
-    flex: 1,
-  },
-  copyNumberCard: {
-    background: "#ffffff",
-    border: "2px solid #667eea",
-    borderRadius: "16px",
-    padding: "16px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: "16px",
-  },
-  numberDisplay: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-  },
-  numberIcon: {
-    fontSize: "24px",
-  },
-  numberText: {
-    fontSize: "20px",
-    fontWeight: "800",
-    color: "#1e293b",
-    letterSpacing: "1px",
-  },
-  copyNumberButton: {
-    background: "#667eea",
-    color: "#ffffff",
-    border: "none",
-    borderRadius: "12px",
-    padding: "10px 20px",
-    fontSize: "14px",
     fontWeight: "600",
-    cursor: "pointer",
-    transition: "all 0.2s",
+    fontSize: "12px",
+    flexShrink: 0,
   },
-  bonusCard: {
-    background: "#f0fdf4",
+  bonusBox: {
+    backgroundColor: "#f0fdf4",
     border: "2px dashed #22c55e",
-    borderRadius: "16px",
-    padding: "16px",
+    borderRadius: "40px",
+    padding: "10px",
     display: "flex",
     alignItems: "center",
-    gap: "12px",
+    justifyContent: "center",
+    gap: "8px",
+    marginBottom: "14px",
   },
   bonusIcon: {
-    fontSize: "28px",
+    fontSize: "18px",
   },
   bonusText: {
     fontSize: "14px",
     fontWeight: "700",
     color: "#15803d",
-    flex: 1,
-    lineHeight: "1.5",
   },
-  formCard: {
+  copySection: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#ffffff",
+    borderRadius: "40px",
+    padding: "8px 12px",
+    border: "2px solid #6366f1",
+  },
+  phoneDisplay: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+  },
+  phoneIcon: {
+    fontSize: "18px",
+  },
+  phoneNumber: {
+    fontSize: "16px",
+    fontWeight: "700",
+    color: "#0f172a",
+    letterSpacing: "1px",
+  },
+  copyButton: {
+    backgroundColor: "#6366f1",
+    color: "#ffffff",
+    border: "none",
+    borderRadius: "30px",
+    padding: "8px 14px",
+    fontSize: "12px",
+    fontWeight: "600",
+    cursor: "pointer",
+    whiteSpace: "nowrap",
+  },
+  formSection: {
     background: "#ffffff",
     borderRadius: "20px",
-    padding: "24px",
+    padding: "14px",
     border: "1px solid #e2e8f0",
   },
   formTitle: {
-    fontSize: "18px",
+    fontSize: "14px",
     fontWeight: "700",
-    color: "#1e293b",
-    margin: "0 0 4px 0",
+    color: "#0f172a",
+    margin: "0 0 2px 0",
+    textAlign: "center",
   },
-  formSubtitle: {
-    fontSize: "13px",
-    color: "#64748b",
-    margin: "0 0 20px 0",
+  formNote: {
+    fontSize: "11px",
+    color: "#ef4444",
+    margin: "0 0 12px 0",
+    textAlign: "center",
+    fontWeight: "500",
   },
   textarea: {
     width: "100%",
-    padding: "16px",
+    padding: "12px",
     border: "2px solid #e2e8f0",
-    borderRadius: "16px",
-    fontSize: "14px",
+    borderRadius: "14px",
+    fontSize: "12px",
     fontFamily: "inherit",
     resize: "none",
     boxSizing: "border-box",
-    marginBottom: "20px",
+    marginBottom: "12px",
     outline: "none",
     transition: "border-color 0.2s",
   },
-  formActions: {
+  buttonGroup: {
     display: "flex",
-    gap: "12px",
+    gap: "6px",
   },
   submitButton: {
-    flex: 2,
-    padding: "16px",
+    flex: 3,
+    padding: "12px",
     background: "linear-gradient(135deg, #10b981, #059669)",
     color: "#ffffff",
     border: "none",
-    borderRadius: "14px",
-    fontSize: "15px",
-    fontWeight: "600",
-    cursor: "pointer",
-    transition: "all 0.2s",
-  },
-  statusButton: {
-    flex: 1,
-    padding: "16px",
-    background: "#ffffff",
-    color: "#475569",
-    border: "2px solid #e2e8f0",
-    borderRadius: "14px",
-    fontSize: "14px",
-    fontWeight: "600",
-    cursor: "pointer",
-  },
-  supportCard: {
-    marginTop: "8px",
-  },
-  whatsappButton: {
-    width: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "12px",
-    padding: "16px",
-    background: "linear-gradient(135deg, #25D366, #128C7E)",
-    border: "none",
-    borderRadius: "16px",
-    cursor: "pointer",
-    color: "white",
-    fontWeight: "600",
-    fontSize: "15px",
-    transition: "all 0.2s",
-    boxShadow: "0 10px 20px -5px rgba(37, 211, 102, 0.3)",
-  },
-  whatsappIcon: {
-    fontSize: "20px",
-  },
-  whatsappText: {
-    fontSize: "15px",
-  },
-  whatsappArrow: {
-    fontSize: "18px",
-    opacity: 0.8,
-  },
-  whatsappPendingButton: {
-    flex: 1,
-    padding: "10px",
-    background: "#25D366",
-    color: "white",
-    border: "none",
-    borderRadius: "10px",
+    borderRadius: "40px",
     fontSize: "13px",
     fontWeight: "600",
     cursor: "pointer",
+    transition: "opacity 0.2s",
+  },
+  checkButton: {
+    flex: 1,
+    padding: "12px",
+    background: "#ffffff",
+    color: "#334155",
+    border: "2px solid #e2e8f0",
+    borderRadius: "40px",
+    fontSize: "12px",
+    fontWeight: "600",
+    cursor: "pointer",
+  },
+  supportSection: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     gap: "6px",
+    padding: "8px",
+    background: "#f1f5f9",
+    borderRadius: "30px",
+    fontSize: "11px",
+    color: "#334155",
   },
-  refreshButton: {
-    flex: 1,
-    padding: "10px",
-    background: "#fbbf24",
-    color: "#92400e",
-    border: "none",
-    borderRadius: "10px",
-    fontSize: "13px",
-    fontWeight: "600",
-    cursor: "pointer",
+  supportIcon: {
+    fontSize: "12px",
   },
   footer: {
-    marginTop: "28px",
+    marginTop: "16px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    borderTop: "1px solid #e2e8f0",
-    paddingTop: "20px",
+    borderTop: "1px solid #f1f5f9",
+    paddingTop: "10px",
   },
-  goBackButton: {
+  logoutButton: {
     background: "none",
     border: "none",
-    color: "#667eea",
-    fontSize: "14px",
+    color: "#64748b",
+    fontSize: "12px",
+    fontWeight: "500",
+    cursor: "pointer",
+    padding: "4px 0",
+  },
+  footerText: {
+    fontSize: "10px",
+    color: "#94a3b8",
+  },
+  goToDashboardBtn: {
+    background: "#ffffff",
+    color: "#10b981",
+    border: "none",
+    borderRadius: "30px",
+    padding: "8px 14px",
+    fontSize: "12px",
     fontWeight: "600",
     cursor: "pointer",
-    padding: "8px 0",
-    display: "flex",
-    alignItems: "center",
-    gap: "4px",
+    marginTop: "4px",
   },
-  footerBadge: {
-    display: "flex",
-    alignItems: "center",
-    gap: "6px",
-    padding: "6px 12px",
-    background: "#f1f5f9",
+  refreshButton: {
+    background: "#fbbf24",
+    color: "#92400e",
+    border: "none",
     borderRadius: "30px",
-  },
-  footerBadgeIcon: {
-    fontSize: "12px",
-    color: "#10b981",
-  },
-  footerBadgeText: {
+    padding: "8px 14px",
     fontSize: "11px",
-    color: "#475569",
-    fontWeight: "500",
+    fontWeight: "600",
+    cursor: "pointer",
+    marginTop: "4px",
   },
 };
