@@ -47,14 +47,14 @@ adminApi.interceptors.response.use(
 ===================================== */
 
 export const getPendingInitialActivations = () => 
-  adminApi.get("/initial-activation/pending");
+  adminApi.get("/admin/initial-activation/pending");
 
 export const getAllInitialActivations = () => 
-  adminApi.get("/initial-activation/all");
+  adminApi.get("/admin/initial-activation/all");
 
 export const approveInitialActivation = (userId) => 
-  adminApi.post("/initial-activation/approve", { userId });
+  adminApi.post("/admin/initial-activation/approve", { userId });
 
 export const rejectInitialActivation = (userId, reason) => 
-  adminApi.post("/initial-activation/reject", { userId, reason });
+  adminApi.post("/admin/initial-activation/reject", { userId, reason });
 
