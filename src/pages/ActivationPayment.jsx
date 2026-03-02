@@ -98,9 +98,9 @@ export default function ActivationPayment() {
               <span style={styles.logoIcon}>🔑</span>
             </div>
             <div style={styles.headerText}>
-              <h1 style={styles.title}>Activate Your Account</h1>
+              <h1 style={styles.title}>ACTIVATE YOUR ACCOUNT NOW🔑</h1>
               <p style={styles.subtitle}>
-                One-time payment of KES {ACTIVATION_FEE}
+                Activation fee is KES {ACTIVATION_FEE}
               </p>
             </div>
           </div>
@@ -108,9 +108,7 @@ export default function ActivationPayment() {
           {/* Clear activation notice */}
           <div style={styles.activationNotice}>
             <span style={styles.activationIcon}>🔒</span>
-            <span style={styles.activationText}>
-              You are paying to ACTIVATE your account. This is a one-time fee.
-            </span>
+
           </div>
         </div>
 
