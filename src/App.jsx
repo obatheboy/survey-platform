@@ -52,12 +52,12 @@ function ProtectedRoute({ children, requireInitialActivation = false }) {
           try {
             const statusRes = await api.get("/initial-activation/status");
             setInitialActivationStatus(statusRes.data.status);
-          } catch (statusErr) {
+          } catch {
             // If endpoint fails, assume not activated
             setInitialActivationStatus("PENDING");
           }
         }
-      } catch (error) {
+      } catch {
         setUser(null);
       } finally {
         setLoading(false);

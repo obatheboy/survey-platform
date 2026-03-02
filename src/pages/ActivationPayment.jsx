@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 const MPESA_NUMBER = "0794101450";
 const CEO_NAME = "Obadiah Otoki";
 const ACTIVATION_FEE = 100;
+const WELCOME_BONUS = 1200;
 
 export default function ActivationPayment() {
   const navigate = useNavigate();
@@ -128,67 +129,77 @@ export default function ActivationPayment() {
           <div style={styles.paymentContainer}>
             {/* Trust Badge */}
             <div style={styles.trustBadge}>
-              <span style={styles.trustIcon}>🔒</span>
-              <span style={styles.trustText}>Secured by M-Pesa</span>
+              <span style={styles.trustIcon}>⚡</span>
+              <span style={styles.trustText}>Get KES {WELCOME_BONUS} instantly after activation!</span>
             </div>
 
-            {/* Payment Instructions - Simplified */}
-            <div style={styles.instructionBox}>
-              <div style={styles.instructionHeader}>
-                <span style={styles.instructionIcon}>📱</span>
-                <span style={styles.instructionTitle}>Pay via M-Pesa</span>
-              </div>
+            {/* HOW TO PAY section - exactly as requested */}
+            <div style={styles.instructionSection}>
+              <h2 style={styles.sectionTitle}>📲 HOW TO PAY & ACTIVATE</h2>
               
-              <div style={styles.paymentDetails}>
-                <div style={styles.detailRow}>
-                  <span style={styles.detailLabel}>Business No:</span>
-                  <div style={styles.numberContainer}>
-                    <span style={styles.detailValue}>{MPESA_NUMBER}</span>
-                    <button onClick={copyNumber} style={styles.copySmallBtn}>
-                      {copied ? "✓" : "📋"}
-                    </button>
-                  </div>
+              <div style={styles.warningBox}>
+                <span style={styles.warningIcon}>⚠️</span>
+                <span style={styles.warningText}>IMPORTANT: Pay to this number of the CEO</span>
+                <span style={styles.ceoNumber}>🚀0794 101 450🚀</span>
+                <span style={styles.verifiedText}>and payments are verified instantly after payment</span>
+              </div>
+
+              <div style={styles.stepsContainer}>
+                <div style={styles.step}>
+                  <span style={styles.stepNumber}>1</span>
+                  <span>Open M-Pesa → Lipa na M-PESA</span>
                 </div>
-                
-                <div style={styles.detailRow}>
-                  <span style={styles.detailLabel}>Account:</span>
-                  <span style={styles.detailValue}>{CEO_NAME}</span>
+                <div style={styles.step}>
+                  <span style={styles.stepNumber}>2</span>
+                  <span>Send Money → Enter 0794101450</span>
                 </div>
-                
-                <div style={styles.detailRow}>
-                  <span style={styles.detailLabel}>Amount:</span>
-                  <span style={styles.detailValue}>KES {ACTIVATION_FEE}</span>
+                <div style={styles.step}>
+                  <span style={styles.stepNumber}>3</span>
+                  <span>Confirm: Obadiah Otoki</span>
+                </div>
+                <div style={styles.step}>
+                  <span style={styles.stepNumber}>4</span>
+                  <span>Amount: KES 100</span>
+                </div>
+                <div style={styles.step}>
+                  <span style={styles.stepNumber}>5</span>
+                  <span>Enter PIN & Complete</span>
+                </div>
+                <div style={styles.step}>
+                  <span style={styles.stepNumber}>6</span>
+                  <span>Paste confirmation below</span>
                 </div>
               </div>
 
-              {/* Quick Steps */}
-              <div style={styles.stepsGrid}>
-                <div style={styles.step}>
-                  <span style={styles.stepDot}>1</span>
-                  <span style={styles.stepText}>Lipa na M-PESA</span>
+              {/* Bonus Highlight */}
+              <div style={styles.bonusBox}>
+                <span style={styles.bonusIcon}>🎁</span>
+                <span style={styles.bonusText}>Get KES {WELCOME_BONUS} instantly!</span>
+              </div>
+
+              {/* Copy Number Section - Prominent */}
+              <div style={styles.copySection}>
+                <div style={styles.phoneDisplay}>
+                  <span style={styles.phoneIcon}>📞</span>
+                  <span style={styles.phoneNumber}>0794101450</span>
                 </div>
-                <div style={styles.step}>
-                  <span style={styles.stepDot}>2</span>
-                  <span style={styles.stepText}>Enter PIN</span>
-                </div>
-                <div style={styles.step}>
-                  <span style={styles.stepDot}>3</span>
-                  <span style={styles.stepText}>Confirm</span>
-                </div>
+                <button onClick={copyNumber} style={styles.copyButton}>
+                  {copied ? "✓ Copied!" : "📋 Copy Number"}
+                </button>
               </div>
             </div>
 
-            {/* Form Section - Compact */}
+            {/* Form Section - with requested text */}
             <form onSubmit={handleSubmit} style={styles.formSection}>
-              <label style={styles.formLabel}>
-                <span style={styles.labelIcon}>📋</span>
-                Paste M-Pesa confirmation
-              </label>
+              <h3 style={styles.formTitle}>📌 Paste the FULL M-Pesa SMS below</h3>
+              <p style={styles.formNote}>
+                ⚠ Include Transaction ID, Amount & Time
+              </p>
               
               <textarea
                 value={mpesaCode}
                 onChange={(e) => setMpesaCode(e.target.value)}
-                placeholder="Paste the full M-Pesa SMS here..."
+                placeholder="Paste your M-Pesa confirmation message here..."
                 style={styles.textarea}
                 rows={3}
               />
@@ -210,7 +221,7 @@ export default function ActivationPayment() {
                   onClick={checkStatus} 
                   style={styles.checkButton}
                 >
-                  🔄 Check Status
+                  🔄 Check
                 </button>
               </div>
             </form>
@@ -241,6 +252,11 @@ export default function ActivationPayment() {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
           }
+          
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+          }
         `}
       </style>
     </div>
@@ -252,7 +268,7 @@ const styles = {
   page: {
     minHeight: "100vh",
     background: "linear-gradient(145deg, #0f172a 0%, #1e293b 100%)",
-    padding: "12px",
+    padding: "10px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -286,46 +302,48 @@ const styles = {
     maxWidth: "400px",
     background: "#ffffff",
     borderRadius: "28px",
-    padding: "20px 16px",
+    padding: "18px 14px",
     boxShadow: "0 20px 40px -12px rgba(0, 0, 0, 0.4)",
     position: "relative",
     zIndex: 1,
     animation: "fadeIn 0.3s ease-out",
+    maxHeight: "98vh",
+    overflowY: "auto",
   },
   header: {
-    marginBottom: "16px",
+    marginBottom: "14px",
   },
   logoContainer: {
     display: "flex",
     alignItems: "center",
-    gap: "12px",
+    gap: "10px",
   },
   logoWrapper: {
-    width: "44px",
-    height: "44px",
+    width: "40px",
+    height: "40px",
     background: "linear-gradient(135deg, #667eea, #764ba2)",
-    borderRadius: "14px",
+    borderRadius: "12px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     boxShadow: "0 8px 16px -4px rgba(102, 126, 234, 0.3)",
   },
   logoIcon: {
-    fontSize: "24px",
+    fontSize: "20px",
     color: "#ffffff",
   },
   headerText: {
     flex: 1,
   },
   title: {
-    fontSize: "22px",
+    fontSize: "20px",
     fontWeight: "700",
     color: "#0f172a",
     margin: 0,
     lineHeight: 1.2,
   },
   subtitle: {
-    fontSize: "13px",
+    fontSize: "12px",
     color: "#64748b",
     margin: "2px 0 0 0",
     fontWeight: "500",
@@ -333,43 +351,43 @@ const styles = {
   approvedBanner: {
     background: "linear-gradient(135deg, #10b981, #059669)",
     borderRadius: "16px",
-    padding: "16px",
+    padding: "14px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: "8px",
-    marginBottom: "16px",
+    gap: "6px",
+    marginBottom: "14px",
   },
   approvedIcon: {
-    fontSize: "24px",
+    fontSize: "22px",
     color: "#ffffff",
   },
   approvedText: {
     color: "#ffffff",
     fontWeight: "600",
-    fontSize: "15px",
+    fontSize: "14px",
   },
   pendingBanner: {
     background: "#fef3c7",
     borderRadius: "16px",
-    padding: "16px",
+    padding: "14px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: "6px",
-    marginBottom: "16px",
+    gap: "4px",
+    marginBottom: "14px",
     border: "1px solid #fbbf24",
   },
   pendingIcon: {
-    fontSize: "22px",
+    fontSize: "20px",
   },
   pendingText: {
     color: "#92400e",
     fontWeight: "600",
-    fontSize: "15px",
+    fontSize: "14px",
   },
   pendingNote: {
-    fontSize: "12px",
+    fontSize: "11px",
     color: "#b45309",
     margin: 0,
     textAlign: "center",
@@ -384,129 +402,169 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     gap: "6px",
-    padding: "6px",
-    background: "#f1f5f9",
+    padding: "8px",
+    background: "linear-gradient(135deg, #fef3c7, #fde68a)",
     borderRadius: "30px",
     fontSize: "12px",
-    color: "#334155",
-    fontWeight: "600",
-    marginBottom: "4px",
+    color: "#92400e",
+    fontWeight: "700",
+    marginBottom: "2px",
+    border: "1px solid #fbbf24",
+    animation: "pulse 2s ease-in-out infinite",
   },
   trustIcon: {
     fontSize: "14px",
   },
-  instructionBox: {
+  instructionSection: {
     background: "#f8fafc",
     borderRadius: "20px",
-    padding: "16px",
+    padding: "14px",
     border: "1px solid #e2e8f0",
   },
-  instructionHeader: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    marginBottom: "16px",
-  },
-  instructionIcon: {
-    fontSize: "20px",
-  },
-  instructionTitle: {
+  sectionTitle: {
     fontSize: "16px",
-    fontWeight: "600",
+    fontWeight: "700",
     color: "#0f172a",
+    margin: "0 0 12px 0",
+    textAlign: "center",
   },
-  paymentDetails: {
-    background: "#ffffff",
+  warningBox: {
+    backgroundColor: "#fef2f2",
+    border: "2px solid #ef4444",
     borderRadius: "14px",
     padding: "12px",
-    marginBottom: "16px",
-    border: "1px solid #e2e8f0",
-  },
-  detailRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "8px 0",
-    borderBottom: "1px solid #f1f5f9",
-  },
-  detailLabel: {
-    fontSize: "13px",
-    color: "#64748b",
-    fontWeight: "500",
-  },
-  detailValue: {
-    fontSize: "14px",
-    fontWeight: "600",
-    color: "#0f172a",
-  },
-  numberContainer: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-  },
-  copySmallBtn: {
-    background: "#e2e8f0",
-    border: "none",
-    borderRadius: "6px",
-    padding: "4px 8px",
-    fontSize: "12px",
-    cursor: "pointer",
-    color: "#334155",
-  },
-  stepsGrid: {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: "6px",
-  },
-  step: {
-    flex: 1,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: "4px",
+    gap: "6px",
+    marginBottom: "14px",
   },
-  stepDot: {
+  warningIcon: {
+    fontSize: "18px",
+  },
+  warningText: {
+    fontSize: "13px",
+    fontWeight: "600",
+    color: "#dc2626",
+    textAlign: "center",
+  },
+  ceoNumber: {
+    fontSize: "18px",
+    fontWeight: "800",
+    color: "#dc2626",
+    letterSpacing: "1px",
+  },
+  verifiedText: {
+    fontSize: "12px",
+    color: "#059669",
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  stepsContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    marginBottom: "14px",
+  },
+  step: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontSize: "13px",
+    color: "#374151",
+  },
+  stepNumber: {
     width: "24px",
     height: "24px",
-    background: "#e2e8f0",
-    borderRadius: "12px",
+    backgroundColor: "#6366f1",
+    color: "#ffffff",
+    borderRadius: "50%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "11px",
-    fontWeight: "700",
-    color: "#334155",
+    fontWeight: "600",
+    fontSize: "12px",
+    flexShrink: 0,
   },
-  stepText: {
-    fontSize: "9px",
-    color: "#64748b",
-    fontWeight: "500",
-    textAlign: "center",
+  bonusBox: {
+    backgroundColor: "#f0fdf4",
+    border: "2px dashed #22c55e",
+    borderRadius: "40px",
+    padding: "10px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+    marginBottom: "14px",
+  },
+  bonusIcon: {
+    fontSize: "18px",
+  },
+  bonusText: {
+    fontSize: "14px",
+    fontWeight: "700",
+    color: "#15803d",
+  },
+  copySection: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#ffffff",
+    borderRadius: "40px",
+    padding: "8px 12px",
+    border: "2px solid #6366f1",
+  },
+  phoneDisplay: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+  },
+  phoneIcon: {
+    fontSize: "18px",
+  },
+  phoneNumber: {
+    fontSize: "16px",
+    fontWeight: "700",
+    color: "#0f172a",
+    letterSpacing: "1px",
+  },
+  copyButton: {
+    backgroundColor: "#6366f1",
+    color: "#ffffff",
+    border: "none",
+    borderRadius: "30px",
+    padding: "8px 14px",
+    fontSize: "12px",
+    fontWeight: "600",
+    cursor: "pointer",
+    whiteSpace: "nowrap",
   },
   formSection: {
     background: "#ffffff",
     borderRadius: "20px",
-    padding: "16px",
+    padding: "14px",
     border: "1px solid #e2e8f0",
   },
-  formLabel: {
-    display: "flex",
-    alignItems: "center",
-    gap: "6px",
+  formTitle: {
     fontSize: "14px",
-    fontWeight: "600",
+    fontWeight: "700",
     color: "#0f172a",
-    marginBottom: "8px",
+    margin: "0 0 2px 0",
+    textAlign: "center",
   },
-  labelIcon: {
-    fontSize: "16px",
+  formNote: {
+    fontSize: "11px",
+    color: "#ef4444",
+    margin: "0 0 12px 0",
+    textAlign: "center",
+    fontWeight: "500",
   },
   textarea: {
     width: "100%",
     padding: "12px",
     border: "2px solid #e2e8f0",
     borderRadius: "14px",
-    fontSize: "13px",
+    fontSize: "12px",
     fontFamily: "inherit",
     resize: "none",
     boxSizing: "border-box",
@@ -516,28 +574,28 @@ const styles = {
   },
   buttonGroup: {
     display: "flex",
-    gap: "8px",
+    gap: "6px",
   },
   submitButton: {
-    flex: 2,
-    padding: "14px",
+    flex: 3,
+    padding: "12px",
     background: "linear-gradient(135deg, #10b981, #059669)",
     color: "#ffffff",
     border: "none",
     borderRadius: "40px",
-    fontSize: "14px",
+    fontSize: "13px",
     fontWeight: "600",
     cursor: "pointer",
     transition: "opacity 0.2s",
   },
   checkButton: {
     flex: 1,
-    padding: "14px",
+    padding: "12px",
     background: "#ffffff",
     color: "#334155",
     border: "2px solid #e2e8f0",
     borderRadius: "40px",
-    fontSize: "13px",
+    fontSize: "12px",
     fontWeight: "600",
     cursor: "pointer",
   },
@@ -546,34 +604,34 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     gap: "6px",
-    padding: "10px",
+    padding: "8px",
     background: "#f1f5f9",
     borderRadius: "30px",
-    fontSize: "12px",
+    fontSize: "11px",
     color: "#334155",
   },
   supportIcon: {
-    fontSize: "14px",
+    fontSize: "12px",
   },
   footer: {
-    marginTop: "20px",
+    marginTop: "16px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     borderTop: "1px solid #f1f5f9",
-    paddingTop: "12px",
+    paddingTop: "10px",
   },
   logoutButton: {
     background: "none",
     border: "none",
     color: "#64748b",
-    fontSize: "13px",
+    fontSize: "12px",
     fontWeight: "500",
     cursor: "pointer",
     padding: "4px 0",
   },
   footerText: {
-    fontSize: "11px",
+    fontSize: "10px",
     color: "#94a3b8",
   },
   goToDashboardBtn: {
@@ -581,8 +639,8 @@ const styles = {
     color: "#10b981",
     border: "none",
     borderRadius: "30px",
-    padding: "8px 16px",
-    fontSize: "13px",
+    padding: "8px 14px",
+    fontSize: "12px",
     fontWeight: "600",
     cursor: "pointer",
     marginTop: "4px",
@@ -592,10 +650,10 @@ const styles = {
     color: "#92400e",
     border: "none",
     borderRadius: "30px",
-    padding: "8px 16px",
-    fontSize: "12px",
+    padding: "8px 14px",
+    fontSize: "11px",
     fontWeight: "600",
     cursor: "pointer",
-    marginTop: "6px",
+    marginTop: "4px",
   },
 };

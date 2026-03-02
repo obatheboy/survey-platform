@@ -46,9 +46,6 @@ adminApi.interceptors.response.use(
    INITIAL ACTIVATION API CALLS
 ===================================== */
 
-export const getPendingInitialActivations = () => 
-  adminApi.get("/admin/initial-activation/pending");
-
 export const getAllInitialActivations = () => 
   adminApi.get("/admin/initial-activation/all");
 

@@ -184,7 +184,7 @@ export default function Auth() {
           navigate("/activation-payment", { replace: true });
           return;
         }
-      } catch (statusErr) {
+      } catch {
         // If status check fails, redirect to activation as fallback
         navigate("/activation-payment", { replace: true });
         return;
