@@ -7,7 +7,6 @@ const MPESA_NUMBER = "0794101450";
 const CEO_NAME = "Obadiah Otoki";
 const ACTIVATION_FEE = 100;
 const WELCOME_BONUS = 1200;
-const WHATSAPP_NUMBER = "254786357584";
 
 export default function ActivationPayment() {
   const navigate = useNavigate();
@@ -19,10 +18,10 @@ export default function ActivationPayment() {
   useEffect(() => {
     checkStatus();
     
-    // Poll for status updates every 5 seconds
+    // Poll for status updates every 10 seconds
     const interval = setInterval(() => {
       checkStatus();
-    }, 5000);
+    }, 10000);
     
     return () => clearInterval(interval);
   }, []);
@@ -30,10 +29,11 @@ export default function ActivationPayment() {
   // Auto-redirect when status becomes APPROVED
   useEffect(() => {
     if (status === "APPROVED") {
-      toast.success("Account activated! Redirecting to dashboard...");
-      setTimeout(() => {
-        navigate("/dashboard", { replace: true });
-      }, 2000);
+      // Small delay for user to see the approved message, then redirect
+      const timer = setTimeout(() => {
+        navigate("/dashboard");
+      }, 1500);
+      return () => clearTimeout(timer);
     }
   }, [status, navigate]);
 
@@ -54,14 +54,6 @@ export default function ActivationPayment() {
     setCopied(true);
     toast.success("Number copied!");
     setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleWhatsApp = () => {
-    const message = encodeURIComponent(
-      "Hello, I need help with my account activation. I have made a payment of KES 100 to 0794101450."
-    );
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
-    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
   };
 
   const handleSubmit = async (e) => {
@@ -89,8 +81,10 @@ export default function ActivationPayment() {
     }
   };
 
-  const handleGoBack = () => {
-    navigate("/auth?mode=register");
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("cachedUser");
+    navigate("/auth?mode=login");
   };
 
   return (
@@ -137,12 +131,6 @@ export default function ActivationPayment() {
             <p style={styles.pendingNote}>Waiting for admin approval (usually 2-5 min)</p>
             <button onClick={checkStatus} style={styles.refreshButton}>
               Refresh Status
-            </button>
-            
-            {/* WhatsApp Support in pending state */}
-            <button onClick={handleWhatsApp} style={styles.whatsappPendingButton}>
-              <span style={styles.whatsappIcon}>💬</span>
-              Contact Support on WhatsApp
             </button>
           </div>
         )}
@@ -249,19 +237,20 @@ export default function ActivationPayment() {
               </div>
             </form>
 
-            {/* WhatsApp Support Button */}
-            <button onClick={handleWhatsApp} style={styles.whatsappButton}>
-              <span style={styles.whatsappIcon}>💬</span>
-              <span style={styles.whatsappText}>Need Help? Chat on WhatsApp</span>
-              <span style={styles.whatsappArrow}>→</span>
-            </button>
+            {/* Support Info */}
+            <div style={styles.supportSection}>
+              <span style={styles.supportIcon}>💬</span>
+              <span style={styles.supportText}>
+                Having issues? Contact support
+              </span>
+            </div>
           </div>
         )}
 
-        {/* Footer with Go Back button instead of Logout */}
+        {/* Footer */}
         <div style={styles.footer}>
-          <button onClick={handleGoBack} style={styles.goBackButton}>
-            ← Go Back
+          <button onClick={handleLogout} style={styles.logoutButton}>
+            ← Logout
           </button>
           <span style={styles.footerText}>© 2024 SurveyEarn</span>
         </div>
@@ -278,11 +267,6 @@ export default function ActivationPayment() {
           @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
-          }
-
-          @keyframes whatsappPulse {
-            0%, 100% { background-color: #25D366; }
-            50% { background-color: #128C7E; }
           }
         `}
       </style>
@@ -401,7 +385,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: "8px",
+    gap: "4px",
     marginBottom: "14px",
     border: "1px solid #fbbf24",
   },
@@ -626,47 +610,19 @@ const styles = {
     fontWeight: "600",
     cursor: "pointer",
   },
-  whatsappButton: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "8px",
-    padding: "12px",
-    background: "linear-gradient(135deg, #25D366, #128C7E)",
-    border: "none",
-    borderRadius: "40px",
-    cursor: "pointer",
-    color: "white",
-    fontWeight: "600",
-    fontSize: "13px",
-    transition: "transform 0.2s",
-    boxShadow: "0 8px 16px -4px rgba(37, 211, 102, 0.3)",
-  },
-  whatsappPendingButton: {
+  supportSection: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     gap: "6px",
-    padding: "10px 16px",
-    background: "#25D366",
-    border: "none",
+    padding: "8px",
+    background: "#f1f5f9",
     borderRadius: "30px",
-    cursor: "pointer",
-    color: "white",
-    fontWeight: "600",
+    fontSize: "11px",
+    color: "#334155",
+  },
+  supportIcon: {
     fontSize: "12px",
-    marginTop: "8px",
-    width: "100%",
-  },
-  whatsappIcon: {
-    fontSize: "16px",
-  },
-  whatsappText: {
-    fontSize: "13px",
-  },
-  whatsappArrow: {
-    fontSize: "14px",
-    opacity: 0.8,
   },
   footer: {
     marginTop: "16px",
@@ -676,17 +632,14 @@ const styles = {
     borderTop: "1px solid #f1f5f9",
     paddingTop: "10px",
   },
-  goBackButton: {
+  logoutButton: {
     background: "none",
     border: "none",
-    color: "#6366f1",
-    fontSize: "13px",
-    fontWeight: "600",
+    color: "#64748b",
+    fontSize: "12px",
+    fontWeight: "500",
     cursor: "pointer",
-    padding: "6px 0",
-    display: "flex",
-    alignItems: "center",
-    gap: "4px",
+    padding: "4px 0",
   },
   footerText: {
     fontSize: "10px",
