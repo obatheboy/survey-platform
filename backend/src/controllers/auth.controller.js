@@ -56,11 +56,6 @@ exports.register = async (req, res) => {
       welcome_bonus_received: true,
       welcome_bonus: 1200, // Add this field
       referral_code: newReferralCode, // ✅ Generate referral code
-      // Initialize initial activation status (KES 100 required before dashboard)
-      initial_activation: {
-        amount: 100,
-        status: 'PENDING'
-      },
       // Initialize empty plans structure
       plans: {
         REGULAR: {

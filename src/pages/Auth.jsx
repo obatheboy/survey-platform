@@ -138,8 +138,8 @@ export default function Auth() {
         }
       }
 
-      setRegMessage("✓ Account created successfully! Redirecting to payment...");
-      setTimeout(() => navigate("/activation-payment", { replace: true }), 1500);
+      setRegMessage("✓ Account created successfully! Redirecting...");
+      setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
     } catch (err) {
       setRegMessage(err.response?.data?.message || "Registration failed");
       setShake(true);
@@ -176,20 +176,6 @@ export default function Auth() {
       }
 
       await api.get("/auth/me");
-      
-      // Check initial activation status
-      try {
-        const statusRes = await api.get("/initial-activation/status");
-        if (statusRes.data.status !== "APPROVED") {
-          navigate("/activation-payment", { replace: true });
-          return;
-        }
-      } catch {
-        // If status check fails, redirect to activation as fallback
-        navigate("/activation-payment", { replace: true });
-        return;
-      }
-      
       navigate("/dashboard", { replace: true });
     } catch (err) {
       if (!navigator.onLine) {
@@ -197,7 +183,7 @@ export default function Auth() {
         const token = localStorage.getItem("token");
         if (cachedUser && token) {
           setLoginMessage("✓ Offline mode: using saved session.");
-          navigate("/activation-payment", { replace: true });
+          navigate("/dashboard", { replace: true });
           return;
         }
         setLoginMessage("Offline. Connect to the internet to log in.");

@@ -175,20 +175,6 @@ const userSchema = new mongoose.Schema({
     from_activation: { type: Boolean, default: true }  // Track if from activation payment
   }],
   // ============================================
-  // INITIAL ACTIVATION (KES 100 - Required before dashboard access)
-  // ============================================
-  initial_activation: {
-    mpesa_code: { type: String, trim: true },
-    amount: { type: Number, default: 100 },
-    status: { 
-      type: String, 
-      enum: ['PENDING', 'SUBMITTED', 'APPROVED', 'REJECTED'],
-      default: 'PENDING' 
-    },
-    submitted_at: { type: Date },
-    processed_at: { type: Date }
-  },
-  // ============================================
   // GAMIFICATION FIELDS
   // ============================================
   // Streak tracking

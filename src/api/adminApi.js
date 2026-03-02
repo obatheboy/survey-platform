@@ -42,16 +42,3 @@ adminApi.interceptors.response.use(
   }
 );
 
-/* ======================================
-   INITIAL ACTIVATION API CALLS
-===================================== */
-
-export const getAllInitialActivations = () => 
-  adminApi.get("/admin/initial-activation/all");
-
-export const approveInitialActivation = (userId) => 
-  adminApi.post("/admin/initial-activation/approve", { userId });
-
-export const rejectInitialActivation = (userId, reason) => 
-  adminApi.post("/admin/initial-activation/reject", { userId, reason });
-

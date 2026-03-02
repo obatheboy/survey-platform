@@ -12,7 +12,6 @@ const gamificationRoutes = require("./routes/gamification.routes");
 const adminRoutes = require("./routes/admin.routes");
 const adminActivationRoutes = require("./routes/admin.activation.routes");
 const adminAuthRoutes = require("./routes/admin.auth.routes");
-const adminInitialActivationRoutes = require("./routes/admin.initialActivation.routes");
 const notificationRoutes = require("./routes/notification.routes");
 
 const app = express();
@@ -87,7 +86,6 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/surveys", surveyRoutes);
 app.use("/api/activation", activationRoutes);
-app.use("/api/initial-activation", require("./routes/initialActivation.routes"));
 app.use("/api/withdraw", withdrawRoutes);
 app.use("/api/affiliate", affiliateRoutes);
 app.use("/api/gamification", gamificationRoutes);
@@ -99,7 +97,6 @@ app.use("/api/notifications", notificationRoutes); // ✅ USER NOTIFICATIONS HER
 app.use("/api/admin/auth", adminAuthRoutes);
 app.use("/api/admin", adminRoutes); // ✅ ADMIN NOTIFICATION SENDING IS IN HERE
 app.use("/api/admin", adminActivationRoutes);
-app.use("/api/admin/initial-activation", adminInitialActivationRoutes);
 
 /* ===============================
    ❌ GLOBAL ERROR HANDLER
