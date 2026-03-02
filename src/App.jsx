@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import api from "./api/api";
@@ -16,6 +16,8 @@ import FAQ from "./pages/FAQ";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import NotFound from "./pages/NotFound";
 import AffiliateDashboard from "./pages/AffiliateDashboard";
+import ActivationPayment from "./pages/ActivationPayment";
+import AdminInitialActivations from "./pages/admin/AdminInitialActivations";
 
 /* ================= ADMIN ================= */
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -32,17 +34,47 @@ import AdminAffiliateWithdrawals from "./pages/admin/AdminAffiliateWithdrawals";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 
 /* ================= USER AUTH GUARD ================= */
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children, requireInitialActivation = false }) {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [initialActivationStatus, setInitialActivationStatus] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    api
-      .get("/auth/me")
-      .then((res) => setUser(res.data))
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false));
-  }, []);
+    const checkAuth = async () => {
+      try {
+        // Get user data
+        const userRes = await api.get("/auth/me");
+        setUser(userRes.data);
+
+        // Check initial activation status if required
+        if (requireInitialActivation) {
+          try {
+            const statusRes = await api.get("/initial-activation/status");
+            setInitialActivationStatus(statusRes.data.status);
+          } catch (statusErr) {
+            // If endpoint fails, assume not activated
+            setInitialActivationStatus("PENDING");
+          }
+        }
+      } catch (error) {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [requireInitialActivation]);
+
+  useEffect(() => {
+    if (!loading && user && requireInitialActivation) {
+      // If initial activation is required but not approved, redirect to activation page
+      if (initialActivationStatus !== "APPROVED") {
+        navigate("/activation-payment", { replace: true });
+      }
+    }
+  }, [loading, user, initialActivationStatus, requireInitialActivation, navigate]);
 
   if (loading) {
     return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
@@ -99,6 +131,16 @@ export default function App() {
         {/* USER AUTH */}
         <Route path="/auth" element={<Auth />} />
 
+        {/* INITIAL ACTIVATION - Before dashboard access */}
+        <Route
+          path="/activation-payment"
+          element={
+            <ProtectedRoute>
+              <ActivationPayment />
+            </ProtectedRoute>
+          }
+        />
+
         {/* TERMS AND CONDITIONS */}
         <Route path="/terms" element={<TermsAndConditions />} />
 
@@ -106,7 +148,7 @@ export default function App() {
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requireInitialActivation={true}>
               <Dashboard />
             </ProtectedRoute>
           }
@@ -194,6 +236,7 @@ export default function App() {
         >
           <Route index element={<AdminDashboard />} />
           <Route path="activations" element={<AdminActivations />} />
+          <Route path="initial-activations" element={<AdminInitialActivations />} />
           <Route path="withdrawals" element={<AdminWithdrawals />} />
           <Route path="affiliates" element={<AdminAffiliates />} />
           <Route path="affiliate-withdrawals" element={<AdminAffiliateWithdrawals />} />

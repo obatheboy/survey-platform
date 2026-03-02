@@ -56,6 +56,7 @@ export default function AdminLayout() {
         <h2 style={{ marginBottom: 20 }}>Admin Panel</h2>
 
         <NavItem to="/admin" end label="Dashboard" />
+        <NavItem to="/admin/initial-activations" label="🔐 Initial Activations" />
         <NavItem to="/admin/activations" label="Activation Payments" />
         <NavItem to="/admin/withdrawals" label="Withdrawals" />
         <NavItem to="/admin/affiliates" label="Affiliate Referrals" />
