@@ -1,30 +1,30 @@
 /* =========================================================
-   SURVEYEARN DASHBOARD - ORANGE & BLUE DESIGN
-   Professional dark theme with orange and blue accents
+   SURVEYEARN DASHBOARD - BRIGHT VIBRANT DESIGN
+   Professional bright theme with vibrant colors
    ========================================================= */
 
 /* =========================================================
-   CSS VARIABLES - ORANGE & BLUE UNIFIED COLOR PALETTE
+   CSS VARIABLES - BRIGHT VIBRANT COLOR PALETTE
    ========================================================= */
 :root {
-  /* Dark Rich Backgrounds */
-  --bg-main: #0a0f1a;
-  --bg-surface: #0f172a;
-  --bg-glass: rgba(15, 23, 42, 0.98);
-  --bg-elevated: #1e293b;
-  --text-primary: #ffffff;
-  --text-secondary: #3B82F6;  /* Blue for labels */
-  --text-muted: #94a3b8;
-  --text-inverse: #0a0f1a;
-  --border-light: rgba(59, 130, 246, 0.2);
-  --border-medium: rgba(59, 130, 246, 0.3);
+  /* Bright Backgrounds */
+  --bg-main: #fff5e6;
+  --bg-surface: #ffffff;
+  --bg-glass: rgba(255, 255, 255, 0.95);
+  --bg-elevated: #fff8f0;
+  --text-primary: #1a1a2e;
+  --text-secondary: #ff6b35;
+  --text-muted: #666680;
+  --text-inverse: #ffffff;
+  --border-light: rgba(255, 107, 53, 0.2);
+  --border-medium: rgba(255, 107, 53, 0.3);
   
-  /* Dark backgrounds - unified */
-  --obsidian-dark: #050911;
-  --obsidian: #0a0f1a;
-  --obsidian-medium: #0f172a;
-  --obsidian-light: #1e293b;
-  --obsidian-bright: #334155;
+  /* Bright backgrounds - unified */
+  --obsidian-dark: #FFE4B5;
+  --obsidian: #FFF8DC;
+  --obsidian-medium: #FFFACD;
+  --obsidian-light: #FFEFD5;
+  --obsidian-bright: #FFE4B5;
   
   /* ORANGE - Primary accent color */
   --orange-dark: #cc5500;
@@ -38,24 +38,24 @@
   --blue-light: #60a5fa;
   --blue-bright: #93c5fd;
   
-  /* Card Gradients - All dark variations */
-  --card-obsidian-dark: linear-gradient(145deg, #050911, #0a0f1a);
-  --card-obsidian: linear-gradient(145deg, #0a0f1a, #0f172a);
-  --card-obsidian-medium: linear-gradient(145deg, #0f172a, #1e293b);
-  --card-obsidian-light: linear-gradient(145deg, #1e293b, #334155);
+  /* Card Gradients - All bright warm variations */
+  --card-obsidian-dark: linear-gradient(145deg, #FFE4B5, #FFDAB9);
+  --card-obsidian: linear-gradient(145deg, #FFF8DC, #FFEFD5);
+  --card-obsidian-medium: linear-gradient(145deg, #FFFACD, #FFF8DC);
+  --card-obsidian-light: linear-gradient(145deg, #FFEFD5, #FFE4B5);
   
   /* WIREFRAME BORDERS */
-  --wireframe-border: 1px solid rgba(59, 130, 246, 0.3);
-  --wireframe-glow: 0 0 10px rgba(59, 130, 246, 0.1);
+  --wireframe-border: 1px solid rgba(255, 107, 53, 0.3);
+  --wireframe-glow: 0 0 10px rgba(255, 107, 53, 0.1);
   
-  /* BUTTON COLORS - Orange/Blue */
+  /* BUTTON COLORS - Bright */
   --button-primary: #FF6B00;
-  --button-success: #3B82F6;
-  --button-warning: #FF6B00;
-  --button-danger: #FF6B00;
-  --button-purple: #3B82F6;
-  --button-pink: #FF6B00;
-  --button-cyan: #3B82F6;
+  --button-success: #00C853;
+  --button-warning: #FFB300;
+  --button-danger: #FF1744;
+  --button-purple: #9C27B0;
+  --button-pink: #E91E63;
+  --button-cyan: #00BCD4;
   --button-orange: #FF6B00;
   
   /* Skeuomorphic Button Gradient */
@@ -65,19 +65,19 @@
   /* PLAN COLORS - Orange for text accents */
   --regular-color: #FF6B00;
   --vip-color: #3B82F6;
-  --vvip-color: #FF6B00;
+  --vvip-color: #9C27B0;
   
-  /* WELCOME BONUS - Orange/Blue gradient */
-  --bonus-gradient: linear-gradient(145deg, #0a0f1a, #1e293b, #FF6B00, #3B82F6);
+  /* WELCOME BONUS - Bright gradient */
+  --bonus-gradient: linear-gradient(145deg, #FFF8DC, #FFE4B5, #FF6B00, #FFB300);
   
   /* Brand Colors */
   --primary: #FF6B00;
   --primary-dark: #cc5500;
   --primary-light: #ff8c33;
-  --success: #3B82F6;
-  --warning: #FF6B00;
-  --danger: #FF6B00;
-  --purple: #3B82F6;
+  --success: #00C853;
+  --warning: #FFB300;
+  --danger: #FF1744;
+  --purple: #9C27B0;
   
   /* Gradients */
   --gradient-primary: linear-gradient(135deg, #cc5500, #FF6B00);

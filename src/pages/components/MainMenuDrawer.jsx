@@ -89,7 +89,7 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
             {user.full_name?.charAt(0).toUpperCase() || "U"}
           </div>
           <div style={{ flex: 1 }}>
-            <strong style={{ color: "#fff" }}>{user.full_name}</strong>
+            <strong style={{ color: "#1a1a2e" }}>{user.full_name}</strong>
           </div>
           <button style={profileBtn} onClick={() => setToast("👤 Profile settings coming soon!")}>
             Profile
@@ -156,9 +156,9 @@ function MenuItem({ label, onClick, danger, icon }) {
         gap: "12px",
         background: danger
           ? "rgba(239, 68, 68, 0.1)"
-          : "rgba(255, 255, 255, 0.05)",
-        color: danger ? "#ef4444" : "#f8fafc",
-        border: `1px solid ${danger ? "rgba(239, 68, 68, 0.2)" : "rgba(255, 255, 255, 0.1)"}`,
+          : "rgba(0, 0, 0, 0.05)",
+        color: danger ? "#ef4444" : "#1a1a2e",
+        border: `1px solid ${danger ? "rgba(239, 68, 68, 0.2)" : "rgba(0, 0, 0, 0.1)"}`,
         transition: "all 0.2s ease",
       }}
       onMouseOver={(e) => {
@@ -193,22 +193,22 @@ const drawer = {
   height: "100%",
   width: "85vw",
   maxWidth: 320,
-  background: "#1e293b",
+  background: "#FFFEF0",
   zIndex: 99999,
   padding: "24px 20px",
   boxShadow: "10px 0 30px rgba(0, 0, 0, 0.5)",
   overflowY: "auto",
-  borderRight: "1px solid rgba(255, 255, 255, 0.1)",
+  borderRight: "1px solid rgba(0, 0, 0, 0.1)",
 };
 
 const profileCard = { 
   display: "flex", 
   alignItems: "center", 
   gap: 14,
-  background: "rgba(255, 255, 255, 0.05)",
+  background: "rgba(255, 107, 0, 0.05)",
   padding: "16px",
   borderRadius: "16px",
-  border: "1px solid rgba(255, 255, 255, 0.1)",
+  border: "1px solid rgba(255, 107, 0, 0.1)",
   marginBottom: "24px"
 };
 
@@ -216,20 +216,20 @@ const avatar = {
   width: 50,
   height: 50,
   borderRadius: "14px",
-  background: "linear-gradient(135deg, #3b82f6, #2563eb)",
+  background: "linear-gradient(135deg, #FF6B00, #ff8c33)",
   color: "#fff",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   fontSize: "20px",
   fontWeight: 800,
-  boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)",
+  boxShadow: "0 4px 12px rgba(255, 107, 0, 0.3)",
 };
 
 const profileBtn = {
-  border: "1px solid rgba(255, 255, 255, 0.2)",
-  background: "rgba(255, 255, 255, 0.1)",
-  color: "#fff",
+  border: "1px solid rgba(255, 107, 0, 0.3)",
+  background: "rgba(255, 107, 0, 0.1)",
+  color: "#FF6B00",
   padding: "6px 14px",
   borderRadius: 10,
   fontSize: "12px",
@@ -238,11 +238,11 @@ const profileBtn = {
   transition: "all 0.2s ease"
 };
 
-const divider = { margin: "24px 0", border: "none", borderTop: "1px solid rgba(255, 255, 255, 0.1)" };
+const divider = { margin: "24px 0", border: "none", borderTop: "1px solid rgba(0, 0, 0, 0.1)" };
 
 const withdrawTitle = { 
   marginBottom: 16, 
-  color: "#f8fafc", 
+  color: "#1a1a2e", 
   fontSize: "16px", 
   fontWeight: "800",
   display: "flex",
@@ -252,11 +252,11 @@ const withdrawTitle = {
 
 const referralCaption = {
   fontSize: "13px",
-  color: "#94a3b8",
+  color: "#666680",
   textAlign: "center",
   margin: "12px 0 24px",
   padding: "12px",
-  background: "rgba(59, 130, 246, 0.05)",
+  background: "rgba(255, 107, 0, 0.05)",
   borderRadius: "12px",
   border: "1px solid rgba(59, 130, 246, 0.1)"
 };

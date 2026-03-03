@@ -1044,7 +1044,7 @@ return (
           
           {/* RIGHT COLUMN: BALANCE */}
           <div style={{
-            background: 'linear-gradient(145deg, #1e293b, #0f172a)',
+            background: 'linear-gradient(145deg, #FFF8DC, #FFEFD5)',
             borderRadius: '16px',
             padding: '10px',
             textAlign: 'center',
@@ -1345,7 +1345,7 @@ return (
               </div>
 
               {/* Affiliate Earnings Card */}
-              <div className="stats-card affiliate-balance" style={{ background: 'linear-gradient(135deg, #0a0f1a, #1e293b)' }}>
+              <div className="stats-card affiliate-balance" style={{ background: 'linear-gradient(135deg, #FFF8DC, #FFEFD5)' }}>
                 <div className="stats-card-header">
                   <span className="stats-icon">🎁</span>
                   <h4>Affiliate Earnings</h4>
@@ -2027,7 +2027,7 @@ return (
         }}>
           {/* Level & Streak Card */}
           <div className="level-streak-card" style={{
-            background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+            background: 'linear-gradient(135deg, #FFF8DC 0%, #FFEFD5 100%)',
             borderRadius: '16px',
             padding: '20px',
             color: 'white'
