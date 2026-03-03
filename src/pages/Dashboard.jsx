@@ -1083,50 +1083,54 @@ export default function Dashboard() {
     padding: '12px !important',
     margin: '8px 0 !important',
     boxShadow: '0 8px 20px rgba(255, 69, 0, 0.4) !important',
-    position: 'relative',
-    overflow: 'hidden'
+    position: 'relative !important',
+    overflow: 'hidden !important'
   }}>
     {/* Subtle animated background effect */}
     <div style={{
-      position: 'absolute',
-      top: '-50%',
-      left: '-50%',
-      width: '200%',
-      height: '200%',
-      background: 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%)',
-      animation: 'rotate 15s linear infinite'
+      position: 'absolute !important',
+      top: '-50% !important',
+      left: '-50% !important',
+      width: '200% !important',
+      height: '200% !important',
+      background: 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%) !important',
+      animation: 'rotate 15s linear infinite !important',
+      zIndex: '1 !important'
     }} />
     
     {/* ALL CAPTIONS TOGETHER IN ONE COMPACT DIV */}
     <div style={{
-      position: 'relative',
-      zIndex: 2,
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '8px'
+      position: 'relative !important',
+      zIndex: '3 !important',
+      display: 'flex !important',
+      flexDirection: 'column !important',
+      gap: '8px !important'
     }}>
       {/* Header with icon and title */}
       <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
+        display: 'flex !important',
+        justifyContent: 'space-between !important',
+        alignItems: 'center !important'
       }}>
         <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px'
+          display: 'flex !important',
+          alignItems: 'center !important',
+          gap: '6px !important'
         }}>
           <span style={{
-            fontSize: '20px',
-            filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.5))'
+            fontSize: '20px !important',
+            filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.5)) !important',
+            display: 'inline-block !important'
           }}>🎁</span>
           <span style={{
-            fontSize: '24px',
+            fontSize: '24px !important',
             fontWeight: '900 !important',
             color: '#FFFFFF !important',
-            textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-            textTransform: 'uppercase',
-            letterSpacing: '2px'
+            textShadow: '2px 2px 4px rgba(0,0,0,0.5) !important',
+            textTransform: 'uppercase !important',
+            letterSpacing: '2px !important',
+            lineHeight: '1.2 !important',
+            display: 'inline-block !important'
           }}>
             WELCOME BONUS
           </span>
@@ -1138,9 +1142,11 @@ export default function Dashboard() {
           borderRadius: '16px !important',
           fontSize: '10px !important',
           fontWeight: '900 !important',
-          textTransform: 'uppercase',
+          textTransform: 'uppercase !important',
           border: '1px solid rgba(255,255,255,0.8) !important',
-          boxShadow: '0 0 10px rgba(255,215,0,0.5) !important'
+          boxShadow: '0 0 10px rgba(255,215,0,0.5) !important',
+          display: 'inline-block !important',
+          letterSpacing: '0.5px !important'
         }}>
           NEW
         </span>
@@ -1152,28 +1158,30 @@ export default function Dashboard() {
         borderRadius: '12px !important',
         padding: '10px !important',
         border: '1px solid rgba(255,255,255,0.3) !important',
-        backdropFilter: 'blur(2px)'
+        backdropFilter: 'blur(2px) !important',
+        width: '100% !important'
       }}>
-       
-  
         
         {/* Description text - all in one block */}
         <div style={{
-          textAlign: 'center'
+          textAlign: 'center !important',
+          width: '100% !important'
         }}>
           <span style={{
             fontSize: '12px !important',
             fontWeight: '600 !important',
             color: 'rgba(255,255,255,0.95) !important',
-            display: 'block',
-            lineHeight: '1.4'
+            display: 'block !important',
+            lineHeight: '1.4 !important',
+            marginBottom: '2px !important'
           }}>
             Congratulations! You've received a welcome bonus of{' '}
             <span style={{
               color: '#FFFFFF !important',
               fontWeight: '900 !important',
               fontSize: '28px !important',
-              textShadow: '2px 2px 4px rgba(0,0,0,0.5) !important'
+              textShadow: '2px 2px 4px rgba(0,0,0,0.5) !important',
+              display: 'inline !important'
             }}>
               KES 1,200
             </span>
@@ -1182,8 +1190,9 @@ export default function Dashboard() {
             fontSize: '11px !important',
             fontWeight: '500 !important',
             color: 'rgba(255,255,255,0.8) !important',
-            display: 'block',
-            marginTop: '2px'
+            display: 'block !important',
+            marginTop: '2px !important',
+            lineHeight: '1.3 !important'
           }}>
             Activate your account to withdraw instantly!
           </span>
@@ -1193,9 +1202,10 @@ export default function Dashboard() {
     
     {/* Action Button */}
     <div style={{ 
-      marginTop: '10px', 
-      position: 'relative', 
-      zIndex: 2 
+      marginTop: '10px !important', 
+      position: 'relative !important', 
+      zIndex: '3 !important',
+      width: '100% !important'
     }}>
       <button 
         className="start-survey-btn"
@@ -1208,16 +1218,17 @@ export default function Dashboard() {
           fontWeight: '900 !important',
           fontSize: '14px !important',
           color: 'white !important',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '8px',
-          width: '100%',
-          cursor: 'pointer',
+          textTransform: 'uppercase !important',
+          letterSpacing: '0.5px !important',
+          display: 'flex !important',
+          alignItems: 'center !important',
+          justifyContent: 'center !important',
+          gap: '8px !important',
+          width: '100% !important',
+          cursor: 'pointer !important',
           boxShadow: '0 0 20px rgba(220, 38, 38, 0.7) !important',
-          transition: 'all 0.2s ease'
+          transition: 'all 0.2s ease !important',
+          lineHeight: '1.2 !important'
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'translateY(-2px)';
@@ -1228,9 +1239,15 @@ export default function Dashboard() {
           e.currentTarget.style.boxShadow = '0 0 20px rgba(220, 38, 38, 0.7)';
         }}
       >
-        <span style={{ fontSize: '16px' }}>🔓</span>
+        <span style={{ 
+          fontSize: '16px !important',
+          display: 'inline-block !important'
+        }}>🔓</span>
         ACTIVATE & CLAIM
-        <span style={{ fontSize: '14px' }}>✨</span>
+        <span style={{ 
+          fontSize: '14px !important',
+          display: 'inline-block !important'
+        }}>✨</span>
       </button>
     </div>
   </div>
