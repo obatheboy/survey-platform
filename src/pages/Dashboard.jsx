@@ -392,7 +392,7 @@ export default function Dashboard() {
       checkAndShowDailyReward();
     }, 1500);
   };
-
+  
   /* =========================
      GAMIFICATION - CHECK DAILY REWARD
    ========================= */
