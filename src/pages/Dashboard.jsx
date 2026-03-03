@@ -985,7 +985,7 @@ export default function Dashboard() {
           </div>
           
           <div style={{
-            background: 'linear-gradient(145deg, #1f7405, #2d9a07), linear-gradient(145deg, #0066cc, #0080ff)',
+            background: 'linear-gradient(145deg, #1f7405, #2d9a07)',
             borderRadius: '16px',
             padding: '10px',
             textAlign: 'center',
@@ -1035,9 +1035,7 @@ export default function Dashboard() {
                 KES
               </span>
               <div style={{
-                background: 'linear-gradient(to right, #34d399, #10b981)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
+                color: 'white',
                 fontSize: '22px',
                 fontWeight: '900',
                 lineHeight: '1'
@@ -1049,193 +1047,257 @@ export default function Dashboard() {
             <button 
               onClick={() => navigate("/withdraw-form")}
               style={{
-                background: 'rgba(16, 185, 129, 0.2)',
-                color: '#34d399',
-                border: '1px solid rgba(16, 185, 129, 0.3)',
+                background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+                color: 'white',
+                border: '2px solid rgba(255,255,255,0.5)',
                 borderRadius: '8px',
-                padding: '6px 12px',
-                fontSize: '11px',
-                fontWeight: '700',
+                padding: '10px 16px',
+                fontSize: '13px',
+                fontWeight: '900',
                 cursor: 'pointer',
                 width: '100%',
-                transition: 'all 0.2s'
+                transition: 'all 0.2s',
+                boxShadow: '0 4px 15px rgba(220, 38, 38, 0.5)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(220, 38, 38, 0.7)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 15px rgba(220, 38, 38, 0.5)';
               }}
             >
-              Withdraw
+              WITHDRAW NOW
             </button>
           </div>
         </div>
       </div>
       
-      {/* WELCOME BONUS CARD - FIRST AFTER HEADER */}
+      {/* WELCOME BONUS CARD - FIRST AFTER HEADER - BRIGHT COLORFUL WITH BOLD CAPTIONS */}
       <section ref={welcomeRef}>
         <div className="plan-card welcome-bonus" style={{
-          background: 'linear-gradient(135deg, #ed64a6, #9f7aea)',
-          border: '2px solid rgba(255,255,255,0.4)',
-          borderRadius: '16px',
-          padding: '12px',
-          margin: '10px 0',
-          boxShadow: '0 4px 15px rgba(237, 100, 166, 0.4)'
+          background: 'linear-gradient(135deg, #FF0080, #FF4D94, #FF99CC)',
+          border: '3px solid rgba(255, 255, 255, 0.6)',
+          borderRadius: '20px',
+          padding: '16px',
+          margin: '12px 0',
+          boxShadow: '0 10px 30px rgba(255, 0, 128, 0.5)',
+          position: 'relative',
+          overflow: 'hidden'
         }}>
-          <div className="plan-card-header" style={{ 
-            position: 'relative', 
-            zIndex: 2,
-            marginBottom: '0px',
-            background: 'linear-gradient(135deg, #ed64a6, #9f7aea)',
-            padding: '8px',
+          {/* Animated background effect */}
+          <div style={{
+            position: 'absolute',
+            top: '-50%',
+            left: '-50%',
+            width: '200%',
+            height: '200%',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%)',
+            animation: 'rotate 10s linear infinite'
+          }} />
+          
+          <div className="plan-card-header" style={{
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'center'
+            alignItems: 'center',
+            marginBottom: '12px',
+            position: 'relative',
+            zIndex: 2
           }}>
-            <div className="plan-badge" style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '0px'
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
             }}>
-              <span className="plan-name" style={{ 
-                color: '#ffffff',
-                fontSize: '14px',
+              <span style={{
+                fontSize: '28px',
+                filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.5))'
+              }}>🎁</span>
+              <span style={{
+                fontSize: '22px',
                 fontWeight: '900',
+                color: 'white',
+                textShadow: '2px 2px 0 rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.5)',
                 textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-                textShadow: '0 0 10px rgba(255,255,255,0.5)'
+                letterSpacing: '1px'
               }}>
                 WELCOME BONUS
               </span>
             </div>
-            <span className="plan-status" style={{ 
-              background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
-              color: '#ffffff',
-              border: '2px solid rgba(255, 255, 255, 0.5)',
-              padding: '4px 10px',
+            <span style={{
+              background: 'linear-gradient(135deg, #FFE500, #FFD700)',
+              color: '#000',
+              padding: '4px 12px',
               borderRadius: '20px',
-              fontSize: '10px',
+              fontSize: '12px',
               fontWeight: '900',
               textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              boxShadow: '0 0 15px rgba(220, 38, 38, 0.5)'
+              border: '2px solid rgba(255,255,255,0.8)',
+              boxShadow: '0 0 15px rgba(255,215,0,0.5)'
             }}>
-              NEW
+              ✨ NEW ✨
             </span>
           </div>
           
-          <div className="plan-card-body" style={{ position: 'relative', zIndex: 2, marginTop: '0px', padding: '8px' }}>
+          <div className="plan-card-body" style={{ position: 'relative', zIndex: 2 }}>
+            {/* BONUS AMOUNT - EXTRA BOLD */}
             <div style={{
               textAlign: 'center',
-              margin: '0px 0',
-              padding: '2px',
-              background: 'rgba(0, 0, 0, 0.3)',
-              borderRadius: '12px',
-              border: '2px solid rgba(59, 130, 246, 0.5)',
-              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-              position: 'relative',
-              overflow: 'hidden'
+              margin: '8px 0',
+              padding: '12px',
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1))',
+              borderRadius: '16px',
+              border: '2px solid rgba(255,255,255,0.4)',
+              backdropFilter: 'blur(5px)'
             }}>
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: '-100%',
-                width: '200%',
-                height: '100%',
-                background: 'linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), transparent)',
-                animation: 'amountShine 2.5s ease-in-out infinite',
-                pointerEvents: 'none'
-              }} />
-              
               <span style={{
-                position: 'absolute',
-                top: '4px',
-                left: '8px',
-                fontSize: '12px',
-                animation: 'sparkleTwinkle 1.5s ease-in-out infinite'
-              }}>✨</span>
-              <span style={{
-                position: 'absolute',
-                top: '4px',
-                right: '8px',
-                fontSize: '12px',
-                animation: 'sparkleTwinkle 1.5s ease-in-out infinite 0.75s'
-              }}>✨</span>
-              
-              <span style={{
-                fontSize: '32px',
+                fontSize: '42px',
                 fontWeight: '900',
                 color: 'white',
+                textShadow: '3px 3px 0 rgba(0,0,0,0.3), 0 0 30px rgba(255,255,255,0.8)',
                 display: 'block',
-                lineHeight: '1.1',
-                textShadow: '0 0 20px #000000, 0 2px 8px rgba(0, 0, 0, 0.6)',
-                position: 'relative',
-                zIndex: 1
+                lineHeight: '1.2'
               }}>
                 KES 1,200
               </span>
+              <span style={{
+                fontSize: '14px',
+                fontWeight: '700',
+                color: 'rgba(255,255,255,0.9)',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                marginTop: '4px',
+                display: 'block'
+              }}>
+                FREE BONUS
+              </span>
             </div>
             
-            <p style={{
-              fontSize: '13px',
-              lineHeight: '1.3',
-              color: 'rgba(255, 255, 255, 0.95)',
-              textAlign: 'center',
-              margin: '0 0 4px',
-              fontWeight: '600',
-              textShadow: '0 1px 3px rgba(0, 0, 0, 0.6)',
-              background: 'rgba(0, 0, 0, 0.25)',
-              padding: '8px 14px',
-              borderRadius: '30px',
-              border: '1px solid rgba(59, 130, 246, 0.3)',
-              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)'
+            {/* BOLD DESCRIPTION */}
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.2))',
+              padding: '12px 16px',
+              borderRadius: '12px',
+              margin: '8px 0',
+              border: '1px solid rgba(255,255,255,0.3)'
             }}>
-              Congratulations! You've received a welcome bonus of <strong style={{
-                color: '#FF6B00',
-                fontSize: '16px',
-                fontWeight: '900',
-                textShadow: '0 0 10px #FF6B00',
-                display: 'inline-block'
-              }}>KES 1,200</strong>. Activate your account to withdraw instantly!
-            </p>
+              <p style={{
+                fontSize: '15px',
+                fontWeight: '700',
+                color: 'white',
+                textAlign: 'center',
+                lineHeight: '1.4',
+                margin: 0
+              }}>
+                Congratulations! You've received a welcome bonus of{' '}
+                <span style={{
+                  color: '#FFE500',
+                  fontSize: '18px',
+                  fontWeight: '900',
+                  textShadow: '0 0 10px rgba(255,215,0,0.8)'
+                }}>
+                  KES 1,200
+                </span>
+              </p>
+              <p style={{
+                fontSize: '14px',
+                fontWeight: '600',
+                color: 'rgba(255,255,255,0.9)',
+                textAlign: 'center',
+                margin: '4px 0 0'
+              }}>
+                Activate your account to withdraw instantly!
+              </p>
+            </div>
+            
+            {/* COUNTDOWN TIMER STYLE */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '12px',
+              margin: '8px 0'
+            }}>
+              <div style={{ textAlign: 'center' }}>
+                <span style={{
+                  fontSize: '18px',
+                  fontWeight: '900',
+                  color: '#FFE500',
+                  textShadow: '0 0 10px #FFD700'
+                }}>24</span>
+                <span style={{
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  color: 'white',
+                  display: 'block'
+                }}>Hours</span>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <span style={{
+                  fontSize: '18px',
+                  fontWeight: '900',
+                  color: '#FFE500',
+                  textShadow: '0 0 10px #FFD700'
+                }}>00</span>
+                <span style={{
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  color: 'white',
+                  display: 'block'
+                }}>Mins</span>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <span style={{
+                  fontSize: '18px',
+                  fontWeight: '900',
+                  color: '#FFE500',
+                  textShadow: '0 0 10px #FFD700'
+                }}>00</span>
+                <span style={{
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  color: 'white',
+                  display: 'block'
+                }}>Secs</span>
+              </div>
+            </div>
           </div>
           
-          <div className="plan-card-footer" style={{ 
-            position: 'relative', 
-            zIndex: 2,
-            marginTop: '0'
-          }}>
+          <div className="plan-card-footer" style={{ marginTop: '12px', position: 'relative', zIndex: 2 }}>
             <button 
               className="start-survey-btn"
               onClick={handleWelcomeBonusWithdraw}
               style={{
                 background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
-                border: '2px solid rgba(255, 255, 255, 0.5)',
+                border: '3px solid rgba(255, 255, 255, 0.6)',
                 borderRadius: '40px',
-                padding: '14px 20px',
+                padding: '16px 20px',
                 fontWeight: '900',
-                fontSize: '16px',
+                fontSize: '18px',
                 color: 'white',
                 textTransform: 'uppercase',
                 letterSpacing: '1px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '8px',
+                gap: '10px',
                 width: '100%',
                 cursor: 'pointer',
-                boxShadow: '0 0 20px rgba(220, 38, 38, 0.7)',
-                transition: 'all 0.2s ease',
-                position: 'relative',
-                overflow: 'hidden'
+                boxShadow: '0 0 25px rgba(220, 38, 38, 0.8)',
+                transition: 'all 0.2s ease'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 0 30px rgba(220, 38, 38, 0.9)';
+                e.currentTarget.style.transform = 'translateY(-3px)';
+                e.currentTarget.style.boxShadow = '0 0 35px rgba(220, 38, 38, 1)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 0 20px rgba(220, 38, 38, 0.7)';
+                e.currentTarget.style.boxShadow = '0 0 25px rgba(220, 38, 38, 0.8)';
               }}
             >
-              <span className="btn-icon" style={{ fontSize: '16px' }}>🔓</span>
+              <span style={{ fontSize: '20px' }}>🔓</span>
               ACTIVATE & CLAIM NOW
-              <span style={{ fontSize: '14px', marginLeft: '2px' }}>✨</span>
+              <span style={{ fontSize: '18px' }}>✨</span>
             </button>
           </div>
         </div>
@@ -1348,7 +1410,7 @@ export default function Dashboard() {
                         fontWeight: '900',
                         borderRadius: '10px',
                         border: '2px solid rgba(255,255,255,0.5)',
-                        background: isCompleted(key) ? '#666' : 'linear-gradient(135deg, #dc2626, #b91c1c)',
+                        background: isCompleted(key) ? '#666' : 'linear-gradient(135deg, #3b82f6, #2563eb)',
                         color: 'white',
                         cursor: isCompleted(key) ? 'not-allowed' : 'pointer',
                         opacity: isCompleted(key) ? 0.6 : 1
@@ -1379,7 +1441,16 @@ export default function Dashboard() {
                           border: '2px solid rgba(255,255,255,0.5)',
                           background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
                           color: 'white',
-                          cursor: 'pointer'
+                          cursor: 'pointer',
+                          boxShadow: '0 4px 15px rgba(220, 38, 38, 0.5)'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(220, 38, 38, 0.7)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 4px 15px rgba(220, 38, 38, 0.5)';
                         }}
                       >
                         {!activated ? (hasPendingActivation(key) ? '⏳ Pending' : '🔓 Activate') : 
@@ -1669,7 +1740,7 @@ export default function Dashboard() {
                           fontWeight: '900',
                           borderRadius: '10px',
                           border: '2px solid rgba(255,255,255,0.5)',
-                          background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+                          background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
                           color: 'white',
                           cursor: 'pointer',
                           display: 'flex',
@@ -1718,7 +1789,16 @@ export default function Dashboard() {
                             border: '2px solid rgba(255,255,255,0.5)',
                             background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
                             color: 'white',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            boxShadow: '0 4px 15px rgba(220, 38, 38, 0.5)'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                            e.currentTarget.style.boxShadow = '0 6px 20px rgba(220, 38, 38, 0.7)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = '0 4px 15px rgba(220, 38, 38, 0.5)';
                           }}
                         >
                           {!activated ? (hasPendingActivation(key) ? '⏳ Pending' : '🔓 Activate') : 
@@ -1753,7 +1833,7 @@ export default function Dashboard() {
         </section>
       )}
 
-      {/* BOTTOM NAVIGATION BAR */}
+      {/* BOTTOM NAVIGATION BAR - BRIGHT COLORS */}
       <div className="bottom-nav-bar" style={{
         position: 'fixed',
         bottom: 0,
@@ -1762,11 +1842,11 @@ export default function Dashboard() {
         display: 'flex',
         justifyContent: 'space-around',
         alignItems: 'center',
-        background: 'rgba(255, 255, 255, 0.98)',
+        background: 'linear-gradient(135deg, #1a1a1a, #2d2d2d)',
         padding: '8px 12px',
-        boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.1)',
+        boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.3)',
         zIndex: 1000,
-        borderTop: '1px solid rgba(0,0,0,0.1)'
+        borderTop: '2px solid rgba(255,255,255,0.1)'
       }}>
         <button
           className={`nav-btn ${activeTab === "OVERVIEW" ? "active" : ""}`}
@@ -1779,12 +1859,23 @@ export default function Dashboard() {
             justifyContent: 'center',
             gap: '4px',
             padding: '8px',
-            background: activeTab === "OVERVIEW" ? 'linear-gradient(135deg, #FF0080, #FF4D94)' : 'transparent',
-            color: activeTab === "OVERVIEW" ? 'white' : '#666',
+            background: activeTab === "OVERVIEW" ? 'linear-gradient(135deg, #FF0080, #FF4D94)' : 'rgba(255,255,255,0.1)',
+            color: 'white',
             border: 'none',
             borderRadius: '12px',
             cursor: 'pointer',
-            transition: 'all 0.2s'
+            transition: 'all 0.2s',
+            boxShadow: activeTab === "OVERVIEW" ? '0 4px 15px rgba(255, 0, 128, 0.5)' : 'none'
+          }}
+          onMouseEnter={(e) => {
+            if (activeTab !== "OVERVIEW") {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (activeTab !== "OVERVIEW") {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+            }
           }}
         >
           <span className="nav-icon" style={{ fontSize: '20px' }}>📊</span>
@@ -1802,12 +1893,23 @@ export default function Dashboard() {
             justifyContent: 'center',
             gap: '4px',
             padding: '8px',
-            background: activeTab === "SURVEYS" ? 'linear-gradient(135deg, #00FF00, #33FF33)' : 'transparent',
-            color: activeTab === "SURVEYS" ? 'white' : '#666',
+            background: activeTab === "SURVEYS" ? 'linear-gradient(135deg, #00FF00, #33FF33)' : 'rgba(255,255,255,0.1)',
+            color: activeTab === "SURVEYS" ? 'white' : 'white',
             border: 'none',
             borderRadius: '12px',
             cursor: 'pointer',
-            transition: 'all 0.2s'
+            transition: 'all 0.2s',
+            boxShadow: activeTab === "SURVEYS" ? '0 4px 15px rgba(0, 255, 0, 0.5)' : 'none'
+          }}
+          onMouseEnter={(e) => {
+            if (activeTab !== "SURVEYS") {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (activeTab !== "SURVEYS") {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+            }
           }}
         >
           <span className="nav-icon" style={{ fontSize: '20px' }}>📝</span>
@@ -1825,12 +1927,21 @@ export default function Dashboard() {
             justifyContent: 'center',
             gap: '4px',
             padding: '8px',
-            background: 'transparent',
-            color: '#666',
+            background: 'linear-gradient(135deg, #FF6600, #FF8533)',
+            color: 'white',
             border: 'none',
             borderRadius: '12px',
             cursor: 'pointer',
-            transition: 'all 0.2s'
+            transition: 'all 0.2s',
+            boxShadow: '0 4px 15px rgba(255, 102, 0, 0.5)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 102, 0, 0.7)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 4px 15px rgba(255, 102, 0, 0.5)';
           }}
         >
           <span className="nav-icon" style={{ fontSize: '20px' }}>🎯</span>
@@ -1854,7 +1965,15 @@ export default function Dashboard() {
             borderRadius: '12px',
             cursor: 'pointer',
             transition: 'all 0.2s',
-            boxShadow: '0 4px 15px rgba(255, 0, 0, 0.3)'
+            boxShadow: '0 4px 15px rgba(255, 0, 0, 0.5)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 0, 0, 0.7)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 4px 15px rgba(255, 0, 0, 0.5)';
           }}
         >
           <span className="nav-icon" style={{ fontSize: '20px' }}>💸</span>
