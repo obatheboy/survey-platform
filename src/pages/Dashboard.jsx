@@ -896,7 +896,7 @@ export default function Dashboard() {
                 }}
               >
                 <span className="btn-icon" style={{ fontSize: '16px' }}>🔓</span>
-                ACTIVATE ACCOUNT NOW
+                TAP HERE TO ACTIVATE ACCOUNT
                 <span style={{ fontSize: '14px', marginLeft: '2px' }}>✨</span>
               </button>
             )
@@ -1162,17 +1162,17 @@ export default function Dashboard() {
           textAlign: 'center'
         }}>
           <div style={{
-            fontSize: '20px',
+            fontSize: '16px',
             fontWeight: '900',
             color: '#FFD700',
             textShadow: '0 0 10px rgba(255,215,0,0.8), 0 0 20px rgba(255,215,0,0.5), 2px 2px 4px rgba(0,0,0,0.8)',
-            letterSpacing: '1px',
-            lineHeight: '1.6'
+            letterSpacing: '0.5px',
+            lineHeight: '1.3'
           }}>
             Congratulations! You've received a welcome bonus of 
             <span style={{
               color: '#00FF00',
-              fontSize: '42px',
+              fontSize: '32px',
               fontWeight: '900',
               textShadow: '0 0 15px rgba(0,255,0,0.9), 0 0 30px rgba(0,255,0,0.6), 3px 3px 6px rgba(0,0,0,0.8)',
               display: 'inline-block'
@@ -1181,7 +1181,7 @@ export default function Dashboard() {
             </span>
           </div>
           <span style={{
-            fontSize: '11px !important',
+            fontSize: '10px !important',
             fontWeight: '500 !important',
             color: 'rgba(255,255,255,0.8) !important',
             display: 'block',

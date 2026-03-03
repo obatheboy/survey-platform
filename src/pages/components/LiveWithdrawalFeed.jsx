@@ -41,7 +41,7 @@ const useData = () => useMemo(() => ({
       border: "#a5d6a7",
       badge: "M-PESA",
       pulse: "mpesaPulse",
-      percentage: 85,
+      percentage: 85,s cha
     },
     {
       name: "Airtel",
