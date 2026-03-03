@@ -1162,19 +1162,21 @@ export default function Dashboard() {
           textAlign: 'center'
         }}>
           <span style={{
-            fontSize: '14px !important',
-            fontWeight: '700 !important',
+            fontSize: '18px !important',
+            fontWeight: '900 !important',
             color: '#FFFFFF !important',
             display: 'block',
             lineHeight: '1.4',
-            textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+            textShadow: '3px 3px 6px rgba(0,0,0,0.7), 0 0 20px rgba(255,255,255,0.4), 0 0 40px rgba(255,255,255,0.2)'
           }}>
             Congratulations! You've received a welcome bonus of{' '}
             <span style={{
-              color: '#FFEE58 !important',
+              color: '#00FF00 !important',
               fontWeight: '900 !important',
-              fontSize: '36px !important',
-              textShadow: '2px 2px 4px rgba(0,0,0,0.6), 0 0 15px rgba(255,238,88,0.5) !important'
+              fontSize: '42px !important',
+              textShadow: '3px 3px 6px rgba(0,0,0,0.7), 0 0 25px rgba(0,255,0,0.8), 0 0 50px rgba(0,255,0,0.5) !important',
+              display: 'inline-block',
+              transform: 'scale(1.1)'
             }}>
               KES 1,200
             </span>
