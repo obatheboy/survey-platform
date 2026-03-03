@@ -1230,9 +1230,9 @@ export default function Dashboard() {
           e.currentTarget.style.boxShadow = '0 0 20px rgba(220, 38, 38, 0.7)';
         }}
       >
-        <span style={{ fontSize: '16px' }}>🔓</span>
-        ACTIVATE & CLAIM
-        <span style={{ fontSize: '14px' }}>✨</span>
+        <span style={{ fontSize: '14px' }}>🔓</span>
+        WITHDRAW WELCOME BONUS NOW
+        <span style={{ fontSize: '12px' }}>✨</span>
       </button>
     </div>
   </div>
