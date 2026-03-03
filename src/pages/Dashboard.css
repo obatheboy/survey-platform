@@ -93,7 +93,7 @@
   /* Glow Effects */
   --glow-money: 0 0 15px rgba(251, 191, 36, 0.6), 0 0 30px rgba(251, 191, 36, 0.3);
   --glow-progress: 0 0 10px rgba(66, 153, 225, 0.6);
-  --glow-card: 0 0 20px rgba(102, 126, 234, 0.3);
+  --glow-card: 0 0 20px rgba(234, 88, 12, 0.4);
   --glow-success: 0 0 15px rgba(72, 187, 120, 0.5);
   --glow-warning: 0 0 15px rgba(251, 191, 36, 0.5);
   --glow-danger: 0 0 15px rgba(245, 101, 101, 0.5);
@@ -814,7 +814,7 @@ p, span, div, button, a, label {
   margin: 6px 0 !important;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-md), 0 0 15px rgba(237, 100, 166, 0.4) !important;
+  box-shadow: var(--shadow-md), 0 0 20px rgba(234, 88, 12, 0.5) !important;
   color: white !important;
   animation: scaleIn 0.5s ease;
   max-width: 100%;
@@ -868,23 +868,23 @@ p, span, div, button, a, label {
 }
 
 .welcome-bonus .bonus-title {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 900;
   color: white;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5), 0 0 20px rgba(255,255,255,0.5);
   margin: 0;
   line-height: 1.2;
 }
 
 .welcome-bonus .bonus-amount {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 900;
   color: white;
-  text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5), 0 0 25px rgba(255,255,255,0.7);
   line-height: 1;
-  margin: 4px 0 4px;
+  margin: 6px 0 6px;
 }
 
 .welcome-bonus .bonus-description {
@@ -912,7 +912,7 @@ p, span, div, button, a, label {
   gap: 4px !important;
   width: 100% !important;
   cursor: pointer !important;
-  box-shadow: 0 0 15px rgba(245, 101, 101, 0.6) !important;
+  box-shadow: 0 0 20px rgba(234, 88, 12, 0.6) !important;
   transition: var(--transition-fast) !important;
   text-transform: uppercase;
   letter-spacing: 0.5px;
