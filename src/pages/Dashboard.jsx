@@ -21,42 +21,42 @@ const PLANS = {
     icon: "⭐", 
     total: 1500, 
     perSurvey: 150,
-    // Bright Sky Blue theme
-    color: "#0ea5e9",
-    gradient: "linear-gradient(135deg, #e0f2fe, #bae6fd)",
-    borderColor: "rgba(14, 165, 233, 0.3)",
-    bgColor: "#e0f2fe",
+    // Hot Pink - matching bottom nav
+    color: "#FF0080",
+    gradient: "linear-gradient(135deg, #1a1a2e, #16213e)",
+    borderColor: "rgba(255, 0, 128, 0.3)",
+    bgColor: "#1a1a2e",
     description: "Perfect for beginners",
-    totalColor: "#0ea5e9",
-    totalGlow: "0 0 10px rgba(14, 165, 233, 0.5), 0 0 20px rgba(14, 165, 233, 0.3)"
+    totalColor: "#FF0080",
+    totalGlow: "0 0 10px rgba(255, 0, 128, 0.5), 0 0 20px rgba(255, 0, 128, 0.3)"
   },
   VIP: { 
     name: "VIP", 
     icon: "💎", 
     total: 2000, 
     perSurvey: 200,
-    // Bright Purple theme
-    color: "#8b5cf6",
-    gradient: "linear-gradient(135deg, #f3e8ff, #ede9fe)",
-    borderColor: "rgba(139, 92, 246, 0.3)",
-    bgColor: "#f3e8ff",
+    // Lime Green - matching bottom nav
+    color: "#00FF00",
+    gradient: "linear-gradient(135deg, #1a1a2e, #16213e)",
+    borderColor: "rgba(0, 255, 0, 0.3)",
+    bgColor: "#1a1a2e",
     description: "For active earners",
-    totalColor: "#8b5cf6",
-    totalGlow: "0 0 10px rgba(139, 92, 246, 0.5), 0 0 20px rgba(139, 92, 246, 0.3)"
+    totalColor: "#00FF00",
+    totalGlow: "0 0 10px rgba(0, 255, 0, 0.5), 0 0 20px rgba(0, 255, 0, 0.3)"
   },
   VVIP: { 
     name: "VVIP", 
     icon: "👑", 
     total: 3000, 
     perSurvey: 300,
-    // Bright Pink theme
-    color: "#ec4899",
-    gradient: "linear-gradient(135deg, #fce7f3, #fbcfe8)",
-    borderColor: "rgba(236, 72, 153, 0.3)",
-    bgColor: "#fce7f3",
+    // Orange - matching bottom nav
+    color: "#FF6600",
+    gradient: "linear-gradient(135deg, #1a1a2e, #16213e)",
+    borderColor: "rgba(255, 102, 0, 0.3)",
+    bgColor: "#1a1a2e",
     description: "Maximum earnings",
-    totalColor: "#ec4899",
-    totalGlow: "0 0 10px rgba(236, 72, 153, 0.5), 0 0 20px rgba(236, 72, 153, 0.3)"
+    totalColor: "#FF6600",
+    totalGlow: "0 0 10px rgba(255, 102, 0, 0.5), 0 0 20px rgba(255, 102, 0, 0.3)"
   },
 };
 const TOTAL_SURVEYS = 10;
@@ -1044,7 +1044,7 @@ return (
           
           {/* RIGHT COLUMN: BALANCE */}
           <div style={{
-            background: 'linear-gradient(145deg, #ffffff, #f8fafc)',
+            background: 'linear-gradient(145deg, #1a1a2e, #16213e)',
             borderRadius: '16px',
             padding: '10px',
             textAlign: 'center',
@@ -1345,7 +1345,7 @@ return (
               </div>
 
               {/* Affiliate Earnings Card */}
-              <div className="stats-card affiliate-balance" style={{ background: 'linear-gradient(135deg, #ffffff, #f8fafc)' }}>
+              <div className="stats-card affiliate-balance" style={{ background: 'linear-gradient(135deg, #1a1a2e, #16213e)' }}>
                 <div className="stats-card-header">
                   <span className="stats-icon">🎁</span>
                   <h4>Affiliate Earnings</h4>
@@ -1825,13 +1825,13 @@ return (
       </footer>
 
       <style jsx>{`
-        /* FORCE LIGHT/BRIGHT MODE STYLES GLOBALLY */
+        /* FORCE INK BRIGHT MODE STYLES GLOBALLY */
         :global(:root[data-theme='dark']) {
-          --bg-main: #ffffff !important;
-          --bg-surface: #f8fafc !important;
-          --text-main: #1e293b !important;
-          --text-muted: #64748b !important;
-          --border-soft: rgba(0, 0, 0, 0.1) !important;
+          --bg-main: #1a1a2e !important;
+          --bg-surface: #16213e !important;
+          --text-main: #ffffff !important;
+          --text-muted: #a0a0b0 !important;
+          --border-soft: rgba(255, 0, 128, 0.2) !important;
         }
 
         :global(html[data-theme='dark'] body) {
@@ -1843,12 +1843,12 @@ return (
         :global(html[data-theme='dark']) .stats-card,
         :global(html[data-theme='dark']) .feature-card,
         :global(html[data-theme='dark']) .quick-action-card {
-          background: #ffffff !important;
+          background: #1a1a2e !important;
           border-color: var(--border-soft) !important;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
         }
         
-        /* Ensure text visibility in dark mode */
+        /* Ensure text visibility in ink mode */
         :global(html[data-theme='dark']) .stats-card h4,
         :global(html[data-theme='dark']) .feature-card h4,
         :global(html[data-theme='dark']) .quick-action-card h4 {
@@ -1887,8 +1887,8 @@ return (
 
         /* Dark mode support for nav bar */
         [data-theme='dark'] .bottom-nav-bar {
-          background: rgba(255, 255, 255, 0.98);
-          border-top-color: rgba(0, 0, 0, 0.1);
+          background: rgba(22, 33, 62, 0.98);
+          border-top-color: rgba(255, 0, 128, 0.2);
         }
 
         /* The .nav-btn styles are in Dashboard.css */
@@ -2027,7 +2027,7 @@ return (
         }}>
           {/* Level & Streak Card */}
           <div className="level-streak-card" style={{
-            background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+            background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
             borderRadius: '16px',
             padding: '20px',
             color: 'white'
