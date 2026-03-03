@@ -1123,8 +1123,8 @@ export default function Dashboard() {
           <span style={{
             fontSize: '24px',
             fontWeight: '900 !important',
-            color: '#1a1a1a !important',
-            textShadow: '1px 1px 0 rgba(255,255,255,0.3), 0 0 15px rgba(255,255,255,0.5)',
+            color: '#FFFFFF !important',
+            textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
             textTransform: 'uppercase',
             letterSpacing: '2px'
           }}>
@@ -1170,10 +1170,10 @@ export default function Dashboard() {
           }}>
             Congratulations! You've received a welcome bonus of{' '}
             <span style={{
-              color: '#1a1a1a !important',
+              color: '#FFFFFF !important',
               fontWeight: '900 !important',
               fontSize: '28px !important',
-              textShadow: '1px 1px 0 rgba(255,255,255,0.3) !important'
+              textShadow: '2px 2px 4px rgba(0,0,0,0.5) !important'
             }}>
               KES 1,200
             </span>
