@@ -1217,7 +1217,7 @@ return (
           color: 'white',
           display: 'block',
           lineHeight: '1.1',
-          textShadow: '0 0 20px #FF6B00, 0 2px 8px rgba(0, 0, 0, 0.6)',
+          textShadow: '0 0 20px #000000, 0 2px 8px rgba(0, 0, 0, 0.6)',
           position: 'relative',
           zIndex: 1
         }}>
