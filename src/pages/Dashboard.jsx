@@ -1,4 +1,3 @@
-
 // ========================= Dashboard.jsx =========================
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -14,14 +13,12 @@ import WelcomeBonusPopup from "./components/WelcomeBonusPopup.jsx";
 import { gamificationApi } from "../api/api";
 import "./Dashboard.css";
 
-
 const PLANS = {
   REGULAR: { 
     name: "Regular", 
     icon: "⭐", 
     total: 1500, 
     perSurvey: 150,
-    // Cool Green
     color: "#1f7405",
     gradient: "linear-gradient(135deg, #1f7405, #2d9a07)",
     borderColor: "rgba(255, 255, 255, 0.4)",
@@ -35,7 +32,6 @@ const PLANS = {
     icon: "💎", 
     total: 2000, 
     perSurvey: 200,
-    // Cool Blue
     color: "#0080ff",
     gradient: "linear-gradient(135deg, #0066cc, #0080ff)",
     borderColor: "rgba(255, 255, 255, 0.4)",
@@ -49,7 +45,6 @@ const PLANS = {
     icon: "👑", 
     total: 3000, 
     perSurvey: 300,
-    // Orange
     color: "#FF6600",
     gradient: "linear-gradient(135deg, #cc5200, #FF6600)",
     borderColor: "rgba(255, 255, 255, 0.4)",
@@ -60,18 +55,15 @@ const PLANS = {
   },
 };
 const TOTAL_SURVEYS = 10;
-const APP_VERSION = "1.2.5"; // Bump this version to force clients to refresh on deploy
+const APP_VERSION = "1.2.5";
 
 const getInitialTheme = () => {
-  // 1. Check for a saved theme in localStorage
   if (typeof window !== 'undefined' && localStorage.getItem('theme')) {
     return localStorage.getItem('theme');
   }
-  // 2. Check for user's OS preference
   if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
     return 'dark';
   }
-  // 3. Default to light
   return 'light';
 };
 
@@ -101,7 +93,6 @@ export default function Dashboard() {
   /* =========================
      WHATSAPP CAPTION BLINKING EFFECT - FASTER
   ========================= */
- 
   const [_showCaption, setShowCaption] = useState(true);
   const [showScrollReminder, setShowScrollReminder] = useState(false);
   const [reminderShown, setReminderShown] = useState(false);
@@ -145,12 +136,10 @@ export default function Dashboard() {
   useEffect(() => {
     let alive = true;
 
-    // 🔄 FORCE UPDATE CHECK
     const savedVersion = localStorage.getItem("app_version");
     if (savedVersion !== APP_VERSION) {
       localStorage.setItem("app_version", APP_VERSION);
       if (savedVersion) {
-        // If a previous version existed, reload to get new assets
         window.location.reload();
       }
     }
@@ -164,7 +153,6 @@ export default function Dashboard() {
         setPlans(resUser.data.plans || {});
         setActivationRequests(resUser.data.activation_requests || []);
         
-        // Calculate stats
         let surveyEarnings = 0;
         let calculatedTotalSurveys = 0;
 
@@ -172,12 +160,10 @@ export default function Dashboard() {
           const backendPlan = resUser.data.plans?.[planKey] || { surveys_completed: 0 };
           let count = backendPlan.surveys_completed || 0;
           
-          // Check backend status
           if (backendPlan.is_activated) {
             count = TOTAL_SURVEYS;
           }
           
-          // Ensure count doesn't exceed total
           count = Math.min(count, TOTAL_SURVEYS);
           
           calculatedTotalSurveys += count;
@@ -187,9 +173,6 @@ export default function Dashboard() {
         let availableBalance = Number(resUser.data.total_earned || 0);
         const totalWithdrawals = Number(resUser.data.total_withdrawals || 0);
         
-        // Fallback: if backend balance seems stale (less than survey earnings)
-        // We calculate expected balance = surveyEarnings - withdrawals
-        // If expected > reported, use expected.
         const expectedBalance = surveyEarnings - totalWithdrawals;
         if (expectedBalance > availableBalance) {
             availableBalance = expectedBalance;
@@ -203,7 +186,6 @@ export default function Dashboard() {
           totalWithdrawals: totalWithdrawals
         });
 
-        // Load pending withdrawals
         loadPendingWithdrawals();
 
         localStorage.setItem("cachedUser", JSON.stringify(resUser.data));
@@ -241,11 +223,9 @@ export default function Dashboard() {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  // Listen for system theme changes and update if no theme is saved
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = (e) => {
-      // Only update if user hasn't made a manual selection
       if (!('theme' in localStorage)) {
         setTheme(e.matches ? 'dark' : 'light');
       }
@@ -338,28 +318,23 @@ export default function Dashboard() {
      GAMIFICATION - CHECK WELCOME BONUS
    ========================= */
   useEffect(() => {
-    // Check if we should show welcome bonus popup
     const showWelcomeBonus = localStorage.getItem("showWelcomeBonus");
     const bonusAmount = localStorage.getItem("welcomeBonusAmount");
     
     if (showWelcomeBonus === "true") {
       setWelcomeBonusAmount(bonusAmount ? parseInt(bonusAmount) : 1200);
       
-      // Show popup after 5 seconds delay
       const showAfterDelay = setTimeout(() => {
         setShowWelcomeBonus(true);
       }, 5000);
       
-      // Also schedule to show again after 10 seconds (reminder)
-      // This will show if user hasn't closed the first popup
       const showAgainAfter = setTimeout(() => {
         const dismissed = localStorage.getItem("welcomeBonusDismissed");
         if (!dismissed) {
           setShowWelcomeBonus(true);
         }
-      }, 15000); // 15 seconds total (5 + 10)
+      }, 15000);
       
-      // Clear the flag but don't mark as dismissed yet
       localStorage.removeItem("showWelcomeBonus");
       localStorage.removeItem("welcomeBonusAmount");
       
@@ -372,12 +347,9 @@ export default function Dashboard() {
 
   const handleWelcomeBonusClose = () => {
     setShowWelcomeBonus(false);
-    // Mark that the user has dismissed the welcome bonus (won't show again)
     localStorage.setItem("welcomeBonusDismissed", "true");
     
-    // After closing welcome bonus, check for daily reward after a short delay
     setTimeout(() => {
-      // Trigger daily reward check manually if needed
       const checkAndShowDailyReward = async () => {
         try {
           const response = await gamificationApi.checkDailyReward();
@@ -392,20 +364,18 @@ export default function Dashboard() {
       checkAndShowDailyReward();
     }, 1500);
   };
-  
+
   /* =========================
      GAMIFICATION - CHECK DAILY REWARD
    ========================= */
   useEffect(() => {
     const checkDailyReward = async () => {
-      // Don't show daily reward if welcome bonus is being shown
       if (showWelcomeBonus) return;
       
       try {
         const response = await gamificationApi.checkDailyReward();
         if (response.data.can_claim) {
           setCanClaimDailyReward(true);
-          // Show the daily reward popup automatically after a short delay
           setTimeout(() => setShowDailyReward(true), 2000);
         }
         setGamificationStats({
@@ -433,14 +403,12 @@ export default function Dashboard() {
       xp: result.xp,
       xpToNextLevel: result.xp_to_next_level
     }));
-    // Refresh user data to get updated balance
     if (user) {
       api.get(`/auth/me?_t=${Date.now()}`).then(res => {
         setUser(res.data);
       });
     }
   };
-
 
   /* =========================
      HELPERS
@@ -462,7 +430,6 @@ export default function Dashboard() {
   };
   const progressPercentage = (plan) => (surveysDone(plan) / TOTAL_SURVEYS) * 100;
 
-  // Check if a plan has a pending activation request
   const hasPendingActivation = (plan) => {
     return activationRequests.some(
       req => req.plan === plan && req.status === 'SUBMITTED'
@@ -470,19 +437,10 @@ export default function Dashboard() {
   };
 
   const getPlanStatus = (plan) => {
-    // First check: if plan is activated, show ready to withdraw
     if (isActivated(plan)) return { status: "completed", label: "Ready to Withdraw", icon: "✅" };
-    
-    // Second check: if there's a pending activation request, show pending approval
     if (hasPendingActivation(plan)) return { status: "pending-approval", label: "Pending Approval", icon: "⏳" };
-    
-    // Third check: if surveys are completed but not activated
     if (isCompleted(plan)) return { status: "completed", label: "Ready to Withdraw", icon: "✅" };
-    
-    // Fourth check: if in progress
     if (surveysDone(plan) > 0) return { status: "in-progress", label: "In Progress", icon: "⏳" };
-    
-    // Default: not started
     return { status: "not-started", label: "Start Earning", icon: "🚀" };
   };
 
@@ -527,7 +485,6 @@ export default function Dashboard() {
      WITHDRAW LOGIC - SIMPLIFIED
   ========================= */
   const handleWithdrawClick = async (plan) => {
-    // Debounce protection
     const now = Date.now();
     const lastClickTime = localStorage.getItem(`lastWithdrawClick_${plan}`);
     if (lastClickTime && (now - parseInt(lastClickTime)) < 2000) {
@@ -544,7 +501,6 @@ export default function Dashboard() {
       return;
     }
 
-    // Check if account is activated
     if (!isActivated(plan)) {
       try {
         await api.post("/surveys/select-plan", { plan });
@@ -552,19 +508,16 @@ export default function Dashboard() {
         console.error("Failed to set active plan:", error);
       }
       
-   // In the handleWithdrawClick function
-navigate("/activation-notice", { 
-  state: { 
-    planKey: plan,           // ← Use planKey (ActivationNotice expects this)
-    amount: PLANS[plan].total
-  }
-});
+      navigate("/activation-notice", { 
+        state: { 
+          planKey: plan,
+          amount: PLANS[plan].total
+        }
+      });
       return;
     }
 
-    // Check for pending withdrawal
     if (pendingWithdrawals[plan]) {
-      // Navigate to success page to manage existing withdrawal
       window.scrollTo(0, 0);
       navigate("/withdraw-success", {
         state: {
@@ -575,7 +528,6 @@ navigate("/activation-notice", {
       return;
     }
 
-    // Navigate to form page for new withdrawal
     navigate("/withdraw-form", { state: { plan } });
   };
 
@@ -583,7 +535,6 @@ navigate("/activation-notice", {
      WELCOME BONUS
   ========================= */
   const handleWelcomeBonusWithdraw = () => {
-    // Prevent body scrolling
     document.body.style.overflow = 'hidden';
     document.body.style.position = 'fixed';
     document.body.style.width = '100%';
@@ -644,177 +595,173 @@ navigate("/activation-notice", {
       </div>
     );
   }
-/* =========================
-   MAIN RENDER
-========================= */
-return (
-  <div className="dashboard" ref={dashboardRef}>
-    {/* TOAST NOTIFICATION */}
-    {toast && <Notifications message={toast} />}
 
-    {/* FULL SCREEN NOTIFICATION - FIXED CENTER */}
-    {fullScreenNotification && (
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        width: '100vw',
-        height: '100vh',
-        backgroundColor: 'rgba(0, 0, 0, 0.95)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 9999,
-        backdropFilter: 'blur(10px)',
-        overflow: 'hidden',
-        margin: 0,
-        padding: '20px',
-        boxSizing: 'border-box'
-      }}>
+  return (
+    <div className="dashboard" ref={dashboardRef}>
+      {/* TOAST NOTIFICATION */}
+      {toast && <div className="toast-notification">{toast}</div>}
+
+      {/* FULL SCREEN NOTIFICATION - FIXED CENTER */}
+      {fullScreenNotification && (
         <div style={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          borderRadius: '20px',
-          padding: '30px 25px',
-          maxWidth: '420px',
-          width: '100%',
-          textAlign: 'center',
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          position: 'relative'
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(0, 0, 0, 0.95)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          backdropFilter: 'blur(10px)',
+          overflow: 'hidden',
+          margin: 0,
+          padding: '20px',
+          boxSizing: 'border-box'
         }}>
           <div style={{
-            fontSize: '50px',
-            marginBottom: '15px',
-            animation: 'pulse 2s infinite'
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            borderRadius: '20px',
+            padding: '30px 25px',
+            maxWidth: '420px',
+            width: '100%',
+            textAlign: 'center',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            position: 'relative'
           }}>
-            🎁
-          </div>
-          
-          <h3 style={{
-            color: 'white',
-            margin: '0 0 10px 0',
-            fontSize: '22px',
-            fontWeight: '700'
-          }}>
-            Welcome Bonus!
-          </h3>
-          
-          <p style={{
-            color: 'rgba(255, 255, 255, 0.95)',
-            fontSize: '16px',
-            lineHeight: '1.4',
-            marginBottom: '25px',
-            padding: '0 10px'
-          }}>
-            {fullScreenNotification.message}
-          </p>
-          
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '12px',
-            width: '100%'
-          }}>
-            {fullScreenNotification.redirect && (
+            <div style={{
+              fontSize: '50px',
+              marginBottom: '15px',
+              animation: 'pulse 2s infinite'
+            }}>
+              🎁
+            </div>
+            
+            <h3 style={{
+              color: 'white',
+              margin: '0 0 10px 0',
+              fontSize: '22px',
+              fontWeight: '700'
+            }}>
+              Welcome Bonus!
+            </h3>
+            
+            <p style={{
+              color: 'rgba(255, 255, 255, 0.95)',
+              fontSize: '16px',
+              lineHeight: '1.4',
+              marginBottom: '25px',
+              padding: '0 10px'
+            }}>
+              {fullScreenNotification.message}
+            </p>
+            
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              width: '100%'
+            }}>
+              {fullScreenNotification.redirect && (
+                <button
+                  onClick={() => {
+                    document.body.style.overflow = '';
+                    document.body.style.position = '';
+                    document.body.style.width = '';
+                    document.body.style.height = '';
+                    
+                    setFullScreenNotification(null);
+                    navigate(fullScreenNotification.redirect);
+                  }}
+                  style={{
+                    background: 'linear-gradient(135deg, #dc2626, #991b1b)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '12px',
+                    padding: '16px 20px',
+                    fontSize: '17px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    width: '100%',
+                    boxShadow: '0 8px 25px rgba(220, 38, 38, 0.4)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 12px 30px rgba(220, 38, 38, 0.6)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(220, 38, 38, 0.4)';
+                  }}
+                >
+                  <span style={{ fontSize: '20px' }}>🔓</span>
+                  Activate Account Now
+                </button>
+              )}
+              
               <button
                 onClick={() => {
-                  // Restore body scrolling
                   document.body.style.overflow = '';
                   document.body.style.position = '';
                   document.body.style.width = '';
                   document.body.style.height = '';
                   
                   setFullScreenNotification(null);
-                  navigate(fullScreenNotification.redirect);
                 }}
                 style={{
-                  background: 'linear-gradient(135deg, #dc2626, #991b1b)',
+                  background: 'rgba(255, 255, 255, 0.1)',
                   color: 'white',
-                  border: 'none',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
                   borderRadius: '12px',
-                  padding: '16px 20px',
-                  fontSize: '17px',
-                  fontWeight: '700',
+                  padding: '14px 20px',
+                  fontSize: '15px',
+                  fontWeight: '600',
                   cursor: 'pointer',
                   transition: 'all 0.3s ease',
                   width: '100%',
-                  boxShadow: '0 8px 25px rgba(220, 38, 38, 0.4)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '10px'
+                  backdropFilter: 'blur(10px)'
                 }}
                 onMouseOver={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 12px 30px rgba(220, 38, 38, 0.6)';
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
                 }}
                 onMouseOut={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(220, 38, 38, 0.4)';
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
                 }}
               >
-                <span style={{ fontSize: '20px' }}>🔓</span>
-                Activate Account Now
+                Maybe Later
               </button>
-            )}
-            
-            <button
-              onClick={() => {
-                // Restore body scrolling
-                document.body.style.overflow = '';
-                document.body.style.position = '';
-                document.body.style.width = '';
-                document.body.style.height = '';
-                
-                setFullScreenNotification(null);
-              }}
-              style={{
-                background: 'rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                borderRadius: '12px',
-                padding: '14px 20px',
-                fontSize: '15px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                width: '100%',
-                backdropFilter: 'blur(10px)'
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-              }}
-            >
-              Maybe Later
-            </button>
-          </div>
-          
-          <div style={{
-            marginTop: '20px',
-            padding: '12px',
-            background: 'rgba(255, 255, 255, 0.08)',
-            borderRadius: '10px',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            fontSize: '13px',
-            color: 'rgba(255, 255, 255, 0.8)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', justifyContent: 'center' }}>
-              <span>✅</span>
-              <span>Instant activation upon payment</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
-              <span>🔒</span>
-              <span>Secure M-Pesa payment</span>
+            
+            <div style={{
+              marginTop: '20px',
+              padding: '12px',
+              background: 'rgba(255, 255, 255, 0.08)',
+              borderRadius: '10px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              fontSize: '13px',
+              color: 'rgba(255, 255, 255, 0.8)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', justifyContent: 'center' }}>
+                <span>✅</span>
+                <span>Instant activation upon payment</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+                <span>🔒</span>
+                <span>Secure M-Pesa payment</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    )}
+      )}
 
       {/* MAIN MENU HEADER WITH DASHBOARD TITLE */}
       <header className="dashboard-main-header">
@@ -860,9 +807,7 @@ return (
 
         <div className="header-activation-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {user && (
-            // Check if user has any pending activation requests
             activationRequests.some(req => req.status === 'SUBMITTED') ? (
-              // User has pending activation - show pending button (disabled)
               <button
                 disabled
                 className="activate-btn-pulse"
@@ -891,7 +836,6 @@ return (
                 <span style={{ fontSize: '14px', marginLeft: '2px' }}>⏰</span>
               </button>
             ) : user.is_activated ? (
-              // User is activated - show activated button (disabled)
               <button
                 disabled
                 className="activate-btn-pulse"
@@ -919,7 +863,6 @@ return (
                 <span style={{ fontSize: '14px', marginLeft: '2px' }}>🎉</span>
               </button>
             ) : (
-              // User needs to activate - show activate button
               <button
                 onClick={() => navigate('/activate?welcome_bonus=true')}
                 className="activate-btn-pulse"
@@ -995,7 +938,6 @@ return (
           gap: '10px',
           alignItems: 'stretch'
         }}>
-          {/* LEFT COLUMN: BUTTONS */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <button 
                 onClick={goToSurveys}
@@ -1042,7 +984,6 @@ return (
               </button>
           </div>
           
-          {/* RIGHT COLUMN: BALANCE */}
           <div style={{
             background: 'linear-gradient(145deg, #1f7405, #2d9a07), linear-gradient(145deg, #0066cc, #0080ff)',
             borderRadius: '16px',
@@ -1128,610 +1069,469 @@ return (
       
       {/* WELCOME BONUS CARD - FIRST AFTER HEADER */}
       <section ref={welcomeRef}>
-  <div className="plan-card welcome-bonus" style={{
-    background: 'linear-gradient(135deg, #ed64a6, #9f7aea) !important',
-    border: '2px solid rgba(255,255,255,0.4) !important',
-    boxShadow: '0 4px 15px rgba(237, 100, 166, 0.4)'
-  }}>
-    
-    {/* HEADER - COMPACT */}
-    <div className="plan-card-header" style={{ 
-      position: 'relative', 
-      zIndex: 2,
-      marginBottom: '0px',
-      background: 'linear-gradient(135deg, #ed64a6, #9f7aea)',
-      padding: '8px'
-    }}>
-      <div className="plan-badge" style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        gap: '0px'
-      }}>
-        <span className="plan-name" style={{ 
-          color: '#ffffff !important',
-          fontSize: '14px',
-          fontWeight: '900',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px',
-          textShadow: '0 0 10px rgba(255,255,255,0.5)'
+        <div className="plan-card welcome-bonus" style={{
+          background: 'linear-gradient(135deg, #ed64a6, #9f7aea)',
+          border: '2px solid rgba(255,255,255,0.4)',
+          borderRadius: '16px',
+          padding: '12px',
+          margin: '10px 0',
+          boxShadow: '0 4px 15px rgba(237, 100, 166, 0.4)'
         }}>
-          WELCOME BONUS
-        </span>
-      </div>
-      <span className="plan-status" style={{ 
-        background: 'linear-gradient(135deg, #dc2626, #b91c1c) !important',
-        color: '#ffffff !important',
-        border: '2px solid rgba(255, 255, 255, 0.5) !important',
-        padding: '4px 10px',
-        borderRadius: '20px',
-        fontSize: '10px',
-        fontWeight: '900',
-        textTransform: 'uppercase',
-        letterSpacing: '0.5px',
-        boxShadow: '0 0 15px rgba(220, 38, 38, 0.5)'
-      }}>
-
-      </span>
-    </div>
-    
-    {/* BODY - EXTRA COMPACT */}
-    <div className="plan-card-body" style={{ position: 'relative', zIndex: 2, marginTop: '0px', padding: '8px' }}>
-      
-      {/* ===== BONUS AMOUNT SECTION - PREMIUM STYLE ===== */}
-      <div style={{
-        textAlign: 'center',
-        margin: '0px 0',
-        padding: '2px',
-        background: 'rgba(0, 0, 0, 0.3)',
-        borderRadius: '12px',
-        border: '2px solid rgba(59, 130, 246, 0.5)',
-        boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        {/* Animated glow */}
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: '-100%',
-          width: '200%',
-          height: '100%',
-          background: 'linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), transparent)',
-          animation: 'amountShine 2.5s ease-in-out infinite',
-          pointerEvents: 'none'
-        }} />
-        
-        {/* Sparkles around amount */}
-        <span style={{
-          position: 'absolute',
-          top: '4px',
-          left: '8px',
-          fontSize: '12px',
-          animation: 'sparkleTwinkle 1.5s ease-in-out infinite'
-        }}>✨</span>
-        <span style={{
-          position: 'absolute',
-          top: '4px',
-          right: '8px',
-          fontSize: '12px',
-          animation: 'sparkleTwinkle 1.5s ease-in-out infinite 0.75s'
-        }}>✨</span>
-        
-        <span style={{
-          fontSize: '32px',
-          fontWeight: '900',
-          color: 'white',
-          display: 'block',
-          lineHeight: '1.1',
-          textShadow: '0 0 20px #000000, 0 2px 8px rgba(0, 0, 0, 0.6)',
-          position: 'relative',
-          zIndex: 1
-        }}>
-          KES 1,200
-        </span>
-      </div>
-      
-      {/* DESCRIPTION - PREMIUM STYLE */}
-      <p style={{
-        fontSize: '13px',
-        lineHeight: '1.3',
-        color: 'rgba(255, 255, 255, 0.95)',
-        textAlign: 'center',
-        margin: '0 0 4px',
-        fontWeight: '600',
-        textShadow: '0 1px 3px rgba(0, 0, 0, 0.6)',
-        background: 'rgba(0, 0, 0, 0.25)',
-        padding: '8px 14px',
-        borderRadius: '30px',
-        border: '1px solid rgba(59, 130, 246, 0.3)',
-        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)'
-      }}>
-        Congratulations! You've received a welcome bonus of <strong style={{
-          color: '#FF6B00',
-          fontSize: '16px',
-          fontWeight: '900',
-          textShadow: '0 0 10px #FF6B00',
-          display: 'inline-block'
-        }}>KES 1,200</strong>. Activate your account to withdraw instantly!
-      </p>
-    </div>
-    
-    {/* FOOTER - EXTRA COMPACT */}
-    <div className="plan-card-footer" style={{ 
-      position: 'relative', 
-      zIndex: 2,
-      marginTop: '0'
-    }}>
-      <button 
-        className="start-survey-btn"
-        onClick={handleWelcomeBonusWithdraw}
-        style={{
-          background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
-          border: '2px solid rgba(255, 255, 255, 0.5)',
-          borderRadius: '40px',
-          padding: '14px 20px',
-          fontWeight: '900',
-          fontSize: '16px',
-          color: 'white',
-          textTransform: 'uppercase',
-          letterSpacing: '1px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '8px',
-          width: '100%',
-          cursor: 'pointer',
-          boxShadow: '0 0 20px rgba(220, 38, 38, 0.7)',
-          transition: 'all 0.2s ease',
-          position: 'relative',
-          overflow: 'hidden'
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'translateY(-2px)';
-          e.currentTarget.style.boxShadow = '0 0 30px rgba(220, 38, 38, 0.9)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'translateY(0)';
-          e.currentTarget.style.boxShadow = '0 0 20px rgba(220, 38, 38, 0.7)';
-        }}
-      >
-        <span className="btn-icon" style={{ fontSize: '16px' }}>🔓</span>
-        ACTIVATE & CLAIM NOW
-        <span style={{ fontSize: '14px', marginLeft: '2px' }}>✨</span>
-      </button>
-    </div>
-  </div>
-</section>
-
-          {/* SURVEY PLANS - Shown after Welcome Bonus */}
-          <section className="dashboard-section">
-            <div className="section-heading">
-              <h3> Survey Plan Available Today</h3>
-              <p>Track your earnings across different plans</p>
+          <div className="plan-card-header" style={{ 
+            position: 'relative', 
+            zIndex: 2,
+            marginBottom: '0px',
+            background: 'linear-gradient(135deg, #ed64a6, #9f7aea)',
+            padding: '8px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <div className="plan-badge" style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0px'
+            }}>
+              <span className="plan-name" style={{ 
+                color: '#ffffff',
+                fontSize: '14px',
+                fontWeight: '900',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                textShadow: '0 0 10px rgba(255,255,255,0.5)'
+              }}>
+                WELCOME BONUS
+              </span>
             </div>
-            <div className="progress-cards">
-              {Object.entries(PLANS).map(([key, plan]) => {
-                const status = getPlanStatus(key);
-                const activated = isActivated(key);
-                const hasPending = !!pendingWithdrawals[key];
-                
-                return (
-                  <div key={key} className="progress-card" style={{
-                    background: plan.bgColor,
-                  }}>
-                    <div className="progress-card-header">
-                      <span className="plan-icon">{plan.icon}</span>
-                      <h4>{plan.name}</h4>
-                      <span className={`status-badge ${status.status}`}>
-                        {status.icon} {status.label}
-                      </span>
-                    </div>
-                    <div className="progress-card-body">
-                      <div className="progress-info">
-                        <div className="progress-row">
-                          <span>Per Survey:</span>
-                          <strong>KES {plan.perSurvey}</strong>
-                        </div>
-                        <div className="progress-row">
-                          <span>Surveys:</span>
-                          <strong>{surveysDone(key)}/{TOTAL_SURVEYS}</strong>
-                        </div>
-                        <div className="progress-row">
-                          <span>Earned:</span>
-                          <strong className="earned-amount" style={{ 
-                            color: PLANS[key].totalColor,
-                            fontWeight: '900',
-                            textShadow: `0 0 10px ${PLANS[key].totalColor}`,
-                            fontSize: '16px'
-                          }}>
-                            KES {earnedSoFar(key).toLocaleString()}
-                          </strong>
-                        </div>
-                      </div>
-                      <div className="progress-bar">
-                        <div 
-                          className="progress-bar-fill"
-                          style={{ 
-                            width: `${progressPercentage(key)}%`,
-                            background: plan.gradient
-                          }}
-                        ></div>
-                      </div>
-                      {hasPending && (
-                        <div style={{
-                          marginTop: '8px',
-                          padding: '8px',
-                          background: 'rgba(251, 191, 36, 0.1)',
-                          border: '1px solid rgba(251, 191, 36, 0.3)',
-                          borderRadius: '8px',
-                          fontSize: '12px',
-                          color: '#f59e0b',
-                          fontWeight: '600',
-                          textAlign: 'center'
-                        }}>
-                          ⏳ Withdrawal Pending - Click to Manage
-                        </div>
-                      )}
-                      <div className="progress-card-actions">
-                        <button 
-                          className="action-btn primary"
-                          onClick={() => startSurvey(key)}
-                          disabled={isCompleted(key)}
-                          style={{
-                            background: isCompleted(key) ? '#ccc' : 'linear-gradient(135deg, #dc2626, #b91c1c)',
-                            color: isCompleted(key) ? '#666' : 'white',
-                            fontWeight: '900',
-                            fontSize: '14px',
-                            padding: '12px',
-                            border: '2px solid rgba(255,255,255,0.5)',
-                            boxShadow: isCompleted(key) ? 'none' : '0 0 15px rgba(220, 38, 38, 0.5)'
-                          }}
-                        >
-                          {isCompleted(key) ? 'Completed' : 'Start Survey'}
-                        </button>
-                        {isCompleted(key) && (
-                          <button 
-                            className="action-btn secondary"
-                            onClick={() => {
-                              if (hasPendingActivation(key)) {
-                                setFullScreenNotification({
-                                  message: "⏳ Your activation payment is pending approval. Please wait for admin to approve your payment.",
-                                  redirect: null
-                                });
-                                return;
-                              }
-                              handleWithdrawClick(key);
-                            }}
-                            style={{
-                              background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
-                              color: 'white',
-                              border: '2px solid rgba(255,255,255,0.5)',
-                              fontWeight: '900',
-                              fontSize: '14px',
-                              padding: '12px',
-                              boxShadow: '0 0 20px rgba(220, 38, 38, 0.6)'
-                            }}
-                          >
-                            {!activated ? (hasPendingActivation(key) ? '⏳ Pending Approval' : '🔓 Activate & Withdraw') : 
-                             hasPending ? '📤 Manage Withdrawal' : 'Withdraw'}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-
-      {/* OVERVIEW TAB */}
-      {activeTab === "OVERVIEW" && (
-        <>
-          {/* EARNINGS DASHBOARD */}
-          <section className="dashboard-section">
-            <div className="section-heading">
-              <h3>Your Earnings Dashboard</h3>
-              <p>Track your progress and earnings across all plans</p>
-            </div>
-            <div className="stats-grid">
-              <div className="stats-card total-earnings" style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
-                <div className="stats-card-header">
-                  <span className="stats-icon">💰</span>
-                  <h4 style={{ color: '#ffffff', fontWeight: 'bold' }}>Total Earnings</h4>
-                </div>
-                <div className="stats-card-body">
-                  <span className="stats-value" style={{ color: '#ffffff' }}>KES {stats.totalEarned.toLocaleString()}</span>
-                  <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)' }}>Lifetime earnings</span>
-                </div>
-              </div>
-
-              <div className="stats-card available-balance" style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)' }}>
-                <div className="stats-card-header">
-                  <span className="stats-icon">💳</span>
-                  <h4 style={{ color: '#ffffff', fontWeight: 'bold' }}>Available Balance</h4>
-                </div>
-                <div className="stats-card-body">
-                  <span className="stats-value" style={{ color: '#ffffff' }}>KES {stats.availableBalance.toLocaleString()}</span>
-                  <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)' }}>Ready to withdraw</span>
-                </div>
-                <button className="withdraw-quick-btn" onClick={() => navigate("/withdraw-form")}>
-                  Withdraw Now
-                </button>
-              </div>
-
-              {/* Affiliate Earnings Card */}
-              <div className="stats-card affiliate-balance" style={{ background: 'linear-gradient(135deg, #1f7405, #2d9a07)' }}>
-                <div className="stats-card-header">
-                  <span className="stats-icon">🎁</span>
-                  <h4 style={{ color: '#ffffff', fontWeight: 'bold' }}>Affiliate Earnings</h4>
-                </div>
-                <div className="stats-card-body">
-                  <span className="stats-value" style={{ color: '#ffffff' }}>KES {(stats.affiliateEarnings || 0).toLocaleString()}</span>
-                  <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)' }}>From referrals</span>
-                </div>
-                <button 
-                  className="withdraw-quick-btn affiliate-withdraw-btn" 
-                  onClick={() => navigate("/withdraw-form?type=affiliate")}
-                >
-                  Withdraw Now
-                </button>
-              </div>
-
-              <div className="stats-card surveys-completed" style={{ background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }}>
-                <div className="stats-card-header">
-                  <span className="stats-icon">📊</span>
-                  <h4 style={{ color: '#ffffff', fontWeight: 'bold' }}>Surveys Completed</h4>
-                </div>
-                <div className="stats-card-body">
-                  <span className="stats-value" style={{ color: '#ffffff' }}>{stats.totalSurveysCompleted}</span>
-                  <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)' }}>Total surveys</span>
-                </div>
-              </div>
-
-              <div className="stats-card success-rate" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
-                <div className="stats-card-header">
-                  <span className="stats-icon">📈</span>
-                  <h4 style={{ color: '#ffffff', fontWeight: 'bold' }}>Success Rate</h4>
-                </div>
-                <div className="stats-card-body">
-                  <span className="stats-value" style={{ color: '#ffffff' }}>98%</span>
-                  <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)' }}>Survey completion</span>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* WHY USERS LOVE OUR PLATFORM */}
-          <section className="dashboard-section">
-            <div className="section-heading">
-              <h3>Why Users Love Our Platform</h3>
-              <p>Discover what makes us the best choice for earning online</p>
-            </div>
-            <div className="progress-cards">
-              {Object.entries(PLANS).map(([key, plan]) => {
-                const status = getPlanStatus(key);
-                const activated = isActivated(key);
-                const hasPending = !!pendingWithdrawals[key];
-                
-                return (
-                  <div key={key} className="progress-card" style={{
-                    background: plan.bgColor,
-                  }}>
-                    <div className="progress-card-header">
-                      <span className="plan-icon">{plan.icon}</span>
-                      <h4>{plan.name}</h4>
-                      <span className={`status-badge ${status.status}`}>
-                        {status.icon} {status.label}
-                      </span>
-                    </div>
-                    <div className="progress-card-body">
-                      <div className="progress-info">
-                        <div className="progress-row">
-                          <span>Per Survey:</span>
-                          <strong>KES {plan.perSurvey}</strong>
-                        </div>
-                        <div className="progress-row">
-                          <span>Surveys:</span>
-                          <strong>{surveysDone(key)}/{TOTAL_SURVEYS}</strong>
-                        </div>
-                        <div className="progress-row">
-                          <span>Earned:</span>
-                         
-
-<strong className="earned-amount" style={{ 
-  color: PLANS[key].totalColor,
-  fontWeight: '900',
-  textShadow: `0 0 10px ${PLANS[key].totalColor}`,
-  fontSize: '16px'
-}}>
-  KES {earnedSoFar(key).toLocaleString()}
-</strong>
-
-
-                        </div>
-                      </div>
-                      <div className="progress-bar">
-                        <div 
-                          className="progress-bar-fill"
-                          style={{ 
-                            width: `${progressPercentage(key)}%`,
-                            background: plan.gradient
-                          }}
-                        ></div>
-                      </div>
-                      {hasPending && (
-                        <div style={{
-                          marginTop: '8px',
-                          padding: '8px',
-                          background: 'rgba(251, 191, 36, 0.1)',
-                          border: '1px solid rgba(251, 191, 36, 0.3)',
-                          borderRadius: '8px',
-                          fontSize: '12px',
-                          color: '#f59e0b',
-                          fontWeight: '600',
-                          textAlign: 'center'
-                        }}>
-                          ⏳ Withdrawal Pending - Click to Manage
-                        </div>
-                      )}
-                      <div className="progress-card-actions">
-                        <button 
-                          className="action-btn primary"
-                          onClick={() => startSurvey(key)}
-                          disabled={isCompleted(key)}
-                          style={{
-                            background: isCompleted(key) ? '#ccc' : 'linear-gradient(135deg, #dc2626, #b91c1c)',
-                            color: isCompleted(key) ? '#666' : 'white',
-                            fontWeight: '900',
-                            fontSize: '14px',
-                            padding: '12px',
-                            border: '2px solid rgba(255,255,255,0.5)',
-                            boxShadow: isCompleted(key) ? 'none' : '0 0 15px rgba(220, 38, 38, 0.5)'
-                          }}
-                        >
-                          {isCompleted(key) ? 'Completed' : 'Start Survey'}
-                        </button>
-                        {isCompleted(key) && (
-                          <button 
-                            className="action-btn secondary"
-                            onClick={() => {
-                              // If there's a pending activation, show a notification instead of navigating
-                              if (hasPendingActivation(key)) {
-                                setFullScreenNotification({
-                                  message: "⏳ Your activation payment is pending approval. Please wait for admin to approve your payment.",
-                                  redirect: null
-                                });
-                                return;
-                              }
-                              handleWithdrawClick(key);
-                            }}
-                            style={{
-                              background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
-                              color: 'white',
-                              border: '2px solid rgba(255,255,255,0.5)',
-                              fontWeight: '900',
-                              fontSize: '14px',
-                              padding: '12px',
-                              boxShadow: '0 0 20px rgba(220, 38, 38, 0.6)'
-                            }}
-                          >
-                            {!activated ? (hasPendingActivation(key) ? '⏳ Pending Approval' : '🔓 Activate & Withdraw') : 
-                             hasPending ? '📤 Manage Withdrawal' : 'Withdraw'}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-
-          {/* WHY USERS LOVE OUR PLATFORM */}
-          <section className="dashboard-section">
-            <div className="section-heading">
-              <h3>Why Users Love Our Platform</h3>
-              <p>Discover what makes us the best choice for earning online</p>
-            </div>
-            <div className="feature-grid">
-              <div className="feature-card">
-                <div className="feature-icon">⚡</div>
-                <h4>Instant Withdrawals</h4>
-                <p>Request cash anytime and get paid within minutes. No waiting periods.</p>
-              </div>
-              <div className="feature-card">
-                <div className="feature-icon">✅</div>
-                <h4>Verified Surveys</h4>
-                <p>Only high-quality surveys that pay on time. No spam, no scams.</p>
-              </div>
-              <div className="feature-card">
-                <div className="feature-icon">🔒</div>
-                <h4>Secure Payments</h4>
-                <p>Bank-level encryption secures all transactions. Your earnings are safe with us.</p>
-              </div>
-              <div className="feature-card">
-                <div className="feature-icon">💬</div>
-                <h4>24/7 Support</h4>
-                <p>Our team is always here to help. Quick response guaranteed!</p>
-              </div>
-              <div className="feature-card">
-                <div className="feature-icon">📊</div>
-                <h4>Real-time Tracking</h4>
-                <p>Monitor your earnings and progress in real-time. Full transparency.</p>
-              </div>
-              <div className="feature-card">
-                <div className="feature-icon">🎁</div>
-                <h4>Referral Bonuses</h4>
-                <p>Earn KES 105 for each friend! Unlimited earning potential.</p>
-              </div>
-              <div className="feature-card">
-                <div className="feature-icon">📱</div>
-                <h4>Mobile Friendly</h4>
-                <p>Complete surveys on your phone or computer. Work from anywhere.</p>
-              </div>
-              <div className="feature-card">
-                <div className="feature-icon">💰</div>
-                <h4>Multiple Income Streams</h4>
-                <p>Activate different plans and maximize your earnings.</p>
-              </div>
-            </div>
-          </section>
-
-          {/* QUICK ACTIONS */}
-          <section className="dashboard-section">
-            <div className="section-heading">
-              <h3>Quick Actions</h3>
-              <p>Complete these tasks to earn bonus points</p>
-            </div>
-            <div className="quick-actions-grid">
-              {quickActions.map(action => (
-                <div key={action.id} className={`quick-action-card ${action.completed ? 'completed' : ''}`}>
-                  <span className="action-icon">{action.icon}</span>
-                  <div className="action-content">
-                    <h4>{action.label}</h4>
-                    <p>{action.completed ? 'Completed! +10 points' : 'Earn 10 bonus points'}</p>
-                  </div>
-                  <button 
-                    className={`action-btn ${action.completed ? 'completed' : ''}`}
-                    onClick={() => !action.completed && completeQuickAction(action.id)}
-                    disabled={action.completed}
-                  >
-                    {action.completed ? '✓' : 'Start'}
-                  </button>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* TESTIMONIALS - Moved back to Dashboard */}
-          <section className="dashboard-section">
-            <div className="section-heading">
-              <h3>Community Success</h3>
-              <p>See what others are earning</p>
-            </div>
-            <Testimonials variant="grid" />
-          </section>
-        </>
-      )}
-
-      {/* TESTIMONIALS TAB */}
-      {activeTab === "TESTIMONIALS" && (
-        <section className="dashboard-section">
-          <div className="section-heading">
-            <h3>Real User Testimonials</h3>
-            <p>See what others are saying about their earnings experience</p>
+            <span className="plan-status" style={{ 
+              background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+              color: '#ffffff',
+              border: '2px solid rgba(255, 255, 255, 0.5)',
+              padding: '4px 10px',
+              borderRadius: '20px',
+              fontSize: '10px',
+              fontWeight: '900',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+              boxShadow: '0 0 15px rgba(220, 38, 38, 0.5)'
+            }}>
+              NEW
+            </span>
           </div>
-          <Testimonials variant="grid" />
-          <div className="testimonial-cta">
-            <p>Ready to join thousands of happy earners?</p>
-            <button className="primary-btn" onClick={goToSurveys}>
-              Start Earning Today →
+          
+          <div className="plan-card-body" style={{ position: 'relative', zIndex: 2, marginTop: '0px', padding: '8px' }}>
+            <div style={{
+              textAlign: 'center',
+              margin: '0px 0',
+              padding: '2px',
+              background: 'rgba(0, 0, 0, 0.3)',
+              borderRadius: '12px',
+              border: '2px solid rgba(59, 130, 246, 0.5)',
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: '-100%',
+                width: '200%',
+                height: '100%',
+                background: 'linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), transparent)',
+                animation: 'amountShine 2.5s ease-in-out infinite',
+                pointerEvents: 'none'
+              }} />
+              
+              <span style={{
+                position: 'absolute',
+                top: '4px',
+                left: '8px',
+                fontSize: '12px',
+                animation: 'sparkleTwinkle 1.5s ease-in-out infinite'
+              }}>✨</span>
+              <span style={{
+                position: 'absolute',
+                top: '4px',
+                right: '8px',
+                fontSize: '12px',
+                animation: 'sparkleTwinkle 1.5s ease-in-out infinite 0.75s'
+              }}>✨</span>
+              
+              <span style={{
+                fontSize: '32px',
+                fontWeight: '900',
+                color: 'white',
+                display: 'block',
+                lineHeight: '1.1',
+                textShadow: '0 0 20px #000000, 0 2px 8px rgba(0, 0, 0, 0.6)',
+                position: 'relative',
+                zIndex: 1
+              }}>
+                KES 1,200
+              </span>
+            </div>
+            
+            <p style={{
+              fontSize: '13px',
+              lineHeight: '1.3',
+              color: 'rgba(255, 255, 255, 0.95)',
+              textAlign: 'center',
+              margin: '0 0 4px',
+              fontWeight: '600',
+              textShadow: '0 1px 3px rgba(0, 0, 0, 0.6)',
+              background: 'rgba(0, 0, 0, 0.25)',
+              padding: '8px 14px',
+              borderRadius: '30px',
+              border: '1px solid rgba(59, 130, 246, 0.3)',
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)'
+            }}>
+              Congratulations! You've received a welcome bonus of <strong style={{
+                color: '#FF6B00',
+                fontSize: '16px',
+                fontWeight: '900',
+                textShadow: '0 0 10px #FF6B00',
+                display: 'inline-block'
+              }}>KES 1,200</strong>. Activate your account to withdraw instantly!
+            </p>
+          </div>
+          
+          <div className="plan-card-footer" style={{ 
+            position: 'relative', 
+            zIndex: 2,
+            marginTop: '0'
+          }}>
+            <button 
+              className="start-survey-btn"
+              onClick={handleWelcomeBonusWithdraw}
+              style={{
+                background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+                border: '2px solid rgba(255, 255, 255, 0.5)',
+                borderRadius: '40px',
+                padding: '14px 20px',
+                fontWeight: '900',
+                fontSize: '16px',
+                color: 'white',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                width: '100%',
+                cursor: 'pointer',
+                boxShadow: '0 0 20px rgba(220, 38, 38, 0.7)',
+                transition: 'all 0.2s ease',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 0 30px rgba(220, 38, 38, 0.9)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 0 20px rgba(220, 38, 38, 0.7)';
+              }}
+            >
+              <span className="btn-icon" style={{ fontSize: '16px' }}>🔓</span>
+              ACTIVATE & CLAIM NOW
+              <span style={{ fontSize: '14px', marginLeft: '2px' }}>✨</span>
             </button>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
-      {/* SURVEYS TAB */}
+      {/* SURVEY PLANS - Shown after Welcome Bonus (ONLY ONE INSTANCE) */}
+      <section className="dashboard-section">
+        <div className="section-heading">
+          <h3>Survey Plan Available Today</h3>
+          <p>Track your earnings across different plans</p>
+        </div>
+        <div className="progress-cards">
+          {Object.entries(PLANS).map(([key, plan]) => {
+            const status = getPlanStatus(key);
+            const activated = isActivated(key);
+            const hasPending = !!pendingWithdrawals[key];
+            
+            return (
+              <div key={key} className="progress-card" style={{
+                background: plan.bgColor,
+                borderRadius: '16px',
+                padding: '16px',
+                marginBottom: '12px'
+              }}>
+                <div className="progress-card-header" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                  <span className="plan-icon" style={{ fontSize: '32px' }}>{plan.icon}</span>
+                  <h4 style={{ flex: 1, fontSize: '18px', fontWeight: '900', color: 'white' }}>{plan.name}</h4>
+                  <span className={`status-badge ${status.status}`} style={{
+                    padding: '4px 12px',
+                    borderRadius: '20px',
+                    fontSize: '11px',
+                    fontWeight: '900',
+                    background: status.status === 'completed' ? 'rgba(72, 187, 120, 0.2)' : 
+                                status.status === 'in-progress' ? 'rgba(251, 191, 36, 0.2)' : 
+                                'rgba(255, 255, 255, 0.2)',
+                    border: `2px solid ${
+                      status.status === 'completed' ? '#48bb78' : 
+                      status.status === 'in-progress' ? '#fbbf24' : 
+                      'rgba(255,255,255,0.3)'
+                    }`,
+                    color: status.status === 'completed' ? '#48bb78' : 
+                           status.status === 'in-progress' ? '#fbbf24' : 
+                           'white'
+                  }}>
+                    {status.icon} {status.label}
+                  </span>
+                </div>
+                <div className="progress-card-body">
+                  <div className="progress-info" style={{ background: 'rgba(0,0,0,0.2)', borderRadius: '12px', padding: '12px', marginBottom: '12px' }}>
+                    <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                      <span>Per Survey:</span>
+                      <strong style={{ color: 'white' }}>KES {plan.perSurvey}</strong>
+                    </div>
+                    <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                      <span>Surveys:</span>
+                      <strong style={{ color: 'white' }}>{surveysDone(key)}/{TOTAL_SURVEYS}</strong>
+                    </div>
+                    <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}>
+                      <span>Earned:</span>
+                      <strong className="earned-amount" style={{ 
+                        color: 'white',
+                        fontWeight: '900',
+                        textShadow: '0 0 10px rgba(255,255,255,0.5)',
+                        fontSize: '16px'
+                      }}>
+                        KES {earnedSoFar(key).toLocaleString()}
+                      </strong>
+                    </div>
+                  </div>
+                  
+                  <div className="progress-bar" style={{ height: '10px', background: 'rgba(0,0,0,0.3)', borderRadius: '10px', overflow: 'hidden', marginBottom: '12px' }}>
+                    <div 
+                      className="progress-bar-fill"
+                      style={{ 
+                        width: `${progressPercentage(key)}%`,
+                        height: '100%',
+                        background: plan.gradient,
+                        borderRadius: '10px',
+                        transition: 'width 0.5s ease'
+                      }}
+                    ></div>
+                  </div>
+                  
+                  {hasPending && (
+                    <div style={{
+                      marginTop: '8px',
+                      padding: '8px',
+                      background: 'rgba(251, 191, 36, 0.1)',
+                      border: '1px solid rgba(251, 191, 36, 0.3)',
+                      borderRadius: '8px',
+                      fontSize: '12px',
+                      color: '#f59e0b',
+                      fontWeight: '600',
+                      textAlign: 'center',
+                      marginBottom: '12px'
+                    }}>
+                      ⏳ Withdrawal Pending - Click to Manage
+                    </div>
+                  )}
+                  
+                  <div className="progress-card-actions" style={{ display: 'flex', gap: '8px' }}>
+                    <button 
+                      className="action-btn primary"
+                      onClick={() => startSurvey(key)}
+                      disabled={isCompleted(key)}
+                      style={{
+                        flex: 1,
+                        padding: '14px',
+                        fontSize: '14px',
+                        fontWeight: '900',
+                        borderRadius: '10px',
+                        border: '2px solid rgba(255,255,255,0.5)',
+                        background: isCompleted(key) ? '#666' : 'linear-gradient(135deg, #dc2626, #b91c1c)',
+                        color: 'white',
+                        cursor: isCompleted(key) ? 'not-allowed' : 'pointer',
+                        opacity: isCompleted(key) ? 0.6 : 1
+                      }}
+                    >
+                      {isCompleted(key) ? '✓ Completed' : '🚀 Start Survey'}
+                    </button>
+                    
+                    {isCompleted(key) && (
+                      <button 
+                        className="action-btn secondary"
+                        onClick={() => {
+                          if (hasPendingActivation(key)) {
+                            setFullScreenNotification({
+                              message: "⏳ Your activation payment is pending approval. Please wait for admin to approve your payment.",
+                              redirect: null
+                            });
+                            return;
+                          }
+                          handleWithdrawClick(key);
+                        }}
+                        style={{
+                          flex: 1,
+                          padding: '14px',
+                          fontSize: '14px',
+                          fontWeight: '900',
+                          borderRadius: '10px',
+                          border: '2px solid rgba(255,255,255,0.5)',
+                          background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+                          color: 'white',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {!activated ? (hasPendingActivation(key) ? '⏳ Pending' : '🔓 Activate') : 
+                         hasPending ? '📤 Manage' : '💸 Withdraw'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* EARNINGS DASHBOARD */}
+      <section className="dashboard-section">
+        <div className="section-heading">
+          <h3>Your Earnings Dashboard</h3>
+          <p>Track your progress and earnings across all plans</p>
+        </div>
+        <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px' }}>
+          <div className="stats-card" style={{ background: 'linear-gradient(135deg, #10b981, #059669)', borderRadius: '16px', padding: '16px' }}>
+            <div className="stats-card-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+              <span className="stats-icon" style={{ fontSize: '24px' }}>💰</span>
+              <h4 style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '14px' }}>Total Earnings</h4>
+            </div>
+            <div className="stats-card-body">
+              <span className="stats-value" style={{ color: '#ffffff', fontSize: '24px', fontWeight: '900', display: 'block' }}>KES {stats.totalEarned.toLocaleString()}</span>
+              <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px' }}>Lifetime earnings</span>
+            </div>
+          </div>
+
+          <div className="stats-card" style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)', borderRadius: '16px', padding: '16px' }}>
+            <div className="stats-card-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+              <span className="stats-icon" style={{ fontSize: '24px' }}>💳</span>
+              <h4 style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '14px' }}>Available</h4>
+            </div>
+            <div className="stats-card-body">
+              <span className="stats-value" style={{ color: '#ffffff', fontSize: '24px', fontWeight: '900', display: 'block' }}>KES {stats.availableBalance.toLocaleString()}</span>
+              <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px' }}>Ready to withdraw</span>
+            </div>
+          </div>
+
+          <div className="stats-card" style={{ background: 'linear-gradient(135deg, #1f7405, #2d9a07)', borderRadius: '16px', padding: '16px' }}>
+            <div className="stats-card-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+              <span className="stats-icon" style={{ fontSize: '24px' }}>🎁</span>
+              <h4 style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '14px' }}>Affiliate</h4>
+            </div>
+            <div className="stats-card-body">
+              <span className="stats-value" style={{ color: '#ffffff', fontSize: '24px', fontWeight: '900', display: 'block' }}>KES {(stats.affiliateEarnings || 0).toLocaleString()}</span>
+              <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px' }}>From referrals</span>
+            </div>
+          </div>
+
+          <div className="stats-card" style={{ background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)', borderRadius: '16px', padding: '16px' }}>
+            <div className="stats-card-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+              <span className="stats-icon" style={{ fontSize: '24px' }}>📊</span>
+              <h4 style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '14px' }}>Surveys</h4>
+            </div>
+            <div className="stats-card-body">
+              <span className="stats-value" style={{ color: '#ffffff', fontSize: '24px', fontWeight: '900', display: 'block' }}>{stats.totalSurveysCompleted}</span>
+              <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px' }}>Total surveys</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* WHY USERS LOVE OUR PLATFORM */}
+      <section className="dashboard-section">
+        <div className="section-heading">
+          <h3>Why Users Love Our Platform</h3>
+          <p>Discover what makes us the best choice for earning online</p>
+        </div>
+        <div className="feature-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px' }}>
+          <div className="feature-card" style={{ background: 'linear-gradient(135deg, #ed64a6, #9f7aea)', borderRadius: '16px', padding: '16px', textAlign: 'center' }}>
+            <div className="feature-icon" style={{ fontSize: '32px', marginBottom: '8px' }}>⚡</div>
+            <h4 style={{ fontSize: '14px', fontWeight: '900', color: 'white', marginBottom: '4px' }}>Instant Withdrawals</h4>
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.9)' }}>Request cash anytime and get paid within minutes.</p>
+          </div>
+          <div className="feature-card" style={{ background: 'linear-gradient(135deg, #fbbf24, #f59e0b)', borderRadius: '16px', padding: '16px', textAlign: 'center' }}>
+            <div className="feature-icon" style={{ fontSize: '32px', marginBottom: '8px' }}>✅</div>
+            <h4 style={{ fontSize: '14px', fontWeight: '900', color: 'white', marginBottom: '4px' }}>Verified Surveys</h4>
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.9)' }}>Only high-quality surveys that pay on time.</p>
+          </div>
+          <div className="feature-card" style={{ background: 'linear-gradient(135deg, #4299e1, #667eea)', borderRadius: '16px', padding: '16px', textAlign: 'center' }}>
+            <div className="feature-icon" style={{ fontSize: '32px', marginBottom: '8px' }}>🔒</div>
+            <h4 style={{ fontSize: '14px', fontWeight: '900', color: 'white', marginBottom: '4px' }}>Secure Payments</h4>
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.9)' }}>Bank-level encryption secures all transactions.</p>
+          </div>
+          <div className="feature-card" style={{ background: 'linear-gradient(135deg, #48bb78, #38b2ac)', borderRadius: '16px', padding: '16px', textAlign: 'center' }}>
+            <div className="feature-icon" style={{ fontSize: '32px', marginBottom: '8px' }}>💬</div>
+            <h4 style={{ fontSize: '14px', fontWeight: '900', color: 'white', marginBottom: '4px' }}>24/7 Support</h4>
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.9)' }}>Our team is always here to help.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* QUICK ACTIONS */}
+      <section className="dashboard-section">
+        <div className="section-heading">
+          <h3>Quick Actions</h3>
+          <p>Complete these tasks to earn bonus points</p>
+        </div>
+        <div className="quick-actions-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
+          {quickActions.map(action => (
+            <div key={action.id} className={`quick-action-card ${action.completed ? 'completed' : ''}`} style={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: '16px',
+              background: action.completed ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #3b82f6, #2563eb)',
+              borderRadius: '16px',
+              color: 'white'
+            }}>
+              <span className="action-icon" style={{ fontSize: '24px', marginRight: '12px' }}>{action.icon}</span>
+              <div className="action-content" style={{ flex: 1 }}>
+                <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: '700' }}>{action.label}</h4>
+                <p style={{ margin: '0', fontSize: '12px', color: 'rgba(255,255,255,0.9)' }}>
+                  {action.completed ? 'Completed! +10 points' : 'Earn 10 bonus points'}
+                </p>
+              </div>
+              <button 
+                className={`action-btn ${action.completed ? 'completed' : ''}`}
+                onClick={() => !action.completed && completeQuickAction(action.id)}
+                disabled={action.completed}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '10px',
+                  border: '2px solid rgba(255,255,255,0.5)',
+                  background: action.completed ? 'rgba(255,255,255,0.2)' : 'white',
+                  color: action.completed ? 'white' : '#2563eb',
+                  fontWeight: '600',
+                  fontSize: '13px',
+                  cursor: action.completed ? 'default' : 'pointer'
+                }}
+              >
+                {action.completed ? '✓' : 'Start'}
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section className="dashboard-section">
+        <div className="section-heading">
+          <h3>Community Success</h3>
+          <p>See what others are earning</p>
+        </div>
+        <Testimonials variant="grid" />
+      </section>
+
+      {/* SURVEYS TAB CONTENT */}
       {activeTab === "SURVEYS" && (
         <section ref={surveyRef} id="surveys-section" className="tab-section">
           <div className="section-heading">
@@ -1739,7 +1539,7 @@ return (
             <p>Choose a plan that matches your earning goals</p>
           </div>
           
-          <div className="plan-cards-container">
+          <div className="plan-cards-container" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {Object.entries(PLANS).map(([key, plan]) => {
               const status = getPlanStatus(key);
               const activated = isActivated(key);
@@ -1748,68 +1548,94 @@ return (
               return (
                 <div key={key} className={`plan-card ${key.toLowerCase()}`} style={{
                   background: plan.gradient,
-                  boxShadow: `0 10px 30px ${plan.color}40`
+                  borderRadius: '20px',
+                  overflow: 'hidden',
+                  boxShadow: `0 10px 30px ${plan.color}40`,
+                  border: '2px solid rgba(255,255,255,0.2)'
                 }}>
-                  <div className="plan-card-header">
-                    <div className="plan-badge">
-                      <span className="plan-icon">{plan.icon}</span>
-                      <span className="plan-name">{plan.name}</span>
+                  <div className="plan-card-header" style={{
+                    padding: '16px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    borderBottom: '2px solid rgba(255,255,255,0.2)',
+                    background: 'rgba(0,0,0,0.1)'
+                  }}>
+                    <div className="plan-badge" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <span className="plan-icon" style={{ fontSize: '32px' }}>{plan.icon}</span>
+                      <span className="plan-name" style={{ fontSize: '20px', fontWeight: '900', color: 'white' }}>{plan.name}</span>
                     </div>
-                    <span className={`plan-status ${status.status}`}>
+                    <span className={`plan-status ${status.status}`} style={{
+                      padding: '4px 12px',
+                      borderRadius: '20px',
+                      fontSize: '11px',
+                      fontWeight: '900',
+                      background: status.status === 'completed' ? 'rgba(72, 187, 120, 0.2)' : 
+                                  status.status === 'in-progress' ? 'rgba(251, 191, 36, 0.2)' : 
+                                  'rgba(255, 255, 255, 0.2)',
+                      border: `2px solid ${
+                        status.status === 'completed' ? '#48bb78' : 
+                        status.status === 'in-progress' ? '#fbbf24' : 
+                        'rgba(255,255,255,0.3)'
+                      }`,
+                      color: status.status === 'completed' ? '#48bb78' : 
+                             status.status === 'in-progress' ? '#fbbf24' : 
+                             'white'
+                    }}>
                       {status.icon} {status.label}
                     </span>
                   </div>
                   
-                  <div className="plan-card-body">
-                    <div className="plan-description">
-                      <p>{plan.description}</p>
+                  <div className="plan-card-body" style={{ padding: '16px' }}>
+                    <div className="plan-description" style={{ marginBottom: '12px' }}>
+                      <p style={{ color: 'white', fontSize: '14px', fontWeight: '600' }}>{plan.description}</p>
                     </div>
                     
-                    <div className="plan-stats">
-                      <div className="stat-row">
-                        <span className="stat-label">Per Survey</span>
-                        <span className="stat-value">KES {plan.perSurvey}</span>
+                    <div className="plan-stats" style={{
+                      background: 'rgba(0,0,0,0.2)',
+                      borderRadius: '12px',
+                      padding: '12px',
+                      marginBottom: '12px'
+                    }}>
+                      <div className="stat-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                        <span className="stat-label" style={{ color: 'rgba(255,255,255,0.9)' }}>Per Survey</span>
+                        <span className="stat-value" style={{ color: 'white', fontWeight: '900' }}>KES {plan.perSurvey}</span>
                       </div>
-                      <div className="stat-row">
-                        <span className="stat-label">Total Plan</span>
-                        
-<span className="stat-value" style={{ 
-  color: PLANS[key].totalColor,
-  fontWeight: '900',
-  textShadow: `0 0 10px ${PLANS[key].totalColor}`,
-  fontSize: '18px'
-}}>
-  KES {plan.total}
-</span>
-
-
+                      <div className="stat-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                        <span className="stat-label" style={{ color: 'rgba(255,255,255,0.9)' }}>Total Plan</span>
+                        <span className="stat-value" style={{ 
+                          color: 'white',
+                          fontWeight: '900',
+                          textShadow: '0 0 10px rgba(255,255,255,0.5)',
+                          fontSize: '16px'
+                        }}>
+                          KES {plan.total}
+                        </span>
                       </div>
-                      <div className="stat-row">
-                        <span className="stat-label">Progress</span>
-                        <div className="progress-container">
-                          <div className="progress-bar">
+                      <div className="stat-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}>
+                        <span className="stat-label" style={{ color: 'rgba(255,255,255,0.9)' }}>Progress</span>
+                        <div className="progress-container" style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '60%' }}>
+                          <div className="progress-bar" style={{ flex: 1, height: '8px', background: 'rgba(0,0,0,0.3)', borderRadius: '4px', overflow: 'hidden' }}>
                             <div 
                               className="progress-bar-fill"
                               style={{ 
                                 width: `${progressPercentage(key)}%`,
-                                background: plan.gradient
+                                height: '100%',
+                                background: plan.gradient,
+                                borderRadius: '4px'
                               }}
                             ></div>
                           </div>
-                          <span className="progress-text">
+                          <span className="progress-text" style={{ color: 'white', fontSize: '12px', fontWeight: '900' }}>
                             {surveysDone(key)}/{TOTAL_SURVEYS}
                           </span>
                         </div>
-                      </div>
-                      <div className="stat-row">
-                        <span className="stat-label">Earned So Far</span>
-                        <span className="stat-value earned">KES {earnedSoFar(key).toLocaleString()}</span>
                       </div>
                     </div>
                     
                     {hasPending && (
                       <div style={{
-                        marginTop: '12px',
+                        marginTop: '8px',
                         padding: '10px',
                         background: 'rgba(251, 191, 36, 0.15)',
                         border: '1px solid rgba(251, 191, 36, 0.3)',
@@ -1817,44 +1643,63 @@ return (
                         fontSize: '13px',
                         color: '#f59e0b',
                         fontWeight: '700',
-                        textAlign: 'center'
+                        textAlign: 'center',
+                        marginBottom: '12px'
                       }}>
                         ⏳ Withdrawal Pending - Click "Manage Withdrawal"
                       </div>
                     )}
                     
-                    <div className="plan-features">
-                      <span className="feature-tag">📱 Mobile-Friendly</span>
-                      <span className="feature-tag">⏱️ 5-10 Minutes</span>
-                      <span className="feature-tag">💯 Guaranteed Payment</span>
+                    <div className="plan-features" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+                      <span className="feature-tag" style={{ padding: '4px 10px', background: 'rgba(255,255,255,0.1)', borderRadius: '20px', fontSize: '10px', color: 'white', border: '1px solid rgba(255,255,255,0.3)' }}>📱 Mobile-Friendly</span>
+                      <span className="feature-tag" style={{ padding: '4px 10px', background: 'rgba(255,255,255,0.1)', borderRadius: '20px', fontSize: '10px', color: 'white', border: '1px solid rgba(255,255,255,0.3)' }}>⏱️ 5-10 Minutes</span>
+                      <span className="feature-tag" style={{ padding: '4px 10px', background: 'rgba(255,255,255,0.1)', borderRadius: '20px', fontSize: '10px', color: 'white', border: '1px solid rgba(255,255,255,0.3)' }}>💯 Guaranteed Payment</span>
                     </div>
                   </div>
                   
-                  <div className="plan-card-footer">
+                  <div className="plan-card-footer" style={{ padding: '16px', borderTop: '2px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.1)' }}>
                     {!isCompleted(key) ? (
                       <button 
                         className="start-survey-btn"
                         onClick={() => startSurvey(key)}
                         style={{
-                          background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
-                          boxShadow: '0 0 20px rgba(220, 38, 38, 0.6)',
-                          fontWeight: '900',
-                          fontSize: '16px',
+                          width: '100%',
                           padding: '14px',
-                          border: '2px solid rgba(255,255,255,0.5)'
+                          fontSize: '16px',
+                          fontWeight: '900',
+                          borderRadius: '10px',
+                          border: '2px solid rgba(255,255,255,0.5)',
+                          background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+                          color: 'white',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '8px'
                         }}
                       >
-                        <span className="btn-icon">🚀</span>
+                        <span>🚀</span>
                         Start Survey
-                        <span className="btn-arrow">→</span>
+                        <span>→</span>
                       </button>
                     ) : (
-                      <div className="completed-actions">
-                        <span className="completed-badge">✅ All Surveys Completed</span>
+                      <div className="completed-actions" style={{ display: 'flex', gap: '8px' }}>
+                        <span className="completed-badge" style={{
+                          flex: 1,
+                          padding: '14px',
+                          background: 'rgba(72, 187, 120, 0.15)',
+                          color: '#48bb78',
+                          borderRadius: '10px',
+                          fontSize: '14px',
+                          fontWeight: '900',
+                          border: '2px solid #48bb78',
+                          textAlign: 'center'
+                        }}>
+                          ✅ All Surveys Completed
+                        </span>
                         <button 
                           className="withdraw-plan-btn"
                           onClick={() => {
-                            // If there's a pending activation, show a notification instead of navigating
                             if (!activated && hasPendingActivation(key)) {
                               setFullScreenNotification({
                                 message: "⏳ Your activation payment is pending approval. Please wait for admin to approve your payment.",
@@ -1865,17 +1710,19 @@ return (
                             handleWithdrawClick(key);
                           }}
                           style={{
-                            background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
-                            boxShadow: '0 0 25px rgba(220, 38, 38, 0.7)',
-                            fontWeight: '900',
-                            fontSize: '16px',
+                            flex: 1,
                             padding: '14px',
-                            border: '2px solid rgba(255,255,255,0.5)'
+                            fontSize: '16px',
+                            fontWeight: '900',
+                            borderRadius: '10px',
+                            border: '2px solid rgba(255,255,255,0.5)',
+                            background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+                            color: 'white',
+                            cursor: 'pointer'
                           }}
                         >
-                          {!activated ? (hasPendingActivation(key) ? '⏳ Pending Approval' : 'Activate to Withdraw') : 
-                           hasPending ? '📤 Manage Withdrawal' :
-                           '💸 Withdraw KES'} {(!hasPending && activated) ? plan.total : ''}
+                          {!activated ? (hasPendingActivation(key) ? '⏳ Pending' : '🔓 Activate') : 
+                           hasPending ? '📤 Manage' : '💸 Withdraw'}
                         </button>
                       </div>
                     )}
@@ -1885,273 +1732,143 @@ return (
             })}
           </div>
           
-          {/* Leaderboard - positioned after survey plans */}
           <Leaderboard />
         </section>
       )}
 
+      {/* TESTIMONIALS TAB */}
+      {activeTab === "TESTIMONIALS" && (
+        <section className="dashboard-section">
+          <div className="section-heading">
+            <h3>Real User Testimonials</h3>
+            <p>See what others are saying about their earnings experience</p>
+          </div>
+          <Testimonials variant="grid" />
+          <div className="testimonial-cta" style={{ textAlign: 'center', padding: '24px', background: 'linear-gradient(135deg, #fbbf24, #f59e0b)', borderRadius: '16px', marginTop: '20px' }}>
+            <p style={{ fontSize: '16px', color: 'white', marginBottom: '16px', fontWeight: '700' }}>Ready to join thousands of happy earners?</p>
+            <button className="primary-btn" onClick={goToSurveys} style={{ padding: '12px 24px', background: 'white', color: '#f59e0b', border: 'none', borderRadius: '10px', fontWeight: '900', cursor: 'pointer' }}>
+              Start Earning Today →
+            </button>
+          </div>
+        </section>
+      )}
+
       {/* BOTTOM NAVIGATION BAR */}
-      <div className="bottom-nav-bar">
+      <div className="bottom-nav-bar" style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        background: 'rgba(255, 255, 255, 0.98)',
+        padding: '8px 12px',
+        boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.1)',
+        zIndex: 1000,
+        borderTop: '1px solid rgba(0,0,0,0.1)'
+      }}>
         <button
-          className="nav-btn home-btn active" //was `${activeTab === "OVERVIEW" ? "active" : ""}`
+          className={`nav-btn ${activeTab === "OVERVIEW" ? "active" : ""}`}
           onClick={() => setActiveTab("OVERVIEW")}
-          style={{ background: '#FF0080', color: '#fff', borderRadius: '12px' }}
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '4px',
+            padding: '8px',
+            background: activeTab === "OVERVIEW" ? 'linear-gradient(135deg, #FF0080, #FF4D94)' : 'transparent',
+            color: activeTab === "OVERVIEW" ? 'white' : '#666',
+            border: 'none',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
         >
-          <span className="nav-icon">📊</span>
-          <span className="nav-label">Home</span>
+          <span className="nav-icon" style={{ fontSize: '20px' }}>📊</span>
+          <span className="nav-label" style={{ fontSize: '11px', fontWeight: '600' }}>Home</span>
         </button>
+        
         <button
-          className="nav-btn surveys-btn" //was `${activeTab === "SURVEYS" ? "active" : ""}`
+          className={`nav-btn ${activeTab === "SURVEYS" ? "active" : ""}`}
           onClick={goToSurveys}
-          style={{ background: '#00FF00', color: '#000', borderRadius: '12px' }}
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '4px',
+            padding: '8px',
+            background: activeTab === "SURVEYS" ? 'linear-gradient(135deg, #00FF00, #33FF33)' : 'transparent',
+            color: activeTab === "SURVEYS" ? 'white' : '#666',
+            border: 'none',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
         >
-          <span className="nav-icon">📝</span>
-          <span className="nav-label">Surveys</span>
+          <span className="nav-icon" style={{ fontSize: '20px' }}>📝</span>
+          <span className="nav-label" style={{ fontSize: '11px', fontWeight: '600' }}>Surveys</span>
         </button>
+        
         <button
-          className="nav-btn affiliate-btn"
+          className="nav-btn"
           onClick={() => navigate("/affiliate")}
-          style={{ background: '#FF6600', color: '#fff', borderRadius: '12px' }}
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '4px',
+            padding: '8px',
+            background: 'transparent',
+            color: '#666',
+            border: 'none',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            transition: 'all 0.2s'
+          }}
         >
-          <span className="nav-icon">🎯</span>
-          <span className="nav-label">Affiliate</span>
+          <span className="nav-icon" style={{ fontSize: '20px' }}>🎯</span>
+          <span className="nav-label" style={{ fontSize: '11px', fontWeight: '600' }}>Affiliate</span>
         </button>
+        
         <button
           className="nav-btn withdraw-btn"
           onClick={() => navigate("/withdraw-form")}
-          style={{ background: '#FF0000', color: '#fff', borderRadius: '12px' }}
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '4px',
+            padding: '8px',
+            background: 'linear-gradient(135deg, #FF0000, #FF3333)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            boxShadow: '0 4px 15px rgba(255, 0, 0, 0.3)'
+          }}
         >
-          <span className="nav-icon">💸</span>
-          <span className="nav-label">Withdraw</span>
+          <span className="nav-icon" style={{ fontSize: '20px' }}>💸</span>
+          <span className="nav-label" style={{ fontSize: '11px', fontWeight: '600' }}>Withdraw</span>
         </button>
       </div>
 
-      {/* FOOTER */}
-      <footer className="dashboard-footer">
-        <p>Need help? 
-          <button 
-            onClick={openWhatsAppSupport}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#3b82f6',
-              textDecoration: 'underline',
-              cursor: 'pointer',
-              fontSize: 'inherit',
-              fontFamily: 'inherit',
-              padding: '0',
-              margin: '0 5px'
-            }}
-          >
-            Contact Support
-          </button> 
-          | <a href="/faq">FAQ</a>
-        </p>
-        <p className="footer-note">© {new Date().getFullYear()} SurveyEarn. All rights reserved.</p>
-      </footer>
-
-      <style jsx>{`
-        /* FORCE COOL BRIGHT MODE STYLES GLOBALLY */
-        :global(:root[data-theme='dark']) {
-          --bg-main: #1f7405 !important;
-          --bg-surface: #2d9a07 !important;
-          --text-main: #ffffff !important;
-          --text-muted: #e6ffe6 !important;
-          --border-soft: rgba(255, 255, 255, 0.3) !important;
-        }
-
-        :global(html[data-theme='dark'] body) {
-          background-color: var(--bg-main) !important;
-          color: var(--text-main) !important;
-        }
-
-        /* Override hardcoded backgrounds in Dashboard.css */
-        :global(html[data-theme='dark']) .stats-card,
-        :global(html[data-theme='dark']) .feature-card,
-        :global(html[data-theme='dark']) .quick-action-card {
-          background: #1f7405 !important;
-          border-color: var(--border-soft) !important;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
-        }
-        
-        /* Ensure text visibility in ink mode */
-        :global(html[data-theme='dark']) .stats-card h4,
-        :global(html[data-theme='dark']) .feature-card h4,
-        :global(html[data-theme='dark']) .quick-action-card h4 {
-          color: var(--text-main) !important;
-          text-shadow: none !important;
-        }
-        
-        :global(html[data-theme='dark']) .stats-card p,
-        :global(html[data-theme='dark']) .feature-card p,
-        :global(html[data-theme='dark']) .quick-action-card p {
-          color: var(--text-muted) !important;
-        }
-
-        /* Add padding to main dashboard to avoid content being hidden by nav bar */
-        .dashboard {
-          padding-bottom: 90px; /* Adjust based on nav bar height */
-        }
-
-        .bottom-nav-bar {
-          position: fixed;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          display: flex;
-          justify-content: space-around;
-          align-items: center;
-          background: var(--bg-surface, #ffffff);
-          padding: 10px 16px;
-          padding-bottom: calc(10px + env(safe-area-inset-bottom));
-          box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
-          z-index: 1000;
-          border-top: 1px solid var(--border-soft, #f1f5f9);
-          backdrop-filter: blur(10px);
-          background: rgba(255, 255, 255, 0.95);
-        }
-
-        /* Dark mode support for nav bar */
-        [data-theme='dark'] .bottom-nav-bar {
-          background: rgba(45, 154, 7, 0.98);
-          border-top-color: rgba(255, 0, 128, 0.2);
-        }
-
-        /* The .nav-btn styles are in Dashboard.css */
-        /* We can add overrides or new styles here if needed */
-        .nav-btn {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          background: transparent;
-          border: none;
-          gap: 2px;
-          padding: 4px;
-          border-radius: 8px;
-          transition: all 0.2s ease;
-          color: var(--text-muted);
-          max-width: 60px;
-        }
-
-        .nav-btn.active {
-          color: var(--primary);
-          background: rgba(37, 99, 235, 0.1);
-        }
-
-        .nav-icon {
-          font-size: 16px;
-        }
-
-        .nav-label {
-          font-size: 9px;
-        }
-
-        .nav-icon {
-          font-size: 22px;
-          margin-bottom: 2px;
-          display: block;
-        }
-
-        .nav-label {
-          font-size: 11px;
-          font-weight: 600;
-          display: block;
-        }
-
-        @keyframes pulse {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.1); }
-        }
-        
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Quick Actions Mobile Fix */
-        .quick-actions-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 12px;
-          width: 100%;
-        }
-
-        .quick-action-card {
-          width: 100%;
-          box-sizing: border-box;
-          display: flex;
-          align-items: center;
-          padding: 16px;
-          background: var(--bg-surface, #ffffff);
-          border: 1px solid var(--border-soft, #f1f5f9);
-          border-radius: 16px;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-
-        .quick-action-card .action-content {
-          flex: 1;
-          padding: 0 12px;
-          text-align: left;
-        }
-
-        .quick-action-card h4 {
-          margin: 0 0 4px 0;
-          font-size: 15px;
-          font-weight: 700;
-          color: var(--text-main, #1e293b);
-        }
-
-        .quick-action-card p {
-          margin: 0;
-          font-size: 12px;
-          color: var(--text-muted, #64748b);
-        }
-
-        .quick-action-card .action-icon {
-          font-size: 24px;
-          width: 48px;
-          height: 48px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: rgba(59, 130, 246, 0.1);
-          border-radius: 12px;
-          flex-shrink: 0;
-        }
-
-        .quick-action-card .action-btn {
-          padding: 8px 16px;
-          border-radius: 10px;
-          border: none;
-          background: var(--primary, #2563eb);
-          color: white;
-          font-weight: 600;
-          font-size: 13px;
-          cursor: pointer;
-          white-space: nowrap;
-        }
-
-        .quick-action-card.completed .action-btn {
-          background: #10b981;
-        }
-
-        @media (min-width: 768px) {
-          .quick-actions-grid {
-            grid-template-columns: repeat(3, 1fr);
-          }
-        }
-      `}</style>
-
-      {/* ===================== GAMIFICATION SECTION - AT BOTTOM ===================== */}
+      {/* GAMIFICATION SECTION */}
       <div className="gamification-section" style={{ marginTop: '30px', marginBottom: '30px' }}>
         <div className="gamification-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: '16px'
         }}>
-          {/* Level & Streak Card */}
           <div className="level-streak-card" style={{
             background: 'linear-gradient(135deg, #1f7405 0%, #2d9a07 100%)',
             borderRadius: '16px',
@@ -2216,7 +1933,30 @@ return (
         <Achievements />
       </div>
 
-      {/* WELCOME BONUS POPUP - Shows first on registration/login */}
+      {/* FOOTER */}
+      <footer className="dashboard-footer" style={{ textAlign: 'center', padding: '20px', marginTop: '20px', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+        <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}>
+          Need help? 
+          <button 
+            onClick={openWhatsAppSupport}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#3b82f6',
+              textDecoration: 'underline',
+              cursor: 'pointer',
+              fontSize: '12px',
+              margin: '0 5px'
+            }}
+          >
+            Contact Support
+          </button> 
+          | <a href="/faq" style={{ color: '#3b82f6', textDecoration: 'none' }}>FAQ</a>
+        </p>
+        <p className="footer-note" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>© {new Date().getFullYear()} SurveyEarn. All rights reserved.</p>
+      </footer>
+
+      {/* WELCOME BONUS POPUP */}
       <WelcomeBonusPopup
         isOpen={showWelcomeBonus}
         onClose={handleWelcomeBonusClose}
