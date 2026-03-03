@@ -21,11 +21,11 @@ const PLANS = {
     icon: "⭐", 
     total: 1500, 
     perSurvey: 150,
-    // Hot Pink - matching bottom nav BRIGHT
-    color: "#FF0080",
-    gradient: "linear-gradient(135deg, #FF0080, #FF3385)",
+    // Cool Green
+    color: "#1f7405",
+    gradient: "linear-gradient(135deg, #1f7405, #2d9a07)",
     borderColor: "rgba(255, 255, 255, 0.4)",
-    bgColor: "#FF0080",
+    bgColor: "#1f7405",
     description: "Perfect for beginners",
     totalColor: "#ffffff",
     totalGlow: "0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3)"
@@ -35,11 +35,11 @@ const PLANS = {
     icon: "💎", 
     total: 2000, 
     perSurvey: 200,
-    // Lime Green - matching bottom nav BRIGHT
-    color: "#00FF00",
-    gradient: "linear-gradient(135deg, #00FF00, #33FF33)",
+    // Cool Blue
+    color: "#0080ff",
+    gradient: "linear-gradient(135deg, #0066cc, #0080ff)",
     borderColor: "rgba(255, 255, 255, 0.4)",
-    bgColor: "#00FF00",
+    bgColor: "#0066cc",
     description: "For active earners",
     totalColor: "#ffffff",
     totalGlow: "0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3)"
@@ -49,11 +49,11 @@ const PLANS = {
     icon: "👑", 
     total: 3000, 
     perSurvey: 300,
-    // Orange - matching bottom nav BRIGHT
+    // Orange
     color: "#FF6600",
-    gradient: "linear-gradient(135deg, #FF6600, #FF8533)",
+    gradient: "linear-gradient(135deg, #cc5200, #FF6600)",
     borderColor: "rgba(255, 255, 255, 0.4)",
-    bgColor: "#FF6600",
+    bgColor: "#cc5200",
     description: "Maximum earnings",
     totalColor: "#ffffff",
     totalGlow: "0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3)"
@@ -1044,7 +1044,7 @@ return (
           
           {/* RIGHT COLUMN: BALANCE */}
           <div style={{
-            background: 'linear-gradient(145deg, #FF0080, #FF3385), linear-gradient(145deg, #00FF00, #33FF33)',
+            background: 'linear-gradient(145deg, #1f7405, #2d9a07), linear-gradient(145deg, #0066cc, #0080ff)',
             borderRadius: '16px',
             padding: '10px',
             textAlign: 'center',
@@ -1345,7 +1345,7 @@ return (
               </div>
 
               {/* Affiliate Earnings Card */}
-              <div className="stats-card affiliate-balance" style={{ background: 'linear-gradient(135deg, #FF0080, #FF3385)' }}>
+              <div className="stats-card affiliate-balance" style={{ background: 'linear-gradient(135deg, #1f7405, #2d9a07)' }}>
                 <div className="stats-card-header">
                   <span className="stats-icon">🎁</span>
                   <h4>Affiliate Earnings</h4>
@@ -1825,12 +1825,12 @@ return (
       </footer>
 
       <style jsx>{`
-        /* FORCE BRIGHT INK MODE STYLES GLOBALLY */
+        /* FORCE COOL BRIGHT MODE STYLES GLOBALLY */
         :global(:root[data-theme='dark']) {
-          --bg-main: #FF0080 !important;
-          --bg-surface: #FF3385 !important;
+          --bg-main: #1f7405 !important;
+          --bg-surface: #2d9a07 !important;
           --text-main: #ffffff !important;
-          --text-muted: #ffeef5 !important;
+          --text-muted: #e6ffe6 !important;
           --border-soft: rgba(255, 255, 255, 0.3) !important;
         }
 
@@ -1843,7 +1843,7 @@ return (
         :global(html[data-theme='dark']) .stats-card,
         :global(html[data-theme='dark']) .feature-card,
         :global(html[data-theme='dark']) .quick-action-card {
-          background: #FF0080 !important;
+          background: #1f7405 !important;
           border-color: var(--border-soft) !important;
           box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
         }
@@ -1887,7 +1887,7 @@ return (
 
         /* Dark mode support for nav bar */
         [data-theme='dark'] .bottom-nav-bar {
-          background: rgba(255, 51, 133, 0.98);
+          background: rgba(45, 154, 7, 0.98);
           border-top-color: rgba(255, 0, 128, 0.2);
         }
 
@@ -2027,7 +2027,7 @@ return (
         }}>
           {/* Level & Streak Card */}
           <div className="level-streak-card" style={{
-            background: 'linear-gradient(135deg, #FF0080 0%, #FF3385 100%)',
+            background: 'linear-gradient(135deg, #1f7405 0%, #2d9a07 100%)',
             borderRadius: '16px',
             padding: '20px',
             color: 'white'

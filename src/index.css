@@ -5,32 +5,32 @@
 
   color-scheme: light;
   color: #ffffff;
-  background-color: #FF0080;
+  background-color: #1f7405;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Primary Colors - Matching Bottom Nav - BRIGHT */
-  --primary: #FF0080;
-  --primary-dark: #CC0066;
-  --primary-light: #FF66AA;
+  /* Primary Colors - Cool Green */
+  --primary: #1f7405;
+  --primary-dark: #1a6504;
+  --primary-light: #3cb308;
   
-  /* Plan Colors - Matching Bottom Nav - BRIGHT */
-  --regular-color: #FF0080;
-  --vip-color: #00FF00;
+  /* Plan Colors - Cool */
+  --regular-color: #1f7405;
+  --vip-color: #0080ff;
   --vvip-color: #FF6600;
   
-  /* Plan Gradients - BRIGHT */
-  --regular-gradient: linear-gradient(135deg, #FF0080, #CC0066);
-  --vip-gradient: linear-gradient(135deg, #00FF00, #00AA00);
-  --vvip-gradient: linear-gradient(135deg, #FF6600, #CC5200);
+  /* Plan Gradients */
+  --regular-gradient: linear-gradient(135deg, #1f7405, #1a6504);
+  --vip-gradient: linear-gradient(135deg, #0080ff, #0066cc);
+  --vvip-gradient: linear-gradient(135deg, #FF6600, #cc5200);
   
-  /* Backgrounds - BRIGHT */
-  --bg-main: #FF0080;
-  --bg-surface: #FF3385;
-  --bg-glass: rgba(255, 51, 133, 0.95);
+  /* Backgrounds */
+  --bg-main: #1f7405;
+  --bg-surface: #2d9a07;
+  --bg-glass: rgba(45, 154, 7, 0.95);
   
   /* Text Colors - High Contrast */
   --text-main: #1a202c;

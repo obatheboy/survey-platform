@@ -193,7 +193,7 @@ const drawer = {
   height: "100%",
   width: "85vw",
   maxWidth: 320,
-  background: "#FF0080",
+  background: "#1f7405",
   zIndex: 99999,
   padding: "24px 20px",
   boxShadow: "10px 0 30px rgba(0, 0, 0, 0.5)",
@@ -216,14 +216,14 @@ const avatar = {
   width: 50,
   height: 50,
   borderRadius: "14px",
-  background: "linear-gradient(135deg, #FF0080, #FF66AA)",
+  background: "linear-gradient(135deg, #1f7405, #3cb308)",
   color: "#ffffff",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   fontSize: "20px",
   fontWeight: 800,
-  boxShadow: "0 4px 20px rgba(255, 0, 128, 0.5)",
+  boxShadow: "0 4px 20px rgba(31, 116, 5, 0.5)",
 };
 
 const profileBtn = {
@@ -252,7 +252,7 @@ const withdrawTitle = {
 
 const referralCaption = {
   fontSize: "13px",
-  color: "#ffeef5",
+  color: "#e6ffe6",
   textAlign: "center",
   margin: "12px 0 24px",
   padding: "12px",
