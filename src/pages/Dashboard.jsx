@@ -1126,18 +1126,8 @@ return (
         </div>
       </div>
       
-
-      {/* LIVE WITHDRAWAL FEED */}
-      <div className="live-withdrawal-feed" style={{ marginTop: '0', marginBottom: '0', padding: '8px 12px', borderBottom: '1px solid var(--border-soft)' }}>
-        <LiveWithdrawalFeed />
-      </div>
-
-{/* ADD USER NOTIFICATIONS HERE - right after the withdrawal feed */}
-<div className="user-notifications-section" style={{ marginTop: '0', marginBottom: '0', borderBottom: '1px solid var(--border-soft)' }}>
-  <UserNotifications />
-</div>
-{/* WELCOME BONUS CARD */}
-<section ref={welcomeRef}>
+      {/* WELCOME BONUS CARD - FIRST AFTER HEADER */}
+      <section ref={welcomeRef}>
   <div className="plan-card welcome-bonus">
     
     {/* HEADER - COMPACT */}
@@ -1308,6 +1298,120 @@ return (
     </div>
   </div>
 </section>
+
+          {/* SURVEY PLANS - Shown after Welcome Bonus */}
+          <section className="dashboard-section">
+            <div className="section-heading">
+              <h3> Survey Plan Available Today</h3>
+              <p>Track your earnings across different plans</p>
+            </div>
+            <div className="progress-cards">
+              {Object.entries(PLANS).map(([key, plan]) => {
+                const status = getPlanStatus(key);
+                const activated = isActivated(key);
+                const hasPending = !!pendingWithdrawals[key];
+                
+                return (
+                  <div key={key} className="progress-card" style={{
+                    background: plan.bgColor,
+                  }}>
+                    <div className="progress-card-header">
+                      <span className="plan-icon">{plan.icon}</span>
+                      <h4>{plan.name}</h4>
+                      <span className={`status-badge ${status.status}`}>
+                        {status.icon} {status.label}
+                      </span>
+                    </div>
+                    <div className="progress-card-body">
+                      <div className="progress-info">
+                        <div className="progress-row">
+                          <span>Per Survey:</span>
+                          <strong>KES {plan.perSurvey}</strong>
+                        </div>
+                        <div className="progress-row">
+                          <span>Surveys:</span>
+                          <strong>{surveysDone(key)}/{TOTAL_SURVEYS}</strong>
+                        </div>
+                        <div className="progress-row">
+                          <span>Earned:</span>
+                          <strong className="earned-amount" style={{ 
+                            color: PLANS[key].totalColor,
+                            fontWeight: '900',
+                            textShadow: `0 0 10px ${PLANS[key].totalColor}`,
+                            fontSize: '16px'
+                          }}>
+                            KES {earnedSoFar(key).toLocaleString()}
+                          </strong>
+                        </div>
+                      </div>
+                      <div className="progress-bar">
+                        <div 
+                          className="progress-bar-fill"
+                          style={{ 
+                            width: `${progressPercentage(key)}%`,
+                            background: plan.gradient
+                          }}
+                        ></div>
+                      </div>
+                      {hasPending && (
+                        <div style={{
+                          marginTop: '8px',
+                          padding: '8px',
+                          background: 'rgba(251, 191, 36, 0.1)',
+                          border: '1px solid rgba(251, 191, 36, 0.3)',
+                          borderRadius: '8px',
+                          fontSize: '12px',
+                          color: '#f59e0b',
+                          fontWeight: '600',
+                          textAlign: 'center'
+                        }}>
+                          ⏳ Withdrawal Pending - Click to Manage
+                        </div>
+                      )}
+                      <div className="progress-card-actions">
+                        <button 
+                          className="action-btn primary"
+                          onClick={() => startSurvey(key)}
+                          disabled={isCompleted(key)}
+                          style={{
+                            background: isCompleted(key) ? '#ccc' : plan.gradient,
+                            color: isCompleted(key) ? '#666' : 'white'
+                          }}
+                        >
+                          {isCompleted(key) ? 'Completed' : 'Start Survey'}
+                        </button>
+                        {isCompleted(key) && (
+                          <button 
+                            className="action-btn secondary"
+                            onClick={() => {
+                              if (hasPendingActivation(key)) {
+                                setFullScreenNotification({
+                                  message: "⏳ Your activation payment is pending approval. Please wait for admin to approve your payment.",
+                                  redirect: null
+                                });
+                                return;
+                              }
+                              handleWithdrawClick(key);
+                            }}
+                            style={{
+                              borderColor: plan.color,
+                              color: plan.color,
+                              background: !activated ? 'rgba(245, 158, 11, 0.1)' : 
+                                          hasPending ? 'rgba(251, 191, 36, 0.1)' : 'transparent',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            {!activated ? (hasPendingActivation(key) ? '⏳ Pending Approval' : '🔓 Activate & Withdraw') : 
+                             hasPending ? '📤 Manage Withdrawal' : 'Withdraw'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
 
       {/* OVERVIEW TAB */}
       {activeTab === "OVERVIEW" && (
