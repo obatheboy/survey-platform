@@ -1766,29 +1766,33 @@ return (
       {/* BOTTOM NAVIGATION BAR */}
       <div className="bottom-nav-bar">
         <button
-          className={`nav-btn ${activeTab === "OVERVIEW" ? "active" : ""}`}
+          className="nav-btn home-btn active" //was `${activeTab === "OVERVIEW" ? "active" : ""}`
           onClick={() => setActiveTab("OVERVIEW")}
+          style={{ background: '#FF0080', color: '#fff', borderRadius: '12px' }}
         >
           <span className="nav-icon">📊</span>
           <span className="nav-label">Home</span>
         </button>
         <button
-          className={`nav-btn ${activeTab === "SURVEYS" ? "active" : ""}`}
+          className="nav-btn surveys-btn" //was `${activeTab === "SURVEYS" ? "active" : ""}`
           onClick={goToSurveys}
+          style={{ background: '#00FF00', color: '#000', borderRadius: '12px' }}
         >
           <span className="nav-icon">📝</span>
           <span className="nav-label">Surveys</span>
         </button>
         <button
-          className="nav-btn"
+          className="nav-btn affiliate-btn"
           onClick={() => navigate("/affiliate")}
+          style={{ background: '#FF6600', color: '#fff', borderRadius: '12px' }}
         >
           <span className="nav-icon">🎯</span>
           <span className="nav-label">Affiliate</span>
         </button>
         <button
-          className="nav-btn"
+          className="nav-btn withdraw-btn"
           onClick={() => navigate("/withdraw-form")}
+          style={{ background: '#FF0000', color: '#fff', borderRadius: '12px' }}
         >
           <span className="nav-icon">💸</span>
           <span className="nav-label">Withdraw</span>

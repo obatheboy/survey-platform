@@ -99,6 +99,14 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate }) {
         <hr style={divider} />
 
         {/* NEW FEATURES */}
+        <h4 style={withdrawTitle}>🚀 Quick Navigation</h4>
+        <MenuItem label="🏠 Home" icon="🏠" onClick={() => { onClose(); }} />
+        <MenuItem label="📝 Surveys" icon="📝" onClick={() => onNavigate('/surveys')} />
+        <MenuItem label="🎯 Affiliate" icon="🎯" onClick={() => onNavigate('/affiliate')} />
+        <MenuItem label="💸 Withdraw" icon="💸" onClick={() => onNavigate('/withdraw-form')} />
+
+        <hr style={divider} />
+
         <h4 style={withdrawTitle}>App Menu</h4>
         <MenuItem label="❓ FAQ & Help" icon="❓" onClick={() => onNavigate('/faq')} />
         <MenuItem label="📊 Account Stats" icon="📊" onClick={showAccountStats} />
