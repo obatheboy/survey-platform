@@ -807,7 +807,7 @@ p, span, div, button, a, label {
    WELCOME BONUS CARD - SMALL AND COMPACT WITH BRIGHT COLOR
    ========================================================= */
 .welcome-bonus {
-  background: var(--gradient-5) !important;
+  background: linear-gradient(135deg, #ea580c, #f97316, #fb923c) !important;
   border: 2px solid rgba(255, 255, 255, 0.4) !important;
   border-radius: var(--radius-md) !important;
   padding: 8px !important;
@@ -868,23 +868,23 @@ p, span, div, button, a, label {
 }
 
 .welcome-bonus .bonus-title {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 900;
   color: white;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+  letter-spacing: 1.5px;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
   margin: 0;
   line-height: 1.2;
 }
 
 .welcome-bonus .bonus-amount {
-  font-size: 20px;
+  font-size: 28px;
   font-weight: 900;
   color: white;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
   line-height: 1;
-  margin: 2px 0 2px;
+  margin: 4px 0 4px;
 }
 
 .welcome-bonus .bonus-description {
@@ -899,7 +899,7 @@ p, span, div, button, a, label {
 }
 
 .welcome-bonus .activate-bonus-btn {
-  background: linear-gradient(135deg, #4a9206, #b81111) !important;
+  background: linear-gradient(135deg, #ea580c, #f97316) !important;
   border: none !important;
   border-radius: var(--radius-sm) !important;
   padding: 6px 12px !important;
