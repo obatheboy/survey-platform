@@ -1423,25 +1423,25 @@ return (
               <p>Track your progress and earnings across all plans</p>
             </div>
             <div className="stats-grid">
-              <div className="stats-card total-earnings">
+              <div className="stats-card total-earnings" style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
                 <div className="stats-card-header">
                   <span className="stats-icon">💰</span>
-                  <h4>Total Earnings</h4>
+                  <h4 style={{ color: '#ffffff', fontWeight: 'bold' }}>Total Earnings</h4>
                 </div>
                 <div className="stats-card-body">
-                  <span className="stats-value">KES {stats.totalEarned.toLocaleString()}</span>
-                  <span className="stats-label">Lifetime earnings</span>
+                  <span className="stats-value" style={{ color: '#ffffff' }}>KES {stats.totalEarned.toLocaleString()}</span>
+                  <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)' }}>Lifetime earnings</span>
                 </div>
               </div>
 
-              <div className="stats-card available-balance">
+              <div className="stats-card available-balance" style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)' }}>
                 <div className="stats-card-header">
                   <span className="stats-icon">💳</span>
-                  <h4>Available Balance</h4>
+                  <h4 style={{ color: '#ffffff', fontWeight: 'bold' }}>Available Balance</h4>
                 </div>
                 <div className="stats-card-body">
-                  <span className="stats-value">KES {stats.availableBalance.toLocaleString()}</span>
-                  <span className="stats-label">Ready to withdraw</span>
+                  <span className="stats-value" style={{ color: '#ffffff' }}>KES {stats.availableBalance.toLocaleString()}</span>
+                  <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)' }}>Ready to withdraw</span>
                 </div>
                 <button className="withdraw-quick-btn" onClick={() => navigate("/withdraw-form")}>
                   Withdraw Now
@@ -1452,11 +1452,11 @@ return (
               <div className="stats-card affiliate-balance" style={{ background: 'linear-gradient(135deg, #1f7405, #2d9a07)' }}>
                 <div className="stats-card-header">
                   <span className="stats-icon">🎁</span>
-                  <h4>Affiliate Earnings</h4>
+                  <h4 style={{ color: '#ffffff', fontWeight: 'bold' }}>Affiliate Earnings</h4>
                 </div>
                 <div className="stats-card-body">
-                  <span className="stats-value">KES {(stats.affiliateEarnings || 0).toLocaleString()}</span>
-                  <span className="stats-label">From referrals</span>
+                  <span className="stats-value" style={{ color: '#ffffff' }}>KES {(stats.affiliateEarnings || 0).toLocaleString()}</span>
+                  <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)' }}>From referrals</span>
                 </div>
                 <button 
                   className="withdraw-quick-btn affiliate-withdraw-btn" 
@@ -1466,31 +1466,31 @@ return (
                 </button>
               </div>
 
-              <div className="stats-card surveys-completed">
+              <div className="stats-card surveys-completed" style={{ background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }}>
                 <div className="stats-card-header">
                   <span className="stats-icon">📊</span>
-                  <h4>Surveys Completed</h4>
+                  <h4 style={{ color: '#ffffff', fontWeight: 'bold' }}>Surveys Completed</h4>
                 </div>
                 <div className="stats-card-body">
-                  <span className="stats-value">{stats.totalSurveysCompleted}</span>
-                  <span className="stats-label">Total surveys</span>
+                  <span className="stats-value" style={{ color: '#ffffff' }}>{stats.totalSurveysCompleted}</span>
+                  <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)' }}>Total surveys</span>
                 </div>
               </div>
 
-              <div className="stats-card success-rate">
+              <div className="stats-card success-rate" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
                 <div className="stats-card-header">
                   <span className="stats-icon">📈</span>
-                  <h4>Success Rate</h4>
+                  <h4 style={{ color: '#ffffff', fontWeight: 'bold' }}>Success Rate</h4>
                 </div>
                 <div className="stats-card-body">
-                  <span className="stats-value">98%</span>
-                  <span className="stats-label">Survey completion</span>
+                  <span className="stats-value" style={{ color: '#ffffff' }}>98%</span>
+                  <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)' }}>Survey completion</span>
                 </div>
               </div>
             </div>
           </section>
 
-          {/* PLAN PROGRESS */}
+          {/* WHY USERS LOVE OUR PLATFORM */}
           <section className="dashboard-section">
             <div className="section-heading">
               <h3> Survey Plan Available Today</h3>

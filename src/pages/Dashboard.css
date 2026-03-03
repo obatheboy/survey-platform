@@ -533,7 +533,7 @@ body {
    WELCOME BONUS CARD - VERY COMPACT
    ========================================================= */
 .welcome-bonus {
-  background: linear-gradient(145deg, #0a0f1a, #1e293b, #FF6B00) !important;
+  background: linear-gradient(145deg, #FF6B00, #ff8c33) !important;
   border: var(--wireframe-border) !important;
   border-radius: 6px !important;
   padding: 2px 6px !important;
@@ -1342,7 +1342,7 @@ body {
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  background: var(--card-obsidian);
+  background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
   border: var(--wireframe-border);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
@@ -1381,13 +1381,13 @@ body {
 .quick-action-card .action-content h4 {
   font-size: 16px;
   font-weight: 900;
-  color: #FF6B00;  /* Orange */
+  color: #ffffff;  /* White for visibility on bright background */
   margin-bottom: 4px;
 }
 
 .quick-action-card .action-content p {
   font-size: 13px;
-  color: #3B82F6;  /* Blue */
+  color: rgba(255, 255, 255, 0.9);  /* White with opacity for visibility */
 }
 
 /* Action button - ORANGE GRADIENT */
@@ -1881,13 +1881,13 @@ body {
     height: 24px !important;
   }
   
-  /* Welcome bonus card dark background */
+  /* Welcome bonus card - bright background */
   .welcome-bonus {
-    background: #0a0f1a !important;
+    background: linear-gradient(145deg, #FF6B00, #ff8c33) !important;
   }
   
   .welcome-bonus .plan-card-body {
-    background: #0a0f1a !important;
+    background: linear-gradient(145deg, #FF6B00, #ff8c33) !important;
   }
   
   .welcome-bonus .plan-name {
