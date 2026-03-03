@@ -1162,21 +1162,26 @@ export default function Dashboard() {
           textAlign: 'center'
         }}>
           <span style={{
-            fontSize: '18px !important',
-            fontWeight: '900 !important',
-            color: '#FFFFFF !important',
+            fontSize: '16px !important',
+            fontWeight: '800 !important',
+            background: 'linear-gradient(135deg, #FFD700, #FFA500) !important',
+            WebkitBackgroundClip: 'text !important',
+            WebkitTextFillColor: 'transparent !important',
+            backgroundClip: 'text !important',
             display: 'block',
             lineHeight: '1.4',
-            textShadow: '3px 3px 6px rgba(0,0,0,0.7), 0 0 20px rgba(255,255,255,0.4), 0 0 40px rgba(255,255,255,0.2)'
+            textShadow: 'none',
+            filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'
           }}>
             Congratulations! You've received a welcome bonus of{' '}
             <span style={{
-              color: '#00FF00 !important',
+              background: 'linear-gradient(135deg, #00FF00, #7FFF00, #FFD700) !important',
+              WebkitBackgroundClip: 'text !important',
+              WebkitTextFillColor: 'transparent !important',
+              backgroundClip: 'text !important',
               fontWeight: '900 !important',
-              fontSize: '42px !important',
-              textShadow: '3px 3px 6px rgba(0,0,0,0.7), 0 0 25px rgba(0,255,0,0.8), 0 0 50px rgba(0,255,0,0.5) !important',
-              display: 'inline-block',
-              transform: 'scale(1.1)'
+              fontSize: '38px !important',
+              filter: 'drop-shadow(0 0 10px rgba(0,255,0,0.8)) drop-shadow(0 0 20px rgba(255,215,0,0.6))'
             }}>
               KES 1,200
             </span>
