@@ -1128,13 +1128,19 @@ return (
       
       {/* WELCOME BONUS CARD - FIRST AFTER HEADER */}
       <section ref={welcomeRef}>
-  <div className="plan-card welcome-bonus">
+  <div className="plan-card welcome-bonus" style={{
+    background: 'linear-gradient(135deg, #ed64a6, #9f7aea) !important',
+    border: '2px solid rgba(255,255,255,0.4) !important',
+    boxShadow: '0 4px 15px rgba(237, 100, 166, 0.4)'
+  }}>
     
     {/* HEADER - COMPACT */}
     <div className="plan-card-header" style={{ 
       position: 'relative', 
       zIndex: 2,
-      marginBottom: '0px'
+      marginBottom: '0px',
+      background: 'linear-gradient(135deg, #ed64a6, #9f7aea)',
+      padding: '8px'
     }}>
       <div className="plan-badge" style={{ 
         display: 'flex', 
@@ -1142,34 +1148,34 @@ return (
         gap: '0px'
       }}>
         <span className="plan-name" style={{ 
-          color: '#FF6B00 !important',
-          fontSize: '16px',
+          color: '#ffffff !important',
+          fontSize: '14px',
           fontWeight: '900',
           textTransform: 'uppercase',
-          letterSpacing: '0.5px'
+          letterSpacing: '0.5px',
+          textShadow: '0 0 10px rgba(255,255,255,0.5)'
         }}>
           WELCOME BONUS
         </span>
       </div>
       <span className="plan-status" style={{ 
-        background: 'linear-gradient(135deg, #FF6B00, #ff8c33) !important',
+        background: 'linear-gradient(135deg, #dc2626, #b91c1c) !important',
         color: '#ffffff !important',
-        border: '2px solid #3B82F6 !important',
-        padding: '6px 14px',
-        borderRadius: '30px',
-        fontSize: '11px',
+        border: '2px solid rgba(255, 255, 255, 0.5) !important',
+        padding: '4px 10px',
+        borderRadius: '20px',
+        fontSize: '10px',
         fontWeight: '900',
         textTransform: 'uppercase',
         letterSpacing: '0.5px',
-        boxShadow: '0 4px 15px rgba(59, 130, 246, 0.5)',
-        textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+        boxShadow: '0 0 15px rgba(220, 38, 38, 0.5)'
       }}>
 
       </span>
     </div>
     
     {/* BODY - EXTRA COMPACT */}
-    <div className="plan-card-body" style={{ position: 'relative', zIndex: 2, marginTop: '0px' }}>
+    <div className="plan-card-body" style={{ position: 'relative', zIndex: 2, marginTop: '0px', padding: '8px' }}>
       
       {/* ===== BONUS AMOUNT SECTION - PREMIUM STYLE ===== */}
       <div style={{
@@ -1260,35 +1266,33 @@ return (
         className="start-survey-btn"
         onClick={handleWelcomeBonusWithdraw}
         style={{
-          background: 'linear-gradient(145deg, #FF6B00, #cc5500)',
-          border: '2px solid #FF6B00',
+          background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+          border: '2px solid rgba(255, 255, 255, 0.5)',
           borderRadius: '40px',
-          padding: '10px 16px', /* REDUCED from 12px 20px to 10px 16px */
+          padding: '14px 20px',
           fontWeight: '900',
-          fontSize: '13px', /* REDUCED from 14px to 13px */
+          fontSize: '16px',
           color: 'white',
           textTransform: 'uppercase',
-          letterSpacing: '0.6px', /* REDUCED from 0.8px to 0.6px */
+          letterSpacing: '1px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '6px', /* REDUCED from 8px to 6px */
+          gap: '8px',
           width: '100%',
           cursor: 'pointer',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4), 0 0 10px rgba(59, 130, 246, 0.3)',
+          boxShadow: '0 0 20px rgba(220, 38, 38, 0.7)',
           transition: 'all 0.2s ease',
           position: 'relative',
           overflow: 'hidden'
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'translateY(-2px)';
-          e.currentTarget.style.boxShadow = '0 8px 16px rgba(255, 107, 0, 0.5), 0 0 12px rgba(255, 107, 0, 0.4)';
-          e.currentTarget.style.borderColor = '#FF6B00';
+          e.currentTarget.style.boxShadow = '0 0 30px rgba(220, 38, 38, 0.9)';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.transform = 'translateY(0)';
-          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255, 107, 0, 0.3)';
-          e.currentTarget.style.borderColor = '#FF6B00';
+          e.currentTarget.style.boxShadow = '0 0 20px rgba(220, 38, 38, 0.7)';
         }}
       >
         <span className="btn-icon" style={{ fontSize: '16px' }}>🔓</span>
@@ -1374,8 +1378,13 @@ return (
                           onClick={() => startSurvey(key)}
                           disabled={isCompleted(key)}
                           style={{
-                            background: isCompleted(key) ? '#ccc' : plan.gradient,
-                            color: isCompleted(key) ? '#666' : 'white'
+                            background: isCompleted(key) ? '#ccc' : 'linear-gradient(135deg, #dc2626, #b91c1c)',
+                            color: isCompleted(key) ? '#666' : 'white',
+                            fontWeight: '900',
+                            fontSize: '14px',
+                            padding: '12px',
+                            border: '2px solid rgba(255,255,255,0.5)',
+                            boxShadow: isCompleted(key) ? 'none' : '0 0 15px rgba(220, 38, 38, 0.5)'
                           }}
                         >
                           {isCompleted(key) ? 'Completed' : 'Start Survey'}
@@ -1394,11 +1403,13 @@ return (
                               handleWithdrawClick(key);
                             }}
                             style={{
-                              borderColor: plan.color,
-                              color: plan.color,
-                              background: !activated ? 'rgba(245, 158, 11, 0.1)' : 
-                                          hasPending ? 'rgba(251, 191, 36, 0.1)' : 'transparent',
-                              cursor: 'pointer'
+                              background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+                              color: 'white',
+                              border: '2px solid rgba(255,255,255,0.5)',
+                              fontWeight: '900',
+                              fontSize: '14px',
+                              padding: '12px',
+                              boxShadow: '0 0 20px rgba(220, 38, 38, 0.6)'
                             }}
                           >
                             {!activated ? (hasPendingActivation(key) ? '⏳ Pending Approval' : '🔓 Activate & Withdraw') : 
@@ -1493,8 +1504,8 @@ return (
           {/* WHY USERS LOVE OUR PLATFORM */}
           <section className="dashboard-section">
             <div className="section-heading">
-              <h3> Survey Plan Available Today</h3>
-              <p>Track your earnings across different plans</p>
+              <h3>Why Users Love Our Platform</h3>
+              <p>Discover what makes us the best choice for earning online</p>
             </div>
             <div className="progress-cards">
               {Object.entries(PLANS).map(([key, plan]) => {
@@ -1569,8 +1580,13 @@ return (
                           onClick={() => startSurvey(key)}
                           disabled={isCompleted(key)}
                           style={{
-                            background: isCompleted(key) ? '#ccc' : plan.gradient,
-                            color: isCompleted(key) ? '#666' : 'white'
+                            background: isCompleted(key) ? '#ccc' : 'linear-gradient(135deg, #dc2626, #b91c1c)',
+                            color: isCompleted(key) ? '#666' : 'white',
+                            fontWeight: '900',
+                            fontSize: '14px',
+                            padding: '12px',
+                            border: '2px solid rgba(255,255,255,0.5)',
+                            boxShadow: isCompleted(key) ? 'none' : '0 0 15px rgba(220, 38, 38, 0.5)'
                           }}
                         >
                           {isCompleted(key) ? 'Completed' : 'Start Survey'}
@@ -1590,11 +1606,13 @@ return (
                               handleWithdrawClick(key);
                             }}
                             style={{
-                              borderColor: plan.color,
-                              color: plan.color,
-                              background: !activated ? 'rgba(245, 158, 11, 0.1)' : 
-                                          hasPending ? 'rgba(251, 191, 36, 0.1)' : 'transparent',
-                              cursor: 'pointer'
+                              background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+                              color: 'white',
+                              border: '2px solid rgba(255,255,255,0.5)',
+                              fontWeight: '900',
+                              fontSize: '14px',
+                              padding: '12px',
+                              boxShadow: '0 0 20px rgba(220, 38, 38, 0.6)'
                             }}
                           >
                             {!activated ? (hasPendingActivation(key) ? '⏳ Pending Approval' : '🔓 Activate & Withdraw') : 
@@ -1818,8 +1836,12 @@ return (
                         className="start-survey-btn"
                         onClick={() => startSurvey(key)}
                         style={{
-                          background: plan.gradient,
-                          boxShadow: `0 5px 20px ${plan.color}40`
+                          background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+                          boxShadow: '0 0 20px rgba(220, 38, 38, 0.6)',
+                          fontWeight: '900',
+                          fontSize: '16px',
+                          padding: '14px',
+                          border: '2px solid rgba(255,255,255,0.5)'
                         }}
                       >
                         <span className="btn-icon">🚀</span>
@@ -1843,12 +1865,12 @@ return (
                             handleWithdrawClick(key);
                           }}
                           style={{
-                            background: !activated ? 
-                              (hasPendingActivation(key) ? 'linear-gradient(135deg, #fbbf24, #f59e0b)' : 'linear-gradient(135deg, #f59e0b, #d97706)') :
-                              hasPending ?
-                              'linear-gradient(135deg, #fbbf24, #f59e0b)' :
-                              plan.gradient,
-                            boxShadow: `0 5px 20px ${plan.color}40`
+                            background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+                            boxShadow: '0 0 25px rgba(220, 38, 38, 0.7)',
+                            fontWeight: '900',
+                            fontSize: '16px',
+                            padding: '14px',
+                            border: '2px solid rgba(255,255,255,0.5)'
                           }}
                         >
                           {!activated ? (hasPendingActivation(key) ? '⏳ Pending Approval' : 'Activate to Withdraw') : 
