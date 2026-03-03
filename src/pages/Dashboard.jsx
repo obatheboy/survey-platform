@@ -1154,22 +1154,8 @@ export default function Dashboard() {
         border: '1px solid rgba(255,255,255,0.3) !important',
         backdropFilter: 'blur(2px)'
       }}>
-        {/* Bonus amount - extra bold */}
-        <div style={{
-          textAlign: 'center',
-          marginBottom: '6px'
-        }}>
-          <span style={{
-            fontSize: '32px !important',
-            fontWeight: '900 !important',
-            color: 'white !important',
-            textShadow: '2px 2px 0 rgba(0,0,0,0.4), 0 0 20px rgba(255,255,255,0.7) !important',
-            display: 'block',
-            lineHeight: '1.1'
-          }}>
-            KES 1,200
-          </span>
-        </div>
+       
+  
         
         {/* Description text - all in one block */}
         <div style={{
