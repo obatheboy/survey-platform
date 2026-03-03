@@ -1121,10 +1121,10 @@ export default function Dashboard() {
             filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.5))'
           }}>🎁</span>
           <span style={{
-            fontSize: '22px',
+            fontSize: '24px',
             fontWeight: '900 !important',
-            color: 'white !important',
-            textShadow: '2px 2px 0 rgba(0,0,0,0.4), 0 0 20px rgba(255,255,255,0.7)',
+            color: '#1a1a1a !important',
+            textShadow: '1px 1px 0 rgba(255,255,255,0.3), 0 0 15px rgba(255,255,255,0.5)',
             textTransform: 'uppercase',
             letterSpacing: '2px'
           }}>
@@ -1170,10 +1170,10 @@ export default function Dashboard() {
           }}>
             Congratulations! You've received a welcome bonus of{' '}
             <span style={{
-              color: '#FFD700 !important',
+              color: '#1a1a1a !important',
               fontWeight: '900 !important',
-              fontSize: '20px !important',
-              textShadow: '0 0 15px rgba(255,215,0,0.8) !important'
+              fontSize: '28px !important',
+              textShadow: '1px 1px 0 rgba(255,255,255,0.3) !important'
             }}>
               KES 1,200
             </span>
