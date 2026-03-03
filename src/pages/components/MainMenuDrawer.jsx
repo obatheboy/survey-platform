@@ -193,7 +193,7 @@ const drawer = {
   height: "100%",
   width: "85vw",
   maxWidth: 320,
-  background: "#FFFEF0",
+  background: "#ffffff",
   zIndex: 99999,
   padding: "24px 20px",
   boxShadow: "10px 0 30px rgba(0, 0, 0, 0.5)",
@@ -205,10 +205,10 @@ const profileCard = {
   display: "flex", 
   alignItems: "center", 
   gap: 14,
-  background: "rgba(255, 107, 0, 0.05)",
+  background: "rgba(14, 165, 233, 0.05)",
   padding: "16px",
   borderRadius: "16px",
-  border: "1px solid rgba(255, 107, 0, 0.1)",
+  border: "1px solid rgba(14, 165, 233, 0.1)",
   marginBottom: "24px"
 };
 
@@ -216,20 +216,20 @@ const avatar = {
   width: 50,
   height: 50,
   borderRadius: "14px",
-  background: "linear-gradient(135deg, #FF6B00, #ff8c33)",
+  background: "linear-gradient(135deg, #0ea5e9, #38bdf8)",
   color: "#fff",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   fontSize: "20px",
   fontWeight: 800,
-  boxShadow: "0 4px 12px rgba(255, 107, 0, 0.3)",
+  boxShadow: "0 4px 12px rgba(14, 165, 233, 0.3)",
 };
 
 const profileBtn = {
-  border: "1px solid rgba(255, 107, 0, 0.3)",
-  background: "rgba(255, 107, 0, 0.1)",
-  color: "#FF6B00",
+  border: "1px solid rgba(14, 165, 233, 0.3)",
+  background: "rgba(14, 165, 233, 0.1)",
+  color: "#0ea5e9",
   padding: "6px 14px",
   borderRadius: 10,
   fontSize: "12px",
@@ -252,11 +252,11 @@ const withdrawTitle = {
 
 const referralCaption = {
   fontSize: "13px",
-  color: "#666680",
+  color: "#64748b",
   textAlign: "center",
   margin: "12px 0 24px",
   padding: "12px",
-  background: "rgba(255, 107, 0, 0.05)",
+  background: "rgba(14, 165, 233, 0.05)",
   borderRadius: "12px",
   border: "1px solid rgba(59, 130, 246, 0.1)"
 };

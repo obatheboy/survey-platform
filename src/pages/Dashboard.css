@@ -1,5 +1,5 @@
 /* =========================================================
-   SURVEYEARN DASHBOARD - BRIGHT VIBRANT DESIGN
+   SURVEYEARN DASHBOARD - BRIGHT SKY BLUE DESIGN
    Professional bright theme with vibrant colors
    ========================================================= */
 
@@ -7,77 +7,77 @@
    CSS VARIABLES - BRIGHT VIBRANT COLOR PALETTE
    ========================================================= */
 :root {
-  /* Bright Backgrounds */
-  --bg-main: #fff5e6;
-  --bg-surface: #ffffff;
+  /* Bright Clean Backgrounds */
+  --bg-main: #ffffff;
+  --bg-surface: #f8fafc;
   --bg-glass: rgba(255, 255, 255, 0.95);
-  --bg-elevated: #fff8f0;
-  --text-primary: #1a1a2e;
-  --text-secondary: #ff6b35;
-  --text-muted: #666680;
+  --bg-elevated: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #0ea5e9;  /* Sky Blue for labels */
+  --text-muted: #64748b;
   --text-inverse: #ffffff;
-  --border-light: rgba(255, 107, 53, 0.2);
-  --border-medium: rgba(255, 107, 53, 0.3);
+  --border-light: rgba(14, 165, 233, 0.2);
+  --border-medium: rgba(14, 165, 233, 0.3);
   
   /* Bright backgrounds - unified */
-  --obsidian-dark: #FFE4B5;
-  --obsidian: #FFF8DC;
-  --obsidian-medium: #FFFACD;
-  --obsidian-light: #FFEFD5;
-  --obsidian-bright: #FFE4B5;
+  --obsidian-dark: #f1f5f9;
+  --obsidian: #f8fafc;
+  --obsidian-medium: #ffffff;
+  --obsidian-light: #ffffff;
+  --obsidian-bright: #f1f5f9;
   
-  /* ORANGE - Primary accent color */
-  --orange-dark: #cc5500;
-  --orange: #FF6B00;
-  --orange-light: #ff8c33;
-  --orange-bright: #ffa366;
+  /* SKY BLUE - Primary accent color */
+  --orange-dark: #0284c7;
+  --orange: #0ea5e9;
+  --orange-light: #38bdf8;
+  --orange-bright: #7dd3fc;
   
-  /* BLUE - Secondary accent color */
-  --blue-dark: #1e40af;
-  --blue: #3B82F6;
-  --blue-light: #60a5fa;
-  --blue-bright: #93c5fd;
+  /* PURPLE - Secondary accent color */
+  --blue-dark: #7c3aed;
+  --blue: #8b5cf6;
+  --blue-light: #a78bfa;
+  --blue-bright: #c4b5fd;
   
-  /* Card Gradients - All bright warm variations */
-  --card-obsidian-dark: linear-gradient(145deg, #FFE4B5, #FFDAB9);
-  --card-obsidian: linear-gradient(145deg, #FFF8DC, #FFEFD5);
-  --card-obsidian-medium: linear-gradient(145deg, #FFFACD, #FFF8DC);
-  --card-obsidian-light: linear-gradient(145deg, #FFEFD5, #FFE4B5);
+  /* Card Gradients - All bright variations */
+  --card-obsidian-dark: linear-gradient(145deg, #ffffff, #f8fafc);
+  --card-obsidian: linear-gradient(145deg, #ffffff, #f1f5f9);
+  --card-obsidian-medium: linear-gradient(145deg, #f8fafc, #ffffff);
+  --card-obsidian-light: linear-gradient(145deg, #ffffff, #f8fafc);
   
   /* WIREFRAME BORDERS */
-  --wireframe-border: 1px solid rgba(255, 107, 53, 0.3);
-  --wireframe-glow: 0 0 10px rgba(255, 107, 53, 0.1);
+  --wireframe-border: 1px solid rgba(14, 165, 233, 0.3);
+  --wireframe-glow: 0 0 10px rgba(14, 165, 233, 0.1);
   
   /* BUTTON COLORS - Bright */
-  --button-primary: #FF6B00;
-  --button-success: #00C853;
-  --button-warning: #FFB300;
-  --button-danger: #FF1744;
-  --button-purple: #9C27B0;
-  --button-pink: #E91E63;
-  --button-cyan: #00BCD4;
-  --button-orange: #FF6B00;
+  --button-primary: #0ea5e9;
+  --button-success: #22c55e;
+  --button-warning: #eab308;
+  --button-danger: #ef4444;
+  --button-purple: #8b5cf6;
+  --button-pink: #ec4899;
+  --button-cyan: #06b6d4;
+  --button-orange: #f97316;
   
   /* Skeuomorphic Button Gradient */
-  --button-gradient: linear-gradient(180deg, #ff8c33 0%, #cc5500 100%);
-  --button-gradient-hover: linear-gradient(180deg, #ffa366 0%, #e67300 100%);
+  --button-gradient: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+  --button-gradient-hover: linear-gradient(180deg, #7dd3fc 0%, #0ea5e9 100%);
   
-  /* PLAN COLORS - Orange for text accents */
-  --regular-color: #FF6B00;
-  --vip-color: #3B82F6;
-  --vvip-color: #9C27B0;
+  /* PLAN COLORS - Vibrant for text accents */
+  --regular-color: #0ea5e9;
+  --vip-color: #8b5cf6;
+  --vvip-color: #ec4899;
   
   /* WELCOME BONUS - Bright gradient */
-  --bonus-gradient: linear-gradient(145deg, #FFF8DC, #FFE4B5, #FF6B00, #FFB300);
+  --bonus-gradient: linear-gradient(145deg, #ffffff, #f8fafc, #0ea5e9, #8b5cf6);
   
   /* Brand Colors */
-  --primary: #FF6B00;
-  --primary-dark: #cc5500;
-  --primary-light: #ff8c33;
-  --success: #00C853;
-  --warning: #FFB300;
-  --danger: #FF1744;
-  --purple: #9C27B0;
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --primary-light: #38bdf8;
+  --success: #22c55e;
+  --warning: #eab308;
+  --danger: #ef4444;
+  --purple: #8b5cf6;
   
   /* Gradients */
   --gradient-primary: linear-gradient(135deg, #cc5500, #FF6B00);
