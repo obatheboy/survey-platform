@@ -1077,12 +1077,12 @@ export default function Dashboard() {
 {/* WELCOME BONUS CARD - FIRST AFTER HEADER - DEEP ORANGE, SMALL SIZE, ALL CAPTIONS TOGETHER */}
 <section ref={welcomeRef}>
   <div className="plan-card welcome-bonus" style={{
-    background: 'linear-gradient(135deg, #FF8C00, #FF6B00, #FF4500)',
-    border: '2px solid rgba(255, 255, 255, 0.5)',
-    borderRadius: '16px',
-    padding: '12px',
-    margin: '8px 0',
-    boxShadow: '0 8px 20px rgba(255, 69, 0, 0.4)',
+    background: 'linear-gradient(135deg, #FF8C00, #FF6B00, #FF4500) !important',
+    border: '2px solid rgba(255, 255, 255, 0.5) !important',
+    borderRadius: '16px !important',
+    padding: '12px !important',
+    margin: '8px 0 !important',
+    boxShadow: '0 8px 20px rgba(255, 69, 0, 0.4) !important',
     position: 'relative',
     overflow: 'hidden'
   }}>
@@ -1122,8 +1122,8 @@ export default function Dashboard() {
           }}>🎁</span>
           <span style={{
             fontSize: '16px',
-            fontWeight: '900',
-            color: 'white',
+            fontWeight: '900 !important',
+            color: 'white !important',
             textShadow: '1px 1px 0 rgba(0,0,0,0.3), 0 0 15px rgba(255,255,255,0.5)',
             textTransform: 'uppercase',
             letterSpacing: '0.5px'
@@ -1132,15 +1132,15 @@ export default function Dashboard() {
           </span>
         </div>
         <span style={{
-          background: 'linear-gradient(135deg, #1c8502, #b30000)',
-          color: '#000',
-          padding: '3px 8px',
-          borderRadius: '16px',
-          fontSize: '10px',
-          fontWeight: '900',
+          background: 'linear-gradient(135deg, #FFD700, #FFA500) !important',
+          color: '#000 !important',
+          padding: '3px 8px !important',
+          borderRadius: '16px !important',
+          fontSize: '10px !important',
+          fontWeight: '900 !important',
           textTransform: 'uppercase',
-          border: '1px solid rgba(255,255,255,0.8)',
-          boxShadow: '0 0 10px rgba(255,215,0,0.5)'
+          border: '1px solid rgba(255,255,255,0.8) !important',
+          boxShadow: '0 0 10px rgba(255,215,0,0.5) !important'
         }}>
           NEW
         </span>
@@ -1148,10 +1148,10 @@ export default function Dashboard() {
       
       {/* Main content - ALL CAPTIONS TOGETHER */}
       <div style={{
-        background: 'linear-gradient(135deg, rgba(0,0,0,0.25), rgba(0,0,0,0.15))',
-        borderRadius: '12px',
-        padding: '10px',
-        border: '1px solid rgba(255,255,255,0.3)',
+        background: 'linear-gradient(135deg, rgba(0,0,0,0.25), rgba(0,0,0,0.15)) !important',
+        borderRadius: '12px !important',
+        padding: '10px !important',
+        border: '1px solid rgba(255,255,255,0.3) !important',
         backdropFilter: 'blur(2px)'
       }}>
         {/* Bonus amount - extra bold */}
@@ -1160,10 +1160,10 @@ export default function Dashboard() {
           marginBottom: '6px'
         }}>
           <span style={{
-            fontSize: '32px',
-            fontWeight: '900',
-            color: 'white',
-            textShadow: '2px 2px 0 rgba(0,0,0,0.4), 0 0 20px rgba(255,255,255,0.7)',
+            fontSize: '32px !important',
+            fontWeight: '900 !important',
+            color: 'white !important',
+            textShadow: '2px 2px 0 rgba(0,0,0,0.4), 0 0 20px rgba(255,255,255,0.7) !important',
             display: 'block',
             lineHeight: '1.1'
           }}>
@@ -1176,26 +1176,26 @@ export default function Dashboard() {
           textAlign: 'center'
         }}>
           <span style={{
-            fontSize: '12px',
-            fontWeight: '600',
-            color: 'rgba(255,255,255,0.95)',
+            fontSize: '12px !important',
+            fontWeight: '600 !important',
+            color: 'rgba(255,255,255,0.95) !important',
             display: 'block',
             lineHeight: '1.4'
           }}>
             Congratulations! You've received a welcome bonus of{' '}
             <span style={{
-              color: '#FFD700',
-              fontWeight: '900',
-              fontSize: '13px',
-              textShadow: '0 0 8px rgba(255,215,0,0.6)'
+              color: '#FFD700 !important',
+              fontWeight: '900 !important',
+              fontSize: '13px !important',
+              textShadow: '0 0 8px rgba(255,215,0,0.6) !important'
             }}>
               KES 1,200
             </span>
           </span>
           <span style={{
-            fontSize: '11px',
-            fontWeight: '500',
-            color: 'rgba(255,255,255,0.8)',
+            fontSize: '11px !important',
+            fontWeight: '500 !important',
+            color: 'rgba(255,255,255,0.8) !important',
             display: 'block',
             marginTop: '2px'
           }}>
@@ -1215,13 +1215,13 @@ export default function Dashboard() {
         className="start-survey-btn"
         onClick={handleWelcomeBonusWithdraw}
         style={{
-          background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
-          border: '2px solid rgba(255, 255, 255, 0.5)',
-          borderRadius: '30px',
-          padding: '12px 16px',
-          fontWeight: '900',
-          fontSize: '14px',
-          color: 'white',
+          background: 'linear-gradient(135deg, #dc2626, #b91c1c) !important',
+          border: '2px solid rgba(255, 255, 255, 0.5) !important',
+          borderRadius: '30px !important',
+          padding: '12px 16px !important',
+          fontWeight: '900 !important',
+          fontSize: '14px !important',
+          color: 'white !important',
           textTransform: 'uppercase',
           letterSpacing: '0.5px',
           display: 'flex',
@@ -1230,7 +1230,7 @@ export default function Dashboard() {
           gap: '8px',
           width: '100%',
           cursor: 'pointer',
-          boxShadow: '0 0 20px rgba(220, 38, 38, 0.7)',
+          boxShadow: '0 0 20px rgba(220, 38, 38, 0.7) !important',
           transition: 'all 0.2s ease'
         }}
         onMouseEnter={(e) => {
