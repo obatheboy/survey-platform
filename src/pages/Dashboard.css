@@ -807,7 +807,7 @@ p, span, div, button, a, label {
    WELCOME BONUS CARD - SMALL AND COMPACT WITH BRIGHT COLOR
    ========================================================= */
 .welcome-bonus {
-  background: linear-gradient(135deg, #ea580c, #f97316, #fb923c) !important;
+  background: linear-gradient(135deg, #cc6300, #0122b4, #14e600) !important;
   border: 2px solid rgba(255, 255, 255, 0.4) !important;
   border-radius: var(--radius-md) !important;
   padding: 8px !important;

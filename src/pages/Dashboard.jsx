@@ -1077,7 +1077,7 @@ export default function Dashboard() {
 {/* WELCOME BONUS CARD - FIRST AFTER HEADER - DEEP ORANGE, SMALL SIZE, ALL CAPTIONS TOGETHER */}
 <section ref={welcomeRef}>
   <div className="plan-card welcome-bonus" style={{
-    background: 'linear-gradient(135deg, #ea580c, #f97316, #fb923c) !important',
+    background: 'linear-gradient(135deg, #ea580c, #1002cf, #2cc905) !important',
     border: '2px solid rgba(255, 255, 255, 0.5) !important',
     borderRadius: '16px !important',
     padding: '12px !important',
@@ -1123,8 +1123,8 @@ export default function Dashboard() {
           <span style={{
             fontSize: '26px !important',
             fontWeight: '900 !important',
-            color: '#FFFFFF !important',
-            textShadow: '3px 3px 6px rgba(0,0,0,0.6) !important',
+            color: '#FFEE58 !important',
+            textShadow: '2px 2px 4px rgba(0,0,0,0.6), 0 0 15px rgba(255,238,88,0.5) !important',
             textTransform: 'uppercase',
             letterSpacing: '3px'
           }}>
@@ -1171,10 +1171,10 @@ export default function Dashboard() {
           }}>
             Congratulations! You've received a welcome bonus of{' '}
             <span style={{
-              color: '#FFFFFF !important',
+              color: '#FFEE58 !important',
               fontWeight: '900 !important',
               fontSize: '36px !important',
-              textShadow: '3px 3px 6px rgba(0,0,0,0.6) !important'
+              textShadow: '2px 2px 4px rgba(0,0,0,0.6), 0 0 15px rgba(255,238,88,0.5) !important'
             }}>
               KES 1,200
             </span>
