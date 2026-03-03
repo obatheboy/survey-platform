@@ -939,7 +939,7 @@ p, span, div, button, a, label {
 .section-heading {
   margin-bottom: 8px;
   position: relative;
-   background: rgb(245, 0, 0);
+   background: rgb(172, 97, 0);
 }
 
 .section-heading h3 {
@@ -950,7 +950,7 @@ p, span, div, button, a, label {
   letter-spacing: -0.3px;
   text-shadow: var(--caption-shadow);
   display: inline-block;
-  background: rgb(255, 0, 0);
+  background: rgb(196, 78, 0);
   padding: 4px 12px;
   border-radius: var(--radius-full);
   backdrop-filter: blur(5px);
@@ -960,7 +960,7 @@ p, span, div, button, a, label {
 .section-heading p {
   color: rgba(255, 255, 255, 0.9);
   font-size: 13px;
-  background: rgb(255, 0, 0);
+  background: rgb(1, 58, 214);
   margin: 0;
   font-weight: 600;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
