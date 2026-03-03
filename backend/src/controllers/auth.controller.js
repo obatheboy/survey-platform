@@ -282,6 +282,7 @@ exports.getMe = async (req, res) => {
       total_surveys_completed: totalSurveysCompleted,
       surveys_locked: surveysLocked,
       plans: user.plans || {},
+      activation_requests: user.activation_requests || [], // Include pending activation requests
     });
   } catch (error) {
     console.error("GET ME ERROR:", error);

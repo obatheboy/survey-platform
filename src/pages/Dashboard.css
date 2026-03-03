@@ -849,6 +849,12 @@ body {
   color: rgba(255,255,255,0.7);
 }
 
+.status-badge.pending-approval {
+  border-color: var(--button-warning);
+  color: var(--button-warning);
+  background: rgba(251, 191, 36, 0.15);
+}
+
 .progress-info {
   margin: var(--space-sm) 0;
 }

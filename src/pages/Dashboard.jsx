@@ -111,6 +111,7 @@ export default function Dashboard() {
   ========================= */
   const [user, setUser] = useState(null);
   const [plans, setPlans] = useState({});
+  const [activationRequests, setActivationRequests] = useState([]);
   const [quickActions, setQuickActions] = useState([
     { id: 1, label: "Complete Profile", icon: "👤", completed: false },
     { id: 2, label: "Verify Email", icon: "📧", completed: false },
@@ -161,6 +162,7 @@ export default function Dashboard() {
 
         setUser(resUser.data);
         setPlans(resUser.data.plans || {});
+        setActivationRequests(resUser.data.activation_requests || []);
         
         // Calculate stats
         let surveyEarnings = 0;
@@ -460,9 +462,27 @@ export default function Dashboard() {
   };
   const progressPercentage = (plan) => (surveysDone(plan) / TOTAL_SURVEYS) * 100;
 
+  // Check if a plan has a pending activation request
+  const hasPendingActivation = (plan) => {
+    return activationRequests.some(
+      req => req.plan === plan && req.status === 'SUBMITTED'
+    );
+  };
+
   const getPlanStatus = (plan) => {
+    // First check: if plan is activated, show ready to withdraw
+    if (isActivated(plan)) return { status: "completed", label: "Ready to Withdraw", icon: "✅" };
+    
+    // Second check: if there's a pending activation request, show pending approval
+    if (hasPendingActivation(plan)) return { status: "pending-approval", label: "Pending Approval", icon: "⏳" };
+    
+    // Third check: if surveys are completed but not activated
     if (isCompleted(plan)) return { status: "completed", label: "Ready to Withdraw", icon: "✅" };
+    
+    // Fourth check: if in progress
     if (surveysDone(plan) > 0) return { status: "in-progress", label: "In Progress", icon: "⏳" };
+    
+    // Default: not started
     return { status: "not-started", label: "Start Earning", icon: "🚀" };
   };
 
@@ -1392,7 +1412,17 @@ return (
                         {isCompleted(key) && (
                           <button 
                             className="action-btn secondary"
-                            onClick={() => handleWithdrawClick(key)}
+                            onClick={() => {
+                              // If there's a pending activation, show a notification instead of navigating
+                              if (hasPendingActivation(key)) {
+                                setFullScreenNotification({
+                                  message: "⏳ Your activation payment is pending approval. Please wait for admin to approve your payment.",
+                                  redirect: null
+                                });
+                                return;
+                              }
+                              handleWithdrawClick(key);
+                            }}
                             style={{
                               borderColor: plan.color,
                               color: plan.color,
@@ -1401,7 +1431,7 @@ return (
                               cursor: 'pointer'
                             }}
                           >
-                            {!activated ? '🔓 Activate & Withdraw' : 
+                            {!activated ? (hasPendingActivation(key) ? '⏳ Pending Approval' : '🔓 Activate & Withdraw') : 
                              hasPending ? '📤 Manage Withdrawal' : 'Withdraw'}
                           </button>
                         )}
@@ -1635,17 +1665,27 @@ return (
                         <span className="completed-badge">✅ All Surveys Completed</span>
                         <button 
                           className="withdraw-plan-btn"
-                          onClick={() => handleWithdrawClick(key)}
+                          onClick={() => {
+                            // If there's a pending activation, show a notification instead of navigating
+                            if (!activated && hasPendingActivation(key)) {
+                              setFullScreenNotification({
+                                message: "⏳ Your activation payment is pending approval. Please wait for admin to approve your payment.",
+                                redirect: null
+                              });
+                              return;
+                            }
+                            handleWithdrawClick(key);
+                          }}
                           style={{
                             background: !activated ? 
-                              'linear-gradient(135deg, #f59e0b, #d97706)' :
+                              (hasPendingActivation(key) ? 'linear-gradient(135deg, #fbbf24, #f59e0b)' : 'linear-gradient(135deg, #f59e0b, #d97706)') :
                               hasPending ?
                               'linear-gradient(135deg, #fbbf24, #f59e0b)' :
                               plan.gradient,
                             boxShadow: `0 5px 20px ${plan.color}40`
                           }}
                         >
-                          {!activated ? 'Activate to Withdraw' : 
+                          {!activated ? (hasPendingActivation(key) ? '⏳ Pending Approval' : 'Activate to Withdraw') : 
                            hasPending ? '📤 Manage Withdrawal' :
                            '💸 Withdraw KES'} {(!hasPending && activated) ? plan.total : ''}
                         </button>
