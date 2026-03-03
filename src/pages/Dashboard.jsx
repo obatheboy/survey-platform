@@ -777,22 +777,22 @@ export default function Dashboard() {
                 background: '#25D366',
                 color: 'white',
                 border: 'none',
-                borderRadius: '20px',
-                padding: '6px 12px',
-                fontSize: '12px',
-                fontWeight: '600',
+                borderRadius: '25px',
+                padding: '10px 18px',
+                fontSize: '16px',
+                fontWeight: '700',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                gap: '8px',
                 transition: 'all 0.3s ease',
-                boxShadow: '0 2px 6px rgba(37, 211, 102, 0.3)',
+                boxShadow: '0 4px 12px rgba(37, 211, 102, 0.4)',
               }}
-              onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+              onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.08)'}
               onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
               title="Contact Support on WhatsApp"
             >
-              <span style={{ fontSize: '14px' }}>💬</span>
+              <span style={{ fontSize: '20px' }}>💬</span>
               <span>CHAT US</span>
             </button>
             <button
@@ -1077,12 +1077,12 @@ export default function Dashboard() {
 {/* WELCOME BONUS CARD - FIRST AFTER HEADER - DEEP ORANGE, SMALL SIZE, ALL CAPTIONS TOGETHER */}
 <section ref={welcomeRef}>
   <div className="plan-card welcome-bonus" style={{
-    background: 'linear-gradient(135deg, #ea580c, #1002cf, #2cc905) !important',
+    background: 'linear-gradient(135deg, #cc6300, #0122b4, #14e600) !important',
     border: '2px solid rgba(255, 255, 255, 0.5) !important',
     borderRadius: '16px !important',
     padding: '12px !important',
     margin: '8px 0 !important',
-    boxShadow: '0 8px 20px rgba(234, 88, 12, 0.5) !important',
+    boxShadow: '0 8px 20px rgba(1, 34, 180, 0.5) !important',
     position: 'relative',
     overflow: 'hidden'
   }}>

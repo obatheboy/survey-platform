@@ -427,7 +427,7 @@ p, span, div, button, a, label {
 
 .dashboard-main-title::after {
   content: 'SurveyEarn';
-  font-size: 20px;
+  font-size: 26px;
   font-weight: 900;
   color: white;
   text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
@@ -2238,7 +2238,7 @@ p, span, div, button, a, label {
   }
   
   .dashboard-main-title::after {
-    font-size: 18px;
+    font-size: 22px;
   }
   
   .whatsapp-btn {
