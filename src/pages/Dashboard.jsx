@@ -21,42 +21,42 @@ const PLANS = {
     icon: "⭐", 
     total: 1500, 
     perSurvey: 150,
-    // Hot Pink - matching bottom nav
+    // Hot Pink - matching bottom nav BRIGHT
     color: "#FF0080",
-    gradient: "linear-gradient(135deg, #1a1a2e, #16213e)",
-    borderColor: "rgba(255, 0, 128, 0.3)",
-    bgColor: "#1a1a2e",
+    gradient: "linear-gradient(135deg, #FF0080, #FF3385)",
+    borderColor: "rgba(255, 255, 255, 0.4)",
+    bgColor: "#FF0080",
     description: "Perfect for beginners",
-    totalColor: "#FF0080",
-    totalGlow: "0 0 10px rgba(255, 0, 128, 0.5), 0 0 20px rgba(255, 0, 128, 0.3)"
+    totalColor: "#ffffff",
+    totalGlow: "0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3)"
   },
   VIP: { 
     name: "VIP", 
     icon: "💎", 
     total: 2000, 
     perSurvey: 200,
-    // Lime Green - matching bottom nav
+    // Lime Green - matching bottom nav BRIGHT
     color: "#00FF00",
-    gradient: "linear-gradient(135deg, #1a1a2e, #16213e)",
-    borderColor: "rgba(0, 255, 0, 0.3)",
-    bgColor: "#1a1a2e",
+    gradient: "linear-gradient(135deg, #00FF00, #33FF33)",
+    borderColor: "rgba(255, 255, 255, 0.4)",
+    bgColor: "#00FF00",
     description: "For active earners",
-    totalColor: "#00FF00",
-    totalGlow: "0 0 10px rgba(0, 255, 0, 0.5), 0 0 20px rgba(0, 255, 0, 0.3)"
+    totalColor: "#ffffff",
+    totalGlow: "0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3)"
   },
   VVIP: { 
     name: "VVIP", 
     icon: "👑", 
     total: 3000, 
     perSurvey: 300,
-    // Orange - matching bottom nav
+    // Orange - matching bottom nav BRIGHT
     color: "#FF6600",
-    gradient: "linear-gradient(135deg, #1a1a2e, #16213e)",
-    borderColor: "rgba(255, 102, 0, 0.3)",
-    bgColor: "#1a1a2e",
+    gradient: "linear-gradient(135deg, #FF6600, #FF8533)",
+    borderColor: "rgba(255, 255, 255, 0.4)",
+    bgColor: "#FF6600",
     description: "Maximum earnings",
-    totalColor: "#FF6600",
-    totalGlow: "0 0 10px rgba(255, 102, 0, 0.5), 0 0 20px rgba(255, 102, 0, 0.3)"
+    totalColor: "#ffffff",
+    totalGlow: "0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3)"
   },
 };
 const TOTAL_SURVEYS = 10;
@@ -1044,7 +1044,7 @@ return (
           
           {/* RIGHT COLUMN: BALANCE */}
           <div style={{
-            background: 'linear-gradient(145deg, #1a1a2e, #16213e)',
+            background: 'linear-gradient(145deg, #FF0080, #FF3385), linear-gradient(145deg, #00FF00, #33FF33)',
             borderRadius: '16px',
             padding: '10px',
             textAlign: 'center',
@@ -1345,7 +1345,7 @@ return (
               </div>
 
               {/* Affiliate Earnings Card */}
-              <div className="stats-card affiliate-balance" style={{ background: 'linear-gradient(135deg, #1a1a2e, #16213e)' }}>
+              <div className="stats-card affiliate-balance" style={{ background: 'linear-gradient(135deg, #FF0080, #FF3385)' }}>
                 <div className="stats-card-header">
                   <span className="stats-icon">🎁</span>
                   <h4>Affiliate Earnings</h4>
@@ -1389,7 +1389,7 @@ return (
           {/* PLAN PROGRESS */}
           <section className="dashboard-section">
             <div className="section-heading">
-              <h3>Plan Progress</h3>
+              <h3> Survey Plan Available Today</h3>
               <p>Track your earnings across different plans</p>
             </div>
             <div className="progress-cards">
@@ -1825,13 +1825,13 @@ return (
       </footer>
 
       <style jsx>{`
-        /* FORCE INK BRIGHT MODE STYLES GLOBALLY */
+        /* FORCE BRIGHT INK MODE STYLES GLOBALLY */
         :global(:root[data-theme='dark']) {
-          --bg-main: #1a1a2e !important;
-          --bg-surface: #16213e !important;
+          --bg-main: #FF0080 !important;
+          --bg-surface: #FF3385 !important;
           --text-main: #ffffff !important;
-          --text-muted: #a0a0b0 !important;
-          --border-soft: rgba(255, 0, 128, 0.2) !important;
+          --text-muted: #ffeef5 !important;
+          --border-soft: rgba(255, 255, 255, 0.3) !important;
         }
 
         :global(html[data-theme='dark'] body) {
@@ -1843,7 +1843,7 @@ return (
         :global(html[data-theme='dark']) .stats-card,
         :global(html[data-theme='dark']) .feature-card,
         :global(html[data-theme='dark']) .quick-action-card {
-          background: #1a1a2e !important;
+          background: #FF0080 !important;
           border-color: var(--border-soft) !important;
           box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
         }
@@ -1887,7 +1887,7 @@ return (
 
         /* Dark mode support for nav bar */
         [data-theme='dark'] .bottom-nav-bar {
-          background: rgba(22, 33, 62, 0.98);
+          background: rgba(255, 51, 133, 0.98);
           border-top-color: rgba(255, 0, 128, 0.2);
         }
 
@@ -2027,7 +2027,7 @@ return (
         }}>
           {/* Level & Streak Card */}
           <div className="level-streak-card" style={{
-            background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+            background: 'linear-gradient(135deg, #FF0080 0%, #FF3385 100%)',
             borderRadius: '16px',
             padding: '20px',
             color: 'white'

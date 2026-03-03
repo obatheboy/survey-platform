@@ -3,34 +3,34 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: dark;
+  color-scheme: light;
   color: #ffffff;
-  background-color: #1a1a2e;
+  background-color: #FF0080;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Primary Colors - Matching Bottom Nav */
+  /* Primary Colors - Matching Bottom Nav - BRIGHT */
   --primary: #FF0080;
-  --primary-dark: #cc0052;
-  --primary-light: #ff3385;
+  --primary-dark: #CC0066;
+  --primary-light: #FF66AA;
   
-  /* Plan Colors - Matching Bottom Nav */
+  /* Plan Colors - Matching Bottom Nav - BRIGHT */
   --regular-color: #FF0080;
   --vip-color: #00FF00;
   --vvip-color: #FF6600;
   
-  /* Plan Gradients - Bold */
-  --regular-gradient: linear-gradient(135deg, #FF0080, #cc0052);
-  --vip-gradient: linear-gradient(135deg, #00FF00, #00aa00);
-  --vvip-gradient: linear-gradient(135deg, #FF6600, #cc5200);
+  /* Plan Gradients - BRIGHT */
+  --regular-gradient: linear-gradient(135deg, #FF0080, #CC0066);
+  --vip-gradient: linear-gradient(135deg, #00FF00, #00AA00);
+  --vvip-gradient: linear-gradient(135deg, #FF6600, #CC5200);
   
-  /* Backgrounds - Bold Ink */
-  --bg-main: #1a1a2e;
-  --bg-surface: #16213e;
-  --bg-glass: rgba(22, 33, 62, 0.95);
+  /* Backgrounds - BRIGHT */
+  --bg-main: #FF0080;
+  --bg-surface: #FF3385;
+  --bg-glass: rgba(255, 51, 133, 0.95);
   
   /* Text Colors - High Contrast */
   --text-main: #1a202c;

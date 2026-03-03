@@ -1,54 +1,54 @@
 /* =========================================================
-   SURVEYEARN DASHBOARD - INK BRIGHT DESIGN
-   Bold bright colors inspired by bottom navigation
+   SURVEYEARN DASHBOARD - BOLD BRIGHT INK COLORS
+   Vibrant saturated colors matching bottom navigation
    ========================================================= */
 
 /* =========================================================
-   CSS VARIABLES - BOLD INK-LIKE BRIGHT COLORS
+   CSS VARIABLES - BOLD BRIGHT COLORS
    ========================================================= */
 :root {
-  /* Bold Ink-like Backgrounds */
-  --bg-main: #1a1a2e;
-  --bg-surface: #16213e;
-  --bg-glass: rgba(22, 33, 62, 0.98);
-  --bg-elevated: #1f3460;
+  /* Bold Bright Backgrounds - Saturated Colors */
+  --bg-main: #FF0080;
+  --bg-surface: #FF3385;
+  --bg-glass: rgba(255, 51, 133, 0.95);
+  --bg-elevated: #FF66AA;
   --text-primary: #ffffff;
-  --text-secondary: #FF0080;  /* Hot Pink for labels */
-  --text-muted: #a0a0b0;
-  --text-inverse: #1a1a2e;
-  --border-light: rgba(255, 0, 128, 0.2);
-  --border-medium: rgba(255, 0, 128, 0.3);
+  --text-secondary: #ffffff;
+  --text-muted: #ffeef5;
+  --text-inverse: #FF0080;
+  --border-light: rgba(255, 255, 255, 0.3);
+  --border-medium: rgba(255, 255, 255, 0.4);
   
-  /* Bold backgrounds - matching nav buttons */
-  --obsidian-dark: #0f0f23;
-  --obsidian: #1a1a2e;
-  --obsidian-medium: #16213e;
-  --obsidian-light: #1f3460;
-  --obsidian-bright: #2a4a7f;
+  /* Bold backgrounds - matching nav button colors */
+  --obsidian-dark: #FF0080;
+  --obsidian: #FF3385;
+  --obsidian-medium: #FF66AA;
+  --obsidian-light: #FF99CC;
+  --obsidian-bright: #FFB3D9;
   
-  /* INK COLORS - Matching bottom navigation */
-  --orange-dark: #cc0052;
-  --orange: #FF0080;
-  --orange-light: #ff3385;
-  --orange-bright: #ff66aa;
+  /* INK COLORS - Matching bottom navigation - BRIGHT */
+  --orange-dark: #FF0080;
+  --orange: #FF3385;
+  --orange-light: #FF66AA;
+  --orange-bright: #FF99CC;
   
   /* Secondary - matching nav buttons */
-  --blue-dark: #00cc00;
-  --blue: #00FF00;
-  --blue-light: #33ff33;
-  --blue-bright: #66ff66;
+  --blue-dark: #00FF00;
+  --blue: #33FF33;
+  --blue-light: #66FF66;
+  --blue-bright: #99FF99;
   
-  /* Card Gradients - Bold ink colors */
-  --card-obsidian-dark: linear-gradient(145deg, #0f0f23, #1a1a2e);
-  --card-obsidian: linear-gradient(145deg, #1a1a2e, #16213e);
-  --card-obsidian-medium: linear-gradient(145deg, #16213e, #1f3460);
-  --card-obsidian-light: linear-gradient(145deg, #1f3460, #2a4a7f);
+  /* Card Gradients - Bold bright colors */
+  --card-obsidian-dark: linear-gradient(145deg, #FF0080, #FF3385);
+  --card-obsidian: linear-gradient(145deg, #FF3385, #FF66AA);
+  --card-obsidian-medium: linear-gradient(145deg, #FF66AA, #FF99CC);
+  --card-obsidian-light: linear-gradient(145deg, #FF99CC, #FFB3D9);
   
   /* WIREFRAME BORDERS */
-  --wireframe-border: 1px solid rgba(255, 0, 128, 0.3);
-  --wireframe-glow: 0 0 10px rgba(255, 0, 128, 0.2);
+  --wireframe-border: 1px solid rgba(255, 255, 255, 0.4);
+  --wireframe-glow: 0 0 15px rgba(255, 255, 255, 0.3);
   
-  /* BUTTON COLORS - Matching bottom nav */
+  /* BUTTON COLORS - Matching bottom nav - BRIGHT */
   --button-primary: #FF0080;
   --button-success: #00FF00;
   --button-warning: #FF6600;
@@ -59,21 +59,21 @@
   --button-orange: #FF6600;
   
   /* Skeuomorphic Button Gradient */
-  --button-gradient: linear-gradient(180deg, #ff3385 0%, #cc0052 100%);
-  --button-gradient-hover: linear-gradient(180deg, #ff66aa 0%, #ff0080 100%);
+  --button-gradient: linear-gradient(180deg, #FF66AA 0%, #CC0066 100%);
+  --button-gradient-hover: linear-gradient(180deg, #FF99CC 0%, #FF0080 100%);
   
-  /* PLAN COLORS - Bold ink for text accents */
+  /* PLAN COLORS - Bold bright for text accents */
   --regular-color: #FF0080;
   --vip-color: #00FF00;
   --vvip-color: #FF6600;
   
   /* WELCOME BONUS - Bold gradient */
-  --bonus-gradient: linear-gradient(145deg, #1a1a2e, #16213e, #FF0080, #00FF00);
+  --bonus-gradient: linear-gradient(145deg, #FF0080, #FF3385, #00FF00, #FF6600);
   
-  /* Brand Colors */
+  /* Brand Colors - BRIGHT */
   --primary: #FF0080;
-  --primary-dark: #cc0052;
-  --primary-light: #ff3385;
+  --primary-dark: #CC0066;
+  --primary-light: #FF66AA;
   --success: #00FF00;
   --warning: #FF6600;
   --danger: #FF0000;

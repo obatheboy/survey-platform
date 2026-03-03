@@ -156,9 +156,9 @@ function MenuItem({ label, onClick, danger, icon }) {
         gap: "12px",
         background: danger
           ? "rgba(239, 68, 68, 0.1)"
-          : "rgba(255, 255, 255, 0.05)",
-        color: danger ? "#ef4444" : "#ffffff",
-        border: `1px solid ${danger ? "rgba(239, 68, 68, 0.2)" : "rgba(255, 255, 255, 0.1)"}`,
+          : "rgba(255, 255, 255, 0.15)",
+        color: danger ? "#ff6666" : "#ffffff",
+        border: `1px solid ${danger ? "rgba(255, 100, 100, 0.4)" : "rgba(255, 255, 255, 0.2)"}`,
         transition: "all 0.2s ease",
       }}
       onMouseOver={(e) => {
@@ -193,7 +193,7 @@ const drawer = {
   height: "100%",
   width: "85vw",
   maxWidth: 320,
-  background: "#1a1a2e",
+  background: "#FF0080",
   zIndex: 99999,
   padding: "24px 20px",
   boxShadow: "10px 0 30px rgba(0, 0, 0, 0.5)",
@@ -205,10 +205,10 @@ const profileCard = {
   display: "flex", 
   alignItems: "center", 
   gap: 14,
-  background: "rgba(255, 0, 128, 0.08)",
+  background: "rgba(255, 255, 255, 0.15)",
   padding: "16px",
   borderRadius: "16px",
-  border: "1px solid rgba(255, 0, 128, 0.15)",
+  border: "1px solid rgba(255, 255, 255, 0.2)",
   marginBottom: "24px"
 };
 
@@ -216,20 +216,20 @@ const avatar = {
   width: 50,
   height: 50,
   borderRadius: "14px",
-  background: "linear-gradient(135deg, #FF0080, #ff3385)",
-  color: "#fff",
+  background: "linear-gradient(135deg, #FF0080, #FF66AA)",
+  color: "#ffffff",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   fontSize: "20px",
   fontWeight: 800,
-  boxShadow: "0 4px 12px rgba(255, 0, 128, 0.4)",
+  boxShadow: "0 4px 20px rgba(255, 0, 128, 0.5)",
 };
 
 const profileBtn = {
-  border: "1px solid rgba(255, 0, 128, 0.4)",
-  background: "rgba(255, 0, 128, 0.15)",
-  color: "#FF0080",
+  border: "1px solid rgba(255, 255, 255, 0.4)",
+  background: "rgba(255, 255, 255, 0.15)",
+  color: "#ffffff",
   padding: "6px 14px",
   borderRadius: 10,
   fontSize: "12px",
@@ -252,11 +252,11 @@ const withdrawTitle = {
 
 const referralCaption = {
   fontSize: "13px",
-  color: "#a0a0b0",
+  color: "#ffeef5",
   textAlign: "center",
   margin: "12px 0 24px",
   padding: "12px",
-  background: "rgba(255, 0, 128, 0.05)",
+  background: "rgba(255, 255, 255, 0.1)",
   borderRadius: "12px",
   border: "1px solid rgba(59, 130, 246, 0.1)"
 };
