@@ -896,7 +896,7 @@ export default function Dashboard() {
                 }}
               >
                 <span className="btn-icon" style={{ fontSize: '16px' }}>🔓</span>
-                TAP HERE TO ACTIVATE ACCOUNT
+                TAP HERE TO ACTIVATE ACCOUNT 
                 <span style={{ fontSize: '14px', marginLeft: '2px' }}>✨</span>
               </button>
             )
