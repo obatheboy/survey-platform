@@ -1231,7 +1231,7 @@ export default function Dashboard() {
         }}
       >
         <span style={{ fontSize: '14px' }}>🔓</span>
-        WITHDRAW WELCOME BONUS NOW
+        TAP HERE TO WITHDRAW
         <span style={{ fontSize: '12px' }}>✨</span>
       </button>
     </div>
