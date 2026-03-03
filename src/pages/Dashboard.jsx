@@ -1074,235 +1074,181 @@ export default function Dashboard() {
         </div>
       </div>
       
-      {/* WELCOME BONUS CARD - FIRST AFTER HEADER - BRIGHT COLORFUL WITH BOLD CAPTIONS */}
-      <section ref={welcomeRef}>
-        <div className="plan-card welcome-bonus" style={{
-          background: 'linear-gradient(135deg, #FF0080, #FF4D94, #FF99CC)',
-          border: '3px solid rgba(255, 255, 255, 0.6)',
-          borderRadius: '20px',
-          padding: '16px',
-          margin: '12px 0',
-          boxShadow: '0 10px 30px rgba(255, 0, 128, 0.5)',
-          position: 'relative',
-          overflow: 'hidden'
+{/* WELCOME BONUS CARD - FIRST AFTER HEADER - DEEP ORANGE, SMALL SIZE, ALL CAPTIONS TOGETHER */}
+<section ref={welcomeRef}>
+  <div className="plan-card welcome-bonus" style={{
+    background: 'linear-gradient(135deg, #FF8C00, #FF6B00, #FF4500)',
+    border: '2px solid rgba(255, 255, 255, 0.5)',
+    borderRadius: '16px',
+    padding: '12px',
+    margin: '8px 0',
+    boxShadow: '0 8px 20px rgba(255, 69, 0, 0.4)',
+    position: 'relative',
+    overflow: 'hidden'
+  }}>
+    {/* Subtle animated background effect */}
+    <div style={{
+      position: 'absolute',
+      top: '-50%',
+      left: '-50%',
+      width: '200%',
+      height: '200%',
+      background: 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%)',
+      animation: 'rotate 15s linear infinite'
+    }} />
+    
+    {/* ALL CAPTIONS TOGETHER IN ONE COMPACT DIV */}
+    <div style={{
+      position: 'relative',
+      zIndex: 2,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '8px'
+    }}>
+      {/* Header with icon and title */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px'
         }}>
-          {/* Animated background effect */}
-          <div style={{
-            position: 'absolute',
-            top: '-50%',
-            left: '-50%',
-            width: '200%',
-            height: '200%',
-            background: 'radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%)',
-            animation: 'rotate 10s linear infinite'
-          }} />
-          
-          <div className="plan-card-header" style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '12px',
-            position: 'relative',
-            zIndex: 2
+          <span style={{
+            fontSize: '20px',
+            filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.5))'
+          }}>🎁</span>
+          <span style={{
+            fontSize: '16px',
+            fontWeight: '900',
+            color: 'white',
+            textShadow: '1px 1px 0 rgba(0,0,0,0.3), 0 0 15px rgba(255,255,255,0.5)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
           }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
-              <span style={{
-                fontSize: '28px',
-                filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.5))'
-              }}>🎁</span>
-              <span style={{
-                fontSize: '22px',
-                fontWeight: '900',
-                color: 'white',
-                textShadow: '2px 2px 0 rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.5)',
-                textTransform: 'uppercase',
-                letterSpacing: '1px'
-              }}>
-                WELCOME BONUS
-              </span>
-            </div>
-            <span style={{
-              background: 'linear-gradient(135deg, #FFE500, #FFD700)',
-              color: '#000',
-              padding: '4px 12px',
-              borderRadius: '20px',
-              fontSize: '12px',
-              fontWeight: '900',
-              textTransform: 'uppercase',
-              border: '2px solid rgba(255,255,255,0.8)',
-              boxShadow: '0 0 15px rgba(255,215,0,0.5)'
-            }}>
-              ✨ NEW ✨
-            </span>
-          </div>
-          
-          <div className="plan-card-body" style={{ position: 'relative', zIndex: 2 }}>
-            {/* BONUS AMOUNT - EXTRA BOLD */}
-            <div style={{
-              textAlign: 'center',
-              margin: '8px 0',
-              padding: '12px',
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1))',
-              borderRadius: '16px',
-              border: '2px solid rgba(255,255,255,0.4)',
-              backdropFilter: 'blur(5px)'
-            }}>
-              <span style={{
-                fontSize: '42px',
-                fontWeight: '900',
-                color: 'white',
-                textShadow: '3px 3px 0 rgba(0,0,0,0.3), 0 0 30px rgba(255,255,255,0.8)',
-                display: 'block',
-                lineHeight: '1.2'
-              }}>
-                KES 1,200
-              </span>
-              <span style={{
-                fontSize: '14px',
-                fontWeight: '700',
-                color: 'rgba(255,255,255,0.9)',
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-                marginTop: '4px',
-                display: 'block'
-              }}>
-                FREE BONUS
-              </span>
-            </div>
-            
-            {/* BOLD DESCRIPTION */}
-            <div style={{
-              background: 'linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.2))',
-              padding: '12px 16px',
-              borderRadius: '12px',
-              margin: '8px 0',
-              border: '1px solid rgba(255,255,255,0.3)'
-            }}>
-              <p style={{
-                fontSize: '15px',
-                fontWeight: '700',
-                color: 'white',
-                textAlign: 'center',
-                lineHeight: '1.4',
-                margin: 0
-              }}>
-                Congratulations! You've received a welcome bonus of{' '}
-                <span style={{
-                  color: '#FFE500',
-                  fontSize: '18px',
-                  fontWeight: '900',
-                  textShadow: '0 0 10px rgba(255,215,0,0.8)'
-                }}>
-                  KES 1,200
-                </span>
-              </p>
-              <p style={{
-                fontSize: '14px',
-                fontWeight: '600',
-                color: 'rgba(255,255,255,0.9)',
-                textAlign: 'center',
-                margin: '4px 0 0'
-              }}>
-                Activate your account to withdraw instantly!
-              </p>
-            </div>
-            
-            {/* COUNTDOWN TIMER STYLE */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '12px',
-              margin: '8px 0'
-            }}>
-              <div style={{ textAlign: 'center' }}>
-                <span style={{
-                  fontSize: '18px',
-                  fontWeight: '900',
-                  color: '#FFE500',
-                  textShadow: '0 0 10px #FFD700'
-                }}>24</span>
-                <span style={{
-                  fontSize: '12px',
-                  fontWeight: '600',
-                  color: 'white',
-                  display: 'block'
-                }}>Hours</span>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <span style={{
-                  fontSize: '18px',
-                  fontWeight: '900',
-                  color: '#FFE500',
-                  textShadow: '0 0 10px #FFD700'
-                }}>00</span>
-                <span style={{
-                  fontSize: '12px',
-                  fontWeight: '600',
-                  color: 'white',
-                  display: 'block'
-                }}>Mins</span>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <span style={{
-                  fontSize: '18px',
-                  fontWeight: '900',
-                  color: '#FFE500',
-                  textShadow: '0 0 10px #FFD700'
-                }}>00</span>
-                <span style={{
-                  fontSize: '12px',
-                  fontWeight: '600',
-                  color: 'white',
-                  display: 'block'
-                }}>Secs</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="plan-card-footer" style={{ marginTop: '12px', position: 'relative', zIndex: 2 }}>
-            <button 
-              className="start-survey-btn"
-              onClick={handleWelcomeBonusWithdraw}
-              style={{
-                background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
-                border: '3px solid rgba(255, 255, 255, 0.6)',
-                borderRadius: '40px',
-                padding: '16px 20px',
-                fontWeight: '900',
-                fontSize: '18px',
-                color: 'white',
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '10px',
-                width: '100%',
-                cursor: 'pointer',
-                boxShadow: '0 0 25px rgba(220, 38, 38, 0.8)',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-3px)';
-                e.currentTarget.style.boxShadow = '0 0 35px rgba(220, 38, 38, 1)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 0 25px rgba(220, 38, 38, 0.8)';
-              }}
-            >
-              <span style={{ fontSize: '20px' }}>🔓</span>
-              ACTIVATE & CLAIM NOW
-              <span style={{ fontSize: '18px' }}>✨</span>
-            </button>
-          </div>
+            WELCOME BONUS
+          </span>
         </div>
-      </section>
-
+        <span style={{
+          background: 'linear-gradient(135deg, #FFD700, #FFA500)',
+          color: '#000',
+          padding: '3px 8px',
+          borderRadius: '16px',
+          fontSize: '10px',
+          fontWeight: '900',
+          textTransform: 'uppercase',
+          border: '1px solid rgba(255,255,255,0.8)',
+          boxShadow: '0 0 10px rgba(255,215,0,0.5)'
+        }}>
+          NEW
+        </span>
+      </div>
+      
+      {/* Main content - ALL CAPTIONS TOGETHER */}
+      <div style={{
+        background: 'linear-gradient(135deg, rgba(0,0,0,0.25), rgba(0,0,0,0.15))',
+        borderRadius: '12px',
+        padding: '10px',
+        border: '1px solid rgba(255,255,255,0.3)',
+        backdropFilter: 'blur(2px)'
+      }}>
+        {/* Bonus amount - extra bold */}
+        <div style={{
+          textAlign: 'center',
+          marginBottom: '6px'
+        }}>
+          <span style={{
+            fontSize: '32px',
+            fontWeight: '900',
+            color: 'white',
+            textShadow: '2px 2px 0 rgba(0,0,0,0.4), 0 0 20px rgba(255,255,255,0.7)',
+            display: 'block',
+            lineHeight: '1.1'
+          }}>
+            KES 1,200
+          </span>
+        </div>
+        
+        {/* Description text - all in one block */}
+        <div style={{
+          textAlign: 'center'
+        }}>
+          <span style={{
+            fontSize: '12px',
+            fontWeight: '600',
+            color: 'rgba(255,255,255,0.95)',
+            display: 'block',
+            lineHeight: '1.4'
+          }}>
+            Congratulations! You've received a welcome bonus of{' '}
+            <span style={{
+              color: '#FFD700',
+              fontWeight: '900',
+              fontSize: '13px',
+              textShadow: '0 0 8px rgba(255,215,0,0.6)'
+            }}>
+              KES 1,200
+            </span>
+          </span>
+          <span style={{
+            fontSize: '11px',
+            fontWeight: '500',
+            color: 'rgba(255,255,255,0.8)',
+            display: 'block',
+            marginTop: '2px'
+          }}>
+            Activate your account to withdraw instantly!
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    {/* Action Button */}
+    <div style={{ 
+      marginTop: '10px', 
+      position: 'relative', 
+      zIndex: 2 
+    }}>
+      <button 
+        className="start-survey-btn"
+        onClick={handleWelcomeBonusWithdraw}
+        style={{
+          background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+          border: '2px solid rgba(255, 255, 255, 0.5)',
+          borderRadius: '30px',
+          padding: '12px 16px',
+          fontWeight: '900',
+          fontSize: '14px',
+          color: 'white',
+          textTransform: 'uppercase',
+          letterSpacing: '0.5px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px',
+          width: '100%',
+          cursor: 'pointer',
+          boxShadow: '0 0 20px rgba(220, 38, 38, 0.7)',
+          transition: 'all 0.2s ease'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'translateY(-2px)';
+          e.currentTarget.style.boxShadow = '0 0 25px rgba(220, 38, 38, 0.9)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '0 0 20px rgba(220, 38, 38, 0.7)';
+        }}
+      >
+        <span style={{ fontSize: '16px' }}>🔓</span>
+        ACTIVATE & CLAIM
+        <span style={{ fontSize: '14px' }}>✨</span>
+      </button>
+    </div>
+  </div>
+</section>
       {/* SURVEY PLANS - Shown after Welcome Bonus (ONLY ONE INSTANCE) */}
       <section className="dashboard-section">
         <div className="section-heading">
