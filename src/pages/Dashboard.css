@@ -899,7 +899,7 @@ p, span, div, button, a, label {
 }
 
 .welcome-bonus .activate-bonus-btn {
-  background: linear-gradient(135deg, #f56565, #c53030) !important;
+  background: linear-gradient(135deg, #4a9206, #b81111) !important;
   border: none !important;
   border-radius: var(--radius-sm) !important;
   padding: 6px 12px !important;
@@ -1721,7 +1721,7 @@ p, span, div, button, a, label {
 }
 
 .nav-btn .nav-label {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.3px;
@@ -2274,7 +2274,7 @@ p, span, div, button, a, label {
   }
   
   .nav-btn .nav-label {
-    font-size: 10px;
+    font-size: 9px;
   }
   
   .nav-btn.withdraw-btn {
@@ -2283,7 +2283,7 @@ p, span, div, button, a, label {
   }
   
   .nav-btn.withdraw-btn .nav-label {
-    font-size: 10px;
+    font-size: 9px;
   }
   
   .action-btn {
@@ -2312,7 +2312,7 @@ p, span, div, button, a, label {
   }
   
   .nav-btn .nav-label {
-    font-size: 9px;
+    font-size: 8px;
   }
   
   .nav-btn .nav-icon {
@@ -2320,7 +2320,7 @@ p, span, div, button, a, label {
   }
   
   .nav-btn.withdraw-btn .nav-label {
-    font-size: 9px;
+    font-size: 8px;
   }
   
   .header-greeting-bottom {

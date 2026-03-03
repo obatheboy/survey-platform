@@ -1132,7 +1132,7 @@ export default function Dashboard() {
           </span>
         </div>
         <span style={{
-          background: 'linear-gradient(135deg, #FFD700, #FFA500)',
+          background: 'linear-gradient(135deg, #1c8502, #b30000)',
           color: '#000',
           padding: '3px 8px',
           borderRadius: '16px',
