@@ -969,9 +969,10 @@ return (
         open={menuOpen} 
         onClose={() => setMenuOpen(false)} 
         user={user}
+        goToSurveys={goToSurveys}
         onNavigate={(path) => {
           setMenuOpen(false);
-          navigate(path);
+          if (path) navigate(path);
         }}
       />
 

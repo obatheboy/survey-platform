@@ -11,7 +11,7 @@ const PLANS = {
   VVIP: { name: "VVIP", color: "#f59e0b", total: 3000 },
 };
 
-export default function MainMenuDrawer({ open, onClose, user, onNavigate }) {
+export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSurveys }) {
   const navigate = useNavigate();
   const [toast, setToast] = useState("");
 
@@ -101,7 +101,7 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate }) {
         {/* NEW FEATURES */}
         <h4 style={withdrawTitle}>🚀 Quick Navigation</h4>
         <MenuItem label="🏠 Home" icon="🏠" onClick={() => { onClose(); }} />
-        <MenuItem label="📝 Surveys" icon="📝" onClick={() => onNavigate('/surveys')} />
+        <MenuItem label="📝 Surveys" icon="📝" onClick={() => { onClose(); if (goToSurveys) goToSurveys(); }} />
         <MenuItem label="🎯 Affiliate" icon="🎯" onClick={() => onNavigate('/affiliate')} />
         <MenuItem label="💸 Withdraw" icon="💸" onClick={() => onNavigate('/withdraw-form')} />
 
