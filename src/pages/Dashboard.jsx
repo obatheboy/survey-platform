@@ -860,42 +860,103 @@ return (
 
         <div className="header-activation-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {user && (
-            <button
-              onClick={() => navigate('/activate?welcome_bonus=true')}
-              className="activate-btn-pulse"
-              style={{
-                background: 'linear-gradient(135deg, #f97316 0%, #ea580c 50%, #c2410c 100%)',
-                border: '2px solid rgba(255,255,255,0.4)',
-                borderRadius: '25px',
-                padding: '10px 20px',
-                color: 'white',
-                fontWeight: '800',
-                fontSize: '13px',
-                cursor: 'pointer',
-                boxShadow: '0 4px 20px rgba(249, 115, 22, 0.5), 0 0 40px rgba(234, 88, 12, 0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                whiteSpace: 'nowrap',
-                animation: 'pulse-glow 2s infinite',
-                transition: 'all 0.3s ease',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px'
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.transform = 'scale(1.05)';
-                e.currentTarget.style.boxShadow = '0 6px 30px rgba(249, 115, 22, 0.7), 0 0 60px rgba(234, 88, 12, 0.5)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.boxShadow = '0 4px 20px rgba(249, 115, 22, 0.5), 0 0 40px rgba(234, 88, 12, 0.3)';
-              }}
-            >
-              <span className="btn-icon" style={{ fontSize: '16px' }}>🔓</span>
-              ACTIVATE & CLAIM NOW
-              <span style={{ fontSize: '14px', marginLeft: '2px' }}>✨</span>
-            </button>
+            // Check if user has any pending activation requests
+            activationRequests.some(req => req.status === 'SUBMITTED') ? (
+              // User has pending activation - show pending button (disabled)
+              <button
+                disabled
+                className="activate-btn-pulse"
+                style={{
+                  background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%)',
+                  border: '2px solid rgba(255,255,255,0.4)',
+                  borderRadius: '25px',
+                  padding: '10px 20px',
+                  color: 'white',
+                  fontWeight: '800',
+                  fontSize: '13px',
+                  cursor: 'not-allowed',
+                  boxShadow: '0 4px 20px rgba(251, 191, 36, 0.5), 0 0 40px rgba(245, 158, 11, 0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  whiteSpace: 'nowrap',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  opacity: 0.9
+                }}
+              >
+                <span className="btn-icon" style={{ fontSize: '16px' }}>⏳</span>
+                PENDING APPROVAL
+                <span style={{ fontSize: '14px', marginLeft: '2px' }}>⏰</span>
+              </button>
+            ) : user.is_activated ? (
+              // User is activated - show activated button (disabled)
+              <button
+                disabled
+                className="activate-btn-pulse"
+                style={{
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+                  border: '2px solid rgba(255,255,255,0.4)',
+                  borderRadius: '25px',
+                  padding: '10px 20px',
+                  color: 'white',
+                  fontWeight: '800',
+                  fontSize: '13px',
+                  cursor: 'default',
+                  boxShadow: '0 4px 20px rgba(16, 185, 129, 0.5), 0 0 40px rgba(5, 150, 105, 0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  whiteSpace: 'nowrap',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}
+              >
+                <span className="btn-icon" style={{ fontSize: '16px' }}>✅</span>
+                ACTIVATED
+                <span style={{ fontSize: '14px', marginLeft: '2px' }}>🎉</span>
+              </button>
+            ) : (
+              // User needs to activate - show activate button
+              <button
+                onClick={() => navigate('/activate?welcome_bonus=true')}
+                className="activate-btn-pulse"
+                style={{
+                  background: 'linear-gradient(135deg, #f97316 0%, #ea580c 50%, #c2410c 100%)',
+                  border: '2px solid rgba(255,255,255,0.4)',
+                  borderRadius: '25px',
+                  padding: '10px 20px',
+                  color: 'white',
+                  fontWeight: '800',
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 20px rgba(249, 115, 22, 0.5), 0 0 40px rgba(234, 88, 12, 0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  whiteSpace: 'nowrap',
+                  animation: 'pulse-glow 2s infinite',
+                  transition: 'all 0.3s ease',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.05)';
+                  e.currentTarget.style.boxShadow = '0 6px 30px rgba(249, 115, 22, 0.7), 0 0 60px rgba(234, 88, 12, 0.5)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(249, 115, 22, 0.5), 0 0 40px rgba(234, 88, 12, 0.3)';
+                }}
+              >
+                <span className="btn-icon" style={{ fontSize: '16px' }}>🔓</span>
+                ACTIVATE ACCOUNT NOW
+                <span style={{ fontSize: '14px', marginLeft: '2px' }}>✨</span>
+              </button>
+            )
           )}
         </div>
         <p className="header-greeting-bottom">
