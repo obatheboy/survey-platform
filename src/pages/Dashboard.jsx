@@ -1077,12 +1077,12 @@ export default function Dashboard() {
 {/* WELCOME BONUS CARD - FIRST AFTER HEADER - DEEP ORANGE, SMALL SIZE, ALL CAPTIONS TOGETHER */}
 <section ref={welcomeRef}>
   <div className="plan-card welcome-bonus" style={{
-    background: 'linear-gradient(135deg, #37940c, #0f0d94, #FF4500) !important',
+    background: 'linear-gradient(135deg, #ea580c, #f97316, #fb923c) !important',
     border: '2px solid rgba(255, 255, 255, 0.5) !important',
     borderRadius: '16px !important',
     padding: '12px !important',
     margin: '8px 0 !important',
-    boxShadow: '0 8px 20px rgba(255, 69, 0, 0.4) !important',
+    boxShadow: '0 8px 20px rgba(234, 88, 12, 0.5) !important',
     position: 'relative',
     overflow: 'hidden'
   }}>
@@ -1162,11 +1162,12 @@ export default function Dashboard() {
           textAlign: 'center'
         }}>
           <span style={{
-            fontSize: '12px !important',
-            fontWeight: '600 !important',
-            color: 'rgba(255,255,255,0.95) !important',
+            fontSize: '14px !important',
+            fontWeight: '700 !important',
+            color: '#FFFFFF !important',
             display: 'block',
-            lineHeight: '1.4'
+            lineHeight: '1.4',
+            textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
           }}>
             Congratulations! You've received a welcome bonus of{' '}
             <span style={{
