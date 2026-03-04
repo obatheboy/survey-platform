@@ -496,7 +496,7 @@ export default function Auth() {
             style={styles.supportButton}
             onClick={() => {
               const message = encodeURIComponent(
-                "Hello, I need help with my SurveyEarn account."
+                "Hello, I need help with Registering/Login to mySurveyEarn account."
               );
               const whatsappUrl = `https://wa.me/254786357584?text=${message}`;
               window.open(whatsappUrl, "_blank", "noopener,noreferrer");
