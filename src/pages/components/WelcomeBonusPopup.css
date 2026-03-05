@@ -30,9 +30,9 @@
 /* Popup Container */
 .welcome-bonus-popup {
   background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-  border-radius: 28px;
+  border-radius: 20px;
   padding: 0;
-  max-width: 400px;
+  max-width: 340px;
   width: 100%;
   position: relative;
   animation: popupEnter 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -105,20 +105,20 @@
 }
 
 .bonus-glow-1 {
-  width: 200px;
-  height: 200px;
+  width: 140px;
+  height: 140px;
   background: radial-gradient(circle, rgba(234, 88, 12, 0.5) 0%, transparent 70%);
-  top: -80px;
-  right: -60px;
+  top: -50px;
+  right: -40px;
   animation: glowPulse 3s ease-in-out infinite;
 }
 
 .bonus-glow-2 {
-  width: 180px;
-  height: 180px;
+  width: 120px;
+  height: 120px;
   background: radial-gradient(circle, rgba(255, 215, 0, 0.35) 0%, transparent 70%);
-  bottom: -60px;
-  left: -50px;
+  bottom: -40px;
+  left: -30px;
   animation: glowPulse 3s ease-in-out infinite 1.5s;
 }
 
@@ -147,7 +147,7 @@
 
 .sparkle {
   position: absolute;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   animation: sparkleFloat 2s ease-in-out infinite;
   filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.8));
 }
@@ -173,18 +173,18 @@
 /* Close Button */
 .welcome-bonus-close {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  top: 10px;
+  right: 10px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
-  font-size: 22px;
+  font-size: 18px;
   cursor: pointer;
   opacity: 0.7;
   transition: all 0.3s;
   z-index: 20;
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -201,7 +201,7 @@
 .welcome-bonus-content {
   position: relative;
   z-index: 10;
-  padding: 32px 24px 24px;
+  padding: 24px 18px 18px;
 }
 
 /* Header Section */
@@ -217,7 +217,7 @@
 }
 
 .welcome-bonus-icon {
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   animation: iconBounce 1.2s ease-in-out infinite;
   position: relative;
   z-index: 2;
@@ -236,8 +236,8 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 90px;
-  height: 90px;
+  width: 70px;
+  height: 70px;
   border: 3px solid rgba(234, 88, 12, 0.6);
   border-radius: 50%;
   animation: ringPulse 2s ease-in-out infinite;
@@ -255,8 +255,8 @@
 }
 
 .welcome-bonus-header h2 {
-  margin: 0 0 8px 0;
-  font-size: 1.6rem;
+  margin: 0 0 6px 0;
+  font-size: 1.2rem;
   font-weight: 800;
   background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #fcd34d 100%);
   -webkit-background-clip: text;
@@ -269,21 +269,21 @@
 .welcome-bonus-header p {
   margin: 0;
   color: rgba(255, 255, 255, 0.75);
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   line-height: 1.4;
 }
 
 /* Amount Section */
 .welcome-bonus-amount {
   position: relative;
-  margin: 24px 0;
+  margin: 16px 0;
 }
 
 .bonus-amount-inner {
   background: linear-gradient(135deg, rgba(234, 88, 12, 0.2) 0%, rgba(251, 146, 60, 0.2) 100%);
   border: 2px solid rgba(251, 191, 36, 0.5);
-  border-radius: 20px;
-  padding: 24px 20px;
+  border-radius: 16px;
+  padding: 16px 14px;
   position: relative;
   overflow: hidden;
 }
@@ -314,7 +314,7 @@
 }
 
 .welcome-bonus-value {
-  font-size: 2.8rem;
+  font-size: 2rem;
   font-weight: 900;
   background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
   -webkit-background-clip: text;
@@ -326,14 +326,14 @@
 }
 
 .welcome-bonus-value span {
-  font-size: 1.4rem;
+  font-size: 1rem;
   opacity: 0.9;
 }
 
 /* Floating Coins */
 .bonus-coin {
   position: absolute;
-  font-size: 2rem;
+  font-size: 1.5rem;
   animation: coinFloat 3s ease-in-out infinite;
 }
 
@@ -357,9 +357,9 @@
 /* Message */
 .welcome-bonus-message {
   color: rgba(255, 255, 255, 0.85);
-  font-size: 0.95rem;
-  margin-bottom: 24px;
-  line-height: 1.6;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+  line-height: 1.5;
   text-align: center;
 }
 
@@ -385,17 +385,17 @@
   background: linear-gradient(135deg, #ea580c 0%, #f97316 50%, #fb923c 100%);
   border: none;
   padding: 0;
-  border-radius: 50px;
-  font-size: 1.1rem;
+  border-radius: 40px;
+  font-size: 0.95rem;
   font-weight: 700;
   color: white;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 
-    0 8px 25px rgba(234, 88, 12, 0.5),
+    0 6px 20px rgba(234, 88, 12, 0.5),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   width: 100%;
-  max-width: 280px;
+  max-width: 240px;
   margin: 0 auto;
   display: block;
   position: relative;
@@ -417,14 +417,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 18px 32px;
+  gap: 8px;
+  padding: 14px 24px;
   position: relative;
   z-index: 2;
 }
 
 .button-icon {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   animation: buttonIconBounce 1s ease-in-out infinite;
 }
 
@@ -453,19 +453,19 @@
 .welcome-bonus-features {
   display: flex;
   justify-content: center;
-  gap: 16px;
-  margin-top: 24px;
+  gap: 8px;
+  margin-top: 16px;
   flex-wrap: wrap;
 }
 
 .feature-item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   background: rgba(255, 255, 255, 0.08);
-  padding: 8px 14px;
-  border-radius: 20px;
-  font-size: 0.8rem;
+  padding: 5px 10px;
+  border-radius: 16px;
+  font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -477,8 +477,8 @@
 
 /* Note */
 .welcome-bonus-note {
-  margin-top: 20px;
-  font-size: 0.8rem;
+  margin-top: 14px;
+  font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.5);
   text-align: center;
 }
@@ -488,12 +488,12 @@
    ========================================================= */
 @media (max-width: 480px) {
   .welcome-bonus-overlay {
-    padding: 12px;
+    padding: 8px;
     align-items: flex-end;
   }
 
   .welcome-bonus-popup {
-    border-radius: 24px 24px 0 0;
+    border-radius: 20px 20px 0 0;
     max-width: 100%;
     animation: popupSlideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
@@ -514,90 +514,90 @@
   }
 
   .welcome-bonus-content {
-    padding: 28px 20px 20px;
+    padding: 20px 16px 16px;
   }
 
   .welcome-bonus-icon {
-    font-size: 3rem;
-  }
-
-  .icon-ring {
-    width: 70px;
-    height: 70px;
-  }
-
-  .welcome-bonus-header h2 {
-    font-size: 1.35rem;
-  }
-
-  .welcome-bonus-header p {
-    font-size: 0.9rem;
-  }
-
-  .bonus-amount-inner {
-    padding: 20px 16px;
-  }
-
-  .welcome-bonus-value {
     font-size: 2.2rem;
   }
 
+  .icon-ring {
+    width: 55px;
+    height: 55px;
+  }
+
+  .welcome-bonus-header h2 {
+    font-size: 1.15rem;
+  }
+
+  .welcome-bonus-header p {
+    font-size: 0.8rem;
+  }
+
+  .bonus-amount-inner {
+    padding: 14px 12px;
+  }
+
+  .welcome-bonus-value {
+    font-size: 1.8rem;
+  }
+
   .welcome-bonus-value span {
-    font-size: 1.1rem;
-  }
-
-  .bonus-coin {
-    font-size: 1.6rem;
-  }
-
-  .welcome-bonus-message {
     font-size: 0.9rem;
   }
 
+  .bonus-coin {
+    font-size: 1.3rem;
+  }
+
+  .welcome-bonus-message {
+    font-size: 0.8rem;
+  }
+
   .welcome-bonus-button {
-    font-size: 1rem;
+    font-size: 0.9rem;
     max-width: 100%;
   }
 
   .button-content {
-    padding: 16px 24px;
+    padding: 12px 20px;
   }
 
   .welcome-bonus-features {
-    gap: 10px;
+    gap: 6px;
   }
 
   .feature-item {
-    font-size: 0.75rem;
-    padding: 6px 10px;
+    font-size: 0.65rem;
+    padding: 4px 8px;
   }
 
   .sparkle {
-    font-size: 1.2rem;
+    font-size: 1rem;
   }
 
   .bonus-glow-1 {
-    width: 150px;
-    height: 150px;
+    width: 100px;
+    height: 100px;
   }
 
   .bonus-glow-2 {
-    width: 130px;
-    height: 130px;
+    width: 90px;
+    height: 90px;
   }
 }
 
 @media (max-width: 380px) {
   .welcome-bonus-content {
-    padding: 24px 16px 16px;
+    padding: 18px 14px 14px;
   }
 
   .welcome-bonus-header h2 {
-    font-size: 1.2rem;
+    font-size: 1.05rem;
   }
 
   .welcome-bonus-value {
-    font-size: 2rem;
+    font-size: 1.6rem;
   }
 
   .bonus-coin {
@@ -605,7 +605,12 @@
   }
 
   .feature-item {
-    font-size: 0.7rem;
+    font-size: 0.6rem;
+  }
+
+  .bonus-glow-1,
+  .bonus-glow-2 {
+    display: none;
   }
 }
 

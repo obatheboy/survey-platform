@@ -81,8 +81,8 @@ export default function WelcomeBonusPopup({ isOpen, onClose, bonusAmount = 1200,
               <div className="welcome-bonus-icon">🎉</div>
               <div className="icon-ring"></div>
             </div>
-            <h2>Welcome Bonus Unlocked!</h2>
-            <p>Congratulations on joining our platform!</p>
+            <h2>Welcome Bonus!</h2>
+            <p>Congratulations on joining!</p>
           </div>
 
           <div className="welcome-bonus-amount">
@@ -97,9 +97,8 @@ export default function WelcomeBonusPopup({ isOpen, onClose, bonusAmount = 1200,
           </div>
 
           <div className="welcome-bonus-message">
-            You've successfully received your welcome bonus of <strong>KSh {bonusAmount.toLocaleString()}</strong>! 
-            <br /><br />
-            <span className="highlight-text">Now activate your account to withdraw!</span>
+            Received <strong>KSh {bonusAmount.toLocaleString()}</strong>! 
+            <span className="highlight-text">Activate to withdraw!</span>
           </div>
 
           <button 
@@ -114,7 +113,7 @@ export default function WelcomeBonusPopup({ isOpen, onClose, bonusAmount = 1200,
           >
             <span className="button-content">
               <span className="button-icon">🚀</span>
-              <span className="button-text">Activate to Withdraw</span>
+            <span className="button-text">Activate to Withdraw</span>
             </span>
             <span className="button-shine"></span>
           </button>
@@ -122,15 +121,15 @@ export default function WelcomeBonusPopup({ isOpen, onClose, bonusAmount = 1200,
           <div className="welcome-bonus-features">
             <div className="feature-item">
               <span className="feature-icon">✓</span>
-              <span>Instant Bonus</span>
+              <span>Instant</span>
             </div>
             <div className="feature-item">
               <span className="feature-icon">✓</span>
-              <span>Easy Activation</span>
+              <span>Easy</span>
             </div>
             <div className="feature-item">
               <span className="feature-icon">✓</span>
-              <span>Start Earning</span>
+              <span>Earn</span>
             </div>
           </div>
 
