@@ -82,12 +82,12 @@ export default function WelcomeBonusPopup({ isOpen, onClose, bonusAmount = 1200,
               <div className="icon-ring"></div>
             </div>
             <h2>Welcome Bonus!</h2>
-            <p>Congratulations on joining!</p>
+            <p>Congratulations for joining our company!</p>
           </div>
 
           <div className="welcome-bonus-amount">
             <div className="bonus-amount-inner">
-              <div className="welcome-bonus-label">Your Welcome Bonus</div>
+              <div className="welcome-bonus-label">Your Welcome Bonus Is</div>
               <div className="welcome-bonus-value">
                 <span>KSh </span>{bonusAmount.toLocaleString()}
               </div>
@@ -97,7 +97,7 @@ export default function WelcomeBonusPopup({ isOpen, onClose, bonusAmount = 1200,
           </div>
 
           <div className="welcome-bonus-message">
-            Received <strong>KSh {bonusAmount.toLocaleString()}</strong>! 
+            You haveReceived <strong>KSh {bonusAmount.toLocaleString()}</strong>   -
             <span className="highlight-text">Activate to withdraw!</span>
           </div>
 
