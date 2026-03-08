@@ -24,7 +24,7 @@ const PLAN_CONFIG = {
   },
   VVIP: {
     label: "VVIP Plan",
-    activationFee: 200,
+    activationFee: 250,
     color: "#f59e0b",
     icon: "👑",
     total: 3000,

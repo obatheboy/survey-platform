@@ -11,7 +11,7 @@ const TOTAL_SURVEYS = 10;
 const PLAN_FEES = {
   REGULAR: 100,
   VIP: 150,
-  VVIP: 200,
+  VVIP: 250,
 };
 
 /* ===============================

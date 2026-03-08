@@ -29,7 +29,7 @@ const PLANS = {
     total: 3000, 
     color: "#f59e0b",
     gradient: "linear-gradient(135deg, #f59e0b, #d97706)",
-    activationFee: 200,
+    activationFee: 250,
     earningsLabel: "Total Earnings: KES 3,000"
   },
   affiliate: {

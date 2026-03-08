@@ -32,7 +32,7 @@ const PLAN_CONFIG = {
   VVIP: { 
     label: "VVIP", 
     total: 3000, 
-    activationFee: 200, 
+    activationFee: 250, 
     color: "#f59e0b", 
     glow: "rgba(245, 158, 11, 0.2)" 
   },
@@ -563,7 +563,7 @@ export default function Activate() {
                 <>
                   2. Complete VIP SURVEY PLAN (150)
                   <br />
-                  3. Complete VVIP PLAN (200) to unlock withdrawals
+                  3. Complete VVIP PLAN (250) to unlock withdrawals
                 </>
               ) : (
                 <>
