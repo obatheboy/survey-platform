@@ -355,7 +355,8 @@ export default function Dashboard() {
           const response = await gamificationApi.checkDailyReward();
           if (response.data.can_claim) {
             setCanClaimDailyReward(true);
-            setShowDailyReward(true);
+            // Daily reward popup disabled
+            // setShowDailyReward(true);
           }
         } catch (error) {
           console.error('Error checking daily reward:', error);
@@ -376,7 +377,8 @@ export default function Dashboard() {
         const response = await gamificationApi.checkDailyReward();
         if (response.data.can_claim) {
           setCanClaimDailyReward(true);
-          setTimeout(() => setShowDailyReward(true), 2000);
+          // Daily reward popup disabled
+          // setTimeout(() => setShowDailyReward(true), 2000);
         }
         setGamificationStats({
           level: response.data.level || 1,
@@ -1452,6 +1454,18 @@ export default function Dashboard() {
         </div>
       </section>
 
+      {/* NOTIFICATIONS & LIVE WITHDRAWALS */}
+      <section className="dashboard-section">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
+          <div>
+            <UserNotifications />
+          </div>
+          <div>
+            <LiveWithdrawalFeed />
+          </div>
+        </div>
+      </section>
+
       {/* WHY USERS LOVE OUR PLATFORM */}
       <section className="dashboard-section">
         <div className="section-heading">
@@ -1951,21 +1965,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <button
-                onClick={() => setShowDailyReward(true)}
-                style={{
-                  background: canClaimDailyReward ? 'linear-gradient(135deg, #fbbf24, #f59e0b)' : 'rgba(255,255,255,0.1)',
-                  border: 'none',
-                  padding: '10px 20px',
-                  borderRadius: '8px',
-                  cursor: canClaimDailyReward ? 'pointer' : 'default',
-                  color: 'white',
-                  fontWeight: 'bold',
-                  transition: 'all 0.3s'
-                }}
-              >
-                🎁 Daily Reward {canClaimDailyReward && '🔔'}
-              </button>
+              {/* Daily Reward button hidden - popup disabled */}
               <div style={{
                 background: 'rgba(255,255,255,0.1)',
                 padding: '10px 16px',
