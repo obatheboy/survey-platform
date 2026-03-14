@@ -498,7 +498,7 @@ export default function Auth() {
               const message = encodeURIComponent(
                 "Hello, I need help with Registering/Login to mySurveyEarn account."
               );
-              const whatsappUrl = `https://wa.me/254772881670?text=${message}`;
+              const whatsappUrl = `https://wa.me/254752881670?text=${message}`;
               window.open(whatsappUrl, "_blank", "noopener,noreferrer");
             }}
           >
