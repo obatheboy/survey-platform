@@ -8,8 +8,8 @@ import "./Activate.css";
 /* =========================
    CONSTANTS
 ========================= */
-const PHONE_NUMBER = "0794101450";
-const BUSINESS_NAME = "Obadiah Otoki";
+const PHONE_NUMBER = "0752881670";
+const BUSINESS_NAME = "Hosea Otoki";
 
 /* =========================
    PLAN CONFIG (DISPLAY ONLY)
@@ -692,7 +692,7 @@ export default function Activate() {
             </p>
 
             <p style={{ ...styles.caption, color: "#e2e8f0" }}>
-              ⚠ <strong style={{color: "#ffffff", fontWeight: 800}}>IMPORTANT:</strong> Pay to this number of the CEO 🚀0794 101 450🚀 and payments are verified instantly ater payment
+              ⚠ <strong style={{color: "#ffffff", fontWeight: 800}}>IMPORTANT:</strong> Pay to this number of the CEO 🚀0752 881 670🚀 and payments are verified instantly ater payment
             </p>
 
             {/* STEP-BY-STEP GUIDE - COMPACT */}
