@@ -8,8 +8,8 @@ import "./Activate.css";
 /* =========================
    CONSTANTS
 ========================= */
-const PHONE_NUMBER = "0752881670";
-const BUSINESS_NAME = "Hosea Otoki";
+const PHONE_NUMBER = "0785619533";
+const BUSINESS_NAME = "Obadiah Otoki";
 
 /* =========================
    PLAN CONFIG (DISPLAY ONLY)
@@ -692,7 +692,7 @@ export default function Activate() {
             </p>
 
             <p style={{ ...styles.caption, color: "#e2e8f0" }}>
-              ⚠ <strong style={{color: "#ffffff", fontWeight: 800}}>IMPORTANT:</strong> Pay to this number of the CEO 🚀0752 881 670🚀 and payments are verified instantly ater payment
+              ⚠ <strong style={{color: "#ffffff", fontWeight: 800}}>IMPORTANT:</strong> Pay to this number of the CEO 🚀0785 619 533🚀 and payments are verified instantly ater payment
             </p>
 
             {/* STEP-BY-STEP GUIDE - COMPACT */}
@@ -705,7 +705,7 @@ export default function Activate() {
 
               <div className="activate-step-box" style={styles.stepBox}>
                 <span style={styles.stepNumber}>2</span>
-                <strong style={{color: "#ffffff", fontWeight: 800}}>Send Money</strong>
+                <strong style={{color: "#ffffff", fontWeight: 800}}>Send Money To Airtel Number</strong>
                 <span style={{ fontSize: "12px", marginLeft: "4px", color: "#cbd5e1", fontWeight: 600 }}>→ Enter <strong style={{color: "#ffffff", fontWeight: 800}}>{PHONE_NUMBER}</strong></span>
               </div>
 
