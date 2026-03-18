@@ -6,10 +6,10 @@ import Testimonials from "../components/Testimonials";
 import "./Activate.css";
 
 /* =========================
-   CONSTANTS
+   CONSTANTS - UPDATED
 ========================= */
-const PHONE_NUMBER = "0785619533";
-const BUSINESS_NAME = "Obadiah Otoki";
+const PHONE_NUMBER = "0140834185"; // Updated to new number
+const BUSINESS_NAME = "OBADIAH OTOKI"; // Updated to match send money name
 
 /* =========================
    PLAN CONFIG (DISPLAY ONLY)
@@ -685,14 +685,14 @@ export default function Activate() {
             </div>
           )}
 
-          {/* HOW TO PAY & ACTIVATE SECTION */}
+          {/* HOW TO PAY & ACTIVATE SECTION - UPDATED INSTRUCTIONS */}
           <div className="activate-section-dark" style={styles.section}>
             <p style={{ fontWeight: 800, fontSize: "14px", marginBottom: "8px", color: "#ffffff" }}>
               📲 HOW TO PAY & ACTIVATE
             </p>
 
             <p style={{ ...styles.caption, color: "#e2e8f0" }}>
-              ⚠ <strong style={{color: "#ffffff", fontWeight: 800}}>IMPORTANT:</strong> Pay to this number of the CEO 🚀0785 619 533🚀 and payments are verified instantly ater payment
+              ⚠ <strong style={{color: "#ffffff", fontWeight: 800}}>IMPORTANT:</strong> Use Send Money to <strong style={{color: "#fbbf24", fontSize: "14px"}}>{PHONE_NUMBER} - {BUSINESS_NAME}</strong> and payments are verified instantly after payment
             </p>
 
             {/* STEP-BY-STEP GUIDE - COMPACT */}
@@ -705,13 +705,13 @@ export default function Activate() {
 
               <div className="activate-step-box" style={styles.stepBox}>
                 <span style={styles.stepNumber}>2</span>
-                <strong style={{color: "#ffffff", fontWeight: 800}}>Send Money To Airtel Number</strong>
+                <strong style={{color: "#ffffff", fontWeight: 800}}>Send Money</strong>
                 <span style={{ fontSize: "12px", marginLeft: "4px", color: "#cbd5e1", fontWeight: 600 }}>→ Enter <strong style={{color: "#ffffff", fontWeight: 800}}>{PHONE_NUMBER}</strong></span>
               </div>
 
               <div className="activate-step-box" style={styles.stepBox}>
                 <span style={styles.stepNumber}>3</span>
-                <strong style={{color: "#ffffff", fontWeight: 800}}>Confirm: {BUSINESS_NAME}</strong>
+                <strong style={{color: "#ffffff", fontWeight: 800}}>Confirm Name: <span style={{color: "#fbbf24"}}>{BUSINESS_NAME}</span></strong>
               </div>
 
               <div className="activate-step-box" style={styles.stepBox}>
@@ -739,7 +739,7 @@ export default function Activate() {
             </div>
           </div>
 
-          {/* PHONE NUMBER SECTION */}
+          {/* PHONE NUMBER SECTION - UPDATED */}
           <div className="activate-section-dark" style={styles.section}>
             <div style={{ 
               display: "flex",
@@ -748,7 +748,10 @@ export default function Activate() {
               flexWrap: "wrap",
               gap: "6px"
             }}>
-              <span style={{ fontSize: "14px", fontWeight: 800, color: "#ffffff" }}>📞 <strong>{PHONE_NUMBER}</strong></span>
+              <div>
+                <span style={{ fontSize: "14px", fontWeight: 800, color: "#ffffff" }}>📞 <strong>{PHONE_NUMBER}</strong></span>
+                <span style={{ fontSize: "12px", marginLeft: "8px", color: "#fbbf24", fontWeight: 700 }}>{BUSINESS_NAME}</span>
+              </div>
               <button 
                 onClick={copyPhoneNumber} 
                 style={styles.copyBtn}
