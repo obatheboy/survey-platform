@@ -34,26 +34,18 @@ export default function Auth() {
   // Get referral code from URL
   const referralCodeFromUrl = searchParams.get("ref");
 
-  const [showRegPassword, setShowRegPassword] = useState(false);
-  const [showRegConfirm, setShowRegConfirm] = useState(false);
-  const [showLoginPassword, setShowLoginPassword] = useState(false);
-
   // Validation states
   const [errors, setErrors] = useState({});
 
   const [regData, setRegData] = useState({
     full_name: "",
     phone: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
     referralCode: referralCodeFromUrl || "",
   });
   const [regMessage, setRegMessage] = useState("");
 
   const [loginData, setLoginData] = useState({
     phone: "",
-    password: "",
   });
   const [loginMessage, setLoginMessage] = useState("");
 
@@ -85,21 +77,8 @@ export default function Auth() {
     
     if (!regData.phone.trim()) {
       newErrors.phone = "Phone number is required";
-    }
-    // Phone number validation removed - any phone number format is accepted
-    
-    if (regData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(regData.email)) {
-      newErrors.email = "Enter a valid email address";
-    }
-    
-    if (!regData.password) {
-      newErrors.password = "Password is required";
-    } else if (regData.password.length < 4) {
-      newErrors.password = "Password must be at least 4 characters";
-    }
-    
-    if (regData.password !== regData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
+    } else if (!/^[\d+\-\s()]+$/.test(regData.phone.trim())) {
+      newErrors.phone = "Enter a valid phone number";
     }
     
     setErrors(newErrors);
@@ -123,8 +102,6 @@ export default function Auth() {
       const res = await api.post("/auth/register", {
         full_name: regData.full_name,
         phone: regData.phone,
-        email: regData.email || null,
-        password: regData.password,
         referral_code: regData.referralCode || referralCodeFromUrl || null,
       });
 
@@ -154,8 +131,8 @@ export default function Auth() {
     setLoginMessage("");
     setShake(false);
 
-    if (!loginData.phone || !loginData.password) {
-      setLoginMessage("Please enter both phone and password");
+    if (!loginData.phone.trim()) {
+      setLoginMessage("Please enter your phone number");
       setShake(true);
       setTimeout(() => setShake(false), 500);
       return;
@@ -163,7 +140,7 @@ export default function Auth() {
 
     try {
       setLoading(true);
-      const res = await api.post("/auth/login", loginData);
+      const res = await api.post("/auth/login", { phone: loginData.phone });
 
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
@@ -190,7 +167,7 @@ export default function Auth() {
         return;
       }
 
-      setLoginMessage(err.response?.data?.message || "Login failed. Try again.");
+      setLoginMessage(err.response?.data?.message || "Phone number not found. Please register first.");
       setShake(true);
       setTimeout(() => setShake(false), 500);
     } finally {
@@ -287,62 +264,6 @@ export default function Auth() {
               />
               {errors.phone && <span style={styles.errorText}>{errors.phone}</span>}
 
-              <Input
-                type="email"
-                placeholder="Email (optional)"
-                value={regData.email}
-                onChange={(e) =>
-                  setRegData(prev => ({ ...prev, email: e.target.value }))
-                }
-                icon="✉️"
-                error={errors.email}
-              />
-              {errors.email && <span style={styles.errorText}>{errors.email}</span>}
-
-              <div style={styles.passwordContainer}>
-                <Input
-                  placeholder="Password"
-                  type={showRegPassword ? "text" : "password"}
-                  value={regData.password}
-                  onChange={(e) =>
-                    setRegData(prev => ({ ...prev, password: e.target.value }))
-                  }
-                  icon="🔒"
-                  error={errors.password}
-                  required
-                />
-                <button
-                  type="button"
-                  style={styles.passwordToggle}
-                  onClick={() => setShowRegPassword(!showRegPassword)}
-                >
-                  {showRegPassword ? "🙈" : "👁️"}
-                </button>
-              </div>
-              {errors.password && <span style={styles.errorText}>{errors.password}</span>}
-
-              <div style={styles.passwordContainer}>
-                <Input
-                  placeholder="Confirm Password"
-                  type={showRegConfirm ? "text" : "password"}
-                  value={regData.confirmPassword}
-                  onChange={(e) =>
-                    setRegData(prev => ({ ...prev, confirmPassword: e.target.value }))
-                  }
-                  icon="✅"
-                  error={errors.confirmPassword}
-                  required
-                />
-                <button
-                  type="button"
-                  style={styles.passwordToggle}
-                  onClick={() => setShowRegConfirm(!showRegConfirm)}
-                >
-                  {showRegConfirm ? "🙈" : "👁️"}
-                </button>
-              </div>
-              {errors.confirmPassword && <span style={styles.errorText}>{errors.confirmPassword}</span>}
-
               {/* Referral Code */}
               {referralCodeFromUrl && (
                 <div style={styles.referralBadge}>
@@ -424,32 +345,6 @@ export default function Auth() {
                 icon="📱"
                 required
               />
-
-              <div style={styles.passwordContainer}>
-                <Input
-                  placeholder="Password"
-                  type={showLoginPassword ? "text" : "password"}
-                  value={loginData.password}
-                  onChange={(e) =>
-                    setLoginData(prev => ({ ...prev, password: e.target.value }))
-                  }
-                  icon="🔒"
-                  required
-                />
-                <button
-                  type="button"
-                  style={styles.passwordToggle}
-                  onClick={() => setShowLoginPassword(!showLoginPassword)}
-                >
-                  {showLoginPassword ? "🙈" : "👁️"}
-                </button>
-              </div>
-            </div>
-
-            <div style={styles.forgotPassword}>
-              <button type="button" style={styles.forgotButton}>
-                Forgot password?
-              </button>
             </div>
 
             {/* Sign In Button */}
@@ -463,7 +358,7 @@ export default function Auth() {
               ) : (
                 <>
                   <span style={styles.buttonIcon}>🔐</span>
-                  Sign In
+                  Sign In with Phone Number
                 </>
               )}
             </button>
@@ -785,26 +680,6 @@ const styles = {
     transition: "all 0.2s ease",
     boxSizing: "border-box",
   },
-  passwordContainer: {
-    position: "relative",
-  },
-  passwordToggle: {
-    position: "absolute",
-    right: "14px",
-    top: "50%",
-    transform: "translateY(-50%)",
-    background: "none",
-    border: "none",
-    fontSize: "18px",
-    cursor: "pointer",
-    color: "#64748b",
-    padding: "8px",
-    borderRadius: "8px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 1,
-  },
   errorText: {
     fontSize: "11px",
     color: "#ef4444",
@@ -906,20 +781,6 @@ const styles = {
     fontWeight: "700",
     cursor: "pointer",
     padding: "4px 8px",
-    borderRadius: "6px",
-  },
-  forgotPassword: {
-    textAlign: "right",
-    marginBottom: "8px",
-  },
-  forgotButton: {
-    background: "none",
-    border: "none",
-    color: "#667eea",
-    fontSize: "12px",
-    fontWeight: "600",
-    cursor: "pointer",
-    padding: "6px 10px",
     borderRadius: "6px",
   },
   termsNotice: {
