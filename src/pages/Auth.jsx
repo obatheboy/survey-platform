@@ -190,6 +190,15 @@ export default function Auth() {
           animation: shake ? "shake 0.5s ease-in-out" : "none",
         }}
       >
+        {/* Government Verification Badge */}
+        <div style={styles.govBadge}>
+          <div style={styles.govBadgeContent}>
+            <span style={styles.govIcon}>🇰🇪</span>
+            <span style={styles.govText}>Verified by Government of Kenya</span>
+            <span style={styles.govCheck}>✓</span>
+          </div>
+        </div>
+
         {/* Bold Large Logo Header */}
         <div style={styles.header}>
           <div style={styles.logoContainer}>
@@ -456,6 +465,11 @@ export default function Auth() {
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
           }
+
+          @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+          }
           
           input:focus {
             border-color: #6366f1 !important;
@@ -542,6 +556,46 @@ const styles = {
     zIndex: 1,
     maxHeight: "98vh",
     overflowY: "auto",
+  },
+  govBadge: {
+    marginBottom: "16px",
+    display: "flex",
+    justifyContent: "center",
+  },
+  govBadgeContent: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "8px",
+    background: "linear-gradient(135deg, #1e3c72, #2b4c7c)",
+    padding: "8px 16px",
+    borderRadius: "40px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+    border: "1px solid rgba(255, 215, 0, 0.3)",
+    animation: "shimmer 3s infinite",
+    backgroundSize: "200% 100%",
+  },
+  govIcon: {
+    fontSize: "18px",
+    filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.2))",
+  },
+  govText: {
+    fontSize: "11px",
+    fontWeight: "700",
+    color: "#FFD700",
+    letterSpacing: "0.3px",
+    textTransform: "uppercase",
+  },
+  govCheck: {
+    fontSize: "14px",
+    fontWeight: "bold",
+    color: "#4ade80",
+    background: "rgba(255,255,255,0.2)",
+    borderRadius: "50%",
+    width: "20px",
+    height: "20px",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   header: {
     marginBottom: "20px",
