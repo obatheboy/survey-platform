@@ -1,5 +1,4 @@
 /* eslint-disable no-undef */
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Notification = require("../models/Notification"); // ✅ ADDED: Import Notification model
@@ -24,10 +23,10 @@ const COOKIE_OPTIONS = {
 exports.register = async (req, res) => {
   try {
     const fullName = req.body.fullName || req.body.name || req.body.full_name;
-    const { phone, email, password, referral_code } = req.body;
+    const { phone, referral_code } = req.body;
 
-    if (!fullName || !phone || !password) {
-      return res.status(400).json({ message: "Required fields missing" });
+    if (!fullName || !phone) {
+      return res.status(400).json({ message: "Full name and phone number are required" });
     }
 
     // ✅ CHANGED: MongoDB findOne instead of pool.query
@@ -35,8 +34,6 @@ exports.register = async (req, res) => {
     if (exists) {
       return res.status(409).json({ message: "Phone already registered" });
     }
-
-    const passwordHash = await bcrypt.hash(password, 10);
 
     // Generate unique referral code
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -49,8 +46,8 @@ exports.register = async (req, res) => {
     const user = new User({
       full_name: fullName,
       phone,
-      email: email || null,
-      password_hash: passwordHash,
+      email: null,
+      password_hash: null,
       is_activated: false,
       total_earned: 1200,
       welcome_bonus_received: true,
@@ -143,14 +140,15 @@ exports.register = async (req, res) => {
 ================================ */
 exports.login = async (req, res) => {
   try {
-    const { phone, password } = req.body;
+    const { phone } = req.body;
 
-    // ✅ CHANGED: MongoDB findOne instead of pool.query
+    if (!phone) {
+      return res.status(400).json({ message: "Phone number is required" });
+    }
+
+    // Find user by phone number - no password needed
     const user = await User.findOne({ phone });
-    if (!user) return res.status(401).json({ message: "Invalid credentials" });
-
-    const match = await bcrypt.compare(password, user.password_hash);
-    if (!match) return res.status(401).json({ message: "Invalid credentials" });
+    if (!user) return res.status(401).json({ message: "Phone number not found. Please register first." });
 
     // ✅ CHANGED: Use user._id instead of user.id
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });

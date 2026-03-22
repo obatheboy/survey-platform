@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
   },
   password_hash: {
     type: String,
-    required: true
+    default: null
   },
   status: {  // ✅ ADDED: User status field
     type: String,
