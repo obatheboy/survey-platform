@@ -119,7 +119,7 @@ export default function Dashboard() {
      GAMIFICATION STATE
    ========================= */
   const [showDailyReward, setShowDailyReward] = useState(false);
-  const [canClaimDailyReward, setCanClaimDailyReward] = useState(false);
+  const [ setCanClaimDailyReward] = useState(false);
   const [showWelcomeBonus, setShowWelcomeBonus] = useState(false);
   const [welcomeBonusAmount, setWelcomeBonusAmount] = useState(1200);
   const [gamificationStats, setGamificationStats] = useState({
@@ -566,7 +566,7 @@ export default function Dashboard() {
   ========================= */
   const openWhatsAppSupport = () => {
     const message = encodeURIComponent("Hello SurveyEarn Support, I need help with my survey account.");
-    const whatsappUrl = `https://wa.me/254102074596?text=${message}`;
+    const whatsappUrl = `https://wa.me/254752881670?text=${message}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
 
