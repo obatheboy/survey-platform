@@ -1805,8 +1805,8 @@ export default function Dashboard() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '4px',
-            padding: '8px',
+            gap: '2px',
+            padding: '6px',
             background: activeTab === "OVERVIEW" ? 'linear-gradient(135deg, #FF0080, #FF4D94)' : 'rgba(255,255,255,0.1)',
             color: 'white',
             border: 'none',
@@ -1827,7 +1827,7 @@ export default function Dashboard() {
           }}
         >
           <span className="nav-icon" style={{ fontSize: '20px' }}>📊</span>
-          <span className="nav-label" style={{ fontSize: '11px', fontWeight: '600' }}>Home</span>
+          <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Home</span>
         </button>
         
         <button
@@ -1839,8 +1839,8 @@ export default function Dashboard() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '4px',
-            padding: '8px',
+            gap: '2px',
+            padding: '6px',
             background: activeTab === "SURVEYS" ? 'linear-gradient(135deg, #00FF00, #33FF33)' : 'rgba(255,255,255,0.1)',
             color: activeTab === "SURVEYS" ? 'white' : 'white',
             border: 'none',
@@ -1861,7 +1861,7 @@ export default function Dashboard() {
           }}
         >
           <span className="nav-icon" style={{ fontSize: '20px' }}>📝</span>
-          <span className="nav-label" style={{ fontSize: '11px', fontWeight: '600' }}>Surveys</span>
+          <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Surveys</span>
         </button>
         
         <button
@@ -1873,8 +1873,8 @@ export default function Dashboard() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '4px',
-            padding: '8px',
+            gap: '2px',
+            padding: '6px',
             background: 'linear-gradient(135deg, #FF6600, #FF8533)',
             color: 'white',
             border: 'none',
@@ -1893,7 +1893,7 @@ export default function Dashboard() {
           }}
         >
           <span className="nav-icon" style={{ fontSize: '20px' }}>🎯</span>
-          <span className="nav-label" style={{ fontSize: '11px', fontWeight: '600' }}>Affiliate</span>
+          <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Affiliate</span>
         </button>
         
         <button
@@ -1905,8 +1905,8 @@ export default function Dashboard() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '4px',
-            padding: '8px',
+            gap: '2px',
+            padding: '6px',
             background: 'linear-gradient(135deg, #FF0000, #FF3333)',
             color: 'white',
             border: 'none',
@@ -1925,7 +1925,7 @@ export default function Dashboard() {
           }}
         >
           <span className="nav-icon" style={{ fontSize: '20px' }}>💸</span>
-          <span className="nav-label" style={{ fontSize: '11px', fontWeight: '600' }}>Withdraw</span>
+          <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Withdraw</span>
         </button>
       </div>
 
