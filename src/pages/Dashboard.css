@@ -291,6 +291,15 @@ p, span, div, button, a, label {
   }
 }
 
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
 /* =========================================================
    LOADING STATES & PLACEHOLDERS
    ========================================================= */
