@@ -781,7 +781,7 @@ export default function Dashboard() {
             whiteSpace: 'nowrap'
           }}>
             <span style={{ color: '#ffffff', fontSize: '14px', fontWeight: '700', padding: '0 20px' }}>
-              💰 Pay Activation Fee: 0140834185 (OBADIAH OTOKI) • Pay Activation Fee: 0140834185 (OBADIAH OTOKI) • Pay Activation Fee: 0140834185 (OBADIAH OTOKI) • Pay Activation Fee: 0140834185 (OBADIAH OTOKI) • Pay Activation Fee: 0140834185 (OBADIAH OTOKI) •
+              💰 Pay Activation Fee To This 👉 0140834185 (OBADIAH OTOKI) • Pay Activation Fee To This👉 0140834185 (OBADIAH OTOKI) • Pay Activation Fee To This 👉 0140834185 (OBADIAH OTOKI) • Pay Activation Fee To This 👉 0140834185 (OBADIAH OTOKI) • Pay Activation Fee To this 👉 0140834185 (OBADIAH OTOKI) •
             </span>
           </div>
         </div>
