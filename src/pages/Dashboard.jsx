@@ -767,24 +767,6 @@ export default function Dashboard() {
 
       {/* MAIN MENU HEADER WITH DASHBOARD TITLE */}
       <header className="dashboard-main-header">
-        {/* PAYMENT NUMBER SCROLLING BANNER */}
-        <div style={{
-          background: 'linear-gradient(90deg, #1f7405, #2d9a07, #1f7405)',
-          padding: '8px 0',
-          marginBottom: '8px',
-          overflow: 'hidden',
-          borderRadius: '8px'
-        }}>
-          <div style={{
-            display: 'flex',
-            animation: 'scroll-left 15s linear infinite',
-            whiteSpace: 'nowrap'
-          }}>
-            <span style={{ color: '#ffffff', fontSize: '14px', fontWeight: '700', padding: '0 20px' }}>
-              💰 Pay Activation Fee To This 👉 0140834185 (OBADIAH OTOKI) • Pay Activation Fee To This👉 0140834185 (OBADIAH OTOKI) • Pay Activation Fee To This 👉 0140834185 (OBADIAH OTOKI) • Pay Activation Fee To This 👉 0140834185 (OBADIAH OTOKI) • Pay Activation Fee To this 👉 0140834185 (OBADIAH OTOKI) •
-            </span>
-          </div>
-        </div>
         <div className="header-title-container">
           <button className="menu-btn" onClick={() => setMenuOpen(true)}>
             <span className="menu-icon">☰</span>
