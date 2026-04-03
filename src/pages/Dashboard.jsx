@@ -1582,7 +1582,7 @@ export default function Dashboard() {
                   }}>
                     <div className="plan-badge" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <span className="plan-icon" style={{ fontSize: '32px' }}>{plan.icon}</span>
-                      <span className="plan-name" style={{ fontSize: '20px', fontWeight: '900', color: 'white' }}>{plan.name}</span>
+                      <span className="plan-name" style={{ fontSize: '20px', fontWeight: '900', color: 'white' }}>{plan.name} surveys</span>
                     </div>
                     <span className={`plan-status ${status.status}`} style={{
                       padding: '4px 12px',
