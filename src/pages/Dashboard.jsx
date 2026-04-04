@@ -772,39 +772,34 @@ export default function Dashboard() {
             <span className="menu-icon">☰</span>
           </button>
           <h1 className="dashboard-main-title">Dashboard</h1>          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button
-              onClick={openWhatsAppSupport}
-              style={{
-                background: '#25D366',
-                color: 'white',
-                border: 'none',
-                borderRadius: '25px',
-                padding: '10px 18px',
-                fontSize: '16px',
-                fontWeight: '700',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                transition: 'all 0.3s ease',
-                boxShadow: '0 4px 12px rgba(37, 211, 102, 0.4)',
-              }}
-              onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.08)'}
-              onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-              title="Contact Support on WhatsApp"
-            >
-              <span style={{ fontSize: '20px' }}>💬</span>
-              <span>CHAT US</span>
-            </button>
-            <button
-              onClick={toggleTheme}
-              className="theme-toggle-btn"
-              title="Toggle Theme"
-            >
-              {theme === 'light' ? '🌙' : '☀️'}
-            </button>
-          </div>
+          <button
+            onClick={openWhatsAppSupport}
+            style={{
+              background: '#25D366',
+              color: 'white',
+              border: 'none',
+              borderRadius: '20px',
+              padding: '8px 14px',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}
+            title="Contact Support on WhatsApp"
+          >
+            <span style={{ fontSize: '16px' }}>💬</span>
+            <span>Support</span>
+          </button>
+          <button
+            onClick={toggleTheme}
+            className="theme-toggle-btn"
+            title="Toggle Theme"
+          >
+            {theme === 'light' ? '🌙' : '☀️'}
+          </button>
+        </div>
         </div>
 
         <div className="header-activation-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -1118,33 +1113,26 @@ export default function Dashboard() {
           alignItems: 'center',
           gap: '6px'
         }}>
+          <span style={{ fontSize: '20px' }}>🎁</span>
           <span style={{
             fontSize: '20px',
-            filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.5))'
-          }}>🎁</span>
-          <span style={{
-            fontSize: '26px !important',
-            fontWeight: '900 !important',
-            color: '#FFEE58 !important',
-            textShadow: '2px 2px 4px rgba(0,0,0,0.6), 0 0 15px rgba(255,238,88,0.5) !important',
-            textTransform: 'uppercase',
-            letterSpacing: '3px'
+            fontWeight: '700',
+            color: '#FFEE58',
+            letterSpacing: '1px'
           }}>
-            WELCOME BONUS
+            Welcome Bonus
           </span>
         </div>
         <span style={{
-          background: 'linear-gradient(135deg, #FFD700, #FFA500) !important',
-          color: '#000 !important',
-          padding: '3px 8px !important',
-          borderRadius: '16px !important',
-          fontSize: '10px !important',
-          fontWeight: '900 !important',
-          textTransform: 'uppercase',
-          border: '1px solid rgba(255,255,255,0.8) !important',
-          boxShadow: '0 0 10px rgba(255,215,0,0.5) !important'
+          background: '#f59e0b',
+          color: '#000',
+          padding: '3px 8px',
+          borderRadius: '12px',
+          fontSize: '10px',
+          fontWeight: '700',
+          textTransform: 'uppercase'
         }}>
-          NEW
+          New
         </span>
       </div>
       
@@ -1173,10 +1161,9 @@ export default function Dashboard() {
           }}>
             Congratulations! You've received a welcome bonus of 
             <span style={{
-              color: '#00FF00',
-              fontSize: '32px',
-              fontWeight: '900',
-              textShadow: '0 0 15px rgba(0,255,0,0.9), 0 0 30px rgba(0,255,0,0.6), 3px 3px 6px rgba(0,0,0,0.8)',
+              color: '#4ade80',
+              fontSize: '24px',
+              fontWeight: '700',
               display: 'inline-block'
             }}>
               KES 1,200
