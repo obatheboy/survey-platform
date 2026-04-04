@@ -771,35 +771,36 @@ export default function Dashboard() {
           <button className="menu-btn" onClick={() => setMenuOpen(true)}>
             <span className="menu-icon">☰</span>
           </button>
-          <h1 className="dashboard-main-title">Dashboard</h1>          
-          <button
-            onClick={openWhatsAppSupport}
-            style={{
-              background: '#25D366',
-              color: 'white',
-              border: 'none',
-              borderRadius: '20px',
-              padding: '8px 14px',
-              fontSize: '14px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}
-            title="Contact Support on WhatsApp"
-          >
-            <span style={{ fontSize: '16px' }}>💬</span>
-            <span>Support</span>
-          </button>
-          <button
-            onClick={toggleTheme}
-            className="theme-toggle-btn"
-            title="Toggle Theme"
-          >
-            {theme === 'light' ? '🌙' : '☀️'}
-          </button>
-        </div>
+          <h1 className="dashboard-main-title">Dashboard</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button
+              onClick={openWhatsAppSupport}
+              style={{
+                background: '#25D366',
+                color: 'white',
+                border: 'none',
+                borderRadius: '20px',
+                padding: '8px 14px',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+              title="Contact Support on WhatsApp"
+            >
+              <span style={{ fontSize: '16px' }}>💬</span>
+              <span>Support</span>
+            </button>
+            <button
+              onClick={toggleTheme}
+              className="theme-toggle-btn"
+              title="Toggle Theme"
+            >
+              {theme === 'light' ? '🌙' : '☀️'}
+            </button>
+          </div>
         </div>
 
         <div className="header-activation-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
