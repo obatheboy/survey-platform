@@ -791,7 +791,7 @@ export default function Dashboard() {
               title="Contact Support on WhatsApp"
             >
               <span style={{ fontSize: '16px' }}>💬</span>
-              <span>Support</span>
+              <span>CHAT US</span>
             </button>
             <button
               onClick={toggleTheme}
