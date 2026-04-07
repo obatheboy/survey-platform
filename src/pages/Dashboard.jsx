@@ -450,13 +450,7 @@ export default function Dashboard() {
      TAB + SCROLL
   ========================= */
   const goToSurveys = () => {
-    setActiveTab("SURVEYS");
-    setTimeout(() => {
-      surveyRef.current?.scrollIntoView({ 
-        behavior: "smooth",
-        block: "start"
-      });
-    }, 50);
+    navigate("/surveys");
   };
 
   const goToWelcome = () => {
@@ -910,7 +904,6 @@ export default function Dashboard() {
         open={menuOpen} 
         onClose={() => setMenuOpen(false)} 
         user={user}
-        goToSurveys={goToSurveys}
         onNavigate={(path) => {
           setMenuOpen(false);
           if (path) navigate(path);
@@ -1538,7 +1531,8 @@ export default function Dashboard() {
         <Testimonials variant="grid" />
       </section>
 
-      {/* SURVEYS TAB CONTENT */}
+      {/* SURVEYS TAB CONTENT - Removed, now using separate Surveys page */}
+      {/*
       {activeTab === "SURVEYS" && (
         <section ref={surveyRef} id="surveys-section" className="tab-section">
           <div className="section-heading">
@@ -1546,7 +1540,7 @@ export default function Dashboard() {
             <p>Choose a plan that matches your earning goals</p>
           </div>
           
-          <div className="plan-cards-container" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="plan-cards-container" style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
             {Object.entries(PLANS).map(([key, plan]) => {
               const status = getPlanStatus(key);
               const activated = isActivated(key);
@@ -1820,7 +1814,7 @@ export default function Dashboard() {
         
         <button
           className={`nav-btn ${activeTab === "SURVEYS" ? "active" : ""}`}
-          onClick={goToSurveys}
+          onClick={() => navigate("/surveys")}
           style={{
             flex: 1,
             display: 'flex',
