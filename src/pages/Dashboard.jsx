@@ -1574,25 +1574,6 @@ export default function Dashboard() {
           <span className="nav-icon" style={{ fontSize: '20px' }}>💸</span>
           <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Withdraw</span>
         </button>
-      </div>
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '2px',
-            padding: '6px',
-            background: '#10b981',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer'
-          }}
-        >
-          <span className="nav-icon" style={{ fontSize: '20px' }}>📝</span>
-          <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Surveys</span>
-        </button>
         
         <button
           className="nav-btn"
