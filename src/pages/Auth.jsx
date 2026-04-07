@@ -402,7 +402,7 @@ export default function Auth() {
               const message = encodeURIComponent(
                 "Hello, I need help with Registering/Login to mySurveyEarn account."
               );
-              const whatsappUrl = `https://wa.me/254140834185?text=${message}`;
+              const whatsappUrl = `https://wa.me/254769945306?text=${message}`;
               window.open(whatsappUrl, "_blank", "noopener,noreferrer");
             }}
           >
