@@ -58,7 +58,7 @@ export default function Surveys() {
   // NAVIGATION HELPER
   // =========================================================
   const navigateToActivation = useCallback((plan) => {
-    navigate("/activation-notice", {
+    navigate("/activate", {
       state: {
         planType: plan,
         amount: PLANS_CONFIG[plan]?.total || 0
@@ -144,7 +144,13 @@ export default function Surveys() {
   // =========================================================
   const handleOptionSelect = useCallback((questionId, option) => {
     setAnswers(prev => ({ ...prev, [questionId]: option }));
-  }, []);
+    // Auto-advance to next question after selection
+    if (currentQuestionIndex < questions.length - 1) {
+      setTimeout(() => {
+        setCurrentQuestionIndex(prev => prev + 1);
+      }, 200);
+    }
+  }, [currentQuestionIndex, questions.length]);
 
   const handleNext = useCallback(() => {
     if (currentQuestionIndex < questions.length - 1) {
@@ -205,7 +211,7 @@ export default function Surveys() {
     setSubmitProgress(100);
     
     // Navigate to activation
-    navigate("/activation-notice", {
+    navigate("/activate", {
       state: {
         planType: plan,
         amount: reward,
@@ -231,7 +237,7 @@ export default function Surveys() {
     updateLocalStorageAfterSubmission(userData, plan, newCount, currentBalance, reward);
     
     // Navigate anyway - user gets their reward!
-    navigate("/activation-notice", {
+    navigate("/activate", {
       state: {
         planType: plan,
         amount: reward,
@@ -371,7 +377,7 @@ export default function Surveys() {
           </div>
         </div>
 
-        {/* Footer with buttons */}
+        {/* Footer with buttons - auto-advance enabled, no Next button needed */}
         <div className="survey-footer">
           <button
             className="nav-btn secondary"
@@ -385,11 +391,11 @@ export default function Surveys() {
           {currentQuestionIndex < questions.length - 1 ? (
             <button
               className="nav-btn primary"
-              onClick={handleNext}
+              onClick={handleComplete}
               disabled={!isCurrentQuestionAnswered}
-              aria-label="Next question"
+              aria-label="Complete survey"
             >
-              Next →
+              ✓ Complete Survey
             </button>
           ) : (
             <button
