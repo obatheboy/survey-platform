@@ -565,7 +565,7 @@ export default function Dashboard() {
      WHATSAPP SUPPORT FUNCTION
   ========================= */
   const openWhatsAppSupport = () => {
-    const message = encodeURIComponent("Hello SurveyEarn Support, I need help with my survey account.");
+    const message = encodeURIComponent("Hello OpinionVault Support, I need help with my survey account.");
     const whatsappUrl = `https://wa.me/254769945306?text=${message}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
@@ -1997,20 +1997,24 @@ export default function Dashboard() {
         <p className="footer-note" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>© {new Date().getFullYear()} SurveyEarn. All rights reserved.</p>
       </footer>
 
-      {/* WELCOME BONUS POPUP */}
+      {/* WELCOME BONUS POPUP - Disabled for professional look */}
+      {/*
       <WelcomeBonusPopup
         isOpen={showWelcomeBonus}
         onClose={handleWelcomeBonusClose}
         bonusAmount={welcomeBonusAmount}
         onActivate={() => navigate('/activate?welcome_bonus=true')}
       />
+      */}
 
-      {/* DAILY REWARD POPUP */}
+      {/* DAILY REWARD POPUP - Disabled for professional look */}
+      {/*
       <DailyRewardPopup
         isOpen={showDailyReward}
         onClose={() => setShowDailyReward(false)}
         onRewardClaimed={handleDailyRewardClaimed}
       />
+      */}
     </div>
   );
 }

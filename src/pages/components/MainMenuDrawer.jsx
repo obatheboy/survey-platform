@@ -18,7 +18,7 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
   if (!open || !user) return null;
 
   const openWhatsAppSupport = () => {
-    const message = encodeURIComponent("Hello SurveyEarn Support, I need help with my survey account.");
+    const message = encodeURIComponent("Hello OpinionVault Support, I need help with my survey account.");
     const whatsappUrl = `https://wa.me/254769945306?text=${message}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
     onClose();
@@ -26,7 +26,7 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
 
   const referralCode = user?.referral_code || user?.id;
   const referralLink = `${window.location.origin}/auth?ref=${referralCode}`;
-  const shareMessage = `Hey! I'm earning real money by completing simple surveys on SurveyEarn. 💰\n\nJoin using my link and get a KES 1,200 welcome bonus! 🎁\n\n${referralLink}`;
+  const shareMessage = `Hey! I'm earning rewards by completing simple surveys on OpinionVault.\n\nJoin using my link and get started!\n\n${referralLink}`;
 
   const shareToWhatsApp = () => {
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
@@ -91,7 +91,7 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
           <div style={{ flex: 1 }}>
             <strong style={{ color: "#ffffff" }}>{user.full_name}</strong>
           </div>
-          <button style={profileBtn} onClick={() => setToast("👤 Profile settings coming soon!")}>
+          <button style={profileBtn} onClick={() => setToast("Profile settings coming soon!")}>
             Profile
           </button>
         </div>
@@ -99,40 +99,40 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
         <hr style={divider} />
 
         {/* NEW FEATURES */}
-        <h4 style={withdrawTitle}>🚀 Quick Navigation</h4>
-        <MenuItem label="🏠 Home" icon="🏠" onClick={() => { onClose(); }} />
-        <MenuItem label="📝 Surveys" icon="📝" onClick={() => { onClose(); if (goToSurveys) goToSurveys(); }} />
-        <MenuItem label="🎯 Affiliate" icon="🎯" onClick={() => onNavigate('/affiliate')} />
-        <MenuItem label="💸 Withdraw" icon="💸" onClick={() => onNavigate('/withdraw-form')} />
+        <h4 style={withdrawTitle}>Quick Navigation</h4>
+        <MenuItem label="Home" icon="home" onClick={() => { onClose(); }} />
+        <MenuItem label="Surveys" icon="survey" onClick={() => { onClose(); if (goToSurveys) goToSurveys(); }} />
+        <MenuItem label="Affiliate" icon="affiliate" onClick={() => onNavigate('/affiliate')} />
+        <MenuItem label="Withdraw" icon="withdraw" onClick={() => onNavigate('/withdraw-form')} />
 
         <hr style={divider} />
 
         <h4 style={withdrawTitle}>App Menu</h4>
-        <MenuItem label="❓ FAQ & Help" icon="❓" onClick={() => onNavigate('/faq')} />
-        <MenuItem label="📊 Account Stats" icon="📊" onClick={showAccountStats} />
-        <MenuItem label="📞 Contact Support" icon="📞" onClick={openWhatsAppSupport} />
+        <MenuItem label="FAQ & Help" icon="help" onClick={() => onNavigate('/faq')} />
+        <MenuItem label="Account Stats" icon="stats" onClick={showAccountStats} />
+        <MenuItem label="Contact Support" icon="support" onClick={openWhatsAppSupport} />
 
         <hr style={divider} />
 
-        <h4 style={withdrawTitle}>💌 Invite & Earn</h4>
+        <h4 style={withdrawTitle}>Invite & Earn</h4>
         <p style={referralCaption}>
           Earn <strong>KES 250</strong> for every friend who signs up and activates.
         </p>
         <div style={shareButtonsContainer}>
             <button style={{...shareBtn, background: '#25D366'}} onClick={shareToWhatsApp}>
-                <span style={shareIconStyle}>💬</span> WhatsApp
+                <span style={shareIconStyle}>WhatsApp</span>
             </button>
             <button style={{...shareBtn, background: '#3b82f6'}} onClick={shareToSMS}>
-                <span style={shareIconStyle}>✉️</span> SMS
+                <span style={shareIconStyle}>SMS</span>
             </button>
             <button style={{...shareBtn, background: '#64748b'}} onClick={copyLink}>
-                <span style={shareIconStyle}>🔗</span> Copy
+                <span style={shareIconStyle}>Copy</span>
             </button>
         </div>
 
         <hr style={divider} />
-        <MenuItem label="📊 Back to Dashboard" icon="📊" onClick={onClose} />
-        <MenuItem label="🚪 Logout" icon="🚪" danger onClick={logout} />
+        <MenuItem label="Back to Dashboard" icon="dashboard" onClick={onClose} />
+        <MenuItem label="Logout" icon="logout" danger onClick={logout} />
       </div>
     </>
   );
@@ -142,35 +142,50 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
    MENU ITEM
 ========================= */
 function MenuItem({ label, onClick, danger, icon }) {
+  const getIcon = () => {
+    const iconMap = {
+      home: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>,
+      survey: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>,
+      affiliate: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>,
+      withdraw: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>,
+      help: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+      stats: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>,
+      support: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>,
+      dashboard: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>,
+      logout: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>,
+    };
+    return iconMap[icon] || null;
+  };
+
   return (
     <div
       onClick={onClick}
       style={{
         padding: "14px 16px",
         marginBottom: 10,
-        borderRadius: 14,
+        borderRadius: 12,
         cursor: "pointer",
-        fontWeight: 700,
+        fontWeight: 500,
         display: "flex",
         alignItems: "center",
         gap: "12px",
         background: danger
           ? "rgba(239, 68, 68, 0.1)"
-          : "rgba(255, 255, 255, 0.15)",
-        color: danger ? "#ff6666" : "#ffffff",
-        border: `1px solid ${danger ? "rgba(255, 100, 100, 0.4)" : "rgba(255, 255, 255, 0.2)"}`,
+          : "rgba(255, 255, 255, 0.08)",
+        color: danger ? "#ef4444" : "#ffffff",
+        border: `1px solid ${danger ? "rgba(239, 68, 68, 0.3)" : "rgba(255, 255, 255, 0.1)"}`,
         transition: "all 0.2s ease",
       }}
       onMouseOver={(e) => {
-        e.currentTarget.style.background = danger ? "rgba(239, 68, 68, 0.2)" : "rgba(255, 255, 255, 0.1)";
+        e.currentTarget.style.background = danger ? "rgba(239, 68, 68, 0.2)" : "rgba(255, 255, 255, 0.12)";
         e.currentTarget.style.transform = "translateX(4px)";
       }}
       onMouseOut={(e) => {
-        e.currentTarget.style.background = danger ? "rgba(239, 68, 68, 0.1)" : "rgba(255, 255, 255, 0.05)";
+        e.currentTarget.style.background = danger ? "rgba(239, 68, 68, 0.1)" : "rgba(255, 255, 255, 0.08)";
         e.currentTarget.style.transform = "translateX(0)";
       }}
     >
-      <span style={{ fontSize: "18px" }}>{icon}</span>
+      <span style={{ fontSize: "18px", display: 'flex' }}>{getIcon()}</span>
       {label}
     </div>
   );
@@ -193,7 +208,7 @@ const drawer = {
   height: "100%",
   width: "85vw",
   maxWidth: 320,
-  background: "#1f7405",
+  background: "#1e3a8a",
   zIndex: 99999,
   padding: "24px 20px",
   boxShadow: "10px 0 30px rgba(0, 0, 0, 0.5)",

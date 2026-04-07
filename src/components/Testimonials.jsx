@@ -6,7 +6,7 @@ const testimonialsData = [
     id: 1,
     name: 'John Mwangi',
     location: 'Nairobi',
-    avatar: '👨‍💼',
+    initials: 'JM',
     earned: 'KES 45,000',
     duration: '3 months',
     rating: 5,
@@ -17,7 +17,7 @@ const testimonialsData = [
     id: 2,
     name: 'Mary Akinyi',
     location: 'Kisumu',
-    avatar: '👩‍💼',
+    initials: 'MA',
     earned: 'KES 32,500',
     duration: '2 months',
     rating: 5,
@@ -28,7 +28,7 @@ const testimonialsData = [
     id: 3,
     name: 'Peter Kamau',
     location: 'Mombasa',
-    avatar: '👨',
+    initials: 'PK',
     earned: 'KES 58,200',
     duration: '4 months',
     rating: 5,
@@ -39,7 +39,7 @@ const testimonialsData = [
     id: 4,
     name: 'Grace Wanjiru',
     location: 'Nakuru',
-    avatar: '👩',
+    initials: 'GW',
     earned: 'KES 28,900',
     duration: '1 month',
     rating: 5,
@@ -50,7 +50,7 @@ const testimonialsData = [
     id: 5,
     name: 'David Omondi',
     location: 'Eldoret',
-    avatar: '👨‍🎓',
+    initials: 'DO',
     earned: 'KES 41,300',
     duration: '3 months',
     rating: 5,
@@ -61,7 +61,7 @@ const testimonialsData = [
     id: 6,
     name: 'Faith Njeri',
     location: 'Thika',
-    avatar: '👩‍🎓',
+    initials: 'FN',
     earned: 'KES 36,700',
     duration: '2 months',
     rating: 5,
@@ -95,7 +95,15 @@ export default function Testimonials({ variant = 'carousel' }) {
   };
 
   const renderStars = (rating) => {
-    return '⭐'.repeat(rating);
+    return (
+      <div className="stars">
+        {[...Array(rating)].map((_, i) => (
+          <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" strokeWidth="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+        ))}
+      </div>
+    );
   };
 
   if (variant === 'grid') {
@@ -106,11 +114,11 @@ export default function Testimonials({ variant = 'carousel' }) {
           {testimonialsData.map((testimonial) => (
             <div key={testimonial.id} className="testimonial-card">
               <div className="testimonial-header">
-                <div className="avatar">{testimonial.avatar}</div>
+                <div className="avatar">{testimonial.initials}</div>
                 <div className="user-info">
                   <h4>
                     {testimonial.name}
-                    {testimonial.verified && <span className="verified">✓</span>}
+                    {testimonial.verified && <span className="verified"><svg width="14" height="14" viewBox="0 0 24 24" fill="#10b981"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01" fill="none" stroke="white" strokeWidth="2"></polyline></svg></span>}
                   </h4>
                   <p className="location">{testimonial.location}</p>
                 </div>
@@ -141,13 +149,13 @@ export default function Testimonials({ variant = 'carousel' }) {
 
         <div className="testimonial-slide">
           <div className="testimonial-content">
-            <div className="avatar-large">{currentTestimonial.avatar}</div>
+            <div className="avatar-large">{currentTestimonial.initials}</div>
             <div className="rating">{renderStars(currentTestimonial.rating)}</div>
             <p className="quote-large">"{currentTestimonial.quote}"</p>
             <div className="user-details">
               <h3>
                 {currentTestimonial.name}
-                {currentTestimonial.verified && <span className="verified">✓</span>}
+                {currentTestimonial.verified && <span className="verified"><svg width="16" height="16" viewBox="0 0 24 24" fill="#10b981"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01" fill="none" stroke="white" strokeWidth="2"></polyline></svg></span>}
               </h3>
               <p className="location">{currentTestimonial.location}</p>
             </div>
