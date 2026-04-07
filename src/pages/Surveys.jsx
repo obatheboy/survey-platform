@@ -152,17 +152,13 @@ export default function Surveys() {
     }
   }, [currentQuestionIndex, questions.length]);
 
-  const handleNext = useCallback(() => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-    }
-  }, [currentQuestionIndex, questions.length]);
-
   const handlePrev = useCallback(() => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(prev => prev - 1);
     }
   }, [currentQuestionIndex]);
+
+  // handleNext removed - using auto-advance instead
 
   // =========================================================
   // LOCAL STORAGE UPDATE HELPER

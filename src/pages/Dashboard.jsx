@@ -1589,7 +1589,7 @@ export default function Dashboard() {
             borderRadius: '8px',
             cursor: 'pointer'
           }}
-        
+        >
           <span className="nav-icon" style={{ fontSize: '20px' }}>📝</span>
           <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Surveys</span>
         </button>

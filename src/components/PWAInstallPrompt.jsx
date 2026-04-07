@@ -13,6 +13,8 @@ export default function PWAInstallPrompt() {
 
     // Check if user has dismissed the prompt before
     const dismissed = localStorage.getItem('pwa-prompt-dismissed');
+    let shouldShowSoon = false;
+    
     if (dismissed) {
       const dismissedTime = parseInt(dismissed);
       const daysSinceDismissed = (Date.now() - dismissedTime) / (1000 * 60 * 60 * 24);
@@ -21,18 +23,37 @@ export default function PWAInstallPrompt() {
       if (daysSinceDismissed < 7) {
         return;
       }
+    } else {
+      shouldShowSoon = true;
     }
+
+    // Check if this is a fresh login (within last 24 hours)
+    const lastLogin = localStorage.getItem('lastLoginTime');
+    const isFreshLogin = lastLogin && (Date.now() - parseInt(lastLogin)) < 24 * 60 * 60 * 1000;
 
     // Listen for the beforeinstallprompt event
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
       
-      // Show prompt after 30 seconds
+      // Show immediately for fresh login or first time users, otherwise after delay
+      if (isFreshLogin || shouldShowSoon) {
+        setTimeout(() => {
+          setShowPrompt(true);
+        }, 2000);
+      } else {
+        setTimeout(() => {
+          setShowPrompt(true);
+        }, 30000);
+      }
+    };
+
+    // For fresh login without beforeinstallprompt, show after 2 seconds
+    if (isFreshLogin || shouldShowSoon) {
       setTimeout(() => {
         setShowPrompt(true);
-      }, 30000);
-    };
+      }, 2000);
+    }
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 

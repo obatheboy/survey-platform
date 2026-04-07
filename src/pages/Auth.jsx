@@ -107,7 +107,9 @@ export default function Auth() {
 
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
+        localStorage.setItem("lastLoginTime", Date.now().toString());
         localStorage.removeItem("active_plan");
+        
         // Store welcome bonus status for Dashboard popup
         if (res.data.user?.welcome_bonus_received) {
           localStorage.setItem("showWelcomeBonus", "true");
@@ -144,7 +146,9 @@ export default function Auth() {
 
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
+        localStorage.setItem("lastLoginTime", Date.now().toString());
         localStorage.removeItem("active_plan");
+        
         // Store welcome bonus status for Dashboard popup
         if (res.data.user?.welcome_bonus_received) {
           localStorage.setItem("showWelcomeBonus", "true");
