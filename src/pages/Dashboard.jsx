@@ -450,7 +450,13 @@ export default function Dashboard() {
      TAB + SCROLL
   ========================= */
   const goToSurveys = () => {
-    navigate("/surveys");
+    setActiveTab("SURVEYS");
+    setTimeout(() => {
+      surveyRef.current?.scrollIntoView({ 
+        behavior: "smooth",
+        block: "start"
+      });
+    }, 50);
   };
 
   const goToWelcome = () => {
@@ -559,7 +565,7 @@ export default function Dashboard() {
      WHATSAPP SUPPORT FUNCTION
   ========================= */
   const openWhatsAppSupport = () => {
-    const message = encodeURIComponent("Hello OpinionVault Support, I need help with my survey account.");
+    const message = encodeURIComponent("Hello SurveyEarn Support, I need help with my survey account.");
     const whatsappUrl = `https://wa.me/254769945306?text=${message}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
@@ -904,6 +910,7 @@ export default function Dashboard() {
         open={menuOpen} 
         onClose={() => setMenuOpen(false)} 
         user={user}
+        goToSurveys={goToSurveys}
         onNavigate={(path) => {
           setMenuOpen(false);
           if (path) navigate(path);
@@ -1531,8 +1538,7 @@ export default function Dashboard() {
         <Testimonials variant="grid" />
       </section>
 
-      {/* SURVEYS TAB CONTENT - Removed, now using separate Surveys page */}
-      {/*
+      {/* SURVEYS TAB CONTENT */}
       {activeTab === "SURVEYS" && (
         <section ref={surveyRef} id="surveys-section" className="tab-section">
           <div className="section-heading">
@@ -1540,7 +1546,7 @@ export default function Dashboard() {
             <p>Choose a plan that matches your earning goals</p>
           </div>
           
-          <div className="plan-cards-container" style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
+          <div className="plan-cards-container" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {Object.entries(PLANS).map(([key, plan]) => {
               const status = getPlanStatus(key);
               const activated = isActivated(key);
@@ -1814,7 +1820,7 @@ export default function Dashboard() {
         
         <button
           className={`nav-btn ${activeTab === "SURVEYS" ? "active" : ""}`}
-          onClick={() => navigate("/surveys")}
+          onClick={goToSurveys}
           style={{
             flex: 1,
             display: 'flex',
@@ -1991,24 +1997,20 @@ export default function Dashboard() {
         <p className="footer-note" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>© {new Date().getFullYear()} SurveyEarn. All rights reserved.</p>
       </footer>
 
-      {/* WELCOME BONUS POPUP - Disabled for professional look */}
-      {/*
+      {/* WELCOME BONUS POPUP */}
       <WelcomeBonusPopup
         isOpen={showWelcomeBonus}
         onClose={handleWelcomeBonusClose}
         bonusAmount={welcomeBonusAmount}
         onActivate={() => navigate('/activate?welcome_bonus=true')}
       />
-      */}
 
-      {/* DAILY REWARD POPUP - Disabled for professional look */}
-      {/*
+      {/* DAILY REWARD POPUP */}
       <DailyRewardPopup
         isOpen={showDailyReward}
         onClose={() => setShowDailyReward(false)}
         onRewardClaimed={handleDailyRewardClaimed}
       />
-      */}
     </div>
   );
 }

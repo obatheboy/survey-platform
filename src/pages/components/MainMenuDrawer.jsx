@@ -101,7 +101,7 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
         {/* NEW FEATURES */}
         <h4 style={withdrawTitle}>Quick Navigation</h4>
         <MenuItem label="Home" icon="home" onClick={() => { onClose(); }} />
-        <MenuItem label="Surveys" icon="survey" onClick={() => { onClose(); onNavigate('/surveys'); }} />
+        <MenuItem label="Surveys" icon="survey" onClick={() => { onClose(); if (goToSurveys) goToSurveys(); }} />
         <MenuItem label="Affiliate" icon="affiliate" onClick={() => onNavigate('/affiliate')} />
         <MenuItem label="Withdraw" icon="withdraw" onClick={() => onNavigate('/withdraw-form')} />
 

@@ -1,45 +1,47 @@
 /* =========================================================
-   OpinionVault DASHBOARD - PROFESSIONAL DESIGN
-   Clean, corporate styling with navy blue theme
+   SURVEYEARN DASHBOARD - COOL BRIGHT COLORS
+   All cards have cool bright backgrounds with bold captions
+   WELCOME BONUS card remains dark as requested
+   Total Lines: ~2450 LOC
    ========================================================= */
 
 /* =========================================================
-   CSS VARIABLES - PROFESSIONAL COLOR SYSTEM
+   CSS VARIABLES - COMPREHENSIVE COLOR SYSTEM
    ========================================================= */
 :root {
-  /* Professional Navy Blue Theme */
-  --bg-main: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #1d4ed8 100%);
-  --bg-surface: #ffffff;
-  --bg-glass: rgba(255, 255, 255, 0.95);
-  --bg-elevated: #f8fafc;
+  /* Cool Bright Backgrounds - Main theme with vibrant colors */
+  --bg-main: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #38b2ac 100%);
+  --bg-surface: linear-gradient(135deg, #4299e1, #667eea);
+  --bg-glass: rgba(102, 126, 234, 0.95);
+  --bg-elevated: linear-gradient(135deg, #48bb78, #38b2ac);
   
-  /* Professional Text Colors */
-  --text-primary: #1e293b;
-  --text-secondary: #475569;
-  --text-muted: #64748b;
-  --text-inverse: #ffffff;
-  --caption-color: #1e293b;
-  --caption-shadow: none;
+  /* Text Colors - All bold and visible */
+  --text-primary: #ffffff;
+  --text-secondary: #f0f4ff;
+  --text-muted: #e6e9ff;
+  --text-inverse: #2d3748;
+  --caption-color: #ffffff;
+  --caption-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4), 0 0 10px rgba(0, 0, 0, 0.2);
   
-  /* Border Effects - Subtle */
-  --border-light: #e2e8f0;
-  --border-medium: #cbd5e1;
-  --wireframe-border: 1px solid #e2e8f0;
-  --wireframe-glow: none;
+  /* Border Effects */
+  --border-light: rgba(255, 255, 255, 0.3);
+  --border-medium: rgba(255, 255, 255, 0.5);
+  --wireframe-border: 2px solid rgba(255, 255, 255, 0.3);
+  --wireframe-glow: 0 0 20px rgba(255, 255, 255, 0.3);
   
-  /* Professional Card Gradients - Muted corporate colors */
-  --gradient-1: linear-gradient(135deg, #1e3a8a, #1e40af); /* Navy */
-  --gradient-2: linear-gradient(135deg, #059669, #10b981); /* Emerald */
-  --gradient-3: linear-gradient(135deg, #0369a1, #0ea5e9); /* Sky Blue */
-  --gradient-4: linear-gradient(135deg, #7c3aed, #8b5cf6); /* Violet */
-  --gradient-5: linear-gradient(135deg, #dc2626, #ef4444); /* Red */
-  --gradient-6: linear-gradient(135deg, #d97706, #f59e0b); /* Amber */
-  --gradient-7: linear-gradient(135deg, #0891b2, #06b6d4); /* Cyan */
-  --gradient-8: linear-gradient(135deg, #4f46e5, #6366f1); /* Indigo */
-  --gradient-9: linear-gradient(135deg, #be185d, #ec4899); /* Pink */
-  --gradient-10: linear-gradient(135deg, #15803d, #22c55e); /* Green */
-  --gradient-11: linear-gradient(135deg, #1e40af, #3b82f6); /* Blue */
-  --gradient-12: linear-gradient(135deg, #a16207, #eab308); /* Yellow */
+  /* COOL BRIGHT GRADIENTS - All cards use these */
+  --gradient-1: linear-gradient(135deg, #667eea, #764ba2); /* Purple-Blue */
+  --gradient-2: linear-gradient(135deg, #38b2ac, #4299e1); /* Teal-Blue */
+  --gradient-3: linear-gradient(135deg, #48bb78, #38b2ac); /* Green-Teal */
+  --gradient-4: linear-gradient(135deg, #9f7aea, #667eea); /* Lavender-Purple */
+  --gradient-5: linear-gradient(135deg, #ed64a6, #9f7aea); /* Pink-Purple */
+  --gradient-6: linear-gradient(135deg, #fbbf24, #f59e0b); /* Gold-Orange */
+  --gradient-7: linear-gradient(135deg, #4299e1, #38b2ac); /* Blue-Teal */
+  --gradient-8: linear-gradient(135deg, #667eea, #48bb78); /* Purple-Green */
+  --gradient-9: linear-gradient(135deg, #9f7aea, #ed64a6); /* Purple-Pink */
+  --gradient-10: linear-gradient(135deg, #38b2ac, #48bb78); /* Teal-Green */
+  --gradient-11: linear-gradient(135deg, #764ba2, #4299e1); /* Purple-Blue */
+  --gradient-12: linear-gradient(135deg, #f59e0b, #fbbf24); /* Orange-Gold */
   
   /* Card Gradients - Mapped for easy use */
   --card-primary: var(--gradient-1);
@@ -53,41 +55,48 @@
   --card-nonary: var(--gradient-9);
   --card-denary: var(--gradient-10);
   
-  /* Professional Button Colors */
-  --button-primary: linear-gradient(135deg, #1e3a8a, #1e40af);
-  --button-success: linear-gradient(135deg, #059669, #10b981);
-  --button-warning: linear-gradient(135deg, #d97706, #f59e0b);
-  --button-danger: linear-gradient(135deg, #dc2626, #ef4444);
-  --button-info: linear-gradient(135deg, #0369a1, #0ea5e9);
-  --button-gradient: linear-gradient(135deg, #1e3a8a, #1e40af);
-  --button-gradient-hover: linear-gradient(135deg, #1e40af, #2563eb);
+  /* WELCOME BONUS - Dark colors (excluded from bright theme) */
+  --bonus-dark: #1a202c;
+  --bonus-darker: #0f141f;
+  --bonus-accent: #fbbf24;
+  --bonus-text: #e2e8f0;
+  --bonus-border: #4a5568;
   
-  /* Withdraw Button - Professional Red */
-  --button-withdraw: linear-gradient(135deg, #dc2626, #b91c1c);
-  --button-withdraw-hover: linear-gradient(135deg, #b91c1c, #991b1b);
+  /* BUTTON COLORS - Bold gradients */
+  --button-primary: linear-gradient(135deg, #667eea, #764ba2);
+  --button-success: linear-gradient(135deg, #48bb78, #38b2ac);
+  --button-warning: linear-gradient(135deg, #fbbf24, #f59e0b);
+  --button-danger: linear-gradient(135deg, #f56565, #ed64a6);
+  --button-info: linear-gradient(135deg, #4299e1, #667eea);
+  --button-gradient: linear-gradient(135deg, #667eea, #764ba2);
+  --button-gradient-hover: linear-gradient(135deg, #764ba2, #9f7aea);
   
-  /* Plan Colors - Professional muted tones */
-  --regular-color: #059669;
-  --vip-color: #7c3aed;
-  --vvip-color: #d97706;
-  --premium-color: #4f46e5;
-  --ultimate-color: #be185d;
+  /* WITHDRAW BUTTON - Bold red */
+  --button-withdraw: linear-gradient(135deg, #f56565, #c53030);
+  --button-withdraw-hover: linear-gradient(135deg, #c53030, #9b2c2c);
   
-  /* Status Colors */
-  --success: #059669;
-  --warning: #d97706;
-  --danger: #dc2626;
-  --info: #0369a1;
-  --purple: #7c3aed;
-  --pink: #be185d;
+  /* PLAN COLORS - For text accents only */
+  --regular-color: #48bb78;
+  --vip-color: #fbbf24;
+  --vvip-color: #f59e0b;
+  --premium-color: #9f7aea;
+  --ultimate-color: #ed64a6;
   
-  /* Glow Effects - Subtle professional */
-  --glow-money: 0 2px 8px rgba(251, 191, 36, 0.3);
-  --glow-progress: 0 2px 6px rgba(59, 130, 246, 0.3);
-  --glow-card: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --glow-success: 0 2px 6px rgba(16, 185, 129, 0.3);
-  --glow-warning: 0 2px 6px rgba(245, 158, 11, 0.3);
-  --glow-danger: 0 2px 6px rgba(239, 68, 68, 0.3);
+  /* STATUS COLORS */
+  --success: #48bb78;
+  --warning: #fbbf24;
+  --danger: #f56565;
+  --info: #4299e1;
+  --purple: #9f7aea;
+  --pink: #ed64a6;
+  
+  /* Glow Effects */
+  --glow-money: 0 0 15px rgba(251, 191, 36, 0.6), 0 0 30px rgba(251, 191, 36, 0.3);
+  --glow-progress: 0 0 10px rgba(66, 153, 225, 0.6);
+  --glow-card: 0 0 20px rgba(234, 88, 12, 0.4);
+  --glow-success: 0 0 15px rgba(72, 187, 120, 0.5);
+  --glow-warning: 0 0 15px rgba(251, 191, 36, 0.5);
+  --glow-danger: 0 0 15px rgba(245, 101, 101, 0.5);
   
   /* Shadows - Layered for depth */
   --shadow-xs: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -155,23 +164,23 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   background: var(--bg-main);
   color: var(--text-primary);
-  line-height: 1.6;
+  line-height: 1.5;
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
 }
 
 /* =========================================================
-   TYPOGRAPHY - CLEAN & PROFESSIONAL
+   TYPOGRAPHY - BOLD CAPTIONS FOR ALL TEXT
    ========================================================= */
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
+  font-weight: 900 !important;
   letter-spacing: -0.02em;
-  line-height: 1.3;
+  line-height: 1.2;
 }
 
 p, span, div, button, a, label {
-  font-weight: 400;
+  font-weight: 600;
 }
 
 .caption,
@@ -183,9 +192,9 @@ p, span, div, button, a, label {
 .feature-title,
 .plan-name,
 .status-text {
-  font-weight: 500;
-  text-shadow: none;
-  letter-spacing: 0;
+  font-weight: 900 !important;
+  text-shadow: var(--caption-shadow);
+  letter-spacing: 0.3px;
 }
 
 /* =========================================================
