@@ -31,7 +31,7 @@ const allowedOrigins = [
   "https://www.survey-platform-three.vercel.app", // old www
   /\.vercel\.app$/, // matches any vercel deployment automatically
   "https://survey-platform-h4o7mczvu-obatheboys-projects.vercel.app", // new frontend
-  "https://survey-platform-h4o7mczvu-obatheboys-projects.vercel.app/", // with trailing slash
+  "https://survey-platform-bp8bfyhia-obatheboys-projects.vercel.app", // newest frontend
 ];
 
 app.use(
