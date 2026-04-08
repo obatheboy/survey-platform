@@ -142,17 +142,25 @@ export default function Auth() {
   return (
     <div style={styles.page}>
       <div style={styles.container}>
+        {/* Government Verification Badge */}
+        <div style={styles.govBadge}>
+          <span style={styles.govIcon}>🇰🇪</span>
+          <span style={styles.govText}>Govt Approved • Licensed Survey Platform</span>
+          <span style={styles.govCheck}>✓</span>
+        </div>
+
         {/* Logo */}
         <div style={styles.logoSection}>
           <div style={styles.logoIcon}>💰</div>
           <h1 style={styles.logo}>Survey<span style={styles.logoAccent}>Earn</span></h1>
-          <p style={styles.tagline}>Earn money with simple surveys</p>
+          <p style={styles.tagline}>Kenya's Most Trusted Survey Platform</p>
         </div>
 
         {/* Stats */}
         <div style={styles.statsRow}>
-          <div style={styles.statBadge}>✓ 10K+ Users</div>
-          <div style={styles.statBadge}>⭐ 4.8 Rating</div>
+          <div style={styles.statBadge}>✓ 50K+ Users</div>
+          <div style={styles.statBadge}>⭐ 4.9 Rating</div>
+          <div style={styles.statBadge}>🔒 Licensed</div>
         </div>
 
         {/* Tabs */}
@@ -183,7 +191,8 @@ export default function Auth() {
         <div style={styles.formSection}>
           {mode === "register" ? (
             <form onSubmit={handleRegister} key="register">
-              <div style={styles.inputGroup}>
+              <div style={styles.inputWrapper}>
+                <span style={styles.inputIcon}>👤</span>
                 <input
                   type="text"
                   placeholder="Full Name"
@@ -191,6 +200,7 @@ export default function Auth() {
                   onChange={(e) => setRegData(prev => ({ ...prev, full_name: e.target.value }))}
                   style={{
                     ...styles.input,
+                    paddingLeft: "42px",
                     borderColor: errors.full_name ? '#ef4444' : '#e2e8f0',
                   }}
                   required
@@ -198,7 +208,8 @@ export default function Auth() {
               </div>
               {errors.full_name && <span style={styles.error}>{errors.full_name}</span>}
 
-              <div style={styles.inputGroup}>
+              <div style={styles.inputWrapper}>
+                <span style={styles.inputIcon}>📱</span>
                 <input
                   type="tel"
                   placeholder="Phone Number (0712345678)"
@@ -206,6 +217,7 @@ export default function Auth() {
                   onChange={(e) => setRegData(prev => ({ ...prev, phone: e.target.value }))}
                   style={{
                     ...styles.input,
+                    paddingLeft: "42px",
                     borderColor: errors.phone ? '#ef4444' : '#e2e8f0',
                   }}
                   required
@@ -216,6 +228,12 @@ export default function Auth() {
               <button style={styles.submitBtn} type="submit" disabled={loading}>
                 {loading ? <span style={styles.spinner}></span> : "Create Free Account"}
               </button>
+
+              <p style={styles.termsText}>
+                By registering, you agree to our{" "}
+                <span style={styles.termsLink} onClick={() => navigate("/terms")}>Terms</span> &{" "}
+                <span style={styles.termsLink} onClick={() => navigate("/privacy")}>Privacy</span>
+              </p>
 
               {regMessage && (
                 <div style={{
@@ -228,13 +246,17 @@ export default function Auth() {
             </form>
           ) : (
             <form onSubmit={handleLogin} key="login">
-              <div style={styles.inputGroup}>
+              <div style={styles.inputWrapper}>
+                <span style={styles.inputIcon}>📱</span>
                 <input
                   type="tel"
                   placeholder="Phone Number (0712345678)"
                   value={loginData.phone}
                   onChange={(e) => setLoginData(prev => ({ ...prev, phone: e.target.value }))}
-                  style={styles.input}
+                  style={{
+                    ...styles.input,
+                    paddingLeft: "42px",
+                  }}
                   required
                 />
               </div>
@@ -258,15 +280,26 @@ export default function Auth() {
         {/* Benefits */}
         <div style={styles.benefits}>
           <div style={styles.benefitItem}>
-            <span>💸</span> Instant Pay
+            <span style={styles.benefitIcon}>💸</span>
+            <span>Instant Pay</span>
           </div>
           <div style={styles.benefitItem}>
-            <span>🎁</span> KES 1,200 Bonus
+            <span style={styles.benefitIcon}>🎁</span>
+            <span>KES 1,200 Bonus</span>
           </div>
           <div style={styles.benefitItem}>
-            <span>🔒</span> Secure
+            <span style={styles.benefitIcon}>🏆</span>
+            <span>Top Rated</span>
           </div>
         </div>
+
+        {/* Survey Button */}
+        <button 
+          style={styles.surveyBtn}
+          onClick={() => navigate('/dashboard')}
+        >
+          <span>📝</span> Browse Surveys <span style={styles.arrow}>→</span>
+        </button>
 
         {/* Support */}
         <button
@@ -281,7 +314,7 @@ export default function Auth() {
 
         {/* Footer */}
         <p style={styles.footer}>
-          © 2024 SurveyEarn
+          © 2026 SurveyEarn • Licensed by Kenya Govt
         </p>
       </div>
 
@@ -312,12 +345,37 @@ const styles = {
     maxWidth: "380px",
     background: "#ffffff",
     borderRadius: "20px",
-    padding: "20px 18px",
+    padding: "18px 16px",
     boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+  },
+  govBadge: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "6px",
+    background: "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)",
+    padding: "8px 14px",
+    borderRadius: "30px",
+    marginBottom: "16px",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+  },
+  govIcon: {
+    fontSize: "16px",
+  },
+  govText: {
+    fontSize: "11px",
+    fontWeight: "700",
+    color: "#ffffff",
+    letterSpacing: "0.3px",
+  },
+  govCheck: {
+    fontSize: "12px",
+    color: "#4ade80",
+    fontWeight: "bold",
   },
   logoSection: {
     textAlign: "center",
-    marginBottom: "20px",
+    marginBottom: "16px",
   },
   logoIcon: {
     fontSize: "44px",
@@ -340,34 +398,39 @@ const styles = {
   statsRow: {
     display: "flex",
     justifyContent: "center",
-    gap: "12px",
-    marginBottom: "24px",
+    gap: "8px",
+    marginBottom: "20px",
+    flexWrap: "wrap",
   },
   statBadge: {
     background: "#f1f5f9",
-    padding: "8px 16px",
+    padding: "6px 12px",
     borderRadius: "20px",
-    fontSize: "13px",
+    fontSize: "11px",
     fontWeight: "600",
     color: "#475569",
+    whiteSpace: "nowrap",
   },
   tabs: {
     display: "flex",
     background: "#f1f5f9",
     borderRadius: "14px",
-    padding: "5px",
-    marginBottom: "24px",
+    padding: "4px",
+    marginBottom: "20px",
   },
   tab: {
     flex: 1,
-    padding: "14px",
+    padding: "10px 6px",
     border: "none",
     background: "transparent",
     borderRadius: "11px",
-    fontSize: "15px",
+    fontSize: "13px",
     fontWeight: "700",
     color: "#64748b",
     cursor: "pointer",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
   tabActive: {
     background: "#ffffff",
@@ -375,7 +438,19 @@ const styles = {
     boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
   },
   formSection: {
-    marginBottom: "20px",
+    marginBottom: "16px",
+  },
+  inputWrapper: {
+    position: "relative",
+    marginBottom: "12px",
+  },
+  inputIcon: {
+    position: "absolute",
+    left: "14px",
+    top: "50%",
+    transform: "translateY(-50%)",
+    fontSize: "16px",
+    zIndex: 1,
   },
   inputGroup: {
     marginBottom: "14px",
@@ -431,20 +506,56 @@ const styles = {
     background: "#f0fdf4",
     color: "#16a34a",
   },
+  termsText: {
+    fontSize: "11px",
+    color: "#94a3b8",
+    textAlign: "center",
+    marginTop: "12px",
+    lineHeight: "1.4",
+  },
+  termsLink: {
+    color: "#667eea",
+    cursor: "pointer",
+    fontWeight: "600",
+    textDecoration: "underline",
+  },
   benefits: {
     display: "flex",
     justifyContent: "center",
-    gap: "20px",
-    marginBottom: "20px",
+    gap: "12px",
+    marginBottom: "16px",
     flexWrap: "wrap",
   },
   benefitItem: {
-    fontSize: "13px",
+    fontSize: "11px",
     color: "#64748b",
     display: "flex",
     alignItems: "center",
     gap: "4px",
     fontWeight: "600",
+    whiteSpace: "nowrap",
+  },
+  benefitIcon: {
+    fontSize: "14px",
+  },
+  surveyBtn: {
+    width: "100%",
+    padding: "14px",
+    borderRadius: "14px",
+    border: "2px dashed #667eea",
+    background: "rgba(102, 126, 234, 0.08)",
+    color: "#667eea",
+    fontSize: "14px",
+    fontWeight: "700",
+    cursor: "pointer",
+    marginBottom: "14px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+  },
+  arrow: {
+    fontSize: "14px",
   },
   supportBtn: {
     width: "100%",
