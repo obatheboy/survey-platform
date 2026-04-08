@@ -42,6 +42,29 @@
   }
 }
 
+.pwa-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #94a3b8;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.pwa-close:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
 .pwa-icon {
   font-size: 72px;
   margin-bottom: 20px;
@@ -52,7 +75,6 @@
   color: #0f172a;
   margin: 0 0 12px;
   font-weight: 900;
-  letter-spacing: -0.5px;
 }
 
 .pwa-prompt p {
@@ -88,6 +110,23 @@
 
 .btn-install:active {
   transform: scale(0.98);
+}
+
+.btn-skip {
+  padding: 14px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+  color: #64748b;
+}
+
+.btn-skip:hover {
+  background: #f1f5f9;
+  color: #0f172a;
 }
 
 @media (max-width: 480px) {
