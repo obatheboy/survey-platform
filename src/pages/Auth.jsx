@@ -300,25 +300,26 @@ export default function Auth() {
           </div>
         </div>
 
-        {/* Survey Button */}
-        <button 
-          style={styles.surveyBtn}
-          onClick={() => {
-            const surveySection = document.getElementById('surveys-section');
-            if (surveySection) {
-              surveySection.scrollIntoView({ behavior: 'smooth' });
-            } else {
-              navigate('/dashboard');
-            }
-          }}
-        >
-          <span>📝</span> Browse Surveys <span style={styles.arrow}>→</span>
-        </button>
+        {/* Trust Badges */}
+        <div style={styles.trustBadges}>
+          <div style={styles.trustBadge}>
+            <span style={styles.trustIcon}>🛡️</span>
+            <span>100% Secure</span>
+          </div>
+          <div style={styles.trustBadge}>
+            <span style={styles.trustIcon}>✓</span>
+            <span>Verified</span>
+          </div>
+          <div style={styles.trustBadge}>
+            <span style={styles.trustIcon}>📋</span>
+            <span>Licensed</span>
+          </div>
+        </div>
 
         <button
           style={styles.supportBtn}
           onClick={() => {
-            const message = encodeURIComponent("Hello, I need help with my account.");
+            const message = encodeURIComponent("Hello, I need help with creating my survey account.");
             window.open(`https://wa.me/254752881670?text=${message}`, "_blank");
           }}
         >
@@ -550,6 +551,28 @@ const styles = {
   },
   benefitIcon: {
     fontSize: "14px",
+  },
+  trustBadges: {
+    display: "flex",
+    justifyContent: "center",
+    gap: "10px",
+    marginBottom: "16px",
+    flexWrap: "wrap",
+  },
+  trustBadge: {
+    display: "flex",
+    alignItems: "center",
+    gap: "4px",
+    background: "linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)",
+    padding: "6px 10px",
+    borderRadius: "20px",
+    fontSize: "10px",
+    fontWeight: "600",
+    color: "#92400e",
+    border: "1px solid #fcd34d",
+  },
+  trustIcon: {
+    fontSize: "12px",
   },
   surveyBtn: {
     width: "100%",
