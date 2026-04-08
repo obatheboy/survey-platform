@@ -22,31 +22,44 @@ const app = express();
 app.set("trust proxy", 1);
 
 /* ===============================
-   🌍 CORS (DEV + LIVE + POSTMAN SAFE)
-   ✅ Supports any Vercel subdomain
-================================ */
+    🌍 CORS (DEV + LIVE + POSTMAN SAFE)
+    ✅ Supports any Vercel subdomain
+=============================== */
 const allowedOrigins = [
   "http://localhost:5173", // local dev
+  "http://localhost:3000", // local dev alt
   "https://survey-platform-three.vercel.app", // old live frontend
   "https://www.survey-platform-three.vercel.app", // old www
-  /\.vercel\.app$/, // matches any vercel deployment automatically
   "https://survey-platform-h4o7mczvu-obatheboys-projects.vercel.app", // new frontend
   "https://survey-platform-bp8bfyhia-obatheboys-projects.vercel.app", // newest frontend
+  "https://survey-platform-mg3gi5tri-obatheboys-projects.vercel.app", // current frontend (YOUR FAILED URL)
+];
+
+// CORS regex patterns - checked AFTER explicit origins
+const allowedOriginPatterns = [
+  /\.vercel\.app$/, // matches any vercel deployment
+  /\.onrender\.com$/, // matches any render deployment
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true); // Postman / server-to-server
+      // Allow no origin (Postman / server-to-server calls)
+      if (!origin) return callback(null, true);
 
       const cleanOrigin = origin.replace(/\/$/, "");
 
-      // Allow if in array OR matches regex
-      if (
-        allowedOrigins.some((o) =>
-          o instanceof RegExp ? o.test(cleanOrigin) : o === cleanOrigin
-        )
-      ) {
+      // First, check explicit origins list
+      if (allowedOrigins.includes(cleanOrigin)) {
+        return callback(null, true);
+      }
+
+      // Second, check regex patterns
+      const matchesPattern = allowedOriginPatterns.some((pattern) =>
+        pattern.test(cleanOrigin)
+      );
+
+      if (matchesPattern) {
         return callback(null, true);
       }
 
@@ -55,6 +68,7 @@ app.use(
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
