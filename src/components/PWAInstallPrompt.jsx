@@ -63,19 +63,32 @@ export default function PWAInstallPrompt() {
   }, []);
 
   const handleInstall = async () => {
-    if (!deferredPrompt) return;
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
 
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+      } else {
+        console.log('User dismissed the install prompt');
+      }
 
-    if (outcome === 'accepted') {
-      console.log('User accepted the install prompt');
-    } else {
-      console.log('User dismissed the install prompt');
+      setDeferredPrompt(null);
+      setShowPrompt(false);
+      return;
     }
 
-    setDeferredPrompt(null);
-    setShowPrompt(false);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isIOS) {
+      alert('To install: Tap the Share button (⬆️) in Safari, then select "Add to Home Screen"');
+      return;
+    }
+
+    if (navigator.standalone) {
+      return;
+    }
+
+    alert('To install this app:\n\n1. Look for the install icon in your browser address bar\nOR\n2. Go to Menu → Install Survey Platform');
   };
 
   const handleDismiss = () => {
