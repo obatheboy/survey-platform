@@ -344,16 +344,6 @@ export default function Auth() {
           </div>
         </div>
 
-        {/* Survey Button */}
-        <button 
-          style={styles.surveyBtn}
-          onClick={() => {
-            navigate('/dashboard', { state: { scrollToSurveys: true } });
-          }}
-        >
-          <span>📝</span> Browse Surveys <span style={styles.arrow}>→</span>
-        </button>
-
         <button
           style={styles.supportBtn}
           onClick={() => {
