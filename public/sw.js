@@ -1,7 +1,7 @@
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const STATIC_CACHE = `survey-platform-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `survey-platform-runtime-${CACHE_VERSION}`;
-const urlsToCache = ['/', '/index.html', '/manifest.json', '/vite.svg'];
+const urlsToCache = ['/', '/index.html', '/vite.svg'];
 
 // Install event - cache resources
 self.addEventListener('install', (event) => {
@@ -37,6 +37,12 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   const requestUrl = new URL(event.request.url);
+
+  // Always fetch manifest.json from network (never cache)
+  if (requestUrl.pathname === '/manifest.json') {
+    event.respondWith(fetch(event.request));
+    return;
+  }
 
   // SPA navigation: network first, fallback to cached shell
   if (event.request.mode === 'navigate') {
