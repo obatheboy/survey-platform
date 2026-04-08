@@ -28,7 +28,7 @@ export default function Auth() {
   useEffect(() => {
     const wakeBackend = async () => {
       try {
-        await api.get("/health");
+        await api.get("/health", { timeout: 10000 });
       } catch (error) {
         console.warn("Backend health check failed:", error.message);
       }
@@ -68,11 +68,31 @@ export default function Auth() {
 
     try {
       setLoading(true);
-      const res = await api.post("/auth/register", {
-        full_name: regData.full_name,
-        phone: regData.phone,
-        referral_code: regData.referralCode || referralCodeFromUrl || null,
-      });
+      let res;
+      let lastError = null;
+      
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          res = await api.post("/auth/register", {
+            full_name: regData.full_name,
+            phone: regData.phone,
+            referral_code: regData.referralCode || referralCodeFromUrl || null,
+          });
+          break;
+        } catch (attemptError) {
+          lastError = attemptError;
+          if (attemptError.response) {
+            throw attemptError;
+          }
+          if (attempt < 2) {
+            await new Promise(r => setTimeout(r, 2000));
+          }
+        }
+      }
+      
+      if (!res) {
+        throw lastError;
+      }
 
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
@@ -88,7 +108,15 @@ export default function Auth() {
       setRegMessage("✓ Account created! Redirecting...");
       setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
     } catch (err) {
-      const errorMessage = err.response?.data?.message || "Registration failed";
+      let errorMessage;
+      
+      if (!err.response) {
+        errorMessage = "Server unavailable. Please try again in a moment.";
+      } else if (err.response.status === 0) {
+        errorMessage = "Network error. Please check your internet connection.";
+      } else {
+        errorMessage = err.response?.data?.message || "Registration failed";
+      }
       
       if (errorMessage.toLowerCase().includes("already exists") || errorMessage.toLowerCase().includes("already registered") || errorMessage.toLowerCase().includes("exists")) {
         setRegMessage("✓ Phone already registered!");
