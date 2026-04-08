@@ -32,7 +32,8 @@ const allowedOrigins = [
   "https://www.survey-platform-three.vercel.app", // old www
   "https://survey-platform-h4o7mczvu-obatheboys-projects.vercel.app", // new frontend
   "https://survey-platform-bp8bfyhia-obatheboys-projects.vercel.app", // newest frontend
-  "https://survey-platform-mg3gi5tri-obatheboys-projects.vercel.app", // current frontend (YOUR FAILED URL)
+  "https://survey-platform-mg3gi5tri-obatheboys-projects.vercel.app", // current frontend
+  "https://survey-platform-khyljxvov-obatheboys-projects.vercel.app", // current frontend
 ];
 
 // CORS regex patterns - checked AFTER explicit origins
@@ -67,16 +68,22 @@ app.use(
       return callback(new Error(`CORS not allowed for ${origin}`));
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+    exposedHeaders: ["Content-Length", "X-Requested-With"],
   })
 );
 
 /* ===============================
    🧩 MIDDLEWARE
-================================ */
+   =============================== */
 app.use(express.json());
 app.use(cookieParser());
+
+/* ===============================
+   ⚡️ CORS PREFLIGHT HANDLER
+   =============================== */
+app.options("*", cors());
 
 /* ===============================
    🩺 HEALTH CHECK (RENDER WAKE-UP)
