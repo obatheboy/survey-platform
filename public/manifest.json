@@ -1,96 +1,48 @@
 {
-  "name": "Survey Platform - Earn Money Online",
-  "short_name": "Survey Platform",
-  "description": "Complete surveys and earn money instantly. Get KES 1,200 welcome bonus!",
+  "name": "Survey App Kenya",
+  "short_name": "SurveyEarn",
+  "description": "Earn money online with paid surveys in Kenya. Instant M-Pesa withdrawals!",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#667eea",
+  "theme_color": "#2563eb",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     },
     {
-      "src": "/icon-96x96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icon-192x192.png",
+      "src": "/icon.svg",
       "sizes": "192x192",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icon-512x512.png",
+      "src": "/icon.svg",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ],
   "categories": ["finance", "productivity", "business"],
-  "screenshots": [
-    {
-      "src": "/screenshot1.png",
-      "sizes": "540x720",
-      "type": "image/png"
-    },
-    {
-      "src": "/screenshot2.png",
-      "sizes": "540x720",
-      "type": "image/png"
-    }
-  ],
   "shortcuts": [
     {
       "name": "Dashboard",
-      "short_name": "Dashboard",
-      "description": "View your earnings and surveys",
       "url": "/dashboard",
-      "icons": [{ "src": "/icon-96x96.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/icon.svg", "sizes": "96x96" }]
     },
     {
       "name": "Surveys",
-      "short_name": "Surveys",
-      "description": "Complete surveys and earn",
       "url": "/surveys",
-      "icons": [{ "src": "/icon-96x96.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/icon.svg", "sizes": "96x96" }]
     },
     {
       "name": "Withdraw",
-      "short_name": "Withdraw",
-      "description": "Withdraw your earnings",
-      "url": "/withdraw",
-      "icons": [{ "src": "/icon-96x96.png", "sizes": "96x96" }]
+      "url": "/withdraw-form",
+      "icons": [{ "src": "/icon.svg", "sizes": "96x96" }]
     }
   ]
 }

@@ -1,22 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './PWAInstallPrompt.css';
 
 export default function PWAInstallPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [isIOS, setIsIOS] = useState(false);
+  const deferredPrompt = useRef(null);
 
   useEffect(() => {
     if (window.matchMedia('(display-mode: standalone)').matches) {
       return;
     }
 
-    const ios = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    setIsIOS(ios);
-
     const handleBeforeInstall = (e) => {
       e.preventDefault();
-      setDeferredPrompt(e);
+      deferredPrompt.current = e;
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
@@ -26,7 +22,7 @@ export default function PWAInstallPrompt() {
       if (!dismissed) {
         setShowPrompt(true);
       }
-    }, 4000);
+    }, 3000);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
@@ -37,9 +33,12 @@ export default function PWAInstallPrompt() {
     setShowPrompt(false);
     localStorage.setItem('pwa-install-dismissed', 'true');
     
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
+    if (deferredPrompt.current) {
+      deferredPrompt.current.prompt();
+      const { outcome } = await deferredPrompt.current.userChoice;
+      if (outcome === 'accepted') {
+        console.log('App installed successfully');
+      }
     }
   };
 
@@ -51,24 +50,17 @@ export default function PWAInstallPrompt() {
   if (!showPrompt) return null;
 
   return (
-    <div className="pwa-prompt-overlay" onClick={handleSkip}>
-      <div className="pwa-prompt" onClick={(e) => e.stopPropagation()}>
-        <button className="pwa-close" onClick={handleSkip}>×</button>
-        
+    <div className="pwa-overlay" onClick={handleSkip}>
+      <div className="pwa-card" onClick={(e) => e.stopPropagation()}>
+        <button className="pwa-close-btn" onClick={handleSkip}>×</button>
         <div className="pwa-icon">📱</div>
-        
         <h3>Add to Home Screen</h3>
-        <p className="pwa-subtitle">
-          {isIOS 
-            ? 'Tap Share, then "Add to Home Screen"' 
-            : 'Tap the menu and select "Add to Home Screen"'}
-        </p>
-
-        <div className="pwa-actions">
-          <button className="btn-install" onClick={handleInstall}>
-            {deferredPrompt ? '📲 Install App' : '✓ Got it!'}
+        <p>For quick access and offline use</p>
+        <div className="pwa-btns">
+          <button className="pwa-install-btn" onClick={handleInstall}>
+            Install App
           </button>
-          <button className="btn-skip" onClick={handleSkip}>
+          <button className="pwa-skip-btn" onClick={handleSkip}>
             Skip
           </button>
         </div>
