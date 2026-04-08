@@ -8,7 +8,6 @@ export default function Auth() {
   const initialMode = searchParams.get("mode") === "login" ? "login" : "register";
   const [mode, setMode] = useState(initialMode);
   const [loading, setLoading] = useState(false);
-  const [focusedField, setFocusedField] = useState(null);
 
   const referralCodeFromUrl = searchParams.get("ref");
 
@@ -52,8 +51,6 @@ export default function Auth() {
     
     if (!regData.phone.trim()) {
       newErrors.phone = "Phone number is required";
-    } else if (!/^[\d+\-\s()]+$/.test(regData.phone.trim())) {
-      newErrors.phone = "Enter a valid phone number";
     }
     
     setErrors(newErrors);
@@ -136,7 +133,7 @@ export default function Auth() {
         return;
       }
 
-      setLoginMessage(err.response?.data?.message || "Phone number not found. Please register first.");
+      setLoginMessage(err.response?.data?.message || "Phone number not found");
     } finally {
       setLoading(false);
     }
@@ -290,7 +287,8 @@ export default function Auth() {
 
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { margin: 0; }
+        html, body, #root { height: 100%; width: 100%; }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         input:focus { outline: none; }
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
@@ -303,30 +301,31 @@ const styles = {
     minHeight: "100vh",
     background: "linear-gradient(180deg, #667eea 0%, #764ba2 100%)",
     fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    padding: "20px 16px",
+    padding: "16px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    width: "100%",
   },
   container: {
     width: "100%",
-    maxWidth: "360px",
+    maxWidth: "380px",
     background: "#ffffff",
-    borderRadius: "24px",
-    padding: "24px 20px",
+    borderRadius: "20px",
+    padding: "20px 18px",
     boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
   },
   logoSection: {
     textAlign: "center",
-    marginBottom: "16px",
+    marginBottom: "20px",
   },
   logoIcon: {
-    fontSize: "48px",
-    marginBottom: "8px",
+    fontSize: "44px",
+    marginBottom: "6px",
   },
   logo: {
     fontSize: "28px",
-    fontWeight: "800",
+    fontWeight: "900",
     color: "#1e293b",
     margin: 0,
   },
@@ -342,31 +341,31 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     gap: "12px",
-    marginBottom: "20px",
+    marginBottom: "24px",
   },
   statBadge: {
     background: "#f1f5f9",
-    padding: "6px 14px",
+    padding: "8px 16px",
     borderRadius: "20px",
-    fontSize: "12px",
+    fontSize: "13px",
     fontWeight: "600",
     color: "#475569",
   },
   tabs: {
     display: "flex",
     background: "#f1f5f9",
-    borderRadius: "12px",
-    padding: "4px",
-    marginBottom: "20px",
+    borderRadius: "14px",
+    padding: "5px",
+    marginBottom: "24px",
   },
   tab: {
     flex: 1,
-    padding: "12px",
+    padding: "14px",
     border: "none",
     background: "transparent",
-    borderRadius: "10px",
-    fontSize: "14px",
-    fontWeight: "600",
+    borderRadius: "11px",
+    fontSize: "15px",
+    fontWeight: "700",
     color: "#64748b",
     cursor: "pointer",
   },
@@ -376,55 +375,55 @@ const styles = {
     boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
   },
   formSection: {
-    marginBottom: "16px",
+    marginBottom: "20px",
   },
   inputGroup: {
-    marginBottom: "12px",
+    marginBottom: "14px",
   },
   input: {
     width: "100%",
-    padding: "14px 16px",
-    borderRadius: "12px",
+    padding: "16px 18px",
+    borderRadius: "14px",
     border: "2px solid #e2e8f0",
-    fontSize: "15px",
+    fontSize: "16px",
     outline: "none",
     transition: "border-color 0.2s",
     boxSizing: "border-box",
   },
   error: {
     color: "#ef4444",
-    fontSize: "12px",
-    marginTop: "-8px",
+    fontSize: "13px",
+    marginTop: "-10px",
     marginBottom: "8px",
     display: "block",
   },
   submitBtn: {
     width: "100%",
-    padding: "14px",
-    borderRadius: "12px",
+    padding: "16px",
+    borderRadius: "14px",
     border: "none",
     background: "linear-gradient(135deg, #667eea, #764ba2)",
     color: "#ffffff",
-    fontSize: "15px",
-    fontWeight: "700",
+    fontSize: "16px",
+    fontWeight: "800",
     cursor: "pointer",
     marginTop: "8px",
   },
   spinner: {
     display: "inline-block",
-    width: "18px",
-    height: "18px",
+    width: "20px",
+    height: "20px",
     border: "2px solid rgba(255,255,255,0.3)",
     borderTopColor: "#ffffff",
     borderRadius: "50%",
     animation: "spin 0.8s linear infinite",
   },
   message: {
-    padding: "10px",
-    borderRadius: "8px",
+    padding: "12px",
+    borderRadius: "10px",
     textAlign: "center",
-    fontSize: "13px",
-    marginTop: "12px",
+    fontSize: "14px",
+    marginTop: "14px",
     background: "#fef2f2",
     color: "#dc2626",
   },
@@ -435,32 +434,33 @@ const styles = {
   benefits: {
     display: "flex",
     justifyContent: "center",
-    gap: "16px",
-    marginBottom: "16px",
+    gap: "20px",
+    marginBottom: "20px",
     flexWrap: "wrap",
   },
   benefitItem: {
-    fontSize: "12px",
+    fontSize: "13px",
     color: "#64748b",
     display: "flex",
     alignItems: "center",
     gap: "4px",
+    fontWeight: "600",
   },
   supportBtn: {
     width: "100%",
-    padding: "12px",
-    borderRadius: "12px",
+    padding: "14px",
+    borderRadius: "14px",
     border: "none",
     background: "#25D366",
     color: "#ffffff",
-    fontSize: "14px",
-    fontWeight: "600",
+    fontSize: "15px",
+    fontWeight: "700",
     cursor: "pointer",
     marginBottom: "16px",
   },
   footer: {
     textAlign: "center",
-    fontSize: "11px",
+    fontSize: "12px",
     color: "#94a3b8",
   },
 };
