@@ -579,7 +579,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="dashboard" ref={dashboardRef}>
+    <div className="dashboard" ref={dashboardRef} style={{ paddingBottom: '80px' }}>
       {/* TOAST NOTIFICATION */}
       {toast && <div className="toast-notification">{toast}</div>}
 
@@ -1529,6 +1529,50 @@ export default function Dashboard() {
         >
           <span className="nav-icon" style={{ fontSize: '20px' }}>📝</span>
           <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Surveys</span>
+        </button>
+
+        <button
+          className="nav-btn"
+          onClick={() => navigate('/affiliate')}
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '2px',
+            padding: '6px',
+            background: '#8b5cf6',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer'
+          }}
+        >
+          <span className="nav-icon" style={{ fontSize: '20px' }}>👥</span>
+          <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Affiliate</span>
+        </button>
+        
+        <button
+          className="nav-btn"
+          onClick={() => navigate('/withdraw-form')}
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '2px',
+            padding: '6px',
+            background: '#dc2626',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer'
+          }}
+        >
+          <span className="nav-icon" style={{ fontSize: '20px' }}>💸</span>
+          <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Withdraw</span>
         </button>
       </div>
 
