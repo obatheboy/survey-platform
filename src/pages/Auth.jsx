@@ -295,7 +295,7 @@ export default function Auth() {
                   required
                 />
               </div>
-
+  
               <button style={styles.submitBtn} type="submit" disabled={loading}>
                 {loading ? <span style={styles.spinner}></span> : "Sign In"}
               </button>
