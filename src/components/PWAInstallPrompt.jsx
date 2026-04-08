@@ -2,63 +2,52 @@ import { useState, useEffect } from 'react';
 import './PWAInstallPrompt.css';
 
 export default function PWAInstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showPrompt, setShowPrompt] = useState(false);
-  const [isInstalled, setIsInstalled] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
     if (window.matchMedia('(display-mode: standalone)').matches) {
-      setIsInstalled(true);
       return;
     }
 
-    const handleBeforeInstallPrompt = (e) => {
+    const ios = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    setIsIOS(ios);
+
+    const handleBeforeInstall = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      setShowPrompt(true);
     };
 
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    
-    if (!isIOS) {
-      setTimeout(() => {
-        setShowPrompt(true);
-      }, 3000);
-    } else {
-      setShowPrompt(true);
-    }
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    setTimeout(() => {
+      const dismissed = localStorage.getItem('pwa-install-dismissed');
+      if (!dismissed) {
+        setShowPrompt(true);
+      }
+    }, 4000);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
     };
   }, []);
 
   const handleInstall = async () => {
+    setShowPrompt(false);
+    localStorage.setItem('pwa-install-dismissed', 'true');
+    
     if (deferredPrompt) {
       deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        setIsInstalled(true);
-      }
-      setDeferredPrompt(null);
-      setShowPrompt(false);
-    } else {
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      if (isIOS) {
-        window.location.href = 'https://wa.me/254752881670?text=Hello,%20I%20need%20help%20installing%20the%20app';
-      } else {
-        setShowPrompt(false);
-      }
+      await deferredPrompt.userChoice;
     }
   };
 
   const handleSkip = () => {
     setShowPrompt(false);
+    localStorage.setItem('pwa-install-dismissed', 'true');
   };
 
-  if (isInstalled) return null;
   if (!showPrompt) return null;
 
   return (
@@ -68,15 +57,19 @@ export default function PWAInstallPrompt() {
         
         <div className="pwa-icon">📱</div>
         
-        <h3>Install App</h3>
-        <p>Add to home screen for the best experience!</p>
+        <h3>Add to Home Screen</h3>
+        <p className="pwa-subtitle">
+          {isIOS 
+            ? 'Tap Share, then "Add to Home Screen"' 
+            : 'Tap the menu and select "Add to Home Screen"'}
+        </p>
 
         <div className="pwa-actions">
           <button className="btn-install" onClick={handleInstall}>
-            ✓ Install Now
+            {deferredPrompt ? '📲 Install App' : '✓ Got it!'}
           </button>
           <button className="btn-skip" onClick={handleSkip}>
-            Skip - Continue to Website
+            Skip
           </button>
         </div>
       </div>
