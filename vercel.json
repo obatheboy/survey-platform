@@ -14,6 +14,27 @@
       "headers": [
         { "key": "Content-Type", "value": "text/css" }
       ]
+    },
+    {
+      "source": "/manifest.json",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Content-Type", "value": "application/manifest+json" }
+      ]
+    },
+    {
+      "source": "/sw.js",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Content-Type", "value": "application/javascript" }
+      ]
+    },
+    {
+      "source": "/icon.svg",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Content-Type", "value": "image/svg+xml" }
+      ]
     }
   ],
   "rewrites": [
