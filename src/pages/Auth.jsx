@@ -2,27 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../api/api";
 
-// Enhanced Input component with professional styling
-const Input = ({ type = "text", icon, readOnly, disabled, error, ...props }) => (
-  <div style={styles.inputContainer}>
-    {icon && <span style={styles.inputIcon}>{icon}</span>}
-    <input
-      type={type}
-      readOnly={readOnly}
-      disabled={disabled}
-      style={{
-        ...styles.input,
-        paddingLeft: icon ? "48px" : "20px",
-        cursor: disabled ? 'not-allowed' : readOnly ? 'default' : 'text',
-        pointerEvents: disabled ? 'none' : 'auto',
-        borderColor: error ? '#ef4444' : '#e2e8f0',
-        backgroundColor: readOnly ? '#f8fafc' : '#ffffff',
-      }}
-      {...props}
-    />
-  </div>
-);
-
 export default function Auth() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -30,11 +9,10 @@ export default function Auth() {
   const [mode, setMode] = useState(initialMode);
   const [loading, setLoading] = useState(false);
   const [shake, setShake] = useState(false);
+  const [focusedField, setFocusedField] = useState(null);
 
-  // Get referral code from URL
   const referralCodeFromUrl = searchParams.get("ref");
 
-  // Validation states
   const [errors, setErrors] = useState({});
 
   const [regData, setRegData] = useState({
@@ -65,7 +43,6 @@ export default function Auth() {
     navigate(`/auth?mode=${mode}`, { replace: true });
   }, [mode, navigate]);
 
-  // Validate registration data
   const validateRegistration = () => {
     const newErrors = {};
     
@@ -110,7 +87,6 @@ export default function Auth() {
         localStorage.setItem("lastLoginTime", Date.now().toString());
         localStorage.removeItem("active_plan");
         
-        // Store welcome bonus status for Dashboard popup
         if (res.data.user?.welcome_bonus_received) {
           localStorage.setItem("showWelcomeBonus", "true");
           localStorage.setItem("welcomeBonusAmount", res.data.user?.welcome_bonus || 1200);
@@ -149,7 +125,6 @@ export default function Auth() {
         localStorage.setItem("lastLoginTime", Date.now().toString());
         localStorage.removeItem("active_plan");
         
-        // Store welcome bonus status for Dashboard popup
         if (res.data.user?.welcome_bonus_received) {
           localStorage.setItem("showWelcomeBonus", "true");
           localStorage.setItem("welcomeBonusAmount", res.data.user?.welcome_bonus || 1200);
@@ -185,13 +160,14 @@ export default function Auth() {
       <div style={styles.backgroundBlur1}></div>
       <div style={styles.backgroundBlur2}></div>
       <div style={styles.backgroundBlur3}></div>
+      <div style={styles.backgroundParticles}></div>
       
       <div
         style={{
           ...styles.card,
           opacity: loading ? 0.7 : 1,
           pointerEvents: loading ? "none" : "auto",
-          animation: shake ? "shake 0.5s ease-in-out" : "none",
+          animation: shake ? "shake 0.5s ease-in-out" : "fadeInUp 0.6s ease-out",
         }}
       >
         {/* Government Verification Badge */}
@@ -208,7 +184,9 @@ export default function Auth() {
           <div style={styles.logoContainer}>
             <div style={styles.logoWrapper}>
               <div style={styles.logoGlow}></div>
-              <div style={styles.logoIcon}>📊</div>
+              <div style={styles.logoIcon}>
+                <span style={styles.logoIconPulse}>📊</span>
+              </div>
             </div>
             <div style={styles.logoTextContainer}>
               <h1 style={styles.logo}>Survey<span style={styles.logoAccent}>Earn</span></h1>
@@ -218,9 +196,15 @@ export default function Auth() {
 
           {/* Trust Indicators */}
           <div style={styles.trustIndicators}>
-            <span style={styles.trustBadge}>✓ 10k+ Earners</span>
-            <span style={styles.trustBadge}>⭐ 4.8 Rating</span>
-            <span style={styles.trustBadge}>🔒 Secure</span>
+            <span style={styles.trustBadge}>
+              <span style={styles.trustBadgeIcon}>✓</span> 10k+ Earners
+            </span>
+            <span style={styles.trustBadge}>
+              <span style={styles.trustBadgeIcon}>⭐</span> 4.8 Rating
+            </span>
+            <span style={styles.trustBadge}>
+              <span style={styles.trustBadgeIcon}>🔒</span> Secure
+            </span>
           </div>
         </div>
 
@@ -234,6 +218,7 @@ export default function Auth() {
             onClick={() => setMode("login")}
             type="button"
           >
+            <span style={styles.modeButtonIcon}>🔐</span>
             <span>Sign In</span>
           </button>
           <button
@@ -244,6 +229,7 @@ export default function Auth() {
             onClick={() => setMode("register")}
             type="button"
           >
+            <span style={styles.modeButtonIcon}>🚀</span>
             <span>Create Account</span>
           </button>
         </div>
@@ -252,41 +238,61 @@ export default function Auth() {
         {mode === "register" ? (
           <form onSubmit={handleRegister} key="register" style={styles.form}>
             <div style={styles.formGrid}>
-              <Input
-                placeholder="Full Name"
-                value={regData.full_name}
-                onChange={(e) =>
-                  setRegData(prev => ({ ...prev, full_name: e.target.value }))
-                }
-                icon="👤"
-                error={errors.full_name}
-                required
-              />
+              <div style={styles.inputWrapper}>
+                <div style={{
+                  ...styles.inputIcon,
+                  ...(focusedField === "name" ? styles.inputIconFocused : {})
+                }}>👤</div>
+                <input
+                  type="text"
+                  placeholder="Full Name"
+                  value={regData.full_name}
+                  onFocus={() => setFocusedField("name")}
+                  onBlur={() => setFocusedField(null)}
+                  onChange={(e) =>
+                    setRegData(prev => ({ ...prev, full_name: e.target.value }))
+                  }
+                  style={{
+                    ...styles.input,
+                    borderColor: errors.full_name ? '#ef4444' : (focusedField === "name" ? '#667eea' : '#e2e8f0'),
+                    boxShadow: focusedField === "name" ? '0 0 0 4px rgba(102, 126, 234, 0.1)' : 'none',
+                  }}
+                  required
+                />
+                {regData.full_name && !errors.full_name && (
+                  <span style={styles.inputCheck}>✓</span>
+                )}
+              </div>
               {errors.full_name && <span style={styles.errorText}>{errors.full_name}</span>}
 
-              <Input
-                placeholder="Phone Number"
-                type="tel"
-                value={regData.phone}
-                onChange={(e) =>
-                  setRegData(prev => ({ ...prev, phone: e.target.value }))
-                }
-                icon="📱"
-                error={errors.phone}
-                required
-              />
+              <div style={styles.inputWrapper}>
+                <div style={{
+                  ...styles.inputIcon,
+                  ...(focusedField === "phone" ? styles.inputIconFocused : {})
+                }}>📱</div>
+                <input
+                  type="tel"
+                  placeholder="Phone Number (e.g., 0712345678)"
+                  value={regData.phone}
+                  onFocus={() => setFocusedField("phone")}
+                  onBlur={() => setFocusedField(null)}
+                  onChange={(e) =>
+                    setRegData(prev => ({ ...prev, phone: e.target.value }))
+                  }
+                  style={{
+                    ...styles.input,
+                    borderColor: errors.phone ? '#ef4444' : (focusedField === "phone" ? '#667eea' : '#e2e8f0'),
+                    boxShadow: focusedField === "phone" ? '0 0 0 4px rgba(102, 126, 234, 0.1)' : 'none',
+                  }}
+                  required
+                />
+                {regData.phone && !errors.phone && (
+                  <span style={styles.inputCheck}>✓</span>
+                )}
+              </div>
               {errors.phone && <span style={styles.errorText}>{errors.phone}</span>}
-
-              {/* Referral Code */}
-              {referralCodeFromUrl && (
-                <div style={styles.referralBadge}>
-                  <span style={styles.referralIcon}>🎁</span>
-                  <span style={styles.referralCode}>Referral: {referralCodeFromUrl}</span>
-                </div>
-              )}
             </div>
 
-            {/* Create Account Button - Prominent */}
             <button
               style={styles.primaryButtonRegister}
               type="submit"
@@ -298,6 +304,7 @@ export default function Auth() {
                 <>
                   <span style={styles.buttonIcon}>🚀</span>
                   Create Free Account
+                  <span style={styles.buttonArrow}>→</span>
                 </>
               )}
             </button>
@@ -311,7 +318,6 @@ export default function Auth() {
               </div>
             )}
 
-            {/* Terms Notice */}
             <div style={styles.termsNotice}>
               <span style={styles.termsNoticeIcon}>✓</span>
               <span style={styles.termsNoticeText}>
@@ -341,26 +347,37 @@ export default function Auth() {
                 onClick={() => setMode("login")}
                 type="button"
               >
-                Sign In
+                Sign In →
               </button>
             </p>
           </form>
         ) : (
           <form onSubmit={handleLogin} key="login" style={styles.form}>
             <div style={styles.formGrid}>
-              <Input
-                placeholder="Phone Number"
-                type="tel"
-                value={loginData.phone}
-                onChange={(e) =>
-                  setLoginData(prev => ({ ...prev, phone: e.target.value }))
-                }
-                icon="📱"
-                required
-              />
+              <div style={styles.inputWrapper}>
+                <div style={{
+                  ...styles.inputIcon,
+                  ...(focusedField === "loginPhone" ? styles.inputIconFocused : {})
+                }}>📱</div>
+                <input
+                  type="tel"
+                  placeholder="Phone Number (e.g., 0712345678)"
+                  value={loginData.phone}
+                  onFocus={() => setFocusedField("loginPhone")}
+                  onBlur={() => setFocusedField(null)}
+                  onChange={(e) =>
+                    setLoginData(prev => ({ ...prev, phone: e.target.value }))
+                  }
+                  style={{
+                    ...styles.input,
+                    borderColor: focusedField === "loginPhone" ? '#667eea' : '#e2e8f0',
+                    boxShadow: focusedField === "loginPhone" ? '0 0 0 4px rgba(102, 126, 234, 0.1)' : 'none',
+                  }}
+                  required
+                />
+              </div>
             </div>
 
-            {/* Sign In Button */}
             <button
               style={styles.primaryButtonLogin}
               type="submit"
@@ -372,6 +389,7 @@ export default function Auth() {
                 <>
                   <span style={styles.buttonIcon}>🔐</span>
                   Sign In with Phone Number
+                  <span style={styles.buttonArrow}>→</span>
                 </>
               )}
             </button>
@@ -392,19 +410,19 @@ export default function Auth() {
                 onClick={() => setMode("register")}
                 type="button"
               >
-                Create Account
+                Create Account →
               </button>
             </p>
           </form>
         )}
 
-        {/* WhatsApp Support - Prominent */}
+        {/* WhatsApp Support */}
         <div style={styles.supportSection}>
           <button
             style={styles.supportButton}
             onClick={() => {
               const message = encodeURIComponent(
-                "Hello, I need help with Registering/Login to mySurveyEarn account."
+                "Hello, I need help with Registering/Login to my SurveyEarn account."
               );
               const whatsappUrl = `https://wa.me/254752881670?text=${message}`;
               window.open(whatsappUrl, "_blank", "noopener,noreferrer");
@@ -434,13 +452,11 @@ export default function Auth() {
           </div>
         </div>
 
-        {/* Footer */}
         <div style={styles.footer}>
           <p style={styles.copyright}>© 2024 SurveyEarn. All rights reserved.</p>
         </div>
       </div>
 
-      {/* Add CSS animations */}
       <style>
         {`
           @keyframes spin {
@@ -455,13 +471,18 @@ export default function Auth() {
           }
 
           @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            0%, 100% { transform: translateY(0) translateX(0); }
+            50% { transform: translateY(-20px) translateX(10px); }
+          }
+
+          @keyframes floatReverse {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            50% { transform: translateY(20px) translateX(-10px); }
           }
 
           @keyframes pulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 0.8; }
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
           }
 
           @keyframes gradient {
@@ -470,14 +491,29 @@ export default function Auth() {
             100% { background-position: 0% 50%; }
           }
 
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
           @keyframes shimmer {
-            0% { background-position: -1000px 0; }
-            100% { background-position: 1000px 0; }
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+          }
+
+          @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
           }
           
           input:focus {
-            border-color: #6366f1 !important;
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1) !important;
+            outline: none;
           }
           
           button {
@@ -486,7 +522,7 @@ export default function Auth() {
           
           button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15) !important;
           }
           
           button:active {
@@ -498,7 +534,6 @@ export default function Auth() {
   );
 }
 
-// Balanced Styles - Not too compact, not too large
 const styles = {
   page: {
     minHeight: "100vh",
@@ -515,133 +550,146 @@ const styles = {
   },
   backgroundBlur1: {
     position: "absolute",
-    width: "300px",
-    height: "300px",
-    background: "rgba(255, 255, 255, 0.1)",
+    width: "400px",
+    height: "400px",
+    background: "radial-gradient(circle, rgba(255,255,255,0.15), transparent)",
     borderRadius: "50%",
-    top: "-80px",
-    right: "-80px",
+    top: "-100px",
+    right: "-100px",
     filter: "blur(80px)",
-    animation: "float 8s ease-in-out infinite",
+    animation: "float 12s ease-in-out infinite",
   },
   backgroundBlur2: {
     position: "absolute",
-    width: "350px",
-    height: "350px",
-    background: "rgba(255, 255, 255, 0.1)",
+    width: "450px",
+    height: "450px",
+    background: "radial-gradient(circle, rgba(255,255,255,0.1), transparent)",
     borderRadius: "50%",
-    bottom: "-100px",
-    left: "-100px",
+    bottom: "-120px",
+    left: "-120px",
     filter: "blur(90px)",
-    animation: "float 10s ease-in-out infinite reverse",
+    animation: "floatReverse 14s ease-in-out infinite",
   },
   backgroundBlur3: {
     position: "absolute",
-    width: "200px",
-    height: "200px",
-    background: "rgba(255, 255, 255, 0.1)",
+    width: "250px",
+    height: "250px",
+    background: "radial-gradient(circle, rgba(255,255,255,0.12), transparent)",
     borderRadius: "50%",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
     filter: "blur(70px)",
-    animation: "pulse 4s ease-in-out infinite",
+    animation: "pulse 6s ease-in-out infinite",
+  },
+  backgroundParticles: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    background: "radial-gradient(circle at 20% 80%, rgba(255,255,255,0.05) 0%, transparent 50%)",
+    pointerEvents: "none",
   },
   card: {
     maxWidth: "480px",
     width: "100%",
     background: "rgba(255, 255, 255, 0.98)",
     backdropFilter: "blur(20px)",
-    borderRadius: "32px",
-    padding: "28px 24px",
-    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)",
-    border: "1px solid rgba(255, 255, 255, 0.3)",
+    borderRadius: "40px",
+    padding: "32px 28px",
+    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255,255,255,0.3)",
+    border: "1px solid rgba(255, 255, 255, 0.5)",
     position: "relative",
     zIndex: 1,
     maxHeight: "98vh",
     overflowY: "auto",
   },
   govBadge: {
-    marginBottom: "16px",
+    marginBottom: "20px",
     display: "flex",
     justifyContent: "center",
   },
   govBadgeContent: {
     display: "inline-flex",
     alignItems: "center",
-    gap: "8px",
+    gap: "10px",
     background: "linear-gradient(135deg, #1e3c72, #2b4c7c)",
-    padding: "8px 16px",
-    borderRadius: "40px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-    border: "1px solid rgba(255, 215, 0, 0.3)",
-    animation: "shimmer 3s infinite",
-    backgroundSize: "200% 100%",
+    padding: "10px 20px",
+    borderRadius: "50px",
+    boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
+    border: "1px solid rgba(255, 215, 0, 0.4)",
   },
   govIcon: {
-    fontSize: "18px",
-    filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.2))",
+    fontSize: "20px",
+    filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.2))",
+    animation: "bounce 2s ease-in-out infinite",
   },
   govText: {
-    fontSize: "11px",
+    fontSize: "12px",
     fontWeight: "700",
     color: "#FFD700",
-    letterSpacing: "0.3px",
+    letterSpacing: "0.5px",
     textTransform: "uppercase",
   },
   govCheck: {
-    fontSize: "14px",
+    fontSize: "16px",
     fontWeight: "bold",
     color: "#4ade80",
     background: "rgba(255,255,255,0.2)",
     borderRadius: "50%",
-    width: "20px",
-    height: "20px",
+    width: "22px",
+    height: "22px",
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
   },
   header: {
-    marginBottom: "20px",
+    marginBottom: "24px",
+    textAlign: "center",
   },
   logoContainer: {
     display: "flex",
     alignItems: "center",
+    justifyContent: "center",
     gap: "16px",
-    marginBottom: "12px",
+    marginBottom: "16px",
+    flexWrap: "wrap",
   },
   logoWrapper: {
     position: "relative",
-    width: "60px",
-    height: "60px",
+    width: "70px",
+    height: "70px",
   },
   logoGlow: {
     position: "absolute",
     width: "100%",
     height: "100%",
     background: "linear-gradient(135deg, #667eea, #764ba2)",
-    borderRadius: "16px",
-    filter: "blur(12px)",
-    opacity: 0.6,
+    borderRadius: "20px",
+    filter: "blur(15px)",
+    opacity: 0.7,
     animation: "pulse 3s ease-in-out infinite",
   },
   logoIcon: {
     position: "relative",
-    fontSize: "32px",
+    fontSize: "36px",
     background: "linear-gradient(135deg, #667eea, #764ba2)",
-    padding: "14px",
-    borderRadius: "16px",
-    boxShadow: "0 10px 20px -5px rgba(102, 126, 234, 0.4)",
+    padding: "16px",
+    borderRadius: "20px",
+    boxShadow: "0 15px 30px -8px rgba(102, 126, 234, 0.5)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     color: "white",
   },
+  logoIconPulse: {
+    animation: "bounce 2s ease-in-out infinite",
+    display: "inline-block",
+  },
   logoTextContainer: {
-    flex: 1,
+    textAlign: "left",
   },
   logo: {
-    fontSize: "32px",
+    fontSize: "36px",
     fontWeight: "800",
     margin: 0,
     color: "#1e293b",
@@ -655,165 +703,182 @@ const styles = {
   },
   tagline: {
     color: "#64748b",
-    fontSize: "13px",
+    fontSize: "14px",
     fontWeight: "500",
-    marginTop: "4px",
+    marginTop: "6px",
   },
   trustIndicators: {
     display: "flex",
-    gap: "12px",
+    gap: "16px",
+    justifyContent: "center",
     flexWrap: "wrap",
   },
   trustBadge: {
-    background: "rgba(255,255,255,0.9)",
-    padding: "6px 12px",
-    borderRadius: "30px",
+    background: "rgba(255,255,255,0.95)",
+    padding: "8px 16px",
+    borderRadius: "40px",
     fontSize: "12px",
     fontWeight: "600",
     color: "#475569",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+  },
+  trustBadgeIcon: {
+    fontSize: "14px",
   },
   modeSelector: {
     display: "flex",
     background: "#f1f5f9",
-    borderRadius: "40px",
-    padding: "4px",
-    marginBottom: "24px",
-    gap: "4px",
+    borderRadius: "50px",
+    padding: "6px",
+    marginBottom: "28px",
+    gap: "6px",
   },
   modeButton: {
     flex: 1,
-    padding: "12px 8px",
+    padding: "14px 12px",
     border: "none",
     background: "transparent",
-    borderRadius: "36px",
+    borderRadius: "44px",
     fontSize: "14px",
     fontWeight: "600",
     color: "#64748b",
     cursor: "pointer",
-    transition: "all 0.2s ease",
-  },
-  modeButtonActiveLogin: {
-    background: "#ffffff",
-    color: "#667eea",
-    boxShadow: "0 4px 10px -2px rgba(102, 126, 234, 0.2)",
-  },
-  modeButtonActiveRegister: {
-    background: "#ffffff",
-    color: "#764ba2",
-    boxShadow: "0 4px 10px -2px rgba(118, 75, 162, 0.2)",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px",
-  },
-  formGrid: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
-  },
-  inputContainer: {
-    position: "relative",
-  },
-  inputIcon: {
-    position: "absolute",
-    left: "16px",
-    top: "50%",
-    transform: "translateY(-50%)",
-    fontSize: "16px",
-    color: "#94a3b8",
-    zIndex: 1,
-  },
-  input: {
-    width: "100%",
-    padding: "14px 14px 14px 48px",
-    borderRadius: "40px",
-    border: "2px solid #e2e8f0",
-    background: "#ffffff",
-    fontSize: "14px",
-    fontWeight: "500",
-    color: "#1e293b",
-    outline: "none",
-    transition: "all 0.2s ease",
-    boxSizing: "border-box",
-  },
-  errorText: {
-    fontSize: "11px",
-    color: "#ef4444",
-    fontWeight: "500",
-    marginLeft: "12px",
-    marginTop: "2px",
-  },
-  referralBadge: {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    padding: "12px 16px",
-    background: "linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1))",
-    borderRadius: "40px",
-    border: "1px solid rgba(16, 185, 129, 0.3)",
-  },
-  referralIcon: {
-    fontSize: "18px",
-  },
-  referralCode: {
-    fontSize: "13px",
-    color: "#065f46",
-    fontWeight: "700",
-  },
-  primaryButtonLogin: {
-    width: "100%",
-    padding: "16px",
-    borderRadius: "40px",
-    border: "none",
-    background: "linear-gradient(135deg, #667eea, #764ba2)",
-    color: "white",
-    fontSize: "15px",
-    fontWeight: "700",
-    cursor: "pointer",
-    boxShadow: "0 10px 20px -5px rgba(102, 126, 234, 0.4)",
+    transition: "all 0.3s ease",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     gap: "8px",
+  },
+  modeButtonIcon: {
+    fontSize: "16px",
+  },
+  modeButtonActiveLogin: {
+    background: "#ffffff",
+    color: "#667eea",
+    boxShadow: "0 6px 15px -3px rgba(102, 126, 234, 0.2)",
+  },
+  modeButtonActiveRegister: {
+    background: "#ffffff",
+    color: "#764ba2",
+    boxShadow: "0 6px 15px -3px rgba(118, 75, 162, 0.2)",
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
+  },
+  formGrid: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "14px",
+  },
+  inputWrapper: {
+    position: "relative",
+    width: "100%",
+  },
+  inputIcon: {
+    position: "absolute",
+    left: "18px",
+    top: "50%",
+    transform: "translateY(-50%)",
+    fontSize: "18px",
+    color: "#94a3b8",
+    zIndex: 2,
+    transition: "all 0.3s ease",
+  },
+  inputIconFocused: {
+    color: "#667eea",
+    transform: "translateY(-50%) scale(1.1)",
+  },
+  input: {
+    width: "100%",
+    padding: "16px 20px 16px 52px",
+    borderRadius: "50px",
+    border: "2px solid #e2e8f0",
+    background: "#ffffff",
+    fontSize: "15px",
+    fontWeight: "500",
+    color: "#1e293b",
+    outline: "none",
+    transition: "all 0.3s ease",
+    boxSizing: "border-box",
+  },
+  inputCheck: {
+    position: "absolute",
+    right: "18px",
+    top: "50%",
+    transform: "translateY(-50%)",
+    color: "#10b981",
+    fontSize: "16px",
+    fontWeight: "bold",
+    zIndex: 2,
+  },
+  errorText: {
+    fontSize: "12px",
+    color: "#ef4444",
+    fontWeight: "500",
+    marginLeft: "16px",
+    marginTop: "4px",
+  },
+  primaryButtonLogin: {
+    width: "100%",
+    padding: "18px",
+    borderRadius: "50px",
+    border: "none",
+    background: "linear-gradient(135deg, #667eea, #764ba2)",
+    color: "white",
+    fontSize: "16px",
+    fontWeight: "700",
+    cursor: "pointer",
+    boxShadow: "0 10px 25px -5px rgba(102, 126, 234, 0.4)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "10px",
     transition: "all 0.3s ease",
     marginTop: "8px",
   },
   primaryButtonRegister: {
     width: "100%",
-    padding: "16px",
-    borderRadius: "40px",
+    padding: "18px",
+    borderRadius: "50px",
     border: "none",
     background: "linear-gradient(135deg, #764ba2, #667eea)",
     color: "white",
-    fontSize: "15px",
+    fontSize: "16px",
     fontWeight: "700",
     cursor: "pointer",
-    boxShadow: "0 10px 20px -5px rgba(118, 75, 162, 0.4)",
+    boxShadow: "0 10px 25px -5px rgba(118, 75, 162, 0.4)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "8px",
+    gap: "10px",
     transition: "all 0.3s ease",
     marginTop: "8px",
   },
   buttonIcon: {
+    fontSize: "20px",
+  },
+  buttonArrow: {
     fontSize: "18px",
+    transition: "transform 0.3s ease",
   },
   loadingSpinner: {
-    width: "18px",
-    height: "18px",
+    width: "20px",
+    height: "20px",
     border: "2px solid rgba(255,255,255,0.3)",
     borderTop: "2px solid white",
     borderRadius: "50%",
     animation: "spin 1s linear infinite",
   },
   message: {
-    padding: "10px",
-    borderRadius: "40px",
+    padding: "12px 16px",
+    borderRadius: "50px",
     textAlign: "center",
-    fontSize: "12px",
+    fontSize: "13px",
     fontWeight: "500",
     background: "#fef2f2",
     color: "#dc2626",
@@ -826,29 +891,30 @@ const styles = {
   },
   switchText: {
     textAlign: "center",
-    marginTop: "12px",
+    marginTop: "16px",
     color: "#64748b",
-    fontSize: "13px",
+    fontSize: "14px",
     fontWeight: "500",
   },
   switchButton: {
     background: "none",
     border: "none",
     color: "#667eea",
-    fontSize: "13px",
+    fontSize: "14px",
     fontWeight: "700",
     cursor: "pointer",
     padding: "4px 8px",
-    borderRadius: "6px",
+    borderRadius: "8px",
+    transition: "all 0.2s ease",
   },
   termsNotice: {
     display: "flex",
     alignItems: "center",
-    gap: "8px",
-    padding: "12px",
-    background: "rgba(99, 102, 241, 0.05)",
-    borderRadius: "40px",
-    border: "1px solid rgba(99, 102, 241, 0.1)",
+    gap: "10px",
+    padding: "14px 16px",
+    background: "rgba(99, 102, 241, 0.06)",
+    borderRadius: "50px",
+    border: "1px solid rgba(99, 102, 241, 0.12)",
     marginTop: "8px",
   },
   termsNoticeIcon: {
@@ -857,7 +923,7 @@ const styles = {
     fontWeight: "bold",
   },
   termsNoticeText: {
-    fontSize: "11px",
+    fontSize: "12px",
     color: "#475569",
     fontWeight: "500",
     lineHeight: "1.4",
@@ -866,78 +932,79 @@ const styles = {
     background: "none",
     border: "none",
     color: "#667eea",
-    fontSize: "11px",
+    fontSize: "12px",
     fontWeight: "600",
     cursor: "pointer",
-    padding: "0 2px",
+    padding: "0 4px",
     textDecoration: "underline",
   },
   featuresSection: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: "20px",
-    padding: "16px 0",
-    borderTop: "1px solid rgba(0, 0, 0, 0.05)",
-    borderBottom: "1px solid rgba(0, 0, 0, 0.05)",
+    marginTop: "24px",
+    padding: "20px 0",
+    borderTop: "1px solid rgba(0, 0, 0, 0.06)",
+    borderBottom: "1px solid rgba(0, 0, 0, 0.06)",
   },
   feature: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: "4px",
+    gap: "6px",
     flex: 1,
   },
   featureIcon: {
-    fontSize: "20px",
+    fontSize: "24px",
   },
   featureText: {
-    fontSize: "10px",
+    fontSize: "11px",
     fontWeight: "600",
     color: "#475569",
     textAlign: "center",
   },
   featureDivider: {
     width: "1px",
-    height: "30px",
-    background: "rgba(0, 0, 0, 0.1)",
+    height: "35px",
+    background: "rgba(0, 0, 0, 0.08)",
   },
   supportSection: {
-    marginTop: "16px",
+    marginTop: "20px",
   },
   supportButton: {
     width: "100%",
     background: "linear-gradient(135deg, #25D366, #128C7E)",
     border: "none",
-    borderRadius: "40px",
-    padding: "14px 20px",
+    borderRadius: "50px",
+    padding: "16px 24px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "10px",
+    gap: "12px",
     cursor: "pointer",
-    boxShadow: "0 10px 20px -5px rgba(37, 211, 102, 0.3)",
+    boxShadow: "0 10px 25px -5px rgba(37, 211, 102, 0.35)",
   },
   supportIcon: {
-    fontSize: "20px",
+    fontSize: "22px",
     color: "white",
   },
   supportText: {
     color: "white",
-    fontSize: "14px",
+    fontSize: "15px",
     fontWeight: "600",
   },
   supportArrow: {
     color: "white",
-    fontSize: "16px",
-    opacity: 0.8,
+    fontSize: "18px",
+    opacity: 0.9,
+    transition: "transform 0.3s ease",
   },
   footer: {
-    marginTop: "16px",
+    marginTop: "20px",
     textAlign: "center",
   },
   copyright: {
-    fontSize: "10px",
+    fontSize: "11px",
     color: "#94a3b8",
     fontWeight: "500",
   },

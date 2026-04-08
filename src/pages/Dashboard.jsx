@@ -901,7 +901,7 @@ export default function Dashboard() {
         borderBottom: '1px solid rgba(255,255,255,0.2)',
         position: 'relative',
         overflow: 'hidden',
-        marginTop: '76px',
+        marginTop: '60px',
         marginBottom: '0'
       }}>
         <div style={{
@@ -1529,94 +1529,6 @@ export default function Dashboard() {
         >
           <span className="nav-icon" style={{ fontSize: '20px' }}>📝</span>
           <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Surveys</span>
-        </button>
-        
-        <button
-          className="nav-btn"
-          onClick={() => navigate("/affiliate")}
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '2px',
-            padding: '6px',
-            background: '#FF6600',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer'
-          }}
-        >
-          <span className="nav-icon" style={{ fontSize: '20px' }}>🎯</span>
-          <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Affiliate</span>
-        </button>
-        
-        <button
-          className="nav-btn withdraw-btn"
-          onClick={() => navigate("/withdraw-form")}
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '2px',
-            padding: '6px',
-            background: '#dc2626',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer'
-          }}
-        >
-          <span className="nav-icon" style={{ fontSize: '20px' }}>💸</span>
-          <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Withdraw</span>
-        </button>
-        
-        <button
-          className="nav-btn"
-          onClick={() => navigate("/affiliate")}
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '2px',
-            padding: '6px',
-            background: '#FF6600',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer'
-          }}
-        >
-          <span className="nav-icon" style={{ fontSize: '20px' }}>🎯</span>
-          <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Affiliate</span>
-        </button>
-        
-        <button
-          className="nav-btn withdraw-btn"
-          onClick={() => navigate("/withdraw-form")}
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '2px',
-            padding: '6px',
-            background: '#dc2626',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer'
-          }}
-        >
-          <span className="nav-icon" style={{ fontSize: '20px' }}>💸</span>
-          <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Withdraw</span>
         </button>
       </div>
 

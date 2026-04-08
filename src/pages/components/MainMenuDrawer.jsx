@@ -18,7 +18,7 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
   if (!open || !user) return null;
 
   const openWhatsAppSupport = () => {
-    const message = encodeURIComponent("Hello OpinionVault Support, I need help with my survey account.");
+    const message = encodeURIComponent("Hello Survey App Kenya Support, I need help with my survey account.");
     const whatsappUrl = `https://wa.me/254752881670?text=${message}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
     onClose();
@@ -26,7 +26,7 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
 
   const referralCode = user?.referral_code || user?.id;
   const referralLink = `${window.location.origin}/auth?ref=${referralCode}`;
-  const shareMessage = `Hey! I'm earning rewards by completing simple surveys on OpinionVault.\n\nJoin using my link and get started!\n\n${referralLink}`;
+  const shareMessage = `Hey! I'm earning rewards by completing simple surveys on Survey App Kenya.\n\nJoin using my link and get started!\n\n${referralLink}`;
 
   const shareToWhatsApp = () => {
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
