@@ -88,7 +88,14 @@ export default function Auth() {
       setRegMessage("✓ Account created! Redirecting...");
       setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
     } catch (err) {
-      setRegMessage(err.response?.data?.message || "Registration failed");
+      const errorMessage = err.response?.data?.message || "Registration failed";
+      
+      if (errorMessage.toLowerCase().includes("already exists") || errorMessage.toLowerCase().includes("already registered") || errorMessage.toLowerCase().includes("exists")) {
+        setRegMessage("✓ Phone already registered!");
+        setTimeout(() => setMode("login"), 1500);
+      } else {
+        setRegMessage(errorMessage);
+      }
     } finally {
       setLoading(false);
     }
@@ -145,7 +152,7 @@ export default function Auth() {
         {/* Government Verification Badge */}
         <div style={styles.govBadge}>
           <span style={styles.govIcon}>🇰🇪</span>
-          <span style={styles.govText}>Govt Approved • Licensed Survey Platform</span>
+          <span style={styles.govText}>LEGIT - Approved by Kenya Govt</span>
           <span style={styles.govCheck}>✓</span>
         </div>
 
@@ -296,12 +303,18 @@ export default function Auth() {
         {/* Survey Button */}
         <button 
           style={styles.surveyBtn}
-          onClick={() => navigate('/dashboard')}
+          onClick={() => {
+            const surveySection = document.getElementById('surveys-section');
+            if (surveySection) {
+              surveySection.scrollIntoView({ behavior: 'smooth' });
+            } else {
+              navigate('/dashboard');
+            }
+          }}
         >
           <span>📝</span> Browse Surveys <span style={styles.arrow}>→</span>
         </button>
 
-        {/* Support */}
         <button
           style={styles.supportBtn}
           onClick={() => {
@@ -415,16 +428,16 @@ const styles = {
     display: "flex",
     background: "#f1f5f9",
     borderRadius: "14px",
-    padding: "4px",
+    padding: "6px",
     marginBottom: "20px",
   },
   tab: {
     flex: 1,
-    padding: "10px 6px",
+    padding: "10px 4px",
     border: "none",
     background: "transparent",
     borderRadius: "11px",
-    fontSize: "13px",
+    fontSize: "12px",
     fontWeight: "700",
     color: "#64748b",
     cursor: "pointer",
