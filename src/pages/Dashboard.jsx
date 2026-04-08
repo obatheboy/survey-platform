@@ -1167,7 +1167,7 @@ export default function Dashboard() {
   </div>
 </section>
       {/* SURVEY PLANS - Shown after Welcome Bonus (ONLY ONE INSTANCE) */}
-      <section className="dashboard-section">
+      <section className="dashboard-section" id="surveys-section">
         <div className="section-heading">
           <h3>Survey Plan Available Today</h3>
           <p>Track your earnings across different plans</p>

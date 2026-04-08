@@ -1696,14 +1696,14 @@ p, span, div, button, a, label {
   align-items: center;
   justify-content: center;
   gap: 2px;
-  padding: 8px 2px;
+  padding: 8px 4px;
   background: transparent;
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: var(--transition-fast);
   color: rgba(255, 255, 255, 0.7);
-  max-width: 80px;
+  max-width: 90px;
   position: relative;
   min-height: 56px;
 }
@@ -1722,7 +1722,7 @@ p, span, div, button, a, label {
 }
 
 .nav-btn .nav-label {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.2px;
@@ -1731,6 +1731,7 @@ p, span, div, button, a, label {
   text-overflow: ellipsis;
   max-width: 100%;
   padding: 0 2px;
+  text-align: center;
 }
 
 .nav-btn:hover {
