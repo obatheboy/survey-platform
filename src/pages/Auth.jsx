@@ -316,6 +316,16 @@ export default function Auth() {
           </div>
         </div>
 
+        {/* Survey Button */}
+        <button 
+          style={styles.surveyBtn}
+          onClick={() => {
+            navigate('/dashboard', { state: { scrollToSurveys: true } });
+          }}
+        >
+          <span>📝</span> Browse Surveys <span style={styles.arrow}>→</span>
+        </button>
+
         <button
           style={styles.supportBtn}
           onClick={() => {
@@ -356,10 +366,10 @@ const styles = {
   },
   container: {
     width: "100%",
-    maxWidth: "380px",
+    maxWidth: "420px",
     background: "#ffffff",
     borderRadius: "20px",
-    padding: "18px 16px",
+    padding: "24px 20px",
     boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
   },
   govBadge: {
