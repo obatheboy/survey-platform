@@ -892,7 +892,7 @@ export default function Dashboard() {
       />
 
       {/* LIVE WITHDRAWAL FEED - MOVED TO TOP */}
-      <section className="dashboard-section" style={{ paddingTop: '0', paddingBottom: '0', marginTop: '10px' }}>
+      <section className="dashboard-section" style={{ paddingTop: '0', paddingBottom: '0', marginTop: '80px' }}>
         <LiveWithdrawalFeed />
       </section>
 
