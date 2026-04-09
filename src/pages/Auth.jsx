@@ -354,6 +354,13 @@ export default function Auth() {
           💬 Chat Support
         </button>
 
+        <button
+          style={styles.whatsappGroupBtn}
+          onClick={() => window.open("https://chat.whatsapp.com/D0lrxZA5yTx7fLlNQi7tB2", "_blank")}
+        >
+          👥 Join WhatsApp Group
+        </button>
+
         {/* Footer */}
         <p style={styles.footer}>
           © 2026 SurveyEarn • Licensed by Kenya Govt
@@ -631,7 +638,23 @@ const styles = {
     fontSize: "15px",
     fontWeight: "700",
     cursor: "pointer",
+    marginBottom: "10px",
+  },
+  whatsappGroupBtn: {
+    width: "100%",
+    padding: "14px",
+    borderRadius: "14px",
+    border: "none",
+    background: "linear-gradient(135deg, #128C7E, #25D366)",
+    color: "#ffffff",
+    fontSize: "15px",
+    fontWeight: "700",
+    cursor: "pointer",
     marginBottom: "16px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
   },
   footer: {
     textAlign: "center",
