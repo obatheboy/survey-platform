@@ -891,6 +891,11 @@ export default function Dashboard() {
         }}
       />
 
+      {/* LIVE WITHDRAWAL FEED - MOVED TO TOP */}
+      <section className="dashboard-section" style={{ paddingTop: '0', paddingBottom: '0', marginTop: '10px' }}>
+        <LiveWithdrawalFeed />
+      </section>
+
       {/* HERO SECTION - ULTRA COMPACT */}
       <div className="dashboard-section hero-section" style={{
         borderRadius: '0',
@@ -901,7 +906,6 @@ export default function Dashboard() {
         borderBottom: '1px solid rgba(255,255,255,0.2)',
         position: 'relative',
         overflow: 'hidden',
-        marginTop: '60px',
         marginBottom: '0'
       }}>
         <div style={{
@@ -1376,14 +1380,11 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* NOTIFICATIONS & LIVE WITHDRAWALS */}
+      {/* NOTIFICATIONS */}
       <section className="dashboard-section">
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
           <div>
             <UserNotifications />
-          </div>
-          <div>
-            <LiveWithdrawalFeed />
           </div>
         </div>
       </section>
