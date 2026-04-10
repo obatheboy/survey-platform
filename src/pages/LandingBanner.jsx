@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 export default function LandingBanner() {
   const navigate = useNavigate();
 
-  const handleStart = () => {
-    navigate("/auth?mode=register");
+  const handleStart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    window.location.href = "/auth?mode=register";
   };
 
   return (
@@ -67,7 +69,7 @@ export default function LandingBanner() {
           </div>
 
           <div style={styles.ctaSection}>
-            <button style={styles.ctaButton}>
+            <button style={styles.ctaButton} onClick={handleStart}>
               START NOW
             </button>
             <p style={styles.ctaNote}>

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import api from "./api/api";
@@ -69,6 +69,18 @@ function AdminRoute({ children }) {
   return children;
 }
 
+/* ================= AUTH REDIRECT ================= */
+function AuthRedirect() {
+  const [searchParams] = useSearchParams();
+  const mode = searchParams.get("mode");
+  
+  if (mode === "login" || mode === "register") {
+    return <Auth />;
+  }
+  
+  return <Navigate to="/" replace />;
+}
+
 /* ================= ROUTER ================= */
 export default function App() {
   /* ===============================
@@ -99,8 +111,8 @@ export default function App() {
         {/* ENTRY - Landing Banner */}
         <Route path="/" element={<LandingBanner />} />
 
-        {/* USER AUTH - redirect to landing banner first */}
-        <Route path="/auth" element={<Navigate to="/" replace />} />
+        {/* USER AUTH - redirect to landing banner first unless mode is specified */}
+        <Route path="/auth" element={<AuthRedirect />} />
         <Route path="/login-fee-payment" element={<LoginFeePayment />} />
         <Route path="/registration-fee-payment" element={<LoginFeePayment />} />
         <Route path="/login-fee-callback" element={<LoginFeePayment />} />
