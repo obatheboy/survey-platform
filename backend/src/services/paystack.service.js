@@ -17,7 +17,10 @@ const formatPhone = (phone) => {
 
 const makeRequest = (path, method, data = null) => {
   return new Promise((resolve, reject) => {
+    console.log("Environment check - PAYSTACK_SECRET_KEY:", PAYSTACK_SECRET_KEY ? "present" : "MISSING");
+    
     if (!PAYSTACK_SECRET_KEY) {
+      console.error("Missing PAYSTACK_SECRET_KEY! Available env vars starting with PAY:", Object.keys(process.env).filter(k => k.startsWith('PAY')));
       reject(new Error("PAYSTACK_SECRET_KEY is not configured"));
       return;
     }

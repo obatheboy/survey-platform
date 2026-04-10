@@ -551,7 +551,7 @@ export default function Dashboard() {
     const whatsappUrl = `https://wa.me/2547140834185?text=${message}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
-
+  
   // Theme toggle removed - light mode only
 
   /* =========================
