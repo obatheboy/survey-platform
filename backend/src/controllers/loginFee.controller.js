@@ -4,10 +4,39 @@ const paystackService = require("../services/paystack.service");
 
 const LOGIN_FEE = 100;
 
+// ✅ Helper function to format phone numbers (handles 01 and 07)
+const formatPhoneForPaystack = (phone) => {
+  if (!phone) return null;
+  let cleaned = phone.replace(/[^0-9]/g, '');
+  
+  // Handle 01XXXXXXXX (new Safaricom prefix)
+  if (cleaned.startsWith('01')) {
+    cleaned = '254' + cleaned.substring(1); // 01XXXXXXXX -> 2541XXXXXXXX
+  }
+  // Handle 07XXXXXXXX (old Safaricom prefix)
+  else if (cleaned.startsWith('07')) {
+    cleaned = '254' + cleaned.substring(1); // 07XXXXXXXX -> 2547XXXXXXXX
+  }
+  // Handle numbers starting with 1 or 7 (no leading 0)
+  else if (cleaned.startsWith('1') || cleaned.startsWith('7')) {
+    cleaned = '254' + cleaned;
+  }
+  // Handle numbers already starting with 254
+  else if (!cleaned.startsWith('254')) {
+    cleaned = '254' + cleaned;
+  }
+  
+  return '+' + cleaned;
+};
+
 exports.initiateLoginFeePayment = async (req, res) => {
   try {
     const userId = req.user.id;
     const user = await User.findById(userId);
+    
+    console.log("=== INITIATE LOGIN FEE PAYMENT ===");
+    console.log("User ID:", userId);
+    console.log("User phone:", user.phone);
     
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -17,66 +46,53 @@ exports.initiateLoginFeePayment = async (req, res) => {
       return res.status(400).json({ message: "Login fee already paid" });
     }
 
+    // ✅ Format phone number correctly (handles 01 and 07)
+    const formattedPhone = formatPhoneForPaystack(user.phone);
+    console.log("Formatted phone for Paystack:", formattedPhone);
+    
     // Use user's email or generate one
     const userEmail = user.email || `user_${userId}@surveyearn.com`;
     
-    // Initialize Paystack payment
+    // ✅ Call paystack service with formatted phone
     const payment = await paystackService.initializePayment(
       LOGIN_FEE,
-      user.phone,
+      formattedPhone,  // ✅ Use formatted phone
       userEmail,
       userId,
       "SurveyEarn Login Fee - KES 100"
     );
 
     console.log("Paystack payment response:", payment);
-    console.log("Paystack response keys:", payment.data ? Object.keys(payment.data) : "no data");
-    console.log("Full Paystack response:", JSON.stringify(payment, null, 2));
 
-    // Check for both reference and authorization_url
-    const reference = payment.data?.reference;
-    const authorizationUrl = payment.data?.authorization_url;
-    const status = payment.data?.status;
-    const message = payment.data?.message; // Some responses have a message
+    // ✅ Check response structure
+    const reference = payment.reference || payment.data?.reference;
+    const authorizationUrl = payment.authorization_url || payment.data?.authorization_url;
 
     if (!reference && !authorizationUrl) {
       console.error("No reference or authorization_url in response:", payment);
       return res.status(500).json({ 
-        message: "Payment initialization failed. Please try again or contact support.",
+        message: "Payment initialization failed. Please try again.",
         debug: "no_reference_or_url"
       });
     }
 
-    // If there's an authorization_url, return it so frontend can redirect
-    if (authorizationUrl) {
-      res.status(200).json({
-        success: true,
-        message: "Payment page opened",
-        authorization_url: authorizationUrl,
-        reference: reference,
-        amount: LOGIN_FEE,
-        instructions: "Complete payment on the next page"
-      });
-    } else {
-      // STK Push was initiated
-      res.status(200).json({
-        success: true,
-        message: status === "success" ? "Payment completed" : "STK Push sent to your phone",
-        reference: reference,
-        status: status,
-        amount: LOGIN_FEE,
-        instructions: "Please check your phone for the M-Pesa STK push and enter your PIN"
-      });
-    }
+    // ✅ Return response for STK push
+    res.status(200).json({
+      success: true,
+      message: "STK Push sent to your phone. Check your M-Pesa and enter PIN.",
+      authorization_url: authorizationUrl,
+      reference: reference,
+      amount: LOGIN_FEE,
+      phone: formattedPhone,
+      instructions: "Please check your phone for the M-Pesa STK push and enter your PIN"
+    });
+    
   } catch (error) {
     console.error("Login fee payment error:", error);
-    // Return more detailed error for debugging
-    const errorMessage = error.message || "Unknown error";
-    const errorDetails = error.response?.data || error.stack;
     res.status(500).json({ 
-      message: "Failed to initiate payment",
-      debug: errorMessage,
-      details: errorDetails
+      success: false,
+      message: "Failed to initiate payment: " + (error.message || "Unknown error"),
+      debug: error.message
     });
   }
 };
@@ -85,7 +101,7 @@ exports.verifyLoginFeePayment = async (req, res) => {
   try {
     const { reference } = req.body;
     const userId = req.user.id;
-    const user = await User.findById(userId);
+    let user = await User.findById(userId);
     
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -101,6 +117,7 @@ exports.verifyLoginFeePayment = async (req, res) => {
           { expiresIn: "7d" }
         );
         return res.status(200).json({
+          success: true,
           message: "Login fee already paid",
           token,
           user: {
@@ -111,9 +128,13 @@ exports.verifyLoginFeePayment = async (req, res) => {
           }
         });
       }
-      return res.status(400).json({ message: "No payment reference. Please initiate payment first." });
+      return res.status(400).json({ 
+        success: false,
+        message: "No payment reference. Please initiate payment first." 
+      });
     }
 
+    // If already paid, return success
     if (user.login_fee_paid) {
       const token = jwt.sign(
         { id: user._id, phone: user.phone, role: user.role },
@@ -121,6 +142,7 @@ exports.verifyLoginFeePayment = async (req, res) => {
         { expiresIn: "7d" }
       );
       return res.status(200).json({
+        success: true,
         message: "Login fee already paid",
         token,
         user: {
@@ -132,71 +154,47 @@ exports.verifyLoginFeePayment = async (req, res) => {
       });
     }
 
-    // Verify with Paystack if reference provided
-    if (reference) {
-      console.log("Verifying payment with reference:", reference);
-      try {
-        const verification = await paystackService.verifyPayment(reference);
-        console.log("Payment verification response:", verification);
-        console.log("Verification data keys:", verification.data ? Object.keys(verification.data) : "no data");
-        console.log("Verification status:", verification.data?.status);
-        
-        // Check various status values that could mean successful payment
-        const paymentStatus = verification.data?.status;
-        const isSuccess = paymentStatus === "success" || paymentStatus === "approved";
-        
-        if (isSuccess && verification.data?.amount >= LOGIN_FEE * 100) {
-          user.login_fee_paid = true;
-          await user.save();
+    // Verify with Paystack
+    console.log("Verifying payment with reference:", reference);
+    const verification = await paystackService.verifyPayment(reference);
+    console.log("Verification result:", verification);
+    
+    if (verification.success && verification.amount >= LOGIN_FEE) {
+      user.login_fee_paid = true;
+      user.login_fee_paid_at = new Date();
+      await user.save();
 
-          const token = jwt.sign(
-            { id: user._id, phone: user.phone, role: user.role },
-            process.env.JWT_SECRET,
-            { expiresIn: "7d" }
-          );
-
-          return res.status(200).json({
-            message: "Payment verified successfully",
-            token,
-            user: {
-              id: user._id,
-              full_name: user.full_name,
-              phone: user.phone,
-              login_fee_paid: true
-            }
-          });
-        }
-      } catch (verifyError) {
-        console.error("Payment verification error:", verifyError.message);
-      }
-    }
-
-    // If user already paid (via webhook or admin), return success
-    // Re-fetch user to get latest status after potential webhook update
-    const updatedUser = await User.findById(userId);
-    if (updatedUser.login_fee_paid) {
       const token = jwt.sign(
-        { id: updatedUser._id, phone: updatedUser.phone, role: updatedUser.role },
+        { id: user._id, phone: user.phone, role: user.role },
         process.env.JWT_SECRET,
         { expiresIn: "7d" }
       );
+
       return res.status(200).json({
-        message: "Login fee already paid",
+        success: true,
+        message: "Payment verified successfully",
         token,
         user: {
-          id: updatedUser._id,
-          full_name: updatedUser.full_name,
-          phone: updatedUser.phone,
+          id: user._id,
+          full_name: user.full_name,
+          phone: user.phone,
           login_fee_paid: true
         }
       });
     }
 
     // If payment not verified yet
-    res.status(400).json({ message: "Payment not yet received. Please complete payment first." });
+    res.status(400).json({ 
+      success: false,
+      message: "Payment not yet received. Please complete payment first." 
+    });
+    
   } catch (error) {
     console.error("Verify payment error:", error);
-    res.status(500).json({ message: "Failed to verify payment" });
+    res.status(500).json({ 
+      success: false,
+      message: "Failed to verify payment" 
+    });
   }
 };
 
@@ -210,22 +208,27 @@ exports.checkLoginFeeStatus = async (req, res) => {
     }
 
     res.status(200).json({
+      success: true,
       login_fee_paid: user.login_fee_paid || false
     });
   } catch (error) {
     console.error("Check status error:", error);
-    res.status(500).json({ message: "Failed to check payment status" });
+    res.status(500).json({ 
+      success: false,
+      message: "Failed to check payment status" 
+    });
   }
 };
 
-// Webhook handler for Paystack callbacks
+// ✅ Webhook handler for Paystack callbacks (UPDATED)
 exports.paymentWebhook = async (req, res) => {
   try {
+    const crypto = require("crypto");
     const event = req.body;
-    console.log("Paystack webhook received:", event);
+    console.log("Paystack webhook received:", event.event);
     
     // Verify the event is from Paystack
-    const hash = require("crypto")
+    const hash = crypto
       .createHmac("sha512", process.env.PAYSTACK_SECRET_KEY)
       .update(JSON.stringify(req.body))
       .digest("hex");
@@ -238,14 +241,25 @@ exports.paymentWebhook = async (req, res) => {
     // Handle successful payment
     if (event.event === "charge.success") {
       const metadata = event.data?.metadata || {};
+      const userId = metadata.user_id;
+      const amount = event.data?.amount / 100;
       
-      if (metadata.type === "login_fee" && metadata.user_id) {
-        const user = await User.findById(metadata.user_id);
+      console.log(`✅ Payment successful! User: ${userId}, Amount: KES ${amount}`);
+      
+      if (userId && (metadata.type === "login_fee" || !metadata.type)) {
+        const user = await User.findById(userId);
         if (user && !user.login_fee_paid) {
           user.login_fee_paid = true;
+          user.login_fee_paid_at = new Date();
           await user.save();
-          console.log(`✅ Login fee paid for user: ${user.phone}`);
+          console.log(`✅ Login fee marked as paid for user: ${user.phone} (${user._id})`);
+        } else if (user) {
+          console.log(`User ${userId} already had login_fee_paid = true`);
+        } else {
+          console.log(`User ${userId} not found`);
         }
+      } else {
+        console.log("No user_id in metadata or not login_fee type:", metadata);
       }
     }
 
