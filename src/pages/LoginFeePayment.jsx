@@ -26,18 +26,30 @@ export default function LoginFeePayment() {
   useEffect(() => {
     const initiatePayment = async () => {
       try {
-        const res = await loginFeeApi.initiate();
+        const token = localStorage.getItem("token");
+        console.log("Initiating payment with token:", token ? "present" : "missing");
         
+        const res = await loginFeeApi.initiate();
+        console.log("Payment response:", res.data);
+        
+        // Handle checkout link payment
         if (res.data.payment_link) {
           setPaymentLink(res.data.payment_link);
           setCheckoutId(res.data.checkout_id);
-          setMessage("Payment link created! Click 'Pay with M-Pesa' to complete payment.");
+          setMessage("💳 Payment link created! Click 'Pay with M-Pesa' to complete payment.");
+        } 
+        // Handle STK push
+        else if (res.data.checkout_id) {
+          setCheckoutId(res.data.checkout_id);
+          setMessage("📱 STK Push sent! Check your phone and enter your M-Pesa PIN.");
+          setPolling(true);
         } else {
-          setMessage("Could not create payment link. Please try again.");
+          setMessage("Could not initiate payment. Please try again.");
         }
       } catch (err) {
         console.error("Initiate error:", err);
-        setMessage("Failed to create payment. Please try again.");
+        console.error("Response:", err.response?.data);
+        setMessage(err.response?.data?.message || "Failed to create payment. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -152,12 +164,25 @@ export default function LoginFeePayment() {
           </div>
 
           {paymentLink ? (
-            <button 
-              style={styles.payBtn} 
-              onClick={handlePayWithMpesa}
-            >
-              💳 Pay with M-Pesa
-            </button>
+            <div style={styles.linkPaymentSection}>
+              <p style={styles.linkText}>
+                Click the button below to pay via M-Pesa
+              </p>
+              <button 
+                style={styles.payBtn} 
+                onClick={handlePayWithMpesa}
+              >
+                💳 Pay with M-Pesa
+              </button>
+            </div>
+          ) : checkoutId ? (
+            <div style={styles.stkStatus}>
+              <span style={styles.stkIcon}>📱</span>
+              <p style={styles.stkText}>
+                M-Pesa STK Push has been sent to your phone <strong>{phone}</strong>
+              </p>
+              <p style={styles.stkHint}>Check your phone and enter your M-Pesa PIN</p>
+            </div>
           ) : (
             <div style={styles.fallbackSection}>
               <p style={styles.fallbackText}>
@@ -294,6 +319,38 @@ const styles = {
     padding: "20px 0",
   },
   fallbackText: {
+    fontSize: "14px",
+    color: "#64748b",
+    marginBottom: "16px",
+  },
+  stkStatus: {
+    textAlign: "center",
+    padding: "24px",
+    background: "linear-gradient(135deg, #ecfdf5, #d1fae5)",
+    borderRadius: "12px",
+    marginBottom: "20px",
+    border: "2px solid #10b981",
+  },
+  stkIcon: {
+    fontSize: "48px",
+    display: "block",
+    marginBottom: "12px",
+  },
+  stkText: {
+    fontSize: "16px",
+    color: "#065f46",
+    marginBottom: "8px",
+  },
+  stkHint: {
+    fontSize: "14px",
+    color: "#047857",
+    fontWeight: "600",
+  },
+  linkPaymentSection: {
+    textAlign: "center",
+    padding: "20px 0",
+  },
+  linkText: {
     fontSize: "14px",
     color: "#64748b",
     marginBottom: "16px",

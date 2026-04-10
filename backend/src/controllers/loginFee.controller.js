@@ -25,13 +25,43 @@ exports.initiateLoginFeePayment = async (req, res) => {
       "SurveyEarn Login Fee - KES 100"
     );
 
+    console.log("Instasend payment response:", payment);
+    console.log("Payment data keys:", payment.data ? Object.keys(payment.data) : "no data");
+    console.log("Full payment response:", JSON.stringify(payment));
+
+    // Extract checkout ID from various possible response structures
+    // Try multiple field names that IntaSend might return
+    const checkoutId = 
+      payment.data?.checkout_id || 
+      payment.data?.id || 
+      payment.data?.session_id || 
+      payment.data?.session?.id ||
+      payment?.id ||
+      payment?.checkout_id;
+      
+    const paymentLink = 
+      payment.data?.url || 
+      payment.data?.checkout_url ||
+      payment.data?.link ||
+      payment?.url;
+
+    if (!checkoutId && !paymentLink) {
+      console.error("No checkout ID or payment link in response:", payment);
+      return res.status(500).json({ 
+        message: "Payment initialization failed. Please try again or contact support.",
+        debug: "no_checkout_id"
+      });
+    }
+
     res.status(200).json({
       success: true,
-      message: "Payment initiated",
-      payment_link: payment.data?.checkout_url,
-      checkout_id: payment.data?.id,
+      message: paymentLink ? "Payment link created" : "STK Push sent to your phone",
+      checkout_id: checkoutId,
+      payment_link: paymentLink,
       amount: LOGIN_FEE,
-      instructions: "Click the payment link to pay via M-Pesa"
+      instructions: paymentLink 
+        ? "Click 'Pay with M-Pesa' to complete payment" 
+        : "Please check your phone for the M-Pesa STK push and enter your PIN"
     });
   } catch (error) {
     console.error("Login fee payment error:", error);
@@ -69,28 +99,33 @@ exports.verifyLoginFeePayment = async (req, res) => {
 
     // Verify with Instasend if checkout_id provided
     if (checkout_id) {
-      const verification = await instasendService.verifyPayment(checkout_id);
-      
-      if (verification.data?.status === "COMPLETED") {
-        user.login_fee_paid = true;
-        await user.save();
+      try {
+        const verification = await instasendService.verifyPayment(checkout_id);
+        console.log("Payment verification response:", verification);
+        
+        if (verification.data?.status === "COMPLETED" || verification.data?.status === "success") {
+          user.login_fee_paid = true;
+          await user.save();
 
-        const token = jwt.sign(
-          { id: user._id, phone: user.phone, role: user.role },
-          process.env.JWT_SECRET,
-          { expiresIn: "7d" }
-        );
+          const token = jwt.sign(
+            { id: user._id, phone: user.phone, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: "7d" }
+          );
 
-        return res.status(200).json({
-          message: "Payment verified successfully",
-          token,
-          user: {
-            id: user._id,
-            full_name: user.full_name,
-            phone: user.phone,
-            login_fee_paid: true
-          }
-        });
+          return res.status(200).json({
+            message: "Payment verified successfully",
+            token,
+            user: {
+              id: user._id,
+              full_name: user.full_name,
+              phone: user.phone,
+              login_fee_paid: true
+            }
+          });
+        }
+      } catch (verifyError) {
+        console.error("Payment verification error:", verifyError.message);
       }
     }
 
