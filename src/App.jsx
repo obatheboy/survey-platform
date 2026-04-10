@@ -5,6 +5,7 @@ import api from "./api/api";
 
 /* ================= USER PAGES ================= */
 import Auth from "./pages/Auth";
+import LandingBanner from "./pages/LandingBanner";
 import Dashboard from "./pages/Dashboard";
 import Surveys from "./pages/Surveys";
 import Activate from "./pages/Activate";
@@ -95,11 +96,11 @@ export default function App() {
       <Toaster position="top-center" reverseOrder={false} />
       <PWAInstallPrompt />
       <Routes>
-        {/* ENTRY */}
-        <Route path="/" element={<Navigate to="/auth?mode=register" replace />} />
+        {/* ENTRY - Landing Banner */}
+        <Route path="/" element={<LandingBanner />} />
 
-        {/* USER AUTH */}
-        <Route path="/auth" element={<Auth />} />
+        {/* USER AUTH - redirect to landing banner first */}
+        <Route path="/auth" element={<Navigate to="/" replace />} />
         <Route path="/login-fee-payment" element={<LoginFeePayment />} />
         <Route path="/registration-fee-payment" element={<LoginFeePayment />} />
         <Route path="/login-fee-callback" element={<LoginFeePayment />} />

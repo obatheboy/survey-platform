@@ -173,6 +173,29 @@ exports.login = async (req, res) => {
 
     // Check if login fee is required
     if (!user.login_fee_paid) {
+      // Check if there's a pending manual payment - if APPROVED, log them in
+      if (user.login_fee_pending && user.login_fee_pending.status === 'APPROVED') {
+        user.login_fee_paid = true;
+        user.login_fee_paid_at = user.login_fee_pending.approved_at || new Date();
+        await user.save();
+        
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+        res.cookie("token", token, COOKIE_OPTIONS);
+        
+        return res.json({
+          message: "Login successful",
+          token: token,
+          user: {
+            id: user._id,
+            phone: user.phone,
+            is_activated: user.is_activated,
+            login_fee_paid: true,
+            welcome_bonus_received: user.welcome_bonus_received || false,
+            welcome_bonus: user.welcome_bonus || 1200,
+          },
+        });
+      }
+      
       // Check if there's a pending manual payment
       if (user.login_fee_pending && user.login_fee_pending.status === 'PENDING') {
         const pendingToken = jwt.sign({ id: user._id, phone: user.phone, role: user.role, payment_only: true }, process.env.JWT_SECRET, { expiresIn: "5m" });

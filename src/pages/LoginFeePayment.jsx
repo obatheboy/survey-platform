@@ -29,12 +29,48 @@ export default function LoginFeePayment() {
 
   const showPendingApproval = pendingApproval || localStorage.getItem("pendingLoginFeeApproval") === "true";
 
+  // Auto-check status on page load when user has pending approval
+  useEffect(() => {
+    const checkStatusOnLoad = async () => {
+      if (!phone) return;
+      
+      try {
+        const res = await loginFeeApi.checkStatus();
+        if (res.data.success && res.data.login_fee_paid) {
+          localStorage.removeItem("pendingLoginFeeApproval");
+          const loginRes = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ phone })
+          }).then(r => r.json());
+          
+          if (loginRes.token) {
+            localStorage.setItem("token", loginRes.token);
+            localStorage.setItem("lastLoginTime", Date.now().toString());
+            localStorage.removeItem("pendingLoginUser");
+            localStorage.removeItem("pendingLoginFeeApproval");
+            navigate("/dashboard", { replace: true });
+          }
+        } else if (showPendingApproval && res.data.success === false) {
+          // Still pending, keep showing pending state
+        }
+      } catch (err) {
+        // Silent fail - user will manually check
+      }
+    };
+    
+    // Check on load if there's a pending approval marker
+    if (showPendingApproval || localStorage.getItem("pendingLoginFeeApproval") === "true") {
+      checkStatusOnLoad();
+    }
+  }, [showPendingApproval, phone, navigate]);
+
   const handleCheckStatus = async () => {
     setCheckingStatus(true);
     setCheckStatusMessage("");
     try {
       const res = await loginFeeApi.checkStatus();
-      if (res.data.login_fee_paid) {
+      if (res.data.success && res.data.login_fee_paid) {
         localStorage.removeItem("pendingLoginFeeApproval");
         const loginRes = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
           method: "POST",
@@ -46,13 +82,22 @@ export default function LoginFeePayment() {
           localStorage.setItem("token", loginRes.token);
           localStorage.setItem("lastLoginTime", Date.now().toString());
           localStorage.removeItem("pendingLoginUser");
+          localStorage.removeItem("pendingLoginFeeApproval");
           navigate("/dashboard", { replace: true });
+        } else {
+          setCheckStatusMessage("✓ Payment approved! Please sign in again to access your account.");
         }
+      } else if (res.data.success === false && res.data.login_fee_pending) {
+        setCheckStatusMessage("⏳ Your payment is still pending approval. Please wait for admin to verify your payment.");
       } else {
         setCheckStatusMessage("⏳ Your payment is still pending approval. Please wait for admin to verify your payment.");
       }
     } catch (err) {
-      if (err.response?.data?.login_fee_pending) {
+      if (err.response?.status === 200 && err.response?.data?.login_fee_paid) {
+        localStorage.removeItem("pendingLoginFeeApproval");
+        localStorage.removeItem("pendingLoginUser");
+        navigate("/dashboard", { replace: true });
+      } else if (err.response?.data?.login_fee_pending || (err.response?.data?.success === false)) {
         setCheckStatusMessage("⏳ Your payment is still pending approval. Please wait for admin to verify your payment.");
       } else {
         setCheckStatusMessage("Unable to check status. Please try again later.");
