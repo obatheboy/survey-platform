@@ -30,6 +30,8 @@ exports.initiateLoginFeePayment = async (req, res) => {
     );
 
     console.log("Paystack payment response:", payment);
+    console.log("Paystack response keys:", payment.data ? Object.keys(payment.data) : "no data");
+    console.log("Full Paystack response:", JSON.stringify(payment, null, 2));
 
     // For STK Push, the response has reference and status
     const reference = payment.data?.reference;

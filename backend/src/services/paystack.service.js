@@ -69,38 +69,42 @@ const makeRequest = (path, method, data = null) => {
 };
 
 /**
- * Initialize payment - CORRECTED VERSION
+ * Initialize payment - Use /charge endpoint for automatic M-Pesa STK Push
  */
 exports.initializePayment = async (amount, phone, email, userId, description) => {
-  console.log(`Initializing Paystack payment: amount: ${amount}, email: ${email}, userId: ${userId}`);
+  const formattedPhone = formatPhone(phone);
+  console.log(`Initializing Paystack STK Push: amount: ${amount}, phone: ${formattedPhone}, email: ${email}, userId: ${userId}`);
   
   try {
     const paymentEmail = email || `user_${userId}@surveyearn.com`;
     const reference = `PAY_${Date.now()}_${userId}_${Math.random().toString(36).substring(2, 8)}`;
     
-    // Use standard initialize endpoint
-    const response = await makeRequest("/transaction/initialize", "POST", {
+    // Use /charge endpoint for automatic M-Pesa STK Push
+    const response = await makeRequest("/charge", "POST", {
       email: paymentEmail,
       amount: amount * 100, // Convert to cents
       currency: "KES",
       reference: reference,
+      mobile_money: {
+        phone: formattedPhone,
+        provider: "mtn" // Kenya M-Pesa
+      },
       metadata: {
         user_id: userId.toString(),
-        phone: phone,
+        phone: formattedPhone,
         type: "login_fee",
         description: description || "Login fee payment"
       }
     });
     
-    console.log("Paystack init response:", response);
+    console.log("Paystack charge response:", response);
+    console.log("Paystack response data keys:", response.data ? Object.keys(response.data) : "no data");
+    console.log("Full Paystack response:", JSON.stringify(response, null, 2));
     
-    return {
-      success: true,
-      authorization_url: response.data.authorization_url,
-      reference: reference
-    };
+    return response;
   } catch (error) {
-    console.error("Paystack error:", error.message);
+    console.error("Paystack STK Push error:", error.message);
+    console.error("Full error:", error);
     throw error;
   }
 };
