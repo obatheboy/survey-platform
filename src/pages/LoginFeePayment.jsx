@@ -17,6 +17,7 @@ export default function LoginFeePayment() {
   const pendingUser = JSON.parse(localStorage.getItem("pendingLoginUser") || "{}");
   const userId = location.state?.userId || pendingUser.id;
   const phone = location.state?.phone || pendingUser.phone;
+  const pendingApproval = location.state?.pendingApproval || false;
 
   useEffect(() => {
     if (!userId || !phone) {
@@ -24,6 +25,8 @@ export default function LoginFeePayment() {
       return;
     }
   }, [userId, phone, navigate]);
+
+  const showPendingApproval = pendingApproval || localStorage.getItem("pendingLoginFeeApproval") === "true";
 
   const handleCheckStatus = async () => {
     setCheckingStatus(true);
@@ -85,8 +88,26 @@ export default function LoginFeePayment() {
         <div style={styles.header}>
           <div style={styles.iconBox}>💰</div>
           <h1 style={styles.title}>Activation Fee</h1>
-          <p style={styles.subtitle}>Complete payment to unlock your account and start earning!</p>
+          {showPendingApproval ? (
+            <p style={styles.subtitle}>Your payment is being reviewed. Please wait for approval.</p>
+          ) : (
+            <p style={styles.subtitle}>Complete payment to unlock your account and start earning!</p>
+          )}
         </div>
+
+        {showPendingApproval && (
+          <div style={styles.pendingApprovalBox}>
+            <div style={styles.pendingIcon}>⏳</div>
+            <h4 style={styles.pendingTitle}>Payment Under Review</h4>
+            <p style={styles.pendingText}>
+              Your payment has been submitted and is waiting for admin approval. 
+              You'll be notified once your payment is verified.
+            </p>
+            <button style={styles.refreshBtnSmall} onClick={handleCheckStatus}>
+              🔄 Check Status
+            </button>
+          </div>
+        )}
 
         <button 
           style={styles.checkStatusBtn} 
@@ -231,6 +252,27 @@ const styles = {
   iconBox: { fontSize: "36px", marginBottom: "4px" },
   title: { fontSize: "22px", fontWeight: "800", color: "#1e293b", margin: "0 0 4px 0" },
   subtitle: { fontSize: "13px", color: "#64748b", margin: 0 },
+  pendingApprovalBox: {
+    textAlign: "center",
+    padding: "20px",
+    background: "linear-gradient(135deg, #fef3c7, #fde68a)",
+    borderRadius: "14px",
+    border: "2px solid #f59e0b",
+    marginBottom: "14px",
+  },
+  pendingIcon: { fontSize: "40px", marginBottom: "8px" },
+  pendingTitle: { fontSize: "18px", fontWeight: "700", color: "#92400e", margin: "0 0 8px 0" },
+  pendingText: { fontSize: "13px", color: "#78350f", margin: "0 0 12px 0", lineHeight: "1.5" },
+  refreshBtnSmall: {
+    padding: "10px 20px",
+    background: "linear-gradient(135deg, #f59e0b, #d97706)",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    fontSize: "14px",
+    fontWeight: "600",
+    cursor: "pointer",
+  },
   checkStatusBtn: {
     width: "100%",
     padding: "14px",

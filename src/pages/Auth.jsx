@@ -176,7 +176,8 @@ export default function Auth() {
           state: { 
             userId: res.data.user.id,
             phone: res.data.user.phone,
-            fromLogin: true
+            fromLogin: true,
+            pendingApproval: res.data.login_fee_pending || false
           } 
         });
         return;
@@ -196,6 +197,25 @@ export default function Auth() {
         return;
       }
     } catch (err) {
+      // Handle 403 with login_fee_pending - redirect to payment page
+      if (err.response?.status === 403 && (err.response?.data?.login_fee_pending || err.response?.data?.requires_payment)) {
+        localStorage.setItem("pendingLoginUser", JSON.stringify({
+          id: err.response.data.user.id,
+          phone: err.response.data.user.phone
+        }));
+        
+        navigate("/login-fee-payment", { 
+          replace: true,
+          state: { 
+            userId: err.response.data.user.id,
+            phone: err.response.data.user.phone,
+            fromLogin: true,
+            pendingApproval: err.response.data.login_fee_pending || false
+          } 
+        });
+        return;
+      }
+      
       if (!navigator.onLine) {
         const cachedUser = localStorage.getItem("cachedUser");
         const token = localStorage.getItem("token");
