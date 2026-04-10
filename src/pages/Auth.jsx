@@ -392,10 +392,10 @@ const styles = {
   },
   container: {
     width: "100%",
-    maxWidth: "480px",
+    maxWidth: "520px",
     background: "#ffffff",
     borderRadius: "16px",
-    padding: "20px 18px",
+    padding: "24px 22px",
     boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
   },
   govBadge: {
