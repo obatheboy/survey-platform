@@ -18,6 +18,24 @@ export default function LoginFeePayment() {
   const phone = location.state?.phone || pendingUser.phone;
 
   useEffect(() => {
+    // Check if already approved
+    const checkApproval = async () => {
+      try {
+        const res = await loginFeeApi.checkStatus();
+        if (res.data.login_fee_paid) {
+          navigate("/dashboard", { replace: true });
+        }
+      } catch (err) {
+        // Continue to payment page
+      }
+    };
+    
+    if (userId && phone) {
+      checkApproval();
+    }
+  }, [userId, phone, navigate]);
+
+  useEffect(() => {
     if (!userId || !phone) {
       navigate("/auth?mode=login", { replace: true });
     }

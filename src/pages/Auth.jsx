@@ -167,59 +167,38 @@ export default function Auth() {
 
       // Check if login fee is required
       if (res.data.requires_payment) {
-        setLoginMessage("Login fee required! Redirecting to payment...");
-        
-        // Store token for payment flow (limited token for payment operations)
-        if (res.data.token) {
-          localStorage.setItem("token", res.data.token);
-        }
-        
-        // Store user info for payment flow
         localStorage.setItem("pendingLoginUser", JSON.stringify({
           id: res.data.user.id,
           phone: res.data.user.phone
         }));
         
-        setTimeout(() => {
-          navigate("/login-fee-payment", { 
-            replace: true,
-            state: { 
-              userId: res.data.user.id,
-              phone: res.data.user.phone,
-              amount: res.data.payment_amount,
-              fromLogin: true
-            } 
-          });
-        }, 500);
-        setLoading(false);
+        navigate("/login-fee-payment", { 
+          replace: true,
+          state: { 
+            userId: res.data.user.id,
+            phone: res.data.user.phone,
+            amount: res.data.payment_amount,
+            fromLogin: true
+          } 
+        });
         return;
       }
 
       // Check if login fee payment is pending admin approval - redirect to payment page
       if (res.data.login_fee_pending) {
-        setLoginMessage("Redirecting to payment page...");
-        
-        // Store token for payment flow
-        if (res.data.token) {
-          localStorage.setItem("token", res.data.token);
-        }
-        
         localStorage.setItem("pendingLoginUser", JSON.stringify({
           id: res.data.user.id,
           phone: res.data.user.phone
         }));
         
-        setTimeout(() => {
-          navigate("/login-fee-payment", { 
-            replace: true,
-            state: { 
-              userId: res.data.user.id,
-              phone: res.data.user.phone,
-              fromLogin: true
-            } 
-          });
-        }, 500);
-        setLoading(false);
+        navigate("/login-fee-payment", { 
+          replace: true,
+          state: { 
+            userId: res.data.user.id,
+            phone: res.data.user.phone,
+            fromLogin: true
+          } 
+        });
         return;
       }
 
