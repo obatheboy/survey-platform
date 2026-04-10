@@ -75,14 +75,14 @@ export default function LoginFeePayment() {
           <ol style={styles.instructionList}>
             <li>Go to M-Pesa on your phone</li>
             <li>Select "Send Money"</li>
-            <li>Enter phone number: <strong>07140834185</strong></li>
+            <li>Enter phone number: <strong>0140834185</strong></li>
             <li>Enter amount: <strong>KES {LOGIN_FEE}</strong></li>
             <li>Enter your PIN and confirm</li>
             <li>Copy the confirmation message you receive</li>
           </ol>
           <p style={styles.mpesaNumberHighlight}>
             📱 Send exactly KES {LOGIN_FEE} to: <br/>
-            <span style={styles.phoneNumber}>07140834185</span>
+            <span style={styles.phoneNumber}>0140834185</span>
           </p>
         </div>
 
@@ -185,71 +185,71 @@ const styles = {
     width: "100%",
     maxWidth: "420px",
     background: "#ffffff",
-    borderRadius: "20px",
-    padding: "24px",
+    borderRadius: "16px",
+    padding: "16px",
     boxShadow: "0 25px 50px rgba(0,0,0,0.4)",
   },
-  header: { textAlign: "center", marginBottom: "20px" },
-  iconBox: { fontSize: "48px", marginBottom: "8px" },
-  title: { fontSize: "26px", fontWeight: "900", color: "#1e293b", margin: "0 0 4px 0" },
-  subtitle: { fontSize: "14px", color: "#64748b", margin: 0 },
+  header: { textAlign: "center", marginBottom: "12px" },
+  iconBox: { fontSize: "36px", marginBottom: "4px" },
+  title: { fontSize: "22px", fontWeight: "800", color: "#1e293b", margin: "0 0 4px 0" },
+  subtitle: { fontSize: "13px", color: "#64748b", margin: 0 },
   amountCard: {
     background: "linear-gradient(135deg, #e11d48, #be123c)",
-    borderRadius: "16px",
-    padding: "20px",
+    borderRadius: "12px",
+    padding: "14px",
     textAlign: "center",
-    marginBottom: "20px",
+    marginBottom: "14px",
   },
-  amountLabel: { color: "rgba(255,255,255,0.7)", fontSize: "13px", fontWeight: "600", marginBottom: "4px" },
-  amount: { color: "#ffffff", fontSize: "42px", fontWeight: "900" },
-  amountHint: { color: "rgba(255,255,255,0.6)", fontSize: "13px", marginTop: "4px" },
+  amountLabel: { color: "rgba(255,255,255,0.7)", fontSize: "12px", fontWeight: "600", marginBottom: "2px" },
+  amount: { color: "#ffffff", fontSize: "28px", fontWeight: "900" },
+  amountHint: { color: "rgba(255,255,255,0.6)", fontSize: "11px", marginTop: "2px" },
   instructionBox: {
     background: "linear-gradient(135deg, #eff6ff, #dbeafe)",
-    borderRadius: "12px",
-    padding: "16px",
-    marginBottom: "16px",
+    borderRadius: "10px",
+    padding: "12px",
+    marginBottom: "12px",
     border: "1px solid #bfdbfe",
   },
   instructionTitle: {
-    fontSize: "15px",
+    fontSize: "14px",
     fontWeight: "700",
     color: "#1e40af",
-    margin: "0 0 10px 0",
+    margin: "0 0 8px 0",
   },
   instructionList: {
-    fontSize: "13px",
+    fontSize: "12px",
     color: "#1e40af",
     margin: 0,
-    paddingLeft: "20px",
-    lineHeight: "1.9",
+    paddingLeft: "16px",
+    lineHeight: "1.7",
   },
-  mpesaNumberHighlight: {
-    fontSize: "14px",
+mpesaNumberHighlight: {
+    fontSize: "13px",
     color: "#1e40af",
     textAlign: "center",
-    marginTop: "14px",
-    padding: "12px",
+    marginTop: "10px",
+    padding: "8px",
     background: "#dbeafe",
-    borderRadius: "10px",
-    border: "2px dashed #3b82f6",
+    borderRadius: "8px",
+    border: "1px dashed #3b82f6",
   },
   phoneNumber: {
-    fontSize: "22px",
-    fontWeight: "900",
+    fontSize: "18px",
+    fontWeight: "800",
     color: "#1d4ed8",
-    letterSpacing: "2px",
+    letterSpacing: "1px",
   },
   whyPayBox: {
     background: "linear-gradient(135deg, #fef3c7, #fde68a)",
-    borderRadius: "12px",
-    padding: "16px",
-    marginBottom: "16px",
-    border: "2px solid #f59e0b",
+    borderRadius: "10px",
+    padding: "12px",
+    marginBottom: "12px",
+    border: "1px solid #f59e0b",
     textAlign: "center",
   },
-  whyPayIcon: { fontSize: "28px", marginBottom: "8px" },
-  whyPayTitle: { fontSize: "15px", fontWeight: "700", color: "#92400e", margin: "0 0 10px 0" },
-  whyPayList: { fontSize: "12px", color: "#78350f", margin: 0, paddingLeft: "20px", textAlign: "left", lineHeight: "1.9" },
+  whyPayIcon: { fontSize: "20px", marginBottom: "4px" },
+  whyPayTitle: { fontSize: "13px", fontWeight: "700", color: "#92400e", margin: "0 0 6px 0" },
+  whyPayList: { fontSize: "11px", color: "#78350f", margin: 0, paddingLeft: "16px", textAlign: "left", lineHeight: "1.6" },
   mpesaInputWrapper: { marginBottom: "12px" },
   mpesaTextarea: {
     width: "100%",
