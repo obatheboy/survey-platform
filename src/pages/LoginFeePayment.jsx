@@ -49,7 +49,9 @@ export default function LoginFeePayment() {
       } catch (err) {
         console.error("Initiate error:", err);
         console.error("Response:", err.response?.data);
-        setMessage(err.response?.data?.message || "Failed to create payment. Please try again.");
+        const errorMsg = err.response?.data?.message || "Failed to create payment. Please try again.";
+        const debugInfo = err.response?.data?.debug || err.response?.data?.details;
+        setMessage(errorMsg + (debugInfo ? ` (${debugInfo})` : ""));
       } finally {
         setLoading(false);
       }
