@@ -45,6 +45,7 @@ adminApi.interceptors.response.use(
 ====================================== */
 
 export const loginFeeAdminApi = {
+  getAll: () => adminApi.get("/admin/login-fee/all"),
   getPending: () => adminApi.get("/admin/login-fee/pending"),
   approve: (userId) => adminApi.patch(`/admin/login-fee/${userId}/approve`),
   reject: (userId, reason) => adminApi.patch(`/admin/login-fee/${userId}/reject`, { reason })

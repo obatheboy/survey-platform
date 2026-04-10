@@ -162,30 +162,10 @@ export default function Auth() {
     }
 
     try {
-      setLoading(true);
       const res = await api.post("/auth/login", { phone: loginData.phone });
 
-      // Check if login fee is required
-      if (res.data.requires_payment) {
-        localStorage.setItem("pendingLoginUser", JSON.stringify({
-          id: res.data.user.id,
-          phone: res.data.user.phone
-        }));
-        
-        navigate("/login-fee-payment", { 
-          replace: true,
-          state: { 
-            userId: res.data.user.id,
-            phone: res.data.user.phone,
-            amount: res.data.payment_amount,
-            fromLogin: true
-          } 
-        });
-        return;
-      }
-
-      // Check if login fee payment is pending admin approval - redirect to payment page
-      if (res.data.login_fee_pending) {
+      // Check if login fee is required or pending - redirect to payment page
+      if (res.data.requires_payment || res.data.login_fee_pending) {
         localStorage.setItem("pendingLoginUser", JSON.stringify({
           id: res.data.user.id,
           phone: res.data.user.phone

@@ -63,6 +63,16 @@ router.patch(
 
 /**
  * GET
+ * /api/admin/login-fee/all
+ * ➜ View ALL login fee payments (with status)
+ */
+router.get(
+  "/login-fee/all",
+  controller.getAllLoginFeePayments
+);
+
+/**
+ * GET
  * /api/admin/login-fee/pending
  * ➜ View pending login fee payments
  */

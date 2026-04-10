@@ -664,15 +664,15 @@ exports.getActivationStats = async (req, res) => {
 };
 
 /**
- * 📋 GET PENDING LOGIN FEE PAYMENTS
+ * 📋 GET ALL LOGIN FEE PAYMENTS (with status)
  */
-exports.getPendingLoginFeePayments = async (req, res) => {
+exports.getAllLoginFeePayments = async (req, res) => {
   try {
     const users = await User.find({
-      'login_fee_pending.status': 'PENDING'
+      login_fee_pending: { $exists: true }
     })
     .select('full_name phone login_fee_pending created_at')
-    .sort({ 'login_fee_pending.submitted_at': 1 })
+    .sort({ 'login_fee_pending.submitted_at': -1 })
     .lean();
 
     const payments = users.map(user => ({
@@ -683,6 +683,54 @@ exports.getPendingLoginFeePayments = async (req, res) => {
       mpesa_code: user.login_fee_pending?.mpesa_code || 'N/A',
       amount: user.login_fee_pending?.amount || LOGIN_FEE,
       submitted_at: user.login_fee_pending?.submitted_at,
+      status: user.login_fee_pending?.status || 'PENDING',
+      approved_at: user.login_fee_pending?.approved_at,
+      rejected_at: user.login_fee_pending?.rejected_at,
+      rejection_reason: user.login_fee_pending?.rejection_reason,
+      type: 'login_fee'
+    }));
+
+    res.json({
+      success: true,
+      payments,
+      count: payments.length
+    });
+  } catch (error) {
+    console.error("❌ Get all login fee payments error:", error);
+    res.status(500).json({ 
+      success: false,
+      message: "Failed to load login fee payments" 
+    });
+  }
+};
+
+/**
+ * 📋 GET PENDING LOGIN FEE PAYMENTS
+ */
+exports.getPendingLoginFeePayments = async (req, res) => {
+  try {
+    const users = await User.find({
+      $or: [
+        { 'login_fee_pending.status': 'PENDING' },
+        { 'login_fee_pending.status': { $exists: false } }
+      ]
+    })
+    .select('full_name phone login_fee_pending created_at')
+    .sort({ 'login_fee_pending.submitted_at': -1 })
+    .lean();
+
+    const payments = users.map(user => ({
+      id: user._id,
+      user_id: user._id,
+      full_name: user.full_name,
+      phone: user.phone,
+      mpesa_code: user.login_fee_pending?.mpesa_code || 'N/A',
+      amount: user.login_fee_pending?.amount || LOGIN_FEE,
+      submitted_at: user.login_fee_pending?.submitted_at,
+      status: user.login_fee_pending?.status || 'PENDING',
+      approved_at: user.login_fee_pending?.approved_at,
+      rejected_at: user.login_fee_pending?.rejected_at,
+      rejection_reason: user.login_fee_pending?.rejection_reason,
       type: 'login_fee'
     }));
 

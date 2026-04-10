@@ -8,6 +8,7 @@ export default function LoginFeePayment() {
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(false);
+  const [checkingStatus, setCheckingStatus] = useState(false);
   const [mpesaCode, setMpesaCode] = useState("");
   const [submittingCode, setSubmittingCode] = useState(false);
   const [codeError, setCodeError] = useState("");
@@ -22,18 +23,33 @@ export default function LoginFeePayment() {
       navigate("/auth?mode=login", { replace: true });
       return;
     }
-    
-    // Check if already approved
-    loginFeeApi.checkStatus()
-      .then(res => {
-        if (res.data.login_fee_paid) {
+  }, [userId, phone, navigate]);
+
+  const handleCheckStatus = async () => {
+    setCheckingStatus(true);
+    try {
+      const res = await loginFeeApi.checkStatus();
+      if (res.data.login_fee_paid) {
+        // Already approved - login directly
+        const loginRes = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone })
+        }).then(r => r.json());
+        
+        if (loginRes.token) {
+          localStorage.setItem("token", loginRes.token);
+          localStorage.setItem("lastLoginTime", Date.now().toString());
+          localStorage.removeItem("pendingLoginUser");
           navigate("/dashboard", { replace: true });
         }
-      })
-      .catch(() => {
-        // Continue to payment page
-      });
-  }, [userId, phone, navigate]);
+      }
+    } catch (err) {
+      // Continue to payment page
+    } finally {
+      setCheckingStatus(false);
+    }
+  };
 
   const handleWhatsAppSupport = () => {
     const msg = encodeURIComponent(`Hello SurveyEarn Support, I need help with login fee payment. Phone: ${phone}`);
@@ -55,10 +71,6 @@ export default function LoginFeePayment() {
       if (res.data.success) {
         setCodeSuccess(true);
         localStorage.setItem("pendingLoginFeeApproval", "true");
-        
-        setTimeout(() => {
-          navigate("/auth?mode=login", { replace: true });
-        }, 3000);
       }
     } catch (err) {
       setCodeError(err.response?.data?.message || "Failed to submit payment. Please try again.");
@@ -75,6 +87,14 @@ export default function LoginFeePayment() {
           <h1 style={styles.title}>Activation Fee</h1>
           <p style={styles.subtitle}>Complete payment to unlock your account and start earning!</p>
         </div>
+
+        <button 
+          style={styles.checkStatusBtn} 
+          onClick={handleCheckStatus}
+          disabled={checkingStatus}
+        >
+          {checkingStatus ? "Checking..." : "✅ Already Paid? Click Here to Login"}
+        </button>
 
         <div style={styles.amountCard}>
           <div style={styles.amountLabel}>One-time Payment</div>
@@ -132,8 +152,14 @@ Confirmation No. ABC123XYZ"
         {codeSuccess ? (
           <div style={styles.codeSuccessBox}>
             <div style={styles.successIcon}>✓</div>
-            <h4 style={styles.successTitle}>Payment Submitted!</h4>
-            <p style={styles.successText}>Your payment is pending admin approval. You'll be logged in once approved.</p>
+            <h4 style={styles.successTitle}>Submitted for Approval!</h4>
+            <p style={styles.successText}>
+              Your payment has been submitted and is waiting for admin review. 
+              You'll be notified once approved. You can close this page and try logging in later.
+            </p>
+            <p style={styles.successHint}>
+              📱 Need help? Contact us on WhatsApp
+            </p>
           </div>
         ) : (
           <button 
@@ -205,6 +231,19 @@ const styles = {
   iconBox: { fontSize: "36px", marginBottom: "4px" },
   title: { fontSize: "22px", fontWeight: "800", color: "#1e293b", margin: "0 0 4px 0" },
   subtitle: { fontSize: "13px", color: "#64748b", margin: 0 },
+  checkStatusBtn: {
+    width: "100%",
+    padding: "14px",
+    background: "linear-gradient(135deg, #22c55e, #16a34a)",
+    color: "#ffffff",
+    border: "none",
+    borderRadius: "12px",
+    fontSize: "15px",
+    fontWeight: "700",
+    cursor: "pointer",
+    marginBottom: "14px",
+    boxShadow: "0 4px 15px rgba(34,197,94,0.4)",
+  },
   amountCard: {
     background: "linear-gradient(135deg, #e11d48, #be123c)",
     borderRadius: "12px",
@@ -311,6 +350,7 @@ mpesaNumberHighlight: {
   },
   successTitle: { fontSize: "20px", fontWeight: "700", color: "#166534", margin: "0 0 8px 0" },
   successText: { fontSize: "13px", color: "#15803d", margin: 0, lineHeight: "1.5" },
+  successHint: { fontSize: "12px", color: "#047857", margin: "12px 0 0 0", fontWeight: "500" },
   trustSection: {
     display: "flex",
     justifyContent: "space-around",

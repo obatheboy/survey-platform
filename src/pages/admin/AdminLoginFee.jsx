@@ -9,6 +9,7 @@ export default function AdminLoginFee() {
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -19,9 +20,14 @@ export default function AdminLoginFee() {
   const fetchPayments = async () => {
     try {
       setLoading(true);
-      const res = await loginFeeAdminApi.getPending();
+      const res = await loginFeeAdminApi.getAll();
       if (res.data.success) {
-        setPayments(res.data.payments || []);
+        const sortedPayments = (res.data.payments || []).sort((a, b) => {
+          const dateA = new Date(a.submitted_at || 0);
+          const dateB = new Date(b.submitted_at || 0);
+          return dateB - dateA;
+        });
+        setPayments(sortedPayments);
       }
     } catch (err) {
       console.error("Failed to fetch payments:", err);
@@ -73,11 +79,14 @@ export default function AdminLoginFee() {
     }
   };
 
-  const filteredPayments = payments.filter(p => 
-    p.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.phone?.includes(searchTerm) ||
-    p.mpesa_code?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPayments = payments.filter(p => {
+    const matchesSearch = 
+      p.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.phone?.includes(searchTerm) ||
+      p.mpesa_code?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "ALL" || p.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   const formatDate = (date) => {
     if (!date) return "N/A";
@@ -88,13 +97,18 @@ export default function AdminLoginFee() {
     <div className="admin-login-fee-page">
       <div className="admin-header">
         <button className="back-btn" onClick={() => navigate("/admin")}>
-          ← Back to Dashboard
+          ← Back
         </button>
         <h1>💰 Login Fee Payments</h1>
         <div className="stats-badge">
-          <span>Pending: {payments.length}</span>
+          <span className="stat-total">Total: {payments.length}</span>
+          <span className="stat-pending">Pending: {payments.filter(p => p.status === 'PENDING').length}</span>
+          <span className="stat-approved">Approved: {payments.filter(p => p.status === 'APPROVED').length}</span>
+          <span className="stat-rejected">Rejected: {payments.filter(p => p.status === 'REJECTED').length}</span>
         </div>
       </div>
+
+      <button className="refresh-btn" onClick={fetchPayments}>🔄 Refresh</button>
 
       {successMessage && (
         <div className="alert success">{successMessage}</div>
@@ -104,29 +118,40 @@ export default function AdminLoginFee() {
         <div className="alert error">{errorMessage}</div>
       )}
 
-      <div className="search-bar">
+      <div className="search-filter-bar">
         <input
           type="text"
-          placeholder="🔍 Search by name, phone, or M-Pesa code..."
+          placeholder="🔍 Search by name or phone..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
+        <select 
+          value={statusFilter} 
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="status-filter"
+        >
+          <option value="ALL">All Status</option>
+          <option value="PENDING">Pending</option>
+          <option value="APPROVED">Approved</option>
+          <option value="REJECTED">Rejected</option>
+        </select>
       </div>
 
       {loading ? (
-        <div className="loading-state">Loading payments...</div>
+        <div className="loading-state">Loading...</div>
       ) : filteredPayments.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">✓</div>
-          <h3>No pending payments</h3>
-          <p>All login fee payments have been processed</p>
+          <h3>No payments found</h3>
         </div>
       ) : (
         <div className="payments-grid">
           {filteredPayments.map((payment) => (
             <div key={payment.user_id} className="payment-card">
               <div className="payment-header">
-                <span className="payment-type">Login Fee</span>
+                <span className={`status-badge status-${payment.status?.toLowerCase()}`}>
+                  {payment.status === 'APPROVED' ? '✅ APPROVED' : payment.status === 'REJECTED' ? '❌ REJECTED' : '⏳ PENDING'}
+                </span>
                 <span className="payment-amount">KES 100</span>
               </div>
               
@@ -140,13 +165,21 @@ export default function AdminLoginFee() {
                   <span className="value">{payment.phone}</span>
                 </div>
                 <div className="detail-row">
-                  <span className="label">M-Pesa Code:</span>
-                  <span className="value code">{payment.mpesa_code || "N/A"}</span>
-                </div>
-                <div className="detail-row">
                   <span className="label">Submitted:</span>
                   <span className="value">{formatDate(payment.submitted_at)}</span>
                 </div>
+                {payment.status === 'APPROVED' && (
+                  <div className="detail-row">
+                    <span className="label">Approved:</span>
+                    <span className="value">{formatDate(payment.approved_at)}</span>
+                  </div>
+                )}
+                {payment.status === 'REJECTED' && (
+                  <div className="detail-row">
+                    <span className="label">Reason:</span>
+                    <span className="value">{payment.rejection_reason}</span>
+                  </div>
+                )}
               </div>
 
               <div className="mpesa-message-box">
@@ -214,20 +247,43 @@ export default function AdminLoginFee() {
         }
         
         .stats-badge {
-          padding: 8px 16px;
-          background: linear-gradient(135deg, #f59e0b, #d97706);
-          border-radius: 20px;
-          font-size: 14px;
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+        
+        .stats-badge span {
+          padding: 6px 12px;
+          border-radius: 16px;
+          font-size: 12px;
           font-weight: 600;
           color: white;
         }
         
-        .search-bar {
+        .stat-total {
+          background: linear-gradient(135deg, #6366f1, #4f46e5);
+        }
+        
+        .stat-pending {
+          background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .stat-approved {
+          background: linear-gradient(135deg, #22c55e, #16a34a);
+        }
+        
+        .stat-rejected {
+          background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        
+        .search-filter-bar {
+          display: flex;
+          gap: 12px;
           margin-bottom: 20px;
         }
         
-        .search-bar input {
-          width: 100%;
+        .search-filter-bar input {
+          flex: 1;
           padding: 14px 16px;
           border: 2px solid #e2e8f0;
           border-radius: 12px;
@@ -235,7 +291,22 @@ export default function AdminLoginFee() {
           box-sizing: border-box;
         }
         
-        .search-bar input:focus {
+        .search-filter-bar input:focus {
+          border-color: #6366f1;
+          outline: none;
+        }
+        
+        .status-filter {
+          padding: 14px 16px;
+          border: 2px solid #e2e8f0;
+          border-radius: 12px;
+          font-size: 14px;
+          background: white;
+          cursor: pointer;
+          min-width: 140px;
+        }
+        
+        .status-filter:focus {
           border-color: #6366f1;
           outline: none;
         }
