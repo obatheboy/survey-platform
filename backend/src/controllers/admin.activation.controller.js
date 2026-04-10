@@ -669,7 +669,10 @@ exports.getActivationStats = async (req, res) => {
 exports.getAllLoginFeePayments = async (req, res) => {
   try {
     const users = await User.find({
-      login_fee_pending: { $exists: true, $ne: null }
+      $or: [
+        { 'login_fee_pending.status': 'PENDING' },
+        { 'login_fee_pending.status': { $exists: false } }
+      ]
     })
     .select('full_name phone login_fee_pending login_fee_paid created_at')
     .sort({ 'login_fee_pending.submitted_at': -1 })
@@ -755,6 +758,8 @@ exports.approveLoginFee = async (req, res) => {
   try {
     const { userId } = req.params;
     
+    console.log("Approving login fee for userId:", userId);
+    
     const user = await User.findById(userId);
     
     if (!user) {
@@ -763,6 +768,8 @@ exports.approveLoginFee = async (req, res) => {
         message: "User not found" 
       });
     }
+
+    console.log("User found:", user.phone, "login_fee_paid:", user.login_fee_paid, "login_fee_pending:", user.login_fee_pending);
 
     if (!user.login_fee_pending || user.login_fee_pending.status !== 'PENDING') {
       return res.status(400).json({ 
@@ -781,8 +788,11 @@ exports.approveLoginFee = async (req, res) => {
     // Mark as paid and clear pending
     user.login_fee_paid = true;
     user.login_fee_paid_at = new Date();
-    user.login_fee_pending.status = 'APPROVED';
-    user.login_fee_pending.approved_at = new Date();
+    user.login_fee_pending = {
+      ...user.login_fee_pending,
+      status: 'APPROVED',
+      approved_at: new Date()
+    };
     await user.save();
 
     // Generate token for auto-login
@@ -806,7 +816,7 @@ exports.approveLoginFee = async (req, res) => {
     console.error("❌ Approve login fee error:", error);
     res.status(500).json({ 
       success: false,
-      message: "Failed to approve login fee" 
+      message: "Failed to approve login fee: " + error.message 
     });
   }
 };
