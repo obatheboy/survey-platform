@@ -209,6 +209,6 @@ export const gamificationApi = {
 /* =====================================================   💰 LOGIN FEE API   ===================================================== */
 export const loginFeeApi = {
   initiate: () => api.post("/login-fee/initiate"),
-  verify: () => api.post("/login-fee/verify"),
+  verify: (reference) => api.post("/login-fee/verify", { reference }),
   checkStatus: () => api.get("/login-fee/status")
 };

@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-const instasendService = require("../services/instasend.service");
+const paystackService = require("../services/paystack.service");
 
 const LOGIN_FEE = 100;
 
@@ -17,51 +17,39 @@ exports.initiateLoginFeePayment = async (req, res) => {
       return res.status(400).json({ message: "Login fee already paid" });
     }
 
-    // Create Instasend payment link
-    const payment = await instasendService.createPaymentLink(
+    // Use user's email or generate one
+    const userEmail = user.email || `user_${userId}@surveyearn.com`;
+    
+    // Initialize Paystack payment
+    const payment = await paystackService.initializePayment(
       LOGIN_FEE,
       user.phone,
+      userEmail,
       userId,
       "SurveyEarn Login Fee - KES 100"
     );
 
-    console.log("Instasend payment response:", payment);
-    console.log("Payment data keys:", payment.data ? Object.keys(payment.data) : "no data");
-    console.log("Full payment response:", JSON.stringify(payment));
+    console.log("Paystack payment response:", payment);
 
-    // Extract checkout ID from various possible response structures
-    // Try multiple field names that IntaSend might return
-    const checkoutId = 
-      payment.data?.checkout_id || 
-      payment.data?.id || 
-      payment.data?.session_id || 
-      payment.data?.session?.id ||
-      payment?.id ||
-      payment?.checkout_id;
-      
-    const paymentLink = 
-      payment.data?.url || 
-      payment.data?.checkout_url ||
-      payment.data?.link ||
-      payment?.url;
+    // Extract authorization URL and reference from Paystack response
+    const authorizationUrl = payment.data?.authorization_url;
+    const reference = payment.data?.reference;
 
-    if (!checkoutId && !paymentLink) {
-      console.error("No checkout ID or payment link in response:", payment);
+    if (!authorizationUrl || !reference) {
+      console.error("No authorization URL or reference in response:", payment);
       return res.status(500).json({ 
         message: "Payment initialization failed. Please try again or contact support.",
-        debug: "no_checkout_id"
+        debug: "no_authorization_url"
       });
     }
 
     res.status(200).json({
       success: true,
-      message: paymentLink ? "Payment link created" : "STK Push sent to your phone",
-      checkout_id: checkoutId,
-      payment_link: paymentLink,
+      message: "Payment link created",
+      authorization_url: authorizationUrl,
+      reference: reference,
       amount: LOGIN_FEE,
-      instructions: paymentLink 
-        ? "Click 'Pay with M-Pesa' to complete payment" 
-        : "Please check your phone for the M-Pesa STK push and enter your PIN"
+      instructions: "Click the payment link to complete payment via M-Pesa or card"
     });
   } catch (error) {
     console.error("Login fee payment error:", error);
@@ -76,7 +64,7 @@ exports.initiateLoginFeePayment = async (req, res) => {
 
 exports.verifyLoginFeePayment = async (req, res) => {
   try {
-    const { checkout_id } = req.body;
+    const { reference } = req.body;
     const userId = req.user.id;
     const user = await User.findById(userId);
     
@@ -102,13 +90,13 @@ exports.verifyLoginFeePayment = async (req, res) => {
       });
     }
 
-    // Verify with Instasend if checkout_id provided
-    if (checkout_id) {
+    // Verify with Paystack if reference provided
+    if (reference) {
       try {
-        const verification = await instasendService.verifyPayment(checkout_id);
+        const verification = await paystackService.verifyPayment(reference);
         console.log("Payment verification response:", verification);
         
-        if (verification.data?.status === "COMPLETED" || verification.data?.status === "success") {
+        if (verification.data?.status === "success" && verification.data?.amount === LOGIN_FEE * 100) {
           user.login_fee_paid = true;
           await user.save();
 
@@ -179,17 +167,34 @@ exports.checkLoginFeeStatus = async (req, res) => {
   }
 };
 
-// Webhook handler for Instasend callbacks
+// Webhook handler for Paystack callbacks
 exports.paymentWebhook = async (req, res) => {
   try {
-    const { checkout_id, status, metadata } = req.body;
+    const event = req.body;
+    console.log("Paystack webhook received:", event);
     
-    if (status === "COMPLETED" && metadata?.user_id) {
-      const user = await User.findById(metadata.user_id);
-      if (user && !user.login_fee_paid) {
-        user.login_fee_paid = true;
-        await user.save();
-        console.log(`✅ Login fee paid for user: ${user.phone}`);
+    // Verify the event is from Paystack
+    const hash = require("crypto")
+      .createHmac("sha512", process.env.PAYSTACK_SECRET_KEY)
+      .update(JSON.stringify(req.body))
+      .digest("hex");
+    
+    if (hash !== req.headers["x-paystack-signature"]) {
+      console.error("Invalid webhook signature");
+      return res.status(401).json({ error: "Invalid signature" });
+    }
+    
+    // Handle successful payment
+    if (event.event === "charge.success") {
+      const metadata = event.data?.metadata || {};
+      
+      if (metadata.type === "login_fee" && metadata.user_id) {
+        const user = await User.findById(metadata.user_id);
+        if (user && !user.login_fee_paid) {
+          user.login_fee_paid = true;
+          await user.save();
+          console.log(`✅ Login fee paid for user: ${user.phone}`);
+        }
       }
     }
 

@@ -32,15 +32,15 @@ export default function LoginFeePayment() {
         const res = await loginFeeApi.initiate();
         console.log("Payment response:", res.data);
         
-        // Handle checkout link payment
-        if (res.data.payment_link) {
-          setPaymentLink(res.data.payment_link);
-          setCheckoutId(res.data.checkout_id);
+        // Handle checkout link payment (Paystack returns authorization_url)
+        if (res.data.authorization_url) {
+          setPaymentLink(res.data.authorization_url);
+          setCheckoutId(res.data.reference);
           setMessage("💳 Payment link created! Click 'Pay with M-Pesa' to complete payment.");
         } 
         // Handle STK push
-        else if (res.data.checkout_id) {
-          setCheckoutId(res.data.checkout_id);
+        else if (res.data.reference) {
+          setCheckoutId(res.data.reference);
           setMessage("📱 STK Push sent! Check your phone and enter your M-Pesa PIN.");
           setPolling(true);
         } else {
@@ -86,7 +86,7 @@ export default function LoginFeePayment() {
     if (!checkoutId) return;
 
     try {
-      const res = await loginFeeApi.verify({ checkout_id: checkoutId });
+      const res = await loginFeeApi.verify({ reference: checkoutId });
       
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
