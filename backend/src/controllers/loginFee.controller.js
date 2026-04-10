@@ -1,7 +1,6 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const paystackService = require("../services/paystack.service");
-
 const LOGIN_FEE = 100;
 
 // ✅ Helper function to format phone numbers (handles 01 and 07)
