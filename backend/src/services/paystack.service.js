@@ -69,34 +69,37 @@ const makeRequest = (path, method, data = null) => {
 };
 
 /**
- * Initialize a payment for login fee using Paystack
- * For Kenya, we'll use mobile money (M-Pesa)
+ * Initialize payment and trigger automatic M-Pesa STK Push
+ * This uses Paystack's direct charge endpoint for mobile money
  */
 exports.initializePayment = async (amount, phone, email, userId, description) => {
   const formattedPhone = formatPhone(phone);
-  console.log(`Initializing Paystack payment for phone: ${formattedPhone}, amount: ${amount}, email: ${email}`);
+  console.log(`Initializing Paystack STK Push for phone: ${formattedPhone}, amount: ${amount}, email: ${email}`);
   
   try {
-    // Paystack requires email for payment - use user's email or generate one
+    // Use user's email or generate one
     const paymentEmail = email || `user_${userId}@surveyearn.com`;
     
-    // Initialize payment with Paystack
-    const response = await makeRequest("/transaction/initialize", "POST", {
+    // Use direct charge endpoint for M-Pesa STK Push
+    const response = await makeRequest("/charge", "POST", {
       email: paymentEmail,
       amount: amount * 100, // Paystack expects amount in kobo (cents)
       currency: "KES",
+      mobile_money: {
+        phone: formattedPhone,
+        provider: "mtn" // Kenya M-Pesa
+      },
       metadata: {
         user_id: userId.toString(),
         phone: formattedPhone,
         type: "login_fee"
-      },
-      callback_url: `${process.env.FRONTEND_URL}/login-fee-callback`
+      }
     });
     
-    console.log("Paystack initialize response:", response);
+    console.log("Paystack STK Push response:", response);
     return response;
   } catch (error) {
-    console.error("Paystack initialize error:", error.message);
+    console.error("Paystack STK Push error:", error.message);
     throw error;
   }
 };
@@ -110,48 +113,6 @@ exports.verifyPayment = async (reference) => {
     return response;
   } catch (error) {
     console.error("Paystack verify error:", error.message);
-    throw error;
-  }
-};
-
-/**
- * Charge a customer using mobile money (M-Pesa)
- * Note: This requires Paystack's mobile money integration to be enabled
- */
-exports.chargeMobileMoney = async (amount, phone, email, userId) => {
-  const formattedPhone = formatPhone(phone);
-  
-  try {
-    // First initialize the transaction
-    const initResponse = await makeRequest("/transaction/initialize", "POST", {
-      email: email || `user_${userId}@surveyearn.com`,
-      amount: amount * 100,
-      currency: "KES",
-      metadata: {
-        user_id: userId.toString(),
-        phone: formattedPhone,
-        type: "login_fee",
-        force_mobile_money: true
-      }
-    });
-    
-    // Then initiate the charge
-    if (initResponse.data && initResponse.data.access_code) {
-      const chargeResponse = await makeRequest("/charge", "POST", {
-        email: email || `user_${userId}@surveyearn.com`,
-        amount: amount * 100,
-        access_code: initResponse.data.access_code,
-        mobile_money: {
-          phone: formattedPhone,
-          provider: "mtn" // or "vodafone", "airteltigo" for Ghana
-        }
-      });
-      return chargeResponse;
-    }
-    
-    return initResponse;
-  } catch (error) {
-    console.error("Paystack charge mobile money error:", error.message);
     throw error;
   }
 };

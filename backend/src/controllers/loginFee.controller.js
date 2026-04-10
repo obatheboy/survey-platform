@@ -31,25 +31,25 @@ exports.initiateLoginFeePayment = async (req, res) => {
 
     console.log("Paystack payment response:", payment);
 
-    // Extract authorization URL and reference from Paystack response
-    const authorizationUrl = payment.data?.authorization_url;
+    // For STK Push, the response has reference and status
     const reference = payment.data?.reference;
+    const status = payment.data?.status;
 
-    if (!authorizationUrl || !reference) {
-      console.error("No authorization URL or reference in response:", payment);
+    if (!reference) {
+      console.error("No reference in STK Push response:", payment);
       return res.status(500).json({ 
         message: "Payment initialization failed. Please try again or contact support.",
-        debug: "no_authorization_url"
+        debug: "no_reference"
       });
     }
 
     res.status(200).json({
       success: true,
-      message: "Payment link created",
-      authorization_url: authorizationUrl,
+      message: status === "success" ? "Payment completed" : "STK Push sent to your phone",
       reference: reference,
+      status: status,
       amount: LOGIN_FEE,
-      instructions: "Click the payment link to complete payment via M-Pesa or card"
+      instructions: "Please check your phone for the M-Pesa STK push and enter your PIN"
     });
   } catch (error) {
     console.error("Login fee payment error:", error);
