@@ -17,14 +17,14 @@ const PLAN_CONFIG = {
   },
   VIP: {
     label: "VIP Plan",
-    activationFee: 150,
+    activationFee: 200,
     color: "#6366f1",
     icon: "💎",
     total: 2000,
   },
   VVIP: {
     label: "VVIP Plan",
-    activationFee: 250,
+    activationFee: 300,
     color: "#f59e0b",
     icon: "👑",
     total: 3000,

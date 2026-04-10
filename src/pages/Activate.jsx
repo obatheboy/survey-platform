@@ -25,14 +25,14 @@ const PLAN_CONFIG = {
   VIP: { 
     label: "VIP", 
     total: 2000, 
-    activationFee: 150, 
+    activationFee: 200, 
     color: "#6366f1", 
     glow: "rgba(99, 102, 241, 0.2)" 
   },
   VVIP: { 
     label: "VVIP", 
     total: 3000, 
-    activationFee: 250, 
+    activationFee: 300, 
     color: "#f59e0b", 
     glow: "rgba(245, 158, 11, 0.2)" 
   },

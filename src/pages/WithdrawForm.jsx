@@ -20,7 +20,7 @@ const PLANS = {
     total: 2000, 
     color: "#6366f1",
     gradient: "linear-gradient(135deg, #6366f1, #4f46e5)",
-    activationFee: 150,
+    activationFee: 200,
     earningsLabel: "Total Earnings: KES 2,000"
   },
   VVIP: { 
@@ -29,7 +29,7 @@ const PLANS = {
     total: 3000, 
     color: "#f59e0b",
     gradient: "linear-gradient(135deg, #f59e0b, #d97706)",
-    activationFee: 250,
+    activationFee: 300,
     earningsLabel: "Total Earnings: KES 3,000"
   },
   affiliate: {
