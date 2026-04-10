@@ -205,3 +205,10 @@ export const gamificationApi = {
   // Stats
   getUserStats: () => api.get("/gamification/stats")
 };
+
+/* =====================================================   💰 LOGIN FEE API   ===================================================== */
+export const loginFeeApi = {
+  initiate: () => api.post("/login-fee/initiate"),
+  verify: () => api.post("/login-fee/verify"),
+  checkStatus: () => api.get("/login-fee/status")
+};

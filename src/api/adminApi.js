@@ -35,10 +35,17 @@ adminApi.interceptors.response.use(
     if (error.response?.status === 401 || error.response?.status === 403) {
       console.error("❌ Admin authentication failed:", error.response?.data?.message);
       localStorage.removeItem("adminToken");
-      // Don't redirect immediately - let component handle it
-      // window.location.href = "/admin/login";
     }
     return Promise.reject(error);
   }
 );
+
+/* ======================================
+   💰 LOGIN FEE ADMIN API
+====================================== */
+
+export const loginFeeAdminApi = {
+  getPending: () => adminApi.get("/admin/login-fee/pending"),
+  approve: (userId) => adminApi.patch(`/admin/login-fee/${userId}/approve`)
+};
 

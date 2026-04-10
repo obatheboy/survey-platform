@@ -55,4 +55,30 @@ router.patch(
   controller.rejectActivation
 );
 
+/**
+ * ====================================================
+ * 💰 LOGIN FEE PAYMENTS (NEW)
+ * ====================================================
+ */
+
+/**
+ * GET
+ * /api/admin/login-fee/pending
+ * ➜ View pending login fee payments
+ */
+router.get(
+  "/login-fee/pending",
+  controller.getPendingLoginFeePayments
+);
+
+/**
+ * PATCH
+ * /api/admin/login-fee/:userId/approve
+ * ➜ Approve login fee payment
+ */
+router.patch(
+  "/login-fee/:userId/approve",
+  controller.approveLoginFee
+);
+
 module.exports = router;

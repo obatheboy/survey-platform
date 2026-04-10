@@ -10,12 +10,13 @@ import Surveys from "./pages/Surveys";
 import Activate from "./pages/Activate";
 import ActivationNotice from "./pages/ActivationNotice";
 import Withdraw from "./pages/Withdraw";
-import WithdrawForm from "./pages/WithdrawForm"; // Add this import
-import WithdrawSuccess from "./pages/WithdrawSuccess"; // Add this import
+import WithdrawForm from "./pages/WithdrawForm";
+import WithdrawSuccess from "./pages/WithdrawSuccess";
 import FAQ from "./pages/FAQ";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import NotFound from "./pages/NotFound";
 import AffiliateDashboard from "./pages/AffiliateDashboard";
+import LoginFeePayment from "./pages/LoginFeePayment";
 
 /* ================= ADMIN ================= */
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -98,6 +99,8 @@ export default function App() {
 
         {/* USER AUTH */}
         <Route path="/auth" element={<Auth />} />
+        <Route path="/login-fee-payment" element={<LoginFeePayment />} />
+        <Route path="/login-fee-callback" element={<LoginFeePayment />} />
 
         {/* TERMS AND CONDITIONS */}
         <Route path="/terms" element={<TermsAndConditions />} />

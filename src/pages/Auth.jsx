@@ -142,6 +142,29 @@ export default function Auth() {
       setLoading(true);
       const res = await api.post("/auth/login", { phone: loginData.phone });
 
+      // Check if login fee is required
+      if (res.data.requires_payment) {
+        setLoginMessage("Login fee required! Redirecting to payment...");
+        
+        // Store user info for payment flow
+        localStorage.setItem("pendingLoginUser", JSON.stringify({
+          id: res.data.user.id,
+          phone: res.data.user.phone
+        }));
+        
+        setTimeout(() => {
+          navigate("/login-fee-payment", { 
+            state: { 
+              userId: res.data.user.id,
+              phone: res.data.user.phone,
+              amount: res.data.payment_amount 
+            } 
+          });
+        }, 1500);
+        setLoading(false);
+        return;
+      }
+
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("lastLoginTime", Date.now().toString());

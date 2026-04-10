@@ -137,7 +137,7 @@ exports.register = async (req, res) => {
 
 /* ===============================
    LOGIN
-================================ */
+=============================== */
 exports.login = async (req, res) => {
   try {
     const { phone } = req.body;
@@ -150,6 +150,21 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ phone });
     if (!user) return res.status(401).json({ message: "Phone number not found. Please register first." });
 
+    // Check if login fee is required
+    if (!user.login_fee_paid) {
+      return res.status(403).json({ 
+        message: "Login fee required",
+        requires_payment: true,
+        payment_amount: 100,
+        instructions: "Please pay KES 100 activation fee to access your account",
+        user: {
+          id: user._id,
+          phone: user.phone,
+          login_fee_paid: false
+        }
+      });
+    }
+
     // ✅ CHANGED: Use user._id instead of user.id
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
     res.cookie("token", token, COOKIE_OPTIONS);
@@ -161,6 +176,7 @@ exports.login = async (req, res) => {
         id: user._id, // ✅ CHANGED to _id
         phone: user.phone,
         is_activated: user.is_activated,
+        login_fee_paid: user.login_fee_paid,
         welcome_bonus_received: user.welcome_bonus_received || false,
         welcome_bonus: user.welcome_bonus || 1200,
       },

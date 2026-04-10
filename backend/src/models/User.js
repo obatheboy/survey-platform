@@ -35,6 +35,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  login_fee_paid: {
+    type: Boolean,
+    default: false
+  },
   total_earned: {
     type: Number,
     default: 0

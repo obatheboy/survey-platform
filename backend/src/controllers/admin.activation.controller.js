@@ -662,3 +662,71 @@ exports.getActivationStats = async (req, res) => {
     });
   }
 };
+
+/**
+ * 📋 GET PENDING LOGIN FEE PAYMENTS
+ */
+exports.getPendingLoginFeePayments = async (req, res) => {
+  try {
+    const users = await User.find({
+      login_fee_paid: false
+    })
+    .select('full_name phone created_at')
+    .sort({ created_at: 1 })
+    .lean();
+
+    res.json({
+      success: true,
+      payments: users,
+      count: users.length
+    });
+  } catch (error) {
+    console.error("❌ Get login fee payments error:", error);
+    res.status(500).json({ 
+      success: false,
+      message: "Failed to load login fee payments" 
+    });
+  }
+};
+
+/**
+ * ✅ APPROVE LOGIN FEE PAYMENT
+ */
+exports.approveLoginFee = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ 
+        success: false,
+        message: "User not found" 
+      });
+    }
+
+    if (user.login_fee_paid) {
+      return res.status(400).json({ 
+        success: false,
+        message: "Login fee already paid" 
+      });
+    }
+
+    user.login_fee_paid = true;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Login fee approved successfully",
+      user_id: user._id,
+      user_name: user.full_name,
+      phone: user.phone
+    });
+  } catch (error) {
+    console.error("❌ Approve login fee error:", error);
+    res.status(500).json({ 
+      success: false,
+      message: "Failed to approve login fee" 
+    });
+  }
+};
