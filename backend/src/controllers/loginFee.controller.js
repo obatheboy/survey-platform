@@ -65,7 +65,12 @@ exports.initiateLoginFeePayment = async (req, res) => {
     });
   } catch (error) {
     console.error("Login fee payment error:", error);
-    res.status(500).json({ message: "Failed to initiate payment" });
+    // Return more detailed error for debugging
+    const errorMessage = error.message || "Unknown error";
+    res.status(500).json({ 
+      message: "Failed to initiate payment",
+      debug: errorMessage
+    });
   }
 };
 

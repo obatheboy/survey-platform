@@ -20,6 +20,11 @@ const formatPhone = (phone) => {
 
 const makeRequest = (path, method, data = null) => {
   return new Promise((resolve, reject) => {
+    if (!INSTASEND_SECRET_KEY) {
+      reject(new Error("INSTASEND_SECRET_KEY is not configured"));
+      return;
+    }
+    
     const headers = {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${INSTASEND_SECRET_KEY}`
@@ -32,10 +37,16 @@ const makeRequest = (path, method, data = null) => {
       headers: headers
     };
 
+    console.log(`IntaSend request: ${method} ${path}`, { 
+      hasData: !!data, 
+      keyPrefix: INSTASEND_SECRET_KEY ? INSTASEND_SECRET_KEY.substring(0, 15) + "..." : "none" 
+    });
+
     const req = https.request(options, (res) => {
       let body = "";
       res.on("data", (chunk) => body += chunk);
       res.on("end", () => {
+        console.log(`IntaSend response status: ${res.statusCode}`);
         try {
           const json = JSON.parse(body);
           console.log(`IntaSend ${method} ${path} response:`, json);
