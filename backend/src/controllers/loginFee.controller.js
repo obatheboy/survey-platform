@@ -33,26 +33,41 @@ exports.initiateLoginFeePayment = async (req, res) => {
     console.log("Paystack response keys:", payment.data ? Object.keys(payment.data) : "no data");
     console.log("Full Paystack response:", JSON.stringify(payment, null, 2));
 
-    // For STK Push, the response has reference and status
+    // Check for both reference and authorization_url
     const reference = payment.data?.reference;
+    const authorizationUrl = payment.data?.authorization_url;
     const status = payment.data?.status;
+    const message = payment.data?.message; // Some responses have a message
 
-    if (!reference) {
-      console.error("No reference in STK Push response:", payment);
+    if (!reference && !authorizationUrl) {
+      console.error("No reference or authorization_url in response:", payment);
       return res.status(500).json({ 
         message: "Payment initialization failed. Please try again or contact support.",
-        debug: "no_reference"
+        debug: "no_reference_or_url"
       });
     }
 
-    res.status(200).json({
-      success: true,
-      message: status === "success" ? "Payment completed" : "STK Push sent to your phone",
-      reference: reference,
-      status: status,
-      amount: LOGIN_FEE,
-      instructions: "Please check your phone for the M-Pesa STK push and enter your PIN"
-    });
+    // If there's an authorization_url, return it so frontend can redirect
+    if (authorizationUrl) {
+      res.status(200).json({
+        success: true,
+        message: "Payment page opened",
+        authorization_url: authorizationUrl,
+        reference: reference,
+        amount: LOGIN_FEE,
+        instructions: "Complete payment on the next page"
+      });
+    } else {
+      // STK Push was initiated
+      res.status(200).json({
+        success: true,
+        message: status === "success" ? "Payment completed" : "STK Push sent to your phone",
+        reference: reference,
+        status: status,
+        amount: LOGIN_FEE,
+        instructions: "Please check your phone for the M-Pesa STK push and enter your PIN"
+      });
+    }
   } catch (error) {
     console.error("Login fee payment error:", error);
     // Return more detailed error for debugging
@@ -76,6 +91,29 @@ exports.verifyLoginFeePayment = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // If no reference provided, just check current status
+    if (!reference) {
+      console.log("No reference provided, checking user login_fee_paid status:", user.login_fee_paid);
+      if (user.login_fee_paid) {
+        const token = jwt.sign(
+          { id: user._id, phone: user.phone, role: user.role },
+          process.env.JWT_SECRET,
+          { expiresIn: "7d" }
+        );
+        return res.status(200).json({
+          message: "Login fee already paid",
+          token,
+          user: {
+            id: user._id,
+            full_name: user.full_name,
+            phone: user.phone,
+            login_fee_paid: true
+          }
+        });
+      }
+      return res.status(400).json({ message: "No payment reference. Please initiate payment first." });
+    }
+
     if (user.login_fee_paid) {
       const token = jwt.sign(
         { id: user._id, phone: user.phone, role: user.role },
@@ -96,11 +134,18 @@ exports.verifyLoginFeePayment = async (req, res) => {
 
     // Verify with Paystack if reference provided
     if (reference) {
+      console.log("Verifying payment with reference:", reference);
       try {
         const verification = await paystackService.verifyPayment(reference);
         console.log("Payment verification response:", verification);
+        console.log("Verification data keys:", verification.data ? Object.keys(verification.data) : "no data");
+        console.log("Verification status:", verification.data?.status);
         
-        if (verification.data?.status === "success" && verification.data?.amount === LOGIN_FEE * 100) {
+        // Check various status values that could mean successful payment
+        const paymentStatus = verification.data?.status;
+        const isSuccess = paymentStatus === "success" || paymentStatus === "approved";
+        
+        if (isSuccess && verification.data?.amount >= LOGIN_FEE * 100) {
           user.login_fee_paid = true;
           await user.save();
 
@@ -126,26 +171,28 @@ exports.verifyLoginFeePayment = async (req, res) => {
       }
     }
 
-    // Manual verification fallback (admin approved)
-    if (user.login_fee_paid) {
+    // If user already paid (via webhook or admin), return success
+    // Re-fetch user to get latest status after potential webhook update
+    const updatedUser = await User.findById(userId);
+    if (updatedUser.login_fee_paid) {
       const token = jwt.sign(
-        { id: user._id, phone: user.phone, role: user.role },
+        { id: updatedUser._id, phone: updatedUser.phone, role: updatedUser.role },
         process.env.JWT_SECRET,
         { expiresIn: "7d" }
       );
-
       return res.status(200).json({
-        message: "Payment verified successfully",
+        message: "Login fee already paid",
         token,
         user: {
-          id: user._id,
-          full_name: user.full_name,
-          phone: user.phone,
+          id: updatedUser._id,
+          full_name: updatedUser.full_name,
+          phone: updatedUser.phone,
           login_fee_paid: true
         }
       });
     }
 
+    // If payment not verified yet
     res.status(400).json({ message: "Payment not yet received. Please complete payment first." });
   } catch (error) {
     console.error("Verify payment error:", error);

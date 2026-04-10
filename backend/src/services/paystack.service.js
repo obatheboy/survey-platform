@@ -45,8 +45,10 @@ const makeRequest = (path, method, data = null) => {
       res.on("data", (chunk) => body += chunk);
       res.on("end", () => {
         console.log(`Paystack response status: ${res.statusCode}`);
+        console.log(`Paystack raw response body: ${body}`);
         try {
           const json = JSON.parse(body);
+          console.log(`Paystack parsed response:`, json);
           if (res.statusCode >= 200 && res.statusCode < 300) {
             resolve(json);
           } else {
@@ -69,7 +71,7 @@ const makeRequest = (path, method, data = null) => {
 };
 
 /**
- * Initialize payment - Use /transaction/initialize with mobile_money for automatic M-Pesa STK Push
+ * Initialize payment - Use transaction/initialize for M-Pesa STK Push
  */
 exports.initializePayment = async (amount, phone, email, userId, description) => {
   const formattedPhone = formatPhone(phone);
@@ -79,10 +81,12 @@ exports.initializePayment = async (amount, phone, email, userId, description) =>
     const paymentEmail = email || `user_${userId}@surveyearn.com`;
     const reference = `PAY_${Date.now()}_${userId}_${Math.random().toString(36).substring(2, 8)}`;
     
+    console.log("Attempting /transaction/initialize with mobile_money for STK push...");
+    
     // Use /transaction/initialize with mobile_money for automatic M-Pesa STK Push
     const response = await makeRequest("/transaction/initialize", "POST", {
       email: paymentEmail,
-      amount: amount * 100, // Convert to cents
+      amount: amount * 100, // Convert to cents (KES 100 = 10000 kobo)
       currency: "KES",
       reference: reference,
       mobile_money: {
@@ -103,7 +107,7 @@ exports.initializePayment = async (amount, phone, email, userId, description) =>
     
     return response;
   } catch (error) {
-    console.error("Paystack STK Push error:", error.message);
+    console.error("Paystack initialize error:", error.message);
     console.error("Full error:", error);
     throw error;
   }
