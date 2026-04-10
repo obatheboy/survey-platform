@@ -669,13 +669,11 @@ exports.getActivationStats = async (req, res) => {
 exports.getAllLoginFeePayments = async (req, res) => {
   try {
     const users = await User.find({
-      $or: [
-        { 'login_fee_pending.status': 'PENDING' },
-        { 'login_fee_pending.status': { $exists: false } }
-      ]
+      'login_fee_pending.status': 'PENDING'
     })
     .select('full_name phone login_fee_pending login_fee_paid created_at')
     .sort({ 'login_fee_pending.submitted_at': -1 })
+    .limit(100)
     .lean();
 
     const payments = users.map(user => ({
