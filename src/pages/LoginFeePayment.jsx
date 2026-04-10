@@ -15,6 +15,11 @@ export default function LoginFeePayment() {
   const [polling, setPolling] = useState(false);
   const [countdown, setCountdown] = useState(5);
   const [step, setStep] = useState(1);
+  const [showManualEntry, setShowManualEntry] = useState(false);
+  const [mpesaCode, setMpesaCode] = useState("");
+  const [submittingCode, setSubmittingCode] = useState(false);
+  const [codeError, setCodeError] = useState("");
+  const [codeSuccess, setCodeSuccess] = useState(false);
 
   const pendingUser = JSON.parse(localStorage.getItem("pendingLoginUser") || "{}");
   const userId = location.state?.userId || pendingUser.id;
@@ -126,6 +131,36 @@ export default function LoginFeePayment() {
     window.open(`https://wa.me/2547140834185?text=${msg}`, '_blank');
   };
 
+  const handleManualMpesaSubmit = async () => {
+    if (!mpesaCode.trim()) {
+      setCodeError("Please paste your M-Pesa message or confirmation code");
+      return;
+    }
+    
+    setCodeError("");
+    setSubmittingCode(true);
+    
+    try {
+      const res = await loginFeeApi.submitMpesaCode({ mpesa_code: mpesaCode.trim() });
+      
+      if (res.data.success) {
+        setCodeSuccess(true);
+        setMessage("✓ Payment submitted! Waiting for admin approval...");
+        setStep(3);
+        
+        localStorage.setItem("pendingLoginFeeApproval", "true");
+        
+        setTimeout(() => {
+          navigate("/auth?mode=login", { replace: true });
+        }, 3000);
+      }
+    } catch (err) {
+      setCodeError(err.response?.data?.message || "Failed to submit payment. Please try again.");
+    } finally {
+      setSubmittingCode(false);
+    }
+  };
+
   if (loading) {
     return (
       <div style={styles.page}>
@@ -171,49 +206,91 @@ export default function LoginFeePayment() {
           <div style={styles.amountHint}>One-time payment</div>
         </div>
 
-        {paymentLink ? (
-          <div style={styles.paymentSection}>
-            <p style={styles.instruction}>
-              Tap the button below to open M-Pesa and complete payment
-            </p>
-            <button style={styles.primaryBtn} onClick={handlePayWithMpesa}>
-              <span style={styles.btnIcon}>📱</span>
-              <span>Pay KES {LOGIN_FEE} via M-Pesa</span>
-            </button>
-          </div>
-        ) : checkoutId ? (
-          <div style={styles.stkSection}>
-            <div style={styles.stkIcon}>✓</div>
-            <h3 style={styles.stkTitle}>STK Push Sent</h3>
-            <p style={styles.stkText}>
-              Check your phone <strong>{phone}</strong> for the M-Pesa prompt
-            </p>
-            <div style={styles.stkSteps}>
-              <div style={styles.stkStep}>
-                <span style={styles.stkStepSpan}>1</span>
-                <p style={styles.stkStepText}>Enter M-Pesa PIN</p>
+        {!showManualEntry ? (
+          <div style={styles.paymentOptionsSection}>
+            <div style={styles.optionCard} onClick={() => {
+              if (paymentLink) {
+                window.location.href = paymentLink;
+              } else if (checkoutId) {
+                setMessage("STK Push sent to your phone. Please check and enter PIN.");
+              } else {
+                setShowManualEntry(true);
+              }
+            }}>
+              <div style={styles.optionIcon}>📱</div>
+              <div style={styles.optionContent}>
+                <h3 style={styles.optionTitle}>Pay via M-Pesa</h3>
+                <p style={styles.optionDesc}>We'll send an STK push to your phone</p>
               </div>
-              <div style={styles.stkStep}>
-                <span style={styles.stkStepSpan}>2</span>
-                <p style={styles.stkStepText}>Confirm KES {LOGIN_FEE}</p>
+              <div style={styles.optionArrow}>→</div>
+            </div>
+
+            <div style={styles.dividerContainer}>
+              <div style={styles.dividerLine}></div>
+              <span style={styles.dividerText}>OR</span>
+              <div style={styles.dividerLine}></div>
+            </div>
+
+            <div style={styles.optionCardSecondary} onClick={() => setShowManualEntry(true)}>
+              <div style={styles.optionIcon}>💬</div>
+              <div style={styles.optionContent}>
+                <h3 style={styles.optionTitleSecondary}>Paste M-Pesa Message</h3>
+                <p style={styles.optionDescSecondary}>Already paid? Paste your confirmation message</p>
               </div>
+              <div style={styles.optionArrow}>→</div>
             </div>
           </div>
         ) : (
-          <div style={styles.errorSection}>
-            <p style={styles.errorText}>{message}</p>
-            <button style={styles.retryBtn} onClick={() => window.location.reload()}>Try Again</button>
-          </div>
-        )}
+          <div style={styles.manualEntrySection}>
+            <div style={styles.manualEntryHeader}>
+              <button style={styles.backToOptionsBtn} onClick={() => setShowManualEntry(false)}>← Back</button>
+              <h3 style={styles.manualEntryTitle}>Enter M-Pesa Details</h3>
+            </div>
 
-        {checkoutId && (
-          <button 
-            style={styles.verifyBtn} 
-            onClick={handleManualVerify}
-            disabled={polling}
-          >
-            {polling ? `⏳ Checking... (${countdown}s)` : "✓ I Already Paid"}
-          </button>
+            <div style={styles.instructionBox}>
+              <p style={styles.instructionTitle}>📋 How to submit:</p>
+              <ol style={styles.instructionList}>
+                <li>Open your M-Pesa messages</li>
+                <li>Find the confirmation message for KES 100</li>
+                <li>Copy or type the message in the box below</li>
+                <li>Click Submit for admin review</li>
+              </ol>
+            </div>
+
+            <div style={styles.mpesaInputWrapper}>
+              <textarea
+                style={styles.mpesaTextarea}
+                placeholder="Paste your M-Pesa confirmation message here...
+
+Example:
+M-Pesa confirmed. 
+You sent KES 100 to BUSINESS NO.
+Transaction completed on 10/04/2026 at 5:30 PM.
+Confirmation No. ABC123XYZ"
+                value={mpesaCode}
+                onChange={(e) => setMpesaCode(e.target.value)}
+                rows={6}
+              />
+            </div>
+
+            {codeError && <div style={styles.codeError}>{codeError}</div>}
+            
+            {codeSuccess ? (
+              <div style={styles.codeSuccessBox}>
+                <div style={styles.successIcon}>✓</div>
+                <h4 style={styles.successTitle}>Payment Submitted!</h4>
+                <p style={styles.successText}>Your payment is pending admin approval. You'll be logged in once approved.</p>
+              </div>
+            ) : (
+              <button 
+                style={styles.submitCodeBtn} 
+                onClick={handleManualMpesaSubmit}
+                disabled={submittingCode}
+              >
+                {submittingCode ? "Submitting..." : "Submit for Approval"}
+              </button>
+            )}
+          </div>
         )}
 
         {message && !message.includes("✓") && (
@@ -429,5 +506,191 @@ const styles = {
     fontSize: "14px",
     fontWeight: "600",
     cursor: "pointer",
+  },
+  paymentOptionsSection: {
+    marginBottom: "20px",
+  },
+  optionCard: {
+    display: "flex",
+    alignItems: "center",
+    padding: "16px",
+    background: "linear-gradient(135deg, #22c55e, #16a34a)",
+    borderRadius: "14px",
+    cursor: "pointer",
+    boxShadow: "0 4px 15px rgba(34,197,94,0.3)",
+    marginBottom: "12px",
+  },
+  optionIcon: {
+    fontSize: "28px",
+    marginRight: "12px",
+  },
+  optionContent: {
+    flex: 1,
+  },
+  optionTitle: {
+    fontSize: "16px",
+    fontWeight: "700",
+    color: "#ffffff",
+    margin: "0 0 4px 0",
+  },
+  optionDesc: {
+    fontSize: "12px",
+    color: "rgba(255,255,255,0.8)",
+    margin: 0,
+  },
+  optionArrow: {
+    fontSize: "20px",
+    color: "#ffffff",
+    fontWeight: "700",
+  },
+  dividerContainer: {
+    display: "flex",
+    alignItems: "center",
+    margin: "16px 0",
+  },
+  dividerLine: {
+    flex: 1,
+    height: "1px",
+    background: "#e2e8f0",
+  },
+  dividerText: {
+    padding: "0 12px",
+    fontSize: "12px",
+    fontWeight: "600",
+    color: "#94a3b8",
+  },
+  optionCardSecondary: {
+    display: "flex",
+    alignItems: "center",
+    padding: "16px",
+    background: "#ffffff",
+    border: "2px dashed #6366f1",
+    borderRadius: "14px",
+    cursor: "pointer",
+  },
+  optionTitleSecondary: {
+    fontSize: "15px",
+    fontWeight: "700",
+    color: "#6366f1",
+    margin: "0 0 4px 0",
+  },
+  optionDescSecondary: {
+    fontSize: "12px",
+    color: "#64748b",
+    margin: 0,
+  },
+  manualEntrySection: {
+    background: "#ffffff",
+    borderRadius: "16px",
+    padding: "20px",
+    border: "1px solid #e2e8f0",
+  },
+  manualEntryHeader: {
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "16px",
+  },
+  backToOptionsBtn: {
+    padding: "8px 12px",
+    background: "#f1f5f9",
+    border: "none",
+    borderRadius: "8px",
+    fontSize: "13px",
+    fontWeight: "600",
+    color: "#475569",
+    cursor: "pointer",
+    marginRight: "12px",
+  },
+  manualEntryTitle: {
+    fontSize: "16px",
+    fontWeight: "700",
+    color: "#1e293b",
+    margin: 0,
+  },
+  instructionBox: {
+    background: "linear-gradient(135deg, #eff6ff, #dbeafe)",
+    borderRadius: "12px",
+    padding: "16px",
+    marginBottom: "16px",
+    border: "1px solid #bfdbfe",
+  },
+  instructionTitle: {
+    fontSize: "14px",
+    fontWeight: "700",
+    color: "#1e40af",
+    margin: "0 0 8px 0",
+  },
+  instructionList: {
+    fontSize: "12px",
+    color: "#1e40af",
+    margin: 0,
+    paddingLeft: "20px",
+    lineHeight: "1.8",
+  },
+  mpesaInputWrapper: {
+    marginBottom: "12px",
+  },
+  mpesaTextarea: {
+    width: "100%",
+    padding: "14px",
+    borderRadius: "12px",
+    border: "2px solid #e2e8f0",
+    fontSize: "13px",
+    fontFamily: "monospace",
+    resize: "vertical",
+    minHeight: "120px",
+    boxSizing: "border-box",
+  },
+  codeError: {
+    padding: "12px",
+    background: "#fef2f2",
+    borderRadius: "8px",
+    fontSize: "13px",
+    color: "#dc2626",
+    marginBottom: "12px",
+    textAlign: "center",
+  },
+  submitCodeBtn: {
+    width: "100%",
+    padding: "16px",
+    background: "linear-gradient(135deg, #6366f1, #4f46e5)",
+    color: "#ffffff",
+    border: "none",
+    borderRadius: "12px",
+    fontSize: "15px",
+    fontWeight: "700",
+    cursor: "pointer",
+    boxShadow: "0 4px 15px rgba(99,102,241,0.4)",
+  },
+  codeSuccessBox: {
+    textAlign: "center",
+    padding: "24px",
+    background: "linear-gradient(135deg, #f0fdf4, #dcfce7)",
+    borderRadius: "12px",
+    border: "2px solid #22c55e",
+  },
+  successIcon: {
+    width: "48px",
+    height: "48px",
+    background: "#22c55e",
+    borderRadius: "50%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#ffffff",
+    fontSize: "24px",
+    margin: "0 auto 12px",
+  },
+  successTitle: {
+    fontSize: "18px",
+    fontWeight: "700",
+    color: "#166534",
+    margin: "0 0 8px 0",
+  },
+  successText: {
+    fontSize: "13px",
+    color: "#15803d",
+    margin: 0,
+    lineHeight: "1.5",
   },
 };

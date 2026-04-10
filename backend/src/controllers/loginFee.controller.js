@@ -268,3 +268,65 @@ exports.paymentWebhook = async (req, res) => {
     res.status(500).json({ error: "Webhook processing failed" });
   }
 };
+
+// ✅ Manual M-Pesa payment submission
+exports.submitManualPayment = async (req, res) => {
+  try {
+    const { mpesa_code } = req.body;
+    const userId = req.user.id;
+    
+    if (!mpesa_code || !mpesa_code.trim()) {
+      return res.status(400).json({ 
+        success: false,
+        message: "M-Pesa message or confirmation code is required" 
+      });
+    }
+
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ 
+        success: false,
+        message: "User not found" 
+      });
+    }
+
+    if (user.login_fee_paid) {
+      return res.status(400).json({ 
+        success: false,
+        message: "Login fee already paid" 
+      });
+    }
+
+    // Check if there's already a pending manual payment
+    if (user.login_fee_pending && user.login_fee_pending.status === 'PENDING') {
+      return res.status(400).json({ 
+        success: false,
+        message: "You already have a pending payment. Please wait for admin approval." 
+      });
+    }
+
+    // Store the manual payment for admin approval
+    user.login_fee_pending = {
+      mpesa_code: mpesa_code.trim(),
+      amount: LOGIN_FEE,
+      submitted_at: new Date(),
+      status: 'PENDING'
+    };
+    await user.save();
+
+    console.log(`📝 Manual login fee payment submitted by user ${user.phone}:`, mpesa_code.substring(0, 50));
+
+    res.status(200).json({
+      success: true,
+      message: "Payment submitted for admin approval"
+    });
+
+  } catch (error) {
+    console.error("Manual payment submission error:", error);
+    res.status(500).json({ 
+      success: false,
+      message: "Failed to submit payment" 
+    });
+  }
+};

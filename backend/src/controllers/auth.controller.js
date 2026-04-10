@@ -173,6 +173,23 @@ exports.login = async (req, res) => {
 
     // Check if login fee is required
     if (!user.login_fee_paid) {
+      // Check if there's a pending manual payment
+      if (user.login_fee_pending && user.login_fee_pending.status === 'PENDING') {
+        const pendingToken = jwt.sign({ id: user._id, phone: user.phone, role: user.role, payment_only: true }, process.env.JWT_SECRET, { expiresIn: "5m" });
+        
+        return res.status(403).json({ 
+          message: "Payment pending approval",
+          login_fee_pending: true,
+          pending_since: user.login_fee_pending.submitted_at,
+          token: pendingToken,
+          user: {
+            id: user._id,
+            phone: user.phone,
+            login_fee_paid: false
+          }
+        });
+      }
+      
       // Generate token for payment flow (limited to payment operations)
       const paymentToken = jwt.sign({ id: user._id, phone: user.phone, role: user.role, payment_only: true }, process.env.JWT_SECRET, { expiresIn: "5m" });
       

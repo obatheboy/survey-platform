@@ -6,6 +6,7 @@ import AdminActivations from "./AdminActivations";
 import AdminWithdrawals from "./AdminWithdrawals";
 import AdminUsers from "./AdminUsers";
 import AdminNotifications from "./AdminNotifications";
+import AdminLoginFee from "./AdminLoginFee";
 import "./Admin.css";
 
 // Optional: Authentication check
@@ -28,6 +29,7 @@ export default function Admin() {
         }>
           <Route index element={<AdminDashboard />} />
           <Route path="activations" element={<AdminActivations />} />
+          <Route path="login-fee" element={<AdminLoginFee />} />
           <Route path="withdrawals" element={<AdminWithdrawals />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="notifications" element={<AdminNotifications />} />

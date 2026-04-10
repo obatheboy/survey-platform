@@ -195,6 +195,27 @@ export default function Auth() {
         return;
       }
 
+      // Check if login fee payment is pending admin approval
+      if (res.data.login_fee_pending) {
+        setLoginMessage("⏳ Your payment is pending approval. You will be logged in once approved.");
+        setLoading(false);
+        
+        // Store token for later auto-login after approval
+        if (res.data.token) {
+          localStorage.setItem("token", res.data.token);
+        }
+        
+        localStorage.setItem("pendingLoginUser", JSON.stringify({
+          id: res.data.user.id,
+          phone: res.data.user.phone
+        }));
+        
+        setTimeout(() => {
+          navigate("/auth?mode=login", { replace: true });
+        }, 4000);
+        return;
+      }
+
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("lastLoginTime", Date.now().toString());

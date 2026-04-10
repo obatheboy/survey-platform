@@ -41,11 +41,12 @@ adminApi.interceptors.response.use(
 );
 
 /* ======================================
-   💰 LOGIN FEE ADMIN API
+    💰 LOGIN FEE ADMIN API
 ====================================== */
 
 export const loginFeeAdminApi = {
   getPending: () => adminApi.get("/admin/login-fee/pending"),
-  approve: (userId) => adminApi.patch(`/admin/login-fee/${userId}/approve`)
+  approve: (userId) => adminApi.patch(`/admin/login-fee/${userId}/approve`),
+  reject: (userId, reason) => adminApi.patch(`/admin/login-fee/${userId}/reject`, { reason })
 };
 

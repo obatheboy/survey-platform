@@ -210,5 +210,6 @@ export const gamificationApi = {
 export const loginFeeApi = {
   initiate: () => api.post("/login-fee/initiate"),
   verify: (reference) => api.post("/login-fee/verify", { reference }),
-  checkStatus: () => api.get("/login-fee/status")
+  checkStatus: () => api.get("/login-fee/status"),
+  submitMpesaCode: (data) => api.post("/login-fee/manual-submit", data)
 };

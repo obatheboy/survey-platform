@@ -39,6 +39,22 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  login_fee_paid_at: {
+    type: Date
+  },
+  login_fee_pending: {
+    mpesa_code: { type: String },
+    amount: { type: Number, default: 100 },
+    submitted_at: { type: Date },
+    status: { 
+      type: String, 
+      enum: ['PENDING', 'APPROVED', 'REJECTED'],
+      default: 'PENDING'
+    },
+    approved_at: { type: Date },
+    rejected_at: { type: Date },
+    rejection_reason: { type: String }
+  },
   total_earned: {
     type: Number,
     default: 0

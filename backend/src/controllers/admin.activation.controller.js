@@ -669,16 +669,27 @@ exports.getActivationStats = async (req, res) => {
 exports.getPendingLoginFeePayments = async (req, res) => {
   try {
     const users = await User.find({
-      login_fee_paid: false
+      'login_fee_pending.status': 'PENDING'
     })
-    .select('full_name phone created_at')
-    .sort({ created_at: 1 })
+    .select('full_name phone login_fee_pending created_at')
+    .sort({ 'login_fee_pending.submitted_at': 1 })
     .lean();
+
+    const payments = users.map(user => ({
+      id: user._id,
+      user_id: user._id,
+      full_name: user.full_name,
+      phone: user.phone,
+      mpesa_code: user.login_fee_pending?.mpesa_code || 'N/A',
+      amount: user.login_fee_pending?.amount || LOGIN_FEE,
+      submitted_at: user.login_fee_pending?.submitted_at,
+      type: 'login_fee'
+    }));
 
     res.json({
       success: true,
-      payments: users,
-      count: users.length
+      payments,
+      count: payments.length
     });
   } catch (error) {
     console.error("❌ Get login fee payments error:", error);
@@ -705,6 +716,13 @@ exports.approveLoginFee = async (req, res) => {
       });
     }
 
+    if (!user.login_fee_pending || user.login_fee_pending.status !== 'PENDING') {
+      return res.status(400).json({ 
+        success: false,
+        message: "No pending login fee payment found" 
+      });
+    }
+
     if (user.login_fee_paid) {
       return res.status(400).json({ 
         success: false,
@@ -712,21 +730,83 @@ exports.approveLoginFee = async (req, res) => {
       });
     }
 
+    // Mark as paid and clear pending
     user.login_fee_paid = true;
+    user.login_fee_paid_at = new Date();
+    user.login_fee_pending.status = 'APPROVED';
+    user.login_fee_pending.approved_at = new Date();
     await user.save();
+
+    // Generate token for auto-login
+    const token = jwt.sign(
+      { id: user._id, phone: user.phone, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    console.log(`✅ Login fee approved for user: ${user.full_name} (${user.phone})`);
 
     res.json({
       success: true,
       message: "Login fee approved successfully",
       user_id: user._id,
       user_name: user.full_name,
-      phone: user.phone
+      phone: user.phone,
+      auto_login_token: token
     });
   } catch (error) {
     console.error("❌ Approve login fee error:", error);
     res.status(500).json({ 
       success: false,
       message: "Failed to approve login fee" 
+    });
+  }
+};
+
+/**
+ * ❌ REJECT LOGIN FEE PAYMENT
+ */
+exports.rejectLoginFee = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { reason } = req.body;
+    
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ 
+        success: false,
+        message: "User not found" 
+      });
+    }
+
+    if (!user.login_fee_pending || user.login_fee_pending.status !== 'PENDING') {
+      return res.status(400).json({ 
+        success: false,
+        message: "No pending login fee payment found" 
+      });
+    }
+
+    // Mark as rejected
+    user.login_fee_pending.status = 'REJECTED';
+    user.login_fee_pending.rejected_at = new Date();
+    user.login_fee_pending.rejection_reason = reason || 'Payment verification failed';
+    await user.save();
+
+    console.log(`❌ Login fee rejected for user: ${user.full_name} (${user.phone})`);
+
+    res.json({
+      success: true,
+      message: "Login fee payment rejected",
+      user_id: user._id,
+      user_name: user.full_name,
+      phone: user.phone
+    });
+  } catch (error) {
+    console.error("❌ Reject login fee error:", error);
+    res.status(500).json({ 
+      success: false,
+      message: "Failed to reject login fee" 
     });
   }
 };

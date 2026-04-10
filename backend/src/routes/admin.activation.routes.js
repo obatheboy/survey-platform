@@ -81,4 +81,14 @@ router.patch(
   controller.approveLoginFee
 );
 
+/**
+ * PATCH
+ * /api/admin/login-fee/:userId/reject
+ * ➜ Reject login fee payment
+ */
+router.patch(
+  "/login-fee/:userId/reject",
+  controller.rejectLoginFee
+);
+
 module.exports = router;

@@ -1,0 +1,428 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { loginFeeAdminApi } from "../../api/adminApi";
+import "./Admin.css";
+
+export default function AdminLoginFee() {
+  const navigate = useNavigate();
+  const [payments, setPayments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [processingId, setProcessingId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    fetchPayments();
+  }, []);
+
+  const fetchPayments = async () => {
+    try {
+      setLoading(true);
+      const res = await loginFeeAdminApi.getPending();
+      if (res.data.success) {
+        setPayments(res.data.payments || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch payments:", err);
+      setErrorMessage("Failed to load payments");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleApprove = async (userId, userName) => {
+    if (!window.confirm(`Approve login fee for ${userName}?`)) return;
+    
+    try {
+      setProcessingId(userId);
+      setErrorMessage("");
+      const res = await loginFeeAdminApi.approve(userId);
+      
+      if (res.data.success) {
+        setSuccessMessage(`✅ Login fee approved for ${userName}`);
+        setPayments(prev => prev.filter(p => p.user_id !== userId));
+        
+        // If there's an auto-login token, user can be logged in
+        if (res.data.auto_login_token) {
+          console.log("Auto-login token available for user");
+        }
+      }
+    } catch (err) {
+      setErrorMessage(err.response?.data?.message || "Failed to approve");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const handleReject = async (userId, userName) => {
+    const reason = window.prompt(`Reason for rejecting payment from ${userName}:`);
+    if (!reason) return;
+    
+    try {
+      setProcessingId(userId);
+      setErrorMessage("");
+      await loginFeeAdminApi.reject(userId, reason);
+      
+      setSuccessMessage(`❌ Payment rejected for ${userName}`);
+      setPayments(prev => prev.filter(p => p.user_id !== userId));
+    } catch (err) {
+      setErrorMessage(err.response?.data?.message || "Failed to reject");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const filteredPayments = payments.filter(p => 
+    p.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.phone?.includes(searchTerm) ||
+    p.mpesa_code?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const formatDate = (date) => {
+    if (!date) return "N/A";
+    return new Date(date).toLocaleString();
+  };
+
+  return (
+    <div className="admin-login-fee-page">
+      <div className="admin-header">
+        <button className="back-btn" onClick={() => navigate("/admin")}>
+          ← Back to Dashboard
+        </button>
+        <h1>💰 Login Fee Payments</h1>
+        <div className="stats-badge">
+          <span>Pending: {payments.length}</span>
+        </div>
+      </div>
+
+      {successMessage && (
+        <div className="alert success">{successMessage}</div>
+      )}
+      
+      {errorMessage && (
+        <div className="alert error">{errorMessage}</div>
+      )}
+
+      <div className="search-bar">
+        <input
+          type="text"
+          placeholder="🔍 Search by name, phone, or M-Pesa code..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
+      {loading ? (
+        <div className="loading-state">Loading payments...</div>
+      ) : filteredPayments.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-icon">✓</div>
+          <h3>No pending payments</h3>
+          <p>All login fee payments have been processed</p>
+        </div>
+      ) : (
+        <div className="payments-grid">
+          {filteredPayments.map((payment) => (
+            <div key={payment.user_id} className="payment-card">
+              <div className="payment-header">
+                <span className="payment-type">Login Fee</span>
+                <span className="payment-amount">KES 100</span>
+              </div>
+              
+              <div className="payment-details">
+                <div className="detail-row">
+                  <span className="label">Name:</span>
+                  <span className="value">{payment.full_name || "N/A"}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="label">Phone:</span>
+                  <span className="value">{payment.phone}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="label">M-Pesa Code:</span>
+                  <span className="value code">{payment.mpesa_code || "N/A"}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="label">Submitted:</span>
+                  <span className="value">{formatDate(payment.submitted_at)}</span>
+                </div>
+              </div>
+
+              <div className="mpesa-message-box">
+                <p className="mpesa-label">📋 M-Pesa Message:</p>
+                <p className="mpesa-text">{payment.mpesa_code || "No message provided"}</p>
+              </div>
+
+              <div className="payment-actions">
+                <button
+                  className="approve-btn"
+                  onClick={() => handleApprove(payment.user_id, payment.full_name)}
+                  disabled={processingId === payment.user_id}
+                >
+                  {processingId === payment.user_id ? "Processing..." : "✓ Approve"}
+                </button>
+                <button
+                  className="reject-btn"
+                  onClick={() => handleReject(payment.user_id, payment.full_name)}
+                  disabled={processingId === payment.user_id}
+                >
+                  ✕ Reject
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <style>{`
+        .admin-login-fee-page {
+          padding: 20px;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+        
+        .admin-header {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin-bottom: 24px;
+          flex-wrap: wrap;
+        }
+        
+        .admin-header h1 {
+          font-size: 24px;
+          font-weight: 700;
+          color: #1e293b;
+          margin: 0;
+          flex: 1;
+        }
+        
+        .back-btn {
+          padding: 10px 16px;
+          background: #f1f5f9;
+          border: none;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          color: #475569;
+          cursor: pointer;
+        }
+        
+        .back-btn:hover {
+          background: #e2e8f0;
+        }
+        
+        .stats-badge {
+          padding: 8px 16px;
+          background: linear-gradient(135deg, #f59e0b, #d97706);
+          border-radius: 20px;
+          font-size: 14px;
+          font-weight: 600;
+          color: white;
+        }
+        
+        .search-bar {
+          margin-bottom: 20px;
+        }
+        
+        .search-bar input {
+          width: 100%;
+          padding: 14px 16px;
+          border: 2px solid #e2e8f0;
+          border-radius: 12px;
+          font-size: 14px;
+          box-sizing: border-box;
+        }
+        
+        .search-bar input:focus {
+          border-color: #6366f1;
+          outline: none;
+        }
+        
+        .alert {
+          padding: 14px 20px;
+          border-radius: 10px;
+          margin-bottom: 20px;
+          font-size: 14px;
+          font-weight: 600;
+        }
+        
+        .alert.success {
+          background: #f0fdf4;
+          color: #166534;
+          border: 1px solid #22c55e;
+        }
+        
+        .alert.error {
+          background: #fef2f2;
+          color: #dc2626;
+          border: 1px solid #ef4444;
+        }
+        
+        .loading-state, .empty-state {
+          text-align: center;
+          padding: 60px 20px;
+          color: #64748b;
+        }
+        
+        .empty-state .empty-icon {
+          width: 64px;
+          height: 64px;
+          background: #22c55e;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 32px;
+          color: white;
+          margin: 0 auto 16px;
+        }
+        
+        .empty-state h3 {
+          font-size: 18px;
+          color: #1e293b;
+          margin: 0 0 8px 0;
+        }
+        
+        .empty-state p {
+          font-size: 14px;
+          color: #64748b;
+          margin: 0;
+        }
+        
+        .payments-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+          gap: 20px;
+        }
+        
+        .payment-card {
+          background: white;
+          border-radius: 16px;
+          padding: 20px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+          border: 1px solid #e2e8f0;
+        }
+        
+        .payment-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 16px;
+          padding-bottom: 12px;
+          border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .payment-type {
+          padding: 6px 12px;
+          background: linear-gradient(135deg, #6366f1, #4f46e5);
+          border-radius: 20px;
+          font-size: 12px;
+          font-weight: 600;
+          color: white;
+        }
+        
+        .payment-amount {
+          font-size: 20px;
+          font-weight: 800;
+          color: #22c55e;
+        }
+        
+        .payment-details {
+          margin-bottom: 16px;
+        }
+        
+        .detail-row {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 8px;
+        }
+        
+        .detail-row .label {
+          font-size: 13px;
+          color: #64748b;
+          font-weight: 500;
+        }
+        
+        .detail-row .value {
+          font-size: 13px;
+          color: #1e293b;
+          font-weight: 600;
+        }
+        
+        .detail-row .value.code {
+          font-family: monospace;
+          background: #f1f5f9;
+          padding: 2px 8px;
+          border-radius: 4px;
+        }
+        
+        .mpesa-message-box {
+          background: #f8fafc;
+          border-radius: 12px;
+          padding: 14px;
+          margin-bottom: 16px;
+          border: 1px solid #e2e8f0;
+        }
+        
+        .mpesa-label {
+          font-size: 12px;
+          font-weight: 600;
+          color: #475569;
+          margin: 0 0 8px 0;
+        }
+        
+        .mpesa-text {
+          font-size: 12px;
+          color: #64748b;
+          margin: 0;
+          font-family: monospace;
+          white-space: pre-wrap;
+          word-break: break-word;
+          max-height: 80px;
+          overflow-y: auto;
+        }
+        
+        .payment-actions {
+          display: flex;
+          gap: 12px;
+        }
+        
+        .payment-actions button {
+          flex: 1;
+          padding: 12px;
+          border: none;
+          border-radius: 10px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        
+        .approve-btn {
+          background: linear-gradient(135deg, #22c55e, #16a34a);
+          color: white;
+        }
+        
+        .approve-btn:hover:not(:disabled) {
+          background: linear-gradient(135deg, #16a34a, #15803d);
+        }
+        
+        .reject-btn {
+          background: #fee2e2;
+          color: #dc2626;
+        }
+        
+        .reject-btn:hover:not(:disabled) {
+          background: #fecaca;
+        }
+        
+        .payment-actions button:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      `}</style>
+    </div>
+  );
+}
