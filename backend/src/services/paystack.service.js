@@ -69,7 +69,7 @@ const makeRequest = (path, method, data = null) => {
 };
 
 /**
- * Initialize payment - Use /charge endpoint for automatic M-Pesa STK Push
+ * Initialize payment - Use /transaction/initialize with mobile_money for automatic M-Pesa STK Push
  */
 exports.initializePayment = async (amount, phone, email, userId, description) => {
   const formattedPhone = formatPhone(phone);
@@ -79,25 +79,25 @@ exports.initializePayment = async (amount, phone, email, userId, description) =>
     const paymentEmail = email || `user_${userId}@surveyearn.com`;
     const reference = `PAY_${Date.now()}_${userId}_${Math.random().toString(36).substring(2, 8)}`;
     
-    // Use /charge endpoint for automatic M-Pesa STK Push
-    const response = await makeRequest("/charge", "POST", {
+    // Use /transaction/initialize with mobile_money for automatic M-Pesa STK Push
+    const response = await makeRequest("/transaction/initialize", "POST", {
       email: paymentEmail,
       amount: amount * 100, // Convert to cents
       currency: "KES",
       reference: reference,
       mobile_money: {
         phone: formattedPhone,
-        provider: "mtn" // Kenya M-Pesa
+        provider: "mpesa"
       },
       metadata: {
         user_id: userId.toString(),
         phone: formattedPhone,
-        type: "login_fee",
-        description: description || "Login fee payment"
-      }
+        type: "login_fee"
+      },
+      callback_url: `${process.env.FRONTEND_URL}/login-fee-callback`
     });
     
-    console.log("Paystack charge response:", response);
+    console.log("Paystack initialize response:", response);
     console.log("Paystack response data keys:", response.data ? Object.keys(response.data) : "no data");
     console.log("Full Paystack response:", JSON.stringify(response, null, 2));
     
