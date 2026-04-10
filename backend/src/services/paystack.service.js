@@ -1,6 +1,7 @@
 const https = require("https");
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
+const PAYSTACK_PUBLIC_KEY = process.env.PAYSTACK_PUBLIC_KEY;
 const BASE_URL = "api.paystack.co";
 
 const formatPhone = (phone) => {
@@ -20,7 +21,7 @@ const makeRequest = (path, method, data = null) => {
     console.log("Environment check - PAYSTACK_SECRET_KEY:", PAYSTACK_SECRET_KEY ? "present" : "MISSING");
     
     if (!PAYSTACK_SECRET_KEY) {
-      console.error("Missing PAYSTACK_SECRET_KEY! Available env vars starting with PAY:", Object.keys(process.env).filter(k => k.startsWith('PAY')));
+      console.error("Missing PAYSTACK_SECRET_KEY!");
       reject(new Error("PAYSTACK_SECRET_KEY is not configured"));
       return;
     }
@@ -37,10 +38,7 @@ const makeRequest = (path, method, data = null) => {
       headers: headers
     };
 
-    console.log(`Paystack request: ${method} ${path}`, { 
-      hasData: !!data,
-      keyPrefix: PAYSTACK_SECRET_KEY ? PAYSTACK_SECRET_KEY.substring(0, 15) + "..." : "none"
-    });
+    console.log(`Paystack request: ${method} ${path}`);
 
     const req = https.request(options, (res) => {
       let body = "";
@@ -49,7 +47,6 @@ const makeRequest = (path, method, data = null) => {
         console.log(`Paystack response status: ${res.statusCode}`);
         try {
           const json = JSON.parse(body);
-          console.log(`Paystack ${method} ${path} response:`, json);
           if (res.statusCode >= 200 && res.statusCode < 300) {
             resolve(json);
           } else {
@@ -72,37 +69,38 @@ const makeRequest = (path, method, data = null) => {
 };
 
 /**
- * Initialize payment and trigger automatic M-Pesa STK Push
- * This uses Paystack's direct charge endpoint for mobile money
+ * Initialize payment - CORRECTED VERSION
  */
 exports.initializePayment = async (amount, phone, email, userId, description) => {
-  const formattedPhone = formatPhone(phone);
-  console.log(`Initializing Paystack STK Push for phone: ${formattedPhone}, amount: ${amount}, email: ${email}`);
+  console.log(`Initializing Paystack payment: amount: ${amount}, email: ${email}, userId: ${userId}`);
   
   try {
-    // Use user's email or generate one
     const paymentEmail = email || `user_${userId}@surveyearn.com`;
+    const reference = `PAY_${Date.now()}_${userId}_${Math.random().toString(36).substring(2, 8)}`;
     
-    // Use direct charge endpoint for M-Pesa STK Push
-    const response = await makeRequest("/charge", "POST", {
+    // Use standard initialize endpoint
+    const response = await makeRequest("/transaction/initialize", "POST", {
       email: paymentEmail,
-      amount: amount * 100, // Paystack expects amount in kobo (cents)
+      amount: amount * 100, // Convert to cents
       currency: "KES",
-      mobile_money: {
-        phone: formattedPhone,
-        provider: "mtn" // Kenya M-Pesa
-      },
+      reference: reference,
       metadata: {
         user_id: userId.toString(),
-        phone: formattedPhone,
-        type: "login_fee"
+        phone: phone,
+        type: "login_fee",
+        description: description || "Login fee payment"
       }
     });
     
-    console.log("Paystack STK Push response:", response);
-    return response;
+    console.log("Paystack init response:", response);
+    
+    return {
+      success: true,
+      authorization_url: response.data.authorization_url,
+      reference: reference
+    };
   } catch (error) {
-    console.error("Paystack STK Push error:", error.message);
+    console.error("Paystack error:", error.message);
     throw error;
   }
 };
@@ -113,7 +111,13 @@ exports.initializePayment = async (amount, phone, email, userId, description) =>
 exports.verifyPayment = async (reference) => {
   try {
     const response = await makeRequest(`/transaction/verify/${reference}`, "GET");
-    return response;
+    return {
+      success: response.data.status === "success",
+      amount: response.data.amount / 100,
+      reference: response.data.reference,
+      paid_at: response.data.paid_at,
+      status: response.data.status
+    };
   } catch (error) {
     console.error("Paystack verify error:", error.message);
     throw error;
@@ -124,5 +128,5 @@ exports.verifyPayment = async (reference) => {
  * Get public key for frontend
  */
 exports.getPublicKey = () => {
-  return process.env.PAYSTACK_PUBLIC_KEY;
+  return PAYSTACK_PUBLIC_KEY;
 };
