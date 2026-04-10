@@ -14,6 +14,7 @@ export default function LoginFeePayment() {
   const [message, setMessage] = useState("");
   const [polling, setPolling] = useState(false);
   const [countdown, setCountdown] = useState(5);
+  const [step, setStep] = useState(1);
 
   const pendingUser = JSON.parse(localStorage.getItem("pendingLoginUser") || "{}");
   const userId = location.state?.userId || pendingUser.id;
@@ -22,24 +23,18 @@ export default function LoginFeePayment() {
 
   const checkPayment = useCallback(async () => {
     if (!checkoutId) return;
-
     try {
       const res = await loginFeeApi.verify({ reference: checkoutId });
-      
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("lastLoginTime", Date.now().toString());
         localStorage.removeItem("pendingLoginUser");
-        
         setMessage("✓ Payment verified! Logging you in...");
-        
-        setTimeout(() => {
-          navigate("/dashboard", { replace: true });
-        }, 1500);
+        setStep(3);
+        setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
         return;
       }
     } catch (err) {
-      console.log("Check payment error:", err.response?.data);
       if (err.response?.data?.message === "Login fee already paid" || err.response?.data?.success === true) {
         try {
           const loginRes = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
@@ -47,17 +42,15 @@ export default function LoginFeePayment() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ phone })
           }).then(r => r.json());
-
           if (loginRes.token) {
             localStorage.setItem("token", loginRes.token);
             localStorage.setItem("lastLoginTime", Date.now().toString());
             localStorage.removeItem("pendingLoginUser");
             setMessage("✓ Payment verified! Logging you in...");
+            setStep(3);
             setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
           }
-        } catch (e) {
-          console.log("Login fallback error:", e);
-        }
+        } catch (e) {}
       }
     }
   }, [checkoutId, navigate, phone]);
@@ -65,58 +58,43 @@ export default function LoginFeePayment() {
   useEffect(() => {
     if (!userId || !phone) {
       navigate("/auth?mode=login", { replace: true });
-      return;
     }
   }, [userId, phone, navigate]);
 
   useEffect(() => {
     const init = async () => {
       if (reference && !checkoutId) {
-        console.log("Processing payment callback with reference:", reference);
         setCheckoutId(reference);
         setMessage("Verifying payment...");
         setLoading(false);
-        
-        try {
-          await checkPayment();
-        } catch (e) {
-          console.log("Callback check failed, will poll");
-          setPolling(true);
-        }
+        setStep(2);
+        try { await checkPayment(); } catch { setPolling(true); }
         return;
       }
-
       if (!userId || !phone) {
         navigate("/auth?mode=login", { replace: true });
         return;
       }
-
       try {
-        console.log("Initiating payment...");
         const res = await loginFeeApi.initiate();
-        console.log("Payment response:", res.data);
-        
         if (res.data.authorization_url) {
           setPaymentLink(res.data.authorization_url);
           setCheckoutId(res.data.reference);
-          setMessage("💳 Payment link created! Click 'Pay with M-Pesa' to complete payment.");
-        } 
-        else if (res.data.reference) {
+          setStep(2);
+        } else if (res.data.reference) {
           setCheckoutId(res.data.reference);
-          setMessage("📱 STK Push sent! Check your phone and enter your M-Pesa PIN.");
+          setMessage("STK Push sent to your phone");
           setPolling(true);
+          setStep(2);
         } else {
           setMessage("Could not initiate payment. Please try again.");
         }
       } catch (err) {
-        console.error("Initiate error:", err);
-        const errorMsg = err.response?.data?.message || "Failed to create payment. Please try again.";
-        setMessage(errorMsg);
+        setMessage(err.response?.data?.message || "Failed to create payment. Please try again.");
       } finally {
         setLoading(false);
       }
     };
-
     init();
   }, [reference, checkoutId, userId, phone, navigate]);
 
@@ -124,22 +102,16 @@ export default function LoginFeePayment() {
     if (polling && checkoutId) {
       const interval = setInterval(() => {
         setCountdown(prev => {
-          if (prev <= 1) {
-            checkPayment();
-            return 5;
-          }
+          if (prev <= 1) { checkPayment(); return 5; }
           return prev - 1;
         });
       }, 1000);
-
       return () => clearInterval(interval);
     }
   }, [polling, checkoutId, checkPayment]);
 
   const handlePayWithMpesa = () => {
-    if (paymentLink) {
-      window.location.href = paymentLink;
-    }
+    if (paymentLink) window.location.href = paymentLink;
   };
 
   const handleManualVerify = async () => {
@@ -160,9 +132,12 @@ export default function LoginFeePayment() {
         <div style={styles.container}>
           <div style={styles.loadingBox}>
             <div style={styles.spinner}></div>
-            <p>Creating payment...</p>
+            <p style={styles.loadingText}>Preparing payment...</p>
           </div>
         </div>
+        <style>{`
+          @keyframes spin { to { transform: rotate(360deg); } }
+        `}</style>
       </div>
     );
   }
@@ -170,81 +145,86 @@ export default function LoginFeePayment() {
   return (
     <div style={styles.page}>
       <div style={styles.container}>
-        <div style={styles.header}>
-          <span style={styles.lockIcon}>🔐</span>
-          <h1 style={styles.title}>Activation Required</h1>
-          <p style={styles.subtitle}>
-            Pay KES {LOGIN_FEE} to activate your account
-          </p>
+        <div style={styles.progressBar}>
+          <div style={{...styles.progressStep, ...styles.progressActive, ...styles.progressActiveSpan}}>
+            <span style={styles.progressStepSpan}>1</span><p style={styles.progressLabel}>Amount</p>
+          </div>
+          <div style={styles.progressLine}></div>
+          <div style={{...styles.progressStep, ...(step >= 2 ? styles.progressActive : {}), ...(step >= 2 ? styles.progressActiveSpan : {})}}>
+            <span style={{...styles.progressStepSpan, ...(step >= 2 ? styles.progressActiveSpanColor : {})}}>2</span><p style={styles.progressLabel}>Pay</p>
+          </div>
+          <div style={styles.progressLine}></div>
+          <div style={{...styles.progressStep, ...(step >= 3 ? styles.progressActive : {}), ...(step >= 3 ? styles.progressActiveSpan : {})}}>
+            <span style={{...styles.progressStepSpan, ...(step >= 3 ? styles.progressActiveSpanColor : {})}}>3</span><p style={styles.progressLabel}>Done</p>
+          </div>
         </div>
 
-        <div style={styles.paymentCard}>
-          <div style={styles.amountDisplay}>
-            <span style={styles.amountLabel}>Amount to Pay</span>
-            <span style={styles.amount}>KES {LOGIN_FEE}</span>
+        <div style={styles.header}>
+          <div style={styles.iconBox}>💰</div>
+          <h1 style={styles.title}>Activation Fee</h1>
+          <p style={styles.subtitle}>Complete payment to activate your account</p>
+        </div>
+
+        <div style={styles.amountCard}>
+          <div style={styles.amountLabel}>Total Amount</div>
+          <div style={styles.amount}>KES {LOGIN_FEE}</div>
+          <div style={styles.amountHint}>One-time payment</div>
+        </div>
+
+        {paymentLink ? (
+          <div style={styles.paymentSection}>
+            <p style={styles.instruction}>
+              Tap the button below to open M-Pesa and complete payment
+            </p>
+            <button style={styles.primaryBtn} onClick={handlePayWithMpesa}>
+              <span style={styles.btnIcon}>📱</span>
+              <span>Pay KES {LOGIN_FEE} via M-Pesa</span>
+            </button>
           </div>
-
-          {paymentLink ? (
-            <div style={styles.linkPaymentSection}>
-              <p style={styles.linkText}>
-                Click the button below to pay via M-Pesa
-              </p>
-              <button 
-                style={styles.payBtn} 
-                onClick={handlePayWithMpesa}
-              >
-                💳 Pay with M-Pesa
-              </button>
+        ) : checkoutId ? (
+          <div style={styles.stkSection}>
+            <div style={styles.stkIcon}>✓</div>
+            <h3 style={styles.stkTitle}>STK Push Sent</h3>
+            <p style={styles.stkText}>
+              Check your phone <strong>{phone}</strong> for the M-Pesa prompt
+            </p>
+            <div style={styles.stkSteps}>
+              <div style={styles.stkStep}>
+                <span style={styles.stkStepSpan}>1</span>
+                <p style={styles.stkStepText}>Enter M-Pesa PIN</p>
+              </div>
+              <div style={styles.stkStep}>
+                <span style={styles.stkStepSpan}>2</span>
+                <p style={styles.stkStepText}>Confirm KES {LOGIN_FEE}</p>
+              </div>
             </div>
-          ) : checkoutId ? (
-            <div style={styles.stkStatus}>
-              <span style={styles.stkIcon}>📱</span>
-              <p style={styles.stkText}>
-                M-Pesa STK Push has been sent to your phone <strong>{phone}</strong>
-              </p>
-              <p style={styles.stkHint}>Check your phone and enter your M-Pesa PIN</p>
-            </div>
-          ) : (
-            <div style={styles.fallbackSection}>
-              <p style={styles.fallbackText}>
-                Click the button below to initiate payment via M-Pesa
-              </p>
-              <button 
-                style={styles.payBtn} 
-                onClick={() => window.location.reload()}
-              >
-                🔄 Try Again
-              </button>
-            </div>
-          )}
-
-          <div style={styles.divider}>
-            <span>OR</span>
           </div>
+        ) : (
+          <div style={styles.errorSection}>
+            <p style={styles.errorText}>{message}</p>
+            <button style={styles.retryBtn} onClick={() => window.location.reload()}>Try Again</button>
+          </div>
+        )}
 
+        {checkoutId && (
           <button 
-            style={styles.checkBtn} 
+            style={styles.verifyBtn} 
             onClick={handleManualVerify}
             disabled={polling}
           >
-            {polling ? `⏳ Checking... (${countdown}s)` : "✓ I've Already Paid"}
+            {polling ? `⏳ Checking... (${countdown}s)` : "✓ I Already Paid"}
           </button>
+        )}
 
-          {message && (
-            <div style={{
-              ...styles.message,
-              background: message.includes("✓") ? "#dcfce7" : "#fef3c7",
-              color: message.includes("✓") ? "#166534" : "#92400e",
-            }}>
-              {message}
-            </div>
-          )}
-        </div>
+        {message && !message.includes("✓") && (
+          <div style={styles.messageBox}>{message}</div>
+        )}
 
-        <div style={styles.supportSection}>
-          <p style={styles.supportText}>Need help?</p>
+        <div style={styles.helpSection}>
+          <div style={styles.helpIcon}>❓</div>
+          <p style={styles.helpText}>Having trouble?</p>
           <button style={styles.whatsappBtn} onClick={handleWhatsAppSupport}>
-            💬 Chat on WhatsApp
+            💬 WhatsApp Support
           </button>
         </div>
 
@@ -262,171 +242,181 @@ export default function LoginFeePayment() {
 const styles = {
   page: {
     minHeight: "100vh",
-    background: "linear-gradient(180deg, #667eea 0%, #764ba2 100%)",
-    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    padding: "16px",
+    background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
+    fontFamily: "'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif",
+    padding: "20px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
   },
   container: {
     width: "100%",
-    maxWidth: "480px",
+    maxWidth: "420px",
     background: "#ffffff",
-    borderRadius: "16px",
+    borderRadius: "20px",
     padding: "24px",
-    boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+    boxShadow: "0 25px 50px rgba(0,0,0,0.4)",
   },
   loadingBox: {
     textAlign: "center",
-    padding: "40px",
+    padding: "60px 20px",
   },
   spinner: {
-    width: "40px",
-    height: "40px",
+    width: "48px",
+    height: "48px",
     border: "4px solid #e2e8f0",
-    borderTopColor: "#667eea",
+    borderTopColor: "#e11d48",
     borderRadius: "50%",
     animation: "spin 1s linear infinite",
     margin: "0 auto 16px",
   },
-  header: {
-    textAlign: "center",
-    marginBottom: "20px",
+  loadingText: { color: "#64748b", fontSize: "16px", margin: 0 },
+  progressBar: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: "24px",
   },
-  lockIcon: {
-    fontSize: "48px",
-    display: "block",
-    marginBottom: "12px",
+  progressStep: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
-  title: {
-    fontSize: "24px",
-    fontWeight: "900",
-    color: "#1e293b",
-    margin: "0 0 8px 0",
-  },
-  subtitle: {
+  progressStepSpan: {
+    width: "32px",
+    height: "32px",
+    borderRadius: "50%",
+    background: "#e2e8f0",
+    color: "#94a3b8",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontWeight: "700",
     fontSize: "14px",
-    color: "#64748b",
-    margin: 0,
   },
-  paymentCard: {
-    background: "#f8fafc",
-    borderRadius: "12px",
-    padding: "20px",
-    marginBottom: "20px",
+  progressActive: {
+    color: "#e11d48",
   },
-  amountDisplay: {
-    textAlign: "center",
-    padding: "16px",
-    background: "linear-gradient(135deg, #dc2626, #b91c1c)",
-    borderRadius: "12px",
-    marginBottom: "20px",
-  },
-  amountLabel: {
-    display: "block",
-    color: "rgba(255,255,255,0.8)",
-    fontSize: "12px",
-    fontWeight: "600",
-    marginBottom: "4px",
-  },
-  amount: {
+  progressActiveSpan: {
+    background: "#e11d48",
     color: "#ffffff",
-    fontSize: "32px",
-    fontWeight: "900",
   },
-  fallbackSection: {
-    textAlign: "center",
-    padding: "20px 0",
+  progressActiveSpanColor: {
+    background: "#e11d48",
+    color: "#ffffff",
   },
-  fallbackText: {
-    fontSize: "14px",
-    color: "#64748b",
-    marginBottom: "16px",
-  },
-  stkStatus: {
-    textAlign: "center",
-    padding: "24px",
-    background: "linear-gradient(135deg, #ecfdf5, #d1fae5)",
-    borderRadius: "12px",
-    marginBottom: "20px",
-    border: "2px solid #10b981",
-  },
-  stkIcon: {
-    fontSize: "48px",
-    display: "block",
-    marginBottom: "12px",
-  },
-  stkText: {
-    fontSize: "16px",
-    color: "#065f46",
-    marginBottom: "8px",
-  },
-  stkHint: {
-    fontSize: "14px",
-    color: "#047857",
+  progressLabel: {
+    fontSize: "11px",
     fontWeight: "600",
+    color: "#94a3b8",
+    marginTop: "4px",
   },
-  linkPaymentSection: {
+  progressLine: {
+    width: "40px",
+    height: "2px",
+    background: "#e2e8f0",
+    margin: "0 8px",
+    marginBottom: "20px",
+  },
+  header: { textAlign: "center", marginBottom: "20px" },
+  iconBox: { fontSize: "40px", marginBottom: "8px" },
+  title: { fontSize: "22px", fontWeight: "800", color: "#1e293b", margin: "0 0 4px 0" },
+  subtitle: { fontSize: "14px", color: "#64748b", margin: 0 },
+  amountCard: {
+    background: "linear-gradient(135deg, #e11d48, #be123c)",
+    borderRadius: "16px",
+    padding: "20px",
     textAlign: "center",
-    padding: "20px 0",
+    marginBottom: "20px",
   },
-  linkText: {
-    fontSize: "14px",
-    color: "#64748b",
-    marginBottom: "16px",
-  },
-  payBtn: {
+  amountLabel: { color: "rgba(255,255,255,0.7)", fontSize: "13px", fontWeight: "600", marginBottom: "4px" },
+  amount: { color: "#ffffff", fontSize: "36px", fontWeight: "900" },
+  amountHint: { color: "rgba(255,255,255,0.6)", fontSize: "12px", marginTop: "4px" },
+  paymentSection: { marginBottom: "20px" },
+  instruction: { fontSize: "14px", color: "#475569", textAlign: "center", marginBottom: "16px" },
+  primaryBtn: {
     width: "100%",
-    padding: "16px",
-    background: "linear-gradient(135deg, #10b981, #059669)",
+    padding: "18px",
+    background: "linear-gradient(135deg, #22c55e, #16a34a)",
     color: "white",
     border: "none",
-    borderRadius: "12px",
+    borderRadius: "14px",
     fontSize: "16px",
-    fontWeight: "800",
+    fontWeight: "700",
     cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "10px",
+    boxShadow: "0 4px 15px rgba(34,197,94,0.4)",
   },
-  divider: {
+  btnIcon: { fontSize: "20px" },
+  stkSection: {
+    background: "linear-gradient(135deg, #ecfdf5, #d1fae5)",
+    borderRadius: "16px",
+    padding: "24px",
     textAlign: "center",
-    margin: "20px 0",
+    marginBottom: "20px",
+    border: "2px solid #22c55e",
   },
-  checkBtn: {
+  stkIcon: {
+    width: "48px", height: "48px", background: "#22c55e", borderRadius: "50%",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    color: "white", fontSize: "24px", margin: "0 auto 12px",
+  },
+  stkTitle: { fontSize: "18px", fontWeight: "700", color: "#065f46", margin: "0 0 8px 0" },
+  stkText: { fontSize: "14px", color: "#047857", marginBottom: "16px" },
+  stkSteps: { display: "flex", gap: "16px", justifyContent: "center" },
+  stkStep: { display: "flex", alignItems: "center", gap: "8px" },
+  stkStepText: { fontSize: "12px", color: "#047857", margin: 0 },
+  stkStepSpan: {
+    width: "24px", height: "24px", background: "#22c55e", borderRadius: "50%",
+    color: "white", fontSize: "12px", display: "flex", alignItems: "center", justifyContent: "center",
+  },
+  errorSection: { textAlign: "center", padding: "20px" },
+  errorText: { color: "#dc2626", fontSize: "14px", marginBottom: "12px" },
+  retryBtn: {
+    padding: "12px 24px", background: "#e2e8f0", color: "#475569",
+    border: "none", borderRadius: "8px", fontSize: "14px", fontWeight: "600", cursor: "pointer",
+  },
+  verifyBtn: {
     width: "100%",
     padding: "14px",
-    background: "transparent",
-    color: "#64748b",
+    background: "#f1f5f9",
+    color: "#475569",
     border: "2px solid #e2e8f0",
     borderRadius: "12px",
     fontSize: "14px",
     fontWeight: "600",
     cursor: "pointer",
+    marginBottom: "16px",
   },
-  message: {
-    marginTop: "16px",
+  messageBox: {
     padding: "12px",
+    background: "#fef3c7",
     borderRadius: "8px",
     fontSize: "14px",
-    fontWeight: "600",
+    color: "#92400e",
     textAlign: "center",
+    marginBottom: "16px",
   },
-  supportSection: {
+  helpSection: {
     textAlign: "center",
-    marginBottom: "20px",
+    padding: "16px",
+    background: "#f8fafc",
+    borderRadius: "12px",
+    marginBottom: "16px",
   },
-  supportText: {
-    fontSize: "14px",
-    color: "#64748b",
-    margin: "0 0 12px 0",
-  },
+  helpIcon: { fontSize: "24px", marginBottom: "4px" },
+  helpText: { fontSize: "13px", color: "#64748b", margin: "0 0 8px 0" },
   whatsappBtn: {
-    padding: "12px 20px",
+    padding: "10px 20px",
     background: "#25D366",
     color: "white",
     border: "none",
     borderRadius: "25px",
     fontSize: "14px",
-    fontWeight: "700",
+    fontWeight: "600",
     cursor: "pointer",
   },
   backBtn: {
