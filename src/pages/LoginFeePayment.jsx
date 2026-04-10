@@ -13,6 +13,7 @@ export default function LoginFeePayment() {
   const [submittingCode, setSubmittingCode] = useState(false);
   const [codeError, setCodeError] = useState("");
   const [codeSuccess, setCodeSuccess] = useState(false);
+  const [checkStatusMessage, setCheckStatusMessage] = useState("");
 
   const pendingUser = JSON.parse(localStorage.getItem("pendingLoginUser") || "{}");
   const userId = location.state?.userId || pendingUser.id;
@@ -30,10 +31,11 @@ export default function LoginFeePayment() {
 
   const handleCheckStatus = async () => {
     setCheckingStatus(true);
+    setCheckStatusMessage("");
     try {
       const res = await loginFeeApi.checkStatus();
       if (res.data.login_fee_paid) {
-        // Already approved - login directly
+        localStorage.removeItem("pendingLoginFeeApproval");
         const loginRes = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -46,9 +48,15 @@ export default function LoginFeePayment() {
           localStorage.removeItem("pendingLoginUser");
           navigate("/dashboard", { replace: true });
         }
+      } else {
+        setCheckStatusMessage("⏳ Your payment is still pending approval. Please wait for admin to verify your payment.");
       }
     } catch (err) {
-      // Continue to payment page
+      if (err.response?.data?.login_fee_pending) {
+        setCheckStatusMessage("⏳ Your payment is still pending approval. Please wait for admin to verify your payment.");
+      } else {
+        setCheckStatusMessage("Unable to check status. Please try again later.");
+      }
     } finally {
       setCheckingStatus(false);
     }
@@ -116,6 +124,10 @@ export default function LoginFeePayment() {
         >
           {checkingStatus ? "Checking..." : "✅ Already Paid? Click Here to Login"}
         </button>
+
+        {checkStatusMessage && (
+          <div style={styles.checkStatusMessage}>{checkStatusMessage}</div>
+        )}
 
         <div style={styles.amountCard}>
           <div style={styles.amountLabel}>One-time Payment</div>
@@ -433,5 +445,15 @@ mpesaNumberHighlight: {
     fontSize: "14px",
     fontWeight: "600",
     cursor: "pointer",
+  },
+  checkStatusMessage: {
+    padding: "12px",
+    background: "linear-gradient(135deg, #fef3c7, #fde68a)",
+    borderRadius: "8px",
+    fontSize: "13px",
+    color: "#92400e",
+    textAlign: "center",
+    marginBottom: "14px",
+    border: "1px solid #f59e0b",
   },
 };
