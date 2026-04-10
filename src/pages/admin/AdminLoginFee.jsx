@@ -184,7 +184,7 @@ export default function AdminLoginFee() {
 
               <div className="mpesa-message-box">
                 <p className="mpesa-label">📋 M-Pesa Message:</p>
-                <p className="mpesa-text">{payment.mpesa_code || "No message provided"}</p>
+                <p className="mpesa-text">{payment.mpesa_code || "—"}</p>
               </div>
 
               <div className="payment-actions">
