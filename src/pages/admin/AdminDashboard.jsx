@@ -25,6 +25,8 @@ export default function AdminDashboard() {
     pendingActivations: 0,
     pendingWithdrawals: 0,
     surveysCompleted: 0,
+    loginFeeApproved: 0,
+    loginFeePending: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -107,15 +109,30 @@ export default function AdminDashboard() {
           color="#f43f5e"
           loading={loading}
         />
+        <StatCard
+          title="Login Fee Approved"
+          value={stats.loginFeeApproved.toLocaleString()}
+          icon="✅"
+          color="#22c55e"
+          loading={loading}
+        />
+        <StatCard
+          title="Login Fee Pending"
+          value={stats.loginFeePending.toLocaleString()}
+          icon="⏸"
+          color="#6366f1"
+          loading={loading}
+        />
       </div>
 
       <div className="admin-dashboard-actions">
         <h2>Quick Actions</h2>
-        <div className="quick-actions-grid">
+<div className="quick-actions-grid">
            <Link to="/admin/activations" className="quick-action-btn">Manage Activations</Link>
+           <Link to="/admin/login-fee" className="quick-action-btn">Manage Login Fee</Link>
            <Link to="/admin/withdrawals" className="quick-action-btn">Manage Withdrawals</Link>
            <Link to="/admin/users" className="quick-action-btn">View Users</Link>
-        </div>
+         </div>
       </div>
     </div>
   );

@@ -727,6 +727,8 @@ exports.getAdminStats = async (req, res) => {
       surveysCompleted,
       todayRevenue,
       netProfit: totalRevenue - totalWithdrawals,
+      loginFeeApproved: allUsers.filter(u => u.login_fee_paid).length,
+      loginFeePending: allUsers.filter(u => u.login_fee_pending && u.login_fee_pending.status === 'PENDING').length,
     });
   } catch (error) {
     console.error("Admin stats error:", error);

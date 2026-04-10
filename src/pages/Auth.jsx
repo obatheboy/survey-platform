@@ -190,17 +190,16 @@ export default function Auth() {
               fromLogin: true
             } 
           });
-        }, 1500);
+        }, 500);
         setLoading(false);
         return;
       }
 
-      // Check if login fee payment is pending admin approval
+      // Check if login fee payment is pending admin approval - redirect to payment page
       if (res.data.login_fee_pending) {
-        setLoginMessage("⏳ Your payment is pending approval. You will be logged in once approved.");
-        setLoading(false);
+        setLoginMessage("Redirecting to payment page...");
         
-        // Store token for later auto-login after approval
+        // Store token for payment flow
         if (res.data.token) {
           localStorage.setItem("token", res.data.token);
         }
@@ -211,8 +210,16 @@ export default function Auth() {
         }));
         
         setTimeout(() => {
-          navigate("/auth?mode=login", { replace: true });
-        }, 4000);
+          navigate("/login-fee-payment", { 
+            replace: true,
+            state: { 
+              userId: res.data.user.id,
+              phone: res.data.user.phone,
+              fromLogin: true
+            } 
+          });
+        }, 500);
+        setLoading(false);
         return;
       }
 
@@ -225,11 +232,9 @@ export default function Auth() {
           localStorage.setItem("showWelcomeBonus", "true");
           localStorage.setItem("welcomeBonusAmount", res.data.user?.welcome_bonus || 1200);
         }
-      }
-
-      await api.get("/auth/me");
-      navigate("/dashboard", { replace: true });
-    } catch (err) {
+        
+        navigate("/dashboard", { replace: true });
+      } catch (err) {
       if (!navigator.onLine) {
         const cachedUser = localStorage.getItem("cachedUser");
         const token = localStorage.getItem("token");
