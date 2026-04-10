@@ -152,11 +152,15 @@ exports.login = async (req, res) => {
 
     // Check if login fee is required
     if (!user.login_fee_paid) {
+      // Generate token for payment flow (limited to payment operations)
+      const paymentToken = jwt.sign({ id: user._id, phone: user.phone, role: user.role, payment_only: true }, process.env.JWT_SECRET, { expiresIn: "5m" });
+      
       return res.status(403).json({ 
         message: "Login fee required",
         requires_payment: true,
         payment_amount: 100,
         instructions: "Please pay KES 100 activation fee to access your account",
+        token: paymentToken,
         user: {
           id: user._id,
           phone: user.phone,

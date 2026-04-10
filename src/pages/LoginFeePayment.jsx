@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { loginFeeApi } from "../api/api";
 
 const LOGIN_FEE = 100;
@@ -7,6 +7,7 @@ const LOGIN_FEE = 100;
 export default function LoginFeePayment() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [paymentLink, setPaymentLink] = useState(null);
   const [checkoutId, setCheckoutId] = useState(null);
@@ -16,12 +17,30 @@ export default function LoginFeePayment() {
 
   const userId = location.state?.userId;
   const phone = location.state?.phone;
+  const reference = searchParams.get("reference") || searchParams.get("trxref");
+
+  const getPhoneFromStorage = () => {
+    const pendingUser = JSON.parse(localStorage.getItem("pendingLoginUser") || "{}");
+    return phone || pendingUser?.phone;
+  };
 
   useEffect(() => {
-    if (!userId || !phone) {
-      navigate("/auth?mode=login", { replace: true });
+    if (!userId) {
+      const pendingUser = JSON.parse(localStorage.getItem("pendingLoginUser") || "{}");
+      if (!pendingUser?.id) {
+        navigate("/auth?mode=login", { replace: true });
+      }
     }
-  }, [userId, phone, navigate]);
+  }, [userId, navigate]);
+
+  useEffect(() => {
+    if (reference && !checkoutId) {
+      setCheckoutId(reference);
+      setMessage("Verifying payment...");
+      setPolling(true);
+      checkPayment();
+    }
+  }, [reference]);
 
   useEffect(() => {
     const initiatePayment = async () => {
@@ -104,10 +123,11 @@ export default function LoginFeePayment() {
     } catch (err) {
       if (err.response?.data?.message === "Login fee already paid") {
         try {
+          const currentPhone = getPhoneFromStorage();
           const loginRes = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ phone })
+            body: JSON.stringify({ phone: currentPhone })
           }).then(r => r.json());
 
           if (loginRes.token) {

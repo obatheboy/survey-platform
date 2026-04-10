@@ -156,6 +156,11 @@ export default function Auth() {
       if (res.data.requires_payment) {
         setLoginMessage("Login fee required! Redirecting to payment...");
         
+        // Store token for payment flow (limited token for payment operations)
+        if (res.data.token) {
+          localStorage.setItem("token", res.data.token);
+        }
+        
         // Store user info for payment flow
         localStorage.setItem("pendingLoginUser", JSON.stringify({
           id: res.data.user.id,
@@ -164,10 +169,12 @@ export default function Auth() {
         
         setTimeout(() => {
           navigate("/login-fee-payment", { 
+            replace: true,
             state: { 
               userId: res.data.user.id,
               phone: res.data.user.phone,
-              amount: res.data.payment_amount 
+              amount: res.data.payment_amount,
+              fromLogin: true
             } 
           });
         }, 1500);
