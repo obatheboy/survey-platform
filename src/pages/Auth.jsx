@@ -213,7 +213,9 @@ export default function Auth() {
         }
         
         navigate("/dashboard", { replace: true });
-      } catch (err) {
+        return;
+      }
+    } catch (err) {
       if (!navigator.onLine) {
         const cachedUser = localStorage.getItem("cachedUser");
         const token = localStorage.getItem("token");

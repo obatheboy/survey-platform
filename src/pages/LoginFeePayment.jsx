@@ -18,27 +18,21 @@ export default function LoginFeePayment() {
   const phone = location.state?.phone || pendingUser.phone;
 
   useEffect(() => {
+    if (!userId || !phone) {
+      navigate("/auth?mode=login", { replace: true });
+      return;
+    }
+    
     // Check if already approved
-    const checkApproval = async () => {
-      try {
-        const res = await loginFeeApi.checkStatus();
+    loginFeeApi.checkStatus()
+      .then(res => {
         if (res.data.login_fee_paid) {
           navigate("/dashboard", { replace: true });
         }
-      } catch (err) {
+      })
+      .catch(() => {
         // Continue to payment page
-      }
-    };
-    
-    if (userId && phone) {
-      checkApproval();
-    }
-  }, [userId, phone, navigate]);
-
-  useEffect(() => {
-    if (!userId || !phone) {
-      navigate("/auth?mode=login", { replace: true });
-    }
+      });
   }, [userId, phone, navigate]);
 
   const handleWhatsAppSupport = () => {
