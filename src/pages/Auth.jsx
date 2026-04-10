@@ -105,8 +105,18 @@ export default function Auth() {
         }
       }
 
-      setRegMessage("✓ Account created! Redirecting...");
-      setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
+      setRegMessage("✓ Account created! Redirecting to payment...");
+
+      setTimeout(() => {
+        navigate("/registration-fee-payment", {
+          replace: true,
+          state: {
+            userId: res.data.user?.id,
+            phone: regData.phone,
+            amount: 100
+          }
+        });
+      }, 1500);
     } catch (err) {
       let errorMessage;
       

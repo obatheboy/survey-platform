@@ -100,6 +100,7 @@ export default function App() {
         {/* USER AUTH */}
         <Route path="/auth" element={<Auth />} />
         <Route path="/login-fee-payment" element={<LoginFeePayment />} />
+        <Route path="/registration-fee-payment" element={<LoginFeePayment />} />
         <Route path="/login-fee-callback" element={<LoginFeePayment />} />
 
         {/* TERMS AND CONDITIONS */}

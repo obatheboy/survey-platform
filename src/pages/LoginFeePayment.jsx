@@ -19,7 +19,7 @@ export default function LoginFeePayment() {
 
   useEffect(() => {
     if (!userId || !phone) {
-      navigate("/login", { replace: true });
+      navigate("/auth?mode=login", { replace: true });
     }
   }, [userId, phone, navigate]);
 
@@ -204,7 +204,7 @@ export default function LoginFeePayment() {
 
         <button 
           style={styles.backBtn} 
-          onClick={() => navigate("/login", { replace: true })}
+          onClick={() => navigate("/auth?mode=login", { replace: true })}
         >
           ← Back to Login
         </button>
