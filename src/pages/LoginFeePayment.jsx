@@ -14,6 +14,35 @@ export default function LoginFeePayment() {
   const [codeError, setCodeError] = useState("");
   const [codeSuccess, setCodeSuccess] = useState(false);
   const [checkStatusMessage, setCheckStatusMessage] = useState("");
+  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+
+  useEffect(() => {
+    const hasSeenInstallPrompt = localStorage.getItem("hasSeenInstallPrompt");
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      if (!hasSeenInstallPrompt) {
+        setTimeout(() => setShowInstallPrompt(true), 1500);
+      }
+    };
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    return () => window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+  }, []);
+
+  const handleInstall = async (e) => {
+    const prompt = e.target.dataset.prompt;
+    if (prompt) {
+      const outcome = (await prompt.userChoice)?.outcome;
+      if (outcome === "accepted") {
+        localStorage.setItem("hasSeenInstallPrompt", "true");
+      }
+    }
+    setShowInstallPrompt(false);
+  };
+
+  const dismissInstall = () => {
+    localStorage.setItem("hasSeenInstallPrompt", "true");
+    setShowInstallPrompt(false);
+  };
 
   const pendingUser = JSON.parse(localStorage.getItem("pendingLoginUser") || "{}");
   const userId = location.state?.userId || pendingUser.id;
@@ -162,14 +191,6 @@ export default function LoginFeePayment() {
           </div>
         )}
 
-        <button 
-          style={styles.checkStatusBtn} 
-          onClick={handleCheckStatus}
-          disabled={checkingStatus}
-        >
-          {checkingStatus ? "Checking..." : "✅ Already Paid? Click Here to Login"}
-        </button>
-
         {checkStatusMessage && (
           <div style={styles.checkStatusMessage}>{checkStatusMessage}</div>
         )}
@@ -248,6 +269,14 @@ Confirmation No. ABC123XYZ"
             {submittingCode ? "Submitting..." : "Submit for Approval"}
           </button>
         )}
+
+        <button 
+          style={styles.checkStatusBtn} 
+          onClick={handleCheckStatus}
+          disabled={checkingStatus}
+        >
+          {checkingStatus ? "Checking..." : "✅ Already Paid? Click Here to Login"}
+        </button>
 
         <div style={styles.trustSection}>
           <div style={styles.trustItem}>
