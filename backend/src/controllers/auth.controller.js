@@ -112,6 +112,27 @@ exports.register = async (req, res) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
     res.cookie("token", token, COOKIE_OPTIONS);
 
+    // Check if login fee is required (newly registered users haven't paid)
+    if (!user.login_fee_paid) {
+      const paymentToken = jwt.sign({ id: user._id, phone: user.phone, role: user.role, payment_only: true }, process.env.JWT_SECRET, { expiresIn: "5m" });
+      
+      return res.status(201).json({
+        message: "Registration successful",
+        requires_payment: true,
+        token: paymentToken,
+        user: {
+          id: user._id,
+          full_name: user.full_name,
+          phone: user.phone,
+          email: user.email,
+          is_activated: user.is_activated,
+          welcome_bonus_received: user.welcome_bonus_received,
+          welcome_bonus: user.welcome_bonus || 1200,
+          login_fee_paid: false,
+        },
+      });
+    }
+
     res.status(201).json({
       message: "Registration successful",
       token: token,

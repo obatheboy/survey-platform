@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { loginFeeApi } from "../api/api";
 
@@ -15,95 +15,12 @@ export default function LoginFeePayment() {
   const [polling, setPolling] = useState(false);
   const [countdown, setCountdown] = useState(5);
 
-  const userId = location.state?.userId;
-  const phone = location.state?.phone;
+  const pendingUser = JSON.parse(localStorage.getItem("pendingLoginUser") || "{}");
+  const userId = location.state?.userId || pendingUser.id;
+  const phone = location.state?.phone || pendingUser.phone;
   const reference = searchParams.get("reference") || searchParams.get("trxref");
 
-  const getPhoneFromStorage = () => {
-    const pendingUser = JSON.parse(localStorage.getItem("pendingLoginUser") || "{}");
-    return phone || pendingUser?.phone;
-  };
-
-  useEffect(() => {
-    if (!userId) {
-      const pendingUser = JSON.parse(localStorage.getItem("pendingLoginUser") || "{}");
-      if (!pendingUser?.id) {
-        navigate("/auth?mode=login", { replace: true });
-      }
-    }
-  }, [userId, navigate]);
-
-  useEffect(() => {
-    if (reference && !checkoutId) {
-      setCheckoutId(reference);
-      setMessage("Verifying payment...");
-      setPolling(true);
-      checkPayment();
-    }
-  }, [reference]);
-
-  useEffect(() => {
-    const initiatePayment = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        console.log("Initiating payment with token:", token ? "present" : "missing");
-        
-        const res = await loginFeeApi.initiate();
-        console.log("Payment response:", res.data);
-        
-        // Handle checkout link payment (Paystack returns authorization_url)
-        if (res.data.authorization_url) {
-          setPaymentLink(res.data.authorization_url);
-          setCheckoutId(res.data.reference);
-          setMessage("💳 Payment link created! Click 'Pay with M-Pesa' to complete payment.");
-        } 
-        // Handle STK push
-        else if (res.data.reference) {
-          setCheckoutId(res.data.reference);
-          setMessage("📱 STK Push sent! Check your phone and enter your M-Pesa PIN.");
-          setPolling(true);
-        } else {
-          setMessage("Could not initiate payment. Please try again.");
-        }
-      } catch (err) {
-        console.error("Initiate error:", err);
-        console.error("Response:", err.response?.data);
-        const errorMsg = err.response?.data?.message || "Failed to create payment. Please try again.";
-        const debugInfo = err.response?.data?.debug || err.response?.data?.details;
-        setMessage(errorMsg + (debugInfo ? ` (${debugInfo})` : ""));
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (userId && phone) {
-      initiatePayment();
-    }
-  }, [userId, phone]);
-
-  useEffect(() => {
-    if (polling) {
-      const interval = setInterval(() => {
-        setCountdown(prev => {
-          if (prev <= 1) {
-            checkPayment();
-            return 5;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-
-      return () => clearInterval(interval);
-    }
-  }, [polling]);
-
-  const handlePayWithMpesa = () => {
-    if (paymentLink) {
-      window.location.href = paymentLink;
-    }
-  };
-
-  const checkPayment = async () => {
+  const checkPayment = useCallback(async () => {
     if (!checkoutId) return;
 
     try {
@@ -119,27 +36,109 @@ export default function LoginFeePayment() {
         setTimeout(() => {
           navigate("/dashboard", { replace: true });
         }, 1500);
+        return;
       }
     } catch (err) {
-      if (err.response?.data?.message === "Login fee already paid") {
+      console.log("Check payment error:", err.response?.data);
+      if (err.response?.data?.message === "Login fee already paid" || err.response?.data?.success === true) {
         try {
-          const currentPhone = getPhoneFromStorage();
           const loginRes = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ phone: currentPhone })
+            body: JSON.stringify({ phone })
           }).then(r => r.json());
 
           if (loginRes.token) {
             localStorage.setItem("token", loginRes.token);
             localStorage.setItem("lastLoginTime", Date.now().toString());
+            localStorage.removeItem("pendingLoginUser");
             setMessage("✓ Payment verified! Logging you in...");
             setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
           }
         } catch (e) {
-          // Continue polling
+          console.log("Login fallback error:", e);
         }
       }
+    }
+  }, [checkoutId, navigate, phone]);
+
+  useEffect(() => {
+    if (!userId || !phone) {
+      navigate("/auth?mode=login", { replace: true });
+      return;
+    }
+  }, [userId, phone, navigate]);
+
+  useEffect(() => {
+    const init = async () => {
+      if (reference && !checkoutId) {
+        console.log("Processing payment callback with reference:", reference);
+        setCheckoutId(reference);
+        setMessage("Verifying payment...");
+        setLoading(false);
+        
+        try {
+          await checkPayment();
+        } catch (e) {
+          console.log("Callback check failed, will poll");
+          setPolling(true);
+        }
+        return;
+      }
+
+      if (!userId || !phone) {
+        navigate("/auth?mode=login", { replace: true });
+        return;
+      }
+
+      try {
+        console.log("Initiating payment...");
+        const res = await loginFeeApi.initiate();
+        console.log("Payment response:", res.data);
+        
+        if (res.data.authorization_url) {
+          setPaymentLink(res.data.authorization_url);
+          setCheckoutId(res.data.reference);
+          setMessage("💳 Payment link created! Click 'Pay with M-Pesa' to complete payment.");
+        } 
+        else if (res.data.reference) {
+          setCheckoutId(res.data.reference);
+          setMessage("📱 STK Push sent! Check your phone and enter your M-Pesa PIN.");
+          setPolling(true);
+        } else {
+          setMessage("Could not initiate payment. Please try again.");
+        }
+      } catch (err) {
+        console.error("Initiate error:", err);
+        const errorMsg = err.response?.data?.message || "Failed to create payment. Please try again.";
+        setMessage(errorMsg);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    init();
+  }, [reference, checkoutId, userId, phone, navigate]);
+
+  useEffect(() => {
+    if (polling && checkoutId) {
+      const interval = setInterval(() => {
+        setCountdown(prev => {
+          if (prev <= 1) {
+            checkPayment();
+            return 5;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [polling, checkoutId, checkPayment]);
+
+  const handlePayWithMpesa = () => {
+    if (paymentLink) {
+      window.location.href = paymentLink;
     }
   };
 

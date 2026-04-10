@@ -105,18 +105,31 @@ export default function Auth() {
         }
       }
 
-      setRegMessage("✓ Account created! Redirecting to payment...");
+      // Check if payment is required after registration
+      if (res.data.requires_payment) {
+        localStorage.setItem("pendingLoginUser", JSON.stringify({
+          id: res.data.user?.id,
+          phone: regData.phone
+        }));
+        
+        setRegMessage("✓ Account created! Redirecting to payment...");
+        
+        setTimeout(() => {
+          navigate("/registration-fee-payment", {
+            replace: true,
+            state: {
+              userId: res.data.user?.id,
+              phone: regData.phone,
+              amount: 100
+            }
+          });
+        }, 1500);
+        return;
+      }
 
-      setTimeout(() => {
-        navigate("/registration-fee-payment", {
-          replace: true,
-          state: {
-            userId: res.data.user?.id,
-            phone: regData.phone,
-            amount: 100
-          }
-        });
-      }, 1500);
+      // Normal flow - no payment required
+      setRegMessage("✓ Account created! Redirecting...");
+      setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
     } catch (err) {
       let errorMessage;
       
