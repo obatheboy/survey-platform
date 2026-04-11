@@ -374,7 +374,7 @@ export default function Activate() {
         // If payment URL returned, open it so user can choose method
         if (res.data.payment_url) {
           window.open(res.data.payment_url, "_blank");
-          setNotification("💳 Payment page opened. Choose M-Pesa or Card there.");
+          setNotification("💳 Payment page opened! Step 1: Choose 'M-Pesa' → Step 2: Enter your M-Pesa phone → Step 3: Confirm on phone");
         } else {
           setNotification("📱 STK Push sent! Check your phone and enter PIN.");
         }
@@ -736,8 +736,8 @@ export default function Activate() {
               📱 INSTANT PAYMENT (STK)
             </p>
             
-            <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.9)", marginBottom: "12px", textAlign: "center" }}>
-              Enter your M-Pesa phone - we'll send an instant STK push
+            <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.9)", marginBottom: "12px", textAlign: "center", background: "rgba(0,0,0,0.3)", padding: "8px", borderRadius: "8px" }}>
+              💡 <strong>How it works:</strong> Tap "Pay Now" → Payment page opens → Choose <strong>M-Pesa</strong> → Enter phone → Confirm on your phone
             </p>
 
             <input
