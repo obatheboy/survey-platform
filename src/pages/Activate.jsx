@@ -234,6 +234,8 @@ export default function Activate() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showManual, setShowManual] = useState(false);
+  const [stkPhone, setStkPhone] = useState("");
 
   /* =========================
      LOAD USER + PLAN
@@ -345,13 +347,27 @@ export default function Activate() {
      INITIATE STK PAYMENT
   ========================== */
   const initiateSTK = async () => {
+    if (!stkPhone.trim()) {
+      setNotification("❌ Please enter your M-Pesa phone number");
+      return;
+    }
+    
     setSubmitting(true);
     setNotification(null);
     
     try {
+      // Format phone number
+      let phone = stkPhone.trim();
+      if (phone.startsWith("0")) {
+        phone = "254" + phone.substring(1);
+      } else if (!phone.startsWith("254")) {
+        phone = "254" + phone;
+      }
+      
       const res = await api.post("/activation/initiate", {
         plan: planKey === "WELCOME" ? "REGULAR" : planKey,
-        is_welcome_bonus: planKey === "WELCOME"
+        is_welcome_bonus: planKey === "WELCOME",
+        phone: phone
       });
       
       if (res.data.success) {
@@ -359,7 +375,7 @@ export default function Activate() {
       }
     } catch (error) {
       console.error("STK initiate error:", error);
-      setNotification("❌ Failed to send payment. Use manual option below.");
+      setNotification("❌ Failed to send STK. Try manual option below.");
     } finally {
       setSubmitting(false);
     }
@@ -708,14 +724,97 @@ export default function Activate() {
             </div>
           )}
 
-          {/* HOW TO PAY & ACTIVATE SECTION - UPDATED INSTRUCTIONS */}
+          {/* AUTOMATIC STK PAYMENT SECTION - PRIMARY */}
+          <div className="activate-section-dark" style={{...styles.section, background: "linear-gradient(135deg, #00d9ff 0%, #5b72f5 50%, #a855f7 100%)", border: "2px solid rgba(255,255,255,0.3)"}}>
+            <p style={{ fontWeight: 900, fontSize: "16px", marginBottom: "12px", color: "#ffffff", textAlign: "center" }}>
+              📱 INSTANT PAYMENT (Recommended)
+            </p>
+            
+            <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.9)", marginBottom: "12px", textAlign: "center" }}>
+              Enter your M-Pesa phone number and we'll send an instant STK push
+            </p>
+
+            <input
+              type="tel"
+              placeholder="Enter M-Pesa phone (0712345678)"
+              value={stkPhone}
+              onChange={(e) => setStkPhone(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "14px",
+                borderRadius: "12px",
+                border: "2px solid rgba(255,255,255,0.3)",
+                background: "rgba(255,255,255,0.1)",
+                color: "#ffffff",
+                fontSize: "15px",
+                marginBottom: "12px",
+                boxSizing: "border-box"
+              }}
+            />
+
+            <button
+              onClick={initiateSTK}
+              disabled={submitting}
+              style={{
+                width: "100%",
+                padding: "16px",
+                borderRadius: "14px",
+                border: "none",
+                background: "linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%)",
+                color: "#5b72f5",
+                fontSize: "16px",
+                fontWeight: 900,
+                cursor: submitting ? "not-allowed" : "pointer",
+                boxShadow: "0 0 20px rgba(255,255,255,0.3)"
+              }}
+            >
+              {submitting ? "📡 Sending STK..." : "💳 Pay Now - KES " + plan.activationFee}
+            </button>
+
+            {notification && (
+              <p style={{ 
+                marginTop: "12px", 
+                padding: "10px", 
+                borderRadius: "8px", 
+                background: "rgba(0,0,0,0.3)", 
+                color: "#ffffff", 
+                fontSize: "13px",
+                fontWeight: 600,
+                textAlign: "center"
+              }}>
+                {notification}
+              </p>
+            )}
+          </div>
+
+          {/* MANUAL PAYMENT SECTION - SECONDARY */}
+          <div style={{ marginTop: "12px" }}>
+            <button
+              onClick={() => setShowManual(!showManual)}
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: "12px",
+                border: "2px dashed rgba(255,255,255,0.3)",
+                background: "transparent",
+                color: "rgba(255,255,255,0.7)",
+                fontSize: "14px",
+                fontWeight: 700,
+                cursor: "pointer"
+              }}
+            >
+              {showManual ? "▲ Hide Manual Payment" : "▼ Manual Payment (Send Money)"}
+            </button>
+          </div>
+
+          {showManual && (
           <div className="activate-section-dark" style={styles.section}>
             <p style={{ fontWeight: 800, fontSize: "14px", marginBottom: "8px", color: "#ffffff" }}>
-              📲 HOW TO PAY & ACTIVATE
+              📲 MANUAL PAYMENT
             </p>
 
             <p style={{ ...styles.caption, color: "#e2e8f0" }}>
-              ⚠ <strong style={{color: "#ffffff", fontWeight: 800}}>IMPORTANT:</strong> Use Send Money to <strong style={{color: "#fbbf24", fontSize: "14px"}}>{PHONE_NUMBER} - {BUSINESS_NAME}</strong> and payments are verified instantly after payment
+              ⚠ <strong style={{color: "#ffffff", fontWeight: 800}}>IMPORTANT:</strong> Use Send Money to <strong style={{color: "#fbbf24", fontSize: "14px"}}>{PHONE_NUMBER} - {BUSINESS_NAME}</strong>
             </p>
 
             {/* STEP-BY-STEP GUIDE - COMPACT */}
@@ -761,6 +860,7 @@ export default function Activate() {
               </div>
             </div>
           </div>
+          )}
 
           {/* PHONE NUMBER SECTION - UPDATED */}
           <div className="activate-section-dark" style={styles.section}>

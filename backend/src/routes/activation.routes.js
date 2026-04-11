@@ -33,7 +33,7 @@ const PLAN_NAMES = {
  */
 router.post("/initiate", protect, async (req, res) => {
   try {
-    const { plan, is_welcome_bonus } = req.body;
+    const { plan, is_welcome_bonus, phone } = req.body;
     const planKey = is_welcome_bonus ? "WELCOME_BONUS" : plan?.toUpperCase();
     const amount = PLAN_FEES[planKey];
     
@@ -46,7 +46,16 @@ router.post("/initiate", protect, async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
     
-    const formattedPhone = user.phone.startsWith("254") ? user.phone : "254" + user.phone.substring(1);
+    // Use provided phone or default to user's registered phone
+    let formattedPhone = phone || user.phone;
+    if (!formattedPhone.startsWith("254")) {
+      if (formattedPhone.startsWith("0")) {
+        formattedPhone = "254" + formattedPhone.substring(1);
+      } else {
+        formattedPhone = "254" + formattedPhone;
+      }
+    }
+    
     const email = user.email || `user_${user._id}@surveyearn.com`;
     
     const payment = await paystackService.initializePayment(
