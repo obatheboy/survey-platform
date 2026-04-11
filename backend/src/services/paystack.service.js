@@ -98,7 +98,7 @@ const initializePayment = async (amount, phone, email, userId, description) => {
     console.log("Phone being used:", phoneOnly);
     console.log("Email being used:", paymentEmail);
     
-    // FORCE mobile_money only - singular channel
+    // Request with mobile_money channel
     const requestData = {
       email: paymentEmail,
       amount: amount * 100,
@@ -107,18 +107,12 @@ const initializePayment = async (amount, phone, email, userId, description) => {
       phone_number: phoneOnly,
       metadata: {
         user_id: userId,
-        phone: phoneOnly,
-        description: description
-      },
-      // FORCE single channel - no choice
-      channel: "mobile_money",
-      mobile_money: {
-        provider: "mpesa",
         phone: phoneOnly
-      }
+      },
+      channel: "mobile_money"
     };
     
-    console.log("Paystack request - FORCING mobile_money:", JSON.stringify(requestData));
+    console.log("📱 Paystack STK request:", JSON.stringify(requestData));
     
     const response = await makeRequest("/transaction/initialize", "POST", requestData);
     

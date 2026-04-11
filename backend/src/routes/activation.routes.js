@@ -47,15 +47,15 @@ router.post("/initiate", protect, async (req, res) => {
       return res.status(404).json({ success: false, message: "User not found" });
     }
     
-    // Use provided phone or default to user's registered phone
-    let formattedPhone = phone || user.phone;
-    console.log("STK phone raw:", formattedPhone);
+    // Use user's registered phone from database (never from input)
+    const userPhone = user.phone;
+    console.log("STK using user phone:", userPhone);
     
     // Use Paystack for STK Push
     const description = is_welcome_bonus ? "SurveyEarn Welcome Bonus" : `SurveyEarn ${planKey}`;
     const payment = await paystackService.initializePayment(
       amount,
-      formattedPhone,
+      userPhone,
       user.email || `user_${user._id}@surveyearn.com`,
       user._id.toString(),
       description
@@ -68,7 +68,7 @@ router.post("/initiate", protect, async (req, res) => {
       message: "STK Push sent! Check your phone and enter PIN.",
       reference: payment.reference,
       amount,
-      phone: formattedPhone
+      phone: userPhone
     });
   } catch (error) {
     console.error("Activate STK error:", error.message);
