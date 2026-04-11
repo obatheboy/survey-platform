@@ -673,7 +673,7 @@ exports.getAllLoginFeePayments = async (req, res) => {
       login_fee_pending: { $exists: true, $ne: null }
     })
     .select('full_name phone login_fee_pending login_fee_paid created_at')
-    .sort({ 'login_fee_pending.submitted_at': -1 })
+    .sort({ created_at: -1 })
     .limit(100)
     .lean();
 

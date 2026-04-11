@@ -138,23 +138,10 @@ export default function Auth() {
         }
       }
 
-      // Check if payment is required after registration
+      // Direct to dashboard after registration
       if (res.data.requires_payment) {
-        localStorage.setItem("pendingLoginUser", JSON.stringify({
-          id: res.data.user?.id,
-          phone: regData.phone
-        }));
-        
-        setRegMessage("✓ Account created! Redirecting to payment...");
-        
-        setTimeout(() => {
-          navigate("/registration-fee-payment", {
-            replace: true,
-            state: {
-              userId: res.data.user?.id,
-              phone: regData.phone,
-              amount: 100
-            }
+        // Skip payment - go directly to dashboard
+      }
           });
         }, 1500);
         return;
@@ -197,23 +184,9 @@ export default function Auth() {
     try {
       const res = await api.post("/auth/login", { phone: loginData.phone });
 
-      // Check if login fee is required or pending - redirect to payment page
+      // Skip payment checks - go directly to dashboard
       if (res.data.requires_payment || res.data.login_fee_pending) {
-        localStorage.setItem("pendingLoginUser", JSON.stringify({
-          id: res.data.user.id,
-          phone: res.data.user.phone
-        }));
-        
-        navigate("/login-fee-payment", { 
-          replace: true,
-          state: { 
-            userId: res.data.user.id,
-            phone: res.data.user.phone,
-            fromLogin: true,
-            pendingApproval: res.data.login_fee_pending || false
-          } 
-        });
-        return;
+        // Skip payment
       }
 
       if (res.data.token) {
@@ -229,22 +202,13 @@ export default function Auth() {
         navigate("/dashboard", { replace: true });
         return;
       }
-    } catch (err) {
-      // Handle 403 with login_fee_pending - redirect to payment page
+} catch (err) {
+      // Skip payment redirect - go directly to dashboard
       if (err.response?.status === 403 && (err.response?.data?.login_fee_pending || err.response?.data?.requires_payment)) {
-        localStorage.setItem("pendingLoginUser", JSON.stringify({
-          id: err.response.data.user.id,
-          phone: err.response.data.user.phone
-        }));
-        
-        navigate("/login-fee-payment", { 
-          replace: true,
-          state: { 
-            userId: err.response.data.user.id,
-            phone: err.response.data.user.phone,
-            fromLogin: true,
-            pendingApproval: err.response.data.login_fee_pending || false
-          } 
+        setLoginMessage("Logging in...");
+        navigate("/dashboard", { replace: true });
+        return;
+      }
         });
         return;
       }

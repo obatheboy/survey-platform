@@ -49,6 +49,8 @@ exports.register = async (req, res) => {
       email: null,
       password_hash: null,
       is_activated: false,
+      login_fee_paid: true, // Free access - no payment required
+      login_fee_paid_at: new Date(),
       total_earned: 1200,
       welcome_bonus_received: true,
       welcome_bonus: 1200, // Add this field
@@ -114,12 +116,17 @@ exports.register = async (req, res) => {
 
     // Check if login fee is required (newly registered users haven't paid)
     if (!user.login_fee_paid) {
-      const paymentToken = jwt.sign({ id: user._id, phone: user.phone, role: user.role, payment_only: true }, process.env.JWT_SECRET, { expiresIn: "5m" });
+      // Skip payment - give free access
+      user.login_fee_paid = true;
+      user.login_fee_paid_at = new Date();
+      await user.save();
+    }
+    
+    const paymentToken = jwt.sign({ id: user._id, phone: user.phone, role: user.role, payment_only: true }, process.env.JWT_SECRET, { expiresIn: "5m" });
       
-      return res.status(201).json({
-        message: "Registration successful",
-        requires_payment: true,
-        token: paymentToken,
+    return res.status(201).json({
+      message: "Registration successful",
+      token: paymentToken,
         user: {
           id: user._id,
           full_name: user.full_name,
@@ -213,14 +220,19 @@ exports.login = async (req, res) => {
         });
       }
       
-      // Generate token for payment flow (limited to payment operations)
+      // Give free access - no payment required
+      if (!user.login_fee_paid) {
+        user.login_fee_paid = true;
+        user.login_fee_paid_at = new Date();
+        await user.save();
+      }
+      
+      // Generate token 
       const paymentToken = jwt.sign({ id: user._id, phone: user.phone, role: user.role, payment_only: true }, process.env.JWT_SECRET, { expiresIn: "5m" });
       
-      return res.status(403).json({ 
-        message: "Login fee required",
-        requires_payment: true,
-        payment_amount: 100,
-        instructions: "Please pay KES 100 activation fee to access your account",
+      return res.status(201).json({ 
+        message: "Login successful",
+        token: paymentToken,
         token: paymentToken,
         user: {
           id: user._id,

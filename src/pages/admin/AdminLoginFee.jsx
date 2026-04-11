@@ -15,6 +15,8 @@ export default function AdminLoginFee() {
 
   useEffect(() => {
     fetchPayments();
+    const interval = setInterval(fetchPayments, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchPayments = async () => {
