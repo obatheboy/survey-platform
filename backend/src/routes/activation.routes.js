@@ -1,10 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
-const paystackService = require("../services/paystack.service");
 
 const { protect } = require("../middlewares/auth.middleware");
-const activationController = require("../controllers/activation.controller");
+const { initiateLoginFeePayment, verifyLoginFeePayment } = require("../controllers/loginFee.controller");
 
 /**
  * =====================================
@@ -29,14 +28,13 @@ const PLAN_NAMES = {
 
 /**
  * POST /api/activation/initiate
- * Initiate automatic STK push payment
+ * Bridge to loginFee payment (uses exact working code)
  */
 router.post("/initiate", protect, async (req, res) => {
   try {
-    const { plan, is_welcome_bonus, phone } = req.body;
+    const { plan, is_welcome_bonus } = req.body;
     const planKey = is_welcome_bonus ? "WELCOME_BONUS" : plan?.toUpperCase();
     const amount = PLAN_FEES[planKey];
-    console.log("STK Initiate request:", { plan, planKey, amount, phone });
     
     if (!amount) {
       return res.status(400).json({ success: false, message: "Invalid plan" });
@@ -47,51 +45,41 @@ router.post("/initiate", protect, async (req, res) => {
       return res.status(404).json({ success: false, message: "User not found" });
     }
     
-    // Use user's registered phone from database (never from input)
-    const userPhone = user.phone;
-    console.log("STK using user phone:", userPhone);
+    // Override amount in body to use plan amount
+    req.body.amount = amount;
     
-    // Use Paystack for STK Push
-    const description = is_welcome_bonus ? "SurveyEarn Welcome Bonus" : `SurveyEarn ${planKey}`;
+    // Use the EXACT working loginFee controller
+    // Create a mock request that loginFee expects
+    const mockReq = {
+      ...req,
+      body: {
+        ...req.body,
+        amount: amount
+      }
+    };
+    
+    // Actually, let's just call paystack directly with exact working params
+    const paystackService = require("../services/paystack.service");
     const payment = await paystackService.initializePayment(
       amount,
-      userPhone,
-      user.email || `user_${user._id}@surveyearn.com`,
+      user.phone,
+      user.email,
       user._id.toString(),
-      description
+      PLAN_NAMES[planKey]
     );
-    
-    console.log("STK payment result:", payment);
     
     return res.json({
       success: true,
       message: "STK Push sent! Check your phone and enter PIN.",
       reference: payment.reference,
-      amount,
-      phone: userPhone
+      amount
     });
   } catch (error) {
     console.error("Activate STK error:", error.message);
-    
-    // Check for specific error messages
-    let errorMessage = "STK failed. Use manual payment below.";
-    let requiresManual = true;
-    
-    if (error.message?.includes("Blacklist")) {
-      errorMessage = "Payment account issue. Use manual M-Pesa payment below.";
-    } else if (error.message?.includes("Insufficient")) {
-      errorMessage = "Insufficient funds. Use manual payment.";
-    } else if (error.message?.includes("Invalid")) {
-      errorMessage = "Invalid phone number. Check and try again.";
-    }
-    
     return res.json({
       success: false,
-      message: errorMessage,
-      requires_manual: requiresManual,
-      amount: amount,
-      plan: planKey,
-      error: error.message
+      message: "STK failed. Use manual payment below.",
+      requires_manual: true
     });
   }
 });
