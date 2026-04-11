@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-const mpesaService = require("../services/mpesa.service");
+const paystackService = require("../services/paystack.service"); // ✅ FIXED: Use paystack service
+
 const LOGIN_FEE = 100;
 
 exports.initiateLoginFeePayment = async (req, res) => {
@@ -20,14 +21,16 @@ exports.initiateLoginFeePayment = async (req, res) => {
       return res.status(400).json({ message: "Login fee already paid" });
     }
 
-    // ✅ Use M-Pesa service for STK Push
-    const payment = await mpesaService.stkPush(
+    // ✅ Use Paystack service for STK Push (FIXED)
+    const payment = await paystackService.initializePayment(
       LOGIN_FEE,
       user.phone,
-      userId
+      user.email,
+      userId,
+      "Login fee payment"
     );
 
-    console.log("M-Pesa STK Push response:", payment);
+    console.log("Paystack STK Push response:", payment);
 
     if (!payment.success) {
       console.error("STK Push failed:", payment);
@@ -41,7 +44,8 @@ exports.initiateLoginFeePayment = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "STK Push sent to your phone. Check your M-Pesa and enter PIN.",
-      checkoutRequestId: payment.checkoutRequestId,
+      reference: payment.reference,
+      authorization_url: payment.authorization_url,
       amount: LOGIN_FEE,
       phone: user.phone,
       instructions: "Please check your phone for the M-Pesa STK push and enter your PIN"
@@ -114,9 +118,9 @@ exports.verifyLoginFeePayment = async (req, res) => {
       });
     }
 
-    // Verify with M-Pesa
-    console.log("Verifying payment with checkoutRequestId:", reference);
-    const verification = await mpesaService.verifyPayment(reference, LOGIN_FEE);
+    // Verify with Paystack
+    console.log("Verifying payment with reference:", reference);
+    const verification = await paystackService.verifyPayment(reference);
     console.log("Verification result:", verification);
     
     if (verification.success && verification.amount >= LOGIN_FEE) {
@@ -180,106 +184,51 @@ exports.checkLoginFeeStatus = async (req, res) => {
   }
 };
 
-// ✅ Webhook handler for M-Pesa callbacks
-exports.mpesaCallback = async (req, res) => {
+// ✅ Webhook handler for Paystack callbacks (FIXED)
+exports.paymentWebhook = async (req, res) => {
   try {
-    const callbackData = req.body;
-    console.log("M-Pesa callback received:", JSON.stringify(callbackData));
+    const crypto = require("crypto");
+    const event = req.body;
+    console.log("Paystack webhook received:", event.event);
     
-    const result = callbackData.Body?.stkCallback;
-    if (!result) {
-      console.error("Invalid M-Pesa callback: no stkCallback");
-      return res.status(400).json({ error: "Invalid callback" });
+    // Verify the event is from Paystack
+    const hash = crypto
+      .createHmac("sha512", process.env.PAYSTACK_SECRET_KEY)
+      .update(JSON.stringify(req.body))
+      .digest("hex");
+    
+    if (hash !== req.headers["x-paystack-signature"]) {
+      console.error("Invalid webhook signature");
+      return res.status(401).json({ error: "Invalid signature" });
     }
     
-    const resultCode = result.ResultCode;
-    const resultDesc = result.ResultDesc;
-    const checkoutRequestId = result.CheckoutRequestID;
-    const metadata = result.MetaData;
-    const userId = metadata?.ExternalReference || req.query.userId;
-    const paymentType = req.query.type || 'login_fee';
-    
-    console.log(`M-Pesa callback: ResultCode=${resultCode}, CheckoutRequestID=${checkoutRequestId}, userId=${userId}, type=${paymentType}`);
-    
-    // Handle failed payment (ResultCode other than 0)
-    if (resultCode !== 0) {
-      console.error(`M-Pesa payment failed: ${resultDesc}`);
-      res.status(400).json({ 
-        success: false,
-        error: resultDesc
-      });
-      return;
-    }
-    
-    // Successful payment
-    const amount = result.Amount || LOGIN_FEE;
-    console.log(`✅ M-Pesa payment successful! User: ${userId}, Amount: KES ${amount}, Type: ${paymentType}`);
-    
-    if (!userId) {
-      console.error("No userId in callback");
-      res.status(400).json({ error: "User ID missing" });
-      return;
-    }
-    
-    const user = await User.findById(userId);
-    if (!user) {
-      console.error(`User not found: ${userId}`);
-      res.status(404).json({ error: "User not found" });
-      return;
-    }
-    
-    // Handle login_fee payment type
-    if (paymentType === 'login_fee') {
-      if (!user.login_fee_paid) {
-        user.login_fee_paid = true;
-        user.login_fee_paid_at = new Date();
-        await user.save();
-        console.log(`✅ Login fee marked as paid for user: ${user.phone} (${user._id})`);
-      }
-    } 
-    // Handle activation payment type (welcome bonus, VIP, VVIP)
-    else if (paymentType === 'activation') {
-      // Find the pending activation request
-      const pendingRequest = user.activation_requests?.find(
-        r => r.status === "SUBMITTED" && r.amount === parseInt(amount)
-      );
+    // Handle successful payment
+    if (event.event === "charge.success") {
+      const metadata = event.data?.metadata || {};
+      const userId = metadata.user_id;
+      const amount = event.data?.amount / 100;
       
-      if (pendingRequest) {
-        pendingRequest.status = "APPROVED";
-        pendingRequest.processed_at = new Date();
-        
-        // Activate the requested plan
-        const planKey = pendingRequest.plan;
-        if (planKey && user.plans?.[planKey]) {
-          user.plans[planKey].is_activated = true;
-          user.plans[planKey].activated_at = new Date();
-          
-          // Also set overall is_activated
-          user.is_activated = true;
-          
-          console.log(`✅ ${planKey} plan activated for user: ${user.phone} (${user._id})`);
+      console.log(`✅ Payment successful! User: ${userId}, Amount: KES ${amount}`);
+      
+      if (userId) {
+        const user = await User.findById(userId);
+        if (user && !user.login_fee_paid) {
+          user.login_fee_paid = true;
+          user.login_fee_paid_at = new Date();
+          await user.save();
+          console.log(`✅ Login fee marked as paid for user: ${user.phone} (${user._id})`);
         }
       }
-      await user.save();
     }
-    
-    res.status(200).json({ 
-      success: true,
-      message: "Payment processed successfully"
-    });
+
+    res.status(200).json({ received: true });
   } catch (error) {
-    console.error("M-Pesa callback error:", error);
-    res.status(500).json({ error: "Callback processing failed" });
+    console.error("Webhook error:", error);
+    res.status(500).json({ error: "Webhook processing failed" });
   }
 };
 
-// ✅ Legacy webhook (kept for compatibility)
-exports.paymentWebhook = async (req, res) => {
-  // Redirect to new M-Pesa callback handler
-  return exports.mpesaCallback(req, res);
-};
-
-// ✅ Manual M-Pesa payment submission
+// ✅ Keep manual payment submission (if you need it)
 exports.submitManualPayment = async (req, res) => {
   try {
     const { mpesa_code } = req.body;
@@ -308,14 +257,6 @@ exports.submitManualPayment = async (req, res) => {
       });
     }
 
-    // Check if there's already a pending manual payment
-    if (user.login_fee_pending && user.login_fee_pending.status === 'PENDING') {
-      return res.status(400).json({ 
-        success: false,
-        message: "You already have a pending payment. Please wait for admin approval." 
-      });
-    }
-
     // Store the manual payment for admin approval
     user.login_fee_pending = {
       mpesa_code: mpesa_code.trim(),
@@ -325,7 +266,7 @@ exports.submitManualPayment = async (req, res) => {
     };
     await user.save();
 
-    console.log(`📝 Manual login fee payment submitted by user ${user.phone}:`, mpesa_code.substring(0, 50));
+    console.log(`📝 Manual login fee payment submitted by user ${user.phone}`);
     console.log("Stored login_fee_pending:", JSON.stringify(user.login_fee_pending));
 
     res.status(200).json({
