@@ -234,7 +234,7 @@ export default function Activate() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const [showManual, setShowManual] = useState(false);
+  const [showManual, setShowManual] = useState(true);
   const [stkPhone, setStkPhone] = useState("");
 
   /* =========================
@@ -732,38 +732,20 @@ export default function Activate() {
 
           {/* AUTOMATIC STK PAYMENT SECTION */}
           <div className="activate-section-dark" style={{...styles.section, background: "linear-gradient(135deg, #00d9ff 0%, #5b72f5 50%, #a855f7 100%)", border: "2px solid rgba(255,255,255,0.3)"}}>
-            <p style={{ fontWeight: 900, fontSize: "16px", marginBottom: "12px", color: "#ffffff", textAlign: "center" }}>
-              📱 INSTANT PAYMENT (STK)
+            <p style={{ fontWeight: 900, fontSize: "18px", marginBottom: "12px", color: "#ffffff", textAlign: "center" }}>
+              📱 PAY NOW AUTOMATICALLY
             </p>
             
             <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.9)", marginBottom: "12px", textAlign: "center", background: "rgba(0,0,0,0.3)", padding: "8px", borderRadius: "8px" }}>
-              💡 <strong>How it works:</strong> Tap "Pay Now" → Payment page opens → Choose <strong>M-Pesa</strong> → Enter phone → Confirm on your phone
+              Tap below → Choose <strong>M-Pesa</strong> → Confirm on your phone
             </p>
-
-            <input
-              type="tel"
-              placeholder="Enter M-Pesa phone (0712345678)"
-              value={stkPhone}
-              onChange={(e) => setStkPhone(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "14px",
-                borderRadius: "12px",
-                border: "2px solid rgba(255,255,255,0.3)",
-                background: "rgba(255,255,255,0.1)",
-                color: "#ffffff",
-                fontSize: "15px",
-                marginBottom: "12px",
-                boxSizing: "border-box"
-              }}
-            />
 
             <button
               onClick={initiateSTK}
               disabled={submitting}
               style={{
                 width: "100%",
-                padding: "16px",
+                padding: "20px",
                 borderRadius: "14px",
                 border: "none",
                 background: "#ffffff",
@@ -793,27 +775,13 @@ export default function Activate() {
             )}
           </div>
 
-          {/* MANUAL PAYMENT SECTION */}
+          {/* MANUAL PAYMENT SECTION - Always visible */}
           <div style={{ marginTop: "12px" }}>
-            <button
-              onClick={() => setShowManual(!showManual)}
-              style={{
-                width: "100%",
-                padding: "12px",
-                borderRadius: "12px",
-                border: "2px dashed rgba(255,255,255,0.3)",
-                background: "transparent",
-                color: "rgba(255,255,255,0.7)",
-                fontSize: "14px",
-                fontWeight: 700,
-                cursor: "pointer"
-              }}
-            >
-              {showManual ? "▲ Hide Manual Payment" : "▼ Manual Payment (Send Money)"}
-            </button>
+            <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.8)", marginBottom: "8px", fontWeight: 700 }}>
+              📱 MANUAL PAYMENT (Send M-Pesa)
+            </p>
           </div>
 
-          {showManual && (
           <div className="activate-section-dark" style={styles.section}>
             <p style={{ fontWeight: 800, fontSize: "14px", marginBottom: "8px", color: "#ffffff" }}>
               📲 MANUAL PAYMENT
@@ -961,7 +929,7 @@ export default function Activate() {
             <div style={styles.notificationBox}>
               {notification}
             </div>
-          )}
+          </div>
 
           <button
             onClick={() => navigate("/dashboard")}
