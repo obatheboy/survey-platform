@@ -235,7 +235,7 @@ export default function Activate() {
   const [user, setUser] = useState(null);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [showManual, setShowManual] = useState(true);
-  const [stkPhone, setStkPhone] = useState("");
+  
 
   /* =========================
      LOAD USER + PLAN
@@ -343,15 +343,10 @@ export default function Activate() {
     }
   };
 
-  /* =========================
+/* =========================
      INITIATE STK PAYMENT
-  ========================== */
+   ========================== */
   const initiateSTK = async () => {
-    if (!stkPhone.trim()) {
-      setNotification("❌ Please enter your M-Pesa phone number");
-      return;
-    }
-    
     setSubmitting(true);
     setNotification(null);
     

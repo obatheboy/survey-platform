@@ -4,15 +4,16 @@ const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 const PAYSTACK_PUBLIC_KEY = process.env.PAYSTACK_PUBLIC_KEY;
 const BASE_URL = "api.paystack.co";
 
-// FIXED: Format phone for Paystack M-Pesa STK
+// FIXED: Format phone for Paystack M-Pesa STK - supports 07, 01, 7, 1, 254 formats
 const formatPhone = (phone) => {
   // Remove any non-numeric characters
   let cleaned = phone.replace(/[^0-9]/g, '');
   
   console.log(`Formatting phone: ${phone} -> cleaned: ${cleaned}`);
   
-  // Handle Kenyan numbers starting with 0 (07 or 01)
-  if (cleaned.startsWith('0')) {
+  // Handle Kenyan numbers: 07, 01, 7, 1, 254
+  if (cleaned.startsWith('0') && cleaned.length > 1) {
+    // Remove leading 0: 0712345678 -> 712345678
     cleaned = '254' + cleaned.substring(1);
   }
   // Handle numbers starting with 7 or 1 (no leading 0)
