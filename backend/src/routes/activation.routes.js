@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User"); // ✅ ADDED: Import User model for debug
+const User = require("../models/User");
+const paystackService = require("../services/paystack.service");
 
 const { protect } = require("../middlewares/auth.middleware");
 const activationController = require("../controllers/activation.controller");
@@ -12,9 +13,70 @@ const activationController = require("../controllers/activation.controller");
  * =====================================
  */
 
+const PLAN_FEES = {
+  REGULAR: 100,
+  VIP: 150,
+  VVIP: 200,
+  WELCOME_BONUS: 100
+};
+
+const PLAN_NAMES = {
+  REGULAR: "SurveyEarn REGULAR",
+  VIP: "SurveyEarn VIP",
+  VVIP: "SurveyEarn VVIP",
+  WELCOME_BONUS: "SurveyEarn Welcome Bonus"
+};
+
+/**
+ * POST /api/activation/initiate
+ * Initiate automatic STK push payment
+ */
+router.post("/initiate", protect, async (req, res) => {
+  try {
+    const { plan, is_welcome_bonus } = req.body;
+    const planKey = is_welcome_bonus ? "WELCOME_BONUS" : plan?.toUpperCase();
+    const amount = PLAN_FEES[planKey];
+    
+    if (!amount) {
+      return res.status(400).json({ message: "Invalid plan" });
+    }
+    
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    const formattedPhone = user.phone.startsWith("254") ? user.phone : "254" + user.phone.substring(1);
+    const email = user.email || `user_${user._id}@surveyearn.com`;
+    
+    const payment = await paystackService.initializePayment(
+      amount,
+      "+" + formattedPhone,
+      email,
+      user._id.toString(),
+      `${PLAN_NAMES[planKey]} - KES ${amount}`
+    );
+    
+    const reference = payment.reference || payment.data?.reference;
+    const authorizationUrl = payment.authorization_url || payment.data?.authorization_url;
+    
+    return res.json({
+      success: true,
+      message: "STK Push sent to your phone. Check your M-Pesa and enter PIN.",
+      reference,
+      authorization_url: authorizationUrl,
+      amount,
+      phone: "+" + formattedPhone
+    });
+  } catch (error) {
+    console.error("Activate STK error:", error);
+    res.status(500).json({ message: "Failed to initiate payment: " + error.message });
+  }
+});
+
 /**
  * POST /api/activation/submit
- * User submits activation payment
+ * User submits activation payment (manual fallback)
  * Protected: Regular user JWT token
  */
 router.post("/submit", protect, activationController.submitActivationPayment);
@@ -24,12 +86,76 @@ router.post("/submit", protect, activationController.submitActivationPayment);
  * User checks activation status
  * Protected: Regular user JWT token
  */
-router.get("/status", protect, (req, res) => {
-  // This endpoint should be in controller, but added here for completeness
-  res.json({
-    message: "User activation status endpoint",
-    note: "Implement this in activation.controller.js if needed"
-  });
+router.get("/status", protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    const plans = user.plans || {};
+    res.json({
+      regular: plans.REGULAR?.is_activated || false,
+      vip: plans.VIP?.is_activated || false,
+      vvip: plans.VVIP?.is_activated || false,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error checking status" });
+  }
+});
+
+/**
+ * POST /api/activation/verify
+ * Verify STK payment and activate plan
+ * Protected: Regular user JWT token
+ */
+router.post("/verify", protect, async (req, res) => {
+  try {
+    const { reference, plan, is_welcome_bonus } = req.body;
+    const user = await User.findById(req.user.id);
+    
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    const planKey = is_welcome_bonus ? "REGULAR" : plan?.toUpperCase();
+    
+    if (user.plans?.[planKey]?.is_activated) {
+      return res.json({ success: true, message: "Plan already activated" });
+    }
+    
+    // Check pending activation request
+    const pendingRequest = user.activation_requests?.find(
+      r => r.plan === planKey && r.status === "SUBMITTED"
+    );
+    
+    if (pendingRequest) {
+      return res.json({ 
+        success: false, 
+        message: "Payment pending approval",
+        status: "pending" 
+      });
+    }
+    
+    // Create pending request for webhook to approve
+    if (!user.activation_requests) {
+      user.activation_requests = [];
+    }
+    
+    user.activation_requests.push({
+      plan: planKey,
+      amount: PLAN_FEES[planKey],
+      reference,
+      status: "SUBMITTED",
+      created_at: new Date()
+    });
+    
+    await user.save();
+    
+    res.json({ success: true, message: "Verification initiated" });
+  } catch (error) {
+    res.status(500).json({ message: "Verification error" });
+  }
 });
 
 /**

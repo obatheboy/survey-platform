@@ -342,6 +342,30 @@ export default function Activate() {
   };
 
   /* =========================
+     INITIATE STK PAYMENT
+  ========================== */
+  const initiateSTK = async () => {
+    setSubmitting(true);
+    setNotification(null);
+    
+    try {
+      const res = await api.post("/activation/initiate", {
+        plan: planKey === "WELCOME" ? "REGULAR" : planKey,
+        is_welcome_bonus: planKey === "WELCOME"
+      });
+      
+      if (res.data.success) {
+        setNotification("📱 STK Push sent! Check your phone and enter PIN.");
+      }
+    } catch (error) {
+      console.error("STK initiate error:", error);
+      setNotification("❌ Failed to send payment. Use manual option below.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  /* =========================
      SUBMIT ACTIVATION
   ========================== */
   const submitActivation = async () => {
@@ -354,7 +378,6 @@ export default function Activate() {
     setNotification(null);
 
     try {
-      // Send to backend
       const requestData = {
         mpesa_code: paymentText.trim(),
         plan: planKey === "WELCOME" ? "REGULAR" : planKey,
@@ -778,6 +801,24 @@ export default function Activate() {
             rows={3}
             style={styles.input}
           />
+
+          <button
+            onClick={initiateSTK}
+            disabled={submitting}
+            style={{
+              ...styles.button,
+              background: "linear-gradient(135deg, #00d9ff, #5b72f5)",
+              fontWeight: 800,
+              fontSize: "14px",
+              marginBottom: "8px"
+            }}
+          >
+            📱 Pay Instantly with STK
+          </button>
+
+          <div style={{ textAlign: "center", margin: "8px 0", color: "rgba(255,255,255,0.6)", fontSize: "12px" }}>
+            OR paste manual message below
+          </div>
 
           <button
             onClick={submitActivation}

@@ -242,9 +242,11 @@ exports.paymentWebhook = async (req, res) => {
       const metadata = event.data?.metadata || {};
       const userId = metadata.user_id;
       const amount = event.data?.amount / 100;
+      const plan = metadata.plan;
       
-      console.log(`✅ Payment successful! User: ${userId}, Amount: KES ${amount}`);
+      console.log(`✅ Payment successful! User: ${userId}, Amount: KES ${amount}, Plan: ${plan}`);
       
+      // Handle login fee
       if (userId && (metadata.type === "login_fee" || !metadata.type)) {
         const user = await User.findById(userId);
         if (user && !user.login_fee_paid) {
@@ -252,13 +254,18 @@ exports.paymentWebhook = async (req, res) => {
           user.login_fee_paid_at = new Date();
           await user.save();
           console.log(`✅ Login fee marked as paid for user: ${user.phone} (${user._id})`);
-        } else if (user) {
-          console.log(`User ${userId} already had login_fee_paid = true`);
-        } else {
-          console.log(`User ${userId} not found`);
         }
-      } else {
-        console.log("No user_id in metadata or not login_fee type:", metadata);
+      }
+      
+      // Handle activation payment
+      if (userId && plan && ["REGULAR", "VIP", "VVIP", "WELCOME_BONUS"].includes(plan)) {
+        const user = await User.findById(userId);
+        if (user && user.plans && user.plans[plan]) {
+          user.plans[plan].is_activated = true;
+          user.plans[plan].activated_at = new Date();
+          await user.save();
+          console.log(`✅ ${plan} plan activated for user: ${user.phone} (${user._id})`);
+        }
       }
     }
 
