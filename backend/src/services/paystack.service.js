@@ -97,8 +97,8 @@ const initializePayment = async (amount, phone, email, userId, description) => {
     console.log("Attempting /transaction/initialize for STK push...");
     console.log("Phone being used:", phoneOnly);
     
-    // M-Pesa STK Push via Paystack mobile_money channel
-    const response = await makeRequest("/transaction/initialize", "POST", {
+    // M-Pesa STK Push via Paystack
+    const requestData = {
       email: paymentEmail,
       amount: amount * 100,
       currency: "KES",
@@ -109,12 +109,12 @@ const initializePayment = async (amount, phone, email, userId, description) => {
         phone: phoneOnly,
         description: description
       },
-      channels: ["mobile_money"],
-      mobile_money: {
-        provider: "mpesa",
-        phone: phoneOnly
-      }
-    });
+      channels: ["mobile_money"]
+    };
+    
+    console.log("Paystack request data:", JSON.stringify(requestData));
+    
+    const response = await makeRequest("/transaction/initialize", "POST", requestData);
     
     console.log("Paystack initialize response:", response);
     

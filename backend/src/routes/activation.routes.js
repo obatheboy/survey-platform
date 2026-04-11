@@ -51,7 +51,7 @@ router.post("/initiate", protect, async (req, res) => {
     let formattedPhone = phone || user.phone;
     console.log("STK phone raw:", formattedPhone);
     
-    // Use Paystack for M-Pesa STK Push (paystackService handles formatting internally)
+    // Use Paystack for STK Push
     const description = is_welcome_bonus ? "SurveyEarn Welcome Bonus" : `SurveyEarn ${planKey}`;
     const payment = await paystackService.initializePayment(
       amount,
@@ -72,10 +72,12 @@ router.post("/initiate", protect, async (req, res) => {
     });
   } catch (error) {
     console.error("Activate STK error:", error.message);
-    return res.status(500).json({
+    return res.json({
       success: false,
-      message: "STK Push failed: " + error.message,
-      requires_manual: true
+      message: "STK failed. Use manual payment. Enter your M-Pesa message below.",
+      requires_manual: true,
+      amount: amount,
+      plan: planKey
     });
   }
 });
