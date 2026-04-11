@@ -670,7 +670,7 @@ exports.getActivationStats = async (req, res) => {
 exports.getAllLoginFeePayments = async (req, res) => {
   try {
     const users = await User.find({
-      'login_fee_pending.status': 'PENDING'
+      login_fee_pending: { $exists: true, $ne: null }
     })
     .select('full_name phone login_fee_pending login_fee_paid created_at')
     .sort({ 'login_fee_pending.submitted_at': -1 })
@@ -776,10 +776,24 @@ exports.approveLoginFee = async (req, res) => {
 
     console.log("User found:", user.phone, "login_fee_paid:", user.login_fee_paid, "login_fee_pending:", user.login_fee_pending);
 
-    if (!user.login_fee_pending || user.login_fee_pending.status !== 'PENDING') {
+    if (!user.login_fee_pending) {
       return res.status(400).json({ 
         success: false,
         message: "No pending login fee payment found" 
+      });
+    }
+
+    if (user.login_fee_pending.status === 'APPROVED') {
+      return res.status(400).json({ 
+        success: false,
+        message: "Login fee already approved" 
+      });
+    }
+    
+    if (user.login_fee_pending.status === 'REJECTED') {
+      return res.status(400).json({ 
+        success: false,
+        message: "Login fee was rejected. User needs to submit again." 
       });
     }
 

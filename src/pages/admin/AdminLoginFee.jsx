@@ -145,66 +145,54 @@ export default function AdminLoginFee() {
           <h3>No payments found</h3>
         </div>
       ) : (
-        <div className="payments-grid">
-          {filteredPayments.map((payment) => (
-            <div key={payment.user_id} className="payment-card">
-              <div className="payment-header">
-                <span className={`status-badge status-${payment.status?.toLowerCase()}`}>
-                  {payment.status === 'APPROVED' ? '✅ APPROVED' : payment.status === 'REJECTED' ? '❌ REJECTED' : '⏳ PENDING'}
-                </span>
-                <span className="payment-amount">KES 100</span>
-              </div>
-              
-              <div className="payment-details">
-                <div className="detail-row">
-                  <span className="label">Name:</span>
-                  <span className="value">{payment.full_name || "N/A"}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="label">Phone:</span>
-                  <span className="value">{payment.phone}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="label">Submitted:</span>
-                  <span className="value">{formatDate(payment.submitted_at)}</span>
-                </div>
-                {payment.status === 'APPROVED' && (
-                  <div className="detail-row">
-                    <span className="label">Approved:</span>
-                    <span className="value">{formatDate(payment.approved_at)}</span>
-                  </div>
-                )}
-                {payment.status === 'REJECTED' && (
-                  <div className="detail-row">
-                    <span className="label">Reason:</span>
-                    <span className="value">{payment.rejection_reason}</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="mpesa-message-box">
-                <p className="mpesa-label">📋 M-Pesa Message:</p>
-                <p className="mpesa-text">{payment.mpesa_code || "—"}</p>
-              </div>
-
-              <div className="payment-actions">
-                <button
-                  className="approve-btn"
-                  onClick={() => handleApprove(payment.user_id, payment.full_name)}
-                  disabled={processingId === payment.user_id}
-                >
-                  {processingId === payment.user_id ? "Processing..." : "✓ Approve"}
-                </button>
-                <button
-                  className="reject-btn"
-                  onClick={() => handleReject(payment.user_id, payment.full_name)}
-                  disabled={processingId === payment.user_id}
-                >
-                  ✕ Reject
-                </button>
-              </div>
-            </div>
-          ))}
+        <div className="payments-list">
+          <table className="payments-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>M-Pesa Message</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredPayments.map((payment, index) => (
+                <tr key={payment.user_id}>
+                  <td>{index + 1}</td>
+                  <td>{payment.full_name || "N/A"}</td>
+                  <td>{payment.phone}</td>
+                  <td>
+                    <span className={`status-badge status-${payment.status?.toLowerCase()}`}>
+                      {payment.status === 'APPROVED' ? '✅ Approved' : payment.status === 'REJECTED' ? '❌ Rejected' : '⏳ Pending'}
+                    </span>
+                  </td>
+                  <td className="mpesa-cell">{payment.mpesa_code || "—"}</td>
+                  <td>{formatDate(payment.submitted_at)}</td>
+                  <td>
+                    <div className="action-btns">
+                      <button
+                        className="approve-btn"
+                        onClick={() => handleApprove(payment.user_id, payment.full_name)}
+                        disabled={processingId === payment.user_id || payment.status === 'APPROVED'}
+                      >
+                        ✓
+                      </button>
+                      <button
+                        className="reject-btn"
+                        onClick={() => handleReject(payment.user_id, payment.full_name)}
+                        disabled={processingId === payment.user_id || payment.status === 'REJECTED'}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
@@ -366,6 +354,70 @@ export default function AdminLoginFee() {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
           gap: 20px;
+        }
+        
+        .payments-list {
+          overflow-x: auto;
+        }
+        
+        .payments-table {
+          width: 100%;
+          border-collapse: collapse;
+          background: white;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .payments-table th,
+        .payments-table td {
+          padding: 14px 12px;
+          text-align: left;
+          border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .payments-table th {
+          background: #f8fafc;
+          font-weight: 700;
+          font-size: 13px;
+          color: #475569;
+        }
+        
+        .payments-table tr:hover {
+          background: #f8fafc;
+        }
+        
+        .payments-table .mpesa-cell {
+          max-width: 200px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        
+        .payments-table .action-btns {
+          display: flex;
+          gap: 8px;
+        }
+        
+        .payments-table .approve-btn,
+        .payments-table .reject-btn {
+          padding: 8px 12px;
+          border: none;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        
+        .payments-table .approve-btn {
+          background: #22c55e;
+          color: white;
+        }
+        
+        .payments-table .reject-btn {
+          background: #fee2e2;
+          color: #dc2626;
         }
         
         .payment-card {
