@@ -416,7 +416,7 @@ export default function Auth() {
 const styles = {
   page: {
     minHeight: "100vh",
-    background: "linear-gradient(180deg, #667eea 0%, #764ba2 100%)",
+    background: "linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)",
     fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     padding: "8px",
     display: "flex",
@@ -428,8 +428,10 @@ const styles = {
   container: {
     width: "100%",
     maxWidth: "520px",
-    background: "#ffffff",
-    borderRadius: "16px",
+    background: "linear-gradient(145deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85))",
+    borderRadius: "20px",
+    border: "1px solid rgba(255,255,255,0.3)",
+    backdropFilter: "blur(10px)",
     padding: "24px 22px",
     boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
   },
@@ -559,15 +561,16 @@ const styles = {
   },
   submitBtn: {
     width: "100%",
-    padding: "14px",
-    borderRadius: "12px",
+    padding: "16px",
+    borderRadius: "14px",
     border: "none",
-    background: "linear-gradient(135deg, #667eea, #764ba2)",
+    background: "linear-gradient(135deg, #00d9ff 0%, #5b72f5 50%, #a855f7 100%)",
     color: "#ffffff",
-    fontSize: "15px",
+    fontSize: "16px",
     fontWeight: "800",
     cursor: "pointer",
-    marginTop: "6px",
+    marginTop: "8px",
+    boxShadow: "0 0 20px rgba(0, 217, 255, 0.4), 0 0 40px rgba(168, 85, 247, 0.3)",
   },
   spinner: {
     display: "inline-block",
