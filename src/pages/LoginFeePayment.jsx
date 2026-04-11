@@ -158,7 +158,14 @@ export default function LoginFeePayment() {
         localStorage.setItem("pendingLoginFeeApproval", "true");
       }
     } catch (err) {
-      setCodeError(err.response?.data?.message || "Failed to submit payment. Please try again.");
+      const errorMsg = err.response?.data?.message || "";
+      if (errorMsg.includes("already have a pending")) {
+        setCodeSuccess(true);
+        localStorage.setItem("pendingLoginFeeApproval", "true");
+        setCheckStatusMessage("⏳ Your previous submission is pending approval.");
+      } else {
+        setCodeError(errorMsg || "Failed to submit payment. Please try again.");
+      }
     } finally {
       setSubmittingCode(false);
     }
@@ -248,19 +255,27 @@ Confirmation No. ABC123XYZ"
 
         {codeError && <div style={styles.codeError}>{codeError}</div>}
         
-        {codeSuccess ? (
+        {checkStatusMessage && (
+          <div style={styles.checkStatusMessage}>{checkStatusMessage}</div>
+        )}
+        
+        {codeSuccess && (
           <div style={styles.codeSuccessBox}>
             <div style={styles.successIcon}>✓</div>
-            <h4 style={styles.successTitle}>Submitted for Approval!</h4>
+            <h4 style={styles.successTitle}>Successfully Submitted!</h4>
             <p style={styles.successText}>
-              Your payment has been submitted and is waiting for admin review. 
-              You'll be notified once approved. You can close this page and try logging in later.
+              Your payment message has been submitted. Wait for admin to approve your payment.
             </p>
-            <p style={styles.successHint}>
-              📱 Need help? Contact us on WhatsApp
-            </p>
+            <button 
+              style={styles.updateMpesaBtn}
+              onClick={() => setCodeSuccess(false)}
+            >
+              ✏️ Update Message
+            </button>
           </div>
-        ) : (
+        )}
+        
+        {!codeSuccess && (
           <button 
             style={styles.submitCodeBtn} 
             onClick={handleManualMpesaSubmit}
@@ -470,6 +485,18 @@ mpesaNumberHighlight: {
     borderRadius: "14px",
     border: "2px solid #22c55e",
     marginBottom: "16px",
+  },
+  updateMpesaBtn: {
+    width: "100%",
+    padding: "14px",
+    background: "linear-gradient(135deg, #6366f1, #4f46e5)",
+    color: "#ffffff",
+    border: "none",
+    borderRadius: "12px",
+    fontSize: "15px",
+    fontWeight: "700",
+    cursor: "pointer",
+    marginTop: "12px",
   },
   successIcon: {
     width: "56px", height: "56px", background: "#22c55e", borderRadius: "50%",

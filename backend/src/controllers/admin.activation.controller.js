@@ -677,23 +677,26 @@ exports.getAllLoginFeePayments = async (req, res) => {
     .limit(100)
     .lean();
 
-    const payments = users.map(user => ({
-      id: user._id,
-      user_id: user._id,
-      full_name: user.full_name,
-      phone: user.phone,
-      mpesa_code: user.login_fee_pending?.mpesa_code || null,
-      amount: user.login_fee_pending?.amount || LOGIN_FEE,
-      submitted_at: user.login_fee_pending?.submitted_at,
-      status: user.login_fee_pending?.status || 'PENDING',
-      approved_at: user.login_fee_pending?.approved_at,
-      rejected_at: user.login_fee_pending?.rejected_at,
-      rejection_reason: user.login_fee_pending?.rejection_reason,
-      type: 'login_fee'
-    }));
+    const payments = users.map(user => {
+      const pending = user.login_fee_pending || {};
+      return {
+        id: user._id,
+        user_id: user._id,
+        full_name: user.full_name,
+        phone: user.phone,
+        mpesa_code: pending.mpesa_code || null,
+        amount: pending.amount || LOGIN_FEE,
+        submitted_at: pending.submitted_at,
+        status: pending.status || 'PENDING',
+        approved_at: pending.approved_at,
+        rejected_at: pending.rejected_at,
+        rejection_reason: pending.rejection_reason,
+        type: 'login_fee'
+      };
+    });
 
-    console.log("LoginFeePayments:", JSON.stringify(payments[0], "Total:", payments.length);
-    console.log("User login_fee_pending:", JSON.stringify(users[0]?.login_fee_pending));
+    console.log("LoginFeePayments:", JSON.stringify(payments[0]));
+    console.log("Raw user login_fee_pending:", users[0]?.login_fee_pending);
 
     res.json({
       success: true,
@@ -787,22 +790,12 @@ exports.approveLoginFee = async (req, res) => {
       });
     }
 
-    // Mark as paid and clear pending
+    // Mark as paid
     user.login_fee_paid = true;
     user.login_fee_paid_at = new Date();
-    user.login_fee_pending = {
-      ...user.login_fee_pending,
-      status: 'APPROVED',
-      approved_at: new Date()
-    };
+    user.login_fee_pending.status = 'APPROVED';
+    user.login_fee_pending.approved_at = new Date();
     await user.save();
-
-    // Generate token for auto-login
-    const token = jwt.sign(
-      { id: user._id, phone: user.phone, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
 
     console.log(`✅ Login fee approved for user: ${user.full_name} (${user.phone})`);
 
@@ -811,8 +804,7 @@ exports.approveLoginFee = async (req, res) => {
       message: "Login fee approved successfully",
       user_id: user._id,
       user_name: user.full_name,
-      phone: user.phone,
-      auto_login_token: token
+      phone: user.phone
     });
   } catch (error) {
     console.error("❌ Approve login fee error:", error);
