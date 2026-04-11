@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
-const paystackService = require("../services/paystack.service");
+const mpesaService = require("../services/mpesa.service");
 
 const { protect } = require("../middlewares/auth.middleware");
 const activationController = require("../controllers/activation.controller");
@@ -58,34 +58,30 @@ router.post("/initiate", protect, async (req, res) => {
     }
     console.log("STK phone formatted:", formattedPhone);
     
-    const email = user.email || `user_${user._id}@surveyearn.com`;
-    
-    const payment = await paystackService.initializePayment(
+    // Use direct M-Pesa STK Push (more reliable for Kenyan numbers)
+    const description = is_welcome_bonus ? "SurveyEarn Welcome Bonus" : `SurveyEarn ${planKey}`;
+    const payment = await mpesaService.stkPush(
       amount,
-      "+" + formattedPhone,
-      email,
+      formattedPhone,
       user._id.toString(),
-      `${PLAN_NAMES[planKey]} - KES ${amount}`
+      description
     );
     
     console.log("STK payment result:", payment);
-    console.log("STK payment message:", payment.message);
-    
-    const reference = payment.reference;
     
     return res.json({
       success: true,
-      message: payment.message || "STK Push sent! Check your phone and enter PIN.",
-      reference,
+      message: "STK Push sent! Check your phone and enter PIN.",
+      checkoutRequestId: payment.checkoutRequestId,
       amount,
       phone: "+" + formattedPhone
     });
   } catch (error) {
     console.error("Activate STK error:", error);
-    // Return success anyway with manual payment prompt
+    // Return error with manual payment option
     return res.json({
-      success: true,
-      message: "Please use manual payment below",
+      success: false,
+      message: "STK Push failed. Please use manual payment below.",
       requires_manual: true
     });
   }
