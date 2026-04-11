@@ -72,12 +72,26 @@ router.post("/initiate", protect, async (req, res) => {
     });
   } catch (error) {
     console.error("Activate STK error:", error.message);
+    
+    // Check for specific error messages
+    let errorMessage = "STK failed. Use manual payment below.";
+    let requiresManual = true;
+    
+    if (error.message?.includes("Blacklist")) {
+      errorMessage = "Payment account issue. Use manual M-Pesa payment below.";
+    } else if (error.message?.includes("Insufficient")) {
+      errorMessage = "Insufficient funds. Use manual payment.";
+    } else if (error.message?.includes("Invalid")) {
+      errorMessage = "Invalid phone number. Check and try again.";
+    }
+    
     return res.json({
       success: false,
-      message: "STK failed. Use manual payment. Enter your M-Pesa message below.",
-      requires_manual: true,
+      message: errorMessage,
+      requires_manual: requiresManual,
       amount: amount,
-      plan: planKey
+      plan: planKey,
+      error: error.message
     });
   }
 });

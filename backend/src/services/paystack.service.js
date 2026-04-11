@@ -91,13 +91,15 @@ const initializePayment = async (amount, phone, email, userId, description) => {
   console.log(`Initializing Paystack STK Push: amount: ${amount}, phone: ${phoneOnly}, email: ${email}, userId: ${userId}`);
   
   try {
-    const paymentEmail = email || `user_${userId}@surveyearn.com`;
+    // Generate unique email per user to avoid blacklist issues
+    const paymentEmail = email || `user_${userId}_${Date.now()}@surveyearn.com`;
     const reference = `PAY_${Date.now()}_${userId}_${Math.random().toString(36).substring(2, 8)}`;
     
     console.log("Attempting /transaction/initialize for STK push...");
     console.log("Phone being used:", phoneOnly);
+    console.log("Email being used:", paymentEmail);
     
-    // M-Pesa STK Push via Paystack
+    // M-Pesa STK Push via Paystack - FORCE mobile_money ONLY
     const requestData = {
       email: paymentEmail,
       amount: amount * 100,
@@ -105,27 +107,41 @@ const initializePayment = async (amount, phone, email, userId, description) => {
       reference: reference,
       phone_number: phoneOnly,
       metadata: {
-        user_id: userId.toString(),
+        user_id: userId,
         phone: phoneOnly,
         description: description
       },
-      channels: ["mobile_money"]
+      // FORCE mobile money only - no card, no bank
+      channel: "mobile_money",
+      mobile_money: {
+        provider: "mpesa",
+        phone: phoneOnly
+      }
     };
     
     console.log("Paystack request data:", JSON.stringify(requestData));
     
     const response = await makeRequest("/transaction/initialize", "POST", requestData);
     
+    // Log ALL response data for debugging
+    console.log("Paystack FULL response:", JSON.stringify(response));
+    
     console.log("Paystack initialize response:", response);
     
     if (response.status && response.data) {
+      console.log("✅ Paystack initialized successfully");
+      console.log("   Authorization URL:", response.data.authorization_url);
+      console.log("   Access code:", response.data.access_code);
+      
       return {
         success: true,
         reference: reference,
         authorization_url: response.data.authorization_url,
+        access_code: response.data.access_code,
         message: "STK Push sent to your phone"
       };
     } else {
+      console.log("❌ Paystack initialization failed:", response);
       throw new Error(response.message || "Payment initialization failed");
     }
     
