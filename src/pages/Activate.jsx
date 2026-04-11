@@ -723,13 +723,13 @@ export default function Activate() {
               📱 PAY NOW AUTOMATICALLY
             </p>
             
-            <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.9)", marginBottom: "12px", textAlign: "center", background: "rgba(0,0,0,0.3)", padding: "8px", borderRadius: "8px" }}>
-              💳 Tap "Pay Now" below → Payment page opens → Choose <strong>M-Pesa</strong> → Enter phone (<strong style={{color: "#fbbf24"}}>07...</strong> format) → Confirm on your phone
-            </p>
-            
-            <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.7)", marginTop: "8px", textAlign: "center" }}>
-              ⚠️ Note: Use phone format <strong>07...</strong> (not 01...) on payment page
-            </p>
+            <div style={{ background: "rgba(0,0,0,0.3)", padding: "12px", borderRadius: "8px", marginBottom: "12px" }}>
+              <p style={{ fontSize: "13px", color: "#ffffff", fontWeight: 700, marginBottom: "8px" }}>📝 Follow these steps:</p>
+              <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.9)", marginBottom: "6px" }}><strong style={{color: "#4ade80"}}>Step 1:</strong> Tap "Pay Now" below</p>
+              <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.9)", marginBottom: "6px" }}><strong style={{color: "#4ade80"}}>Step 2:</strong> On payment page, choose <strong>M-Pesa</strong></p>
+              <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.9)", marginBottom: "6px" }}><strong style={{color: "#4ade80"}}>Step 3:</strong> Enter your M-Pesa phone (<strong style={{color: "#fbbf24"}}>07...</strong> format - not 01...)</p>
+              <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.9)" }}><strong style={{color: "#4ade80"}}>Step 4:</strong> Check phone for PIN request → Enter PIN to pay</p>
+            </div>
 
             <button
               onClick={initiateSTK}
