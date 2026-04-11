@@ -724,7 +724,11 @@ export default function Activate() {
             </p>
             
             <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.9)", marginBottom: "12px", textAlign: "center", background: "rgba(0,0,0,0.3)", padding: "8px", borderRadius: "8px" }}>
-              Tap below → Choose <strong>M-Pesa</strong> → Confirm on your phone
+              💳 Tap "Pay Now" below → Payment page opens → Choose <strong>M-Pesa</strong> → Enter phone (<strong style={{color: "#fbbf24"}}>07...</strong> format) → Confirm on your phone
+            </p>
+            
+            <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.7)", marginTop: "8px", textAlign: "center" }}>
+              ⚠️ Note: Use phone format <strong>07...</strong> (not 01...) on payment page
             </p>
 
             <button
