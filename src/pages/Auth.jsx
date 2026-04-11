@@ -131,16 +131,10 @@ export default function Auth() {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("lastLoginTime", Date.now().toString());
         localStorage.removeItem("active_plan");
-        
-        if (res.data.user?.welcome_bonus_received) {
-          localStorage.setItem("showWelcomeBonus", "true");
-          localStorage.setItem("welcomeBonusAmount", res.data.user?.welcome_bonus || 1200);
-        }
       }
 
       // Direct to dashboard after registration
-      setRegMessage("✓ Account created! Redirecting...");
-      setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       let errorMessage;
       
@@ -175,32 +169,14 @@ export default function Auth() {
     try {
       const res = await api.post("/auth/login", { phone: loginData.phone });
 
-      // Skip payment checks - go directly to dashboard
-      if (res.data.requires_payment || res.data.login_fee_pending) {
-        // Skip payment
-      }
-
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("lastLoginTime", Date.now().toString());
-        localStorage.removeItem("active_plan");
-        
-        if (res.data.user?.welcome_bonus_received) {
-          localStorage.setItem("showWelcomeBonus", "true");
-          localStorage.setItem("welcomeBonusAmount", res.data.user?.welcome_bonus || 1200);
-        }
-        
-        navigate("/dashboard", { replace: true });
-        return;
       }
-} catch (err) {
-      // Skip payment redirect - go directly to dashboard
-      if (err.response?.status === 403 && (err.response?.data?.login_fee_pending || err.response?.data?.requires_payment)) {
-        setLoginMessage("Logging in...");
-        navigate("/dashboard", { replace: true });
-        return;
-      }
-      
+
+      navigate("/dashboard", { replace: true });
+      return;
+    } catch (err) {
       if (!navigator.onLine) {
         const cachedUser = localStorage.getItem("cachedUser");
         const token = localStorage.getItem("token");
@@ -406,7 +382,7 @@ export default function Auth() {
           style={styles.supportBtn}
           onClick={() => {
             const message = encodeURIComponent("Hello, I need help with creating my survey account.");
-            window.open(`https://wa.me/254140834185?text=${message}`, "_blank");
+            window.open(`https://wa.me/254752881670?text=${message}`, "_blank");
           }}
         >
           💬 Chat Support

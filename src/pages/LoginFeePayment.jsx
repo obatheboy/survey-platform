@@ -138,7 +138,7 @@ export default function LoginFeePayment() {
 
   const handleWhatsAppSupport = () => {
     const msg = encodeURIComponent(`Hello SurveyEarn Support, I need help with login fee payment. Phone: ${phone}`);
-    window.open(`https://wa.me/2547140834185?text=${msg}`, '_blank');
+    window.open(`https://wa.me/2547752881670?text=${msg}`, '_blank');
   };
 
   const handleManualMpesaSubmit = async () => {
