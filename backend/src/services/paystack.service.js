@@ -93,17 +93,24 @@ const initializePayment = async (amount, phone, email, userId, description) => {
     const reference = `PAY_${Date.now()}_${userId}_${Math.random().toString(36).substring(2, 8)}`;
     
     console.log("Attempting /transaction/initialize for STK push...");
+    console.log("Phone being used:", formattedPhone);
     
+    // Include phone_number for STK push
     const response = await makeRequest("/transaction/initialize", "POST", {
       email: paymentEmail,
       amount: amount * 100,
       currency: "KES",
       reference: reference,
+      phone_number: formattedPhone.replace("+", ""),
       metadata: {
         user_id: userId.toString(),
         phone: formattedPhone,
-        type: "login_fee",
-        description: description || "Login fee payment"
+        custom_fields: [
+          {
+            variable_name: "user_id",
+            value: userId.toString()
+          }
+        ]
       }
     });
     
