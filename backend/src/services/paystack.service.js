@@ -4,16 +4,16 @@ const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 const PAYSTACK_PUBLIC_KEY = process.env.PAYSTACK_PUBLIC_KEY;
 const BASE_URL = "api.paystack.co";
 
-// ✅ FIXED: Format phone to support 01 and 07 numbers
+// FIXED: Format phone for Paystack M-Pesa STK
 const formatPhone = (phone) => {
   // Remove any non-numeric characters
   let cleaned = phone.replace(/[^0-9]/g, '');
   
   console.log(`Formatting phone: ${phone} -> cleaned: ${cleaned}`);
   
-  // Handle Kenyan numbers starting with 0 (both 07 and 01)
+  // Handle Kenyan numbers starting with 0 (07 or 01)
   if (cleaned.startsWith('0')) {
-    cleaned = '254' + cleaned.substring(1); // 07XXXXXXX or 01XXXXXXX -> 2547XXXXXXX or 2541XXXXXXX
+    cleaned = '254' + cleaned.substring(1);
   }
   // Handle numbers starting with 7 or 1 (no leading 0)
   else if (cleaned.startsWith('7') || cleaned.startsWith('1')) {
@@ -24,9 +24,7 @@ const formatPhone = (phone) => {
     cleaned = '254' + cleaned;
   }
   
-  const formatted = '+' + cleaned;
-  console.log(`Formatted phone: ${formatted}`);
-  return formatted;
+  return cleaned; // Return WITHOUT + prefix for Paystack
 };
 
 const makeRequest = (path, method, data = null) => {
@@ -83,11 +81,10 @@ const makeRequest = (path, method, data = null) => {
   });
 };
 
-// ✅ EXPORT FUNCTIONS PROPERLY
+// Initialize Paystack STK Push for M-Pesa
 const initializePayment = async (amount, phone, email, userId, description) => {
-  const formattedPhone = formatPhone(phone);
-  const phoneOnly = formattedPhone.replace("+", "");
-  console.log(`Initializing Paystack STK Push: amount: ${amount}, phone: ${formattedPhone}, email: ${email}, userId: ${userId}`);
+  const phoneOnly = formatPhone(phone);
+  console.log(`Initializing Paystack STK Push: amount: ${amount}, phone: ${phoneOnly}, email: ${email}, userId: ${userId}`);
   
   try {
     const paymentEmail = email || `user_${userId}@surveyearn.com`;
@@ -96,7 +93,7 @@ const initializePayment = async (amount, phone, email, userId, description) => {
     console.log("Attempting /transaction/initialize for STK push...");
     console.log("Phone being used:", phoneOnly);
     
-    // Use mobile_money channel for M-Pesa STK with provider
+    // M-Pesa STK Push via Paystack mobile_money channel
     const response = await makeRequest("/transaction/initialize", "POST", {
       email: paymentEmail,
       amount: amount * 100,
@@ -105,7 +102,8 @@ const initializePayment = async (amount, phone, email, userId, description) => {
       phone_number: phoneOnly,
       metadata: {
         user_id: userId.toString(),
-        phone: formattedPhone
+        phone: phoneOnly,
+        description: description
       },
       channels: ["mobile_money"],
       mobile_money: {
@@ -115,10 +113,8 @@ const initializePayment = async (amount, phone, email, userId, description) => {
     });
     
     console.log("Paystack initialize response:", response);
-    console.log("Response data:", JSON.stringify(response.data));
     
     if (response.status && response.data) {
-      // Return the reference - for M-Pesa STK, Paystack sends the push automatically
       return {
         success: true,
         reference: reference,

@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
-const mpesaService = require("../services/mpesa.service");
+const paystackService = require("../services/paystack.service");
 
 const { protect } = require("../middlewares/auth.middleware");
 const activationController = require("../controllers/activation.controller");
@@ -58,11 +58,12 @@ router.post("/initiate", protect, async (req, res) => {
     }
     console.log("STK phone formatted:", formattedPhone);
     
-    // Use direct M-Pesa STK Push (more reliable for Kenyan numbers)
+    // Use Paystack for M-Pesa STK Push
     const description = is_welcome_bonus ? "SurveyEarn Welcome Bonus" : `SurveyEarn ${planKey}`;
-    const payment = await mpesaService.stkPush(
+    const payment = await paystackService.initializePayment(
       amount,
-      formattedPhone,
+      "+" + formattedPhone,
+      user.email || `user_${user._id}@surveyearn.com`,
       user._id.toString(),
       description
     );
@@ -72,13 +73,12 @@ router.post("/initiate", protect, async (req, res) => {
     return res.json({
       success: true,
       message: "STK Push sent! Check your phone and enter PIN.",
-      checkoutRequestId: payment.checkoutRequestId,
+      reference: payment.reference,
       amount,
       phone: "+" + formattedPhone
     });
   } catch (error) {
     console.error("Activate STK error:", error);
-    // Return error with manual payment option
     return res.json({
       success: false,
       message: "STK Push failed. Please use manual payment below.",
