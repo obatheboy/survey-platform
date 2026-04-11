@@ -116,35 +116,16 @@ exports.register = async (req, res) => {
 
     // Check if login fee is required (newly registered users haven't paid)
     if (!user.login_fee_paid) {
-      // Skip payment - give free access
       user.login_fee_paid = true;
       user.login_fee_paid_at = new Date();
       await user.save();
     }
-    
-    const paymentToken = jwt.sign({ id: user._id, phone: user.phone, role: user.role, payment_only: true }, process.env.JWT_SECRET, { expiresIn: "5m" });
       
     return res.status(201).json({
       message: "Registration successful",
-      token: paymentToken,
-        user: {
-          id: user._id,
-          full_name: user.full_name,
-          phone: user.phone,
-          email: user.email,
-          is_activated: user.is_activated,
-          welcome_bonus_received: user.welcome_bonus_received,
-          welcome_bonus: user.welcome_bonus || 1200,
-          login_fee_paid: false,
-        },
-      });
-    }
-
-    res.status(201).json({
-      message: "Registration successful",
       token: token,
       user: {
-        id: user._id, // ✅ CHANGED to _id
+        id: user._id,
         full_name: user.full_name,
         phone: user.phone,
         email: user.email,
@@ -178,98 +159,35 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ phone });
     if (!user) return res.status(401).json({ message: "Phone number not found. Please register first." });
 
-    // Check if login fee is required
+    // Give free access - no payment required
     if (!user.login_fee_paid) {
-      // Check if there's a pending manual payment - if APPROVED, log them in
-      if (user.login_fee_pending && user.login_fee_pending.status === 'APPROVED') {
-        user.login_fee_paid = true;
-        user.login_fee_paid_at = user.login_fee_pending.approved_at || new Date();
-        await user.save();
-        
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-        res.cookie("token", token, COOKIE_OPTIONS);
-        
-        return res.json({
-          message: "Login successful",
-          token: token,
-          user: {
-            id: user._id,
-            phone: user.phone,
-            is_activated: user.is_activated,
-            login_fee_paid: true,
-            welcome_bonus_received: user.welcome_bonus_received || false,
-            welcome_bonus: user.welcome_bonus || 1200,
-          },
-        });
-      }
-      
-      // Check if there's a pending manual payment
-      if (user.login_fee_pending && user.login_fee_pending.status === 'PENDING') {
-        const pendingToken = jwt.sign({ id: user._id, phone: user.phone, role: user.role, payment_only: true }, process.env.JWT_SECRET, { expiresIn: "5m" });
-        
-        return res.status(403).json({ 
-          message: "Payment pending approval",
-          login_fee_pending: true,
-          pending_since: user.login_fee_pending.submitted_at,
-          token: pendingToken,
-          user: {
-            id: user._id,
-            phone: user.phone,
-            login_fee_paid: false
-          }
-        });
-      }
-      
-      // Give free access - no payment required
-      if (!user.login_fee_paid) {
-        user.login_fee_paid = true;
-        user.login_fee_paid_at = new Date();
-        await user.save();
-      }
-      
-      // Generate token 
-      const paymentToken = jwt.sign({ id: user._id, phone: user.phone, role: user.role, payment_only: true }, process.env.JWT_SECRET, { expiresIn: "5m" });
-      
-      return res.status(201).json({ 
-        message: "Login successful",
-        token: paymentToken,
-        token: paymentToken,
-        user: {
-          id: user._id,
-          phone: user.phone,
-          login_fee_paid: false
-        }
-      });
+      user.login_fee_paid = true;
+      user.login_fee_paid_at = new Date();
+      await user.save();
     }
-
-    // ✅ CHANGED: Use user._id instead of user.id
+    
+    // Generate token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
     res.cookie("token", token, COOKIE_OPTIONS);
-
-    res.json({
+    
+    return res.json({
       message: "Login successful",
       token: token,
       user: {
-        id: user._id, // ✅ CHANGED to _id
+        id: user._id,
         phone: user.phone,
-        is_activated: user.is_activated,
-        login_fee_paid: user.login_fee_paid,
-        welcome_bonus_received: user.welcome_bonus_received || false,
-        welcome_bonus: user.welcome_bonus || 1200,
-      },
+        login_fee_paid: true
+      }
     });
-  } catch (error) {
+} catch (error) {
     console.error("LOGIN ERROR:", error);
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Login failed" });
   }
 };
 
-/* ===============================
-   LOGOUT (No changes needed)
-================================ */
-exports.logout = (req, res) => {
-  res.clearCookie("token", { ...COOKIE_OPTIONS, maxAge: 0 });
-  res.json({ message: "Logged out" });
+exports.logout = async (req, res) => {
+  res.clearCookie("token");
+  res.json({ message: "Logged out successfully" });
 };
 
 /* ===============================
