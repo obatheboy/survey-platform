@@ -929,7 +929,7 @@ export default function Activate() {
             <div style={styles.notificationBox}>
               {notification}
             </div>
-          </div>
+          )}
 
           <button
             onClick={() => navigate("/dashboard")}
