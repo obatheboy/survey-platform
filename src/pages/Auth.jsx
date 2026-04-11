@@ -382,7 +382,7 @@ export default function Auth() {
           style={styles.supportBtn}
           onClick={() => {
             const message = encodeURIComponent("Hello, I need help with creating my survey account.");
-            window.open(`https://wa.me/254752881670?text=${message}`, "_blank");
+            window.open(`https://wa.me/254785619533?text=${message}`, "_blank");
           }}
         >
           💬 Chat Support
@@ -428,12 +428,10 @@ const styles = {
   container: {
     width: "100%",
     maxWidth: "520px",
-    background: "linear-gradient(145deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85))",
-    borderRadius: "20px",
-    border: "1px solid rgba(255,255,255,0.3)",
-    backdropFilter: "blur(10px)",
+    background: "linear-gradient(145deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%)",
+    borderRadius: "24px",
     padding: "24px 22px",
-    boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+    boxShadow: "0 20px 60px rgba(139, 92, 246, 0.4)",
   },
   govBadge: {
     display: "flex",
@@ -471,15 +469,15 @@ const styles = {
   logo: {
     fontSize: "28px",
     fontWeight: "900",
-    color: "#1e293b",
+    color: "#ffffff",
     margin: 0,
   },
   logoAccent: {
-    color: "#667eea",
+    color: "#00d9ff",
   },
   tagline: {
     fontSize: "13px",
-    color: "#64748b",
+    color: "rgba(255,255,255,0.9)",
     marginTop: "2px",
   },
   statsRow: {
@@ -500,29 +498,29 @@ const styles = {
   },
   tabs: {
     display: "flex",
-    background: "#f1f5f9",
-    borderRadius: "12px",
+    background: "rgba(0,0,0,0.3)",
+    borderRadius: "14px",
     padding: "5px",
     marginBottom: "14px",
   },
   tab: {
     flex: 1,
-    padding: "8px 4px",
+    padding: "10px 4px",
     border: "none",
     background: "transparent",
-    borderRadius: "10px",
-    fontSize: "11px",
+    borderRadius: "12px",
+    fontSize: "12px",
     fontWeight: "700",
-    color: "#64748b",
+    color: "rgba(255,255,255,0.7)",
     cursor: "pointer",
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
   },
   tabActive: {
-    background: "#ffffff",
-    color: "#667eea",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+    background: "linear-gradient(135deg, #00d9ff, #a855f7)",
+    color: "#ffffff",
+    boxShadow: "0 0 15px rgba(168, 85, 247, 0.5)",
   },
   formSection: {
     marginBottom: "12px",
@@ -546,14 +544,22 @@ const styles = {
     width: "100%",
     padding: "14px 16px",
     borderRadius: "12px",
-    border: "2px solid #e2e8f0",
+    border: "2px solid rgba(255,255,255,0.3)",
+    background: "rgba(255,255,255,0.1)",
+    color: "#ffffff",
     fontSize: "15px",
     outline: "none",
     transition: "border-color 0.2s",
     boxSizing: "border-box",
+    "::placeholder": {
+      color: "rgba(255,255,255,0.5)",
+    },
+  },
+  inputPlaceholder: {
+    color: "rgba(255,255,255,0.5)",
   },
   error: {
-    color: "#ef4444",
+    color: "#ff6b6b",
     fontSize: "12px",
     marginTop: "-8px",
     marginBottom: "6px",
@@ -587,16 +593,16 @@ const styles = {
     textAlign: "center",
     fontSize: "13px",
     marginTop: "12px",
-    background: "#fef2f2",
-    color: "#dc2626",
+    background: "rgba(255,107,107,0.2)",
+    color: "#ff6b6b",
   },
   successMsg: {
-    background: "#f0fdf4",
-    color: "#16a34a",
+    background: "rgba(0,255,150,0.2)",
+    color: "#00ff96",
   },
   termsText: {
     fontSize: "10px",
-    color: "#94a3b8",
+    color: "rgba(255,255,255,0.7)",
     textAlign: "center",
     marginTop: "10px",
     lineHeight: "1.4",
