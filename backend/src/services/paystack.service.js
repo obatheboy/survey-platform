@@ -50,6 +50,9 @@ const makeRequest = (path, method, data = null) => {
     };
 
     console.log(`Paystack request: ${method} ${path}`);
+    if (data) {
+      console.log("Paystack request data:", JSON.stringify(data));
+    }
 
     const req = https.request(options, (res) => {
       let body = "";
@@ -74,7 +77,8 @@ const makeRequest = (path, method, data = null) => {
     req.on("error", reject);
 
     if (data) {
-      req.write(JSON.stringify(data));
+      const dataString = JSON.stringify(data);
+      req.write(dataString);
     }
 
     req.end();

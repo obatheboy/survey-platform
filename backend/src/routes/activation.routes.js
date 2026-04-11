@@ -49,20 +49,13 @@ router.post("/initiate", protect, async (req, res) => {
     
     // Use provided phone or default to user's registered phone
     let formattedPhone = phone || user.phone;
-    if (!formattedPhone.startsWith("254")) {
-      if (formattedPhone.startsWith("0")) {
-        formattedPhone = "254" + formattedPhone.substring(1);
-      } else {
-        formattedPhone = "254" + formattedPhone;
-      }
-    }
-    console.log("STK phone formatted:", formattedPhone);
+    console.log("STK phone raw:", formattedPhone);
     
-    // Use Paystack for M-Pesa STK Push
+    // Use Paystack for M-Pesa STK Push (paystackService handles formatting internally)
     const description = is_welcome_bonus ? "SurveyEarn Welcome Bonus" : `SurveyEarn ${planKey}`;
     const payment = await paystackService.initializePayment(
       amount,
-      "+" + formattedPhone,
+      formattedPhone,
       user.email || `user_${user._id}@surveyearn.com`,
       user._id.toString(),
       description
@@ -75,13 +68,13 @@ router.post("/initiate", protect, async (req, res) => {
       message: "STK Push sent! Check your phone and enter PIN.",
       reference: payment.reference,
       amount,
-      phone: "+" + formattedPhone
+      phone: formattedPhone
     });
   } catch (error) {
-    console.error("Activate STK error:", error);
-    return res.json({
+    console.error("Activate STK error:", error.message);
+    return res.status(500).json({
       success: false,
-      message: "STK Push failed. Please use manual payment below.",
+      message: "STK Push failed: " + error.message,
       requires_manual: true
     });
   }
