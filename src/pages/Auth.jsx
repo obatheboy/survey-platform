@@ -139,15 +139,6 @@ export default function Auth() {
       }
 
       // Direct to dashboard after registration
-      if (res.data.requires_payment) {
-        // Skip payment - go directly to dashboard
-      }
-          });
-        }, 1500);
-        return;
-      }
-
-      // Normal flow - no payment required
       setRegMessage("✓ Account created! Redirecting...");
       setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
     } catch (err) {
@@ -207,9 +198,6 @@ export default function Auth() {
       if (err.response?.status === 403 && (err.response?.data?.login_fee_pending || err.response?.data?.requires_payment)) {
         setLoginMessage("Logging in...");
         navigate("/dashboard", { replace: true });
-        return;
-      }
-        });
         return;
       }
       
