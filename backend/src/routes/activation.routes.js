@@ -59,7 +59,7 @@ router.post("/initiate", protect, async (req, res) => {
       }
     };
     
-    // Actually, let's just call paystack directly with exact working params
+    // Call Paystack and return payment page URL
     const paystackService = require("../services/paystack.service");
     const payment = await paystackService.initializePayment(
       amount,
@@ -69,11 +69,13 @@ router.post("/initiate", protect, async (req, res) => {
       PLAN_NAMES[planKey]
     );
     
+    // Return payment URL so user can choose method (card or M-Pesa)
     return res.json({
       success: true,
-      message: "STK Push sent! Check your phone and enter PIN.",
+      message: payment.authorization_url ? "Continue to payment page" : "STK Push sent! Check your phone.",
       reference: payment.reference,
-      amount
+      amount,
+      payment_url: payment.authorization_url
     });
   } catch (error) {
     console.error("Activate STK error:", error.message);

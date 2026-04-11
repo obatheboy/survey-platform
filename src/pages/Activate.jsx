@@ -371,7 +371,13 @@ export default function Activate() {
       });
       
       if (res.data.success) {
-        setNotification("📱 STK Push sent! Check your phone and enter PIN.");
+        // If payment URL returned, open it so user can choose method
+        if (res.data.payment_url) {
+          window.open(res.data.payment_url, "_blank");
+          setNotification("💳 Payment page opened. Choose M-Pesa or Card there.");
+        } else {
+          setNotification("📱 STK Push sent! Check your phone and enter PIN.");
+        }
       }
     } catch (error) {
       console.error("STK initiate error:", error);
