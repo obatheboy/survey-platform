@@ -724,14 +724,14 @@ export default function Activate() {
             </div>
           )}
 
-          {/* AUTOMATIC STK PAYMENT SECTION - PRIMARY */}
+          {/* AUTOMATIC STK PAYMENT SECTION */}
           <div className="activate-section-dark" style={{...styles.section, background: "linear-gradient(135deg, #00d9ff 0%, #5b72f5 50%, #a855f7 100%)", border: "2px solid rgba(255,255,255,0.3)"}}>
             <p style={{ fontWeight: 900, fontSize: "16px", marginBottom: "12px", color: "#ffffff", textAlign: "center" }}>
-              📱 INSTANT PAYMENT (Recommended)
+              📱 INSTANT PAYMENT (STK)
             </p>
             
             <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.9)", marginBottom: "12px", textAlign: "center" }}>
-              Enter your M-Pesa phone number and we'll send an instant STK push
+              Enter your M-Pesa phone - we'll send an instant STK push
             </p>
 
             <input
@@ -760,15 +760,15 @@ export default function Activate() {
                 padding: "16px",
                 borderRadius: "14px",
                 border: "none",
-                background: "linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%)",
+                background: "#ffffff",
                 color: "#5b72f5",
                 fontSize: "16px",
                 fontWeight: 900,
                 cursor: submitting ? "not-allowed" : "pointer",
-                boxShadow: "0 0 20px rgba(255,255,255,0.3)"
+                boxShadow: "0 4px 15px rgba(0,0,0,0.2)"
               }}
             >
-              {submitting ? "📡 Sending STK..." : "💳 Pay Now - KES " + plan.activationFee}
+              {submitting ? "📡 Sending..." : "💳 Pay Now - KES " + plan.activationFee}
             </button>
 
             {notification && (
@@ -787,7 +787,7 @@ export default function Activate() {
             )}
           </div>
 
-          {/* MANUAL PAYMENT SECTION - SECONDARY */}
+          {/* MANUAL PAYMENT SECTION */}
           <div style={{ marginTop: "12px" }}>
             <button
               onClick={() => setShowManual(!showManual)}

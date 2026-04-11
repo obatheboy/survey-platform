@@ -95,7 +95,7 @@ const initializePayment = async (amount, phone, email, userId, description) => {
     console.log("Attempting /transaction/initialize for STK push...");
     console.log("Phone being used:", formattedPhone);
     
-    // Include phone_number for STK push
+    // Use mobile_money channel for M-Pesa STK
     const response = await makeRequest("/transaction/initialize", "POST", {
       email: paymentEmail,
       amount: amount * 100,
@@ -105,12 +105,14 @@ const initializePayment = async (amount, phone, email, userId, description) => {
       metadata: {
         user_id: userId.toString(),
         phone: formattedPhone
-      }
+      },
+      channels: ["mobile_money"]
     });
     
     console.log("Paystack initialize response:", response);
     
     if (response.status && response.data) {
+      // Return the reference - the actual STK trigger comes from Paystack
       return {
         success: true,
         reference: reference,
