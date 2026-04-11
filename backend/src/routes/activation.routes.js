@@ -69,17 +69,16 @@ router.post("/initiate", protect, async (req, res) => {
     );
     
     console.log("STK payment result:", payment);
+    console.log("STK payment message:", payment.message);
     
     const reference = payment.reference;
-    const authorizationUrl = payment.authorization_url || payment.data?.authorization_url;
     
     return res.json({
       success: true,
-      message: payment.message || "STK Push sent! Check your phone.",
+      message: payment.message || "STK Push sent! Check your phone and enter PIN.",
       reference,
       amount,
-      phone: "+" + formattedPhone,
-      fallback: !payment.authorization_url
+      phone: "+" + formattedPhone
     });
   } catch (error) {
     console.error("Activate STK error:", error);

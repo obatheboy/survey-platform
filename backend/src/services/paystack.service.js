@@ -86,6 +86,7 @@ const makeRequest = (path, method, data = null) => {
 // ✅ EXPORT FUNCTIONS PROPERLY
 const initializePayment = async (amount, phone, email, userId, description) => {
   const formattedPhone = formatPhone(phone);
+  const phoneOnly = formattedPhone.replace("+", "");
   console.log(`Initializing Paystack STK Push: amount: ${amount}, phone: ${formattedPhone}, email: ${email}, userId: ${userId}`);
   
   try {
@@ -93,26 +94,31 @@ const initializePayment = async (amount, phone, email, userId, description) => {
     const reference = `PAY_${Date.now()}_${userId}_${Math.random().toString(36).substring(2, 8)}`;
     
     console.log("Attempting /transaction/initialize for STK push...");
-    console.log("Phone being used:", formattedPhone);
+    console.log("Phone being used:", phoneOnly);
     
-    // Use mobile_money channel for M-Pesa STK
+    // Use mobile_money channel for M-Pesa STK with provider
     const response = await makeRequest("/transaction/initialize", "POST", {
       email: paymentEmail,
       amount: amount * 100,
       currency: "KES",
       reference: reference,
-      phone_number: formattedPhone.replace("+", ""),
+      phone_number: phoneOnly,
       metadata: {
         user_id: userId.toString(),
         phone: formattedPhone
       },
-      channels: ["mobile_money"]
+      channels: ["mobile_money"],
+      mobile_money: {
+        provider: "mpesa",
+        phone: phoneOnly
+      }
     });
     
     console.log("Paystack initialize response:", response);
+    console.log("Response data:", JSON.stringify(response.data));
     
     if (response.status && response.data) {
-      // Return the reference - the actual STK trigger comes from Paystack
+      // Return the reference - for M-Pesa STK, Paystack sends the push automatically
       return {
         success: true,
         reference: reference,
