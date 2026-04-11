@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
+const paystackService = require("../services/paystack.service");
 
 const { protect } = require("../middlewares/auth.middleware");
-const { initiateLoginFeePayment, verifyLoginFeePayment } = require("../controllers/loginFee.controller");
+const activationController = require("../controllers/activation.controller");
 
 /**
  * =====================================

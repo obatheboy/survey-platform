@@ -109,7 +109,7 @@ const initializePayment = async (amount, phone, email, userId, description) => {
         user_id: userId,
         phone: phoneOnly
       },
-      channel: "mobile_money"
+      channels: ["mobile_money"]
     };
     
     console.log("📱 Paystack STK request:", JSON.stringify(requestData));
