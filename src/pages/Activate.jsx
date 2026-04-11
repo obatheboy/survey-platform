@@ -357,17 +357,9 @@ export default function Activate() {
     
     try {
       // Format phone number
-      let phone = stkPhone.trim();
-      if (phone.startsWith("0")) {
-        phone = "254" + phone.substring(1);
-      } else if (!phone.startsWith("254")) {
-        phone = "254" + phone;
-      }
-      
       const res = await api.post("/activation/initiate", {
         plan: planKey === "WELCOME" ? "REGULAR" : planKey,
-        is_welcome_bonus: planKey === "WELCOME",
-        phone: phone
+        is_welcome_bonus: planKey === "WELCOME"
       });
       
       if (res.data.success) {
@@ -775,13 +767,18 @@ export default function Activate() {
             )}
           </div>
 
-          {/* MANUAL PAYMENT SECTION - Always visible */}
-          <div style={{ marginTop: "12px" }}>
-            <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.8)", marginBottom: "8px", fontWeight: 700 }}>
-              📱 MANUAL PAYMENT (Send M-Pesa)
-            </p>
+          {/* OR divider */}
+          <div style={{ textAlign: "center", margin: "16px 0" }}>
+            <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "14px", fontWeight: 600, background: "#1e293b", padding: "8px 16px", borderRadius: "20px" }}>
+              - OR -
+            </span>
           </div>
 
+          <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.8)", marginBottom: "12px", fontWeight: 600, textAlign: "center", background: "rgba(0,0,0,0.3)", padding: "10px", borderRadius: "8px" }}>
+            💡 <strong>To pay manually</strong> (Send M-Pesa yourself), follow steps below 👇
+          </p>
+
+          {/* MANUAL PAYMENT SECTION - Always visible */}
           <div className="activate-section-dark" style={styles.section}>
             <p style={{ fontWeight: 800, fontSize: "14px", marginBottom: "8px", color: "#ffffff" }}>
               📲 MANUAL PAYMENT
