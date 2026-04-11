@@ -316,6 +316,7 @@ exports.submitManualPayment = async (req, res) => {
     await user.save();
 
     console.log(`📝 Manual login fee payment submitted by user ${user.phone}:`, mpesa_code.substring(0, 50));
+    console.log("Stored login_fee_pending:", JSON.stringify(user.login_fee_pending));
 
     res.status(200).json({
       success: true,

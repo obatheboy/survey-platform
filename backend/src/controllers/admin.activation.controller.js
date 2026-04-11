@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const TOTAL_SURVEYS = 10;
@@ -690,6 +691,9 @@ exports.getAllLoginFeePayments = async (req, res) => {
       rejection_reason: user.login_fee_pending?.rejection_reason,
       type: 'login_fee'
     }));
+
+    console.log("LoginFeePayments:", JSON.stringify(payments[0], "Total:", payments.length);
+    console.log("User login_fee_pending:", JSON.stringify(users[0]?.login_fee_pending));
 
     res.json({
       success: true,
