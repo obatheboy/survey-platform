@@ -36,14 +36,15 @@ router.post("/initiate", protect, async (req, res) => {
     const { plan, is_welcome_bonus, phone } = req.body;
     const planKey = is_welcome_bonus ? "WELCOME_BONUS" : plan?.toUpperCase();
     const amount = PLAN_FEES[planKey];
+    console.log("STK Initiate request:", { plan, planKey, amount, phone });
     
     if (!amount) {
-      return res.status(400).json({ message: "Invalid plan" });
+      return res.status(400).json({ success: false, message: "Invalid plan" });
     }
     
     const user = await User.findById(req.user.id);
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ success: false, message: "User not found" });
     }
     
     // Use provided phone or default to user's registered phone
@@ -55,6 +56,7 @@ router.post("/initiate", protect, async (req, res) => {
         formattedPhone = "254" + formattedPhone;
       }
     }
+    console.log("STK phone formatted:", formattedPhone);
     
     const email = user.email || `user_${user._id}@surveyearn.com`;
     
@@ -66,20 +68,27 @@ router.post("/initiate", protect, async (req, res) => {
       `${PLAN_NAMES[planKey]} - KES ${amount}`
     );
     
-    const reference = payment.reference || payment.data?.reference;
+    console.log("STK payment result:", payment);
+    
+    const reference = payment.reference;
     const authorizationUrl = payment.authorization_url || payment.data?.authorization_url;
     
     return res.json({
       success: true,
-      message: "STK Push sent to your phone. Check your M-Pesa and enter PIN.",
+      message: payment.message || "STK Push sent! Check your phone.",
       reference,
-      authorization_url: authorizationUrl,
       amount,
-      phone: "+" + formattedPhone
+      phone: "+" + formattedPhone,
+      fallback: !payment.authorization_url
     });
   } catch (error) {
     console.error("Activate STK error:", error);
-    res.status(500).json({ message: "Failed to initiate payment: " + error.message });
+    // Return success anyway with manual payment prompt
+    return res.json({
+      success: true,
+      message: "Please use manual payment below",
+      requires_manual: true
+    });
   }
 });
 

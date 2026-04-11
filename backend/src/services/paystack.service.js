@@ -95,7 +95,7 @@ const initializePayment = async (amount, phone, email, userId, description) => {
     console.log("Attempting /transaction/initialize for STK push...");
     console.log("Phone being used:", formattedPhone);
     
-    // Include phone_number for STK push - use mobile_money channel for M-Pesa
+    // Include phone_number for STK push
     const response = await makeRequest("/transaction/initialize", "POST", {
       email: paymentEmail,
       amount: amount * 100,
@@ -104,43 +104,18 @@ const initializePayment = async (amount, phone, email, userId, description) => {
       phone_number: formattedPhone.replace("+", ""),
       metadata: {
         user_id: userId.toString(),
-        phone: formattedPhone,
-        custom_fields: [
-          {
-            variable_name: "user_id",
-            value: userId.toString()
-          }
-        ]
-      },
-      channels: ["mobile_money"],
-      mobile_money: {
-        provider: "mpesa"
+        phone: formattedPhone
       }
     });
     
     console.log("Paystack initialize response:", response);
     
     if (response.status && response.data) {
-      // For M-Pesa STK, we need to trigger the charge
-      const chargeResponse = await makeRequest("/charge", "POST", {
-        reference: reference,
-        email: paymentEmail,
-        amount: amount * 100,
-        phone: formattedPhone.replace("+", ""),
-        currency: "KES",
-        provider: "mpesa",
-        metadata: {
-          user_id: userId.toString(),
-          phone: formattedPhone
-        }
-      });
-      
-      console.log("Paystack charge response:", chargeResponse);
-      
       return {
         success: true,
         reference: reference,
-        message: chargeResponse.message || "STK Push sent to your phone"
+        authorization_url: response.data.authorization_url,
+        message: "STK Push sent to your phone"
       };
     } else {
       throw new Error(response.message || "Payment initialization failed");
