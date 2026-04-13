@@ -15,7 +15,7 @@ const activationController = require("../controllers/activation.controller");
 
 const PLAN_FEES = {
   REGULAR: 100,
-  VIP: 150,
+  VIP: 200,
   VVIP: 300,
   WELCOME_BONUS: 100
 };
