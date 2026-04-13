@@ -44,14 +44,16 @@ export default function WithdrawSuccess() {
     }
   }, [withdrawal, navigate]);
 
+  const referralLink = `${window.location.origin}/auth?ref=${withdrawal.referral_code}`;
+  
   const shareToWhatsApp = () => {
-    const text = `Hey! I'm earning money on the Survey App. Join me and complete surveys to earn cash! 🎉\n\nDownload now: ${window.location.origin}\n\nUse my referral code: ${withdrawal.referral_code}`;
+    const text = `Hey! I'm earning money doing simple surveys on Survey App Kenya! 🎉\n\nJoin me using this link and get KES 1,200 welcome bonus:\n\n${referralLink}\n\nUse code: ${withdrawal.referral_code}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
     incrementShareCount();
   };
 
   const shareToSMS = () => {
-    const text = `Hi! Join me on Survey App and earn money. Code: ${withdrawal.referral_code} ${window.location.origin}`;
+    const text = `Hi! Join me on Survey App Kenya and earn money. Get KES 1,200 welcome bonus: ${referralLink} - Code: ${withdrawal.referral_code}`;
     const smsUrl = `sms:?body=${encodeURIComponent(text)}`;
     
     // Use window.open instead of modifying window.location.href
@@ -61,8 +63,7 @@ export default function WithdrawSuccess() {
   };
 
   const copyLink = () => {
-    const text = `Survey App Referral - Code: ${withdrawal.referral_code} - ${window.location.origin}`;
-    navigator.clipboard.writeText(text);
+    navigator.clipboard.writeText(referralLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 3000);
     incrementShareCount();
@@ -92,7 +93,8 @@ export default function WithdrawSuccess() {
         </div>
         <h1>Withdrawal Submitted!</h1>
         <p className="success-subtitle">
-          Your request is being processed. Share your referral link to speed up payment!
+          🎉 Your withdrawal is being processed! <br/>
+          👉 <strong>Invite 10+ friends</strong> to get paid faster!
         </p>
       </div>
 
@@ -137,11 +139,16 @@ export default function WithdrawSuccess() {
         {/* Referral Code */}
         <div className="referral-section">
           <div className="referral-header">
-            <h3>Your Referral Code</h3>
+            <h3>🎁 Invite Friends to Speed Up Payment</h3>
             <span className="shares-count">
-              Shares: <strong>{shareCount}/3</strong>
+              Invited: <strong>{shareCount}/10</strong>
             </span>
           </div>
+          
+          <p style={{ color: "#fff", fontSize: "14px", marginBottom: "12px", textAlign: "center" }}>
+            📢 <strong>Invite 10 or more friends</strong> to get your payment faster!
+          </p>
+          
           <div className="referral-code-display">
             <div className="referral-code">
               {withdrawal.referral_code}
@@ -151,31 +158,49 @@ export default function WithdrawSuccess() {
               onClick={copyLink}
               style={{ background: planData.gradient }}
             >
-              {copied ? "✓ Copied!" : "📋 Copy"}
+              {copied ? "✓ Copied!" : "📋 Copy Code"}
             </button>
           </div>
+          
+          <div className="referral-code-display" style={{ marginTop: "8px" }}>
+            <div className="referral-code" style={{ fontSize: "12px" }}>
+              {window.location.origin}/auth?ref={withdrawal.referral_code}
+            </div>
+            <button 
+              className="copy-code-btn"
+              onClick={() => {
+                navigator.clipboard.writeText(`${window.location.origin}/auth?ref=${withdrawal.referral_code}`);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 3000);
+              }}
+              style={{ background: planData.gradient }}
+            >
+              {copied ? "✓ Copied!" : "📋 Copy Link"}
+            </button>
+          </div>
+          
           <div className="progress-bar-container">
             <div 
               className="progress-bar-fill"
               style={{ 
-                width: `${Math.min((shareCount / 3) * 100, 100)}%`,
+                width: `${Math.min((shareCount / 10) * 100, 100)}%`,
                 background: planData.gradient
               }}
             ></div>
           </div>
           <p className="progress-text">
-            {shareCount >= 3 ? 
-              "✅ Target reached! Your payment is being prioritized." : 
-              `Share ${3 - shareCount} more time(s) to speed up processing.`}
+            {shareCount >= 10 ? 
+              "✅ Amazing! 10+ invited - your payment is being prioritized!" : 
+              `Invite ${10 - shareCount} more friend(s) to speed up your payment!`}
           </p>
         </div>
       </div>
 
       {/* Sharing Options */}
       <div className="sharing-section">
-        <h2>Share Your Referral Link</h2>
+        <h2>📨 Invite Friends Now</h2>
         <p className="sharing-subtitle">
-          Help others earn while speeding up your payment
+          Share your referral link - the more people who join, the faster you get paid!
         </p>
 
         <div className="share-buttons-grid">
