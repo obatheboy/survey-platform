@@ -75,6 +75,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("OVERVIEW");
   // Theme removed - light mode only
   const [menuOpen, setMenuOpen] = useState(false);
+  const surveysSectionRef = useRef(null);
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -428,17 +429,17 @@ export default function Dashboard() {
     return { status: "not-started", label: "Start Earning", icon: "🚀" };
   };
 
-  /* =========================
+/* =========================
      TAB + SCROLL
-  ========================= */
+   ========================= */
   const goToSurveys = () => {
     setActiveTab("SURVEYS");
     setTimeout(() => {
-      surveyRef.current?.scrollIntoView({ 
+      surveysSectionRef.current?.scrollIntoView({ 
         behavior: "smooth",
         block: "start"
       });
-    }, 50);
+    }, 100);
   };
 
   const goToWelcome = () => {
@@ -1171,7 +1172,7 @@ export default function Dashboard() {
   </div>
 </section>
       {/* SURVEY PLANS - Shown after Welcome Bonus (ONLY ONE INSTANCE) */}
-      <section className="dashboard-section" id="surveys-section">
+      <section className="dashboard-section" id="surveys-section" ref={surveysSectionRef}>
         <div className="section-heading">
           <h3>Survey Plan Available Today</h3>
           <p>Track your earnings across different plans</p>

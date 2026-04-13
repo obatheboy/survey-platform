@@ -106,7 +106,7 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
           icon="survey" 
           onClick={() => { 
             onClose(); 
-            navigate('/surveys'); 
+            if (goToSurveys) goToSurveys();
           }} 
         />
         <MenuItem label="Affiliate" icon="affiliate" onClick={() => onNavigate('/affiliate')} />
