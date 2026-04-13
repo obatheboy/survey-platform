@@ -434,13 +434,21 @@ export default function Dashboard() {
    ========================= */
   const goToSurveys = () => {
     setActiveTab("SURVEYS");
-    setTimeout(() => {
-      surveysSectionRef.current?.scrollIntoView({ 
-        behavior: "smooth",
-        block: "start"
-      });
-    }, 100);
   };
+  
+  // Scroll when tab changes to SURVEYS
+  useEffect(() => {
+    if (activeTab === "SURVEYS") {
+      setTimeout(() => {
+        const element = document.getElementById('surveys-section');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else if (surveysSectionRef.current) {
+          surveysSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  }, [activeTab]);
 
   const goToWelcome = () => {
     setActiveTab("OVERVIEW");

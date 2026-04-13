@@ -101,14 +101,33 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
         {/* NEW FEATURES */}
         <h4 style={withdrawTitle}>Quick Navigation</h4>
         <MenuItem label="Home" icon="home" onClick={() => { onClose(); }} />
-        <MenuItem 
-          label="Surveys" 
-          icon="survey" 
+        <button 
           onClick={() => { 
             onClose(); 
-            if (goToSurveys) goToSurveys();
+            if (goToSurveys) {
+              goToSurveys();
+            } else {
+              navigate('/dashboard#surveys-section');
+            }
           }} 
-        />
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            padding: "14px 12px",
+            background: "transparent",
+            border: "none",
+            borderRadius: "12px",
+            fontSize: "14px",
+            color: "#1e293b",
+            cursor: "pointer",
+            textAlign: "left"
+          }}
+        >
+          <span style={{ fontSize: "18px" }}>📋</span>
+          <span style={{ fontWeight: "600" }}>Surveys</span>
+        </button>
         <MenuItem label="Affiliate" icon="affiliate" onClick={() => onNavigate('/affiliate')} />
         <MenuItem label="Withdraw" icon="withdraw" onClick={() => onNavigate('/withdraw-form')} />
 
