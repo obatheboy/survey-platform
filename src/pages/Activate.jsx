@@ -235,12 +235,6 @@ export default function Activate() {
   const [user, setUser] = useState(null);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [showManual, setShowManual] = useState(true);
-  
-
-  /* =========================
-     LOAD USER + PLAN
-  ========================== */
-  useEffect(() => {
     let isMounted = true;
 
     const load = async () => {
@@ -715,74 +709,9 @@ export default function Activate() {
               ⚠️ <strong>Note:</strong> You have completed VVIP surveys. 
               Make sure you're activating the correct plan. Current: <strong style={{color: "#ffffff"}}>{plan.label}</strong>
             </div>
-          )}
+)}
 
-          {/* AUTOMATIC STK PAYMENT SECTION */}
-          <div className="activate-section-dark" style={{...styles.section, background: "linear-gradient(135deg, #00d9ff 0%, #5b72f5 50%, #a855f7 100%)", border: "2px solid rgba(255,255,255,0.3)"}}>
-            <p style={{ fontWeight: 900, fontSize: "18px", marginBottom: "12px", color: "#ffffff", textAlign: "center" }}>
-              📱 PAY NOW AUTOMATICALLY
-            </p>
-            
-            <div style={{ background: "rgba(0,0,0,0.3)", padding: "12px", borderRadius: "8px", marginBottom: "12px" }}>
-              <p style={{ fontSize: "13px", color: "#ffffff", fontWeight: 700, marginBottom: "8px" }}>📝 Follow these steps:</p>
-              <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.9)", marginBottom: "6px" }}><strong style={{color: "#4ade80"}}>Step 1:</strong> Tap "Pay Now" below</p>
-              <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.9)", marginBottom: "6px" }}><strong style={{color: "#4ade80"}}>Step 2:</strong> On payment page, choose <strong>M-Pesa</strong></p>
-              <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.9)", marginBottom: "6px" }}><strong style={{color: "#4ade80"}}>Step 3:</strong> Enter your M-Pesa phone (<strong style={{color: "#fbbf24"}}>07...</strong> format - not 01...)</p>
-              <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.9)" }}><strong style={{color: "#4ade80"}}>Step 4:</strong> Check phone for PIN request → Enter PIN to pay</p>
-            </div>
-
-            <button
-              onClick={initiateSTK}
-              disabled={submitting}
-              style={{
-                width: "100%",
-                padding: "20px",
-                borderRadius: "14px",
-                border: "none",
-                background: "#ffffff",
-                color: "#5b72f5",
-                fontSize: "16px",
-                fontWeight: 900,
-                cursor: submitting ? "not-allowed" : "pointer",
-                boxShadow: "0 4px 15px rgba(0,0,0,0.2)"
-              }}
-            >
-              {submitting ? "📡 Sending..." : "💳 Pay Now - KES " + plan.activationFee}
-            </button>
-
-            {notification && (
-              <p style={{ 
-                marginTop: "12px", 
-                padding: "10px", 
-                borderRadius: "8px", 
-                background: "rgba(0,0,0,0.3)", 
-                color: "#ffffff", 
-                fontSize: "13px",
-                fontWeight: 600,
-                textAlign: "center"
-              }}>
-                {notification}
-              </p>
-            )}
-          </div>
-
-          {/* OR divider */}
-          <div style={{ textAlign: "center", margin: "16px 0" }}>
-            <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "14px", fontWeight: 600, background: "#1e293b", padding: "8px 16px", borderRadius: "20px" }}>
-              - OR -
-            </span>
-          </div>
-
-          <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.8)", marginBottom: "12px", fontWeight: 600, textAlign: "center", background: "rgba(0,0,0,0.3)", padding: "10px", borderRadius: "8px" }}>
-            💡 <strong>To pay manually</strong> (Send M-Pesa yourself), follow steps below 👇
-          </p>
-
-          {/* MANUAL PAYMENT SECTION - Always visible */}
-          <div className="activate-section-dark" style={styles.section}>
-            <p style={{ fontWeight: 800, fontSize: "14px", marginBottom: "8px", color: "#ffffff" }}>
-              📲 MANUAL PAYMENT
-            </p>
-
+            {/* MANUAL PAYMENT SECTION */}
             <p style={{ ...styles.caption, color: "#e2e8f0" }}>
               ⚠ <strong style={{color: "#ffffff", fontWeight: 800}}>IMPORTANT:</strong> Use Send Money to <strong style={{color: "#fbbf24", fontSize: "14px"}}>{PHONE_NUMBER} - {BUSINESS_NAME}</strong>
             </p>
@@ -870,25 +799,7 @@ export default function Activate() {
             onChange={(e) => setPaymentText(e.target.value)}
             rows={3}
             style={styles.input}
-          />
-
-          <button
-            onClick={initiateSTK}
-            disabled={submitting}
-            style={{
-              ...styles.button,
-              background: "linear-gradient(135deg, #00d9ff, #5b72f5)",
-              fontWeight: 800,
-              fontSize: "14px",
-              marginBottom: "8px"
-            }}
-          >
-            📱 Pay Instantly with STK
-          </button>
-
-          <div style={{ textAlign: "center", margin: "8px 0", color: "rgba(255,255,255,0.6)", fontSize: "12px" }}>
-            OR paste manual message below
-          </div>
+/>
 
           <button
             onClick={submitActivation}
