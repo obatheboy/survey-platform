@@ -754,10 +754,36 @@ export default function Activate() {
                 border: "1px solid rgba(16, 185, 129, 0.5)"
               }}>
                 <span style={{...styles.stepNumber, background: "#10b981"}}>6</span>
-                <strong style={{ color: "#6ee7b7", fontWeight: 800 }}>Paste confirmation below</strong>
-                <span style={{ fontSize: "11px", display: "block", marginTop: "2px", color: "#a7f3d0", fontWeight: 600 }}>
+                <strong style={{ color: "#6ee7b7", fontWeight: 800 }}>Enter Details</strong>
+                <span style={{ fontSize: "11px", display: "block", marginTop: "4px", color: "#a7f3d0", fontWeight: 600 }}>
                   Get KES {plan.total} instantly!
                 </span>
+                
+                <div style={{ marginTop: "10px" }}>
+                  <div style={{ fontSize: "11px", color: "#f87171", fontWeight: 700, marginBottom: "6px" }}>
+                    📌 Paste M-Pesa SMS (Include Transaction ID, Amount & Time)
+                  </div>
+                  <textarea
+                    placeholder="Paste M-Pesa confirmation here..."
+                    value={paymentText}
+                    onChange={(e) => setPaymentText(e.target.value)}
+                    rows={2}
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      borderRadius: "8px",
+                      border: "2px solid #475569",
+                      background: "#1e293b",
+                      color: "#ffffff",
+                      fontSize: "12px",
+                      fontFamily: "inherit",
+                      resize: "vertical",
+                      minHeight: "60px",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
+                
                 <button 
                   onClick={copyPhoneNumber} 
                   style={{...styles.copyBtn, marginTop: "8px"}}
@@ -766,58 +792,6 @@ export default function Activate() {
                 </button>
                 {copied && <p style={{...styles.copiedNote, color: "#6ee7b7", fontWeight: 700, marginTop: "6px"}}>✅ Phone number copied</p>}
               </div>
-            </div>
-          </div>
-          )}
-
-          {/* COMBINED PHONE & INPUT SECTION */}
-          <div style={{ marginTop: "12px" }}>
-            <div style={{ 
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: "6px",
-              marginBottom: "8px"
-            }}>
-              <div>
-                <span style={{ fontSize: "14px", fontWeight: 800, color: "#ffffff" }}>📞 <strong>{PHONE_NUMBER}</strong></span>
-                <span style={{ fontSize: "12px", marginLeft: "8px", color: "#fbbf24", fontWeight: 700 }}>{BUSINESS_NAME}</span>
-              </div>
-            </div>
-
-            <div style={{ 
-              background: "#0f172a", 
-              border: "1px solid #334155", 
-              borderRadius: "12px", 
-              padding: "14px" 
-            }}>
-              <div style={{ fontSize: "13px", color: "#e2e8f0", fontWeight: 600, marginBottom: "8px" }}>
-                📌 Paste the <strong style={{color: "#ffffff", fontWeight: 800}}>FULL M-Pesa SMS</strong> below
-              </div>
-              <div style={{ fontSize: "11px", color: "#f87171", fontWeight: 700, marginBottom: "8px" }}>
-                ⚠ Include Transaction ID, Amount & Time
-              </div>
-
-              <textarea
-                placeholder="Paste M-Pesa confirmation here..."
-                value={paymentText}
-                onChange={(e) => setPaymentText(e.target.value)}
-                rows={3}
-                style={{
-                  width: "100%",
-                  padding: "12px",
-                  borderRadius: "10px",
-                  border: "2px solid #475569",
-                  background: "#1e293b",
-                  color: "#ffffff",
-                  fontSize: "13px",
-                  fontFamily: "inherit",
-                  resize: "vertical",
-                  minHeight: "80px",
-                  boxSizing: "border-box",
-                }}
-              />
             </div>
           </div>
 
