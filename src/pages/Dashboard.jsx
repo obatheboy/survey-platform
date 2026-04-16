@@ -297,36 +297,27 @@ export default function Dashboard() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [showScrollReminder]);
 
-  /* =========================
-     GAMIFICATION - CHECK WELCOME BONUS
-   ========================= */
+/* =========================
+      GAMIFICATION - CHECK WELCOME BONUS
+    ========================= */
   useEffect(() => {
-    const showWelcomeBonus = localStorage.getItem("showWelcomeBonus");
-    const bonusAmount = localStorage.getItem("welcomeBonusAmount");
+    if (!user) return;
     
-    if (showWelcomeBonus === "true") {
-      setWelcomeBonusAmount(bonusAmount ? parseInt(bonusAmount) : 1200);
+    const bonusAmount = user.welcome_bonus;
+    const dismissed = localStorage.getItem("welcomeBonusDismissed");
+    const alreadyShown = localStorage.getItem("welcomeBonusShown");
+    
+    if (bonusAmount && !dismissed && !alreadyShown) {
+      setWelcomeBonusAmount(bonusAmount);
       
       const showAfterDelay = setTimeout(() => {
         setShowWelcomeBonus(true);
-      }, 5000);
+        localStorage.setItem("welcomeBonusShown", "true");
+      }, 2000);
       
-      const showAgainAfter = setTimeout(() => {
-        const dismissed = localStorage.getItem("welcomeBonusDismissed");
-        if (!dismissed) {
-          setShowWelcomeBonus(true);
-        }
-      }, 15000);
-      
-      localStorage.removeItem("showWelcomeBonus");
-      localStorage.removeItem("welcomeBonusAmount");
-      
-      return () => {
-        clearTimeout(showAfterDelay);
-        clearTimeout(showAgainAfter);
-      };
+      return () => clearTimeout(showAfterDelay);
     }
-  }, []);
+  }, [user]);
 
   const handleWelcomeBonusClose = () => {
     setShowWelcomeBonus(false);
