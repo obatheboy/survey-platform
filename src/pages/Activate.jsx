@@ -235,6 +235,8 @@ export default function Activate() {
   const [user, setUser] = useState(null);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [showManual, setShowManual] = useState(true);
+  
+  useEffect(() => {
     let isMounted = true;
 
     const load = async () => {
@@ -919,7 +921,6 @@ export default function Activate() {
               })}
             </div>
           </div>
-        </div>
 
         {/* Trust Badges */}
         <div style={{ marginTop: "24px", width: "100%" }}>
@@ -931,16 +932,6 @@ export default function Activate() {
           <Testimonials variant="carousel" />
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-        @keyframes bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-8px); }
-        }
-      `}</style>
     </>
   );
 }
