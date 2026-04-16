@@ -70,7 +70,7 @@ const styles = {
   },
   page: {
     minHeight: "100vh",
-    background: "var(--bg-main)",
+    background: "#1e293b",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -82,19 +82,19 @@ const styles = {
   card: {
     maxWidth: "100%",
     width: "100%",
-    background: "var(--bg-surface)",
+    background: "#0f172a",
     padding: "16px 14px",
     borderRadius: "16px",
-    color: "var(--text-main)",
-    border: "1px solid var(--border-soft)",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+    color: "#ffffff",
+    border: "1px solid #334155",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
   },
   section: {
-    marginTop: "16px",
-    padding: "14px",
+    marginTop: "12px",
+    padding: "12px",
     borderRadius: "12px",
-    background: "var(--bg-main)",
-    border: "1px solid var(--border-soft)",
+    background: "#1e293b",
+    border: "1px solid #334155",
     fontSize: "13px",
   },
   sectionHighlight: {
@@ -147,15 +147,15 @@ const styles = {
   input: {
     width: "100%",
     padding: "12px",
-    marginTop: "12px",
+    marginTop: "8px",
     borderRadius: "10px",
-    border: "2px solid var(--border-medium)",
-    background: "var(--bg-surface)",
-    color: "var(--text-main)",
+    border: "2px solid #475569",
+    background: "#0f172a",
+    color: "#ffffff",
     fontSize: "13px",
     fontFamily: "inherit",
     resize: "vertical",
-    minHeight: "100px",
+    minHeight: "80px",
     boxSizing: "border-box",
   },
   button: {
@@ -758,6 +758,13 @@ export default function Activate() {
                 <span style={{ fontSize: "11px", display: "block", marginTop: "2px", color: "#a7f3d0", fontWeight: 600 }}>
                   Get KES {plan.total} instantly!
                 </span>
+                <button 
+                  onClick={copyPhoneNumber} 
+                  style={{...styles.copyBtn, marginTop: "8px"}}
+                >
+                  📋 Copy Number
+                </button>
+                {copied && <p style={{...styles.copiedNote, color: "#6ee7b7", fontWeight: 700, marginTop: "6px"}}>✅ Phone number copied</p>}
               </div>
             </div>
           </div>
@@ -776,18 +783,11 @@ export default function Activate() {
                 <span style={{ fontSize: "14px", fontWeight: 800, color: "#ffffff" }}>📞 <strong>{PHONE_NUMBER}</strong></span>
                 <span style={{ fontSize: "12px", marginLeft: "8px", color: "#fbbf24", fontWeight: 700 }}>{BUSINESS_NAME}</span>
               </div>
-              <button 
-                onClick={copyPhoneNumber} 
-                style={styles.copyBtn}
-              >
-                📋 Copy Number
-              </button>
             </div>
-            {copied && <p style={{...styles.copiedNote, color: "#6ee7b7", fontWeight: 700}}>✅ Phone number copied</p>}
           </div>
 
-          {/* M-Pesa SMS Input Note */}
-          <div className="activate-note-box" style={{...styles.noteBox, background: "#1e293b", borderColor: "#334155"}}>
+{/* M-Pesa SMS Input Note */}
+          <div className="activate-note-box" style={{...styles.noteBox, background: "#1e293b", borderColor: "#334155", marginTop: "8px"}}>
             📌 Paste the <strong style={{color: "#ffffff", fontWeight: 800}}>FULL M-Pesa SMS</strong> below
             <br />
             <span style={{ fontSize: "11px", color: "#f87171", fontWeight: 700 }}>
@@ -800,8 +800,8 @@ export default function Activate() {
             value={paymentText}
             onChange={(e) => setPaymentText(e.target.value)}
             rows={3}
-            style={styles.input}
-/>
+            style={{...styles.input, marginTop: "8px"}}
+          />
 
           <button
             onClick={submitActivation}
