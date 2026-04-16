@@ -25,7 +25,7 @@ export default function LandingBanner() {
           </div>
 
           <h1 style={styles.headline}>
-            Earn KES 500 - KES 5,000 Daily
+            Earn KES 1,200 - KES 6,500 Daily
           </h1>
 
           <p style={styles.subheadline}>
