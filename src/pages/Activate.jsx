@@ -770,38 +770,56 @@ export default function Activate() {
           </div>
           )}
 
-          {/* PHONE NUMBER SECTION - UPDATED */}
-          <div className="activate-section-dark" style={styles.section}>
+          {/* COMBINED PHONE & INPUT SECTION */}
+          <div style={{ marginTop: "12px" }}>
             <div style={{ 
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
               flexWrap: "wrap",
-              gap: "6px"
+              gap: "6px",
+              marginBottom: "8px"
             }}>
               <div>
                 <span style={{ fontSize: "14px", fontWeight: 800, color: "#ffffff" }}>📞 <strong>{PHONE_NUMBER}</strong></span>
                 <span style={{ fontSize: "12px", marginLeft: "8px", color: "#fbbf24", fontWeight: 700 }}>{BUSINESS_NAME}</span>
               </div>
             </div>
-          </div>
 
-{/* M-Pesa SMS Input Note */}
-          <div className="activate-note-box" style={{...styles.noteBox, background: "#1e293b", borderColor: "#334155", marginTop: "8px"}}>
-            📌 Paste the <strong style={{color: "#ffffff", fontWeight: 800}}>FULL M-Pesa SMS</strong> below
-            <br />
-            <span style={{ fontSize: "11px", color: "#f87171", fontWeight: 700 }}>
-              ⚠ Include Transaction ID, Amount & Time
-            </span>
-          </div>
+            <div style={{ 
+              background: "#0f172a", 
+              border: "1px solid #334155", 
+              borderRadius: "12px", 
+              padding: "14px" 
+            }}>
+              <div style={{ fontSize: "13px", color: "#e2e8f0", fontWeight: 600, marginBottom: "8px" }}>
+                📌 Paste the <strong style={{color: "#ffffff", fontWeight: 800}}>FULL M-Pesa SMS</strong> below
+              </div>
+              <div style={{ fontSize: "11px", color: "#f87171", fontWeight: 700, marginBottom: "8px" }}>
+                ⚠ Include Transaction ID, Amount & Time
+              </div>
 
-          <textarea
-            placeholder="Paste M-Pesa confirmation here..."
-            value={paymentText}
-            onChange={(e) => setPaymentText(e.target.value)}
-            rows={3}
-            style={{...styles.input, marginTop: "8px"}}
-          />
+              <textarea
+                placeholder="Paste M-Pesa confirmation here..."
+                value={paymentText}
+                onChange={(e) => setPaymentText(e.target.value)}
+                rows={3}
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  borderRadius: "10px",
+                  border: "2px solid #475569",
+                  background: "#1e293b",
+                  color: "#ffffff",
+                  fontSize: "13px",
+                  fontFamily: "inherit",
+                  resize: "vertical",
+                  minHeight: "80px",
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
+          </div>
 
           <button
             onClick={submitActivation}
