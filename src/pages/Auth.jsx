@@ -131,6 +131,7 @@ export default function Auth() {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("lastLoginTime", Date.now().toString());
         localStorage.removeItem("active_plan");
+        localStorage.setItem("showWelcomeBonusOnDashboard", "true");
       }
 
       // Direct to dashboard after registration
@@ -172,6 +173,7 @@ export default function Auth() {
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("lastLoginTime", Date.now().toString());
+        localStorage.setItem("showWelcomeBonusOnDashboard", "true");
       }
 
       navigate("/dashboard", { replace: true });

@@ -305,14 +305,16 @@ export default function Dashboard() {
     
     const bonusAmount = user.welcome_bonus;
     const isActivated = user.is_activated || user.account_activated;
+    const showOnLogin = localStorage.getItem("showWelcomeBonusOnDashboard");
     const dismissed = localStorage.getItem("welcomeBonusDismissed");
     
-    if (bonusAmount && !isActivated && !dismissed) {
+    if (bonusAmount && !isActivated && showOnLogin && !dismissed) {
       setWelcomeBonusAmount(bonusAmount);
       
       const showAfterDelay = setTimeout(() => {
         setShowWelcomeBonus(true);
-      }, 2000);
+        localStorage.removeItem("showWelcomeBonusOnDashboard");
+      }, 1500);
       
       return () => clearTimeout(showAfterDelay);
     }
