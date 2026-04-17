@@ -1,11 +1,10 @@
 const https = require("https");
 
 const PAYNECTA_CONFIG = {
-  paymentCode: "PNT_492664",
   apiKey: "hmp_vY2jhkhBWNuCryXY1dd5VnO5rsL63vKDAAKOnBE1",
   userEmail: "obavanteshia65@gmail.com",
-  tillNumber: "7282886",
-  baseUrl: "https://paynecta.co.ke/api/v1"
+  paymentLink: "survey-app",
+  baseUrl: "https://paynecta.co.ke"
 };
 
 const formatPhone = (phone) => {
@@ -24,18 +23,18 @@ const formatPhone = (phone) => {
   return cleaned;
 };
 
-const makeRequest = (endpoint, method, data = null) => {
+const makeRequest = (path, method, data = null) => {
   return new Promise((resolve, reject) => {
-    const url = new URL(`${PAYNECTA_CONFIG.baseUrl}${endpoint}`);
+    const url = new URL(`${PAYNECTA_CONFIG.baseUrl}${path}`);
     
     const options = {
       hostname: url.hostname,
-      path: url.pathname,
+      path: url.pathname + url.search,
       method: method,
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${PAYNECTA_CONFIG.apiKey}`,
-        "Payment-Code": PAYNECTA_CONFIG.paymentCode
+        "User-Email": PAYNECTA_CONFIG.userEmail
       }
     };
 
@@ -44,20 +43,30 @@ const makeRequest = (endpoint, method, data = null) => {
       options.headers["Content-Length"] = Buffer.byteLength(postData);
     }
 
+    console.log(`Paynecta Request: ${method} ${url.href}`);
+    console.log("Paynecta Headers:", JSON.stringify(options.headers));
+    if (data) console.log("Paynecta Data:", JSON.stringify(data));
+
     const req = https.request(options, (res) => {
       let body = "";
       res.on("data", chunk => body += chunk);
       res.on("end", () => {
+        console.log(`Paynecta Response Status: ${res.statusCode}`);
+        console.log(`Paynecta Response Body: ${body}`);
+        
         try {
           const json = JSON.parse(body);
           resolve(json);
         } catch (e) {
-          resolve({ success: true, message: body });
+          resolve({ success: true, raw: body });
         }
       });
     });
 
-    req.on("error", reject);
+    req.on("error", (err) => {
+      console.error("Paynecta Request Error:", err.message);
+      reject(err);
+    });
     
     if (postData) {
       req.write(postData);
@@ -66,41 +75,42 @@ const makeRequest = (endpoint, method, data = null) => {
   });
 };
 
+// Initialize STK Push Payment
 const initiateSTKPush = async (amount, phoneNumber, email, userId, description) => {
   try {
     const formattedPhone = formatPhone(phoneNumber);
     
     const requestData = {
-      amount: amount,
+      amount: parseInt(amount),
       phone: formattedPhone,
       email: email || PAYNECTA_CONFIG.userEmail,
-      user_id: userId,
       description: description || "SurveyEarn Activation Payment",
-      callback_url: `${process.env.SERVER_URL || 'https://yourdomain.com'}/api/payment/webhook`
+      metadata: {
+        user_id: userId,
+        type: "activation"
+      }
     };
 
-    console.log("Paynecta STK Push request:", JSON.stringify(requestData, null, 2));
-
-    const response = await makeRequest("/mpesa/stk-push", "POST", requestData);
+    const response = await makeRequest("/wp-json/paynecta/v1/stk-push", "POST", requestData);
     
-    console.log("Paynecta response:", JSON.stringify(response, null, 2));
+    console.log("Paynecta STK Response:", JSON.stringify(response, null, 2));
     
-    if (response.success || response.ResponseCode === "0") {
+    if (response.success || response.status === "success" || response.CheckoutRequestID) {
       return {
         success: true,
-        message: "STK Push sent successfully! Check your phone.",
+        message: "STK Push sent! Check your phone and enter PIN.",
         checkout_request_id: response.CheckoutRequestID || response.checkout_request_id,
-        reference: response.CheckoutRequestID || `PNT_${Date.now()}`
+        reference: response.MerchantRequestID || `PNT_${Date.now()}`
       };
     } else {
       return {
         success: false,
-        message: response.message || "STK Push failed",
-        error: response
+        message: response.message || response.error || "STK Push failed",
+        details: response
       };
     }
   } catch (error) {
-    console.error("Paynecta STK error:", error.message);
+    console.error("Paynecta STK Error:", error.message);
     return {
       success: false,
       message: error.message,
@@ -109,13 +119,14 @@ const initiateSTKPush = async (amount, phoneNumber, email, userId, description) 
   }
 };
 
+// Verify Payment Status
 const verifyPayment = async (checkoutRequestId) => {
   try {
-    const response = await makeRequest("/mpesa/status", "POST", {
-      checkout_request_id: checkoutRequestId
-    });
+    const response = await makeRequest(`/wp-json/paynecta/v1/status?checkout_request_id=${checkoutRequestId}`, "GET");
+    
+    console.log("Paynecta Verify Response:", JSON.stringify(response, null, 2));
 
-    if (response.success && response.ResultCode === "0") {
+    if (response.success || response.ResultCode === "0") {
       return {
         success: true,
         verified: true,
@@ -129,11 +140,11 @@ const verifyPayment = async (checkoutRequestId) => {
     return {
       success: true,
       verified: false,
-      status: response.ResultCode,
-      message: response.ResultDesc
+      status: response.ResultCode || response.status,
+      message: response.ResultDesc || response.message
     };
   } catch (error) {
-    console.error("Paynecta verify error:", error.message);
+    console.error("Paynecta Verify Error:", error.message);
     return {
       success: false,
       message: error.message
@@ -141,20 +152,14 @@ const verifyPayment = async (checkoutRequestId) => {
   }
 };
 
-const queryTransaction = async (checkoutRequestId) => {
-  try {
-    return await verifyPayment(checkoutRequestId);
-  } catch (error) {
-    return {
-      success: false,
-      message: error.message
-    };
-  }
+// Query Transaction
+const queryPayment = async (checkoutRequestId) => {
+  return await verifyPayment(checkoutRequestId);
 };
 
 module.exports = {
   initiateSTKPush,
   verifyPayment,
-  queryPayment: queryTransaction,
+  queryPayment,
   formatPhone
 };
