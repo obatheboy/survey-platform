@@ -235,6 +235,9 @@ export default function Activate() {
   const [user, setUser] = useState(null);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [showManual, setShowManual] = useState(true);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [checkoutRequestId, setCheckoutRequestId] = useState(null);
+  const [verifying, setVerifying] = useState(false);
   
   useEffect(() => {
     let isMounted = true;
@@ -340,33 +343,66 @@ export default function Activate() {
   };
 
 /* =========================
-     INITIATE STK PAYMENT
-   ========================== */
+      INITIATE STK PAYMENT (PAYNECTA)
+    ========================== */
   const initiateSTK = async () => {
+    if (!phoneNumber.trim()) {
+      setNotification("❌ Please enter your M-Pesa phone number");
+      return;
+    }
+
     setSubmitting(true);
     setNotification(null);
     
     try {
-      // Format phone number
       const res = await api.post("/activation/initiate", {
         plan: planKey === "WELCOME" ? "REGULAR" : planKey,
-        is_welcome_bonus: planKey === "WELCOME"
+        is_welcome_bonus: planKey === "WELCOME",
+        phone: phoneNumber.trim()
       });
       
       if (res.data.success) {
-        // If payment URL returned, open it so user can choose method
-        if (res.data.payment_url) {
-          window.open(res.data.payment_url, "_blank");
-          setNotification("💳 Payment page opened! Step 1: Choose 'M-Pesa' → Step 2: Enter your M-Pesa phone → Step 3: Confirm on phone");
-        } else {
-          setNotification("📱 STK Push sent! Check your phone and enter PIN.");
-        }
+        setCheckoutRequestId(res.data.checkout_request_id);
+        setNotification("📱 STK Push sent to " + phoneNumber + "! Check your phone and enter PIN.");
+        
+        // Start polling for payment verification
+        pollPaymentStatus();
+      } else {
+        setNotification("❌ " + (res.data.message || "Failed to send STK. Try manual option below."));
       }
     } catch (error) {
       console.error("STK initiate error:", error);
       setNotification("❌ Failed to send STK. Try manual option below.");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  /* =========================
+      POLL PAYMENT STATUS
+    ========================== */
+  const pollPaymentStatus = async () => {
+    if (!checkoutRequestId) return;
+    
+    setVerifying(true);
+    try {
+      const res = await api.post("/activation/verify-stk", {
+        checkout_request_id: checkoutRequestId,
+        plan: planKey === "WELCOME" ? "REGULAR" : planKey,
+        is_welcome_bonus: planKey === "WELCOME"
+      });
+      
+      if (res.data.success && res.data.activated) {
+        setShowSuccessPopup(true);
+        setNotification(null);
+      } else if (res.data.status === "pending") {
+        // Continue polling
+        setTimeout(pollPaymentStatus, 3000);
+      }
+    } catch (error) {
+      console.error("Payment verification error:", error);
+    } finally {
+      setVerifying(false);
     }
   };
 
@@ -697,7 +733,7 @@ export default function Activate() {
             </div>
           </div>
 
-          {showPlanWarning && (
+{showPlanWarning && (
             <div style={{
               marginTop: "12px",
               padding: "10px",
@@ -711,7 +747,91 @@ export default function Activate() {
               ⚠️ <strong>Note:</strong> You have completed VVIP surveys. 
               Make sure you're activating the correct plan. Current: <strong style={{color: "#ffffff"}}>{plan.label}</strong>
             </div>
-)}
+          )}
+
+            {/* STK PUSH PAYMENT SECTION */}
+            <div style={{ 
+              background: "linear-gradient(135deg, #00d9ff 0%, #5b72f5 50%, #a855f7 100%)", 
+              border: "2px solid rgba(255,255,255,0.3)",
+              borderRadius: "12px", 
+              padding: "14px",
+              marginBottom: "16px"
+            }}>
+              <p style={{ fontWeight: 800, fontSize: "14px", color: "#ffffff", marginBottom: "12px", textAlign: "center" }}>
+                📱 PAY WITH M-PESA STK PUSH
+              </p>
+              
+              <input
+                type="tel"
+                placeholder="Enter M-Pesa phone (e.g. 07xx...)"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  borderRadius: "8px",
+                  border: "2px solid #ffffff",
+                  background: "#ffffff",
+                  color: "#1e293b",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  marginBottom: "10px",
+                  boxSizing: "border-box"
+                }}
+              />
+
+              <button
+                onClick={initiateSTK}
+                disabled={submitting || !phoneNumber.trim()}
+                style={{
+                  width: "100%",
+                  padding: "14px",
+                  borderRadius: "10px",
+                  border: "none",
+                  background: "#ffffff",
+                  color: "#5b72f5",
+                  fontSize: "14px",
+                  fontWeight: 800,
+                  cursor: submitting || !phoneNumber.trim() ? "not-allowed" : "pointer"
+                }}
+              >
+                {submitting ? "📡 Sending..." : "💳 Send STK Push - KES " + plan.activationFee}
+              </button>
+
+              {notification && (
+                <p style={{ 
+                  marginTop: "10px", 
+                  padding: "8px", 
+                  borderRadius: "6px", 
+                  background: "rgba(0,0,0,0.3)", 
+                  color: "#ffffff", 
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  textAlign: "center"
+                }}>
+                  {notification}
+                </p>
+              )}
+              
+              {verifying && (
+                <p style={{ 
+                  marginTop: "8px", 
+                  color: "#fbbf24", 
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  textAlign: "center"
+                }}>
+                  ⏳ Waiting for payment... (check your phone)
+                </p>
+              )}
+            </div>
+
+            {/* Divider */}
+            <div style={{ textAlign: "center", margin: "12px 0" }}>
+              <span style={{ color: "rgba(255,255,255,0.5)", fontSize: "12px", fontWeight: 600, background: "#1e293b", padding: "6px 12px", borderRadius: "20px" }}>
+                - OR PAY MANUAL -
+              </span>
+            </div>
 
             {/* MANUAL PAYMENT SECTION */}
             <p style={{ ...styles.caption, color: "#e2e8f0" }}>

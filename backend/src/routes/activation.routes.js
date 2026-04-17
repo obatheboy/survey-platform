@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
-const paystackService = require("../services/paystack.service");
+const paynectaService = require("../services/paynecta.service");
 
 const { protect } = require("../middlewares/auth.middleware");
 const activationController = require("../controllers/activation.controller");
@@ -29,11 +29,11 @@ const PLAN_NAMES = {
 
 /**
  * POST /api/activation/initiate
- * Bridge to loginFee payment (uses exact working code)
+ * Initiate M-Pesa STK Push via Paynecta
  */
 router.post("/initiate", protect, async (req, res) => {
   try {
-    const { plan, is_welcome_bonus } = req.body;
+    const { plan, is_welcome_bonus, phone } = req.body;
     const planKey = is_welcome_bonus ? "WELCOME_BONUS" : plan?.toUpperCase();
     const amount = PLAN_FEES[planKey];
     
@@ -45,38 +45,35 @@ router.post("/initiate", protect, async (req, res) => {
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
-    
-    // Override amount in body to use plan amount
-    req.body.amount = amount;
-    
-    // Use the EXACT working loginFee controller
-    // Create a mock request that loginFee expects
-    const mockReq = {
-      ...req,
-      body: {
-        ...req.body,
-        amount: amount
-      }
-    };
-    
-    // Call Paystack and return payment page URL
-    const paystackService = require("../services/paystack.service");
-    const payment = await paystackService.initializePayment(
+
+    const phoneNumber = phone || user.phone;
+    const userEmail = user.email || "user@surveyearn.co.ke";
+
+    console.log(`Initiating Paynecta STK: amount=${amount}, phone=${phoneNumber}, email=${userEmail}`);
+
+    const payment = await paynectaService.initiateSTKPush(
       amount,
-      user.phone,
-      user.email,
+      phoneNumber,
+      userEmail,
       user._id.toString(),
       PLAN_NAMES[planKey]
     );
-    
-    // Return payment URL so user can choose method (card or M-Pesa)
-    return res.json({
-      success: true,
-      message: payment.authorization_url ? "Continue to payment page" : "STK Push sent! Check your phone.",
-      reference: payment.reference,
-      amount,
-      payment_url: payment.authorization_url
-    });
+
+    if (payment.success) {
+      return res.json({
+        success: true,
+        message: payment.message,
+        reference: payment.reference,
+        checkout_request_id: payment.checkout_request_id,
+        amount
+      });
+    } else {
+      return res.json({
+        success: false,
+        message: payment.message || "STK failed. Use manual payment below.",
+        requires_manual: true
+      });
+    }
   } catch (error) {
     console.error("Activate STK error:", error.message);
     return res.json({
@@ -93,6 +90,103 @@ router.post("/initiate", protect, async (req, res) => {
  * Protected: Regular user JWT token
  */
 router.post("/submit", protect, activationController.submitActivationPayment);
+
+/**
+ * POST /api/activation/verify-stk
+ * Verify Paynecta STK payment status
+ * Protected: Regular user JWT token
+ */
+router.post("/verify-stk", protect, async (req, res) => {
+  try {
+    const { checkout_request_id, plan, is_welcome_bonus } = req.body;
+    const user = await User.findById(req.user.id);
+    
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    if (!checkout_request_id) {
+      return res.status(400).json({ success: false, message: "Missing checkout_request_id" });
+    }
+
+    const result = await paynectaService.verifyPayment(checkout_request_id);
+
+    if (result.success && result.verified) {
+      const planKey = is_welcome_bonus ? "REGULAR" : plan?.toUpperCase() || "REGULAR";
+      const amount = PLAN_FEES[planKey];
+
+      // Activate the plan
+      if (!user.plans) user.plans = {};
+      if (!user.plans[planKey]) user.plans[planKey] = {};
+      
+      user.plans[planKey].is_activated = true;
+      user.plans[planKey].activated_at = new Date();
+      user.is_activated = true;
+      user.account_activated = true;
+
+      // Create activation record
+      if (!user.activation_requests) user.activation_requests = [];
+      user.activation_requests.push({
+        plan: planKey,
+        amount: amount,
+        reference: result.receipt,
+        status: "APPROVED",
+        mpesa_receipt: result.receipt,
+        created_at: new Date(),
+        processed_at: new Date()
+      });
+
+      await user.save();
+
+      return res.json({
+        success: true,
+        message: "Payment verified! Account activated.",
+        activated: true,
+        receipt: result.receipt
+      });
+    }
+
+    return res.json({
+      success: false,
+      message: result.message || "Payment not yet completed",
+      status: "pending"
+    });
+  } catch (error) {
+    console.error("Verify STK error:", error.message);
+    res.status(500).json({ success: false, message: "Verification failed" });
+  }
+});
+
+/**
+ * POST /api/activation/webhook
+ * Paynecta webhook for payment confirmation
+ */
+router.post("/webhook", async (req, res) => {
+  try {
+    const payload = req.body;
+    console.log("Paynecta webhook received:", JSON.stringify(payload));
+
+    const checkoutRequestId = payload.CheckoutRequestID || payload.checkout_request_id;
+    const resultCode = payload.ResultCode;
+    const resultDesc = payload.ResultDesc;
+
+    if (resultCode === "0") {
+      const amount = payload.Amount;
+      const phone = payload.PhoneNumber;
+      const mpesaReceipt = payload.MpesaReceiptNumber;
+
+      console.log(`✅ Paynecta Payment Success: ${checkoutRequestId}, Amount: ${amount}, Phone: ${phone}`);
+
+      // Find user by checkout request (store in pending request)
+      // This would need additional logic to match user
+    }
+
+    res.status(200).json({ received: true });
+  } catch (error) {
+    console.error("Webhook error:", error);
+    res.status(500).json({ error: "Webhook processing failed" });
+  }
+});
 
 /**
  * GET /api/activation/status
