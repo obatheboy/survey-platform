@@ -10,16 +10,17 @@ const PAYNECTA_CONFIG = {
 const formatPhone = (phone) => {
   let cleaned = phone.replace(/[^0-9]/g, '');
   
+  // Paynecta expects format: 7xxxxxxxx (without 254, without 0)
   if (cleaned.startsWith('0') && cleaned.length > 1) {
-    cleaned = '254' + cleaned.substring(1);
+    cleaned = cleaned.substring(1); // 0740834185 -> 740834185
   }
-  else if (cleaned.startsWith('7') || cleaned.startsWith('1')) {
-    cleaned = '254' + cleaned;
+  else if (cleaned.startsWith('254')) {
+    cleaned = cleaned.substring(3); // 254740834185 -> 740834185
   }
-  else if (!cleaned.startsWith('254')) {
-    cleaned = '254' + cleaned;
-  }
+  // Remove any remaining non-digit characters
+  cleaned = cleaned.replace(/\D/g, '');
   
+  console.log(`Phone formatted: ${phone} -> ${cleaned}`);
   return cleaned;
 };
 

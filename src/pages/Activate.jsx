@@ -351,6 +351,12 @@ export default function Activate() {
       return;
     }
 
+    // Clean phone number - remove any non-digits
+    const cleanPhone = phoneNumber.replace(/\D/g, '');
+    
+    // Format for Paynecta (remove leading 0 if present)
+    const formattedPhone = cleanPhone.startsWith('0') ? cleanPhone.substring(1) : cleanPhone;
+
     setSubmitting(true);
     setNotification(null);
     
@@ -358,7 +364,7 @@ export default function Activate() {
       const res = await api.post("/activation/initiate", {
         plan: planKey === "WELCOME" ? "REGULAR" : planKey,
         is_welcome_bonus: planKey === "WELCOME",
-        phone: phoneNumber.trim()
+        phone: formattedPhone
       });
       
       if (res.data.success) {
