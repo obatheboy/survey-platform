@@ -761,6 +761,15 @@ export default function Activate() {
                 Instant activation - Secure M-Pesa payment
               </p>
 
+              <div style={{ marginTop: "12px", padding: "8px", background: "rgba(255,255,255,0.15)", borderRadius: "8px" }}>
+                <p style={{ color: "#ffffff", fontSize: "11px", margin: "0 0 4px 0", textAlign: "center", fontWeight: 600 }}>
+                  📝 Usiweke 0 kwa hiyo number yako | Don't add 0 at the start
+                </p>
+                <p style={{ color: "#d1fae5", fontSize: "10px", margin: 0, textAlign: "center" }}>
+                  Mfano: 794101464, 140834185 | Example: 794101464, 140834185
+                </p>
+              </div>
+
               {notification && (
                 <p style={{ 
                   marginTop: "10px", 
