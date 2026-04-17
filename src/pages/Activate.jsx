@@ -735,9 +735,25 @@ export default function Activate() {
               boxShadow: "0 8px 25px rgba(249, 115, 22, 0.4)"
             }}>
               <p style={{ fontWeight: 900, fontSize: "16px", color: "#ffffff", marginBottom: "16px", textAlign: "center" }}>
-                PAY AUTOMATICALLY & ACTIVATE IMMEDIATELY
+Pay Automatic Now and Activate Your Account
               </p>
-               
+
+              <p style={{ color: "#ffffff", fontSize: "12px", marginBottom: "10px", fontWeight: 700 }}>
+                Step-by-step instructions:
+              </p>
+              
+              <div style={{ marginBottom: "14px", padding: "10px", background: "rgba(255,255,255,0.1)", borderRadius: "8px" }}>
+                <p style={{ color: "#fed7aa", fontSize: "11px", margin: "4px 0" }}>
+                  Step 1: Tap the button below "Pay KES {plan.activationFee} Now"
+                </p>
+                <p style={{ color: "#fed7aa", fontSize: "11px", margin: "4px 0" }}>
+                  Step 2: Enter your number without 0 in front (e.g., 740209988 or 140834185)
+                </p>
+                <p style={{ color: "#fed7aa", fontSize: "11px", margin: "4px 0" }}>
+                  Step 3: Wait for STK push and enter your PIN to complete payment
+                </p>
+              </div>
+                
               <button
                 onClick={initiateSTK}
                 style={{
