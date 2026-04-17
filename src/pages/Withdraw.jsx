@@ -187,7 +187,13 @@ export default function Withdraw() {
                 type="tel"
                 placeholder="07XXXXXXXX"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => {
+                  let value = e.target.value.replace(/\D/g, '');
+                  if (value.startsWith('0')) {
+                    value = value.substring(1);
+                  }
+                  setPhone(value);
+                }}
                 style={styles.input}
               />
             </div>
