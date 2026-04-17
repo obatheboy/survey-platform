@@ -331,26 +331,14 @@ export default function Activate() {
       INITIATE STK PAYMENT (PAYNECTA)
     ========================== */
   const initiateSTK = async () => {
-    if (!phoneNumber.trim()) {
-      setNotification("❌ Please enter your M-Pesa phone number");
-      return;
-    }
-
     // Get the activation fee for current plan
     const activationFee = plan.activationFee || 100;
     
-    // Format phone - remove any non-digits and leading 0
-    let formattedPhone = phoneNumber.replace(/\D/g, '');
-    if (formattedPhone.startsWith('0')) {
-      formattedPhone = formattedPhone.substring(1);
-    }
+    // Open Paynecta payment page with amount pre-filled
+    const paynectaUrl = `https://paynecta.co.ke/pay/survey-app?amount=${activationFee}`;
     
-    // Build Paynecta URL with amount and phone pre-filled
-    const paynectaUrl = `https://paynecta.co.ke/pay/survey-app?amount=${activationFee}&phone=${formattedPhone}`;
-    
-    // Open Paynecta payment page
     window.open(paynectaUrl, "_blank");
-    setNotification("📱 Opening Paynecta payment page... Amount KES " + activationFee + " pre-filled.");
+    setNotification("📱 Payment page opened! Complete payment there, then paste confirmation below.");
   };
 
   /* =========================
@@ -737,60 +725,41 @@ export default function Activate() {
             </div>
           )}
 
-            /* STK PUSH PAYMENT SECTION */}
+            /* PAY AUTOMATICALLY AND ACTIVATE ACCOUNT IMMEDIATELY */}
             <div style={{ 
-              background: "linear-gradient(135deg, #00d9ff 0%, #5b72f5 50%, #a855f7 100%)", 
-              border: "2px solid rgba(255,255,255,0.3)",
-              borderRadius: "12px", 
-              padding: "14px",
-              marginBottom: "16px"
+              background: "linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)", 
+              border: "3px solid #34d399",
+              borderRadius: "16px", 
+              padding: "20px",
+              marginBottom: "20px",
+              boxShadow: "0 8px 25px rgba(16, 185, 129, 0.4)"
             }}>
-              <p style={{ fontWeight: 800, fontSize: "14px", color: "#ffffff", marginBottom: "12px", textAlign: "center" }}>
-                📱 PAY WITH M-PESA
+              <p style={{ fontWeight: 900, fontSize: "16px", color: "#ffffff", marginBottom: "16px", textAlign: "center" }}>
+                PAY AUTOMATICALLY & ACTIVATE IMMEDIATELY
               </p>
-
-              <input
-                type="tel"
-                placeholder="Enter M-Pesa number (e.g. 0740...)"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    initiateSTK();
-                  }
-                }}
-                style={{
-                  width: "100%",
-                  padding: "12px",
-                  borderRadius: "8px",
-                  border: "2px solid #ffffff",
-                  background: "#ffffff",
-                  color: "#1e293b",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  marginBottom: "10px",
-                  boxSizing: "border-box"
-                }}
-              />
                
               <button
                 onClick={initiateSTK}
-                disabled={!phoneNumber.trim()}
                 style={{
                   width: "100%",
-                  padding: "14px",
-                  borderRadius: "10px",
+                  padding: "18px",
+                  borderRadius: "12px",
                   border: "none",
                   background: "#ffffff",
-                  color: "#5b72f5",
-                  fontSize: "14px",
-                  fontWeight: 800,
-                  cursor: !phoneNumber.trim() ? "not-allowed" : "pointer",
-                  marginBottom: "8px"
+                  color: "#059669",
+                  fontSize: "17px",
+                  fontWeight: 900,
+                  cursor: "pointer",
+                  marginBottom: "10px",
+                  boxShadow: "0 4px 15px rgba(0,0,0,0.2)"
                 }}
               >
-                📱 Pay with M-Pesa - KES {plan.activationFee}
+                Pay KES {plan.activationFee} Now
               </button>
+
+              <p style={{ color: "#d1fae5", fontSize: "12px", textAlign: "center", margin: 0, fontWeight: 600 }}>
+                Instant activation - Secure M-Pesa payment
+              </p>
 
               {notification && (
                 <p style={{ 
