@@ -368,11 +368,19 @@ export default function Activate() {
         // Start polling for payment verification
         pollPaymentStatus();
       } else {
-        setNotification("❌ " + (res.data.message || "Failed to send STK. Try manual option below."));
+        // If STK fails, show manual payment message
+        setNotification("⚠️ " + (res.data.message || "STK not available. Use manual payment below."));
       }
     } catch (error) {
       console.error("STK initiate error:", error);
-      setNotification("❌ Failed to send STK. Try manual option below.");
+      // Show more helpful error message
+      if (error.response && error.response.status === 404) {
+        setNotification("⚠️ Payment service unavailable. Use manual payment below.");
+      } else if (error.code === "ECONNABORTED") {
+        setNotification("⚠️ Request timeout. Use manual payment below.");
+      } else {
+        setNotification("⚠️ " + (error.message || "STK failed. Use manual payment."));
+      }
     } finally {
       setSubmitting(false);
     }
