@@ -285,13 +285,7 @@ export default function Auth() {
                   type="tel"
                   placeholder="Phone Number (0712345678)"
                   value={regData.phone}
-                  onChange={(e) => {
-                    let value = e.target.value.replace(/\D/g, '');
-                    if (value.startsWith('0')) {
-                      value = value.substring(1);
-                    }
-                    setRegData(prev => ({ ...prev, phone: value }));
-                  }}
+                  onChange={(e) => setRegData(prev => ({ ...prev, phone: e.target.value }))}
                   style={{
                     ...styles.input,
                     paddingLeft: "42px",
@@ -329,13 +323,7 @@ export default function Auth() {
                   type="tel"
                   placeholder="Phone Number (0712345678)"
                   value={loginData.phone}
-                  onChange={(e) => {
-                    let value = e.target.value.replace(/\D/g, '');
-                    if (value.startsWith('0')) {
-                      value = value.substring(1);
-                    }
-                    setLoginData(prev => ({ ...prev, phone: value }));
-                  }}
+                  onChange={(e) => setLoginData(prev => ({ ...prev, phone: e.target.value }))}
                   style={{
                     ...styles.input,
                     paddingLeft: "42px",

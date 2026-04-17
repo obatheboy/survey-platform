@@ -617,13 +617,7 @@ export default function WithdrawForm() {
                 type="tel"
                 placeholder="07XX XXX XXX or 01XX XXX XXX"
                 value={phone}
-                onChange={(e) => {
-                  let value = e.target.value.replace(/\D/g, '');
-                  if (value.startsWith('0')) {
-                    value = value.substring(1);
-                  }
-                  setPhone(value);
-                }}
+                onChange={(e) => setPhone(e.target.value)}
                 required
                 disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && !isPlanActivated(plan))}
               />

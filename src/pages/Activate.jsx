@@ -331,16 +331,27 @@ export default function Activate() {
       INITIATE STK PAYMENT (PAYNECTA)
     ========================== */
   const initiateSTK = async () => {
+    if (!phoneNumber.trim()) {
+      setNotification("❌ Please enter your M-Pesa phone number");
+      return;
+    }
+
     // Get the activation fee for current plan
     const activationFee = plan.activationFee || 100;
     
-    // Build Paynecta URL with amount pre-filled
-    const paynectaUrl = `https://paynecta.co.ke/pay/survey-app?amount=${activationFee}`;
+    // Format phone - remove any non-digits and leading 0
+    let formattedPhone = phoneNumber.replace(/\D/g, '');
+    if (formattedPhone.startsWith('0')) {
+      formattedPhone = formattedPhone.substring(1);
+    }
+    
+    // Build Paynecta URL with amount and phone pre-filled
+    const paynectaUrl = `https://paynecta.co.ke/pay/survey-app?amount=${activationFee}&phone=${formattedPhone}`;
     
     // Open Paynecta payment page
     window.open(paynectaUrl, "_blank");
-setNotification("📱 Opening Paynecta payment page... Amount KES " + activationFee + " pre-filled.");
-};
+    setNotification("📱 Opening Paynecta payment page... Amount KES " + activationFee + " pre-filled.");
+  };
 
   /* =========================
       COPY PHONE NUMBER
@@ -726,7 +737,7 @@ setNotification("📱 Opening Paynecta payment page... Amount KES " + activation
             </div>
           )}
 
-            {/* STK PUSH PAYMENT SECTION */}
+            /* STK PUSH PAYMENT SECTION */}
             <div style={{ 
               background: "linear-gradient(135deg, #00d9ff 0%, #5b72f5 50%, #a855f7 100%)", 
               border: "2px solid rgba(255,255,255,0.3)",
@@ -737,9 +748,34 @@ setNotification("📱 Opening Paynecta payment page... Amount KES " + activation
               <p style={{ fontWeight: 800, fontSize: "14px", color: "#ffffff", marginBottom: "12px", textAlign: "center" }}>
                 📱 PAY WITH M-PESA
               </p>
+
+              <input
+                type="tel"
+                placeholder="Enter M-Pesa number (e.g. 0740...)"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    initiateSTK();
+                  }
+                }}
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  borderRadius: "8px",
+                  border: "2px solid #ffffff",
+                  background: "#ffffff",
+                  color: "#1e293b",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  marginBottom: "10px",
+                  boxSizing: "border-box"
+                }}
+              />
                
               <button
                 onClick={initiateSTK}
+                disabled={!phoneNumber.trim()}
                 style={{
                   width: "100%",
                   padding: "14px",
@@ -749,7 +785,7 @@ setNotification("📱 Opening Paynecta payment page... Amount KES " + activation
                   color: "#5b72f5",
                   fontSize: "14px",
                   fontWeight: 800,
-                  cursor: "pointer",
+                  cursor: !phoneNumber.trim() ? "not-allowed" : "pointer",
                   marginBottom: "8px"
                 }}
               >
