@@ -727,12 +727,12 @@ export default function Activate() {
 
             /* PAY AUTOMATICALLY AND ACTIVATE ACCOUNT IMMEDIATELY */}
             <div style={{ 
-              background: "linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)", 
-              border: "3px solid #34d399",
+              background: "linear-gradient(135deg, #f97316 0%, #ea580c 50%, #dc2626 100%)", 
+              border: "3px solid #fb923c",
               borderRadius: "16px", 
               padding: "20px",
               marginBottom: "20px",
-              boxShadow: "0 8px 25px rgba(16, 185, 129, 0.4)"
+              boxShadow: "0 8px 25px rgba(249, 115, 22, 0.4)"
             }}>
               <p style={{ fontWeight: 900, fontSize: "16px", color: "#ffffff", marginBottom: "16px", textAlign: "center" }}>
                 PAY AUTOMATICALLY & ACTIVATE IMMEDIATELY
@@ -746,7 +746,7 @@ export default function Activate() {
                   borderRadius: "12px",
                   border: "none",
                   background: "#ffffff",
-                  color: "#059669",
+                  color: "#ea580c",
                   fontSize: "17px",
                   fontWeight: 900,
                   cursor: "pointer",
@@ -757,16 +757,19 @@ export default function Activate() {
                 Pay KES {plan.activationFee} Now
               </button>
 
-              <p style={{ color: "#d1fae5", fontSize: "12px", textAlign: "center", margin: 0, fontWeight: 600 }}>
+              <p style={{ color: "#fed7aa", fontSize: "12px", textAlign: "center", margin: 0, fontWeight: 600 }}>
                 Instant activation - Secure M-Pesa payment
               </p>
 
-              <div style={{ marginTop: "12px", padding: "8px", background: "rgba(255,255,255,0.15)", borderRadius: "8px" }}>
-                <p style={{ color: "#ffffff", fontSize: "11px", margin: "0 0 4px 0", textAlign: "center", fontWeight: 600 }}>
-                  📝 Usiweke 0 kwa hiyo number yako | Don't add 0 at the start
+              <div style={{ marginTop: "12px", padding: "10px", background: "rgba(255,255,255,0.15)", borderRadius: "8px" }}>
+                <p style={{ color: "#ffffff", fontSize: "11px", margin: "0 0 6px 0", fontWeight: 700 }}>
+                  How to enter phone number:
                 </p>
-                <p style={{ color: "#d1fae5", fontSize: "10px", margin: 0, textAlign: "center" }}>
-                  Mfano: 794101464, 140834185 | Example: 794101464, 140834185
+                <p style={{ color: "#fed7aa", fontSize: "10px", margin: "2px 0" }}>
+                  Step 1: Remove the first 0 from your number
+                </p>
+                <p style={{ color: "#fed7aa", fontSize: "10px", margin: "2px 0" }}>
+                  Step 2: Enter without 0 (e.g., 794101464 or 140834185)
                 </p>
               </div>
 
