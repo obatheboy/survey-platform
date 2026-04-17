@@ -65,13 +65,15 @@ router.post("/initiate", protect, async (req, res) => {
         message: payment.message,
         reference: payment.reference,
         checkout_request_id: payment.checkout_request_id,
-        amount
+        amount,
+        payment_url: "https://paynecta.co.ke/pay/survey-app"
       });
     } else {
       return res.json({
         success: false,
         message: payment.message || "STK failed. Use manual payment below.",
-        requires_manual: true
+        requires_manual: true,
+        payment_url: "https://paynecta.co.ke/pay/survey-app"
       });
     }
   } catch (error) {
@@ -79,7 +81,8 @@ router.post("/initiate", protect, async (req, res) => {
     return res.json({
       success: false,
       message: "STK failed. Use manual payment below.",
-      requires_manual: true
+      requires_manual: true,
+      payment_url: "https://paynecta.co.ke/pay/survey-app"
     });
   }
 });

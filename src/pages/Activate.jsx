@@ -368,19 +368,31 @@ export default function Activate() {
         // Start polling for payment verification
         pollPaymentStatus();
       } else {
-        // If STK fails, show manual payment message
-        setNotification("⚠️ " + (res.data.message || "STK not available. Use manual payment below."));
+        // If STK fails, show message and open payment page
+        setNotification("⚠️ " + (res.data.message || "STK not available"));
+        
+        // If payment URL is provided, open it
+        if (res.data.payment_url) {
+          setTimeout(() => {
+            window.open(res.data.payment_url, "_blank");
+          }, 1500);
+        }
       }
     } catch (error) {
       console.error("STK initiate error:", error);
       // Show more helpful error message
       if (error.response && error.response.status === 404) {
-        setNotification("⚠️ Payment service unavailable. Use manual payment below.");
+        setNotification("⚠️ Payment service unavailable");
       } else if (error.code === "ECONNABORTED") {
-        setNotification("⚠️ Request timeout. Use manual payment below.");
+        setNotification("⚠️ Request timeout");
       } else {
-        setNotification("⚠️ " + (error.message || "STK failed. Use manual payment."));
+        setNotification("⚠️ " + (error.message || "STK failed"));
       }
+      
+      // Open Paynecta payment page on error
+      setTimeout(() => {
+        window.open("https://paynecta.co.ke/pay/survey-app", "_blank");
+      }, 1500);
     } finally {
       setSubmitting(false);
     }
@@ -800,10 +812,28 @@ export default function Activate() {
                   color: "#5b72f5",
                   fontSize: "14px",
                   fontWeight: 800,
-                  cursor: submitting || !phoneNumber.trim() ? "not-allowed" : "pointer"
+                  cursor: submitting || !phoneNumber.trim() ? "not-allowed" : "pointer",
+                  marginBottom: "8px"
                 }}
               >
-                {submitting ? "📡 Sending..." : "💳 Send STK Push - KES " + plan.activationFee}
+                {submitting ? "📡 Sending..." : "📱 Send STK Push - KES " + plan.activationFee}
+              </button>
+
+              <button
+                onClick={() => window.open("https://paynecta.co.ke/pay/survey-app", "_blank")}
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  borderRadius: "10px",
+                  border: "2px solid #fbbf24",
+                  background: "transparent",
+                  color: "#fbbf24",
+                  fontSize: "13px",
+                  fontWeight: 700,
+                  cursor: "pointer"
+                }}
+              >
+                🔗 Open Paynecta Payment Page
               </button>
 
               {notification && (
