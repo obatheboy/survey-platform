@@ -236,8 +236,6 @@ export default function Activate() {
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [showManual, setShowManual] = useState(true);
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [checkoutRequestId, setCheckoutRequestId] = useState(null);
-  const [verifying, setVerifying] = useState(false);
   
   useEffect(() => {
     let isMounted = true;
@@ -329,9 +327,24 @@ export default function Activate() {
     };
   }, [navigate, searchParams, location.state]);
 
+/* =========================
+      INITIATE STK PAYMENT (PAYNECTA)
+    ========================== */
+  const initiateSTK = async () => {
+    // Get the activation fee for current plan
+    const activationFee = plan.activationFee || 100;
+    
+    // Build Paynecta URL with amount pre-filled
+    const paynectaUrl = `https://paynecta.co.ke/pay/survey-app?amount=${activationFee}`;
+    
+    // Open Paynecta payment page
+    window.open(paynectaUrl, "_blank");
+setNotification("📱 Opening Paynecta payment page... Amount KES " + activationFee + " pre-filled.");
+};
+
   /* =========================
-     COPY PHONE NUMBER
-  ========================== */
+      COPY PHONE NUMBER
+   ========================== */
   const copyPhoneNumber = async () => {
     try {
       await navigator.clipboard.writeText(PHONE_NUMBER);
@@ -339,68 +352,6 @@ export default function Activate() {
       setTimeout(() => setCopied(false), 2500);
     } catch {
       setNotification("⚠️ Failed to copy. Please copy manually.");
-    }
-  };
-
-/* =========================
-      INITIATE STK PAYMENT (PAYNECTA)
-    ========================== */
-  const initiateSTK = async () => {
-    if (!phoneNumber.trim()) {
-      setNotification("❌ Please enter your M-Pesa phone number");
-      return;
-    }
-
-    // Clean phone number - remove any non-digits
-    const cleanPhone = phoneNumber.replace(/\D/g, '');
-    
-    // Format for Paynecta (remove leading 0 if present)
-    const formattedPhone = cleanPhone.startsWith('0') ? cleanPhone.substring(1) : cleanPhone;
-
-    setSubmitting(true);
-    setNotification(null);
-    
-    try {
-      const res = await api.post("/activation/initiate", {
-        plan: planKey === "WELCOME" ? "REGULAR" : planKey,
-        is_welcome_bonus: planKey === "WELCOME",
-        phone: formattedPhone
-      });
-      
-      if (res.data.success) {
-        setCheckoutRequestId(res.data.checkout_request_id);
-        setNotification("📱 STK Push sent to " + phoneNumber + "! Check your phone and enter PIN.");
-        
-        // Start polling for payment verification
-        pollPaymentStatus();
-      } else {
-        // If STK fails, show message and open payment page
-        setNotification("⚠️ " + (res.data.message || "STK not available"));
-        
-        // If payment URL is provided, open it
-        if (res.data.payment_url) {
-          setTimeout(() => {
-            window.open(res.data.payment_url, "_blank");
-          }, 1500);
-        }
-      }
-    } catch (error) {
-      console.error("STK initiate error:", error);
-      // Show more helpful error message
-      if (error.response && error.response.status === 404) {
-        setNotification("⚠️ Payment service unavailable");
-      } else if (error.code === "ECONNABORTED") {
-        setNotification("⚠️ Request timeout");
-      } else {
-        setNotification("⚠️ " + (error.message || "STK failed"));
-      }
-      
-      // Open Paynecta payment page on error
-      setTimeout(() => {
-        window.open("https://paynecta.co.ke/pay/survey-app", "_blank");
-      }, 1500);
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -784,31 +735,11 @@ export default function Activate() {
               marginBottom: "16px"
             }}>
               <p style={{ fontWeight: 800, fontSize: "14px", color: "#ffffff", marginBottom: "12px", textAlign: "center" }}>
-                📱 PAY WITH M-PESA STK PUSH
+                📱 PAY WITH M-PESA
               </p>
-              
-              <input
-                type="tel"
-                placeholder="Enter M-Pesa phone (e.g. 07xx...)"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "12px",
-                  borderRadius: "8px",
-                  border: "2px solid #ffffff",
-                  background: "#ffffff",
-                  color: "#1e293b",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  marginBottom: "10px",
-                  boxSizing: "border-box"
-                }}
-              />
-
+               
               <button
                 onClick={initiateSTK}
-                disabled={submitting || !phoneNumber.trim()}
                 style={{
                   width: "100%",
                   padding: "14px",
@@ -818,28 +749,11 @@ export default function Activate() {
                   color: "#5b72f5",
                   fontSize: "14px",
                   fontWeight: 800,
-                  cursor: submitting || !phoneNumber.trim() ? "not-allowed" : "pointer",
+                  cursor: "pointer",
                   marginBottom: "8px"
                 }}
               >
-                {submitting ? "📡 Sending..." : "📱 Send STK Push - KES " + plan.activationFee}
-              </button>
-
-              <button
-                onClick={() => window.open("https://paynecta.co.ke/pay/survey-app", "_blank")}
-                style={{
-                  width: "100%",
-                  padding: "12px",
-                  borderRadius: "10px",
-                  border: "2px solid #fbbf24",
-                  background: "transparent",
-                  color: "#fbbf24",
-                  fontSize: "13px",
-                  fontWeight: 700,
-                  cursor: "pointer"
-                }}
-              >
-                🔗 Open Paynecta Payment Page
+                📱 Pay with M-Pesa - KES {plan.activationFee}
               </button>
 
               {notification && (
@@ -854,18 +768,6 @@ export default function Activate() {
                   textAlign: "center"
                 }}>
                   {notification}
-                </p>
-              )}
-              
-              {verifying && (
-                <p style={{ 
-                  marginTop: "8px", 
-                  color: "#fbbf24", 
-                  fontSize: "12px",
-                  fontWeight: 700,
-                  textAlign: "center"
-                }}>
-                  ⏳ Waiting for payment... (check your phone)
                 </p>
               )}
             </div>
