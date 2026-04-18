@@ -51,11 +51,15 @@ router.post("/initiate", protect, async (req, res) => {
     console.log(`Initiating Paynecta Payment: amount=${amount}, phone=${phoneNumber}, plan=${planKey}`);
     
     // Try direct payment API first with correct code and format
+    console.log("=== CALLING PAYNECTA DIRECT API ===");
     let payment = await paynectaService.initializeDirectPayment(
       phoneNumber,
       amount,
       "PNT_492664"
     );
+    console.log("=== PAYNECTA RESULT ===");
+    console.log(JSON.stringify(payment, null, 2));
+    console.log("======================");
 
     if (payment.success) {
       console.log("Direct payment successful:", payment);
