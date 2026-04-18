@@ -306,8 +306,9 @@ export default function Dashboard() {
     const bonusAmount = user.welcome_bonus;
     const isActivated = user.is_activated || user.account_activated;
     const showOnLogin = localStorage.getItem("showWelcomeBonusOnDashboard");
+    const onboardingCompleted = user.survey_onboarding_completed;
     
-    if (bonusAmount && !isActivated && showOnLogin) {
+    if (bonusAmount && showOnLogin && onboardingCompleted) {
       setWelcomeBonusAmount(bonusAmount);
       
       const showAfterDelay = setTimeout(() => {
@@ -1293,14 +1294,7 @@ export default function Dashboard() {
                       <button 
                         className="action-btn secondary"
                         onClick={() => {
-                          if (hasPendingActivation(key)) {
-                            setFullScreenNotification({
-                              message: "⏳ Your activation payment is pending approval. Please wait for admin to approve your payment.",
-                              redirect: null
-                            });
-                            return;
-                          }
-                          handleWithdrawClick(key);
+                          navigate(`/activate?plan=${key.toLowerCase()}`);
                         }}
                         style={{
                           flex: 1,
@@ -1314,8 +1308,7 @@ export default function Dashboard() {
                           cursor: 'pointer'
                         }}
                       >
-                        {!activated ? (hasPendingActivation(key) ? '⏳ Pending' : '🔓 Activate') : 
-                         hasPending ? '📤 Manage' : '💸 Withdraw'}
+                        🔓 Activate
                       </button>
                     )}
                   </div>

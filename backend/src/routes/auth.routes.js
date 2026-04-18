@@ -17,6 +17,9 @@ router.post("/login", authController.login);
 // ✅ Get logged-in user (COOKIE + JWT)
 router.get("/me", protect, authController.getMe);
 
+// ✅ Save survey onboarding answers
+router.post("/survey-onboarding", protect, authController.saveSurveyOnboarding);
+
 // ✅ Logout MUST NOT be protected
 // (cookie may be expired or invalid, but still needs clearing)
 router.post("/logout", authController.logout);

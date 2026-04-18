@@ -130,12 +130,11 @@ export default function Auth() {
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("lastLoginTime", Date.now().toString());
-        localStorage.removeItem("active_plan");
-        localStorage.setItem("showWelcomeBonusOnDashboard", "true");
+        localStorage.setItem("pendingWelcomeBonus", "true");
       }
 
-      // Direct to dashboard after registration
-      navigate("/dashboard", { replace: true });
+      // Redirect to onboarding survey after registration
+      navigate("/onboarding", { replace: true });
     } catch (err) {
       let errorMessage;
       
@@ -173,10 +172,17 @@ export default function Auth() {
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("lastLoginTime", Date.now().toString());
-        localStorage.setItem("showWelcomeBonusOnDashboard", "true");
+        
+        const onboardingCompleted = res.data.user?.survey_onboarding_completed;
+        
+        if (!onboardingCompleted) {
+          localStorage.removeItem("showWelcomeBonusOnDashboard");
+          navigate("/onboarding", { replace: true });
+        } else {
+          localStorage.setItem("showWelcomeBonusOnDashboard", "true");
+          navigate("/dashboard", { replace: true });
+        }
       }
-
-      navigate("/dashboard", { replace: true });
       return;
     } catch (err) {
       if (!navigator.onLine) {

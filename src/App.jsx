@@ -18,6 +18,7 @@ import TermsAndConditions from "./pages/TermsAndConditions";
 import NotFound from "./pages/NotFound";
 import AffiliateDashboard from "./pages/AffiliateDashboard";
 import LoginFeePayment from "./pages/LoginFeePayment";
+import OnboardingSurvey from "./pages/OnboardingSurvey";
 
 /* ================= ADMIN ================= */
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -113,6 +114,9 @@ export default function App() {
 
         {/* USER AUTH - redirect to landing banner first unless mode is specified */}
         <Route path="/auth" element={<AuthRedirect />} />
+        
+        {/* ONBOARDING SURVEY */}
+        <Route path="/onboarding" element={<OnboardingSurvey />} />
         
         {/* Login is FREE - no payment pages needed */}
         {/* Old payment routes disabled - redirect to dashboard */}

@@ -176,7 +176,8 @@ exports.login = async (req, res) => {
       user: {
         id: user._id,
         phone: user.phone,
-        login_fee_paid: true
+        login_fee_paid: true,
+        survey_onboarding_completed: user.survey_onboarding_completed || false
       }
     });
 } catch (error) {
@@ -285,6 +286,7 @@ exports.getMe = async (req, res) => {
       welcome_bonus: user.welcome_bonus || 1200, // Include welcome_bonus field
       welcome_bonus_received: user.welcome_bonus_received,
       welcome_bonus_withdrawn: user.welcome_bonus_withdrawn || false,
+      survey_onboarding_completed: user.survey_onboarding_completed || false,
       active_plan: activePlan,
       recommended_plan: recommendedPlan, // New field: which plan should be activated
       surveys_completed: surveysCompleted,
@@ -295,6 +297,32 @@ exports.getMe = async (req, res) => {
     });
   } catch (error) {
     console.error("GET ME ERROR:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+/* ===============================
+   SAVE SURVEY ONBOARDING ANSWERS
+============================== */
+exports.saveSurveyOnboarding = async (req, res) => {
+  try {
+    const { answers } = req.body;
+    
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.survey_onboarding_completed = true;
+    user.survey_answers = answers || {};
+    await user.save();
+
+    res.json({ 
+      success: true, 
+      message: "Survey answers saved successfully" 
+    });
+  } catch (error) {
+    console.error("SAVE SURVEY ONBOARDING ERROR:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

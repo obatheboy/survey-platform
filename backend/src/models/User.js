@@ -71,6 +71,14 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  survey_onboarding_completed: {
+    type: Boolean,
+    default: false
+  },
+  survey_answers: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
+  },
   balance: {
     type: Number,
     default: 0
