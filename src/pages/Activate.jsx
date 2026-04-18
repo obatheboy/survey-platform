@@ -336,7 +336,15 @@ export default function Activate() {
 /* =========================
       INITIATE STK PAYMENT (CUSTOM POPUP)
     ========================== */
-  const initiateSTK = async () => {
+  const initiateSTK = () => {
+    console.log("Pay button clicked!");
+    // Open the payment modal first
+    setShowPaymentWidget(true);
+    setPaymentNotification(null);
+    setPaymentPhone("");
+  };
+
+  const handlePaymentSubmit = async () => {
     // Validate phone number
     let formattedPhone = paymentPhone.replace(/[^0-9]/g, '');
     
@@ -1214,7 +1222,7 @@ export default function Activate() {
             {/* Action Button - Only show when not loading and no notification yet */}
             {!paymentLoading && !paymentNotification && (
               <button
-                onClick={initiateSTK}
+                onClick={handlePaymentSubmit}
                 style={{
                   width: "100%",
                   padding: "14px",
