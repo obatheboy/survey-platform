@@ -83,37 +83,33 @@ const makeRequest = (path, method, data = null) => {
       let body = "";
       res.on("data", chunk => body += chunk);
       res.on("end", () => {
-        console.log(`Paynecta Response Status: ${res.statusCode}`);
-        console.log(`Paynecta Response Body (first 500 chars): ${body.substring(0, 500)}`);
+        const status = res.statusCode;
+        console.log("=== PAYNECTA HTTP STATUS:", status, "===");
+        console.log("Response length:", body.length, "chars");
         
-        // Check if response is empty
+        // Check for empty response
         if (!body || body.trim() === "") {
-          console.log("Empty response from Paynecta");
-          resolve({ success: false, error: "Empty response from Paynecta" });
+          console.log("EMPTY RESPONSE");
+          resolve({ success: false, error: "Empty response" });
           return;
         }
         
-        // Check if it's HTML (error page)
-        if (body.trim().startsWith("<!") || body.trim().startsWith("<html")) {
-          console.log("========== HTML ERROR FROM PAYNECTA ==========");
-          console.log(body);
-          console.log("===============================================");
-          resolve({ success: false, error: "HTML error page received", raw: body });
+        // Print first 1000 chars regardless
+        console.log("RESPONSE START:", body.substring(0, 1000));
+        
+        // Check if it's HTML
+        const trimmed = body.trim();
+        if (trimmed.startsWith("<!") || trimmed.startsWith("<html") || trimmed.startsWith("<!DOCTYPE")) {
+          resolve({ success: false, error: "HTML error page", raw: body.substring(0, 500) });
           return;
         }
         
-        // Try to parse as JSON
+        // Try to parse JSON
         try {
           const json = JSON.parse(body);
-          console.log("Parsed response:", JSON.stringify(json, null, 2));
-          console.log("Response success field:", json.success);
-          console.log("Response status field:", json.status);
-          console.log("Response CheckoutRequestID:", json.CheckoutRequestID);
           resolve(json);
         } catch (e) {
-          console.log("Failed to parse response as JSON, raw body:", body.substring(0, 300));
-          // Don't assume success - return the raw response for debugging
-          resolve({ success: false, raw: body, error: "Invalid JSON response" });
+          resolve({ success: false, error: "Invalid JSON", raw: body.substring(0, 500) });
         }
       });
     });
