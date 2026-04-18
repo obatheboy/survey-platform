@@ -240,6 +240,7 @@ export default function Activate() {
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentNotification, setPaymentNotification] = useState(null);
   const [isWelcomeBonus, setIsWelcomeBonus] = useState(false);
+  const [paymentPhone, setPaymentPhone] = useState("");
   
   useEffect(() => {
     let isMounted = true;
@@ -336,25 +337,30 @@ export default function Activate() {
       INITIATE STK PAYMENT (CUSTOM POPUP)
     ========================== */
   const initiateSTK = async () => {
-    // Open popup and start payment immediately
-    setShowPaymentWidget(true);
+    // Validate phone number
+    let formattedPhone = paymentPhone.replace(/[^0-9]/g, '');
+    
+    if (!formattedPhone || formattedPhone.length < 9) {
+      setPaymentNotification({
+        type: "error",
+        message: "Please enter a valid phone number"
+      });
+      return;
+    }
+    
+    // Convert to 254 format (e.g., 0740209662 -> 254740209662)
+    if (formattedPhone.startsWith('0') && formattedPhone.length > 1) {
+      formattedPhone = '254' + formattedPhone.substring(1);
+    } else if (formattedPhone.startsWith('7')) {
+      formattedPhone = '254' + formattedPhone;
+    }
+    
     setPaymentNotification(null);
     setPaymentLoading(true);
     
     const activationFee = plan.activationFee || 100;
     
     try {
-      // Get user's phone and convert to 254 format
-      const userPhone = user?.phone || "";
-      let formattedPhone = userPhone.replace(/[^0-9]/g, '');
-      
-      // Convert to 254 format (e.g., 0740209662 -> 254740209662)
-      if (formattedPhone.startsWith('0') && formattedPhone.length > 1) {
-        formattedPhone = '254' + formattedPhone.substring(1);
-      } else if (formattedPhone.startsWith('7')) {
-        formattedPhone = '254' + formattedPhone;
-      }
-      
       console.log("Initiating payment:", { amount: activationFee, phone: formattedPhone });
       
       const res = await api.post("/activation/initiate", {
@@ -454,42 +460,14 @@ export default function Activate() {
       await navigator.clipboard.writeText(PHONE_NUMBER);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
-    } catch {
+} catch {
       setNotification("⚠️ Failed to copy. Please copy manually.");
     }
   };
 
   /* =========================
-      POLL PAYMENT STATUS
-    ========================== */
-  const pollPaymentStatus = async () => {
-    if (!checkoutRequestId) return;
-    
-    setVerifying(true);
-    try {
-      const res = await api.post("/activation/verify-stk", {
-        checkout_request_id: checkoutRequestId,
-        plan: planKey === "WELCOME" ? "REGULAR" : planKey,
-        is_welcome_bonus: planKey === "WELCOME"
-      });
-      
-      if (res.data.success && res.data.activated) {
-        setShowSuccessPopup(true);
-        setNotification(null);
-      } else if (res.data.status === "pending") {
-        // Continue polling
-        setTimeout(pollPaymentStatus, 3000);
-      }
-    } catch (error) {
-      console.error("Payment verification error:", error);
-    } finally {
-      setVerifying(false);
-    }
-  };
-
-  /* =========================
      SUBMIT ACTIVATION
-  ========================== */
+   ========================== */
   const submitActivation = async () => {
     if (!paymentText.trim()) {
       setNotification("❌ Paste the FULL M-Pesa confirmation message.");
@@ -1208,10 +1186,26 @@ export default function Activate() {
               ) : (
                 <div>
                   <p style={{ color: "#666", fontSize: "13px", marginBottom: "8px" }}>
-                    📱 Payment will be sent to:
+                    📱 Enter M-Pesa phone number:
                   </p>
-                  <p style={{ color: "#9a3412", fontSize: "16px", fontWeight: "800" }}>
-                    {user?.phone || "Not registered"}
+                  <input
+                    type="tel"
+                    value={paymentPhone}
+                    onChange={(e) => setPaymentPhone(e.target.value)}
+                    placeholder="e.g. 0740123456"
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      fontSize: "16px",
+                      border: "2px solid #fed7aa",
+                      borderRadius: "8px",
+                      textAlign: "center",
+                      fontWeight: "700",
+                      color: "#1e293b"
+                    }}
+                  />
+                  <p style={{ color: "#9a3412", fontSize: "11px", marginTop: "8px" }}>
+                    STK push will be sent to this number
                   </p>
                 </div>
               )}
