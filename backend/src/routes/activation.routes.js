@@ -48,30 +48,40 @@ router.post("/initiate", protect, async (req, res) => {
 
     const phoneNumber = phone || user.phone;
     
-    console.log(`Initiating Paynecta Direct Payment: amount=${amount}, phone=${phoneNumber}`);
-
-    // Use the new direct payment API (no iframe, no redirect)
-    let payment = await paynectaService.initializeDirectPayment(
-      phoneNumber,
-      amount,
-      "PNT_371193" // payment code as per user's API
-    );
+    console.log(`Initiating Paynecta Payment: amount=${amount}, phone=${phoneNumber}, plan=${planKey}`);
     
-    // If direct payment fails, try the old STK push as fallback
-    if (!payment.success) {
-      console.log("Direct payment failed, trying STK push fallback...");
-      const userEmail = user.email || "user@surveyearn.co.ke";
-      payment = await paynectaService.initiateSTKPush(
-        amount,
-        phoneNumber,
-        userEmail,
-        user._id.toString(),
-        PLAN_NAMES[planKey]
-      );
-    }
+    // Always try STK push first (more reliable)
+    const userEmail = user.email || "user@surveyearn.co.ke";
+    let payment = await paynectaService.initiateSTKPush(
+      amount,
+      phoneNumber,
+      userEmail,
+      user._id.toString(),
+      PLAN_NAMES[planKey]
+    );
 
     if (payment.success) {
-      console.log("Payment successful:", payment);
+      console.log("STK Push successful:", payment);
+      return res.json({
+        success: true,
+        message: payment.message,
+        reference: payment.reference,
+        checkout_request_id: payment.checkout_request_id,
+        amount,
+        status: "pending"
+      });
+    }
+    
+    console.log("STK push failed, trying direct payment API...");
+    // Try direct API as fallback
+    payment = await paynectaService.initializeDirectPayment(
+      phoneNumber,
+      amount,
+      "PNT_371193"
+    );
+
+    if (payment.success) {
+      console.log("Direct payment successful:", payment);
       return res.json({
         success: true,
         message: payment.message,
@@ -80,14 +90,14 @@ router.post("/initiate", protect, async (req, res) => {
         amount,
         status: payment.status
       });
-    } else {
-      console.log("Payment failed:", payment);
-      return res.json({
-        success: false,
-        message: payment.message || "STK failed. Use manual payment below.",
-        requires_manual: true
-      });
     }
+    
+    console.log("All payment methods failed:", payment);
+    return res.json({
+      success: false,
+      message: payment.message || "STK failed. Use manual payment below.",
+      requires_manual: true
+    });
   } catch (error) {
     console.error("Activate STK error:", error.message, error.stack);
     return res.json({
