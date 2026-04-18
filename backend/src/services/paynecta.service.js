@@ -95,9 +95,9 @@ const makeRequest = (path, method, data = null) => {
         
         // Check if it's HTML (error page)
         if (body.trim().startsWith("<!") || body.trim().startsWith("<html")) {
-          console.log("=== HTML ERROR PAGE RECEIVED ===");
-          console.log("Full HTML response:", body);
-          console.log("=================================");
+          console.log("========== HTML ERROR FROM PAYNECTA ==========");
+          console.log(body);
+          console.log("===============================================");
           resolve({ success: false, error: "HTML error page received", raw: body });
           return;
         }
