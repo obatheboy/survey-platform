@@ -336,10 +336,12 @@ export default function Activate() {
       INITIATE STK PAYMENT (CUSTOM POPUP)
     ========================== */
   const initiateSTK = async () => {
-    const activationFee = plan.activationFee || 100;
+    // Open popup and start payment immediately
     setShowPaymentWidget(true);
     setPaymentNotification(null);
     setPaymentLoading(true);
+    
+    const activationFee = plan.activationFee || 100;
     
     try {
       // Get user's phone and convert to 254 format
@@ -1204,14 +1206,19 @@ export default function Activate() {
                   </p>
                 </div>
               ) : (
-                <p style={{ color: "#666", fontSize: "13px" }}>
-                  Click the button below to pay
-                </p>
+                <div>
+                  <p style={{ color: "#666", fontSize: "13px", marginBottom: "8px" }}>
+                    📱 Payment will be sent to:
+                  </p>
+                  <p style={{ color: "#9a3412", fontSize: "16px", fontWeight: "800" }}>
+                    {user?.phone || "Not registered"}
+                  </p>
+                </div>
               )}
             </div>
             
-            {/* Action Button */}
-            {!paymentLoading && (!paymentNotification || paymentNotification.type === "error") && (
+            {/* Action Button - Only show when not loading and no notification yet */}
+            {!paymentLoading && !paymentNotification && (
               <button
                 onClick={initiateSTK}
                 style={{
@@ -1228,6 +1235,27 @@ export default function Activate() {
                 }}
               >
                 Pay KES {plan.activationFee} Now
+              </button>
+            )}
+            
+            {/* Show close button after payment is initiated */}
+            {paymentNotification && (
+              <button
+                onClick={closePaymentWidget}
+                style={{
+                  width: "100%",
+                  padding: "14px",
+                  background: "#64748b",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "10px",
+                  fontSize: "14px",
+                  fontWeight: "700",
+                  cursor: "pointer",
+                  marginTop: "12px"
+                }}
+              >
+                Close
               </button>
             )}
             
