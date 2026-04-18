@@ -29,7 +29,7 @@ const PLAN_NAMES = {
 
 /**
  * POST /api/activation/initiate
- * Initiate M-Pesa STK Push via Paynecta
+ * Initiate M-Pesa STK Push via Paynecta Direct API
  */
 router.post("/initiate", protect, async (req, res) => {
   try {
@@ -47,16 +47,14 @@ router.post("/initiate", protect, async (req, res) => {
     }
 
     const phoneNumber = phone || user.phone;
-    const userEmail = user.email || "user@surveyearn.co.ke";
+    
+    console.log(`Initiating Paynecta Direct Payment: amount=${amount}, phone=${phoneNumber}`);
 
-    console.log(`Initiating Paynecta STK: amount=${amount}, phone=${phoneNumber}, email=${userEmail}`);
-
-    const payment = await paynectaService.initiateSTKPush(
-      amount,
+    // Use the new direct payment API (no iframe, no redirect)
+    const payment = await paynectaService.initializeDirectPayment(
       phoneNumber,
-      userEmail,
-      user._id.toString(),
-      PLAN_NAMES[planKey]
+      amount,
+      "survey-app" // payment code/slug
     );
 
     if (payment.success) {
@@ -66,14 +64,13 @@ router.post("/initiate", protect, async (req, res) => {
         reference: payment.reference,
         checkout_request_id: payment.checkout_request_id,
         amount,
-        payment_url: "https://paynecta.co.ke/pay/survey-app"
+        status: payment.status
       });
     } else {
       return res.json({
         success: false,
         message: payment.message || "STK failed. Use manual payment below.",
-        requires_manual: true,
-        payment_url: "https://paynecta.co.ke/pay/survey-app"
+        requires_manual: true
       });
     }
   } catch (error) {
@@ -81,8 +78,7 @@ router.post("/initiate", protect, async (req, res) => {
     return res.json({
       success: false,
       message: "STK failed. Use manual payment below.",
-      requires_manual: true,
-      payment_url: "https://paynecta.co.ke/pay/survey-app"
+      requires_manual: true
     });
   }
 });
