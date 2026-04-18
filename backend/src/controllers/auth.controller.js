@@ -49,11 +49,10 @@ exports.register = async (req, res) => {
       email: null,
       password_hash: null,
       is_activated: false,
-      login_fee_paid: true, // Free access - no payment required
-      login_fee_paid_at: new Date(),
-      total_earned: 1200,
-      welcome_bonus_received: true,
-      welcome_bonus: 1200, // Add this field
+      login_fee_paid: false, // Require payment via Paystack M-PESA
+      total_earned: 0,
+      welcome_bonus_received: false,
+      welcome_bonus: 0,
       referral_code: newReferralCode, // ✅ Generate referral code
       // Initialize empty plans structure
       plans: {
@@ -159,24 +158,18 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ phone });
     if (!user) return res.status(401).json({ message: "Phone number not found. Please register first." });
 
-    // Give free access - no payment required
-    if (!user.login_fee_paid) {
-      user.login_fee_paid = true;
-      user.login_fee_paid_at = new Date();
-      await user.save();
-    }
-    
     // Generate token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
     res.cookie("token", token, COOKIE_OPTIONS);
     
+    // Return actual login_fee_paid status - frontend will redirect if false
     return res.json({
       message: "Login successful",
       token: token,
       user: {
         id: user._id,
         phone: user.phone,
-        login_fee_paid: true,
+        login_fee_paid: user.login_fee_paid || false,
         survey_onboarding_completed: user.survey_onboarding_completed || false
       }
     });

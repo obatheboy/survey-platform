@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
-const paynectaService = require("../services/paynecta.service");
+const paystackService = require("../services/paystack.service");
 
 const { protect } = require("../middlewares/auth.middleware");
 const activationController = require("../controllers/activation.controller");

@@ -1,36 +1,99 @@
 const https = require("https");
 
+// Remove hardcoded keys - only use environment variables
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 const PAYSTACK_PUBLIC_KEY = process.env.PAYSTACK_PUBLIC_KEY;
 const BASE_URL = "api.paystack.co";
 
-// FIXED: Format phone for Paystack M-Pesa STK - supports 07, 01, 7, 1, 254 formats
+// Check for missing keys
+if (!PAYSTACK_SECRET_KEY) {
+  console.error("❌ PAYSTACK_SECRET_KEY is missing in environment variables");
+}
+if (!PAYSTACK_PUBLIC_KEY) {
+  console.error("❌ PAYSTACK_PUBLIC_KEY is missing in environment variables");
+}
+
 const formatPhone = (phone) => {
-  // Remove any non-numeric characters
   let cleaned = phone.replace(/[^0-9]/g, '');
   
-  console.log(`Formatting phone: ${phone} -> cleaned: ${cleaned}`);
-  
-  // Handle Kenyan numbers: 07, 01, 7, 1, 254
+  // Format to +254XXXXXXXXX for Paystack mobile_money.phone
   if (cleaned.startsWith('0') && cleaned.length > 1) {
-    // Remove leading 0: 0712345678 -> 712345678
-    cleaned = '254' + cleaned.substring(1);
-  }
-  // Handle numbers starting with 7 or 1 (no leading 0)
-  else if (cleaned.startsWith('7') || cleaned.startsWith('1')) {
-    cleaned = '254' + cleaned;
-  }
-  // Handle numbers already starting with 254
-  else if (!cleaned.startsWith('254')) {
-    cleaned = '254' + cleaned;
+    cleaned = '+254' + cleaned.substring(1);
+  } else if (cleaned.startsWith('7') && cleaned.length === 9) {
+    cleaned = '+254' + cleaned;
+  } else if (cleaned.startsWith('254') && cleaned.length === 12) {
+    cleaned = '+' + cleaned;
+  } else if (!cleaned.startsWith('+')) {
+    cleaned = '+' + cleaned;
   }
   
-  return cleaned; // Return WITHOUT + prefix for Paystack
+  console.log(`Phone formatted: ${phone} -> ${cleaned}`);
+  return cleaned;
+};
+
+// Main function for direct STK push (no redirect, no webhook needed)
+const chargeMpesa = async (amount, phone, email, userId) => {
+  // Format phone for Paystack mobile_money.phone (requires +254 format)
+  const formattedPhone = formatPhone(phone);
+  const paymentEmail = email || `user_${userId}@surveyearn.co.ke`;
+  const reference = `PAY_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+  
+  console.log("=== PAYSTACK DIRECT STK PUSH (M-PESA) ===");
+  console.log("Phone (formatted):", formattedPhone);
+  console.log("Amount (KES):", amount);
+  console.log("Email:", paymentEmail);
+  console.log("Reference:", reference);
+  
+  // CORRECT payload for direct STK push - using mobile_money object
+  const requestData = {
+    email: paymentEmail,
+    amount: amount * 100,  // Convert to kobo/cent (e.g., 100 KES = 10000)
+    currency: "KES",
+    reference: reference,
+    mobile_money: {
+      phone: formattedPhone,
+      provider: "mpesa"
+    },
+    metadata: {
+      user_id: userId
+    }
+  };
+
+  console.log("Request payload:", JSON.stringify(requestData, null, 2));
+  
+  try {
+    const response = await makeRequest("/charge", "POST", requestData);
+    console.log("Paystack response:", JSON.stringify(response, null, 2));
+    
+    // Check if STK push was initiated successfully
+    // Paystack returns status "true" with data.status like "send_otp" or "pending"
+    if (response.status === true && response.data) {
+      return {
+        success: true,
+        message: "STK Push sent! Check your phone and enter PIN.",
+        reference: reference,
+        status: response.data.status,
+        requires_manual_approval: true  // Flag that manual approval is needed
+      };
+    } else {
+      return {
+        success: false,
+        message: response.message || response.data?.message || "STK Push failed",
+        details: response
+      };
+    }
+  } catch (error) {
+    console.error("Paystack charge error:", error.message);
+    return {
+      success: false,
+      message: error.message
+    };
+  }
 };
 
 const makeRequest = (path, method, data = null) => {
   return new Promise((resolve, reject) => {
-    console.log("Environment check - PAYSTACK_SECRET_KEY:", PAYSTACK_SECRET_KEY ? "present" : "MISSING");
+    console.log("PAYSTACK_SECRET_KEY:", PAYSTACK_SECRET_KEY ? "present" : "MISSING");
     
     if (!PAYSTACK_SECRET_KEY) {
       console.error("Missing PAYSTACK_SECRET_KEY!");
@@ -86,59 +149,7 @@ const makeRequest = (path, method, data = null) => {
   });
 };
 
-// Initialize Paystack STK Push for M-Pesa
-const initializePayment = async (amount, phone, email, userId, description) => {
-  const phoneOnly = formatPhone(phone);
-  console.log(`Initializing Paystack STK Push: amount: ${amount}, phone: ${phoneOnly}, email: ${email}, userId: ${userId}`);
-  
-  try {
-    const paymentEmail = email || `user_${userId}_${Date.now()}@surveyearn.com`;
-    const reference = `PAY_${Date.now()}_${userId}_${Math.random().toString(36).substring(2, 8)}`;
-    
-    console.log("Attempting /transaction/initialize for STK push...");
-    console.log("Phone being used:", phoneOnly);
-    console.log("Email being used:", paymentEmail);
-    
-    // Request with mobile_money channel
-    const requestData = {
-      email: paymentEmail,
-      amount: amount * 100,
-      currency: "KES",
-      reference: reference,
-      phone_number: phoneOnly,
-      metadata: {
-        user_id: userId,
-        phone: phoneOnly
-      },
-      channels: ["mobile_money"]
-    };
-    
-    console.log("📱 Paystack STK request:", JSON.stringify(requestData));
-    
-    const response = await makeRequest("/transaction/initialize", "POST", requestData);
-    
-    console.log("Paystack FULL response:", JSON.stringify(response));
-    
-    if (response.status && response.data) {
-      console.log("✅ Paystack initialized successfully");
-      
-      return {
-        success: true,
-        reference: reference,
-        authorization_url: response.data.authorization_url,
-        message: "STK Push sent to your phone"
-      };
-    } else {
-      console.log("❌ Paystack initialization failed:", response);
-      throw new Error(response.message || "Payment initialization failed");
-    }
-    
-  } catch (error) {
-    console.error("Paystack initialize error:", error.message);
-    throw error;
-  }
-};
-
+// Verify payment status (useful for admin to check)
 const verifyPayment = async (reference) => {
   try {
     const response = await makeRequest(`/transaction/verify/${reference}`, "GET");
@@ -160,7 +171,8 @@ const getPublicKey = () => {
 };
 
 module.exports = {
-  initializePayment,
+  chargeMpesa,
   verifyPayment,
-  getPublicKey
+  getPublicKey,
+  formatPhone
 };

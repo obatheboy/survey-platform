@@ -14,8 +14,8 @@ const BASE_URL = RAW_BASE.endsWith("/api") ? RAW_BASE : `${RAW_BASE}/api`;
 ===================================================== */
 const api = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true, // Keep for backward compatibility
-  timeout: 30000, // Add timeout to prevent hanging requests
+  withCredentials: true,
+  timeout: 30000,
 });
 
 /* 🔐 ADD TOKEN FROM LOCALSTORAGE (MOBILE FIX) */
@@ -23,7 +23,6 @@ api.interceptors.request.use(
   (config) => {
     config.withCredentials = true;
     
-    // Add token from localStorage for mobile compatibility
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -36,7 +35,6 @@ api.interceptors.request.use(
 
 /* =====================================================
    👑 ADMIN API (BEARER TOKEN)
-   - No cookies
 ===================================================== */
 export const adminApi = axios.create({
   baseURL: BASE_URL,
@@ -44,7 +42,6 @@ export const adminApi = axios.create({
   timeout: 30000,
 });
 
-/* 🔐 ADMIN TOKEN ATTACHER */
 adminApi.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("adminToken");
@@ -57,20 +54,15 @@ adminApi.interceptors.request.use(
 );
 
 /* =====================================================
-   ⚠️ RESPONSE INTERCEPTOR - ENHANCED
-   - Better error handling for rate limiting
-   - Prevent accidental forced logout
+   ⚠️ RESPONSE INTERCEPTOR
 ===================================================== */
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     const originalRequest = error.config;
     
-    // Handle 429 (Too Many Requests) specifically
     if (error?.response?.status === 429) {
       console.warn("Rate limited (429). Please wait before retrying.");
-      
-      // Don't auto-retry 429 errors
       return Promise.reject({
         ...error,
         isRateLimit: true,
@@ -78,26 +70,19 @@ api.interceptors.response.use(
       });
     }
     
-    // Handle 401 (Unauthorized) - only for non-critical routes
     if (error?.response?.status === 401) {
-      console.warn(
-        "User request returned 401. Do not force logout here.",
-        error.response?.data?.message
-      );
+      console.warn("User request returned 401.", error.response?.data?.message);
       
-      // Check if this is a protected route that should trigger logout
       const protectedRoutes = ['/auth/me', '/withdraw/request', '/surveys/select-plan'];
       const isProtectedRoute = protectedRoutes.some(route => 
         originalRequest.url.includes(route)
       );
       
       if (isProtectedRoute) {
-        // Only clear token if it's a critical route
         localStorage.removeItem("token");
       }
     }
     
-    // Handle network errors
     if (!error.response) {
       console.error("Network error or server not responding");
     }
@@ -109,7 +94,6 @@ api.interceptors.response.use(
 adminApi.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Handle admin API errors
     if (error?.response?.status === 429) {
       console.warn("Admin API rate limited (429)");
       return Promise.reject({
@@ -123,14 +107,12 @@ adminApi.interceptors.response.use(
 
 /* =====================================================
    🚀 REQUEST QUEUE FOR WITHDRAWAL REQUESTS
-   - Prevent multiple simultaneous withdrawal requests
 ===================================================== */
 let isWithdrawRequestPending = false;
 let withdrawRequestQueue = [];
 
 export const queueWithdrawRequest = async (requestFn) => {
   if (isWithdrawRequestPending) {
-    // Queue the request
     return new Promise((resolve, reject) => {
       withdrawRequestQueue.push({ requestFn, resolve, reject });
     });
@@ -143,14 +125,13 @@ export const queueWithdrawRequest = async (requestFn) => {
   } finally {
     isWithdrawRequestPending = false;
     
-    // Process next request in queue
     if (withdrawRequestQueue.length > 0) {
       const nextRequest = withdrawRequestQueue.shift();
       setTimeout(() => {
         queueWithdrawRequest(nextRequest.requestFn)
           .then(nextRequest.resolve)
           .catch(nextRequest.reject);
-      }, 2000); // 2 second delay between queued requests
+      }, 2000);
     }
   }
 };
@@ -173,43 +154,65 @@ export const canMakeRequest = (endpoint, cooldownMs = 10000) => {
 };
 
 /* =====================================================
-   📦 EXPORTS
-===================================================== */
-export default api;
-
-/* =====================================================
    🏆 AFFILIATE API
-   - Get affiliate stats
-   - Verify referral code
 ===================================================== */
 export const affiliateApi = {
   getStats: () => api.get("/affiliate/stats"),
   verifyCode: (code) => api.post("/affiliate/verify-code", { referral_code: code })
 };  
- 
-/* =====================================================   ?? ADMIN AFFILIATE API   ===================================================== */
-export const adminAffiliateApi = {  getAllAffiliates: () => adminApi.get("/affiliate/admin/all")};  
 
-/* =====================================================   🎮 GAMIFICATION API   ===================================================== */
+/* =====================================================
+   👑 ADMIN AFFILIATE API
+===================================================== */
+export const adminAffiliateApi = { 
+  getAllAffiliates: () => adminApi.get("/affiliate/admin/all")
+};  
+
+/* =====================================================
+   🎮 GAMIFICATION API
+===================================================== */
 export const gamificationApi = {
-  // Achievements
   getAchievements: () => api.get("/gamification/achievements"),
-  
-  // Leaderboard
   getLeaderboard: (type = 'earnings', limit = 10) => api.get(`/gamification/leaderboard?type=${type}&limit=${limit}`),
-  
-  // Daily rewards
   checkDailyReward: () => api.get("/gamification/daily-reward"),
   claimDailyReward: () => api.post("/gamification/daily-reward/claim"),
-  
-  // Stats
   getUserStats: () => api.get("/gamification/stats")
 };
 
-/* =====================================================   💰 LOGIN FEE API   ===================================================== */
+/* =====================================================
+   💰 LOGIN FEE API - FIXED FOR STK PUSH ONLY
+   - Removed submitMpesaCode (manual submission not needed)
+   - verify endpoint kept but not used for auto-approval
+===================================================== */
 export const loginFeeApi = {
-  initiate: () => api.post("/login-fee/initiate"),
-  verify: (reference) => api.post("/login-fee/verify", { reference }),
-  checkStatus: () => api.get("/login-fee/status"),
-  submitMpesaCode: (data) => api.post("/login-fee/manual-submit", data)
+  // ✅ Send STK push to user's phone
+  initiate: (userId) => api.post("/login-fee/initiate", { userId }),
+  
+  // ✅ Check if user has been approved (manual approval)
+  checkStatus: (userId) => api.get(`/login-fee/status?userId=${userId}`),
+  
+  // ✅ Verify payment with Paystack (admin can use before approving)
+  verify: (reference, userId) => api.post("/login-fee/verify-paystack", { reference, userId }),
+  
+  // ❌ REMOVED: submitMpesaCode - manual code submission is no longer needed
+  // Users pay via STK push only, admin approves manually after checking Paystack
 };
+
+/* =====================================================
+   👑 ADMIN LOGIN FEE API (For manual approval)
+===================================================== */
+export const adminLoginFeeApi = {
+  // Get all users with pending payment
+  getPending: () => adminApi.get("/login-fee/admin/pending"),
+  
+  // Manually approve a user after verifying payment in Paystack dashboard
+  approveUser: (userId, reference, notes) => adminApi.post("/login-fee/admin/approve", { userId, reference, notes }),
+  
+  // Verify payment reference with Paystack
+  verifyWithPaystack: (reference) => adminApi.post("/login-fee/admin/verify-paystack", { reference })
+};
+
+/* =====================================================
+   📦 DEFAULT EXPORT
+===================================================== */
+export default api;
