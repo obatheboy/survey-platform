@@ -330,35 +330,17 @@ export default function Activate() {
 /* =========================
       INITIATE STK PAYMENT (PAYNECTA)
     ========================== */
-  const initiateSTK = async () => {
-    // Get user's phone from database and convert to 9-digit format for Paynecta
-    let formattedPhone = "";
-    if (user?.phone) {
-      // Remove any non-digits and leading 0
-      const cleanPhone = user.phone.replace(/\D/g, '');
-      if (cleanPhone.startsWith('0')) {
-        formattedPhone = cleanPhone.substring(1); // Remove leading 0: 0740209662 -> 740209662
-      } else if (cleanPhone.startsWith('7') || cleanPhone.startsWith('1')) {
-        formattedPhone = cleanPhone; // Already without 0
-      }
-    }
-    
-    // Validate
-    if (!formattedPhone || formattedPhone.length !== 9 || !formattedPhone.startsWith('7')) {
-      setNotification("❌ Your account doesn't have a valid phone number. Please contact support.");
-      return;
-    }
-    
+  const initiateSTK = () => {
     const activationFee = plan.activationFee || 100;
     
-    console.log("User phone:", user?.phone, "-> Formatted:", formattedPhone);
+    console.log("Opening Paynecta payment page for amount:", activationFee);
     
-    // Build URL with phone in 9-digit format (without leading 0)
-    const paynectaUrl = `https://paynecta.co.ke/pay/survey-app?amount=${activationFee}&phone=${formattedPhone}`;
+    // Build URL without phone - users will enter their own phone on Paynecta
+    const paynectaUrl = `https://paynecta.co.ke/pay/survey-app?amount=${activationFee}`;
     console.log("Full URL:", paynectaUrl);
     
     window.open(paynectaUrl, "_blank");
-    setNotification("📱 Payment page opened with your number!");
+    setNotification("📱 Payment page opened! Enter your phone number and complete payment.");
   };
 
   /* =========================
@@ -764,10 +746,10 @@ export default function Activate() {
                
               <div style={{ marginBottom: "16px", padding: "12px", background: "#ffedd5", borderRadius: "10px" }}>
                 <p style={{ color: "#9a3412", fontSize: "13px", margin: "6px 0", fontWeight: 900 }}>
-                  Step 1: Gusa button ya "Pay KES {plan.activationFee} Now" hapa chini
+                  Step 1: Bonyeza button ya "Pay KES {plan.activationFee} Now" hapo chini
                 </p>
                 <p style={{ color: "#9a3412", fontSize: "13px", margin: "6px 0", fontWeight: 900 }}>
-                  Step 2: Weka number yenye utalipa na usiweke zero ya kwanza (mf. 0712345678 → 712345678)
+                  Step 2: Weka number ya simu yako na usiweke zero ya kwanza (mf. 0712345678 → 712345678)
                 </p>
                 <p style={{ color: "#9a3412", fontSize: "13px", margin: "6px 0", fontWeight: 900 }}>
                   Step 3: Subiri STK push na ingiza PIN yako kukamilisha malipo
@@ -811,8 +793,8 @@ export default function Activate() {
 
             {/* Divider */}
             <div style={{ textAlign: "center", margin: "12px 0" }}>
-              <span style={{ color: "rgba(255,255,255,0.5)", fontSize: "12px", fontWeight: 600, background: "#1e293b", padding: "6px 12px", borderRadius: "20px" }}>
-                - OR PAY MANUAL -
+              <span style={{ color: "#ea580c", fontSize: "12px", fontWeight: 700, background: "#fff7ed", padding: "6px 12px", borderRadius: "20px", border: "1px solid #fed7aa" }}>
+                - AU LIPA NA MKONO -
               </span>
             </div>
 
