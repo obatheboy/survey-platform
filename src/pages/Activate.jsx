@@ -727,7 +727,6 @@ export default function Activate() {
             </div>
           )}
 
-            /* PAY AUTOMATICALLY AND ACTIVATE ACCOUNT IMMEDIATELY */}
             <div style={{ 
               background: "#fff7ed", 
               border: "3px solid #ea580c",
