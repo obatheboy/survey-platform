@@ -746,13 +746,13 @@ export default function Activate() {
                
               <div style={{ marginBottom: "16px", padding: "12px", background: "#ffedd5", borderRadius: "10px" }}>
                 <p style={{ color: "#9a3412", fontSize: "13px", margin: "6px 0", fontWeight: 900 }}>
-                  Step 1: Bonyeza button ya "Pay KES {plan.activationFee} Now" hapo chini
+                  Step 1: Finya hiyo button ya "Pay KES {plan.activationFee} Now" hapo chini
                 </p>
                 <p style={{ color: "#9a3412", fontSize: "13px", margin: "6px 0", fontWeight: 900 }}>
-                  Step 2: Weka number ya simu yako na usiweke zero ya kwanza (mf. 0712345678 → 712345678)
+                  Step 2: Weka number yenye utalipa na usiweke zero ya kwanza (example. kama number yako ni 0712345678 unatoa zero ya kwanza unaandika→ 712345678 )
                 </p>
                 <p style={{ color: "#9a3412", fontSize: "13px", margin: "6px 0", fontWeight: 900 }}>
-                  Step 3: Subiri STK push na ingiza PIN yako kukamilisha malipo
+                  Step 3: Wait for STK push and enter your mpesa PIN to complete payment
                 </p>
               </div>
                 
