@@ -59,6 +59,17 @@ const makeRequest = (path, method, data = null) => {
   return new Promise((resolve, reject) => {
     const url = new URL(`${PAYNECTA_CONFIG.baseUrl}${path}`);
     
+    console.log("========== MAKING REQUEST ==========");
+    console.log("URL:", url.href);
+    console.log("Method:", method);
+    console.log("Headers:", {
+      "Content-Type": "application/json",
+      "X-API-Key": PAYNECTA_CONFIG.apiKey ? "SET" : "MISSING",
+      "X-User-Email": PAYNECTA_CONFIG.userEmail
+    });
+    console.log("Data:", data);
+    console.log("====================================");
+    
     const options = {
       hostname: url.hostname,
       path: url.pathname + url.search,
@@ -74,10 +85,6 @@ const makeRequest = (path, method, data = null) => {
     if (postData) {
       options.headers["Content-Length"] = Buffer.byteLength(postData);
     }
-
-    console.log(`Paynecta Request: ${method} ${url.href}`);
-    console.log("Paynecta Headers:", JSON.stringify(options.headers));
-    if (data) console.log("Paynecta Data:", JSON.stringify(data));
 
     const req = https.request(options, (res) => {
       let body = "";
