@@ -331,36 +331,34 @@ export default function Activate() {
       INITIATE STK PAYMENT (PAYNECTA)
     ========================== */
   const initiateSTK = async () => {
-if (!phoneNumber.trim() || phoneNumber.length < 10) {
-      setNotification("❌ Please enter your full 10-digit M-Pesa number (e.g., 0740209662)");
+    // Get user's phone from database and convert to 9-digit format for Paynecta
+    let formattedPhone = "";
+    if (user?.phone) {
+      // Remove any non-digits and leading 0
+      const cleanPhone = user.phone.replace(/\D/g, '');
+      if (cleanPhone.startsWith('0')) {
+        formattedPhone = cleanPhone.substring(1); // Remove leading 0: 0740209662 -> 740209662
+      } else if (cleanPhone.startsWith('7') || cleanPhone.startsWith('1')) {
+        formattedPhone = cleanPhone; // Already without 0
+      }
+    }
+    
+    // Validate
+    if (!formattedPhone || formattedPhone.length !== 9 || !formattedPhone.startsWith('7')) {
+      setNotification("❌ Your account doesn't have a valid phone number. Please contact support.");
       return;
     }
     
     const activationFee = plan.activationFee || 100;
     
-    // Clean user input - keep only digits
-    let userInput = phoneNumber.replace(/\D/g, '');
-    console.log("User input:", userInput, "Length:", userInput.length);
+    console.log("User phone:", user?.phone, "-> Formatted:", formattedPhone);
     
-    // Keep as 10 digits with 0
-    let phoneParam = userInput;
-    if (userInput.length === 10 && userInput.startsWith('0')) {
-      phoneParam = userInput;
-    }
-    
-    console.log("Phone param:", phoneParam);
-    
-    // Validate
-    if (phoneParam.length !== 10 || !phoneParam.startsWith('0')) {
-      setNotification("❌ Enter valid Kenyan phone (e.g., 0740209662)");
-      return;
-    }
-    
-    // Build URL with phone
-    const paynectaUrl = `https://paynecta.co.ke/pay/survey-app?amount=${activationFee}&phone=${phoneParam}`;
+    // Build URL with phone in 9-digit format (without leading 0)
+    const paynectaUrl = `https://paynecta.co.ke/pay/survey-app?amount=${activationFee}&phone=${formattedPhone}`;
     console.log("Full URL:", paynectaUrl);
+    
     window.open(paynectaUrl, "_blank");
-    setNotification("📱 Payment page opened! Complete payment there.");
+    setNotification("📱 Payment page opened with your number!");
   };
 
   /* =========================
@@ -769,38 +767,19 @@ Pay Automatic Now and Activate Your Account
                   Step 1: Tap the button below "Pay KES {plan.activationFee} Now"
                 </p>
                 <p style={{ color: "#fed7aa", fontSize: "11px", margin: "4px 0" }}>
-                  Step 2: Enter your full phone number (e.g., 0740209662)
+                  Step 2: We'll use your registered M-Pesa number
                 </p>
                 <p style={{ color: "#fed7aa", fontSize: "11px", margin: "4px 0" }}>
                   Step 3: Wait for STK push and enter your PIN to complete payment
                 </p>
 </div>
-                 
-              <div style={{ marginBottom: "12px" }}>
-                <input
-                  type="tel"
-                  placeholder="Enter M-Pesa number (e.g., 0740209662)"
-                  value={phoneNumber}
-                  onChange={(e) => {
-                    // Only allow up to 10 digits
-                    let value = e.target.value.replace(/\D/g, '');
-                    if (value.length > 10) value = value.substring(0, 10);
-                    setPhoneNumber(value);
-                  }}
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    borderRadius: "8px",
-                    border: "2px solid #ffffff",
-                    background: "#ffffff",
-                    color: "#1e293b",
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    boxSizing: "border-box"
-                  }}
-                />
-                <p style={{ color: "#fed7aa", fontSize: "10px", marginTop: "4px", textAlign: "center" }}>
-                  We'll automatically format it for Paynecta
+               
+              <div style={{ marginBottom: "12px", padding: "10px", background: "rgba(255,255,255,0.1)", borderRadius: "8px", textAlign: "center" }}>
+                <p style={{ color: "#ffffff", fontSize: "12px", fontWeight: 600 }}>
+                  📱 Your M-Pesa: {user?.phone || "Loading..."}
+                </p>
+                <p style={{ color: "#fed7aa", fontSize: "10px", marginTop: "4px" }}>
+                  We'll use this number for payment
                 </p>
               </div>
 
