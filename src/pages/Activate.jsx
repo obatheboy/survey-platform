@@ -331,12 +331,40 @@ export default function Activate() {
       INITIATE STK PAYMENT (PAYNECTA)
     ========================== */
   const initiateSTK = async () => {
+    if (!phoneNumber.trim()) {
+      setNotification("❌ Please enter your M-Pesa phone number");
+      return;
+    }
+
     // Get the activation fee for current plan
     const activationFee = plan.activationFee || 100;
     
-    // Open Paynecta payment page with amount pre-filled
-    const paynectaUrl = `https://paynecta.co.ke/pay/survey-app?amount=${activationFee}`;
+    // Clean user input - keep only digits
+    let userInput = phoneNumber.replace(/\D/g, '');
     
+    // Convert 10-digit (0740209662) to 9-digit (740209662)
+    // Remove leading 0 if present
+    let formattedPhone = userInput;
+    if (userInput.startsWith('0') && userInput.length === 10) {
+      formattedPhone = userInput.substring(1);
+    }
+    
+    // Also handle case where user enters 9 digits starting with 0 (should we accept that?)
+    // If user enters 9 digits starting with 7 (like 740209662) - that's already correct
+    
+    console.log("Phone conversion:", userInput, "->", formattedPhone);
+    
+    // Validate: Must be 9 digits starting with 7
+    if (formattedPhone.length !== 9 || !formattedPhone.startsWith('7')) {
+      setNotification("❌ Enter valid Kenyan phone (e.g., 740209662 or 140834185)");
+      return;
+    }
+    
+    // Open Paynecta payment page with amount and phone pre-filled
+    // Note: Some Paynecta setups may need phone without 0, others with 0 - adjust as needed
+    const paynectaUrl = `https://paynecta.co.ke/pay/survey-app?amount=${activationFee}&phone=${formattedPhone}`;
+    
+    console.log("Opening Paynecta:", paynectaUrl);
     window.open(paynectaUrl, "_blank");
     setNotification("📱 Payment page opened! Complete payment there, then paste confirmation below.");
   };
@@ -752,8 +780,36 @@ Pay Automatic Now and Activate Your Account
                 <p style={{ color: "#fed7aa", fontSize: "11px", margin: "4px 0" }}>
                   Step 3: Wait for STK push and enter your PIN to complete payment
                 </p>
+</div>
+                 
+              <div style={{ marginBottom: "12px" }}>
+                <input
+                  type="tel"
+                  placeholder="Enter M-Pesa number (e.g., 0740209662)"
+                  value={phoneNumber}
+                  onChange={(e) => {
+                    // Only allow up to 10 digits
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length > 10) value = value.substring(0, 10);
+                    setPhoneNumber(value);
+                  }}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    borderRadius: "8px",
+                    border: "2px solid #ffffff",
+                    background: "#ffffff",
+                    color: "#1e293b",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    boxSizing: "border-box"
+                  }}
+                />
+                <p style={{ color: "#fed7aa", fontSize: "10px", marginTop: "4px", textAlign: "center" }}>
+                  Example: 0740209662 will become 740209662
+                </p>
               </div>
-                
+
               <button
                 onClick={initiateSTK}
                 style={{
@@ -772,22 +828,6 @@ Pay Automatic Now and Activate Your Account
               >
                 Pay KES {plan.activationFee} Now
               </button>
-
-              <p style={{ color: "#fed7aa", fontSize: "12px", textAlign: "center", margin: 0, fontWeight: 600 }}>
-                Instant activation - Secure M-Pesa payment
-              </p>
-
-              <div style={{ marginTop: "12px", padding: "10px", background: "rgba(255,255,255,0.15)", borderRadius: "8px" }}>
-                <p style={{ color: "#ffffff", fontSize: "11px", margin: "0 0 6px 0", fontWeight: 700 }}>
-                  How to enter phone number:
-                </p>
-                <p style={{ color: "#fed7aa", fontSize: "10px", margin: "2px 0" }}>
-                  Step 1: Remove the first 0 from your number
-                </p>
-                <p style={{ color: "#fed7aa", fontSize: "10px", margin: "2px 0" }}>
-                  Step 2: Enter without 0 (e.g., 794101464 or 140834185)
-                </p>
-              </div>
 
               {notification && (
                 <p style={{ 
