@@ -744,18 +744,21 @@ export default function Activate() {
                 📋 STEP-BY-STEP GUIDE:
               </p>
                
-              <div style={{ marginBottom: "16px", padding: "12px", background: "#ffedd5", borderRadius: "10px" }}>
-                <p style={{ color: "#9a3412", fontSize: "13px", margin: "6px 0", fontWeight: 900 }}>
-                  Step 1: Finya hiyo button ya "Pay KES {plan.activationFee} Now" hapo chini
-                </p>
-                <p style={{ color: "#9a3412", fontSize: "13px", margin: "6px 0", fontWeight: 900 }}>
-                  Step 2: Weka number yenye utalipa na usiweke zero ya kwanza (example. kama number yako ni 0712345678 unatoa zero ya kwanza unaandika→ 712345678 )
-                </p>
-                <p style={{ color: "#9a3412", fontSize: "13px", margin: "6px 0", fontWeight: 900 }}>
-                  Step 3: Wait for STK push and enter your mpesa PIN to complete payment
-                </p>
+<div style={{ marginBottom: "16px", padding: "14px", background: "#fff7ed", borderRadius: "10px", border: "2px solid #fed7aa" }}>
+                <div style={{ marginBottom: "12px" }}>
+                  <span style={{ color: "#ea580c", fontWeight: 900, fontSize: "14px" }}>Step 1:</span>
+                  <span style={{ color: "#1e293b", fontWeight: 700, fontSize: "13px", marginLeft: "6px" }}>Finya hiyo button ya "Pay KES {plan.activationFee} Now" hapo chini</span>
+                </div>
+                <div style={{ marginBottom: "12px" }}>
+                  <span style={{ color: "#ea580c", fontWeight: 900, fontSize: "14px" }}>Step 2:</span>
+                  <span style={{ color: "#1e293b", fontWeight: 700, fontSize: "13px", marginLeft: "6px" }}>Weka number yenye utalipa na usiweke zero ya kwanza (example. kama number yako ni 0712345678 unatoa zero ya kwanza unaandika→ 712345678 )</span>
+                </div>
+                <div>
+                  <span style={{ color: "#ea580c", fontWeight: 900, fontSize: "14px" }}>Step 3:</span>
+                  <span style={{ color: "#1e293b", fontWeight: 700, fontSize: "13px", marginLeft: "6px" }}>Wait for STK push and enter your mpesa PIN to complete payment</span>
+                </div>
               </div>
-                
+               
               <button
                 onClick={initiateSTK}
                 style={{
@@ -774,21 +777,6 @@ export default function Activate() {
               >
                 Pay KES {plan.activationFee} Now
               </button>
-
-              {notification && (
-                <p style={{ 
-                  marginTop: "10px", 
-                  padding: "8px", 
-                  borderRadius: "6px", 
-                  background: "rgba(0,0,0,0.3)", 
-                  color: "#ffffff", 
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  textAlign: "center"
-                }}>
-                  {notification}
-                </p>
-              )}
             </div>
 
             {/* Divider */}
