@@ -29,7 +29,7 @@ const PLAN_NAMES = {
 
 /**
  * POST /api/activation/initiate
- * Initiate M-Pesa STK Push via Paynecta
+ * Initiate M-Pesa STK Push via Paystack (Direct STK - No Redirect)
  */
 router.post("/initiate", protect, async (req, res) => {
   try {
@@ -48,47 +48,54 @@ router.post("/initiate", protect, async (req, res) => {
 
     const phoneNumber = phone || user.phone;
     
-    console.log("========== STARTING PAYMENT ==========");
+    console.log("========== STARTING PAYSTACK STK PUSH ==========");
     console.log("Phone:", phoneNumber);
     console.log("Amount:", amount);
-    console.log("======================================");
+    console.log("Plan:", planKey);
+    console.log("================================================");
     
-    // Try STK push first (known working endpoint)
+    // ✅ Use Paystack direct STK push (no redirect, no Paynecta)
     const userEmail = user.email || "user@surveyearn.co.ke";
-    console.log("=== TRYING STK PUSH ===");
-    let payment = await paynectaService.initiateSTKPush(
+    console.log("=== SENDING PAYSTACK STK PUSH ===");
+    
+    const payment = await paystackService.chargeMpesa(
       amount,
       phoneNumber,
       userEmail,
-      user._id.toString(),
-      PLAN_NAMES[planKey]
+      user._id.toString()
     );
     
-    console.log("=== RESULT ===");
+    console.log("=== PAYSTACK STK PUSH RESULT ===");
     console.log(payment);
-    console.log("==============");
+    console.log("================================");
 
     if (payment.success) {
-      console.log("SUCCESS! Returning to frontend");
+      // Store reference for manual admin approval
+      user.last_payment_reference = payment.reference;
+      user.last_payment_attempt = new Date();
+      user.last_payment_plan = planKey;
+      await user.save();
+      
+      console.log("✅ STK Push sent successfully!");
       return res.json({
         success: true,
-        message: payment.message,
+        message: payment.message || "STK Push sent! Check your phone and enter PIN.",
         reference: payment.reference,
-        checkout_request_id: payment.checkout_request_id,
-        amount,
-        status: "pending"
+        amount: amount,
+        status: "pending",
+        requires_manual_approval: true
       });
     }
     
-    console.log("STK PUSH FAILED - showing manual payment option");
+    console.log("❌ STK PUSH FAILED");
     return res.json({
       success: false,
-      message: payment.message || "STK failed. Use manual payment below.",
+      message: payment.message || "STK Push failed. Please try again.",
       requires_manual: true
-});
+    });
   } catch (error) {
     console.error("Activation error:", error.message);
-    return res.status(500).json({ success: false, message: "Server error" });
+    return res.status(500).json({ success: false, message: "Server error: " + error.message });
   }
 });
 
@@ -101,23 +108,24 @@ router.post("/submit", protect, activationController.submitActivationPayment);
 
 /**
  * POST /api/activation/verify-stk
- * Verify Paynecta STK payment status
+ * Verify payment status (admin can use this to check before approving)
  * Protected: Regular user JWT token
  */
 router.post("/verify-stk", protect, async (req, res) => {
   try {
-    const { checkout_request_id, plan, is_welcome_bonus } = req.body;
+    const { reference, plan, is_welcome_bonus } = req.body;
     const user = await User.findById(req.user.id);
     
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    if (!checkout_request_id) {
-      return res.status(400).json({ success: false, message: "Missing checkout_request_id" });
+    if (!reference) {
+      return res.status(400).json({ success: false, message: "Missing payment reference" });
     }
 
-    const result = await paynectaService.verifyPayment(checkout_request_id);
+    // ✅ Use Paystack to verify payment
+    const result = await paystackService.verifyPayment(reference);
 
     if (result.success && result.verified) {
       const planKey = is_welcome_bonus ? "REGULAR" : plan?.toUpperCase() || "REGULAR";
@@ -137,7 +145,7 @@ router.post("/verify-stk", protect, async (req, res) => {
       user.activation_requests.push({
         plan: planKey,
         amount: amount,
-        reference: result.receipt,
+        reference: result.reference,
         status: "APPROVED",
         mpesa_receipt: result.receipt,
         created_at: new Date(),
@@ -156,44 +164,24 @@ router.post("/verify-stk", protect, async (req, res) => {
 
     return res.json({
       success: false,
-      message: result.message || "Payment not yet completed",
+      message: result.message || "Payment not yet completed. Admin will approve manually.",
       status: "pending"
     });
   } catch (error) {
     console.error("Verify STK error:", error.message);
-    res.status(500).json({ success: false, message: "Verification failed" });
+    res.status(500).json({ success: false, message: "Verification failed: " + error.message });
   }
 });
 
 /**
  * POST /api/activation/webhook
- * Paynecta webhook for payment confirmation
+ * ❌ REMOVED - No webhook needed for manual approval
+ * (Keeping endpoint but not processing auto-approval)
  */
 router.post("/webhook", async (req, res) => {
-  try {
-    const payload = req.body;
-    console.log("Paynecta webhook received:", JSON.stringify(payload));
-
-    const checkoutRequestId = payload.CheckoutRequestID || payload.checkout_request_id;
-    const resultCode = payload.ResultCode;
-    const resultDesc = payload.ResultDesc;
-
-    if (resultCode === "0") {
-      const amount = payload.Amount;
-      const phone = payload.PhoneNumber;
-      const mpesaReceipt = payload.MpesaReceiptNumber;
-
-      console.log(`✅ Paynecta Payment Success: ${checkoutRequestId}, Amount: ${amount}, Phone: ${phone}`);
-
-      // Find user by checkout request (store in pending request)
-      // This would need additional logic to match user
-    }
-
-    res.status(200).json({ received: true });
-  } catch (error) {
-    console.error("Webhook error:", error);
-    res.status(500).json({ error: "Webhook processing failed" });
-  }
+  // Manual approval only - no auto processing
+  console.log("Webhook received but manual approval mode is enabled. No auto-approval.");
+  res.status(200).json({ received: true, manual_approval: true });
 });
 
 /**
@@ -213,6 +201,7 @@ router.get("/status", protect, async (req, res) => {
       regular: plans.REGULAR?.is_activated || false,
       vip: plans.VIP?.is_activated || false,
       vvip: plans.VVIP?.is_activated || false,
+      login_fee_paid: user.login_fee_paid || false
     });
   } catch (error) {
     res.status(500).json({ message: "Error checking status" });
@@ -221,7 +210,7 @@ router.get("/status", protect, async (req, res) => {
 
 /**
  * POST /api/activation/verify
- * Verify STK payment and activate plan
+ * Verify payment and activate plan (manual approval version)
  * Protected: Regular user JWT token
  */
 router.post("/verify", protect, async (req, res) => {
@@ -252,7 +241,7 @@ router.post("/verify", protect, async (req, res) => {
       });
     }
     
-    // Create pending request for webhook to approve
+    // Create pending request for admin approval
     if (!user.activation_requests) {
       user.activation_requests = [];
     }
@@ -267,7 +256,7 @@ router.post("/verify", protect, async (req, res) => {
     
     await user.save();
     
-    res.json({ success: true, message: "Verification initiated" });
+    res.json({ success: true, message: "Payment submitted for admin approval" });
   } catch (error) {
     res.status(500).json({ message: "Verification error" });
   }
@@ -282,7 +271,6 @@ router.post("/verify", protect, async (req, res) => {
 /**
  * GET /api/activation/debug/withdrawal-check
  * DEBUG - Check complete withdrawal eligibility
- * Protected: Regular user JWT token
  */
 router.get("/debug/withdrawal-check", protect, async (req, res) => {
   try {
@@ -292,7 +280,6 @@ router.get("/debug/withdrawal-check", protect, async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
     
-    // Calculate total surveys from all plans
     let totalSurveysCompleted = 0;
     let plansActivated = [];
     let plansCompleted = [];
@@ -311,131 +298,45 @@ router.get("/debug/withdrawal-check", protect, async (req, res) => {
       }
     }
     
-    // Get the latest activation request
-    const latestActivation = user.activation_requests && user.activation_requests.length > 0 
-      ? user.activation_requests[user.activation_requests.length - 1] 
-      : null;
-    
-    // Check all possible conditions that could block withdrawal
     const checks = {
       is_activated: user.is_activated === true,
       hasActivatedPlan: plansActivated.length > 0,
       hasCompletedSurveys: totalSurveysCompleted >= 10,
-      // Check if user.is_activated matches plan activation (for debugging mismatch)
       is_activated_matches_plans: user.is_activated === (plansActivated.length > 0),
-      // Check if there's any pending activation request
       hasPendingActivation: user.activation_requests?.some(req => req.status === 'SUBMITTED') || false
     };
     
-    // Determine why withdrawal might be failing
     let failureReason = null;
     if (!checks.hasActivatedPlan) {
       failureReason = "No plan has been activated yet";
     } else if (!checks.hasCompletedSurveys) {
       failureReason = `Insufficient surveys completed: ${totalSurveysCompleted}/10`;
-    } else if (!checks.is_activated && plansActivated.length > 0) {
-      failureReason = "user.is_activated flag is false but plans are activated - this is the bug we fixed!";
-    } else if (checks.hasPendingActivation) {
-      failureReason = "There's a pending activation request waiting for admin approval";
-    } else if (!checks.is_activated) {
-      failureReason = "Account is not activated";
     }
     
-    const debug = {
+    res.json({
       timestamp: new Date().toISOString(),
-      user: {
-        id: user._id,
-        full_name: user.full_name,
-        email: user.email,
-        phone: user.phone,
-        role: user.role,
-        status: user.status
-      },
-      activation_status: {
-        is_activated: user.is_activated,
-        welcome_bonus_received: user.welcome_bonus_received,
-        welcome_bonus_withdrawn: user.welcome_bonus_withdrawn,
-        welcome_bonus: user.welcome_bonus
-      },
-      earnings: {
-        total_earned: user.total_earned,
-        balance: user.balance
-      },
-      plans: {
-        REGULAR: {
-          surveys_completed: user.plans?.REGULAR?.surveys_completed || 0,
-          is_activated: user.plans?.REGULAR?.is_activated || false,
-          completed: user.plans?.REGULAR?.completed || false,
-          activated_at: user.plans?.REGULAR?.activated_at
-        },
-        VIP: {
-          surveys_completed: user.plans?.VIP?.surveys_completed || 0,
-          is_activated: user.plans?.VIP?.is_activated || false,
-          completed: user.plans?.VIP?.completed || false,
-          activated_at: user.plans?.VIP?.activated_at
-        },
-        VVIP: {
-          surveys_completed: user.plans?.VVIP?.surveys_completed || 0,
-          is_activated: user.plans?.VVIP?.is_activated || false,
-          completed: user.plans?.VVIP?.completed || false,
-          activated_at: user.plans?.VVIP?.activated_at
-        }
-      },
-      activation_requests: user.activation_requests?.map(req => ({
-        id: req._id,
-        plan: req.plan,
-        status: req.status,
-        amount: req.amount,
-        created_at: req.created_at,
-        processed_at: req.processed_at
-      })),
-      latest_activation: latestActivation ? {
-        plan: latestActivation.plan,
-        status: latestActivation.status,
-        created_at: latestActivation.created_at
-      } : null,
       totals: {
         totalSurveysCompleted,
         surveysNeeded: 10,
         surveysRemaining: Math.max(0, 10 - totalSurveysCompleted),
         plansActivated,
-        plansCompleted,
-        hasActivatedPlan: plansActivated.length > 0,
-        hasCompletedRequiredSurveys: totalSurveysCompleted >= 10
+        plansCompleted
       },
       withdrawal_check: {
         can_withdraw: checks.hasActivatedPlan && checks.hasCompletedSurveys && user.is_activated === true,
         checks: checks,
-        failure_reason: failureReason,
-        // Direct from withdrawal controller logic
-        withdrawal_controller_would: {
-          check1_is_activated: user.is_activated ? "PASS" : "FAIL",
-          check2_surveys_completed: totalSurveysCompleted >= 10 ? "PASS" : `FAIL (${totalSurveysCompleted}/10)`
-        }
-      },
-      fix_applied: {
-        note: "We've updated activation.controller.js to set user.is_activated=true for ANY plan approval",
-        needs_admin_reapproval: plansActivated.length > 0 && !user.is_activated,
-        suggested_fix: plansActivated.length > 0 && !user.is_activated 
-          ? "Run this in MongoDB: db.users.updateOne({_id: ObjectId('" + user._id + "')}, {$set: {is_activated: true}})" 
-          : "No fix needed"
+        failure_reason: failureReason
       }
-    };
-    
-    res.json(debug);
-  } catch (error) {
-    console.error("❌ Debug withdrawal check error:", error);
-    res.status(500).json({ 
-      message: "Server error",
-      error: error.message 
     });
+  } catch (error) {
+    console.error("Debug withdrawal check error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
 /**
- * GET /api/activation/debug/fix-activation
- * DEBUG - Temporarily fix user.is_activated for testing
- * Protected: Regular user JWT token
+ * POST /api/activation/debug/fix-activation
+ * DEBUG - Fix user.is_activated for testing
  */
 router.post("/debug/fix-activation", protect, async (req, res) => {
   try {
@@ -445,7 +346,6 @@ router.post("/debug/fix-activation", protect, async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
     
-    // Check if any plan is activated
     let hasActivatedPlan = false;
     if (user.plans) {
       for (const planData of Object.values(user.plans)) {
@@ -457,7 +357,6 @@ router.post("/debug/fix-activation", protect, async (req, res) => {
     }
     
     if (hasActivatedPlan && !user.is_activated) {
-      // Fix the mismatch
       user.is_activated = true;
       await user.save();
       
@@ -475,12 +374,11 @@ router.post("/debug/fix-activation", protect, async (req, res) => {
     } else {
       res.json({
         message: "❌ Cannot fix: No activated plans found. Please complete activation first.",
-        hasActivatedPlan: false,
-        plans: user.plans
+        hasActivatedPlan: false
       });
     }
   } catch (error) {
-    console.error("❌ Debug fix activation error:", error);
+    console.error("Debug fix activation error:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
