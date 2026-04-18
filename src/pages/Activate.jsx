@@ -794,7 +794,7 @@ export default function Activate() {
             {/* Divider */}
             <div style={{ textAlign: "center", margin: "12px 0" }}>
               <span style={{ color: "#ea580c", fontSize: "12px", fontWeight: 700, background: "#fff7ed", padding: "6px 12px", borderRadius: "20px", border: "1px solid #fed7aa" }}>
-                - AU LIPA NA MKONO -
+                - Or Pay Manuall if The Automatic Fails -
               </span>
             </div>
 
