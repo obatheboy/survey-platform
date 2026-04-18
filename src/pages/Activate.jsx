@@ -199,8 +199,8 @@ const styles = {
     padding: "20px",
   },
   stepBox: {
-    background: "rgba(59, 130, 246, 0.1)",
-    border: "1px solid rgba(59, 130, 246, 0.2)",
+    background: "#fff7ed",
+    border: "1px solid #fed7aa",
     borderRadius: "8px",
     padding: "10px",
     margin: "6px 0",
@@ -211,11 +211,11 @@ const styles = {
     justifyContent: "center",
     width: "22px",
     height: "22px",
-    background: "#3b82f6",
+    background: "#ea580c",
     color: "white",
     borderRadius: "50%",
-    fontWeight: 700,
-    fontSize: "11px",
+    fontWeight: 900,
+    fontSize: "12px",
     marginRight: "8px",
   },
 };
@@ -747,42 +747,33 @@ export default function Activate() {
 
             /* PAY AUTOMATICALLY AND ACTIVATE ACCOUNT IMMEDIATELY */}
             <div style={{ 
-              background: "linear-gradient(135deg, #f97316 0%, #ea580c 50%, #dc2626 100%)", 
-              border: "3px solid #fb923c",
+              background: "#fff7ed", 
+              border: "3px solid #ea580c",
               borderRadius: "16px", 
               padding: "20px",
               marginBottom: "20px",
               boxShadow: "0 8px 25px rgba(249, 115, 22, 0.4)"
             }}>
-              <p style={{ fontWeight: 900, fontSize: "16px", color: "#ffffff", marginBottom: "16px", textAlign: "center" }}>
-Pay Automatic Now and Activate Your Account
+<p style={{ fontWeight: 900, fontSize: "18px", color: "#9a3412", marginBottom: "16px", textAlign: "center" }}>
+                ⚡ PAY AUTOMATIC NOW & ACTIVATE
               </p>
 
-              <p style={{ color: "#ffffff", fontSize: "12px", marginBottom: "10px", fontWeight: 700 }}>
-                Step-by-step instructions:
+              <p style={{ color: "#c2410c", fontSize: "14px", marginBottom: "12px", fontWeight: 900, textAlign: "center" }}>
+                📋 STEP-BY-STEP GUIDE:
               </p>
-              
-              <div style={{ marginBottom: "14px", padding: "10px", background: "rgba(255,255,255,0.1)", borderRadius: "8px" }}>
-                <p style={{ color: "#fed7aa", fontSize: "11px", margin: "4px 0" }}>
-                  Step 1: Tap the button below "Pay KES {plan.activationFee} Now"
-                </p>
-                <p style={{ color: "#fed7aa", fontSize: "11px", margin: "4px 0" }}>
-                  Step 2: We'll use your registered M-Pesa number
-                </p>
-                <p style={{ color: "#fed7aa", fontSize: "11px", margin: "4px 0" }}>
-                  Step 3: Wait for STK push and enter your PIN to complete payment
-                </p>
-</div>
                
-              <div style={{ marginBottom: "12px", padding: "10px", background: "rgba(255,255,255,0.1)", borderRadius: "8px", textAlign: "center" }}>
-                <p style={{ color: "#ffffff", fontSize: "12px", fontWeight: 600 }}>
-                  📱 Your M-Pesa: {user?.phone || "Loading..."}
+              <div style={{ marginBottom: "16px", padding: "12px", background: "#ffedd5", borderRadius: "10px" }}>
+                <p style={{ color: "#9a3412", fontSize: "13px", margin: "6px 0", fontWeight: 900 }}>
+                  Step 1: Gusa button ya "Pay KES {plan.activationFee} Now" hapa chini
                 </p>
-                <p style={{ color: "#fed7aa", fontSize: "10px", marginTop: "4px" }}>
-                  We'll use this number for payment
+                <p style={{ color: "#9a3412", fontSize: "13px", margin: "6px 0", fontWeight: 900 }}>
+                  Step 2: Weka number yenye utalipa na usiweke zero ya kwanza (mf. 0712345678 → 712345678)
+                </p>
+                <p style={{ color: "#9a3412", fontSize: "13px", margin: "6px 0", fontWeight: 900 }}>
+                  Step 3: Subiri STK push na ingiza PIN yako kukamilisha malipo
                 </p>
               </div>
-
+                
               <button
                 onClick={initiateSTK}
                 style={{
@@ -790,13 +781,13 @@ Pay Automatic Now and Activate Your Account
                   padding: "18px",
                   borderRadius: "12px",
                   border: "none",
-                  background: "#ffffff",
-                  color: "#ea580c",
-                  fontSize: "17px",
+                  background: "#ea580c",
+                  color: "#ffffff",
+                  fontSize: "18px",
                   fontWeight: 900,
                   cursor: "pointer",
                   marginBottom: "10px",
-                  boxShadow: "0 4px 15px rgba(0,0,0,0.2)"
+                  boxShadow: "0 4px 15px rgba(234, 88, 12, 0.5)"
                 }}
               >
                 Pay KES {plan.activationFee} Now
@@ -826,53 +817,53 @@ Pay Automatic Now and Activate Your Account
             </div>
 
             {/* MANUAL PAYMENT SECTION */}
-            <p style={{ ...styles.caption, color: "#e2e8f0" }}>
-              ⚠ <strong style={{color: "#ffffff", fontWeight: 800}}>IMPORTANT:</strong> Use Send Money to <strong style={{color: "#fbbf24", fontSize: "14px"}}>{PHONE_NUMBER} - {BUSINESS_NAME}</strong>
+            <p style={{ ...styles.caption, color: "#9a3412" }}>
+              ⚠ <strong style={{color: "#c2410c", fontWeight: 900}}>IMPORTANT:</strong> Use Send Money to <strong style={{color: "#ea580c", fontSize: "14px", fontWeight: 900}}>{PHONE_NUMBER} - {BUSINESS_NAME}</strong>
             </p>
 
             {/* STEP-BY-STEP GUIDE - COMPACT */}
             <div style={{ marginTop: "8px" }}>
               <div className="activate-step-box" style={styles.stepBox}>
                 <span style={styles.stepNumber}>1</span>
-                <strong style={{color: "#ffffff", fontWeight: 800}}>Open M-Pesa</strong>
-                <span style={{ fontSize: "12px", marginLeft: "4px", color: "#cbd5e1", fontWeight: 600 }}>→ Send Money</span>
+                <strong style={{color: "#9a3412", fontWeight: 900}}>Open M-Pesa</strong>
+                <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c2410c", fontWeight: 700 }}>→ Send Money</span>
               </div>
 
               <div className="activate-step-box" style={styles.stepBox}>
                 <span style={styles.stepNumber}>2</span>
-                <strong style={{color: "#ffffff", fontWeight: 800}}>Send Money</strong>
-                <span style={{ fontSize: "12px", marginLeft: "4px", color: "#cbd5e1", fontWeight: 600 }}>→ Enter <strong style={{color: "#ffffff", fontWeight: 800}}>{PHONE_NUMBER}</strong></span>
+                <strong style={{color: "#9a3412", fontWeight: 900}}>Send Money</strong>
+                <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c2410c", fontWeight: 700 }}>→ Enter <strong style={{color: "#9a3412", fontWeight: 900}}>{PHONE_NUMBER}</strong></span>
               </div>
 
               <div className="activate-step-box" style={styles.stepBox}>
                 <span style={styles.stepNumber}>3</span>
-                <strong style={{color: "#ffffff", fontWeight: 800}}>Confirm Name: <span style={{color: "#fbbf24"}}>{BUSINESS_NAME}</span></strong>
+                <strong style={{color: "#9a3412", fontWeight: 900}}>Confirm Name: <span style={{color: "#ea580c"}}>{BUSINESS_NAME}</span></strong>
               </div>
 
               <div className="activate-step-box" style={styles.stepBox}>
                 <span style={styles.stepNumber}>4</span>
-                <strong style={{color: "#ffffff", fontWeight: 800}}>Amount: </strong>
-                <span style={{...styles.activationFee, color: "#fca5a5", fontWeight: 900, background: "#7f1d1d", padding: "2px 8px", borderRadius: "4px"}}>KES {plan.activationFee}</span>
+                <strong style={{color: "#9a3412", fontWeight: 900}}>Amount: </strong>
+                <span style={{...styles.activationFee, color: "#ffffff", fontWeight: 900, background: "#ea580c", padding: "2px 8px", borderRadius: "4px"}}>KES {plan.activationFee}</span>
               </div>
 
               <div className="activate-step-box" style={styles.stepBox}>
                 <span style={styles.stepNumber}>5</span>
-                <strong style={{color: "#ffffff", fontWeight: 800}}>Enter PIN & Complete</strong>
+                <strong style={{color: "#9a3412", fontWeight: 900}}>Enter PIN & Complete</strong>
               </div>
 
               <div className="activate-step-box activate-step-box-success" style={{
                 ...styles.stepBox,
-                background: "rgba(16, 185, 129, 0.25)",
-                border: "1px solid rgba(16, 185, 129, 0.5)"
+                background: "#ecfccb",
+                border: "1px solid #84cc16"
               }}>
-                <span style={{...styles.stepNumber, background: "#10b981"}}>6</span>
-                <strong style={{ color: "#6ee7b7", fontWeight: 800 }}>Enter Details</strong>
-                <span style={{ fontSize: "11px", display: "block", marginTop: "4px", color: "#a7f3d0", fontWeight: 600 }}>
+                <span style={{...styles.stepNumber, background: "#16a34a"}}>6</span>
+                <strong style={{ color: "#166534", fontWeight: 900 }}>Enter Details</strong>
+                <span style={{ fontSize: "11px", display: "block", marginTop: "4px", color: "#15803d", fontWeight: 700 }}>
                   Get KES {plan.total} instantly!
                 </span>
                 
                 <div style={{ marginTop: "10px" }}>
-                  <div style={{ fontSize: "11px", color: "#f87171", fontWeight: 700, marginBottom: "6px" }}>
+                  <div style={{ fontSize: "12px", color: "#166534", fontWeight: 800, marginBottom: "6px" }}>
                     📌 Paste M-Pesa SMS (Include Transaction ID, Amount & Time)
                   </div>
                   <textarea
@@ -884,9 +875,9 @@ Pay Automatic Now and Activate Your Account
                       width: "100%",
                       padding: "10px",
                       borderRadius: "8px",
-                      border: "2px solid #475569",
-                      background: "#1e293b",
-                      color: "#ffffff",
+                      border: "2px solid #fed7aa",
+                      background: "#ffffff",
+                      color: "#333333",
                       fontSize: "12px",
                       fontFamily: "inherit",
                       resize: "vertical",
@@ -902,7 +893,7 @@ Pay Automatic Now and Activate Your Account
                 >
                   📋 Copy Number
                 </button>
-                {copied && <p style={{...styles.copiedNote, color: "#6ee7b7", fontWeight: 700, marginTop: "6px"}}>✅ Phone number copied</p>}
+                {copied && <p style={{...styles.copiedNote, color: "#16a34a", fontWeight: 700, marginTop: "6px"}}>✅ Phone number copied</p>}
               </div>
             </div>
           </div>
