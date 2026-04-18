@@ -24,7 +24,6 @@ const formatPhone = (phone) => {
   return cleaned;
 };
 
-// Format phone to 254 international format (e.g., 0740209662 -> 254740209662)
 const formatPhoneToInternational = (phone) => {
   let cleaned = phone.replace(/[^0-9]/g, '');
   
@@ -38,6 +37,21 @@ const formatPhoneToInternational = (phone) => {
   }
   
   console.log(`Phone formatted to international: ${phone} -> ${cleaned}`);
+  return cleaned;
+};
+
+// Format phone for Paynecta - without 254 prefix (e.g., 740209662)
+const formatPhoneForPaynecta = (phone) => {
+  let cleaned = phone.replace(/[^0-9]/g, '');
+  
+  // Remove any prefix
+  if (cleaned.startsWith('0') && cleaned.length > 1) {
+    cleaned = cleaned.substring(1); // 0740209662 -> 740209662
+  } else if (cleaned.startsWith('254')) {
+    cleaned = cleaned.substring(3); // 254740209662 -> 740209662
+  }
+  
+  console.log(`Phone formatted for Paynecta: ${phone} -> ${cleaned}`);
   return cleaned;
 };
 
@@ -182,30 +196,44 @@ const queryPayment = async (checkoutRequestId) => {
 ============================== */
 const initializeDirectPayment = async (phoneNumber, amount, paymentCode = "PNT_371193") => {
   try {
-    const internationalPhone = formatPhoneToInternational(phoneNumber);
+    // Try both phone formats to see which one works
+    const phone254 = formatPhoneToInternational(phoneNumber); // 254740209662
+    const phone7 = formatPhoneForPaynecta(phoneNumber); // 740209662
     
+    // Try with 254 format first (as per user spec)
     const requestData = {
       code: paymentCode,
-      mobile_number: internationalPhone,
+      mobile_number: phone254,
       amount: parseInt(amount)
     };
 
     console.log("Paynecta Direct API Request:", JSON.stringify(requestData, null, 2));
-    console.log("Paynecta API Key:", PAYNECTA_CONFIG.apiKey);
+    console.log("Paynecta API Key:", PAYNECTA_CONFIG.apiKey ? "PRESENT" : "MISSING");
     console.log("Paynecta User Email:", PAYNECTA_CONFIG.userEmail);
 
     const response = await makeRequest("/api/v1/payment/initialize", "POST", requestData);
     
     console.log("Paynecta Direct API Response:", JSON.stringify(response, null, 2));
+    console.log("Paynecta Response keys:", Object.keys(response));
+    console.log("Paynecta Response status:", response.status);
+    console.log("Paynecta Response success:", response.success);
     
-    // Check for successful response
-    if (response.success || response.status === "success" || response.CheckoutRequestID || response.status === "pending") {
+    // Check for successful response - be more lenient
+    const isSuccess = response.success === true || 
+                      response.status === "success" || 
+                      response.status === "pending" ||
+                      response.CheckoutRequestID || 
+                      response.MerchantRequestID ||
+                      response.checkout_request_id;
+    
+    if (isSuccess) {
       return {
         success: true,
         message: response.message || "STK Push sent! Check your phone and enter PIN.",
-        checkout_request_id: response.CheckoutRequestID || response.checkout_request_id,
+        checkout_request_id: response.CheckoutRequestID || response.checkout_request_id || response.MerchantRequestID,
         reference: response.MerchantRequestID || response.reference || `PNT_${Date.now()}`,
-        status: response.status
+        status: response.status,
+        raw_response: response
       };
     } else {
       return {
@@ -230,5 +258,6 @@ module.exports = {
   queryPayment,
   formatPhone,
   formatPhoneToInternational,
+  formatPhoneForPaynecta,
   initializeDirectPayment
 };
