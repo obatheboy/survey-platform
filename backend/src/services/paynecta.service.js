@@ -51,8 +51,8 @@ const makeRequest = (path, method, data = null) => {
       method: method,
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${PAYNECTA_CONFIG.apiKey}`,
-        "User-Email": PAYNECTA_CONFIG.userEmail
+        "X-API-Key": PAYNECTA_CONFIG.apiKey,
+        "X-User-Email": PAYNECTA_CONFIG.userEmail
       }
     };
 
