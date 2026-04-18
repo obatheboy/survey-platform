@@ -29,7 +29,7 @@ const PLAN_NAMES = {
 
 /**
  * POST /api/activation/initiate
- * Initiate M-Pesa STK Push via Paynecta Direct API
+ * Initiate M-Pesa STK Push via Paynecta
  */
 router.post("/initiate", protect, async (req, res) => {
   try {
@@ -46,7 +46,7 @@ router.post("/initiate", protect, async (req, res) => {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-const phoneNumber = phone || user.phone;
+    const phoneNumber = phone || user.phone;
     
     console.log("========== STARTING PAYMENT ==========");
     console.log("Phone:", phoneNumber);
@@ -86,7 +86,11 @@ const phoneNumber = phone || user.phone;
       message: payment.message || "STK failed. Use manual payment below.",
       requires_manual: true
     });
-    }
+  } catch (error) {
+    console.error("Activation error:", error.message);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+});
     
     console.log("Direct payment failed, trying STK push...");
     // Try STK push as fallback
