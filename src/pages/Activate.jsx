@@ -236,6 +236,7 @@ export default function Activate() {
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [showManual, setShowManual] = useState(true);
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [showPaymentWidget, setShowPaymentWidget] = useState(false);
   
   useEffect(() => {
     let isMounted = true;
@@ -328,26 +329,46 @@ export default function Activate() {
   }, [navigate, searchParams, location.state]);
 
 /* =========================
-      INITIATE STK PAYMENT (PAYNECTA)
+      INITIATE STK PAYMENT (PAYNECTA WIDGET)
     ========================== */
   const initiateSTK = () => {
     const activationFee = plan.activationFee || 100;
-    console.log("Opening Paynecta payment for amount:", activationFee);
+    console.log("Opening Paynecta widget for amount:", activationFee);
+    setShowPaymentWidget(true);
     
-    // Open Paynecta payment page in popup
-    const paynectaUrl = `https://paynecta.co.ke/pay/survey-app?amount=${activationFee}`;
-    
-    // Open in a centered popup window
-    const width = 500;
-    const height = 700;
-    const left = (window.screen.width - width) / 2;
-    const top = (window.screen.height - height) / 2;
-    
-    window.open(
-      paynectaUrl, 
-      'paynectaPayment',
-      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`
-    );
+    // Try to trigger Paynecta widget if available
+    setTimeout(() => {
+      // Method 1: Check for PaynectaWidget global
+      if (window.PaynectaWidget && typeof window.PaynectaWidget.open === 'function') {
+        window.PaynectaWidget.open({
+          slug: 'survey-app',
+          amount: activationFee
+        });
+        return;
+      }
+      
+      // Method 2: Check for paynecta global object
+      if (window.paynecta && typeof window.paynecta.open === 'function') {
+        window.paynecta.open({
+          slug: 'survey-app', 
+          amount: activationFee
+        });
+        return;
+      }
+      
+      // Method 3: Try triggering via custom event
+      const event = new CustomEvent('paynecta:open', {
+        detail: { slug: 'survey-app', amount: activationFee }
+      });
+      document.dispatchEvent(event);
+      
+      // Log for debugging
+      console.log("Paynecta widget not found. Available globals:", Object.keys(window).filter(k => k.toLowerCase().includes('pay')));
+    }, 500);
+  };
+
+  const closePaymentWidget = () => {
+    setShowPaymentWidget(false);
   };
 
   /* =========================
@@ -1003,6 +1024,92 @@ export default function Activate() {
           <Testimonials variant="carousel" />
         </div>
       </div>
+
+      {/* Paynecta Payment Modal Overlay */}
+      {showPaymentWidget && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: "rgba(0,0,0,0.7)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 99999,
+          padding: "20px"
+        }}>
+          <div style={{
+            background: "#fff7ed",
+            borderRadius: "16px",
+            padding: "24px",
+            maxWidth: "380px",
+            width: "100%",
+            position: "relative"
+          }}>
+            <button
+              onClick={closePaymentWidget}
+              style={{
+                position: "absolute",
+                top: "10px",
+                right: "10px",
+                background: "#fee2e2",
+                border: "none",
+                borderRadius: "50%",
+                width: "28px",
+                height: "28px",
+                cursor: "pointer",
+                fontSize: "16px",
+                color: "#dc2626",
+                fontWeight: "bold"
+              }}
+            >
+              ✕
+            </button>
+            <h3 style={{
+              color: "#9a3412",
+              fontSize: "18px",
+              fontWeight: "900",
+              marginBottom: "12px",
+              textAlign: "center"
+            }}>
+              💳 Pay with M-Pesa
+            </h3>
+            <p style={{
+              color: "#c2410c",
+              fontSize: "14px",
+              marginBottom: "16px",
+              textAlign: "center",
+              fontWeight: "700"
+            }}>
+              Amount: KES {plan.activationFee}
+            </p>
+            <div style={{
+              background: "#fff",
+              borderRadius: "10px",
+              padding: "20px",
+              textAlign: "center",
+              minHeight: "150px"
+            }}>
+              <p style={{ color: "#666", fontSize: "13px" }}>
+                Loading payment form...
+              </p>
+              <p style={{ color: "#999", fontSize: "12px", marginTop: "10px" }}>
+                You will receive an STK push on your phone
+              </p>
+            </div>
+            <p style={{
+              color: "#9a3412",
+              fontSize: "11px",
+              marginTop: "12px",
+              textAlign: "center"
+            }}>
+              🔒 Secure payment via Paynecta
+            </p>
+          </div>
+        </div>
+      )}
     </>
   );
 }
