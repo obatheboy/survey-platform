@@ -17,9 +17,7 @@ const notificationRoutes = require("./routes/notification.routes");
 
 const app = express();
 
-/* ===============================
-   🔥 TRUST PROXY (CRITICAL FOR VERCEL/RENDER)
-================================ */
+
 app.set("trust proxy", 1);
 
 /* ===============================
