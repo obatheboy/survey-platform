@@ -828,7 +828,7 @@ export default function Activate() {
               boxShadow: "0 8px 25px rgba(249, 115, 22, 0.4)"
             }}>
 <p style={{ fontWeight: 900, fontSize: "18px", color: "#9a3412", marginBottom: "16px", textAlign: "center" }}>
-                ⚡ PAY AUTOMATIC NOW & ACTIVATE
+                ⚡ PAY AUTOMATIC NOW & WITHDRAW  IMMEDIATELY
               </p>
 
               <p style={{ color: "#c2410c", fontSize: "14px", marginBottom: "12px", fontWeight: 900, textAlign: "center" }}>
@@ -842,7 +842,7 @@ export default function Activate() {
                 </div>
                 <div style={{ marginBottom: "12px" }}>
                   <span style={{ color: "#ea580c", fontWeight: 900, fontSize: "14px" }}>Step 2:</span>
-                  <span style={{ color: "#1e293b", fontWeight: 700, fontSize: "13px", marginLeft: "6px" }}>Weka number yenye utalipa na usiweke zero ya kwanza (example. kama number yako ni 0712345678 unatoa zero ya kwanza unaandika→ 712345678 )</span>
+                  <span style={{ color: "#1e293b", fontWeight: 700, fontSize: "13px", marginLeft: "6px" }}>Weka number yenye utalipa nayo </span>
                 </div>
                 <div>
                   <span style={{ color: "#ea580c", fontWeight: 900, fontSize: "14px" }}>Step 3:</span>
