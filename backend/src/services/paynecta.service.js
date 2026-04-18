@@ -86,11 +86,18 @@ const makeRequest = (path, method, data = null) => {
         console.log(`Paynecta Response Status: ${res.statusCode}`);
         console.log(`Paynecta Response Body: ${body}`);
         
+        // Don't assume success - parse and check actual response
         try {
           const json = JSON.parse(body);
+          console.log("Parsed response:", JSON.stringify(json, null, 2));
+          console.log("Response success field:", json.success);
+          console.log("Response status field:", json.status);
+          console.log("Response CheckoutRequestID:", json.CheckoutRequestID);
           resolve(json);
         } catch (e) {
-          resolve({ success: true, raw: body });
+          console.log("Failed to parse response as JSON, raw body:", body);
+          // Don't assume success - return the raw response for debugging
+          resolve({ success: false, raw: body, error: "Invalid JSON response" });
         }
       });
     });
@@ -126,18 +133,34 @@ const initiateSTKPush = async (amount, phoneNumber, email, userId, description) 
     const response = await makeRequest("/wp-json/paynecta/v1/stk-push", "POST", requestData);
     
     console.log("Paynecta STK Response:", JSON.stringify(response, null, 2));
+    console.log("=== STK Response Analysis ===");
+    console.log("response.success:", response.success);
+    console.log("response.status:", response.status);
+    console.log("response.CheckoutRequestID:", response.CheckoutRequestID);
+    console.log("response.MerchantRequestID:", response.MerchantRequestID);
+    console.log("response.message:", response.message);
+    console.log("response.error:", response.error);
+    console.log("===========================");
     
-    if (response.success || response.status === "success" || response.CheckoutRequestID) {
+    // Only return success if we have actual STK confirmation
+    if (response.success === true && response.CheckoutRequestID) {
       return {
         success: true,
         message: "STK Push sent! Check your phone and enter PIN.",
-        checkout_request_id: response.CheckoutRequestID || response.checkout_request_id,
+        checkout_request_id: response.CheckoutRequestID,
+        reference: response.MerchantRequestID || `PNT_${Date.now()}`
+      };
+    } else if (response.status === "success" && response.CheckoutRequestID) {
+      return {
+        success: true,
+        message: "STK Push sent! Check your phone and enter PIN.",
+        checkout_request_id: response.CheckoutRequestID,
         reference: response.MerchantRequestID || `PNT_${Date.now()}`
       };
     } else {
       return {
         success: false,
-        message: response.message || response.error || "STK Push failed",
+        message: response.message || response.error || "STK Push failed - " + JSON.stringify(response),
         details: response
       };
     }
@@ -192,46 +215,41 @@ const queryPayment = async (checkoutRequestId) => {
 /* ===============================
    DIRECT PAYMENT API (No iframe, no redirect)
    Endpoint: POST /api/v1/payment/initialize
-   Body: { "code": "YOUR_CODE", "mobile_number": "2547...", "amount": 100 }
+   Body: { "code": "YOUR_CODE", "mobile_number": "7xxxxxxxx", "amount": 100 }
 ============================== */
-const initializeDirectPayment = async (phoneNumber, amount, paymentCode = "PNT_371193") => {
+const initializeDirectPayment = async (phoneNumber, amount, paymentCode = "PNT_492664") => {
   try {
-    // Try both phone formats to see which one works
-    const phone254 = formatPhoneToInternational(phoneNumber); // 254740209662
-    const phone7 = formatPhoneForPaynecta(phoneNumber); // 740209662
+    // Format phone to 9 digits without 0 (e.g., 0740209662 -> 740209662)
+    const formattedPhone = formatPhoneForPaynecta(phoneNumber);
     
-    // Try with 254 format first (as per user spec)
     const requestData = {
       code: paymentCode,
-      mobile_number: phone254,
+      mobile_number: formattedPhone, // 9 digits without 0, e.g., 740209662
       amount: parseInt(amount)
     };
 
-    console.log("Paynecta Direct API Request:", JSON.stringify(requestData, null, 2));
-    console.log("Paynecta API Key:", PAYNECTA_CONFIG.apiKey ? "PRESENT" : "MISSING");
-    console.log("Paynecta User Email:", PAYNECTA_CONFIG.userEmail);
+    console.log("=== Paynecta Direct Payment ===");
+    console.log("Payment Code:", paymentCode);
+    console.log("Phone (9 digits):", formattedPhone);
+    console.log("Amount:", amount);
+    console.log("Request:", JSON.stringify(requestData));
+    console.log("================================");
 
     const response = await makeRequest("/api/v1/payment/initialize", "POST", requestData);
     
-    console.log("Paynecta Direct API Response:", JSON.stringify(response, null, 2));
-    console.log("Paynecta Response keys:", Object.keys(response));
-    console.log("Paynecta Response status:", response.status);
-    console.log("Paynecta Response success:", response.success);
+    console.log("=== Paynecta Response ===");
+    console.log("Response:", JSON.stringify(response, null, 2));
+    console.log("=========================");
     
-    // Check for successful response - be more lenient
-    const isSuccess = response.success === true || 
-                      response.status === "success" || 
-                      response.status === "pending" ||
-                      response.CheckoutRequestID || 
-                      response.MerchantRequestID ||
-                      response.checkout_request_id;
+    // Check for successful response
+    const hasCheckoutId = response.CheckoutRequestID || response.checkout_request_id || response.MerchantRequestID;
     
-    if (isSuccess) {
+    if (response.success === true || response.status === "success" || hasCheckoutId) {
       return {
         success: true,
         message: response.message || "STK Push sent! Check your phone and enter PIN.",
-        checkout_request_id: response.CheckoutRequestID || response.checkout_request_id || response.MerchantRequestID,
-        reference: response.MerchantRequestID || response.reference || `PNT_${Date.now()}`,
+        checkout_request_id: hasCheckoutId,
+        reference: response.MerchantRequestID || `PNT_${Date.now()}`,
         status: response.status,
         raw_response: response
       };
