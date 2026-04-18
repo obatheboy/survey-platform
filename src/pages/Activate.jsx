@@ -236,7 +236,6 @@ export default function Activate() {
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [showManual, setShowManual] = useState(true);
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [showPaymentWidget, setShowPaymentWidget] = useState(false);
   
   useEffect(() => {
     let isMounted = true;
@@ -329,45 +328,26 @@ export default function Activate() {
   }, [navigate, searchParams, location.state]);
 
 /* =========================
-      INITIATE STK PAYMENT (PAYNECTA WIDGET)
+      INITIATE STK PAYMENT (PAYNECTA)
     ========================== */
   const initiateSTK = () => {
-    setShowPaymentWidget(true);
     const activationFee = plan.activationFee || 100;
-    console.log("Opening Paynecta widget for amount:", activationFee);
+    console.log("Opening Paynecta payment for amount:", activationFee);
     
-    // Remove any existing Paynecta scripts to avoid duplicates
-    const existingScripts = document.querySelectorAll('script[src*="paynecta"]');
-    existingScripts.forEach(script => script.remove());
+    // Open Paynecta payment page in popup
+    const paynectaUrl = `https://paynecta.co.ke/pay/survey-app?amount=${activationFee}`;
     
-    // Remove existing widget container content
-    const container = document.getElementById('paynecta-widget-container');
-    if (container) container.innerHTML = '';
+    // Open in a centered popup window
+    const width = 500;
+    const height = 700;
+    const left = (window.screen.width - width) / 2;
+    const top = (window.screen.height - height) / 2;
     
-    // Load Paynecta widget script dynamically after a short delay
-    setTimeout(() => {
-      // Clear container first
-      if (container) {
-        container.innerHTML = '';
-      }
-      
-      const script = document.createElement('script');
-      script.src = "https://paynecta.co.ke/widget.js";
-      script.setAttribute('data-slug', 'survey-app');
-      script.setAttribute('data-amount', activationFee);
-      script.async = true;
-      
-      // Append to widget container instead of body
-      if (container) {
-        container.appendChild(script);
-      } else {
-        document.body.appendChild(script);
-      }
-    }, 200);
-  };
-
-  const closePaymentWidget = () => {
-    setShowPaymentWidget(false);
+    window.open(
+      paynectaUrl, 
+      'paynectaPayment',
+      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`
+    );
   };
 
   /* =========================
@@ -1023,85 +1003,6 @@ export default function Activate() {
           <Testimonials variant="carousel" />
         </div>
       </div>
-
-      {/* Paynecta Payment Widget Overlay */}
-      {showPaymentWidget && (
-        <div style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: "rgba(0,0,0,0.8)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 9999,
-          padding: "20px"
-        }}>
-          <div style={{
-            background: "#fff7ed",
-            borderRadius: "16px",
-            padding: "24px",
-            maxWidth: "400px",
-            width: "100%",
-            position: "relative"
-          }}>
-            <button
-              onClick={closePaymentWidget}
-              style={{
-                position: "absolute",
-                top: "12px",
-                right: "12px",
-                background: "#fee2e2",
-                border: "none",
-                borderRadius: "50%",
-                width: "32px",
-                height: "32px",
-                cursor: "pointer",
-                fontSize: "18px",
-                color: "#dc2626"
-              }}
-            >
-              ✕
-            </button>
-            <h3 style={{
-              color: "#9a3412",
-              fontSize: "18px",
-              fontWeight: 900,
-              marginBottom: "16px",
-              textAlign: "center"
-            }}>
-              Pay with M-Pesa
-            </h3>
-            <p style={{
-              color: "#c2410c",
-              fontSize: "14px",
-              marginBottom: "16px",
-              textAlign: "center"
-            }}>
-              Amount: KES {plan.activationFee}
-            </p>
-            <div id="paynecta-widget-container" style={{
-              minHeight: "200px",
-              background: "#fff",
-              borderRadius: "8px",
-              padding: "20px",
-              textAlign: "center"
-            }}>
-            </div>
-            <p style={{
-              color: "#9a3412",
-              fontSize: "12px",
-              marginTop: "12px",
-              textAlign: "center",
-              fontWeight: 600
-            }}>
-              You will receive an STK push on your phone
-            </p>
-          </div>
-        </div>
-      )}
     </>
   );
 }
