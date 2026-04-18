@@ -237,6 +237,9 @@ export default function Activate() {
   const [showManual, setShowManual] = useState(true);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [showPaymentWidget, setShowPaymentWidget] = useState(false);
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [paymentNotification, setPaymentNotification] = useState(null);
+  const [isWelcomeBonus, setIsWelcomeBonus] = useState(false);
   
   useEffect(() => {
     let isMounted = true;
@@ -250,6 +253,7 @@ export default function Activate() {
         const statePlanKey = location.state?.planKey;
         const isWelcome = searchParams.get("welcome_bonus");
         const planFromUrl = searchParams.get("plan");
+        setIsWelcomeBonus(!!isWelcome);
 
         // FIXED LOGIC: Prioritize URL param, then state, then active_plan
         let planFromQuery;
@@ -329,46 +333,115 @@ export default function Activate() {
   }, [navigate, searchParams, location.state]);
 
 /* =========================
-      INITIATE STK PAYMENT (PAYNECTA WIDGET)
+      INITIATE STK PAYMENT (CUSTOM POPUP)
     ========================== */
-  const initiateSTK = () => {
+  const initiateSTK = async () => {
     const activationFee = plan.activationFee || 100;
-    console.log("Opening Paynecta widget for amount:", activationFee);
     setShowPaymentWidget(true);
+    setPaymentNotification(null);
+    setPaymentLoading(true);
     
-    // Try to trigger Paynecta widget if available
-    setTimeout(() => {
-      // Method 1: Check for PaynectaWidget global
-      if (window.PaynectaWidget && typeof window.PaynectaWidget.open === 'function') {
-        window.PaynectaWidget.open({
-          slug: 'survey-app',
-          amount: activationFee
-        });
-        return;
+    try {
+      // Get user's phone and convert to 254 format
+      const userPhone = user?.phone || "";
+      let formattedPhone = userPhone.replace(/[^0-9]/g, '');
+      
+      // Convert to 254 format (e.g., 0740209662 -> 254740209662)
+      if (formattedPhone.startsWith('0') && formattedPhone.length > 1) {
+        formattedPhone = '254' + formattedPhone.substring(1);
+      } else if (formattedPhone.startsWith('7')) {
+        formattedPhone = '254' + formattedPhone;
       }
       
-      // Method 2: Check for paynecta global object
-      if (window.paynecta && typeof window.paynecta.open === 'function') {
-        window.paynecta.open({
-          slug: 'survey-app', 
-          amount: activationFee
-        });
-        return;
-      }
+      console.log("Initiating payment:", { amount: activationFee, phone: formattedPhone });
       
-      // Method 3: Try triggering via custom event
-      const event = new CustomEvent('paynecta:open', {
-        detail: { slug: 'survey-app', amount: activationFee }
+      const res = await api.post("/activation/initiate", {
+        plan: planKey,
+        is_welcome_bonus: isWelcomeBonus,
+        phone: formattedPhone
       });
-      document.dispatchEvent(event);
       
-      // Log for debugging
-      console.log("Paynecta widget not found. Available globals:", Object.keys(window).filter(k => k.toLowerCase().includes('pay')));
-    }, 500);
+      setPaymentLoading(false);
+      
+      if (res.data.success) {
+        setPaymentNotification({
+          type: "success",
+          message: "📱 STK Push sent! Check your phone and enter your M-Pesa PIN to complete payment."
+        });
+        
+        // Start polling for payment status
+        if (res.data.checkout_request_id) {
+          pollPaymentStatus(res.data.checkout_request_id);
+        }
+      } else {
+        setPaymentNotification({
+          type: "error",
+          message: res.data.message || "Payment failed. Please try manual payment below."
+        });
+      }
+    } catch (error) {
+      setPaymentLoading(false);
+      console.error("Payment error:", error);
+      setPaymentNotification({
+        type: "error",
+        message: "Failed to initiate payment. Please try manual payment below."
+      });
+    }
+  };
+
+  // Poll payment status
+  const pollPaymentStatus = async (checkoutRequestId) => {
+    let attempts = 0;
+    const maxAttempts = 20;
+    
+    const poll = async () => {
+      try {
+        const res = await api.post("/activation/verify-stk", {
+          checkout_request_id: checkoutRequestId,
+          plan: planKey,
+          is_welcome_bonus: isWelcomeBonus
+        });
+        
+        if (res.data.success && res.data.verified) {
+          setPaymentNotification({
+            type: "success",
+            message: "✅ Payment successful! Your account is now activated."
+          });
+          
+          // Set welcome bonus to show on dashboard
+          localStorage.setItem("showWelcomeBonusOnDashboard", "true");
+          
+          // Redirect after success
+          setTimeout(() => {
+            navigate("/dashboard");
+          }, 2000);
+          return;
+        }
+        
+        attempts++;
+        if (attempts < maxAttempts) {
+          setTimeout(poll, 3000);
+        } else {
+          setPaymentNotification({
+            type: "info",
+            message: "⏳ Payment pending. If you completed payment, please wait for confirmation or use manual payment."
+          });
+        }
+      } catch (err) {
+        console.error("Poll error:", err);
+        attempts++;
+        if (attempts < maxAttempts) {
+          setTimeout(poll, 3000);
+        }
+      }
+    };
+    
+    setTimeout(poll, 3000);
   };
 
   const closePaymentWidget = () => {
     setShowPaymentWidget(false);
+    setPaymentNotification(null);
   };
 
   /* =========================
@@ -1085,27 +1158,86 @@ export default function Activate() {
             }}>
               Amount: KES {plan.activationFee}
             </p>
+            
+            {/* Payment Content */}
             <div style={{
               background: "#fff",
               borderRadius: "10px",
               padding: "20px",
               textAlign: "center",
-              minHeight: "150px"
+              minHeight: "120px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center"
             }}>
-              <p style={{ color: "#666", fontSize: "13px" }}>
-                Loading payment form...
-              </p>
-              <p style={{ color: "#999", fontSize: "12px", marginTop: "10px" }}>
-                You will receive an STK push on your phone
-              </p>
+              {paymentLoading ? (
+                <>
+                  <div style={{ 
+                    width: "40px", 
+                    height: "40px", 
+                    border: "4px solid #fed7aa", 
+                    borderTopColor: "#ea580c",
+                    borderRadius: "50%",
+                    animation: "spin 1s linear infinite",
+                    marginBottom: "12px"
+                  }} />
+                  <p style={{ color: "#666", fontSize: "13px" }}>
+                    Sending STK push to your phone...
+                  </p>
+                </>
+              ) : paymentNotification ? (
+                <div style={{
+                  padding: "12px",
+                  borderRadius: "8px",
+                  background: paymentNotification.type === "success" ? "#dcfce7" : 
+                             paymentNotification.type === "error" ? "#fee2e2" : "#fef3c7"
+                }}>
+                  <p style={{ 
+                    color: paymentNotification.type === "success" ? "#166534" : 
+                           paymentNotification.type === "error" ? "#dc2626" : "#92400e",
+                    fontSize: "13px",
+                    fontWeight: "600",
+                    margin: 0
+                  }}>
+                    {paymentNotification.message}
+                  </p>
+                </div>
+              ) : (
+                <p style={{ color: "#666", fontSize: "13px" }}>
+                  Click the button below to pay
+                </p>
+              )}
             </div>
+            
+            {/* Action Button */}
+            {!paymentLoading && (!paymentNotification || paymentNotification.type === "error") && (
+              <button
+                onClick={initiateSTK}
+                style={{
+                  width: "100%",
+                  padding: "14px",
+                  background: "#ea580c",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "10px",
+                  fontSize: "15px",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  marginTop: "12px"
+                }}
+              >
+                Pay KES {plan.activationFee} Now
+              </button>
+            )}
+            
             <p style={{
               color: "#9a3412",
               fontSize: "11px",
               marginTop: "12px",
               textAlign: "center"
             }}>
-              🔒 Secure payment via Paynecta
+              💰 Instant payment via M-Pesa
             </p>
           </div>
         </div>
