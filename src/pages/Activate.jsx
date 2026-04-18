@@ -331,43 +331,34 @@ export default function Activate() {
       INITIATE STK PAYMENT (PAYNECTA)
     ========================== */
   const initiateSTK = async () => {
-    if (!phoneNumber.trim()) {
-      setNotification("❌ Please enter your M-Pesa phone number");
+if (!phoneNumber.trim() || phoneNumber.length < 10) {
+      setNotification("❌ Please enter your full 10-digit M-Pesa number (e.g., 0740209662)");
       return;
     }
-
-    // Get the activation fee for current plan
+    
     const activationFee = plan.activationFee || 100;
     
     // Clean user input - keep only digits
     let userInput = phoneNumber.replace(/\D/g, '');
+    console.log("User input:", userInput, "Length:", userInput.length);
     
-    // Keep original format (with 0) since Paynecta might expect 10 digits
-    // User enters: 0740209662 -> Paynecta gets: 0740209662
-    // If Paynecta cuts last 2, they might expect: 074020966 (9 digits with 0)
-    
-    // Try keeping 10 digits with 0 first (if user entered 10 digits)
+    // Keep as 10 digits with 0
     let phoneParam = userInput;
     if (userInput.length === 10 && userInput.startsWith('0')) {
-      phoneParam = userInput; // Keep as 10 digits with 0
-    } else if (userInput.length === 9 && userInput.startsWith('7')) {
-      // If user entered 9 digits without 0, add the 0
-      phoneParam = '0' + userInput;
+      phoneParam = userInput;
     }
     
     console.log("Phone param:", phoneParam);
     
-    // Validate phone length (either 9 or 10 digits)
+    // Validate
     if (phoneParam.length !== 10 || !phoneParam.startsWith('0')) {
       setNotification("❌ Enter valid Kenyan phone (e.g., 0740209662)");
       return;
     }
     
-    // Open Paynecta payment page - try both formats
-    // First: with leading 0 (10 digits)
+    // Build URL with phone
     const paynectaUrl = `https://paynecta.co.ke/pay/survey-app?amount=${activationFee}&phone=${phoneParam}`;
-    
-    console.log("Opening Paynecta:", paynectaUrl);
+    console.log("Full URL:", paynectaUrl);
     window.open(paynectaUrl, "_blank");
     setNotification("📱 Payment page opened! Complete payment there.");
   };
