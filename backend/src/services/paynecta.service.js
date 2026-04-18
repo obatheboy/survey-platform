@@ -133,10 +133,10 @@ const makeRequest = (path, method, data = null) => {
   });
 };
 
-// Initialize STK Push Payment
+// Initialize STK Push Payment - Using the OLD working endpoint
 const initiateSTKPush = async (amount, phoneNumber, email, userId, description) => {
   try {
-    const formattedPhone = formatPhone(phoneNumber);
+    const formattedPhone = formatPhone(phoneNumber); // 7xxxxxxxx format
     
     const requestData = {
       amount: parseInt(amount),
@@ -149,27 +149,18 @@ const initiateSTKPush = async (amount, phoneNumber, email, userId, description) 
       }
     };
 
+    console.log("=== STK Push Request ===");
+    console.log("Phone:", formattedPhone);
+    console.log("Amount:", amount);
+    console.log("========================");
+
     const response = await makeRequest("/wp-json/paynecta/v1/stk-push", "POST", requestData);
     
-    console.log("Paynecta STK Response:", JSON.stringify(response, null, 2));
-    console.log("=== STK Response Analysis ===");
-    console.log("response.success:", response.success);
-    console.log("response.status:", response.status);
-    console.log("response.CheckoutRequestID:", response.CheckoutRequestID);
-    console.log("response.MerchantRequestID:", response.MerchantRequestID);
-    console.log("response.message:", response.message);
-    console.log("response.error:", response.error);
-    console.log("===========================");
+    console.log("=== STK Push Response ===");
+    console.log(JSON.stringify(response, null, 2));
+    console.log("=========================");
     
-    // Only return success if we have actual STK confirmation
-    if (response.success === true && response.CheckoutRequestID) {
-      return {
-        success: true,
-        message: "STK Push sent! Check your phone and enter PIN.",
-        checkout_request_id: response.CheckoutRequestID,
-        reference: response.MerchantRequestID || `PNT_${Date.now()}`
-      };
-    } else if (response.status === "success" && response.CheckoutRequestID) {
+    if (response.success === true || response.CheckoutRequestID) {
       return {
         success: true,
         message: "STK Push sent! Check your phone and enter PIN.",
@@ -179,7 +170,7 @@ const initiateSTKPush = async (amount, phoneNumber, email, userId, description) 
     } else {
       return {
         success: false,
-        message: response.message || response.error || "STK Push failed - " + JSON.stringify(response),
+        message: response.message || response.error || "STK Push failed",
         details: response
       };
     }
@@ -254,37 +245,75 @@ const initializeDirectPayment = async (phoneNumber, amount, paymentCode = "PNT_4
     console.log("Request:", JSON.stringify(requestData));
     console.log("================================");
 
-    const response = await makeRequest("/api/v1/payment/initialize", "POST", requestData);
+    // Try both endpoints and methods
+    const endpoints = [
+      { path: "/api/v1/payment/initialize", method: "POST" },
+      { path: "/api/v1/payment", method: "POST" },
+      { path: "/api/v1/payment/initialize", method: "GET" },
+      { path: "/api/payment/initialize", method: "POST" },
+    ];
     
-    console.log("=== Paynecta Response ===");
-    console.log("Response:", JSON.stringify(response, null, 2));
-    console.log("=========================");
+    let lastError = null;
     
-    // Check for successful response
-    const hasCheckoutId = response.CheckoutRequestID || response.checkout_request_id || response.MerchantRequestID;
-    
-    if (response.success === true || response.status === "success" || hasCheckoutId) {
-      return {
-        success: true,
-        message: response.message || "STK Push sent! Check your phone and enter PIN.",
-        checkout_request_id: hasCheckoutId,
-        reference: response.MerchantRequestID || `PNT_${Date.now()}`,
-        status: response.status,
-        raw_response: response
-      };
-    } else {
-      return {
-        success: false,
-        message: response.message || response.error || "Payment initialization failed",
-        details: response
-      };
+    for (const endpoint of endpoints) {
+      console.log(`Trying ${endpoint.method} ${endpoint.path}...`);
+      
+      try {
+        const response = await makeRequest(endpoint.path, endpoint.method, requestData);
+        
+        // Check if we got a valid JSON response
+        if (response && !response.error && !response.raw?.startsWith("<")) {
+          console.log("Success with:", endpoint.method, endpoint.path);
+          return processDirectPaymentResponse(response);
+        }
+        
+        console.log(`Failed with ${endpoint.method} ${endpoint.path}:`, response.error || "Invalid response");
+        lastError = response;
+      } catch (err) {
+        console.log(`Error with ${endpoint.method} ${endpoint.path}:`, err.message);
+        lastError = err;
+      }
     }
+    
+    // If all endpoints fail, try the direct payment response processor
+    console.log("All endpoints failed, trying direct payment response parser...");
+    // Return a failure since none of the endpoints worked
+    
+    return {
+      success: false,
+      message: "Payment API not available. Please use manual payment.",
+      details: lastError
+    };
   } catch (error) {
     console.error("Paynecta Direct API Error:", error.message);
     return {
       success: false,
       message: error.message || "Payment initialization failed",
       error: error
+    };
+  }
+};
+
+// Helper to process direct payment response
+const processDirectPaymentResponse = (response) => {
+  console.log("Processing response:", JSON.stringify(response));
+  
+  const hasCheckoutId = response.CheckoutRequestID || response.checkout_request_id || response.MerchantRequestID;
+  
+  if (response.success === true || response.status === "success" || hasCheckoutId) {
+    return {
+      success: true,
+      message: response.message || "STK Push sent! Check your phone and enter PIN.",
+      checkout_request_id: hasCheckoutId,
+      reference: response.MerchantRequestID || `PNT_${Date.now()}`,
+      status: response.status,
+      raw_response: response
+    };
+  } else {
+    return {
+      success: false,
+      message: response.message || response.error || "Payment initialization failed",
+      details: response
     };
   }
 };

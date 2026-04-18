@@ -46,36 +46,46 @@ router.post("/initiate", protect, async (req, res) => {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    const phoneNumber = phone || user.phone;
+const phoneNumber = phone || user.phone;
     
-    console.log(`Initiating Paynecta Payment: amount=${amount}, phone=${phoneNumber}, plan=${planKey}`);
-    
-    // Try direct payment API first with correct code and format
     console.log("========== STARTING PAYMENT ==========");
     console.log("Phone:", phoneNumber);
     console.log("Amount:", amount);
     console.log("======================================");
     
-    let payment = await paynectaService.initializeDirectPayment(
-      phoneNumber,
+    // Try STK push first (known working endpoint)
+    const userEmail = user.email || "user@surveyearn.co.ke";
+    console.log("=== TRYING STK PUSH ===");
+    let payment = await paynectaService.initiateSTKPush(
       amount,
-      "PNT_492664"
+      phoneNumber,
+      userEmail,
+      user._id.toString(),
+      PLAN_NAMES[planKey]
     );
     
-    console.log("========== PAYMENT RESULT ==========");
+    console.log("=== RESULT ===");
     console.log(payment);
-    console.log("====================================");
+    console.log("==============");
 
     if (payment.success) {
-      console.log("Direct payment successful:", payment);
+      console.log("SUCCESS! Returning to frontend");
       return res.json({
         success: true,
         message: payment.message,
         reference: payment.reference,
         checkout_request_id: payment.checkout_request_id,
         amount,
-        status: payment.status
+        status: "pending"
       });
+    }
+    
+    console.log("STK PUSH FAILED - showing manual payment option");
+    return res.json({
+      success: false,
+      message: payment.message || "STK failed. Use manual payment below.",
+      requires_manual: true
+    });
     }
     
     console.log("Direct payment failed, trying STK push...");
