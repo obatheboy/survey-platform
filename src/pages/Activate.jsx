@@ -838,11 +838,11 @@ export default function Activate() {
 <div style={{ marginBottom: "16px", padding: "14px", background: "#fff7ed", borderRadius: "10px", border: "2px solid #fed7aa" }}>
                 <div style={{ marginBottom: "12px" }}>
                   <span style={{ color: "#ea580c", fontWeight: 900, fontSize: "14px" }}>Step 1:</span>
-                  <span style={{ color: "#1e293b", fontWeight: 700, fontSize: "13px", marginLeft: "6px" }}>Finya hiyo button ya "Pay KES {plan.activationFee} Now" hapo chini</span>
+                  <span style={{ color: "#1e293b", fontWeight: 700, fontSize: "13px", marginLeft: "6px" }}>Tap the "Pay KES {plan.activationFee} Now" button below</span>
                 </div>
                 <div style={{ marginBottom: "12px" }}>
                   <span style={{ color: "#ea580c", fontWeight: 900, fontSize: "14px" }}>Step 2:</span>
-                  <span style={{ color: "#1e293b", fontWeight: 700, fontSize: "13px", marginLeft: "6px" }}>Weka number yenye utalipa nayo </span>
+                  <span style={{ color: "#1e293b", fontWeight: 700, fontSize: "13px", marginLeft: "6px" }}>Enter the phone number you will use to pay </span>
                 </div>
                 <div>
                   <span style={{ color: "#ea580c", fontWeight: 900, fontSize: "14px" }}>Step 3:</span>
