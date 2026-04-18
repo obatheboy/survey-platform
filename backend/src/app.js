@@ -23,7 +23,7 @@ app.set("trust proxy", 1);
 /* ===============================
     🌍 CORS (DEV + LIVE + POSTMAN SAFE)
     ✅ Supports any Vercel subdomain
-=============================== */
+
 const allowedOrigins = [
   "http://localhost:5173", // local dev
   "http://localhost:3000", // local dev alt
