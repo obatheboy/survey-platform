@@ -342,31 +342,34 @@ export default function Activate() {
     // Clean user input - keep only digits
     let userInput = phoneNumber.replace(/\D/g, '');
     
-    // Convert 10-digit (0740209662) to 9-digit (740209662)
-    // Remove leading 0 if present
-    let formattedPhone = userInput;
-    if (userInput.startsWith('0') && userInput.length === 10) {
-      formattedPhone = userInput.substring(1);
+    // Keep original format (with 0) since Paynecta might expect 10 digits
+    // User enters: 0740209662 -> Paynecta gets: 0740209662
+    // If Paynecta cuts last 2, they might expect: 074020966 (9 digits with 0)
+    
+    // Try keeping 10 digits with 0 first (if user entered 10 digits)
+    let phoneParam = userInput;
+    if (userInput.length === 10 && userInput.startsWith('0')) {
+      phoneParam = userInput; // Keep as 10 digits with 0
+    } else if (userInput.length === 9 && userInput.startsWith('7')) {
+      // If user entered 9 digits without 0, add the 0
+      phoneParam = '0' + userInput;
     }
     
-    // Also handle case where user enters 9 digits starting with 0 (should we accept that?)
-    // If user enters 9 digits starting with 7 (like 740209662) - that's already correct
+    console.log("Phone param:", phoneParam);
     
-    console.log("Phone conversion:", userInput, "->", formattedPhone);
-    
-    // Validate: Must be 9 digits starting with 7
-    if (formattedPhone.length !== 9 || !formattedPhone.startsWith('7')) {
-      setNotification("❌ Enter valid Kenyan phone (e.g., 740209662 or 140834185)");
+    // Validate phone length (either 9 or 10 digits)
+    if (phoneParam.length !== 10 || !phoneParam.startsWith('0')) {
+      setNotification("❌ Enter valid Kenyan phone (e.g., 0740209662)");
       return;
     }
     
-    // Open Paynecta payment page with amount and phone pre-filled
-    // Note: Some Paynecta setups may need phone without 0, others with 0 - adjust as needed
-    const paynectaUrl = `https://paynecta.co.ke/pay/survey-app?amount=${activationFee}&phone=${formattedPhone}`;
+    // Open Paynecta payment page - try both formats
+    // First: with leading 0 (10 digits)
+    const paynectaUrl = `https://paynecta.co.ke/pay/survey-app?amount=${activationFee}&phone=${phoneParam}`;
     
     console.log("Opening Paynecta:", paynectaUrl);
     window.open(paynectaUrl, "_blank");
-    setNotification("📱 Payment page opened! Complete payment there, then paste confirmation below.");
+    setNotification("📱 Payment page opened! Complete payment there.");
   };
 
   /* =========================
@@ -775,7 +778,7 @@ Pay Automatic Now and Activate Your Account
                   Step 1: Tap the button below "Pay KES {plan.activationFee} Now"
                 </p>
                 <p style={{ color: "#fed7aa", fontSize: "11px", margin: "4px 0" }}>
-                  Step 2: Enter your number without 0 in front (e.g., 740209988 or 140834185)
+                  Step 2: Enter your full phone number (e.g., 0740209662)
                 </p>
                 <p style={{ color: "#fed7aa", fontSize: "11px", margin: "4px 0" }}>
                   Step 3: Wait for STK push and enter your PIN to complete payment
@@ -806,7 +809,7 @@ Pay Automatic Now and Activate Your Account
                   }}
                 />
                 <p style={{ color: "#fed7aa", fontSize: "10px", marginTop: "4px", textAlign: "center" }}>
-                  Example: 0740209662 will become 740209662
+                  We'll automatically format it for Paynecta
                 </p>
               </div>
 
