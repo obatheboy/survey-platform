@@ -84,9 +84,23 @@ const makeRequest = (path, method, data = null) => {
       res.on("data", chunk => body += chunk);
       res.on("end", () => {
         console.log(`Paynecta Response Status: ${res.statusCode}`);
-        console.log(`Paynecta Response Body: ${body}`);
+        console.log(`Paynecta Response Body (first 500 chars): ${body.substring(0, 500)}`);
         
-        // Don't assume success - parse and check actual response
+        // Check if response is empty
+        if (!body || body.trim() === "") {
+          console.log("Empty response from Paynecta");
+          resolve({ success: false, error: "Empty response from Paynecta" });
+          return;
+        }
+        
+        // Check if it's HTML (error page)
+        if (body.trim().startsWith("<!") || body.trim().startsWith("<html")) {
+          console.log("HTML response received (likely error page):", body.substring(0, 200));
+          resolve({ success: false, error: "HTML error page received", raw: body });
+          return;
+        }
+        
+        // Try to parse as JSON
         try {
           const json = JSON.parse(body);
           console.log("Parsed response:", JSON.stringify(json, null, 2));
@@ -95,7 +109,7 @@ const makeRequest = (path, method, data = null) => {
           console.log("Response CheckoutRequestID:", json.CheckoutRequestID);
           resolve(json);
         } catch (e) {
-          console.log("Failed to parse response as JSON, raw body:", body);
+          console.log("Failed to parse response as JSON, raw body:", body.substring(0, 300));
           // Don't assume success - return the raw response for debugging
           resolve({ success: false, raw: body, error: "Invalid JSON response" });
         }
