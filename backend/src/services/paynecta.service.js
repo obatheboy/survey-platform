@@ -191,6 +191,8 @@ const initializeDirectPayment = async (phoneNumber, amount, paymentCode = "PNT_3
     };
 
     console.log("Paynecta Direct API Request:", JSON.stringify(requestData, null, 2));
+    console.log("Paynecta API Key:", PAYNECTA_CONFIG.apiKey);
+    console.log("Paynecta User Email:", PAYNECTA_CONFIG.userEmail);
 
     const response = await makeRequest("/api/v1/payment/initialize", "POST", requestData);
     

@@ -379,6 +379,8 @@ export default function Activate() {
       
       setPaymentLoading(false);
       
+      console.log("Payment response:", res.data);
+      
       if (res.data.success) {
         setPaymentNotification({
           type: "success",
@@ -390,17 +392,18 @@ export default function Activate() {
           pollPaymentStatus(res.data.checkout_request_id);
         }
       } else {
+        console.log("Payment failed:", res.data);
         setPaymentNotification({
           type: "error",
-          message: res.data.message || "Payment failed. Please try manual payment below."
+          message: res.data.message || res.data.error || "Payment failed. Please try manual payment below."
         });
       }
     } catch (error) {
       setPaymentLoading(false);
-      console.error("Payment error:", error);
+      console.error("Payment error:", error.response?.data || error);
       setPaymentNotification({
         type: "error",
-        message: "Failed to initiate payment. Please try manual payment below."
+        message: error.response?.data?.message || "Failed to initiate payment. Please try manual payment below."
       });
     }
   };
