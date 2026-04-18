@@ -85,49 +85,10 @@ router.post("/initiate", protect, async (req, res) => {
       success: false,
       message: payment.message || "STK failed. Use manual payment below.",
       requires_manual: true
-    });
+});
   } catch (error) {
     console.error("Activation error:", error.message);
     return res.status(500).json({ success: false, message: "Server error" });
-  }
-});
-    
-    console.log("Direct payment failed, trying STK push...");
-    // Try STK push as fallback
-    const userEmail = user.email || "user@surveyearn.co.ke";
-    payment = await paynectaService.initiateSTKPush(
-      amount,
-      phoneNumber,
-      userEmail,
-      user._id.toString(),
-      PLAN_NAMES[planKey]
-    );
-
-    if (payment.success) {
-      console.log("STK Push successful:", payment);
-      return res.json({
-        success: true,
-        message: payment.message,
-        reference: payment.reference,
-        checkout_request_id: payment.checkout_request_id,
-        amount,
-        status: "pending"
-      });
-    }
-    
-    console.log("All payment methods failed:", payment);
-    return res.json({
-      success: false,
-      message: payment.message || "STK failed. Use manual payment below.",
-      requires_manual: true
-    });
-  } catch (error) {
-    console.error("Activate STK error:", error.message, error.stack);
-    return res.json({
-      success: false,
-      message: "STK failed. Use manual payment below.",
-      requires_manual: true
-    });
   }
 });
 
