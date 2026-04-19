@@ -6,9 +6,9 @@ import "./Surveys.css";
 
 // Plan configuration constants
 const PLANS_CONFIG = {
-  REGULAR: { name: "Regular", icon: "⭐", total: 1500 },
-  VIP: { name: "VIP", icon: "💎", total: 2000 },
-  VVIP: { name: "VVIP", icon: "👑", total: 3000 },
+  REGULAR: { name: "REGULAR SURVEYS", icon: "⭐", total: 1500 },
+  VIP: { name: "VIP SURVEY", icon: "💎", total: 2000 },
+  VVIP: { name: "VVIP SURVEYS", icon: "👑", total: 3000 },
 };
 
 // Local storage keys
@@ -143,14 +143,22 @@ export default function Surveys() {
   // EVENT HANDLERS
   // =========================================================
   const handleOptionSelect = useCallback((questionId, option) => {
+    if (isCompleting) return; // Prevent multiple submissions
+    
     setAnswers(prev => ({ ...prev, [questionId]: option }));
-    // Auto-advance to next question after selection
+    
     if (currentQuestionIndex < questions.length - 1) {
+      // Auto-advance to next question
       setTimeout(() => {
         setCurrentQuestionIndex(prev => prev + 1);
       }, 200);
+    } else {
+      // Last question - auto-submit after brief delay
+      setTimeout(() => {
+        handleComplete();
+      }, 200);
     }
-  }, [currentQuestionIndex, questions.length]);
+  }, [currentQuestionIndex, questions.length, handleComplete, isCompleting]);
 
   const handlePrev = useCallback(() => {
     if (currentQuestionIndex > 0) {
@@ -299,11 +307,11 @@ export default function Surveys() {
     return (
       <div className="survey-page">
         <div className="survey-container">
-          <div className="survey-header">
-            <h1>
-              <span className="plan-icon">{planConfig.icon}</span>
-              {planConfig.name} Plan Survey
-            </h1>
+         <div className="survey-header">
+           <h1>
+             <span className="plan-icon">{planConfig.icon}</span>
+             {planConfig.name}
+           </h1>
             <div className="progress-bar-container">
               <div
                 className="progress-bar-fill"
@@ -333,11 +341,11 @@ export default function Surveys() {
     <div className="survey-page">
       <div className="survey-container">
         {/* Header */}
-        <div className="survey-header">
-          <h1>
-            <span className="plan-icon">{planConfig.icon}</span>
-            {planConfig.name} Plan Survey
-          </h1>
+          <div className="survey-header">
+            <h1>
+              <span className="plan-icon">{planConfig.icon}</span>
+              {planConfig.name}
+            </h1>
           <div className="progress-bar-container">
             <div
               className="progress-bar-fill"

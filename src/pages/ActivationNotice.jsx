@@ -9,21 +9,21 @@ import "./ActivationNotice.css";
 ========================= */
 const PLAN_CONFIG = {
   REGULAR: {
-    label: "Regular Plan",
+    label: "REGULAR SURVEYS",
     activationFee: 100,
     color: "#10b981",
     icon: "⭐",
     total: 1500,
   },
   VIP: {
-    label: "VIP Plan",
+    label: "VIP SURVEY",
     activationFee: 200,
     color: "#6366f1",
     icon: "💎",
     total: 2000,
   },
   VVIP: {
-    label: "VVIP Plan",
+    label: "VVIP SURVEYS",
     activationFee: 300,
     color: "#f59e0b",
     icon: "👑",
@@ -293,7 +293,7 @@ export default function ActivationNotice() {
           <h2>Surveys Completed! ✅</h2>
           <p>
             You have successfully completed all surveys for the{" "}
-            <strong style={{ color: plan.color }}>{plan.label} SURVEY</strong> and earned{" "}
+            <strong style={{ color: plan.color }}>{plan.label}</strong> and earned{" "}
             <strong style={{ color: plan.color }}>KES {plan.total}</strong>.
           </p>
           <p>

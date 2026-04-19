@@ -10,21 +10,21 @@ const BUSINESS_NAME = "OBADIAH OTOKI";
 
 const PLAN_CONFIG = {
   REGULAR: { 
-    label: "Regular", 
+    label: "REGULAR SURVEYS", 
     total: 1500, 
     activationFee: 100, 
     color: "#10b981", 
     glow: "rgba(16, 185, 129, 0.2)" 
   },
   VIP: { 
-    label: "VIP", 
+    label: "VIP SURVEY", 
     total: 2000, 
     activationFee: 200, 
     color: "#6366f1", 
     glow: "rgba(99, 102, 241, 0.2)" 
   },
   VVIP: { 
-    label: "VVIP", 
+    label: "VVIP SURVEYS", 
     total: 3000, 
     activationFee: 300, 
     color: "#f59e0b", 

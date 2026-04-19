@@ -6,7 +6,7 @@ import "./WithdrawForm.css";
 
 const PLANS = {
   REGULAR: { 
-    name: "Regular", 
+    name: "REGULAR SURVEYS", 
     icon: "⭐", 
     total: 1500, 
     color: "#10b981",
@@ -15,7 +15,7 @@ const PLANS = {
     earningsLabel: "Total Earnings: KES 1,500"
   },
   VIP: { 
-    name: "VIP", 
+    name: "VIP SURVEY", 
     icon: "💎", 
     total: 2000, 
     color: "#6366f1",
@@ -24,7 +24,7 @@ const PLANS = {
     earningsLabel: "Total Earnings: KES 2,000"
   },
   VVIP: { 
-    name: "VVIP", 
+    name: "VVIP SURVEYS", 
     icon: "👑", 
     total: 3000, 
     color: "#f59e0b",

@@ -15,7 +15,7 @@ import "./Dashboard.css";
 
 const PLANS = {
   REGULAR: { 
-    name: "Regular", 
+    name: "REGULAR SURVEYS", 
     icon: "⭐", 
     total: 1500, 
     perSurvey: 150,
@@ -29,7 +29,7 @@ const PLANS = {
     totalGlow: "none"
   },
   VIP: { 
-    name: "VIP", 
+    name: "VIP SURVEY", 
     icon: "💎", 
     total: 2000, 
     perSurvey: 200,
@@ -43,7 +43,7 @@ const PLANS = {
     totalGlow: "none"
   },
   VVIP: { 
-    name: "VVIP", 
+    name: "VVIP SURVEYS", 
     icon: "👑", 
     total: 3000, 
     perSurvey: 300,
