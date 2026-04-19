@@ -8,18 +8,36 @@ const PAYNECTA_CONFIG = {
 };
 
 // Format phone to 254XXXXXXXX format (international)
+// Supports: 07XXXXXXXX (standard mobile), 011XXXXXXXX (Safaricom 01), 0100XXXXXX (Airtel 01)
 const formatPhoneToInternational = (phone) => {
   let cleaned = phone.replace(/[^0-9]/g, '');
   
-  // Kenyan numbers: 07XXXXXXXX or 01XXXXXXXX (10 digits with leading 0)
+  // Kenyan mobile numbers only (M-Pesa STK compatible):
+  // Standard: 070, 071, 072, 074, 075, 076, 078, 079 → 07xxxxxxxx
+  // Safaricom 01: 011, 0110, 0111 → 011xxxxxxxx
+  // Airtel 01: 0100, 0101, 0102 → 0100xxxxxx
+  
   if (cleaned.startsWith('0') && cleaned.length === 10) {
-    cleaned = '254' + cleaned.substring(1);
+    const afterZero = cleaned.substring(1);
+    const prefix2 = afterZero.substring(0, 2);
+    
+    if (afterZero.charAt(0) === '7' || prefix2 === '11' || prefix2 === '10') {
+      cleaned = '254' + afterZero;
+    }
   } 
-  // Numbers without leading 0: 7XXXXXXXX or 1XXXXXXXX (exactly 9 digits)
-  else if ((cleaned.startsWith('7') || cleaned.startsWith('1')) && cleaned.length === 9) {
+  // Without leading 0: 7xxxxxxx, 11xxxxxxx, or 10xxxxxxx (all exactly 9 digits)
+  else if (cleaned.startsWith('7') && cleaned.length === 9) {
+    cleaned = '254' + cleaned;
+  } else if (cleaned.startsWith('11') && cleaned.length === 9) {
+    cleaned = '254' + cleaned;
+  } else if (cleaned.startsWith('10') && cleaned.length === 9) {
     cleaned = '254' + cleaned;
   } else if (cleaned.startsWith('254')) {
-    // Already correct
+    // Already in international format - ensure it's exactly 12 digits (254 + 9)
+    if (cleaned.length === 12) {
+      return cleaned;
+    }
+    // If wrong length, fall through to re-format
   }
   
   return cleaned;

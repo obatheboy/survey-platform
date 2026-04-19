@@ -312,40 +312,61 @@ export default function Activate() {
    const initiateDirectStk = async () => {
      let formattedPhone = paymentPhone.replace(/[^0-9]/g, '');
      
-     if (!formattedPhone || formattedPhone.length < 9) {
-       setPaymentNotification({
-         type: "error",
-         message: "Please enter a valid phone number (e.g., 0740123456 or 0112345678)"
-       });
-       return;
-     }
-     
-     // Remove leading 0 if present
-     if (formattedPhone.startsWith('0') && formattedPhone.length > 1) {
-       formattedPhone = formattedPhone.substring(1);
-     }
-     
-     // Validate Kenyan mobile/landline prefixes: after removing 0, must start with 7 or 1
-     const firstDigit = formattedPhone.charAt(0);
-     if (firstDigit !== '7' && firstDigit !== '1') {
-       setPaymentNotification({
-         type: "error",
-         message: "Phone number must start with 07 (mobile) or 01 (landline)"
-       });
-       return;
-     }
-     
-     // Prepend Kenya country code
-     formattedPhone = '254' + formattedPhone;
-     
-     // Ensure final number is exactly 12 digits (254 + 9 digits)
-     if (formattedPhone.length !== 12) {
-       setPaymentNotification({
-         type: "error",
-         message: "Phone number must be 10 digits (e.g., 0712345678 or 0112345678)"
-       });
-       return;
-     }
+      if (!formattedPhone || formattedPhone.length < 9) {
+        setPaymentNotification({
+          type: "error",
+          message: "Please enter a valid phone number (e.g., 0712345678, 0110123456, or 0100123456)"
+        });
+        return;
+      }
+      
+      // Remove leading 0 if present, but keep 254 prefix if already present
+      if (formattedPhone.startsWith('254')) {
+        // Already in international format - keep as is
+      } else if (formattedPhone.startsWith('0') && formattedPhone.length > 1) {
+        formattedPhone = formattedPhone.substring(1);
+      }
+      
+      // Validate Kenyan mobile prefixes after removing leading 0:
+      // Standard: 7xxxxxxx (9 digits) — 070, 071, 072, 074, 075, 076, 078, 079
+      // Safaricom 01: 11xxxxxxx (9 digits) — 011, 0110, 0111
+      // Airtel 01: 10xxxxxxx (9 digits) — 0100, 0101, 0102
+      // Or already in 254 format (12 digits)
+      const firstDigit = formattedPhone.charAt(0);
+      const firstTwo = formattedPhone.substring(0, 2);
+      const firstThree = formattedPhone.substring(0, 3);
+      
+      const isAlreadyInternational = formattedPhone.startsWith('254') && formattedPhone.length === 12;
+      const isValidPrefix = 
+        isAlreadyInternational ||
+        // Standard mobile: starts with 7, exactly 9 digits
+        (firstDigit === '7' && formattedPhone.length === 9) ||
+        // Safaricom 01: starts with 11 (011, 0110, 0111), exactly 9 digits
+        (firstTwo === '11' && formattedPhone.length === 9) ||
+        // Airtel 01: starts with 10 (0100, 0101, 0102), exactly 9 digits
+        (firstTwo === '10' && formattedPhone.length === 9);
+      
+      if (!isValidPrefix) {
+        setPaymentNotification({
+          type: "error",
+          message: "Phone must be a valid Kenyan mobile: 07XXXXXXXX, 011XXXXXXXX, 0100XXXXXX, or 2547XXXXXXXX"
+        });
+        return;
+      }
+      
+      // Prepend Kenya country code if not already present
+      if (!formattedPhone.startsWith('254')) {
+        formattedPhone = '254' + formattedPhone;
+      }
+      
+      // Ensure final number is exactly 12 digits (254 + 9 digits)
+      if (formattedPhone.length !== 12) {
+        setPaymentNotification({
+          type: "error",
+          message: "Invalid phone number format"
+        });
+        return;
+      }
     
     setPaymentNotification(null);
     setPaymentLoading(true);
@@ -784,7 +805,7 @@ export default function Activate() {
                   </label>
                   <input
                     type="tel"
-                    placeholder="e.g., 0740123456 or 011234567"
+                    placeholder="e.g., 0712345678, 0110123456, or 0100123456"
                     value={paymentPhone}
                     onChange={(e) => setPaymentPhone(e.target.value)}
                     style={{
@@ -796,11 +817,11 @@ export default function Activate() {
                       fontWeight: "500",
                       background: "#f9fafb"
                     }}
-                  />
-                  <p style={{ fontSize: "11px", color: "#6b7280", marginTop: "4px" }}>
-                    Enter the phone number registered with M-Pesa
-                  </p>
-                </div>
+                   />
+                   <p style={{ fontSize: "11px", color: "#6b7280", marginTop: "4px" }}>
+                     Valid formats: 07XXXXXXXX (Safaricom/Airtel), 011XXXXXXXX, 0100XXXXXX (Airtel)
+                   </p>
+                 </div>
                 
                 <button
                   onClick={initiateDirectStk}

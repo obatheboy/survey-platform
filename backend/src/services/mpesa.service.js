@@ -19,9 +19,25 @@ let tokenExpiry = null;
 const formatPhone = (phone) => {
   let cleaned = phone.replace(/[^0-9]/g, '');
   
-  if (cleaned.startsWith('0')) {
-    cleaned = '254' + cleaned.substring(1);
-  } else if (cleaned.startsWith('7') || cleaned.startsWith('1')) {
+  // Kenyan mobile numbers only (M-Pesa compatible)
+  // Standard 07: 070, 071, 072, 074, 075, 076, 078, 079
+  // Safaricom 01: 011, 0110, 0111
+  // Airtel 01: 0100, 0101, 0102
+  
+  if (cleaned.startsWith('0') && cleaned.length === 10) {
+    const afterZero = cleaned.substring(1);
+    const prefix2 = afterZero.substring(0, 2);
+    const prefix3 = afterZero.substring(0, 3);
+    
+    // Accept: starts with 7, 11, or 10
+    if (afterZero.charAt(0) === '7' || prefix2 === '11' || prefix2 === '10') {
+      cleaned = '254' + afterZero;
+    }
+  } else if (cleaned.startsWith('7') && cleaned.length === 9) {
+    cleaned = '254' + cleaned;
+  } else if (cleaned.startsWith('11') && cleaned.length === 9) {
+    cleaned = '254' + cleaned;
+  } else if (cleaned.startsWith('10') && cleaned.length === 9) {
     cleaned = '254' + cleaned;
   } else if (!cleaned.startsWith('254')) {
     cleaned = '254' + cleaned;
