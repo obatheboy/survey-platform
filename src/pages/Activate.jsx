@@ -275,7 +275,7 @@ export default function Activate() {
     };
   }, [navigate, searchParams, location.state]);
 
-  // Check for payment return from Paynecta (for redirect fallback - can be removed later)
+  // Check for payment return from Paynecta
   useEffect(() => {
     const paymentRef = searchParams.get("reference");
     const paymentStatus = searchParams.get("payment");
@@ -291,7 +291,7 @@ export default function Activate() {
       setPaymentLoading(true);
       const res = await api.post("/activation/verify-paynecta", {
         reference: reference,
-        plan: planKey,
+        plan: planKey === "WELCOME" ? "REGULAR" : planKey,
         is_welcome_bonus: isWelcomeBonus
       });
       
@@ -307,7 +307,7 @@ export default function Activate() {
   };
 
   /* =========================
-     DIRECT STK PUSH - ONLY METHOD (NO REDIRECT)
+     DIRECT STK PUSH - NO REDIRECT, CUSTOMER STAYS ON APP
      ========================= */
   const initiateDirectStk = async () => {
     let formattedPhone = paymentPhone.replace(/[^0-9]/g, '');
@@ -329,17 +329,20 @@ export default function Activate() {
     setPaymentNotification(null);
     setPaymentLoading(true);
     
-    const activationFee = plan.activationFee || 100;
+    // ✅ FIX: Convert WELCOME to REGULAR for backend
+    const actualPlan = planKey === "WELCOME" ? "REGULAR" : planKey;
+    const activationFee = PLAN_CONFIG[actualPlan]?.activationFee || 100;
     
     try {
       console.log("📱 Initiating DIRECT STK Push:", { 
-        plan: planKey, 
+        plan: actualPlan, 
+        originalPlan: planKey,
         amount: activationFee, 
         phone: formattedPhone 
       });
       
       const res = await api.post("/activation/initiate-direct-stk", {
-        plan: planKey,
+        plan: actualPlan,
         phone_number: formattedPhone,
         is_welcome_bonus: isWelcomeBonus
       });
@@ -383,14 +386,14 @@ export default function Activate() {
       try {
         const res = await api.post("/activation/verify-paynecta", {
           reference: reference,
-          plan: planKey,
+          plan: planKey === "WELCOME" ? "REGULAR" : planKey,
           is_welcome_bonus: isWelcomeBonus
         });
         
         if (res.data.success && res.data.activated) {
           setPaymentNotification({
             type: "success",
-            message: "✅ Payment successful! Your account is now activated. Redirecting..."
+            message: "✅ Payment successful! Your account is now activated."
           });
           
           localStorage.setItem("showWelcomeBonusOnDashboard", "true");
