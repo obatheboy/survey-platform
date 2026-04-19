@@ -25,7 +25,7 @@ const PLAN_EARNINGS = {
 
 /* =====================================
    USER — SUBMIT ACTIVATION PAYMENT
-===================================== */
+   ===================================== */
 exports.submitActivationPayment = async (req, res) => {
   try {
     console.log("🔍 ACTIVATION SUBMISSION DEBUG:");
@@ -33,19 +33,22 @@ exports.submitActivationPayment = async (req, res) => {
     console.log("Request body:", req.body);
     console.log("Plan received:", req.body.plan);
     console.log("Plan uppercase:", req.body.plan?.toUpperCase());
-    console.log("PLAN_FEES for this plan:", PLAN_FEES[req.body.plan?.toUpperCase()]);
     
     const userId = req.user.id;
-    const { mpesa_code, plan } = req.body;
+    const { mpesa_code, plan, is_welcome_bonus } = req.body;
     const paymentReference = String(mpesa_code || "").trim();
+    // Determine plan key - welcome bonus uses REGULAR plan
+    const planKey = is_welcome_bonus ? "REGULAR" : (plan?.toUpperCase());
 
+    console.log("PLAN_FEES for this plan:", PLAN_FEES[planKey]);
+    
     if (!paymentReference) {
       return res.status(400).json({
         message: "Please enter the M-Pesa payment reference",
       });
     }
 
-    if (!PLAN_FEES[plan]) {
+    if (!PLAN_FEES[planKey]) {
       return res.status(400).json({
         message: "Invalid plan",
       });
@@ -57,17 +60,19 @@ exports.submitActivationPayment = async (req, res) => {
     }
 
     // Check if user has the plan
-    if (!user.plans || !user.plans[plan]) {
+    if (!user.plans || !user.plans[planKey]) {
       return res.status(400).json({ message: "Survey plan not found" });
     }
 
-    const userPlan = user.plans[plan];
+    const userPlan = user.plans[planKey];
 
-    // Check if surveys are completed
-    if (!userPlan.completed || userPlan.surveys_completed !== TOTAL_SURVEYS) {
-      return res.status(400).json({
-        message: "Complete all surveys before activation",
-      });
+    // Skip survey completion check for welcome bonus
+    if (!is_welcome_bonus) {
+      if (!userPlan.completed || userPlan.surveys_completed !== TOTAL_SURVEYS) {
+        return res.status(400).json({
+          message: "Complete all surveys before activation",
+        });
+      }
     }
 
     // Check if already activated
@@ -84,7 +89,7 @@ exports.submitActivationPayment = async (req, res) => {
     
     // Check for existing pending activation for this plan
     const existingRequest = user.activation_requests.find(
-      req => req.plan === plan && req.status === 'SUBMITTED'
+      req => req.plan === planKey && req.status === 'SUBMITTED'
     );
     
     if (existingRequest) {
@@ -93,13 +98,14 @@ exports.submitActivationPayment = async (req, res) => {
       });
     }
     
-    // Add new activation request
+    // Add new activation request (include is_welcome_bonus flag)
     user.activation_requests.push({
-      plan: plan,
+      plan: planKey,
       mpesa_code: paymentReference,
-      amount: PLAN_FEES[plan],
+      amount: PLAN_FEES[planKey],
       status: 'SUBMITTED',
-      created_at: new Date()
+      created_at: new Date(),
+      is_welcome_bonus: !!is_welcome_bonus
     });
     
     await user.save();
@@ -140,7 +146,7 @@ exports.submitActivationPayment = async (req, res) => {
 
 /* =====================================
    ADMIN — APPROVE ACTIVATION
-===================================== */
+   ===================================== */
 exports.approveActivation = async (req, res) => {
   try {
     if (req.user.role !== "admin") {
@@ -173,23 +179,39 @@ exports.approveActivation = async (req, res) => {
     }
 
     const plan = activationRequest.plan;
+    const isWelcomeBonus = activationRequest.is_welcome_bonus === true;
 
-    // Check if user has the plan completed
-    if (!user.plans || !user.plans[plan]) {
-      return res.status(400).json({
-        message: "User has not completed required surveys",
-      });
+    // For non-welcome-bonus, enforce survey completion; for welcome bonus skip this check
+    if (!isWelcomeBonus) {
+      if (!user.plans || !user.plans[plan]) {
+        return res.status(400).json({
+          message: "User has not completed required surveys",
+        });
+      }
+
+      const userPlan = user.plans[plan];
+      
+      if (!userPlan.completed || userPlan.surveys_completed !== TOTAL_SURVEYS) {
+        return res.status(400).json({
+          message: "User has not completed required surveys",
+        });
+      }
+    } else {
+      // Ensure user has a plan entry (should exist from registration). Create if missing.
+      if (!user.plans) user.plans = {};
+      if (!user.plans[plan]) {
+        user.plans[plan] = {
+          surveys_completed: 0,
+          completed: false,
+          is_activated: false,
+          total_surveys: 10,
+          activated_at: null
+        };
+      }
     }
 
-    const userPlan = user.plans[plan];
-    
-    if (!userPlan.completed || userPlan.surveys_completed !== TOTAL_SURVEYS) {
-      return res.status(400).json({
-        message: "User has not completed required surveys",
-      });
-    }
-
-    if (userPlan.is_activated) {
+    // Check if already activated
+    if (user.plans[plan].is_activated) {
       return res.status(400).json({
         message: "Plan already activated",
       });
@@ -206,33 +228,26 @@ exports.approveActivation = async (req, res) => {
     // ALWAYS set user.is_activated = true when ANY plan is activated
     user.is_activated = true;
     
-    // Add CORRECT earnings to user's balance
-    const earningsToAdd = PLAN_EARNINGS[plan] || 0;
-    const oldBalance = user.total_earned || 0;
-    user.total_earned = oldBalance + earningsToAdd;
-    
-    console.log(`💰 Added KES ${earningsToAdd} to user balance for ${plan} plan activation`);
-    console.log(`💰 Old balance: KES ${oldBalance}, New balance: KES ${user.total_earned}`);
-    
     // Track which plan activated the user
     user.activated_by = plan;
     user.activated_at = new Date();
+
+    // Credit earnings: for welcome bonus use welcome_bonus amount, otherwise use plan earnings
+    let creditAmount;
+    if (isWelcomeBonus) {
+      creditAmount = user.welcome_bonus || 1200;
+      user.welcome_bonus_received = true;
+    } else {
+      creditAmount = PLAN_EARNINGS[plan] || 0;
+    }
+    
+    const oldBalance = user.total_earned || 0;
+    user.total_earned = oldBalance + creditAmount;
+    
+    console.log(`💰 Added KES ${creditAmount} to user balance for ${plan} plan activation${isWelcomeBonus ? ' (welcome bonus)' : ''}`);
+    console.log(`💰 Old balance: KES ${oldBalance}, New balance: KES ${user.total_earned}`);
     
     await user.save();
-
-    // Award referral commission to the referrer if this user was referred
-    if (user.referred_by) {
-      try {
-        const commissionResult = await awardReferralCommission(user._id);
-        if (commissionResult.success) {
-          console.log(`💰 Referral commission of KES ${commissionResult.amount} awarded for user ${user.full_name}`);
-        }
-      } catch (commError) {
-        console.error("Referral commission error:", commError);
-      }
-    }
-
-    console.log(`✅ Activation approved - User: ${user.full_name || user.email}, Plan: ${plan}, Balance: KES ${user.total_earned}`);
 
     // Create notification for activation approval
     try {
@@ -554,11 +569,13 @@ exports.testActivationFormat = async (req, res) => {
    ===================================== */
 exports.initiateDirectStkPush = async (req, res) => {
   try {
-    const { plan, phone_number } = req.body;
+    const { plan, phone_number, is_welcome_bonus } = req.body;
     const userId = req.user.id;
     
+    // Determine plan key - welcome bonus uses REGULAR plan
+    const planKey = is_welcome_bonus ? "REGULAR" : (plan?.toUpperCase());
+    
     // Validate plan
-    const planKey = plan?.toUpperCase();
     if (!PLAN_FEES[planKey]) {
       return res.status(400).json({
         success: false,
@@ -577,25 +594,28 @@ exports.initiateDirectStkPush = async (req, res) => {
       });
     }
     
-    // Check if user has completed surveys
-    if (!user.plans || !user.plans[planKey]) {
-      return res.status(400).json({
-        success: false,
-        message: "Complete all surveys before activation"
-      });
-    }
-    
-    const userPlan = user.plans[planKey];
-    
-    if (!userPlan.completed || userPlan.surveys_completed !== TOTAL_SURVEYS) {
-      return res.status(400).json({
-        success: false,
-        message: `Complete ${TOTAL_SURVEYS - (userPlan.surveys_completed || 0)} more surveys to activate`
-      });
+    // Skip survey completion check for welcome bonus
+    if (!is_welcome_bonus) {
+      if (!user.plans || !user.plans[planKey]) {
+        return res.status(400).json({
+          success: false,
+          message: "Complete all surveys before activation"
+        });
+      }
+      
+      const userPlan = user.plans[planKey];
+      
+      if (!userPlan.completed || userPlan.surveys_completed !== TOTAL_SURVEYS) {
+        return res.status(400).json({
+          success: false,
+          message: `Complete ${TOTAL_SURVEYS - (userPlan.surveys_completed || 0)} more surveys to activate`
+        });
+      }
     }
     
     // Check if already activated
-    if (userPlan.is_activated) {
+    const userPlan = user.plans?.[planKey];
+    if (userPlan && userPlan.is_activated) {
       return res.status(400).json({
         success: false,
         message: "Plan already activated"

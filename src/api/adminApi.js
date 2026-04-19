@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getCacheBuster } from "../utils/cache";
 
 /* ======================================
    🔐 ADMIN AXIOS INSTANCE
@@ -10,7 +11,7 @@ export const adminApi = axios.create({
 });
 
 /* ======================================
-   🔑 ATTACH ADMIN TOKEN (JWT)
+   🔑 ATTACH ADMIN TOKEN (JWT) + VERSION
 ====================================== */
 
 adminApi.interceptors.request.use((config) => {
@@ -21,6 +22,10 @@ adminApi.interceptors.request.use((config) => {
   } else {
     console.warn("⚠️ No adminToken found in localStorage");
   }
+
+  // Append version parameter for cache busting
+  const urlSeparator = config.url.includes('?') ? '&' : '?';
+  config.url = `${config.url}${urlSeparator}${getCacheBuster()}`;
 
   return config;
 });

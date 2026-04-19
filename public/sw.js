@@ -1,35 +1,41 @@
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const STATIC_CACHE = `survey-platform-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `survey-platform-runtime-${CACHE_VERSION}`;
 const urlsToCache = ['/', '/index.html', '/vite.svg'];
 
 // Install event - cache resources
 self.addEventListener('install', (event) => {
+  console.log('[SW] Installing service worker version:', CACHE_VERSION);
   event.waitUntil(
     caches
       .open(STATIC_CACHE)
       .then((cache) => cache.addAll(urlsToCache))
       .catch((error) => {
-        console.log('Cache installation failed:', error);
+        console.log('[SW] Cache installation failed:', error);
       })
   );
+  // Force the waiting service worker to become the active service worker
   self.skipWaiting();
 });
 
-// Activate event - clean up old caches
+// Activate event - clean up old caches and claim all clients
 self.addEventListener('activate', (event) => {
+  console.log('[SW] Activating service worker version:', CACHE_VERSION);
   event.waitUntil(
     caches.keys().then((cacheNames) =>
       Promise.all(
         cacheNames.map((cacheName) => {
           if (![STATIC_CACHE, RUNTIME_CACHE].includes(cacheName)) {
+            console.log('[SW] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
       )
-    )
+    ).then(() => {
+      // Take control of all pages immediately
+      return self.clients.claim();
+    })
   );
-  self.clients.claim();
 });
 
 // Fetch event - serve from cache, fallback to network

@@ -81,6 +81,18 @@ app.use(express.json());
 app.use(cookieParser());
 
 /* ===============================
+   🔄 CACHE BUSTING HEADERS
+   Apply to all API routes
+   =============================== */
+app.use((req, res, next) => {
+  // Set cache-control headers for all API responses
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+});
+
+/* ===============================
    ⚡️ CORS PREFLIGHT HANDLER
    =============================== */
 app.options("*", cors());

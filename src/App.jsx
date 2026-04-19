@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from "react-r
 import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import api from "./api/api";
+import { initCacheBusting } from "./utils/cache";
 
 /* ================= USER PAGES ================= */
 import Auth from "./pages/Auth";
@@ -102,6 +103,15 @@ export default function App() {
     };
 
     wakeBackend();
+  }, []);
+
+  /* ===============================
+     🔄 CACHE BUSTING ON APP START
+  ================================ */
+  useEffect(() => {
+    initCacheBusting(() => {
+      console.log('[App] Version mismatch - app data cleared');
+    });
   }, []);
 
   return (

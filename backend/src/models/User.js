@@ -112,39 +112,43 @@ const userSchema = new mongoose.Schema({
       activated_at: { type: Date }
     }
   },
-  // ✅ Activation requests array - ENUM RESTRICTION REMOVED
-  activation_requests: [{
-    plan: { 
-      type: String, 
-      required: true,
-      trim: true,
-      uppercase: true  // Convert to uppercase for consistency
-    },
-    mpesa_code: { 
-      type: String, 
-      required: true,
-      trim: true 
-    },
-    amount: { 
-      type: Number, 
-      required: true 
-    },
-    status: { 
-      type: String, 
-      enum: ['SUBMITTED', 'APPROVED', 'REJECTED'],
-      default: 'SUBMITTED' 
-    },
-    created_at: { 
-      type: Date, 
-      default: Date.now 
-    },
-    processed_at: { 
-      type: Date 
-    },
-    admin_notes: { 
-      type: String 
-    }
-  }],
+   // ✅ Activation requests array - ENUM RESTRICTION REMOVED
+   activation_requests: [{
+     plan: { 
+       type: String, 
+       required: true,
+       trim: true,
+       uppercase: true  // Convert to uppercase for consistency
+     },
+     mpesa_code: { 
+       type: String, 
+       required: true,
+       trim: true 
+     },
+     amount: { 
+       type: Number, 
+       required: true 
+     },
+     status: { 
+       type: String, 
+       enum: ['SUBMITTED', 'APPROVED', 'REJECTED'],
+       default: 'SUBMITTED' 
+     },
+     created_at: { 
+       type: Date, 
+       default: Date.now 
+     },
+     processed_at: { 
+       type: Date 
+     },
+     admin_notes: { 
+       type: String 
+     },
+     is_welcome_bonus: {
+       type: Boolean,
+       default: false
+     }
+   }],
   // ✅ Withdrawal requests array - FIXED: Added 'SUBMITTED' to enum
   withdrawal_requests: [{
     phone_number: { type: String, required: true },

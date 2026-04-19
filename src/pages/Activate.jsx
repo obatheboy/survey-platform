@@ -309,22 +309,34 @@ export default function Activate() {
   /* =========================
      DIRECT STK PUSH - NO REDIRECT, CUSTOMER STAYS ON APP
      ========================= */
-  const initiateDirectStk = async () => {
-    let formattedPhone = paymentPhone.replace(/[^0-9]/g, '');
-    
-    if (!formattedPhone || formattedPhone.length < 9) {
-      setPaymentNotification({
-        type: "error",
-        message: "Please enter a valid phone number (e.g., 0740123456)"
-      });
-      return;
-    }
-    
-    if (formattedPhone.startsWith('0') && formattedPhone.length > 1) {
-      formattedPhone = '254' + formattedPhone.substring(1);
-    } else if (formattedPhone.startsWith('7')) {
-      formattedPhone = '254' + formattedPhone;
-    }
+   const initiateDirectStk = async () => {
+     let formattedPhone = paymentPhone.replace(/[^0-9]/g, '');
+     
+     if (!formattedPhone || formattedPhone.length < 9) {
+       setPaymentNotification({
+         type: "error",
+         message: "Please enter a valid phone number (e.g., 0740123456 or 011234567)"
+       });
+       return;
+     }
+     
+     // Remove leading 0 if present
+     if (formattedPhone.startsWith('0') && formattedPhone.length > 1) {
+       formattedPhone = formattedPhone.substring(1);
+     }
+     
+     // Validate Kenyan mobile prefixes: after removing 0, must start with 7 (mobile) or 1 (landline/mobile)
+     const validPrefixes = ['7', '1'];
+     if (!validPrefixes.includes(formattedPhone.charAt(0))) {
+       setPaymentNotification({
+         type: "error",
+         message: "Phone number must start with 07 (mobile) or 01 (landline)"
+       });
+       return;
+     }
+     
+     // Prepend Kenya country code
+     formattedPhone = '254' + formattedPhone;
     
     setPaymentNotification(null);
     setPaymentLoading(true);
@@ -763,7 +775,7 @@ export default function Activate() {
                   </label>
                   <input
                     type="tel"
-                    placeholder="e.g., 0740123456"
+                    placeholder="e.g., 0740123456 or 011234567"
                     value={paymentPhone}
                     onChange={(e) => setPaymentPhone(e.target.value)}
                     style={{

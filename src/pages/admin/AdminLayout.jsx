@@ -3,12 +3,17 @@ import { Outlet, useNavigate, NavLink } from "react-router-dom";
 
 // 🔑 FIX: import the correct adminApi instance
 import { adminApi } from "../../api/adminApi";
+import { refreshApp } from "../../utils/cache";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [admin, setAdmin] = useState(null);
   const [error, setError] = useState(null);
+
+  const handleRefreshApp = () => {
+    refreshApp();
+  };
 
   useEffect(() => {
     const checkAdminSession = async () => {
@@ -62,7 +67,24 @@ export default function AdminLayout() {
         <NavItem to="/admin/affiliates" label="Affiliate Referrals" />
         <NavItem to="/admin/affiliate-withdrawals" label="Affiliate Withdrawals" />
         <NavItem to="/admin/users" label="Users" />
-        <NavItem to="/admin/notifications" label="Bulk Notifications" />
+         <NavItem to="/admin/notifications" label="Bulk Notifications" />
+
+         <hr style={{ margin: "20px 0", borderColor: "#333" }} />
+
+         <button
+           style={{
+             ...styles.link,
+             background: "transparent",
+             cursor: "pointer",
+             textAlign: "left",
+             display: "block",
+             border: "none",
+             width: "calc(100% - 20px)",
+           }}
+           onClick={handleRefreshApp}
+         >
+           🔄 Refresh App
+         </button>
 
         <hr style={{ margin: "20px 0", borderColor: "#333" }} />
 

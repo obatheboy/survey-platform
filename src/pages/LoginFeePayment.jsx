@@ -26,7 +26,13 @@ export default function LoginFeePayment() {
           localStorage.setItem("lastLoginTime", Date.now().toString());
           localStorage.removeItem("pendingLoginUser");
           localStorage.removeItem("pendingLoginFeeApproval");
-          navigate("/dashboard", { replace: true });
+
+          // Check if user has completed onboarding surveys
+          if (!data.user?.survey_onboarding_completed) {
+            navigate("/onboarding", { replace: true });
+          } else {
+            navigate("/dashboard", { replace: true });
+          }
         } else {
           // Fallback - go to login page
           navigate("/auth?mode=login", { replace: true });

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getCacheBuster } from "../utils/cache";
 
 /* =====================================================
    🌍 BASE API URL
@@ -18,16 +19,20 @@ const api = axios.create({
   timeout: 30000,
 });
 
-/* 🔐 ADD TOKEN FROM LOCALSTORAGE (MOBILE FIX) */
+/* 🔐 ADD TOKEN FROM LOCALSTORAGE (MOBILE FIX) + CACHE BUSTING */
 api.interceptors.request.use(
   (config) => {
     config.withCredentials = true;
-    
+
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
+    // Append version parameter for cache busting
+    const urlSeparator = config.url.includes('?') ? '&' : '?';
+    config.url = `${config.url}${urlSeparator}${getCacheBuster()}`;
+
     return config;
   },
   (error) => Promise.reject(error)
@@ -48,6 +53,9 @@ adminApi.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // Append version parameter for cache busting
+    const urlSeparator = config.url.includes('?') ? '&' : '?';
+    config.url = `${config.url}${urlSeparator}${getCacheBuster()}`;
     return config;
   },
   (error) => Promise.reject(error)
