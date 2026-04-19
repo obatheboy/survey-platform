@@ -4,14 +4,12 @@ import api from "../api/api";
 import { SURVEY_QUESTIONS } from "./components/surveyQuestions.js";
 import "./Surveys.css";
 
-// Plan configuration constants
 const PLANS_CONFIG = {
   REGULAR: { name: "REGULAR SURVEYS", icon: "⭐", total: 1500 },
   VIP: { name: "VIP SURVEY", icon: "💎", total: 2000 },
   VVIP: { name: "VVIP SURVEYS", icon: "👑", total: 3000 },
 };
 
-// Local storage keys
 const STORAGE_KEYS = {
   USER_DATA: "userData",
   CACHED_BALANCE: "cachedBalance",
@@ -21,7 +19,6 @@ const STORAGE_KEYS = {
 export default function Surveys() {
   const navigate = useNavigate();
   
-  // State management
   const [activePlan, setActivePlan] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -29,34 +26,26 @@ export default function Surveys() {
   const [submitProgress, setSubmitProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Memoized questions based on active plan
   const questions = useMemo(() => {
     return activePlan ? SURVEY_QUESTIONS[activePlan] : [];
   }, [activePlan]);
 
-  // Memoized current question
   const currentQuestion = useMemo(() => {
     return questions[currentQuestionIndex];
   }, [questions, currentQuestionIndex]);
 
-  // Memoized progress percentage
   const progress = useMemo(() => {
-    return ((currentQuestionIndex + 1) / questions.length) * 100;
+    return questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0;
   }, [currentQuestionIndex, questions.length]);
 
-  // Memoized plan config
   const planConfig = useMemo(() => {
     return activePlan ? PLANS_CONFIG[activePlan] : null;
   }, [activePlan]);
 
-  // Check if current question is answered
   const isCurrentQuestionAnswered = useMemo(() => {
     return currentQuestion && Boolean(answers[currentQuestion.id]);
   }, [currentQuestion, answers]);
 
-  // =========================================================
-  // NAVIGATION HELPER
-  // =========================================================
   const navigateToActivation = useCallback((plan) => {
     navigate("/activate", {
       state: {
@@ -66,166 +55,73 @@ export default function Surveys() {
     });
   }, [navigate]);
 
-  // =========================================================
-  // SURVEY STATUS CHECK
-  // =========================================================
   useEffect(() => {
     const checkSurveyStatus = async () => {
       setIsLoading(true);
       
       try {
         let plan = localStorage.getItem(STORAGE_KEYS.ACTIVE_PLAN);
-        console.log("🔍 [Surveys] Active plan from localStorage:", plan);
         
-        // If no plan in localStorage, try to get from API
         if (!plan || !SURVEY_QUESTIONS[plan]) {
-          console.log("🔍 [Surveys] No valid plan in localStorage, fetching from API...");
           try {
             const res = await api.get("/auth/me");
             plan = res.data.active_plan;
-            console.log("🔍 [Surveys] Active plan from API:", plan);
             
-            // Save to localStorage for future use
             if (plan && SURVEY_QUESTIONS[plan]) {
               localStorage.setItem(STORAGE_KEYS.ACTIVE_PLAN, plan);
             }
           } catch (apiError) {
-            console.error("🔍 [Surveys] API error:", apiError);
+            console.error("API error:", apiError);
           }
         }
         
-        // Validate plan exists
         if (!plan || !SURVEY_QUESTIONS[plan]) {
-          console.log("🔍 [Surveys] Still no valid plan, redirecting to dashboard");
-          navigate("/dashboard");
-          return;
+          plan = "REGULAR";
+          localStorage.setItem(STORAGE_KEYS.ACTIVE_PLAN, plan);
         }
         
-        // Set active plan immediately after validation
-        console.log("🔍 [Surveys] Setting active plan:", plan);
         setActivePlan(plan);
 
-        // Check localStorage first (instant)
-        const surveyCompleted = await checkLocalStorageSurveyStatus(plan);
-        if (surveyCompleted) return;
-
-        // If not in localStorage, check API
-        await checkApiSurveyStatus(plan);
+        try {
+          const res = await api.get("/auth/me");
+          const userPlan = res.data.plans?.[plan];
+          
+          if (userPlan?.surveys_completed >= 10) {
+            navigateToActivation(plan);
+          }
+        } catch (e) {
+          console.error("Check status error:", e);
+        }
         
       } catch (error) {
         console.error("Survey status check failed:", error);
-        // Try to get plan from API as fallback
-        try {
-          const res = await api.get("/auth/me");
-          const plan = res.data.active_plan;
-          if (plan && SURVEY_QUESTIONS[plan]) {
-            localStorage.setItem(STORAGE_KEYS.ACTIVE_PLAN, plan);
-            setActivePlan(plan);
-          } else {
-            navigate("/dashboard");
-          }
-        } catch (fallbackError) {
-          console.error("Fallback also failed:", fallbackError);
-          // Try with any available plan from localStorage
-          const plan = localStorage.getItem(STORAGE_KEYS.ACTIVE_PLAN);
-          console.log("🔍 [Surveys] Plan from localStorage in fallback:", plan);
-          if (plan && SURVEY_QUESTIONS[plan]) {
-            setActivePlan(plan);
-          } else {
-            // Default to REGULAR if nothing else works
-            console.log("🔍 [Surveys] Defaulting to REGULAR plan");
-            setActivePlan("REGULAR");
-            localStorage.setItem(STORAGE_KEYS.ACTIVE_PLAN, "REGULAR");
-          }
-        }
+        setActivePlan("REGULAR");
+        localStorage.setItem(STORAGE_KEYS.ACTIVE_PLAN, "REGULAR");
       } finally {
         setIsLoading(false);
       }
     };
 
-    const checkLocalStorageSurveyStatus = async (plan) => {
-      const localUserData = localStorage.getItem(STORAGE_KEYS.USER_DATA);
-      
-      if (localUserData) {
-        const parsed = JSON.parse(localUserData);
-        const userPlan = parsed.plans?.[plan];
-        
-        if (userPlan?.surveys_completed >= 10) {
-          navigateToActivation(plan);
-          return true;
-        }
-      }
-      
-      return false;
-    };
-
-    const checkApiSurveyStatus = async (plan) => {
-      console.log("🔍 [Surveys] Checking API for plan:", plan);
-      const res = await api.get("/auth/me");
-      console.log("🔍 [Surveys] User data from API:", res.data);
-      console.log("🔍 [Surveys] Plans:", res.data.plans);
-      
-      const userPlan = res.data.plans?.[plan];
-      console.log("🔍 [Surveys] User's plan data:", userPlan);
-      
-      // Update localStorage cache
-      updateLocalStorageUserData(res.data);
-      
-      if (userPlan?.surveys_completed >= 10) {
-        // If this plan is completed, find a different plan that isn't completed
-        const plans = res.data.plans || {};
-        let foundPlan = null;
-        
-        for (const [planKey, planData] of Object.entries(plans)) {
-          if (planData && planData.surveys_completed < 10 && SURVEY_QUESTIONS[planKey]) {
-            foundPlan = planKey;
-            break;
-          }
-        }
-        
-        if (foundPlan) {
-          console.log("🔍 [Surveys] Previous plan completed, using:", foundPlan);
-          localStorage.setItem(STORAGE_KEYS.ACTIVE_PLAN, foundPlan);
-          setActivePlan(foundPlan);
-        } else {
-          // All plans completed
-          navigateToActivation(plan);
-        }
-      } else {
-        setActivePlan(plan);
-      }
-    };
-
-    const updateLocalStorageUserData = (apiData) => {
-      const userData = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_DATA) || "{}");
-      userData.plans = apiData.plans;
-      userData.total_earned = apiData.total_earned;
-      localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
-    };
-
     checkSurveyStatus();
   }, [navigate, navigateToActivation]);
 
-  // =========================================================
-  // EVENT HANDLERS
-  // =========================================================
   const handleOptionSelect = useCallback((questionId, option) => {
-    if (isCompleting) return; // Prevent multiple submissions
+    if (isCompleting) return;
     
     setAnswers(prev => ({ ...prev, [questionId]: option }));
     
     if (currentQuestionIndex < questions.length - 1) {
-      // Auto-advance to next question
       setTimeout(() => {
         setCurrentQuestionIndex(prev => prev + 1);
-      }, 200);
-    } else {
-      // Last question - auto-submit after brief delay
-      setTimeout(() => {
-        handleComplete();
-      }, 200);
+      }, 300);
     }
-  }, [currentQuestionIndex, questions.length, handleComplete, isCompleting]);
+  }, [currentQuestionIndex, questions.length, isCompleting]);
+
+  const handleNext = useCallback(() => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+    }
+  }, [currentQuestionIndex, questions.length]);
 
   const handlePrev = useCallback(() => {
     if (currentQuestionIndex > 0) {
@@ -233,11 +129,6 @@ export default function Surveys() {
     }
   }, [currentQuestionIndex]);
 
-  // handleNext removed - using auto-advance instead
-
-  // =========================================================
-  // LOCAL STORAGE UPDATE HELPER
-  // =========================================================
   const updateLocalStorageAfterSubmission = useCallback((userData, plan, newCount, currentBalance, reward) => {
     const updatedData = {
       ...userData,
@@ -256,9 +147,6 @@ export default function Surveys() {
     localStorage.setItem(STORAGE_KEYS.CACHED_BALANCE, (currentBalance + reward).toString());
   }, []);
 
-  // =========================================================
-  // BATCH SUBMIT HELPER
-  // =========================================================
   const submitBatchSurveys = useCallback(async (plan, surveysNeeded, userData, currentCount) => {
     const response = await api.post("/surveys/batch-submit", { 
       plan,
@@ -267,21 +155,17 @@ export default function Surveys() {
     
     setSubmitProgress(80);
     
-    // Log success
     const { data } = response;
-    console.log(`✅ Successfully submitted ${data.added || surveysNeeded} surveys`);
+    console.log(`Submitted ${data.added || surveysNeeded} surveys`);
     
-    // Calculate new values
     const newCount = currentCount + surveysNeeded;
     const reward = PLANS_CONFIG[plan]?.total || 0;
     const currentBalance = Number(userData.total_earned || 0);
     
-    // Update localStorage optimistically
     updateLocalStorageAfterSubmission(userData, plan, newCount, currentBalance, reward);
     
     setSubmitProgress(100);
     
-    // Navigate to activation
     navigate("/activate", {
       state: {
         planType: plan,
@@ -293,11 +177,7 @@ export default function Surveys() {
     });
   }, [navigate, updateLocalStorageAfterSubmission]);
 
-  // =========================================================
-  // ERROR HANDLER
-  // =========================================================
   const handleSubmissionError = useCallback((plan) => {
-    // Optimistic update on error
     const userData = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_DATA) || "{}");
     const currentCount = userData.plans?.[plan]?.surveys_completed || 0;
     const surveysNeeded = Math.max(0, 10 - currentCount);
@@ -307,7 +187,6 @@ export default function Surveys() {
     
     updateLocalStorageAfterSubmission(userData, plan, newCount, currentBalance, reward);
     
-    // Navigate anyway - user gets their reward!
     navigate("/activate", {
       state: {
         planType: plan,
@@ -317,45 +196,38 @@ export default function Surveys() {
     });
   }, [navigate, updateLocalStorageAfterSubmission]);
 
-  // =========================================================
-  // HANDLE COMPLETE - MAIN SUBMISSION FUNCTION
-  // =========================================================
   const handleComplete = useCallback(async () => {
+    const unanswered = questions.filter(q => !answers[q.id]);
+    if (unanswered.length > 0) {
+      alert("Please answer all questions before submitting");
+      return;
+    }
+    
     setIsCompleting(true);
     setSubmitProgress(10);
 
     try {
-      // Get current count from localStorage
       const userData = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_DATA) || "{}");
       const currentCount = userData.plans?.[activePlan]?.surveys_completed || 0;
       
       setSubmitProgress(30);
       
-      // Calculate how many surveys needed
       const surveysNeeded = Math.max(0, 10 - currentCount);
       
       if (surveysNeeded <= 0) {
-        // Already completed, just navigate
         navigateToActivation(activePlan);
         return;
       }
 
       setSubmitProgress(50);
-
-      // Batch submit surveys
       await submitBatchSurveys(activePlan, surveysNeeded, userData, currentCount);
       
     } catch (error) {
-      console.error("❌ Batch submission failed:", error);
+      console.error("Submission failed:", error);
       handleSubmissionError(activePlan);
     }
-  }, [activePlan, navigateToActivation, submitBatchSurveys, handleSubmissionError]);
+  }, [activePlan, navigateToActivation, submitBatchSurveys, handleSubmissionError, questions, answers]);
 
-  // =========================================================
-  // RENDER LOADING STATE
-  // =========================================================
-  console.log("🔍 [Surveys] Render state - isLoading:", isLoading, "activePlan:", activePlan, "planConfig:", planConfig);
-  
   if (isLoading || !activePlan || !planConfig) {
     return (
       <div className="survey-page">
@@ -369,18 +241,15 @@ export default function Surveys() {
     );
   }
 
-  // =========================================================
-  // RENDER COMPLETION STATE
-  // =========================================================
   if (isCompleting) {
     return (
       <div className="survey-page">
         <div className="survey-container">
-         <div className="survey-header">
-           <h1>
-             <span className="plan-icon">{planConfig.icon}</span>
-             {planConfig.name}
-           </h1>
+          <div className="survey-header">
+            <h1>
+              <span className="plan-icon">{planConfig.icon}</span>
+              {planConfig.name}
+            </h1>
             <div className="progress-bar-container">
               <div
                 className="progress-bar-fill"
@@ -403,18 +272,14 @@ export default function Surveys() {
     );
   }
 
-  // =========================================================
-  // MAIN RENDER
-  // =========================================================
   return (
     <div className="survey-page">
       <div className="survey-container">
-        {/* Header */}
-          <div className="survey-header">
-            <h1>
-              <span className="plan-icon">{planConfig.icon}</span>
-              {planConfig.name}
-            </h1>
+        <div className="survey-header">
+          <h1>
+            <span className="plan-icon">{planConfig.icon}</span>
+            {planConfig.name}
+          </h1>
           <div className="progress-bar-container">
             <div
               className="progress-bar-fill"
@@ -423,7 +288,6 @@ export default function Surveys() {
           </div>
         </div>
 
-        {/* Body */}
         <div className="survey-body">
           <p className="question-counter">
             <span>Q{currentQuestionIndex + 1}</span>
@@ -450,7 +314,6 @@ export default function Surveys() {
           </div>
         </div>
 
-        {/* Footer with buttons - auto-advance enabled, no Next button needed */}
         <div className="survey-footer">
           <button
             className="nav-btn secondary"
@@ -464,11 +327,11 @@ export default function Surveys() {
           {currentQuestionIndex < questions.length - 1 ? (
             <button
               className="nav-btn primary"
-              onClick={handleComplete}
+              onClick={handleNext}
               disabled={!isCurrentQuestionAnswered}
-              aria-label="Complete survey"
+              aria-label="Next question"
             >
-              ✓ Complete Survey
+              Next →
             </button>
           ) : (
             <button
