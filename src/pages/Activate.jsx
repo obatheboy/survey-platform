@@ -1,21 +1,13 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import api from "../api/api";
 import TrustBadges from "../components/TrustBadges";
 import Testimonials from "../components/Testimonials";
 import "./Activate.css";
 
-const PAYNECTA_SLUG = "survey-app";
-
-/* =========================
-   CONSTANTS - UPDATED
-========================= */
 const PHONE_NUMBER = "0140834185";
 const BUSINESS_NAME = "OBADIAH OTOKI";
 
-/* =========================
-   PLAN CONFIG (DISPLAY ONLY)
-========================= */
 const PLAN_CONFIG = {
   REGULAR: { 
     label: "Regular", 
@@ -40,9 +32,6 @@ const PLAN_CONFIG = {
   },
 };
 
-/* =========================
-   INLINE STYLES (OPTIMIZED FOR MOBILE)
-========================= */
 const styles = {
   overlay: {
     position: "fixed",
@@ -91,38 +80,11 @@ const styles = {
     border: "1px solid #334155",
     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
   },
-  section: {
-    marginTop: "12px",
-    padding: "12px",
-    borderRadius: "12px",
-    background: "#1e293b",
-    border: "1px solid #334155",
-    fontSize: "13px",
-  },
-  sectionHighlight: {
-    marginTop: "16px",
-    padding: "14px",
-    borderRadius: "12px",
-    background: "rgba(37, 99, 235, 0.05)",
-    border: "1px solid rgba(37, 99, 235, 0.1)",
-    fontSize: "13px",
-  },
   caption: {
     fontSize: "12px",
     color: "#e2e8f0",
     fontWeight: 700,
     marginBottom: "8px",
-    lineHeight: "1.4",
-  },
-  noteBox: {
-    marginTop: "16px",
-    padding: "12px",
-    borderRadius: "10px",
-    background: "var(--bg-surface)",
-    fontSize: "12px",
-    fontWeight: 600,
-    border: "1px solid var(--border-medium)",
-    color: "var(--text-muted)",
     lineHeight: "1.4",
   },
   notificationBox: {
@@ -145,20 +107,6 @@ const styles = {
     fontWeight: 700,
     fontSize: "11px",
     marginTop: "6px",
-  },
-  input: {
-    width: "100%",
-    padding: "12px",
-    marginTop: "8px",
-    borderRadius: "10px",
-    border: "2px solid #475569",
-    background: "#0f172a",
-    color: "#ffffff",
-    fontSize: "13px",
-    fontFamily: "inherit",
-    resize: "vertical",
-    minHeight: "80px",
-    boxSizing: "border-box",
   },
   button: {
     width: "100%",
@@ -236,9 +184,6 @@ export default function Activate() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const [showManual, setShowManual] = useState(true);
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [showPaymentWidget, setShowPaymentWidget] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentNotification, setPaymentNotification] = useState(null);
   const [isWelcomeBonus, setIsWelcomeBonus] = useState(false);
@@ -330,7 +275,7 @@ export default function Activate() {
     };
   }, [navigate, searchParams, location.state]);
 
-  // Check for payment return from Paynecta
+  // Check for payment return from Paynecta (for redirect fallback - can be removed later)
   useEffect(() => {
     const paymentRef = searchParams.get("reference");
     const paymentStatus = searchParams.get("payment");
@@ -362,7 +307,7 @@ export default function Activate() {
   };
 
   /* =========================
-     DIRECT STK PUSH - NO REDIRECT, CUSTOMER STAYS ON APP
+     DIRECT STK PUSH - ONLY METHOD (NO REDIRECT)
      ========================= */
   const initiateDirectStk = async () => {
     let formattedPhone = paymentPhone.replace(/[^0-9]/g, '');
@@ -387,7 +332,7 @@ export default function Activate() {
     const activationFee = plan.activationFee || 100;
     
     try {
-      console.log("Initiating DIRECT STK Push:", { 
+      console.log("📱 Initiating DIRECT STK Push:", { 
         plan: planKey, 
         amount: activationFee, 
         phone: formattedPhone 
@@ -445,7 +390,7 @@ export default function Activate() {
         if (res.data.success && res.data.activated) {
           setPaymentNotification({
             type: "success",
-            message: "✅ Payment successful! Your account is now activated."
+            message: "✅ Payment successful! Your account is now activated. Redirecting..."
           });
           
           localStorage.setItem("showWelcomeBonusOnDashboard", "true");
@@ -481,271 +426,6 @@ export default function Activate() {
     };
     
     setTimeout(poll, 3000);
-  };
-
-  /* =========================
-      INITIATE PAYNECTA PAYMENT (REDIRECT METHOD)
-    ========================== */
-  const initiateSTK = async () => {
-    console.log("Pay button clicked with Paynecta!");
-    setShowPaymentWidget(true);
-    setPaymentNotification(null);
-    setPaymentPhone("");
-    setPaymentLoading(true);
-    
-    try {
-      const amount = plan.activationFee || 100;
-      
-      const res = await api.post("/activation/initiate-paynecta", {
-        plan: planKey,
-        is_welcome_bonus: isWelcomeBonus,
-        amount: amount
-      });
-      
-      setPaymentLoading(false);
-      
-      if (res.data.success) {
-        loadPaynectaWidget(res.data.paymentUrl, res.data.reference);
-      } else {
-        setPaymentNotification({
-          type: "error",
-          message: res.data.message || "Failed to initiate payment"
-        });
-      }
-    } catch (error) {
-      setPaymentLoading(false);
-      console.error("Paynecta error:", error);
-      setPaymentNotification({
-        type: "error",
-        message: error.response?.data?.message || "Payment initialization failed"
-      });
-    }
-  };
-
-  const loadPaynectaWidget = (paymentUrl, reference) => {
-    const existingScript = document.getElementById("paynecta-script");
-    if (existingScript) {
-      existingScript.remove();
-    }
-    
-    const script = document.createElement("script");
-    script.id = "paynecta-script";
-    script.src = "https://paynecta.co.ke/widget.js";
-    script.async = true;
-    script.onload = () => {
-      if (window.PaynectaWidget) {
-        window.PaynectaWidget.initialize({
-          slug: PAYNECTA_SLUG,
-          amount: plan.activationFee,
-          phone: user?.phone || "",
-          onSuccess: (data) => {
-            console.log("Paynecta payment success:", data);
-            handlePaynectaSuccess(reference);
-          },
-          onClose: () => {
-            console.log("Paynecta widget closed");
-          }
-        });
-        window.PaynectaWidget.open();
-      }
-    };
-    document.body.appendChild(script);
-  };
-
-  const handlePaynectaSuccess = async (reference) => {
-    setPaymentNotification({
-      type: "success",
-      message: "✅ Payment successful! Activating your account..."
-    });
-    
-    try {
-      const res = await api.post("/activation/verify-paynecta", {
-        reference: reference,
-        plan: planKey,
-        is_welcome_bonus: isWelcomeBonus
-      });
-      
-      if (res.data.success) {
-        setShowSuccessPopup(true);
-      } else {
-        setPaymentNotification({
-          type: "error",
-          message: "Payment received but activation failed. Contact support."
-        });
-      }
-    } catch (error) {
-      console.error("Activation error:", error);
-      setPaymentNotification({
-        type: "error",
-        message: "Payment received. Account activation is pending."
-      });
-    }
-  };
-
-  const handlePaymentSubmit = async () => {
-    let formattedPhone = paymentPhone.replace(/[^0-9]/g, '');
-    
-    if (!formattedPhone || formattedPhone.length < 9) {
-      setPaymentNotification({
-        type: "error",
-        message: "Please enter a valid phone number"
-      });
-      return;
-    }
-    
-    if (formattedPhone.startsWith('0') && formattedPhone.length > 1) {
-      formattedPhone = '254' + formattedPhone.substring(1);
-    } else if (formattedPhone.startsWith('7')) {
-      formattedPhone = '254' + formattedPhone;
-    }
-    
-    setPaymentNotification(null);
-    setPaymentLoading(true);
-    
-    const activationFee = plan.activationFee || 100;
-    
-    try {
-      console.log("Initiating payment:", { amount: activationFee, phone: formattedPhone });
-      
-      const res = await api.post("/activation/initiate", {
-        plan: planKey,
-        is_welcome_bonus: isWelcomeBonus,
-        phone: formattedPhone
-      });
-      
-      setPaymentLoading(false);
-      
-      console.log("Payment response:", res.data);
-      
-      if (res.data.success) {
-        setPaymentNotification({
-          type: "success",
-          message: "📱 STK Push sent! Check your phone and enter your M-Pesa PIN to complete payment."
-        });
-        
-        if (res.data.checkout_request_id) {
-          pollLegacyPaymentStatus(res.data.checkout_request_id);
-        }
-      } else {
-        console.log("Payment failed:", res.data);
-        setPaymentNotification({
-          type: "error",
-          message: res.data.message || res.data.error || "Payment failed. Please try manual payment below."
-        });
-      }
-    } catch (error) {
-      setPaymentLoading(false);
-      console.error("Payment error:", error.response?.data || error);
-      setPaymentNotification({
-        type: "error",
-        message: error.response?.data?.message || "Failed to initiate payment. Please try manual payment below."
-      });
-    }
-  };
-
-  const pollLegacyPaymentStatus = async (checkoutRequestId) => {
-    let attempts = 0;
-    const maxAttempts = 20;
-    
-    const poll = async () => {
-      try {
-        const res = await api.post("/activation/verify-stk", {
-          checkout_request_id: checkoutRequestId,
-          plan: planKey,
-          is_welcome_bonus: isWelcomeBonus
-        });
-        
-        if (res.data.success && res.data.verified) {
-          setPaymentNotification({
-            type: "success",
-            message: "✅ Payment successful! Your account is now activated."
-          });
-          
-          localStorage.setItem("showWelcomeBonusOnDashboard", "true");
-          
-          setTimeout(() => {
-            navigate("/dashboard");
-          }, 2000);
-          return;
-        }
-        
-        attempts++;
-        if (attempts < maxAttempts) {
-          setTimeout(poll, 3000);
-        } else {
-          setPaymentNotification({
-            type: "info",
-            message: "⏳ Payment pending. If you completed payment, please wait for confirmation or use manual payment."
-          });
-        }
-      } catch (err) {
-        console.error("Poll error:", err);
-        attempts++;
-        if (attempts < maxAttempts) {
-          setTimeout(poll, 3000);
-        }
-      }
-    };
-    
-    setTimeout(poll, 3000);
-  };
-
-  const pollPaynectaStatus = async (reference, plan) => {
-    let attempts = 0;
-    const maxAttempts = 30;
-    
-    const poll = async () => {
-      try {
-        const res = await api.post("/activation/verify-stk", {
-          reference: reference,
-          plan: plan,
-          is_welcome_bonus: isWelcomeBonus
-        });
-        
-        if (res.data.success && res.data.activated) {
-          setPaymentNotification({
-            type: "success",
-            message: "✅ Payment successful! Your account is now activated."
-          });
-          
-          localStorage.setItem("showWelcomeBonusOnDashboard", "true");
-          localStorage.removeItem("pendingActivationRef");
-          localStorage.removeItem("pendingPlanKey");
-          
-          setTimeout(() => {
-            navigate("/dashboard");
-          }, 2000);
-          return;
-        }
-        
-        attempts++;
-        if (attempts < maxAttempts) {
-          setPaymentNotification({
-            type: "info",
-            message: `Checking payment status... (${attempts}/${maxAttempts})`
-          });
-          setTimeout(poll, 3000);
-        } else {
-          setPaymentNotification({
-            type: "info",
-            message: "⏳ Payment may still be processing. You can check again or use manual payment."
-          });
-        }
-      } catch (err) {
-        console.error("Payment poll error:", err);
-        attempts++;
-        if (attempts < maxAttempts) {
-          setTimeout(poll, 3000);
-        }
-      }
-    };
-    
-    setTimeout(poll, 3000);
-  };
-
-  const closePaymentWidget = () => {
-    setShowPaymentWidget(false);
-    setPaymentNotification(null);
   };
 
   const copyPhoneNumber = async () => {
@@ -1068,7 +748,6 @@ export default function Activate() {
                   💳 Pay with M-Pesa (STK Push)
                 </p>
                 
-                {/* Phone Number Input for Direct STK */}
                 <div style={{ marginBottom: "16px", textAlign: "left" }}>
                   <label style={{ 
                     display: "block", 
@@ -1159,7 +838,6 @@ export default function Activate() {
               </div>
             ) : (
               <button
-                id="paynecta-pay-btn"
                 onClick={() => {
                   setShowPaynectaInline(true);
                 }}
@@ -1394,131 +1072,6 @@ export default function Activate() {
           <Testimonials variant="carousel" />
         </div>
       </div>
-
-      {showPaymentWidget && (
-        <div style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: "rgba(0,0,0,0.7)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 99999,
-          padding: "20px"
-        }}>
-          <div style={{
-            background: "#fff7ed",
-            borderRadius: "16px",
-            padding: "24px",
-            maxWidth: "380px",
-            width: "100%",
-            position: "relative"
-          }}>
-            <button
-              onClick={closePaymentWidget}
-              style={{
-                position: "absolute",
-                top: "10px",
-                right: "10px",
-                background: "#fee2e2",
-                border: "none",
-                borderRadius: "50%",
-                width: "28px",
-                height: "28px",
-                cursor: "pointer",
-                fontSize: "16px",
-                color: "#dc2626",
-                fontWeight: "bold"
-              }}
-            >
-              ✕
-            </button>
-            <h3 style={{ color: "#9a3412", fontSize: "18px", fontWeight: "900", marginBottom: "12px", textAlign: "center" }}>
-              💳 Pay with M-Pesa
-            </h3>
-            <p style={{ color: "#c2410c", fontSize: "14px", marginBottom: "16px", textAlign: "center", fontWeight: "700" }}>
-              Amount: KES {plan.activationFee}
-            </p>
-            
-            <div id="paynecta-inline-widget" style={{
-              background: "#fff",
-              borderRadius: "10px",
-              padding: "20px",
-              textAlign: "center",
-              minHeight: "150px",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center"
-            }}>
-              <button
-                onClick={() => {
-                  const existingScript = document.getElementById("paynecta-inline-script");
-                  if (existingScript) existingScript.remove();
-                  
-                  const script = document.createElement("script");
-                  script.id = "paynecta-inline-script";
-                  script.src = "https://paynecta.co.ke/widget.js";
-                  script.async = true;
-                  script.setAttribute("data-slug", "survey-app");
-                  script.setAttribute("data-label", "Pay with M-Pesa");
-                  script.setAttribute("data-color", "#00A859");
-                  script.setAttribute("data-position", "center");
-                  document.body.appendChild(script);
-                  
-                  setPaymentNotification({
-                    type: "info",
-                    message: "Loading payment widget..."
-                  });
-                  
-                  setTimeout(() => setPaymentNotification(null), 2000);
-                }}
-                style={{
-                  padding: "16px 32px",
-                  background: "#00A859",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "10px",
-                  fontSize: "16px",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  boxShadow: "0 4px 12px rgba(0, 168, 89, 0.4)"
-                }}
-              >
-                💳 Pay with M-Pesa
-              </button>
-              <p style={{ color: "#9a3412", fontSize: "12px", marginTop: "12px" }}>
-                Click to open M-Pesa payment
-              </p>
-            </div>
-            
-            <button
-              onClick={closePaymentWidget}
-              style={{
-                width: "100%",
-                padding: "12px",
-                background: "transparent",
-                color: "#64748b",
-                border: "1px solid #e2e8f0",
-                borderRadius: "8px",
-                fontSize: "14px",
-                fontWeight: "600",
-                cursor: "pointer",
-                marginTop: "12px"
-              }}
-            >
-              Cancel
-            </button>
-            
-            <p style={{ color: "#9a3412", fontSize: "11px", marginTop: "12px", textAlign: "center" }}>
-              💰 Secure payment via Paynecta
-            </p>
-          </div>
-        </div>
-      )}
     </>
   );
 }
