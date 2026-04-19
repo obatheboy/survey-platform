@@ -125,12 +125,11 @@ export default function App() {
         {/* USER AUTH - redirect to landing banner first unless mode is specified */}
         <Route path="/auth" element={<AuthRedirect />} />
         
-        {/* ONBOARDING SURVEY */}
-        <Route path="/onboarding" element={<OnboardingSurvey />} />
-        
-        {/* Login is FREE - no payment pages needed */}
-        {/* Old payment routes disabled - redirect to dashboard */}
-        <Route path="/login-fee-payment" element={<Navigate to="/dashboard" replace />} />
+         {/* ONBOARDING SURVEY */}
+         <Route path="/onboarding" element={<OnboardingSurvey />} />
+         
+         {/* Login is FREE - auto-redirects to onboarding or dashboard */}
+         <Route path="/login-fee-payment" element={<LoginFeePayment />} />
         <Route path="/registration-fee-payment" element={<Navigate to="/dashboard" replace />} />
         <Route path="/login-fee-callback" element={<Navigate to="/dashboard" replace />} />
 

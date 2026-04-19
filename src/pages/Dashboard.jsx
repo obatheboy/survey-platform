@@ -58,7 +58,6 @@ const PLANS = {
   },
 };
 const TOTAL_SURVEYS = 10;
-const APP_VERSION = "1.2.5";
 
 // Theme removed - light mode only
 
@@ -132,13 +131,8 @@ export default function Dashboard() {
   useEffect(() => {
     let alive = true;
 
-    const savedVersion = localStorage.getItem("app_version");
-    if (savedVersion !== APP_VERSION) {
-      localStorage.setItem("app_version", APP_VERSION);
-      if (savedVersion) {
-        window.location.reload();
-      }
-    }
+  // Version check removed - handled globally in App.jsx via cache utility
+  // This prevents duplicate reload loops
 
     const load = async () => {
       try {
