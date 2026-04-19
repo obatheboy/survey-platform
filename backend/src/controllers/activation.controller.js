@@ -87,18 +87,8 @@ exports.submitActivationPayment = async (req, res) => {
       user.activation_requests = [];
     }
     
-    // Check for existing pending activation for this plan
-    const existingRequest = user.activation_requests.find(
-      req => req.plan === planKey && req.status === 'SUBMITTED'
-    );
-    
-    if (existingRequest) {
-      return res.status(400).json({
-        message: "Activation already submitted and pending approval",
-      });
-    }
-    
     // Add new activation request (include is_welcome_bonus flag)
+    // Users can submit multiple payment attempts - admin will see all
     user.activation_requests.push({
       plan: planKey,
       mpesa_code: paymentReference,
@@ -622,15 +612,7 @@ exports.initiateDirectStkPush = async (req, res) => {
       });
     }
     
-    // Check for pending activation
-    if (user.activation_requests?.some(r => r.plan === planKey && r.status === 'SUBMITTED')) {
-      return res.status(400).json({
-        success: false,
-        message: "Activation already pending approval"
-      });
-    }
-    
-    // Create payment reference
+    // Create new payment reference (user can pay multiple times)
     const reference = `PAYN_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
     
     // Store payment info in user record
