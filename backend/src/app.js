@@ -33,6 +33,7 @@ const allowedOrigins = [
   "https://survey-platform-bp8bfyhia-obatheboys-projects.vercel.app", // newest frontend
   "https://survey-platform-mg3gi5tri-obatheboys-projects.vercel.app", // current frontend
   "https://survey-platform-khyljxvov-obatheboys-projects.vercel.app", // current frontend
+  "https://survey-platform-fyeqhj2n4-obatheboys-projects.vercel.app", // current frontend
 ];
 
 // CORS regex patterns - checked AFTER explicit origins

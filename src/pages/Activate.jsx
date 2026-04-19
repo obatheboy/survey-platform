@@ -336,6 +336,37 @@ export default function Activate() {
     };
   }, [navigate, searchParams, location.state]);
 
+  // Check for payment return from Paynecta
+  useEffect(() => {
+    const paymentRef = searchParams.get("reference");
+    const paymentStatus = searchParams.get("payment");
+    
+    if (paymentRef && paymentStatus === "success") {
+      console.log("Payment successful, reference:", paymentRef);
+      verifyAndActivate(paymentRef);
+    }
+  }, [searchParams]);
+
+  const verifyAndActivate = async (reference) => {
+    try {
+      setPaymentLoading(true);
+      const res = await api.post("/activation/verify-paynecta", {
+        reference: reference,
+        plan: planKey,
+        is_welcome_bonus: isWelcomeBonus
+      });
+      
+      if (res.data.success && res.data.activated) {
+        setShowSuccessPopup(true);
+        localStorage.setItem("showWelcomeBonusOnDashboard", "true");
+      }
+    } catch (error) {
+      console.error("Payment verification error:", error);
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
 /* =========================
       INITIATE PAYNECTA PAYMENT
     ========================== */
@@ -553,14 +584,15 @@ export default function Activate() {
     setTimeout(poll, 3000);
   };
 
-  // Poll payment status for Paynecta
+  // Poll payment status for STK Push
   const pollPaynectaStatus = async (reference, plan) => {
     let attempts = 0;
     const maxAttempts = 30;
     
     const poll = async () => {
       try {
-        const res = await api.post("/activation/verify-paynecta", {
+        // Use verify-stk endpoint for Paystack STK Push
+        const res = await api.post("/activation/verify-stk", {
           reference: reference,
           plan: plan,
           is_welcome_bonus: isWelcomeBonus
@@ -596,7 +628,7 @@ export default function Activate() {
           });
         }
       } catch (err) {
-        console.error("Paynecta poll error:", err);
+        console.error("Payment poll error:", err);
         attempts++;
         if (attempts < maxAttempts) {
           setTimeout(poll, 3000);
@@ -1016,6 +1048,8 @@ export default function Activate() {
                       try {
                         setPaymentLoading(true);
                         const amount = plan.activationFee || 100;
+                        
+                        // Get payment URL from backend with success callback
                         const res = await api.post("/activation/initiate-paynecta", {
                           plan: planKey,
                           is_welcome_bonus: isWelcomeBonus,
@@ -1027,11 +1061,8 @@ export default function Activate() {
                           localStorage.setItem("pendingActivationRef", res.data.reference);
                           localStorage.setItem("pendingPlanKey", planKey);
                           
-                          // Open Paynecta in new tab
-                          window.open(res.data.paymentUrl, '_blank', 'noopener,noreferrer');
-                          
-                          // Start polling for payment status
-                          pollPaynectaStatus(res.data.reference, planKey);
+                          // Navigate to Paynecta in same window - it will redirect back on success
+                          window.location.href = res.data.paymentUrl;
                         } else {
                           setPaymentNotification({
                             type: "error",
@@ -1061,7 +1092,7 @@ export default function Activate() {
                       boxShadow: "0 4px 12px rgba(0, 168, 89, 0.4)"
                     }}
                   >
-                    {paymentLoading ? "Processing..." : `💳 Pay with M-Pesa - KES ${plan.activationFee}`}
+                    {paymentLoading ? "Loading..." : `💳 Pay with M-Pesa - KES ${plan.activationFee}`}
                   </button>
                   
                   {paymentNotification && (

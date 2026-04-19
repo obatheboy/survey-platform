@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
+const paystackService = require("../services/paystack.service");
 
 const { protect } = require("../middlewares/auth.middleware");
 const activationController = require("../controllers/activation.controller");
@@ -28,40 +29,48 @@ const PLAN_NAMES = {
 
 /**
  * POST /api/activation/initiate
- * Initiate M-Pesa STK Push via Paystack (Direct STK - No Redirect)
- * NOTE: Paystack is now disabled - Use Paynecta instead
+ * Initiate Paynecta payment - keeps user on site
  */
 router.post("/initiate", protect, async (req, res) => {
   try {
-    const { plan, is_welcome_bonus, phone } = req.body;
-    const planKey = is_welcome_bonus ? "WELCOME_BONUS" : plan?.toUpperCase();
-    const amount = PLAN_FEES[planKey];
-    
-    if (!amount) {
-      return res.status(400).json({ success: false, message: "Invalid plan" });
-    }
+    const { plan, is_welcome_bonus, amount } = req.body;
+    const planKey = is_welcome_bonus ? "REGULAR" : plan?.toUpperCase();
+    const paymentAmount = amount || PLAN_FEES[planKey];
     
     const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    const phoneNumber = phone || user.phone;
-    
-    console.log("========== STARTING PAYSTACK STK PUSH (DISABLED) ==========");
-    console.log("Phone:", phoneNumber);
-    console.log("Amount:", amount);
+    console.log("=== INITIATE PAYNECTA PAYMENT ===");
+    console.log("User:", user.phone);
     console.log("Plan:", planKey);
-    console.log("================================================");
+    console.log("Amount:", paymentAmount);
     
-    // Paystack is disabled - return message to use Paynecta
+    // Create payment reference
+    const reference = `PAYN_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+    
+    // Store reference for verification
+    user.last_payment_reference = reference;
+    user.last_payment_attempt = new Date();
+    user.last_payment_plan = planKey;
+    user.payment_method = "paynecta";
+    await user.save();
+    
+    // Return payment URL that opens in same window (not new tab)
+    const paymentUrl = `https://paynecta.co.ke/pay/survey-app?amount=${paymentAmount}&phone=${user.phone}&reference=${reference}`;
+    
     return res.json({
-      success: false,
-      message: "Please use Paynecta widget to complete payment.",
-      use_paynecta: true
+      success: true,
+      message: "Payment ready",
+      reference: reference,
+      paymentUrl: paymentUrl,
+      amount: paymentAmount,
+      phone: user.phone
     });
+    
   } catch (error) {
-    console.error("Activation error:", error.message);
+    console.error("Paynecta initiate error:", error.message);
     return res.status(500).json({ success: false, message: "Server error: " + error.message });
   }
 });
@@ -97,7 +106,7 @@ router.post("/initiate-paynecta", protect, async (req, res) => {
     await user.save();
     
     // Generate payment URL with success callback
-    const successUrl = `${process.env.FRONTEND_URL || 'https://survey-platform-three.vercel.app'}/activate?payment=success&reference=${reference}`;
+    const successUrl = `https://survey-platform-fyeqhj2n4-obatheboys-projects.vercel.app/activate?payment=success&reference=${reference}`;
     const paymentUrl = `https://paynecta.co.ke/pay/survey-app?amount=${paymentAmount}&phone=${user.phone}&reference=${reference}&callback=${encodeURIComponent(successUrl)}`;
     
     return res.json({
