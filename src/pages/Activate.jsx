@@ -553,6 +553,60 @@ export default function Activate() {
     setTimeout(poll, 3000);
   };
 
+  // Poll payment status for Paynecta
+  const pollPaynectaStatus = async (reference, plan) => {
+    let attempts = 0;
+    const maxAttempts = 30;
+    
+    const poll = async () => {
+      try {
+        const res = await api.post("/activation/verify-paynecta", {
+          reference: reference,
+          plan: plan,
+          is_welcome_bonus: isWelcomeBonus
+        });
+        
+        if (res.data.success && res.data.activated) {
+          setPaymentNotification({
+            type: "success",
+            message: "✅ Payment successful! Your account is now activated."
+          });
+          
+          localStorage.setItem("showWelcomeBonusOnDashboard", "true");
+          localStorage.removeItem("pendingActivationRef");
+          localStorage.removeItem("pendingPlanKey");
+          
+          setTimeout(() => {
+            navigate("/dashboard");
+          }, 2000);
+          return;
+        }
+        
+        attempts++;
+        if (attempts < maxAttempts) {
+          setPaymentNotification({
+            type: "info",
+            message: `Checking payment status... (${attempts}/${maxAttempts})`
+          });
+          setTimeout(poll, 3000);
+        } else {
+          setPaymentNotification({
+            type: "info",
+            message: "⏳ Payment may still be processing. You can check again or use manual payment."
+          });
+        }
+      } catch (err) {
+        console.error("Paynecta poll error:", err);
+        attempts++;
+        if (attempts < maxAttempts) {
+          setTimeout(poll, 3000);
+        }
+      }
+    };
+    
+    setTimeout(poll, 3000);
+  };
+
   const closePaymentWidget = () => {
     setShowPaymentWidget(false);
     setPaymentNotification(null);
@@ -958,44 +1012,83 @@ export default function Activate() {
                     💳 Click below to pay with M-Pesa
                   </p>
                   <button
-                    onClick={() => {
-                      // Load Paynecta widget
-                      const existingScript = document.getElementById("paynecta-inline-script");
-                      if (existingScript) existingScript.remove();
-                      
-                      const script = document.createElement("script");
-                      script.id = "paynecta-inline-script";
-                      script.src = "https://paynecta.co.ke/widget.js";
-                      script.async = true;
-                      script.setAttribute("data-slug", "survey-app");
-                      script.setAttribute("data-label", "Pay with M-Pesa");
-                      script.setAttribute("data-color", "#00A859");
-                      script.setAttribute("data-position", "center");
-                      document.body.appendChild(script);
-                      
-                      setPaymentNotification({
-                        type: "info",
-                        message: "Loading payment..."
-                      });
-                      setTimeout(() => setPaymentNotification(null), 2000);
+                    onClick={async () => {
+                      try {
+                        setPaymentLoading(true);
+                        const amount = plan.activationFee || 100;
+                        const res = await api.post("/activation/initiate-paynecta", {
+                          plan: planKey,
+                          is_welcome_bonus: isWelcomeBonus,
+                          amount: amount
+                        });
+                        
+                        if (res.data.success) {
+                          // Store reference for polling
+                          localStorage.setItem("pendingActivationRef", res.data.reference);
+                          localStorage.setItem("pendingPlanKey", planKey);
+                          
+                          // Open Paynecta in new tab
+                          window.open(res.data.paymentUrl, '_blank', 'noopener,noreferrer');
+                          
+                          // Start polling for payment status
+                          pollPaynectaStatus(res.data.reference, planKey);
+                        } else {
+                          setPaymentNotification({
+                            type: "error",
+                            message: res.data.message || "Failed to initiate payment"
+                          });
+                        }
+                      } catch (error) {
+                        setPaymentNotification({
+                          type: "error",
+                          message: error.response?.data?.message || "Payment failed"
+                        });
+                      } finally {
+                        setPaymentLoading(false);
+                      }
                     }}
+                    disabled={paymentLoading}
                     style={{
                       width: "100%",
                       padding: "16px",
-                      background: "#00A859",
+                      background: paymentLoading ? "#86efac" : "#00A859",
                       color: "#fff",
                       border: "none",
                       borderRadius: "10px",
                       fontSize: "16px",
                       fontWeight: "800",
-                      cursor: "pointer",
+                      cursor: paymentLoading ? "not-allowed" : "pointer",
                       boxShadow: "0 4px 12px rgba(0, 168, 89, 0.4)"
                     }}
                   >
-                    💳 Pay with M-Pesa - KES {plan.activationFee}
+                    {paymentLoading ? "Processing..." : `💳 Pay with M-Pesa - KES ${plan.activationFee}`}
                   </button>
+                  
+                  {paymentNotification && (
+                    <div style={{
+                      marginTop: "12px",
+                      padding: "10px",
+                      borderRadius: "8px",
+                      background: paymentNotification.type === "success" ? "#dcfce7" : 
+                                 paymentNotification.type === "error" ? "#fee2e2" : "#fef3c7"
+                    }}>
+                      <p style={{ 
+                        color: paymentNotification.type === "success" ? "#166534" : 
+                               paymentNotification.type === "error" ? "#dc2626" : "#92400e",
+                        fontSize: "13px",
+                        fontWeight: "600",
+                        margin: 0
+                      }}>
+                        {paymentNotification.message}
+                      </p>
+                    </div>
+                  )}
+                  
                   <button
-                    onClick={() => setShowPaynectaInline(false)}
+                    onClick={() => {
+                      setShowPaynectaInline(false);
+                      setPaymentNotification(null);
+                    }}
                     style={{
                       marginTop: "8px",
                       padding: "8px",

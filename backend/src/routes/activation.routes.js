@@ -96,8 +96,9 @@ router.post("/initiate-paynecta", protect, async (req, res) => {
     user.payment_method = "paynecta";
     await user.save();
     
-    // Generate payment URL
-    const paymentUrl = `https://paynecta.co.ke/pay/survey-app?amount=${paymentAmount}&phone=${user.phone}&reference=${reference}`;
+    // Generate payment URL with success callback
+    const successUrl = `${process.env.FRONTEND_URL || 'https://survey-platform-three.vercel.app'}/activate?payment=success&reference=${reference}`;
+    const paymentUrl = `https://paynecta.co.ke/pay/survey-app?amount=${paymentAmount}&phone=${user.phone}&reference=${reference}&callback=${encodeURIComponent(successUrl)}`;
     
     return res.json({
       success: true,
@@ -105,7 +106,8 @@ router.post("/initiate-paynecta", protect, async (req, res) => {
       reference: reference,
       paymentUrl: paymentUrl,
       amount: paymentAmount,
-      phone: user.phone
+      phone: user.phone,
+      successUrl: successUrl
     });
     
   } catch (error) {
