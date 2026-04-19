@@ -74,10 +74,29 @@ export default function Surveys() {
       setIsLoading(true);
       
       try {
-        const plan = localStorage.getItem(STORAGE_KEYS.ACTIVE_PLAN);
+        let plan = localStorage.getItem(STORAGE_KEYS.ACTIVE_PLAN);
+        console.log("🔍 [Surveys] Active plan from localStorage:", plan);
+        
+        // If no plan in localStorage, try to get from API
+        if (!plan || !SURVEY_QUESTIONS[plan]) {
+          console.log("🔍 [Surveys] No valid plan in localStorage, fetching from API...");
+          try {
+            const res = await api.get("/auth/me");
+            plan = res.data.active_plan;
+            console.log("🔍 [Surveys] Active plan from API:", plan);
+            
+            // Save to localStorage for future use
+            if (plan && SURVEY_QUESTIONS[plan]) {
+              localStorage.setItem(STORAGE_KEYS.ACTIVE_PLAN, plan);
+            }
+          } catch (apiError) {
+            console.error("🔍 [Surveys] API error:", apiError);
+          }
+        }
         
         // Validate plan exists
         if (!plan || !SURVEY_QUESTIONS[plan]) {
+          console.log("🔍 [Surveys] Still no valid plan, redirecting to dashboard");
           navigate("/dashboard");
           return;
         }
@@ -91,9 +110,30 @@ export default function Surveys() {
         
       } catch (error) {
         console.error("Survey status check failed:", error);
-        // Allow survey on error
-        const plan = localStorage.getItem(STORAGE_KEYS.ACTIVE_PLAN);
-        setActivePlan(plan);
+        // Try to get plan from API as fallback
+        try {
+          const res = await api.get("/auth/me");
+          const plan = res.data.active_plan;
+          if (plan && SURVEY_QUESTIONS[plan]) {
+            localStorage.setItem(STORAGE_KEYS.ACTIVE_PLAN, plan);
+            setActivePlan(plan);
+          } else {
+            navigate("/dashboard");
+          }
+        } catch (fallbackError) {
+          console.error("Fallback also failed:", fallbackError);
+          // Try with any available plan from localStorage
+          const plan = localStorage.getItem(STORAGE_KEYS.ACTIVE_PLAN);
+          console.log("🔍 [Surveys] Plan from localStorage in fallback:", plan);
+          if (plan && SURVEY_QUESTIONS[plan]) {
+            setActivePlan(plan);
+          } else {
+            // Default to REGULAR if nothing else works
+            console.log("🔍 [Surveys] Defaulting to REGULAR plan");
+            setActivePlan("REGULAR");
+            localStorage.setItem(STORAGE_KEYS.ACTIVE_PLAN, "REGULAR");
+          }
+        }
       } finally {
         setIsLoading(false);
       }
@@ -116,8 +156,13 @@ export default function Surveys() {
     };
 
     const checkApiSurveyStatus = async (plan) => {
+      console.log("🔍 [Surveys] Checking API for plan:", plan);
       const res = await api.get("/auth/me");
+      console.log("🔍 [Surveys] User data from API:", res.data);
+      console.log("🔍 [Surveys] Plans:", res.data.plans);
+      
       const userPlan = res.data.plans?.[plan];
+      console.log("🔍 [Surveys] User's plan data:", userPlan);
       
       // Update localStorage cache
       updateLocalStorageUserData(res.data);
@@ -287,6 +332,8 @@ export default function Surveys() {
   // =========================================================
   // RENDER LOADING STATE
   // =========================================================
+  console.log("🔍 [Surveys] Render state - isLoading:", isLoading, "activePlan:", activePlan, "planConfig:", planConfig);
+  
   if (isLoading || !activePlan || !planConfig) {
     return (
       <div className="survey-page">

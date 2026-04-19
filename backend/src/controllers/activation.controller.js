@@ -244,7 +244,7 @@ exports.approveActivation = async (req, res) => {
       const notification = new Notification({
         user_id: user._id,
         title: `✅ ${plan} Plan Activated!`,
-        message: `Your ${plan} plan has been successfully activated! KES ${earningsToAdd} has been added to your balance. You can now withdraw your earnings.`,
+        message: `Your ${plan} plan has been successfully activated! KES ${creditAmount} has been added to your balance. You can now withdraw your earnings.`,
         action_route: "/withdraw",
         type: "activation"
       });
@@ -260,7 +260,7 @@ exports.approveActivation = async (req, res) => {
       withdraw_unlocked: true,
       user_activated: user.is_activated,
       balance_before: oldBalance,
-      balance_added: earningsToAdd,
+      balance_added: creditAmount,
       new_balance: user.total_earned
     });
   } catch (error) {
