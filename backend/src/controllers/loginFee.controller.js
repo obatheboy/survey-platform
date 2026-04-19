@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-const paystackService = require("../services/paystack.service");
+const paynectaService = require("../services/paynecta.service");
 const https = require("https");
 
 const LOGIN_FEE = 100;
@@ -25,22 +25,23 @@ exports.initiateLoginFeePayment = async (req, res) => {
       return res.status(400).json({ message: "Login fee already paid" });
     }
 
-    // ✅ Send STK push only - NO auto approval
-    const payment = await paystackService.chargeMpesa(
+    // ✅ Send Paynecta STK push - NO auto approval
+    const payment = await paynectaService.initiateSTKPush(
       LOGIN_FEE,
       user.phone,
       user.email,
-      userId
+      userId,
+      "Login Fee Payment"
     );
 
-    console.log("Paystack STK Push response:", payment);
+    console.log("Paynecta STK Push response:", payment);
 
     if (!payment.success) {
       console.error("STK Push failed:", payment);
       return res.status(500).json({ 
         success: false,
         message: "Failed to initiate STK Push. Please try again.",
-        debug: payment.message
+        debug: payment.message || payment.error
       });
     }
 
@@ -49,7 +50,7 @@ exports.initiateLoginFeePayment = async (req, res) => {
     user.last_payment_attempt = new Date();
     await user.save();
 
-    // ✅ Return success - NO auto approval, user stays in app
+    // ✅ Return success - NO auto approval, user waits for admin
     res.status(200).json({
       success: true,
       message: "STK Push sent to your phone. Check your M-Pesa and enter PIN.",
@@ -96,7 +97,7 @@ exports.checkLoginFeeStatus = async (req, res) => {
   }
 };
 
-// ✅ MANUAL APPROVAL FUNCTION - Admin calls this after verifying payment in Paystack dashboard
+// ✅ MANUAL APPROVAL FUNCTION - Admin calls this after verifying payment in Paynecta dashboard
 exports.manualApprovePayment = async (req, res) => {
   try {
     const { userId, reference, notes } = req.body;
@@ -249,37 +250,7 @@ exports.initiatePaynectaPayment = async (req, res) => {
   }
 };
 
-// ✅ Verify payment with Paystack (optional - admin can use to check before approving)
-exports.verifyWithPaystack = async (req, res) => {
-  try {
-    const { reference } = req.body;
-    
-    if (!reference) {
-      return res.status(400).json({ 
-        success: false,
-        message: "Payment reference required" 
-      });
-    }
-    
-    const verification = await paystackService.verifyPayment(reference);
-    
-    res.status(200).json({
-      success: true,
-      verified: verification.success,
-      amount: verification.amount,
-      status: verification.status,
-      paid_at: verification.paid_at
-    });
-    
-  } catch (error) {
-    console.error("Verify with Paystack error:", error);
-    res.status(500).json({ 
-      success: false,
-      message: "Failed to verify payment: " + error.message
-    });
-  }
-};
-
+// ✅ REMOVED: verifyWithPaystack (Paystack no longer used)
 // ✅ REMOVED: verifyLoginFeePayment (auto-approval)
 // ✅ REMOVED: paymentWebhook (no automation)
 // ✅ REMOVED: submitManualPayment (handled by admin panel)

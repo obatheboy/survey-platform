@@ -315,7 +315,7 @@ export default function Activate() {
      if (!formattedPhone || formattedPhone.length < 9) {
        setPaymentNotification({
          type: "error",
-         message: "Please enter a valid phone number (e.g., 0740123456 or 011234567)"
+         message: "Please enter a valid phone number (e.g., 0740123456 or 0112345678)"
        });
        return;
      }
@@ -325,9 +325,9 @@ export default function Activate() {
        formattedPhone = formattedPhone.substring(1);
      }
      
-     // Validate Kenyan mobile prefixes: after removing 0, must start with 7 (mobile) or 1 (landline/mobile)
-     const validPrefixes = ['7', '1'];
-     if (!validPrefixes.includes(formattedPhone.charAt(0))) {
+     // Validate Kenyan mobile/landline prefixes: after removing 0, must start with 7 or 1
+     const firstDigit = formattedPhone.charAt(0);
+     if (firstDigit !== '7' && firstDigit !== '1') {
        setPaymentNotification({
          type: "error",
          message: "Phone number must start with 07 (mobile) or 01 (landline)"
@@ -337,6 +337,15 @@ export default function Activate() {
      
      // Prepend Kenya country code
      formattedPhone = '254' + formattedPhone;
+     
+     // Ensure final number is exactly 12 digits (254 + 9 digits)
+     if (formattedPhone.length !== 12) {
+       setPaymentNotification({
+         type: "error",
+         message: "Phone number must be 10 digits (e.g., 0712345678 or 0112345678)"
+       });
+       return;
+     }
     
     setPaymentNotification(null);
     setPaymentLoading(true);

@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
-const paystackService = require("../services/paystack.service");
 
 const { protect } = require("../middlewares/auth.middleware");
 const activationController = require("../controllers/activation.controller");
@@ -204,7 +203,7 @@ router.post("/submit", protect, activationController.submitActivationPayment);
 
 /**
  * POST /api/activation/verify-stk
- * Verify payment status (admin can use this to check before approving)
+ * Verify payment status via Paynecta (manual admin approval mode)
  * Protected: Regular user JWT token
  */
 router.post("/verify-stk", protect, async (req, res) => {
@@ -220,49 +219,20 @@ router.post("/verify-stk", protect, async (req, res) => {
       return res.status(400).json({ success: false, message: "Missing payment reference" });
     }
 
-    // ✅ Use Paystack to verify payment
-    const result = await paystackService.verifyPayment(reference);
-
-    if (result.success && result.verified) {
-      const planKey = is_welcome_bonus ? "REGULAR" : plan?.toUpperCase() || "REGULAR";
-      const amount = PLAN_FEES[planKey];
-
-      // Activate the plan
-      if (!user.plans) user.plans = {};
-      if (!user.plans[planKey]) user.plans[planKey] = {};
-      
-      user.plans[planKey].is_activated = true;
-      user.plans[planKey].activated_at = new Date();
-      user.is_activated = true;
-      user.account_activated = true;
-
-      // Create activation record
-      if (!user.activation_requests) user.activation_requests = [];
-      user.activation_requests.push({
-        plan: planKey,
-        amount: amount,
-        reference: result.reference,
-        status: "APPROVED",
-        mpesa_receipt: result.receipt,
-        created_at: new Date(),
-        processed_at: new Date()
-      });
-
-      await user.save();
-
-      return res.json({
-        success: true,
-        message: "Payment verified! Account activated.",
-        activated: true,
-        receipt: result.receipt
-      });
+    // Verify the payment reference matches
+    if (user.last_payment_reference !== reference) {
+      return res.status(400).json({ success: false, message: "Invalid payment reference" });
     }
 
+    // For Paynecta, we don't auto-verify via API - admin must approve manually
+    // Return pending status so user knows to wait for admin
     return res.json({
-      success: false,
-      message: result.message || "Payment not yet completed. Admin will approve manually.",
-      status: "pending"
+      success: true,
+      message: "Payment reference received. Awaiting admin approval.",
+      status: "pending",
+      reference: reference
     });
+
   } catch (error) {
     console.error("Verify STK error:", error.message);
     res.status(500).json({ success: false, message: "Verification failed: " + error.message });

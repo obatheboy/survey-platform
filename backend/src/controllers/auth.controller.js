@@ -49,7 +49,7 @@ exports.register = async (req, res) => {
       email: null,
       password_hash: null,
       is_activated: false,
-      login_fee_paid: false, // Require payment via Paystack M-PESA
+       login_fee_paid: false, // Require payment via Paynecta M-PESA
       total_earned: 0,
       welcome_bonus_received: false,
       welcome_bonus: 0,

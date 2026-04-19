@@ -200,13 +200,10 @@ export const loginFeeApi = {
   initiatePaynecta: (userId, slug, amount) => api.post("/login-fee/initiate-paynecta", { userId, slug, amount }),
   
   // ✅ Check if user has been approved (manual approval)
-  checkStatus: (userId) => api.get(`/login-fee/status?userId=${userId}`),
+  checkStatus: (userId) => api.get(`/login-fee/status?userId=${userId}`)
   
-  // ✅ Verify payment with Paystack (admin can use before approving)
-  verify: (reference, userId) => api.post("/login-fee/verify-paystack", { reference, userId }),
-  
-  // ❌ REMOVED: submitMpesaCode - manual code submission is no longer needed
-  // Users pay via STK push only, admin approves manually after checking Paystack
+  // ❌ REMOVED: verify - Paystack no longer used
+  // Users pay via STK push only, admin approves manually after checking Paynecta dashboard
 };
 
 /* =====================================================
@@ -216,11 +213,10 @@ export const adminLoginFeeApi = {
   // Get all users with pending payment
   getPending: () => adminApi.get("/login-fee/admin/pending"),
   
-  // Manually approve a user after verifying payment in Paystack dashboard
-  approveUser: (userId, reference, notes) => adminApi.post("/login-fee/admin/approve", { userId, reference, notes }),
+  // Manually approve a user after verifying payment in Paynecta dashboard
+  approveUser: (userId, reference, notes) => adminApi.post("/login-fee/admin/approve", { userId, reference, notes })
   
-  // Verify payment reference with Paystack
-  verifyWithPaystack: (reference) => adminApi.post("/login-fee/admin/verify-paystack", { reference })
+  // ❌ REMOVED: verifyWithPaystack - Paystack no longer used
 };
 
 /* =====================================================

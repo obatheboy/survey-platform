@@ -15,7 +15,7 @@ const formatPhoneToInternational = (phone) => {
   if (cleaned.startsWith('0') && cleaned.length === 10) {
     cleaned = '254' + cleaned.substring(1);
   } 
-  // Numbers without leading 0: 7XXXXXXXX or 1XXXXXXXX (9 digits)
+  // Numbers without leading 0: 7XXXXXXXX or 1XXXXXXXX (exactly 9 digits)
   else if ((cleaned.startsWith('7') || cleaned.startsWith('1')) && cleaned.length === 9) {
     cleaned = '254' + cleaned;
   } else if (cleaned.startsWith('254')) {

@@ -6,7 +6,6 @@ const {
   checkLoginFeeStatus,
   manualApprovePayment,
   getPendingPayments,
-  verifyWithPaystack,
   initiatePaynectaPayment
 } = require("../controllers/loginFee.controller");
 
@@ -19,10 +18,9 @@ router.post("/initiate-paynecta", protect, initiatePaynectaPayment);
 // ✅ CHECK STATUS - User can check if they've been approved
 router.get("/status", protect, checkLoginFeeStatus);
 
-// ✅ ADMIN ENDPOINTS - For manual approval after verifying in Paystack dashboard
+// ✅ ADMIN ENDPOINTS - For manual approval after verifying in Paynecta dashboard
 router.post("/admin/approve", protect, manualApprovePayment);
 router.get("/admin/pending", protect, getPendingPayments);
-router.post("/admin/verify-paystack", protect, verifyWithPaystack);
 
 // ❌ REMOVED - These caused auto-approval or were unused
 // router.post("/verify", ...) - was calling wrong function and auto-approving
