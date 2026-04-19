@@ -100,6 +100,10 @@ export default function Surveys() {
           navigate("/dashboard");
           return;
         }
+        
+        // Set active plan immediately after validation
+        console.log("🔍 [Surveys] Setting active plan:", plan);
+        setActivePlan(plan);
 
         // Check localStorage first (instant)
         const surveyCompleted = await checkLocalStorageSurveyStatus(plan);
@@ -168,7 +172,25 @@ export default function Surveys() {
       updateLocalStorageUserData(res.data);
       
       if (userPlan?.surveys_completed >= 10) {
-        navigateToActivation(plan);
+        // If this plan is completed, find a different plan that isn't completed
+        const plans = res.data.plans || {};
+        let foundPlan = null;
+        
+        for (const [planKey, planData] of Object.entries(plans)) {
+          if (planData && planData.surveys_completed < 10 && SURVEY_QUESTIONS[planKey]) {
+            foundPlan = planKey;
+            break;
+          }
+        }
+        
+        if (foundPlan) {
+          console.log("🔍 [Surveys] Previous plan completed, using:", foundPlan);
+          localStorage.setItem(STORAGE_KEYS.ACTIVE_PLAN, foundPlan);
+          setActivePlan(foundPlan);
+        } else {
+          // All plans completed
+          navigateToActivation(plan);
+        }
       } else {
         setActivePlan(plan);
       }
