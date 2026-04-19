@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
-const paystackService = require("../services/paystack.service");
 
 const { protect } = require("../middlewares/auth.middleware");
 const activationController = require("../controllers/activation.controller");
@@ -30,6 +29,7 @@ const PLAN_NAMES = {
 /**
  * POST /api/activation/initiate
  * Initiate M-Pesa STK Push via Paystack (Direct STK - No Redirect)
+ * NOTE: Paystack is now disabled - Use Paynecta instead
  */
 router.post("/initiate", protect, async (req, res) => {
   try {
@@ -48,54 +48,132 @@ router.post("/initiate", protect, async (req, res) => {
 
     const phoneNumber = phone || user.phone;
     
-    console.log("========== STARTING PAYSTACK STK PUSH ==========");
+    console.log("========== STARTING PAYSTACK STK PUSH (DISABLED) ==========");
     console.log("Phone:", phoneNumber);
     console.log("Amount:", amount);
     console.log("Plan:", planKey);
     console.log("================================================");
     
-    // ✅ Use Paystack direct STK push (no redirect, no Paynecta)
-    const userEmail = user.email || "user@surveyearn.co.ke";
-    console.log("=== SENDING PAYSTACK STK PUSH ===");
-    
-    const payment = await paystackService.chargeMpesa(
-      amount,
-      phoneNumber,
-      userEmail,
-      user._id.toString()
-    );
-    
-    console.log("=== PAYSTACK STK PUSH RESULT ===");
-    console.log(payment);
-    console.log("================================");
-
-    if (payment.success) {
-      // Store reference for manual admin approval
-      user.last_payment_reference = payment.reference;
-      user.last_payment_attempt = new Date();
-      user.last_payment_plan = planKey;
-      await user.save();
-      
-      console.log("✅ STK Push sent successfully!");
-      return res.json({
-        success: true,
-        message: payment.message || "STK Push sent! Check your phone and enter PIN.",
-        reference: payment.reference,
-        amount: amount,
-        status: "pending",
-        requires_manual_approval: true
-      });
-    }
-    
-    console.log("❌ STK PUSH FAILED");
+    // Paystack is disabled - return message to use Paynecta
     return res.json({
       success: false,
-      message: payment.message || "STK Push failed. Please try again.",
-      requires_manual: true
+      message: "Please use Paynecta widget to complete payment.",
+      use_paynecta: true
     });
   } catch (error) {
     console.error("Activation error:", error.message);
     return res.status(500).json({ success: false, message: "Server error: " + error.message });
+  }
+});
+
+/**
+ * POST /api/activation/initiate-paynecta
+ * Initiate Paynecta payment for plan activation
+ */
+router.post("/initiate-paynecta", protect, async (req, res) => {
+  try {
+    const { plan, is_welcome_bonus, amount } = req.body;
+    const planKey = is_welcome_bonus ? "REGULAR" : plan?.toUpperCase();
+    const paymentAmount = amount || PLAN_FEES[planKey];
+    
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    console.log("=== INITIATE PAYNECTA PAYMENT ===");
+    console.log("User:", user.phone);
+    console.log("Plan:", planKey);
+    console.log("Amount:", paymentAmount);
+    
+    // Create payment reference
+    const reference = `PAYN_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+    
+    // Store reference for verification
+    user.last_payment_reference = reference;
+    user.last_payment_attempt = new Date();
+    user.last_payment_plan = planKey;
+    user.payment_method = "paynecta";
+    await user.save();
+    
+    // Generate payment URL
+    const paymentUrl = `https://paynecta.co.ke/pay/survey-app?amount=${paymentAmount}&phone=${user.phone}&reference=${reference}`;
+    
+    return res.json({
+      success: true,
+      message: "Payment initiated via Paynecta",
+      reference: reference,
+      paymentUrl: paymentUrl,
+      amount: paymentAmount,
+      phone: user.phone
+    });
+    
+  } catch (error) {
+    console.error("Paynecta initiate error:", error.message);
+    return res.status(500).json({ success: false, message: "Server error: " + error.message });
+  }
+});
+
+/**
+ * POST /api/activation/verify-paynecta
+ * Verify Paynecta payment and activate plan
+ */
+router.post("/verify-paynecta", protect, async (req, res) => {
+  try {
+    const { reference, plan, is_welcome_bonus } = req.body;
+    const user = await User.findById(req.user.id);
+    
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    
+    const planKey = is_welcome_bonus ? "REGULAR" : plan?.toUpperCase();
+    const amount = PLAN_FEES[planKey];
+    
+    console.log("=== VERIFY PAYNECTA PAYMENT ===");
+    console.log("Reference:", reference);
+    console.log("Plan:", planKey);
+    
+    // Verify the payment reference matches
+    if (user.last_payment_reference !== reference) {
+      return res.status(400).json({ success: false, message: "Invalid payment reference" });
+    }
+    
+    // Activate the plan
+    if (!user.plans) user.plans = {};
+    if (!user.plans[planKey]) user.plans[planKey] = {};
+    
+    user.plans[planKey].is_activated = true;
+    user.plans[planKey].activated_at = new Date();
+    user.is_activated = true;
+    user.account_activated = true;
+    
+    // Create activation record
+    if (!user.activation_requests) user.activation_requests = [];
+    user.activation_requests.push({
+      plan: planKey,
+      amount: amount,
+      reference: reference,
+      status: "APPROVED",
+      payment_method: "paynecta",
+      created_at: new Date(),
+      processed_at: new Date()
+    });
+    
+    await user.save();
+    
+    console.log("✅ Plan activated via Paynecta:", planKey);
+    
+    return res.json({
+      success: true,
+      message: "Payment verified! Plan activated.",
+      activated: true,
+      plan: planKey
+    });
+    
+  } catch (error) {
+    console.error("Paynecta verify error:", error.message);
+    return res.status(500).json({ success: false, message: "Verification failed: " + error.message });
   }
 });
 

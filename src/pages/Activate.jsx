@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import api from "../api/api";
 import TrustBadges from "../components/TrustBadges";
 import Testimonials from "../components/Testimonials";
 import "./Activate.css";
+
+const PAYNECTA_SLUG = "survey-app";
 
 /* =========================
    CONSTANTS - UPDATED
@@ -334,14 +336,106 @@ export default function Activate() {
   }, [navigate, searchParams, location.state]);
 
 /* =========================
-      INITIATE STK PAYMENT (CUSTOM POPUP)
+      INITIATE PAYNECTA PAYMENT
     ========================== */
-  const initiateSTK = () => {
-    console.log("Pay button clicked!");
-    // Open the payment modal first
+  const initiateSTK = async () => {
+    console.log("Pay button clicked with Paynecta!");
     setShowPaymentWidget(true);
     setPaymentNotification(null);
     setPaymentPhone("");
+    setPaymentLoading(true);
+    
+    try {
+      const amount = plan.activationFee || 100;
+      
+      const res = await api.post("/activation/initiate-paynecta", {
+        plan: planKey,
+        is_welcome_bonus: isWelcomeBonus,
+        amount: amount
+      });
+      
+      setPaymentLoading(false);
+      
+      if (res.data.success) {
+        // Load Paynecta widget
+        loadPaynectaWidget(res.data.paymentUrl, res.data.reference);
+      } else {
+        setPaymentNotification({
+          type: "error",
+          message: res.data.message || "Failed to initiate payment"
+        });
+      }
+    } catch (error) {
+      setPaymentLoading(false);
+      console.error("Paynecta error:", error);
+      setPaymentNotification({
+        type: "error",
+        message: error.response?.data?.message || "Payment initialization failed"
+      });
+    }
+  };
+
+  const loadPaynectaWidget = (paymentUrl, reference) => {
+    // Create and load Paynecta script
+    const existingScript = document.getElementById("paynecta-script");
+    if (existingScript) {
+      existingScript.remove();
+    }
+    
+    const script = document.createElement("script");
+    script.id = "paynecta-script";
+    script.src = "https://paynecta.co.ke/widget.js";
+    script.async = true;
+    script.onload = () => {
+      // Initialize Paynecta widget after script loads
+      if (window.PaynectaWidget) {
+        window.PaynectaWidget.initialize({
+          slug: PAYNECTA_SLUG,
+          amount: plan.activationFee,
+          phone: user?.phone || "",
+          onSuccess: (data) => {
+            console.log("Paynecta payment success:", data);
+            handlePaynectaSuccess(reference);
+          },
+          onClose: () => {
+            console.log("Paynecta widget closed");
+          }
+        });
+        window.PaynectaWidget.open();
+      }
+    };
+    document.body.appendChild(script);
+  };
+
+  const handlePaynectaSuccess = async (reference) => {
+    setPaymentNotification({
+      type: "success",
+      message: "✅ Payment successful! Activating your account..."
+    });
+    
+    try {
+      // Verify and activate the plan
+      const res = await api.post("/activation/verify-paynecta", {
+        reference: reference,
+        plan: planKey,
+        is_welcome_bonus: isWelcomeBonus
+      });
+      
+      if (res.data.success) {
+        setShowSuccessPopup(true);
+      } else {
+        setPaymentNotification({
+          type: "error",
+          message: "Payment received but activation failed. Contact support."
+        });
+      }
+    } catch (error) {
+      console.error("Activation error:", error);
+      setPaymentNotification({
+        type: "error",
+        message: "Payment received. Account activation is pending."
+      });
+    }
   };
 
   const handlePaymentSubmit = async () => {

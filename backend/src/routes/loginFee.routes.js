@@ -6,11 +6,15 @@ const {
   checkLoginFeeStatus,
   manualApprovePayment,
   getPendingPayments,
-  verifyWithPaystack
+  verifyWithPaystack,
+  initiatePaynectaPayment
 } = require("../controllers/loginFee.controller");
 
 // ✅ STK PUSH ENDPOINT - User initiates payment, receives STK on phone
 router.post("/initiate", protect, initiateLoginFeePayment);
+
+// ✅ PAYNECTA ENDPOINT - Paynecta payment widget
+router.post("/initiate-paynecta", protect, initiatePaynectaPayment);
 
 // ✅ CHECK STATUS - User can check if they've been approved
 router.get("/status", protect, checkLoginFeeStatus);

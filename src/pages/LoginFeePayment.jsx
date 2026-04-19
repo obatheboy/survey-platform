@@ -1,12 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { loginFeeApi } from "../api/api";
 
 const LOGIN_FEE = 100;
+const PAYNECTA_SLUG = "survey-app";
+const PAYNECTA_SUCCESS_PATH = "/activation-success";
 
 export default function LoginFeePayment() {
   const navigate = useNavigate();
   const location = useLocation();
+  const paynectaContainerRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [checkingStatus, setCheckingStatus] = useState(false);
   const [stkPushSent, setStkPushSent] = useState(false);
@@ -132,6 +135,68 @@ export default function LoginFeePayment() {
     window.open(`https://wa.me/2547785619533?text=${msg}`, '_blank');
   };
 
+  const initiatePaynectaPayment = async () => {
+    setLoading(true);
+    setErrorMessage("");
+    
+    try {
+      const res = await loginFeeApi.initiatePaynecta(userId, PAYNECTA_SLUG, LOGIN_FEE);
+      
+      if (res.data.success) {
+        setStkPushSent(true);
+        setStkPushMessage("Payment initiated! Complete payment on the widget, then you'll be redirected.");
+        
+        startPaymentPolling();
+      } else {
+        setErrorMessage(res.data.message || "Failed to initiate payment");
+      }
+    } catch (err) {
+      console.error("Paynecta error:", err);
+      setErrorMessage(err.response?.data?.message || err.message || "Payment failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const startPaymentPolling = () => {
+    const pollInterval = setInterval(async () => {
+      try {
+        const res = await loginFeeApi.checkStatus(userId);
+        if (res.data.success && res.data.login_fee_paid) {
+          clearInterval(pollInterval);
+          handlePaymentSuccess();
+        }
+      } catch (err) {
+        console.log("Poll check:", err.message);
+      }
+    }, 3000);
+  };
+
+  const handlePaymentSuccess = async () => {
+    setCheckStatusMessage("✅ Payment successful! Redirecting...");
+    localStorage.removeItem("pendingLoginFeeApproval");
+    
+    try {
+      const loginRes = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone })
+      }).then(r => r.json());
+      
+      if (loginRes.token) {
+        localStorage.setItem("token", loginRes.token);
+        localStorage.setItem("lastLoginTime", Date.now().toString());
+        localStorage.removeItem("pendingLoginUser");
+        localStorage.removeItem("pendingLoginFeeApproval");
+        setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
+      } else {
+        setCheckStatusMessage("✅ Payment successful! Please sign in again.");
+      }
+    } catch (err) {
+      setCheckStatusMessage("✅ Payment verified! Please sign in.");
+    }
+  };
+
   return (
     <div style={styles.page}>
       <div style={styles.container}>
@@ -147,30 +212,24 @@ export default function LoginFeePayment() {
           <div style={styles.amountHint}>Get KES 1,200+ in rewards</div>
         </div>
 
-        {/* STK Push Section - Main Payment Method */}
+        {/* Paynecta Payment Widget Section */}
         <div style={styles.stkPushBox}>
-          <p style={styles.stkPushTitle}>📱 Pay Instantly with M-Pesa STK Push</p>
-          <p style={styles.stkPushHint}>No need to leave the app. STK push will be sent to your phone.</p>
+          <p style={styles.stkPushTitle}>📱 Pay with M-Pesa</p>
+          <p style={styles.stkPushHint}>Pay securely without leaving the app.</p>
           
-          <input
-            style={styles.mpesaPhoneInput}
-            placeholder="Enter M-Pesa phone (e.g., 0740834185)"
-            value={mpesaPhone}
-            onChange={(e) => setMpesaPhone(e.target.value)}
-          />
-          
-          <button 
-            style={styles.stkPushBtn} 
-            onClick={handleStkPush}
-            disabled={loading || stkPushSent}
-          >
-            {loading ? "Sending STK Push..." : stkPushSent ? "✅ STK Push Sent!" : "Pay KES 100 via STK Push"}
-          </button>
+          <div ref={paynectaContainerRef} style={styles.paynectaContainer}>
+            <button 
+              style={styles.paynectaBtn} 
+              onClick={initiatePaynectaPayment}
+              disabled={loading}
+            >
+              {loading ? "Processing..." : "Pay KES 100 via M-Pesa"}
+            </button>
+          </div>
           
           {stkPushMessage && (
             <div style={styles.successMessageBox}>
               <p style={styles.successMessageText}>{stkPushMessage}</p>
-              <p style={styles.approvalNote}>⏳ After payment, admin will verify and approve your account.</p>
             </div>
           )}
           
@@ -178,12 +237,6 @@ export default function LoginFeePayment() {
             <div style={styles.errorMessageBox}>
               <p style={styles.errorMessageText}>{errorMessage}</p>
             </div>
-          )}
-          
-          {stkPushSent && (
-            <button style={styles.checkStatusBtnSmall} onClick={handleCheckStatus} disabled={checkingStatus}>
-              {checkingStatus ? "Checking..." : "✅ Already Paid? Click Here to Check Status"}
-            </button>
           )}
         </div>
 
@@ -311,6 +364,21 @@ const styles = {
     fontWeight: "800",
     cursor: "pointer",
     boxShadow: "0 4px 12px rgba(34,197,94,0.4)",
+  },
+  paynectaContainer: {
+    marginBottom: "12px",
+  },
+  paynectaBtn: {
+    width: "100%",
+    padding: "14px",
+    background: "linear-gradient(135deg, #00A859, #008f4c)",
+    color: "#ffffff",
+    border: "none",
+    borderRadius: "10px",
+    fontSize: "15px",
+    fontWeight: "800",
+    cursor: "pointer",
+    boxShadow: "0 4px 12px rgba(0,168,89,0.4)",
   },
   checkStatusBtnSmall: {
     width: "100%",

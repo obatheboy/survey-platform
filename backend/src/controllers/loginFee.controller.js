@@ -1,8 +1,11 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const paystackService = require("../services/paystack.service");
+const https = require("https");
 
 const LOGIN_FEE = 100;
+const PAYNECTA_API_URL = "https://paynecta.co.ke/api";
+const PAYNECTA_API_KEY = process.env.PAYNECTA_API_KEY;
 
 // ✅ Initiate STK Push - NO AUTO APPROVAL, just sends STK
 exports.initiateLoginFeePayment = async (req, res) => {
@@ -194,6 +197,54 @@ exports.getPendingPayments = async (req, res) => {
     res.status(500).json({ 
       success: false,
       message: "Failed to get pending payments" 
+    });
+  }
+};
+
+// ✅ Initiate Paynecta Payment
+exports.initiatePaynectaPayment = async (req, res) => {
+  try {
+    const { userId, slug, amount } = req.body;
+    const user = await User.findById(userId);
+    
+    console.log("=== INITIATE PAYNECTA PAYMENT ===");
+    console.log("User ID:", userId);
+    console.log("Slug:", slug);
+    console.log("Amount:", amount);
+    
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.login_fee_paid) {
+      return res.status(400).json({ message: "Login fee already paid" });
+    }
+
+    // Create payment reference
+    const reference = `PAYN_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+    
+    // Store reference for verification
+    user.last_payment_reference = reference;
+    user.last_payment_attempt = new Date();
+    user.payment_method = "paynecta";
+    await user.save();
+
+    // Return payment URL for widget
+    res.status(200).json({
+      success: true,
+      message: "Payment initiated",
+      reference: reference,
+      paymentUrl: `https://paynecta.co.ke/pay/${slug}?amount=${amount}&phone=${user.phone}&reference=${reference}`,
+      amount: amount,
+      phone: user.phone,
+      requires_verification: true
+    });
+    
+  } catch (error) {
+    console.error("Paynecta payment error:", error);
+    res.status(500).json({ 
+      success: false,
+      message: "Failed to initiate payment: " + (error.message || "Unknown error")
     });
   }
 };

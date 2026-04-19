@@ -180,13 +180,16 @@ export const gamificationApi = {
 };
 
 /* =====================================================
-   💰 LOGIN FEE API - FIXED FOR STK PUSH ONLY
-   - Removed submitMpesaCode (manual submission not needed)
-   - verify endpoint kept but not used for auto-approval
+    💰 LOGIN FEE API - FIXED FOR STK PUSH ONLY
+    - Removed submitMpesaCode (manual submission not needed)
+    - verify endpoint kept but not used for auto-approval
 ===================================================== */
 export const loginFeeApi = {
   // ✅ Send STK push to user's phone
   initiate: (userId) => api.post("/login-fee/initiate", { userId }),
+  
+  // ✅ Initiate Paynecta payment
+  initiatePaynecta: (userId, slug, amount) => api.post("/login-fee/initiate-paynecta", { userId, slug, amount }),
   
   // ✅ Check if user has been approved (manual approval)
   checkStatus: (userId) => api.get(`/login-fee/status?userId=${userId}`),
