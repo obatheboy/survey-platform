@@ -16,12 +16,11 @@ const PLAN_FEES = {
 
 /* ===============================
    PLAN EARNINGS (AMOUNT USER CAN WITHDRAW)
-   ✅ UPDATED WITH CORRECT VALUES
 ================================ */
 const PLAN_EARNINGS = {
-  REGULAR: 1500,  // Regular pays 1500
-  VIP: 2000,      // VIP pays 2000
-  VVIP: 3000,     // VVIP pays 3000
+  REGULAR: 1500,
+  VIP: 2000,
+  VVIP: 3000,
 };
 
 /* =====================================
@@ -140,9 +139,7 @@ exports.submitActivationPayment = async (req, res) => {
 };
 
 /* =====================================
-   ADMIN — APPROVE ACTIVATION (FIXED)
-   ✅ NOW SETS user.is_activated = true FOR ANY PLAN
-   ✅ NOW ADDS CORRECT EARNINGS TO USER BALANCE
+   ADMIN — APPROVE ACTIVATION
 ===================================== */
 exports.approveActivation = async (req, res) => {
   try {
@@ -206,10 +203,10 @@ exports.approveActivation = async (req, res) => {
     user.plans[plan].is_activated = true;
     user.plans[plan].activated_at = new Date();
     
-    // 🔥 FIX: ALWAYS set user.is_activated = true when ANY plan is activated
+    // ALWAYS set user.is_activated = true when ANY plan is activated
     user.is_activated = true;
     
-    // 🔥 FIX: Add CORRECT earnings to user's balance
+    // Add CORRECT earnings to user's balance
     const earningsToAdd = PLAN_EARNINGS[plan] || 0;
     const oldBalance = user.total_earned || 0;
     user.total_earned = oldBalance + earningsToAdd;
@@ -223,7 +220,7 @@ exports.approveActivation = async (req, res) => {
     
     await user.save();
 
-    // ✅ Award referral commission to the referrer if this user was referred
+    // Award referral commission to the referrer if this user was referred
     if (user.referred_by) {
       try {
         const commissionResult = await awardReferralCommission(user._id);
@@ -232,7 +229,6 @@ exports.approveActivation = async (req, res) => {
         }
       } catch (commError) {
         console.error("Referral commission error:", commError);
-        // Don't fail activation if commission fails
       }
     }
 
@@ -458,7 +454,6 @@ exports.getAllActivations = async (req, res) => {
 
 /* =====================================
    WELCOME BONUS APPROVAL
-   ✅ NEW: Handle welcome bonus approval separately
 ===================================== */
 exports.approveWelcomeBonus = async (req, res) => {
   try {
@@ -549,6 +544,118 @@ exports.testActivationFormat = async (req, res) => {
       success: false,
       message: "Test error",
       error: error.message 
+    });
+  }
+};
+
+/* =====================================
+   USER — INITIATE DIRECT STK PUSH (NO REDIRECT)
+   Customers pay directly on your app
+   ===================================== */
+exports.initiateDirectStkPush = async (req, res) => {
+  try {
+    const { plan, phone_number } = req.body;
+    const userId = req.user.id;
+    
+    // Validate plan
+    const planKey = plan?.toUpperCase();
+    if (!PLAN_FEES[planKey]) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid plan selected"
+      });
+    }
+    
+    const amount = PLAN_FEES[planKey];
+    
+    // Get user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+    
+    // Check if user has completed surveys
+    if (!user.plans || !user.plans[planKey]) {
+      return res.status(400).json({
+        success: false,
+        message: "Complete all surveys before activation"
+      });
+    }
+    
+    const userPlan = user.plans[planKey];
+    
+    if (!userPlan.completed || userPlan.surveys_completed !== TOTAL_SURVEYS) {
+      return res.status(400).json({
+        success: false,
+        message: `Complete ${TOTAL_SURVEYS - (userPlan.surveys_completed || 0)} more surveys to activate`
+      });
+    }
+    
+    // Check if already activated
+    if (userPlan.is_activated) {
+      return res.status(400).json({
+        success: false,
+        message: "Plan already activated"
+      });
+    }
+    
+    // Check for pending activation
+    if (user.activation_requests?.some(r => r.plan === planKey && r.status === 'SUBMITTED')) {
+      return res.status(400).json({
+        success: false,
+        message: "Activation already pending approval"
+      });
+    }
+    
+    // Create payment reference
+    const reference = `PAYN_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+    
+    // Store payment info in user record
+    user.last_payment_reference = reference;
+    user.last_payment_attempt = new Date();
+    user.last_payment_plan = planKey;
+    user.payment_method = "paynecta_direct";
+    await user.save();
+    
+    // Initialize Paynecta STK Push
+    const paynectaService = require("../services/paynecta.service");
+    
+    const paymentResult = await paynectaService.initiateSTKPush(
+      amount,
+      phone_number,
+      user.email,
+      userId,
+      `${planKey} Activation`
+    );
+    
+    if (paymentResult.success) {
+      return res.json({
+        success: true,
+        message: "STK Push sent! Check your phone and enter PIN.",
+        reference: reference,
+        checkout_request_id: paymentResult.checkout_request_id,
+        amount: amount,
+        plan: planKey
+      });
+    } else {
+      // Clear the stored reference if payment failed
+      user.last_payment_reference = null;
+      await user.save();
+      
+      return res.status(400).json({
+        success: false,
+        message: paymentResult.message || "Failed to initiate payment. Please try again.",
+        details: paymentResult.details
+      });
+    }
+  } catch (error) {
+    console.error("❌ Direct STK Push error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error: " + error.message
     });
   }
 };

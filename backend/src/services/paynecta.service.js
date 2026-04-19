@@ -3,72 +3,33 @@ const https = require("https");
 const PAYNECTA_CONFIG = {
   apiKey: "hmp_vY2jhkhBWNuCryXY1dd5VnO5rsL63vKDAAKOnBE1",
   userEmail: "obavanteshia65@gmail.com",
-  paymentLink: "survey-app",
+  paymentCode: "PNT_492664",
   baseUrl: "https://paynecta.co.ke"
 };
 
-const formatPhone = (phone) => {
-  let cleaned = phone.replace(/[^0-9]/g, '');
-  
-  // Paynecta expects format: 7xxxxxxxx (without 254, without 0)
-  if (cleaned.startsWith('0') && cleaned.length > 1) {
-    cleaned = cleaned.substring(1); // 0740834185 -> 740834185
-  }
-  else if (cleaned.startsWith('254')) {
-    cleaned = cleaned.substring(3); // 254740834185 -> 740834185
-  }
-  // Remove any remaining non-digit characters
-  cleaned = cleaned.replace(/\D/g, '');
-  
-  console.log(`Phone formatted: ${phone} -> ${cleaned}`);
-  return cleaned;
-};
-
+// Format phone to 254XXXXXXXX format (international)
 const formatPhoneToInternational = (phone) => {
   let cleaned = phone.replace(/[^0-9]/g, '');
   
-  // Convert to 254 format
-  if (cleaned.startsWith('0') && cleaned.length > 1) {
-    cleaned = '254' + cleaned.substring(1); // 0740209662 -> 254740209662
-  } else if (cleaned.startsWith('7')) {
-    cleaned = '254' + cleaned; // 740209662 -> 254740209662
+  if (cleaned.startsWith('0') && cleaned.length === 10) {
+    cleaned = '254' + cleaned.substring(1);
+  } else if (cleaned.startsWith('7') && cleaned.length === 9) {
+    cleaned = '254' + cleaned;
   } else if (cleaned.startsWith('254')) {
-    // Already in 254 format
+    // Already correct
   }
   
-  console.log(`Phone formatted to international: ${phone} -> ${cleaned}`);
   return cleaned;
 };
 
-// Format phone for Paynecta - without 254 prefix (e.g., 740209662)
+// Format phone for Paynecta API (254XXXXXXXX format)
 const formatPhoneForPaynecta = (phone) => {
-  let cleaned = phone.replace(/[^0-9]/g, '');
-  
-  // Remove any prefix
-  if (cleaned.startsWith('0') && cleaned.length > 1) {
-    cleaned = cleaned.substring(1); // 0740209662 -> 740209662
-  } else if (cleaned.startsWith('254')) {
-    cleaned = cleaned.substring(3); // 254740209662 -> 740209662
-  }
-  
-  console.log(`Phone formatted for Paynecta: ${phone} -> ${cleaned}`);
-  return cleaned;
+  return formatPhoneToInternational(phone);
 };
 
 const makeRequest = (path, method, data = null) => {
   return new Promise((resolve, reject) => {
     const url = new URL(`${PAYNECTA_CONFIG.baseUrl}${path}`);
-    
-    console.log("========== MAKING REQUEST ==========");
-    console.log("URL:", url.href);
-    console.log("Method:", method);
-    console.log("Headers:", {
-      "Content-Type": "application/json",
-      "X-API-Key": PAYNECTA_CONFIG.apiKey ? "SET" : "MISSING",
-      "X-User-Email": PAYNECTA_CONFIG.userEmail
-    });
-    console.log("Data:", data);
-    console.log("====================================");
     
     const options = {
       hostname: url.hostname,
@@ -90,39 +51,27 @@ const makeRequest = (path, method, data = null) => {
       let body = "";
       res.on("data", chunk => body += chunk);
       res.on("end", () => {
-        const status = res.statusCode;
-        console.log("=== PAYNECTA HTTP STATUS:", status, "===");
-        console.log("Response length:", body.length, "chars");
-        
-        // Check for empty response
         if (!body || body.trim() === "") {
-          console.log("EMPTY RESPONSE");
           resolve({ success: false, error: "Empty response" });
           return;
         }
         
-        // Print first 1000 chars regardless
-        console.log("RESPONSE START:", body.substring(0, 1000));
-        
-        // Check if it's HTML
         const trimmed = body.trim();
-        if (trimmed.startsWith("<!") || trimmed.startsWith("<html") || trimmed.startsWith("<!DOCTYPE")) {
-          resolve({ success: false, error: "HTML error page", raw: body.substring(0, 500) });
+        if (trimmed.startsWith("<!") || trimmed.startsWith("<html")) {
+          resolve({ success: false, error: "HTML error page" });
           return;
         }
         
-        // Try to parse JSON
         try {
           const json = JSON.parse(body);
           resolve(json);
         } catch (e) {
-          resolve({ success: false, error: "Invalid JSON", raw: body.substring(0, 500) });
+          resolve({ success: false, error: "Invalid JSON", raw: body.substring(0, 200) });
         }
       });
     });
 
     req.on("error", (err) => {
-      console.error("Paynecta Request Error:", err.message);
       reject(err);
     });
     
@@ -133,39 +82,38 @@ const makeRequest = (path, method, data = null) => {
   });
 };
 
-// Initialize STK Push Payment - Using the OLD working endpoint
+/**
+ * Initialize STK Push Payment - CORRECT API ENDPOINT
+ * Based on Paynecta documentation: POST /api/v1/payment/initialize
+ */
 const initiateSTKPush = async (amount, phoneNumber, email, userId, description) => {
   try {
-    const formattedPhone = formatPhone(phoneNumber); // 7xxxxxxxx format
+    const formattedPhone = formatPhoneForPaynecta(phoneNumber);
     
     const requestData = {
-      amount: parseInt(amount),
-      phone: formattedPhone,
-      email: email || PAYNECTA_CONFIG.userEmail,
-      description: description || "SurveyEarn Activation Payment",
-      metadata: {
-        user_id: userId,
-        type: "activation"
-      }
+      code: PAYNECTA_CONFIG.paymentCode,
+      mobile_number: formattedPhone,
+      amount: parseInt(amount)
     };
 
-    console.log("=== STK Push Request ===");
-    console.log("Phone:", formattedPhone);
+    console.log("=== Paynecta STK Push Request ===");
+    console.log("URL: /api/v1/payment/initialize");
+    console.log("Phone (254 format):", formattedPhone);
     console.log("Amount:", amount);
-    console.log("========================");
+    console.log("Payment Code:", PAYNECTA_CONFIG.paymentCode);
 
-    const response = await makeRequest("/wp-json/paynecta/v1/stk-push", "POST", requestData);
+    const response = await makeRequest("/api/v1/payment/initialize", "POST", requestData);
     
-    console.log("=== STK Push Response ===");
-    console.log(JSON.stringify(response, null, 2));
-    console.log("=========================");
-    
-    if (response.success === true || response.CheckoutRequestID) {
+    console.log("Paynecta Response:", JSON.stringify(response, null, 2));
+
+    // Check for successful response
+    if (response.success === true || response.status === "success") {
       return {
         success: true,
         message: "STK Push sent! Check your phone and enter PIN.",
-        checkout_request_id: response.CheckoutRequestID,
-        reference: response.MerchantRequestID || `PNT_${Date.now()}`
+        checkout_request_id: response.checkout_request_id || response.transaction_id,
+        reference: response.reference || `PAYN_${Date.now()}`,
+        raw_response: response
       };
     } else {
       return {
@@ -184,29 +132,29 @@ const initiateSTKPush = async (amount, phoneNumber, email, userId, description) 
   }
 };
 
-// Verify Payment Status
-const verifyPayment = async (checkoutRequestId) => {
+/**
+ * Verify Payment Status
+ */
+const verifyPayment = async (reference) => {
   try {
-    const response = await makeRequest(`/wp-json/paynecta/v1/status?checkout_request_id=${checkoutRequestId}`, "GET");
+    const response = await makeRequest(`/api/v1/payment/status/${reference}`, "GET");
     
-    console.log("Paynecta Verify Response:", JSON.stringify(response, null, 2));
-
-    if (response.success || response.ResultCode === "0") {
+    if (response.success && response.data?.status === "completed") {
       return {
         success: true,
         verified: true,
-        amount: response.Amount,
-        phone: response.PhoneNumber,
-        receipt: response.MpesaReceiptNumber,
-        timestamp: response.TransactionDate
+        amount: response.data.amount,
+        phone: response.data.phone,
+        receipt: response.data.transaction_id,
+        timestamp: response.data.created_at
       };
     }
 
     return {
       success: true,
       verified: false,
-      status: response.ResultCode || response.status,
-      message: response.ResultDesc || response.message
+      status: response.status,
+      message: response.message || "Payment pending"
     };
   } catch (error) {
     console.error("Paynecta Verify Error:", error.message);
@@ -217,113 +165,14 @@ const verifyPayment = async (checkoutRequestId) => {
   }
 };
 
-// Query Transaction
-const queryPayment = async (checkoutRequestId) => {
-  return await verifyPayment(checkoutRequestId);
-};
-
-/* ===============================
-   DIRECT PAYMENT API (No iframe, no redirect)
-   Endpoint: POST /api/v1/payment/initialize
-   Body: { "code": "YOUR_CODE", "mobile_number": "7xxxxxxxx", "amount": 100 }
-============================== */
-const initializeDirectPayment = async (phoneNumber, amount, paymentCode = "PNT_492664") => {
-  try {
-    // Format phone to 9 digits without 0 (e.g., 0740209662 -> 740209662)
-    const formattedPhone = formatPhoneForPaynecta(phoneNumber);
-    
-    const requestData = {
-      code: paymentCode,
-      mobile_number: formattedPhone, // 9 digits without 0, e.g., 740209662
-      amount: parseInt(amount)
-    };
-
-    console.log("=== Paynecta Direct Payment ===");
-    console.log("Payment Code:", paymentCode);
-    console.log("Phone (9 digits):", formattedPhone);
-    console.log("Amount:", amount);
-    console.log("Request:", JSON.stringify(requestData));
-    console.log("================================");
-
-    // Try both endpoints and methods
-    const endpoints = [
-      { path: "/api/v1/payment/initialize", method: "POST" },
-      { path: "/api/v1/payment", method: "POST" },
-      { path: "/api/v1/payment/initialize", method: "GET" },
-      { path: "/api/payment/initialize", method: "POST" },
-    ];
-    
-    let lastError = null;
-    
-    for (const endpoint of endpoints) {
-      console.log(`Trying ${endpoint.method} ${endpoint.path}...`);
-      
-      try {
-        const response = await makeRequest(endpoint.path, endpoint.method, requestData);
-        
-        // Check if we got a valid JSON response
-        if (response && !response.error && !response.raw?.startsWith("<")) {
-          console.log("Success with:", endpoint.method, endpoint.path);
-          return processDirectPaymentResponse(response);
-        }
-        
-        console.log(`Failed with ${endpoint.method} ${endpoint.path}:`, response.error || "Invalid response");
-        lastError = response;
-      } catch (err) {
-        console.log(`Error with ${endpoint.method} ${endpoint.path}:`, err.message);
-        lastError = err;
-      }
-    }
-    
-    // If all endpoints fail, try the direct payment response processor
-    console.log("All endpoints failed, trying direct payment response parser...");
-    // Return a failure since none of the endpoints worked
-    
-    return {
-      success: false,
-      message: "Payment API not available. Please use manual payment.",
-      details: lastError
-    };
-  } catch (error) {
-    console.error("Paynecta Direct API Error:", error.message);
-    return {
-      success: false,
-      message: error.message || "Payment initialization failed",
-      error: error
-    };
-  }
-};
-
-// Helper to process direct payment response
-const processDirectPaymentResponse = (response) => {
-  console.log("Processing response:", JSON.stringify(response));
-  
-  const hasCheckoutId = response.CheckoutRequestID || response.checkout_request_id || response.MerchantRequestID;
-  
-  if (response.success === true || response.status === "success" || hasCheckoutId) {
-    return {
-      success: true,
-      message: response.message || "STK Push sent! Check your phone and enter PIN.",
-      checkout_request_id: hasCheckoutId,
-      reference: response.MerchantRequestID || `PNT_${Date.now()}`,
-      status: response.status,
-      raw_response: response
-    };
-  } else {
-    return {
-      success: false,
-      message: response.message || response.error || "Payment initialization failed",
-      details: response
-    };
-  }
+const queryPayment = async (reference) => {
+  return await verifyPayment(reference);
 };
 
 module.exports = {
   initiateSTKPush,
   verifyPayment,
   queryPayment,
-  formatPhone,
-  formatPhoneToInternational,
   formatPhoneForPaynecta,
-  initializeDirectPayment
+  formatPhoneToInternational
 };

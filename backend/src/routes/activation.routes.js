@@ -126,6 +126,13 @@ router.post("/initiate-paynecta", protect, async (req, res) => {
 });
 
 /**
+ * POST /api/activation/initiate-direct-stk
+ * NEW: Direct STK Push - Customer stays on app, no redirect
+ * Protected: Regular user JWT token
+ */
+router.post("/initiate-direct-stk", protect, activationController.initiateDirectStkPush);
+
+/**
  * POST /api/activation/verify-paynecta
  * Verify Paynecta payment and activate plan
  */
