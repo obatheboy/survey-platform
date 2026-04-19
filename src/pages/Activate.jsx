@@ -243,6 +243,7 @@ export default function Activate() {
   const [paymentNotification, setPaymentNotification] = useState(null);
   const [isWelcomeBonus, setIsWelcomeBonus] = useState(false);
   const [paymentPhone, setPaymentPhone] = useState("");
+  const [showPaynectaInline, setShowPaynectaInline] = useState(false);
   
   useEffect(() => {
     let isMounted = true;
@@ -944,24 +945,93 @@ export default function Activate() {
                 </div>
               </div>
                
-              <button
-                onClick={initiateSTK}
-                style={{
-                  width: "100%",
-                  padding: "18px",
+              {showPaynectaInline ? (
+                <div style={{
+                  background: "#fff",
                   borderRadius: "12px",
-                  border: "none",
-                  background: "#ea580c",
-                  color: "#ffffff",
-                  fontSize: "18px",
-                  fontWeight: 900,
-                  cursor: "pointer",
+                  padding: "20px",
+                  textAlign: "center",
                   marginBottom: "10px",
-                  boxShadow: "0 4px 15px rgba(234, 88, 12, 0.5)"
-                }}
-              >
-                Pay KES {plan.activationFee} Now
-              </button>
+                  border: "2px solid #00A859"
+                }}>
+                  <p style={{ color: "#166534", fontSize: "14px", fontWeight: "700", marginBottom: "12px" }}>
+                    💳 Click below to pay with M-Pesa
+                  </p>
+                  <button
+                    onClick={() => {
+                      // Load Paynecta widget
+                      const existingScript = document.getElementById("paynecta-inline-script");
+                      if (existingScript) existingScript.remove();
+                      
+                      const script = document.createElement("script");
+                      script.id = "paynecta-inline-script";
+                      script.src = "https://paynecta.co.ke/widget.js";
+                      script.async = true;
+                      script.setAttribute("data-slug", "survey-app");
+                      script.setAttribute("data-label", "Pay with M-Pesa");
+                      script.setAttribute("data-color", "#00A859");
+                      script.setAttribute("data-position", "center");
+                      document.body.appendChild(script);
+                      
+                      setPaymentNotification({
+                        type: "info",
+                        message: "Loading payment..."
+                      });
+                      setTimeout(() => setPaymentNotification(null), 2000);
+                    }}
+                    style={{
+                      width: "100%",
+                      padding: "16px",
+                      background: "#00A859",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "10px",
+                      fontSize: "16px",
+                      fontWeight: "800",
+                      cursor: "pointer",
+                      boxShadow: "0 4px 12px rgba(0, 168, 89, 0.4)"
+                    }}
+                  >
+                    💳 Pay with M-Pesa - KES {plan.activationFee}
+                  </button>
+                  <button
+                    onClick={() => setShowPaynectaInline(false)}
+                    style={{
+                      marginTop: "8px",
+                      padding: "8px",
+                      background: "transparent",
+                      color: "#64748b",
+                      border: "none",
+                      fontSize: "12px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    ← Back
+                  </button>
+                </div>
+              ) : (
+                <button
+                  id="paynecta-pay-btn"
+                  onClick={() => {
+                    setShowPaynectaInline(true);
+                  }}
+                  style={{
+                    width: "100%",
+                    padding: "18px",
+                    borderRadius: "12px",
+                    border: "none",
+                    background: "#00A859",
+                    color: "#ffffff",
+                    fontSize: "18px",
+                    fontWeight: 900,
+                    cursor: "pointer",
+                    marginBottom: "10px",
+                    boxShadow: "0 4px 15px rgba(0, 168, 89, 0.5)"
+                  }}
+                >
+                  Pay KES {plan.activationFee} Now
+                </button>
+              )}
             </div>
 
             {/* Divider */}
@@ -1244,119 +1314,80 @@ export default function Activate() {
               Amount: KES {plan.activationFee}
             </p>
             
-            {/* Payment Content */}
-            <div style={{
+            {/* Paynecta Widget Container */}
+            <div id="paynecta-inline-widget" style={{
               background: "#fff",
               borderRadius: "10px",
               padding: "20px",
               textAlign: "center",
-              minHeight: "120px",
+              minHeight: "150px",
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center"
             }}>
-              {paymentLoading ? (
-                <>
-                  <div style={{ 
-                    width: "40px", 
-                    height: "40px", 
-                    border: "4px solid #fed7aa", 
-                    borderTopColor: "#ea580c",
-                    borderRadius: "50%",
-                    animation: "spin 1s linear infinite",
-                    marginBottom: "12px"
-                  }} />
-                  <p style={{ color: "#666", fontSize: "13px" }}>
-                    Sending STK push to your phone...
-                  </p>
-                </>
-              ) : paymentNotification ? (
-                <div style={{
-                  padding: "12px",
-                  borderRadius: "8px",
-                  background: paymentNotification.type === "success" ? "#dcfce7" : 
-                             paymentNotification.type === "error" ? "#fee2e2" : "#fef3c7"
-                }}>
-                  <p style={{ 
-                    color: paymentNotification.type === "success" ? "#166534" : 
-                           paymentNotification.type === "error" ? "#dc2626" : "#92400e",
-                    fontSize: "13px",
-                    fontWeight: "600",
-                    margin: 0
-                  }}>
-                    {paymentNotification.message}
-                  </p>
-                </div>
-              ) : (
-                <div>
-                  <p style={{ color: "#666", fontSize: "13px", marginBottom: "8px" }}>
-                    📱 Enter M-Pesa phone number:
-                  </p>
-                  <input
-                    type="tel"
-                    value={paymentPhone}
-                    onChange={(e) => setPaymentPhone(e.target.value)}
-                    placeholder="e.g. 0740123456"
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      fontSize: "16px",
-                      border: "2px solid #fed7aa",
-                      borderRadius: "8px",
-                      textAlign: "center",
-                      fontWeight: "700",
-                      color: "#1e293b"
-                    }}
-                  />
-                  <p style={{ color: "#9a3412", fontSize: "11px", marginTop: "8px" }}>
-                    STK push will be sent to this number
-                  </p>
-                </div>
-              )}
-            </div>
-            
-            {/* Action Button - Only show when not loading and no notification yet */}
-            {!paymentLoading && !paymentNotification && (
               <button
-                onClick={handlePaymentSubmit}
+                onClick={() => {
+                  // Remove any existing script
+                  const existingScript = document.getElementById("paynecta-inline-script");
+                  if (existingScript) existingScript.remove();
+                  
+                  // Create new script element
+                  const script = document.createElement("script");
+                  script.id = "paynecta-inline-script";
+                  script.src = "https://paynecta.co.ke/widget.js";
+                  script.async = true;
+                  script.setAttribute("data-slug", "survey-app");
+                  script.setAttribute("data-label", "Pay with M-Pesa");
+                  script.setAttribute("data-color", "#00A859");
+                  script.setAttribute("data-position", "center");
+                  document.body.appendChild(script);
+                  
+                  // Show message while widget loads
+                  setPaymentNotification({
+                    type: "info",
+                    message: "Loading payment widget..."
+                  });
+                  
+                  // Clear message after 2 seconds
+                  setTimeout(() => setPaymentNotification(null), 2000);
+                }}
                 style={{
-                  width: "100%",
-                  padding: "14px",
-                  background: "#ea580c",
+                  padding: "16px 32px",
+                  background: "#00A859",
                   color: "#fff",
                   border: "none",
                   borderRadius: "10px",
-                  fontSize: "15px",
+                  fontSize: "16px",
                   fontWeight: "800",
                   cursor: "pointer",
-                  marginTop: "12px"
+                  boxShadow: "0 4px 12px rgba(0, 168, 89, 0.4)"
                 }}
               >
-                Pay KES {plan.activationFee} Now
+                💳 Pay with M-Pesa
               </button>
-            )}
+              <p style={{ color: "#9a3412", fontSize: "12px", marginTop: "12px" }}>
+                Click to open M-Pesa payment
+              </p>
+            </div>
             
-            {/* Show close button after payment is initiated */}
-            {paymentNotification && (
-              <button
-                onClick={closePaymentWidget}
-                style={{
-                  width: "100%",
-                  padding: "14px",
-                  background: "#64748b",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "10px",
-                  fontSize: "14px",
-                  fontWeight: "700",
-                  cursor: "pointer",
-                  marginTop: "12px"
-                }}
-              >
-                Close
-              </button>
-            )}
+            <button
+              onClick={closePaymentWidget}
+              style={{
+                width: "100%",
+                padding: "12px",
+                background: "transparent",
+                color: "#64748b",
+                border: "1px solid #e2e8f0",
+                borderRadius: "8px",
+                fontSize: "14px",
+                fontWeight: "600",
+                cursor: "pointer",
+                marginTop: "12px"
+              }}
+            >
+              Cancel
+            </button>
             
             <p style={{
               color: "#9a3412",
@@ -1364,7 +1395,7 @@ export default function Activate() {
               marginTop: "12px",
               textAlign: "center"
             }}>
-              💰 Instant payment via M-Pesa
+              💰 Secure payment via Paynecta
             </p>
           </div>
         </div>
