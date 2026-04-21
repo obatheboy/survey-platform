@@ -1149,6 +1149,12 @@ p, span, div, button, a, label {
   text-shadow: var(--glow-success);
 }
 
+.status-badge.activated {
+  border-color: #10b981;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.2);
+}
+
 .status-badge.in-progress {
   border-color: var(--warning);
   color: var(--warning);

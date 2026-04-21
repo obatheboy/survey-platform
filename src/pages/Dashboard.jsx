@@ -409,7 +409,7 @@ export default function Dashboard() {
   const getPlanStatus = (plan) => {
     if (isActivated(plan)) return { status: "completed", label: "Ready to Withdraw", icon: "✅" };
     if (hasPendingActivation(plan)) return { status: "pending-approval", label: "Pending Approval", icon: "⏳" };
-    if (isCompleted(plan)) return { status: "completed", label: "Ready to Withdraw", icon: "✅" };
+    if (isCompleted(plan)) return { status: "completed", label: "Ready to Activate", icon: "✅" };
     if (surveysDone(plan) > 0) return { status: "in-progress", label: "In Progress", icon: "⏳" };
     return { status: "not-started", label: "Start Earning", icon: "🚀" };
   };
@@ -1267,7 +1267,7 @@ export default function Dashboard() {
                     <button 
                       className="action-btn primary"
                       onClick={() => startSurvey(key)}
-                      disabled={isCompleted(key)}
+                      disabled={isCompleted(key) || isActivated(key)}
                       style={{
                         flex: 1,
                         padding: '10px',
@@ -1277,14 +1277,14 @@ export default function Dashboard() {
                         border: 'none',
                         background: isCompleted(key) ? '#999' : '#3b82f6',
                         color: 'white',
-                        cursor: isCompleted(key) ? 'not-allowed' : 'pointer',
-                        opacity: isCompleted(key) ? 0.6 : 1
+                        cursor: (isCompleted(key) || isActivated(key)) ? 'not-allowed' : 'pointer',
+                        opacity: (isCompleted(key) || isActivated(key)) ? 0.6 : 1
                       }}
                     >
-                      {isCompleted(key) ? '✓ Completed' : '🚀 Start Survey'}
+                      {isActivated(key) ? '✓ Completed' : isCompleted(key) ? '✓ Completed' : '🚀 Start Survey'}
                     </button>
                     
-                    {isCompleted(key) && (
+                    {isCompleted(key) && !isActivated(key) && (
                       <button 
                         className="action-btn secondary"
                         onClick={() => {
@@ -1303,6 +1303,28 @@ export default function Dashboard() {
                         }}
                       >
                         🔓 Activate
+                      </button>
+                    )}
+                    
+                    {isActivated(key) && (
+                      <button 
+                        className="action-btn secondary"
+                        onClick={() => {
+                          navigate(`/withdraw-form?type=${key.toLowerCase()}`, { state: { plan: key } });
+                        }}
+                        style={{
+                          flex: 1,
+                          padding: '10px',
+                          fontSize: '12px',
+                          fontWeight: '800',
+                          borderRadius: '6px',
+                          border: 'none',
+                          background: '#10b981',
+                          color: 'white',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        💰 Withdraw
                       </button>
                     )}
                   </div>
