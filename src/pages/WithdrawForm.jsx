@@ -149,8 +149,9 @@ export default function WithdrawForm() {
   const handleActivationRedirect = () => {
     if (selectedPlanForActivation) {
       const planData = PLANS[selectedPlanForActivation];
+      const planLower = selectedPlanForActivation.toLowerCase();
       // Navigate to activation page with plan info
-      navigate("/activate", { 
+      navigate(`/activate?plan=${planLower}`, { 
         state: { 
           planKey: selectedPlanForActivation,
           activationFee: planData.activationFee,

@@ -46,14 +46,15 @@ export default function Surveys() {
     return currentQuestion && Boolean(answers[currentQuestion.id]);
   }, [currentQuestion, answers]);
 
-  const navigateToActivation = useCallback((plan) => {
-    navigate("/activate", {
-      state: {
-        planType: plan,
-        amount: PLANS_CONFIG[plan]?.total || 0
-      }
-    });
-  }, [navigate]);
+const navigateToActivation = useCallback((plan) => {
+  const planLower = plan.toLowerCase();
+  navigate(`/activate?plan=${planLower}`, {
+    state: {
+      planKey: plan,
+      amount: PLANS_CONFIG[plan]?.total || 0
+    }
+  });
+}, [navigate]);
 
   useEffect(() => {
     const checkSurveyStatus = async () => {
@@ -164,17 +165,18 @@ export default function Surveys() {
     
     updateLocalStorageAfterSubmission(userData, plan, newCount, currentBalance, reward);
     
-    setSubmitProgress(100);
-    
-    navigate("/activate", {
-      state: {
-        planType: plan,
-        amount: reward,
-        instant: true,
-        surveysAdded: data.added || surveysNeeded,
-        totalCompleted: data.surveys_completed || newCount
-      }
-    });
+     setSubmitProgress(100);
+     
+     const planLower = plan.toLowerCase();
+     navigate(`/activate?plan=${planLower}`, {
+       state: {
+         planKey: plan,
+         amount: reward,
+         instant: true,
+         surveysAdded: data.added || surveysNeeded,
+         totalCompleted: data.surveys_completed || newCount
+       }
+     });
   }, [navigate, updateLocalStorageAfterSubmission]);
 
   const handleSubmissionError = useCallback((plan) => {
@@ -185,15 +187,16 @@ export default function Surveys() {
     const reward = PLANS_CONFIG[plan]?.total || 0;
     const currentBalance = Number(userData.total_earned || 0);
     
-    updateLocalStorageAfterSubmission(userData, plan, newCount, currentBalance, reward);
-    
-    navigate("/activate", {
-      state: {
-        planType: plan,
-        amount: reward,
-        offline: true
-      }
-    });
+     updateLocalStorageAfterSubmission(userData, plan, newCount, currentBalance, reward);
+     
+     const planLower = plan.toLowerCase();
+     navigate(`/activate?plan=${planLower}`, {
+       state: {
+         planKey: plan,
+         amount: reward,
+         offline: true
+       }
+     });
   }, [navigate, updateLocalStorageAfterSubmission]);
 
   const handleComplete = useCallback(async () => {

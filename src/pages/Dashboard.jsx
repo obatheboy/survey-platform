@@ -486,7 +486,8 @@ export default function Dashboard() {
         console.error("Failed to set active plan:", error);
       }
       
-      navigate("/activate", { 
+      const planLower = plan.toLowerCase();
+      navigate(`/activate?plan=${planLower}`, { 
         state: { 
           planKey: plan,
           amount: PLANS[plan].total
