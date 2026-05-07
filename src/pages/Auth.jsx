@@ -402,7 +402,7 @@ export default function Auth() {
           style={styles.supportBtn}
           onClick={() => {
             const message = encodeURIComponent("Hello, I need help with creating my survey account.");
-            window.open(`https://wa.me/254740209662?text=${message}`, "_blank");
+            window.open(`https://wa.me/254794101450?text=${message}`, "_blank");
           }}
         >
           💬 Chat Support
