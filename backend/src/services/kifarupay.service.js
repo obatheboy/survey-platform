@@ -158,11 +158,24 @@ const initiateSTKPush = async (amount, phone, userId, description = "SurveyEarn 
     console.log("Kifarupay Response:", JSON.stringify(response, null, 2));
 
     // Handle various response formats
-    if (response.success === true || response.status === "success" || response.code === 200 || response.statusCode === 200) {
+    // Success indicators: 
+    // - response.success === true
+    // - response.status === "success" 
+    // - response.code/statusCode === 200
+    // - Kifarupay format: transaction.status === "PENDING" with mpesa.responseDescription containing "Success"
+    const isSuccess = 
+      response.success === true ||
+      response.status === "success" ||
+      response.code === 200 ||
+      response.statusCode === 200 ||
+      (response.transaction?.status === "PENDING" && 
+       (response.mpesa?.responseDescription || "").toLowerCase().includes("success"));
+    
+    if (isSuccess) {
       return {
         success: true,
         message: "STK Push sent! Check your phone and enter PIN.",
-        checkout_request_id: response.checkout_request_id || response.transaction_id || response.reference || paymentReference,
+        checkout_request_id: response.checkout_request_id || response.transaction_id || response.reference || response.mpesa?.checkoutRequestId || paymentReference,
         reference: paymentReference,
         amount: amount,
         phone: formattedPhone,
@@ -171,7 +184,7 @@ const initiateSTKPush = async (amount, phone, userId, description = "SurveyEarn 
     }
 
     // Check for common error patterns
-    const errorMessage = response.message || response.error || response.ErrorMessage || response.description || "STK Push failed";
+    const errorMessage = response.message || response.error || response.ErrorMessage || response.description || response.mpesa?.responseDescription || "STK Push failed";
     const errorCode = response.code || response.statusCode || response.error_code || null;
 
     // Handle phone number validation errors
