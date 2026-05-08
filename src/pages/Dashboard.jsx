@@ -102,6 +102,7 @@ export default function Dashboard() {
     { id: 1, label: "Complete Profile", icon: "👤", completed: false },
     { id: 2, label: "Verify Email", icon: "📧", completed: false },
     { id: 3, label: "Invite Friends", icon: "👥", completed: false },
+    { id: 4, label: "Activate & Pay", icon: "🔓", completed: false, action: "activate" },
   ]);
 
   /* =========================
@@ -518,9 +519,9 @@ export default function Dashboard() {
     document.body.style.position = 'fixed';
     document.body.style.width = '100%';
     document.body.style.height = '100%';
-    
+
     setFullScreenNotification({
-      message: "🎁 Activate your account with KES 100 to unlock your KES 1,200 welcome bonus!",
+      message: "🎁 Activate your account with KES 100 to unlock your KES 1,200 welcome bonus! Pay directly on this page.",
       redirect: "/activate?welcome_bonus=true",
     });
   };
@@ -529,11 +530,18 @@ export default function Dashboard() {
      QUICK ACTIONS
   ========================= */
   const completeQuickAction = (id) => {
+    const action = quickActions.find(a => a.id === id);
     setQuickActions(prev =>
-      prev.map(action =>
-        action.id === id ? { ...action, completed: true } : action
+      prev.map(a =>
+        a.id === id ? { ...a, completed: true } : a
       )
     );
+
+    if (action?.action === "activate") {
+      navigate("/activate");
+      return;
+    }
+
     setToast("Action completed! +10 points awarded");
     setTimeout(() => setToast(""), 3000);
   };

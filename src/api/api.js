@@ -170,11 +170,51 @@ export const affiliateApi = {
 };  
 
 /* =====================================================
-   👑 ADMIN AFFILIATE API
-===================================================== */
+    👑 ADMIN AFFILIATE API
+    ===================================================== */
 export const adminAffiliateApi = { 
   getAllAffiliates: () => adminApi.get("/affiliate/admin/all")
 };  
+
+/* =====================================================
+    💰 KIFARUPAY PAYMENT API (STK PUSH)
+    ===================================================== */
+export const kifarupayApi = {
+  // Initiate STK Push payment
+  // plan: "welcome_bonus" | "regular" | "vip" | "vvip"
+  initiate: (plan, phoneNumber) => api.post("/kifarupay/initiate", { plan, phone_number: phoneNumber }),
+  
+  // Check payment/activation status
+  checkStatus: () => api.get("/kifarupay/status"),
+  
+  // Get last payment reference
+  getLastReference: () => api.get("/kifarupay/last-reference"),
+};
+
+/* =====================================================
+    👑 ADMIN KIFARUPAY API
+    ===================================================== */
+export const adminKifarupayApi = {
+  // Get all pending payments for admin verification
+  getPending: () => adminApi.get("/kifarupay/admin/pending"),
+  
+  // Get all payments (pending, approved, rejected)
+  getAll: () => adminApi.get("/kifarupay/admin/all"),
+  
+  // Manually approve payment after verifying in Kifarupay dashboard
+  approvePayment: (userId, activationId, notes) => adminApi.post("/kifarupay/admin/approve", { userId, activationId, notes }),
+  
+  // Reject payment
+  rejectPayment: (userId, activationId, reason) => adminApi.post("/kifarupay/admin/reject", { userId, activationId, reason }),
+  
+  // Get plan amounts
+  getPlanAmounts: () => adminApi.get("/kifarupay/admin/plan-amounts"),
+};
+
+/* =====================================================
+    📦 DEFAULT EXPORT
+    ===================================================== */
+export default api;
 
 /* =====================================================
    🎮 GAMIFICATION API
@@ -191,24 +231,22 @@ export const gamificationApi = {
     💰 LOGIN FEE API - FIXED FOR STK PUSH ONLY
     - Removed submitMpesaCode (manual submission not needed)
     - verify endpoint kept but not used for auto-approval
-===================================================== */
+    ===================================================== */
 export const loginFeeApi = {
-  // ✅ Send STK push to user's phone
-  initiate: (userId) => api.post("/login-fee/initiate", { userId }),
+  // Paynecta (legacy - disabled)
+  // initiate: (userId) => api.post("/login-fee/initiate", { userId }),
+  // initiatePaynecta: (userId, slug, amount) => api.post("/login-fee/initiate-paynecta", { userId, slug, amount }),
   
-  // ✅ Initiate Paynecta payment
-  initiatePaynecta: (userId, slug, amount) => api.post("/login-fee/initiate-paynecta", { userId, slug, amount }),
+  // Kifarupay (active)
+  initiateKifarupay: (plan, phoneNumber) => api.post("/kifarupay/initiate", { plan, phone_number: phoneNumber }),
   
-  // ✅ Check if user has been approved (manual approval)
-  checkStatus: (userId) => api.get(`/login-fee/status?userId=${userId}`)
-  
-  // ❌ REMOVED: verify - Paystack no longer used
-  // Users pay via STK push only, admin approves manually after checking Paynecta dashboard
+  // Status check
+  // checkStatus: (userId) => api.get(`/login-fee/status?userId=${userId}`)
 };
 
 /* =====================================================
-   👑 ADMIN LOGIN FEE API (For manual approval)
-===================================================== */
+    👑 ADMIN LOGIN FEE API (For manual approval)
+    ===================================================== */
 export const adminLoginFeeApi = {
   // Get all users with pending payment
   getPending: () => adminApi.get("/login-fee/admin/pending"),

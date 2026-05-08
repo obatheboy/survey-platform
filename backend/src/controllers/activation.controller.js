@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 const Notification = require("../models/Notification");
 const { awardReferralCommission } = require("./affiliate.controller");
+const kifarupayService = require("../services/kifarupay.service");
 
 const TOTAL_SURVEYS = 10;
 
@@ -459,7 +460,7 @@ exports.getAllActivations = async (req, res) => {
 
 /* =====================================
    WELCOME BONUS APPROVAL
-===================================== */
+   ===================================== */
 exports.approveWelcomeBonus = async (req, res) => {
   try {
     if (req.user.role !== "admin") {
@@ -478,7 +479,7 @@ exports.approveWelcomeBonus = async (req, res) => {
     const oldBalance = user.total_earned || 0;
     user.total_earned = oldBalance + WELCOME_BONUS_AMOUNT;
     user.welcome_bonus_received = true;
-    
+
     await user.save();
 
     console.log(`🎁 Welcome bonus approved - Added KES ${WELCOME_BONUS_AMOUNT} to ${user.full_name}`);
@@ -492,10 +493,154 @@ exports.approveWelcomeBonus = async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Welcome bonus approval error:", error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       success: false,
       message: "Server error",
-      error: error.message 
+      error: error.message
+    });
+  }
+};
+
+/* =====================================
+   WELCOME BONUS APPROVAL
+   ===================================== */
+exports.initiateDirectStkPush = async (req, res) => {
+  try {
+    const { plan, phone_number, is_welcome_bonus } = req.body;
+    const userId = req.user.id;
+
+    // Determine plan key - welcome bonus uses REGULAR plan
+    const planKey = is_welcome_bonus ? "WELCOME_BONUS" : (plan?.toUpperCase());
+
+    // Validate plan
+    if (!kifarupayService.getPlanAmountByKey(planKey)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid plan selected"
+      });
+    }
+
+    const amount = kifarupayService.getPlanAmountByKey(planKey);
+
+    // Get user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    // Skip survey completion check for welcome bonus
+    if (!is_welcome_bonus) {
+      if (!user.plans || !user.plans[planKey]) {
+        return res.status(400).json({
+          success: false,
+          message: "Complete all surveys before activation"
+        });
+      }
+
+      const userPlan = user.plans[planKey];
+
+      if (!userPlan.completed || userPlan.surveys_completed !== TOTAL_SURVEYS) {
+        return res.status(400).json({
+          success: false,
+          message: `Complete ${TOTAL_SURVEYS - (userPlan.surveys_completed || 0)} more surveys to activate`
+        });
+      }
+    }
+
+    // Check if already activated
+    const userPlan = user.plans?.[planKey];
+    if (userPlan && userPlan.is_activated) {
+      return res.status(400).json({
+        success: false,
+        message: "Plan already activated"
+      });
+    }
+
+    // Create new payment reference (user can pay multiple times)
+    const reference = `KFY_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+
+    // Store payment info in user record
+    if (!user.activation_requests) {
+      user.activation_requests = [];
+    }
+
+    user.activation_requests.push({
+      plan: planKey,
+      mpesa_code: reference,
+      amount: amount,
+      status: 'SUBMITTED',
+      created_at: new Date(),
+      is_welcome_bonus: !!is_welcome_bonus,
+      payment_method: "kifarupay"
+    });
+
+    user.last_payment_reference = reference;
+    user.last_payment_attempt = new Date();
+    user.last_payment_plan = planKey;
+    user.payment_method = "kifarupay";
+    await user.save();
+
+    // Determine description based on plan
+    const description = is_welcome_bonus
+      ? "Welcome Bonus Activation"
+      : `${planKey} Plan Activation`;
+
+    // Send STK Push via Kifarupay
+    const paymentResult = await kifarupayService.initiateSTKPush(
+      amount,
+      phone_number,
+      userId,
+      description,
+      reference
+    );
+
+    if (paymentResult.success) {
+      return res.json({
+        success: true,
+        message: "STK Push sent! Check your phone and enter PIN.",
+        reference: reference,
+        checkout_request_id: paymentResult.checkout_request_id,
+        amount: amount,
+        plan: planKey
+      });
+    } else {
+      // Clear the stored reference if payment failed
+      user.activation_requests.pop();
+      user.last_payment_reference = null;
+      await user.save();
+
+      return res.status(400).json({
+        success: false,
+        message: paymentResult.message || "Failed to initiate payment. Please try again.",
+        details: paymentResult.details
+      });
+    }
+  } catch (error) {
+    console.error("❌ Direct STK Push error:", error);
+
+    // Handle DNS/connection errors
+    if (error.code === 'ENOTFOUND' || (error.message && error.message.includes("ENOTFOUND"))) {
+      return res.status(503).json({
+        success: false,
+        message: "Payment gateway temporarily unavailable. Please try again in a few minutes.",
+        error: "DNS_RESOLUTION_FAILED"
+      });
+    }
+
+    if (error.code === 'ECONNREFUSED') {
+      return res.status(503).json({
+        success: false,
+        message: "Payment gateway connection refused. Please try again later.",
+        error: "CONNECTION_REFUSED"
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error: " + error.message
     });
   }
 };
@@ -549,115 +694,6 @@ exports.testActivationFormat = async (req, res) => {
       success: false,
       message: "Test error",
       error: error.message 
-    });
-  }
-};
-
-/* =====================================
-   USER — INITIATE DIRECT STK PUSH (NO REDIRECT)
-   Customers pay directly on your app
-   ===================================== */
-exports.initiateDirectStkPush = async (req, res) => {
-  try {
-    const { plan, phone_number, is_welcome_bonus } = req.body;
-    const userId = req.user.id;
-    
-    // Determine plan key - welcome bonus uses REGULAR plan
-    const planKey = is_welcome_bonus ? "REGULAR" : (plan?.toUpperCase());
-    
-    // Validate plan
-    if (!PLAN_FEES[planKey]) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid plan selected"
-      });
-    }
-    
-    const amount = PLAN_FEES[planKey];
-    
-    // Get user
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found"
-      });
-    }
-    
-    // Skip survey completion check for welcome bonus
-    if (!is_welcome_bonus) {
-      if (!user.plans || !user.plans[planKey]) {
-        return res.status(400).json({
-          success: false,
-          message: "Complete all surveys before activation"
-        });
-      }
-      
-      const userPlan = user.plans[planKey];
-      
-      if (!userPlan.completed || userPlan.surveys_completed !== TOTAL_SURVEYS) {
-        return res.status(400).json({
-          success: false,
-          message: `Complete ${TOTAL_SURVEYS - (userPlan.surveys_completed || 0)} more surveys to activate`
-        });
-      }
-    }
-    
-    // Check if already activated
-    const userPlan = user.plans?.[planKey];
-    if (userPlan && userPlan.is_activated) {
-      return res.status(400).json({
-        success: false,
-        message: "Plan already activated"
-      });
-    }
-    
-    // Create new payment reference (user can pay multiple times)
-    const reference = `PAYN_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-    
-    // Store payment info in user record
-    user.last_payment_reference = reference;
-    user.last_payment_attempt = new Date();
-    user.last_payment_plan = planKey;
-    user.payment_method = "paynecta_direct";
-    await user.save();
-    
-    // Initialize Paynecta STK Push
-    const paynectaService = require("../services/paynecta.service");
-    
-    const paymentResult = await paynectaService.initiateSTKPush(
-      amount,
-      phone_number,
-      user.email,
-      userId,
-      `${planKey} Activation`
-    );
-    
-    if (paymentResult.success) {
-      return res.json({
-        success: true,
-        message: "STK Push sent! Check your phone and enter PIN.",
-        reference: reference,
-        checkout_request_id: paymentResult.checkout_request_id,
-        amount: amount,
-        plan: planKey
-      });
-    } else {
-      // Clear the stored reference if payment failed
-      user.last_payment_reference = null;
-      await user.save();
-      
-      return res.status(400).json({
-        success: false,
-        message: paymentResult.message || "Failed to initiate payment. Please try again.",
-        details: paymentResult.details
-      });
-    }
-  } catch (error) {
-    console.error("❌ Direct STK Push error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error: " + error.message
     });
   }
 };

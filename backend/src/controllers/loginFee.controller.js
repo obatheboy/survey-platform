@@ -63,6 +63,16 @@ exports.initiateLoginFeePayment = async (req, res) => {
     
   } catch (error) {
     console.error("Login fee payment error:", error);
+    
+    // Handle DNS/connection errors with user-friendly message
+    if (error.message && error.message.includes("ENOTFOUND")) {
+      return res.status(503).json({ 
+        success: false,
+        message: "Payment gateway temporarily unavailable. Please try again in a few minutes.",
+        error: "DNS_RESOLUTION_FAILED"
+      });
+    }
+    
     res.status(500).json({ 
       success: false,
       message: "Failed to initiate payment: " + (error.message || "Unknown error")

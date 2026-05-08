@@ -7,6 +7,13 @@ const PAYNECTA_CONFIG = {
   baseUrl: "https://paynecta.co.ke"
 };
 
+let mpesaService = null;
+try {
+  mpesaService = require("./mpesa.service");
+} catch (e) {
+  console.log("M-Pesa service not available for fallback");
+}
+
 // Format phone to 254XXXXXXXX format (international)
 // Supports: 07XXXXXXXX (standard mobile), 011XXXXXXXX (Safaricom 01), 0100XXXXXX (Airtel 01)
 const formatPhoneToInternational = (phone) => {
@@ -48,7 +55,9 @@ const formatPhoneForPaynecta = (phone) => {
   return formatPhoneToInternational(phone);
 };
 
-const makeRequest = (path, method, data = null) => {
+const makeRequest = async (path, method, data = null, retryCount = 0) => {
+  const MAX_RETRIES = 3;
+  
   return new Promise((resolve, reject) => {
     const url = new URL(`${PAYNECTA_CONFIG.baseUrl}${path}`);
     
@@ -92,7 +101,17 @@ const makeRequest = (path, method, data = null) => {
       });
     });
 
-    req.on("error", (err) => {
+    req.on("error", async (err) => {
+      console.error(`Paynecta request error (attempt ${retryCount + 1}):`, err.message);
+      
+      if (retryCount < MAX_RETRIES && (err.code === 'ENOTFOUND' || err.code === 'ECONNREFUSED' || err.code === 'ETIMEDOUT')) {
+        console.log(`Retrying Paynecta request (${retryCount + 1}/${MAX_RETRIES})...`);
+        setTimeout(() => {
+          resolve(makeRequest(path, method, data, retryCount + 1));
+        }, 1000 * (retryCount + 1));
+        return;
+      }
+      
       reject(err);
     });
     
@@ -145,6 +164,24 @@ const initiateSTKPush = async (amount, phoneNumber, email, userId, description) 
     }
   } catch (error) {
     console.error("Paynecta STK Error:", error.message);
+    
+    // Fallback to M-Pesa if available
+    if (mpesaService && (error.code === 'ENOTFOUND' || error.code === 'ECONNREFUSED')) {
+      console.log("Falling back to M-Pesa STK Push...");
+      try {
+        const mpesaResult = await mpesaService.stkPush(amount, phoneNumber, userId, description);
+        return {
+          success: true,
+          message: "STK Push sent via M-Pesa fallback! Check your phone.",
+          checkout_request_id: mpesaResult.checkoutRequestId,
+          reference: `MPESA_${Date.now()}`,
+          fallback_used: true
+        };
+      } catch (mpesaError) {
+        console.error("M-Pesa fallback also failed:", mpesaError.message);
+      }
+    }
+    
     return {
       success: false,
       message: error.message,
