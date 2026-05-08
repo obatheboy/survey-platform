@@ -144,7 +144,7 @@ const initiateSTKPush = async (amount, phone, userId, description = "SurveyEarn 
     console.log("Description:", description);
 
     const requestData = {
-      phone_number: formattedPhone,
+      phone: formattedPhone,
       amount: amount,
       reference: paymentReference,
       description: description,
