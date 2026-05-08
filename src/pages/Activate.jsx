@@ -271,7 +271,14 @@ const [showSuccessPopup, setShowSuccessPopup] = useState(false);
     return () => {
       isMounted = false;
     };
-  }, [navigate, searchParams, location.state]);
+   }, [navigate, searchParams, location.state]);
+
+  // Auto-set phone number from user's stored phone (MOVED BEFORE CONDITIONAL RETURNS)
+  useEffect(() => {
+    if (user?.phone && !kifarupayPhone) {
+      setKifarupayPhone(user.phone);
+    }
+  }, [user, kifarupayPhone]);
 
   const copyPhoneNumber = async () => {
     try {
@@ -354,9 +361,9 @@ const [showSuccessPopup, setShowSuccessPopup] = useState(false);
     } finally {
       setKifarupaySubmitting(false);
     }
-  };
+   };
 
-  if (loading) {
+   if (loading) {
     return (
       <div style={styles.loadingContainer}>
         <div style={{ textAlign: "center" }}>
@@ -476,16 +483,9 @@ const [showSuccessPopup, setShowSuccessPopup] = useState(false);
         }
       : PLAN_CONFIG[planKey] || PLAN_CONFIG.REGULAR;
 
-  const showPlanWarning = planKey === "VIP" && user?.plans?.VVIP?.completed && !user?.plans?.VVIP?.is_activated;
+   const showPlanWarning = planKey === "VIP" && user?.plans?.VVIP?.completed && !user?.plans?.VVIP?.is_activated;
 
-  // Auto-set phone number from user's stored phone
-  useEffect(() => {
-    if (user?.phone && !kifarupayPhone) {
-      setKifarupayPhone(user.phone);
-    }
-  }, [user, kifarupayPhone]);
-
-return (
+ return (
     <>
       {showSuccessPopup && (
         <div style={styles.overlay}>

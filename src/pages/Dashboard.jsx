@@ -115,7 +115,7 @@ export default function Dashboard() {
      GAMIFICATION STATE
    ========================= */
   const [showDailyReward, setShowDailyReward] = useState(false);
-  const [ setCanClaimDailyReward] = useState(false);
+  const [canClaimDailyReward, setCanClaimDailyReward] = useState(false);
   const [showWelcomeBonus, setShowWelcomeBonus] = useState(false);
   const [welcomeBonusAmount, setWelcomeBonusAmount] = useState(1200);
   const [gamificationStats, setGamificationStats] = useState({
