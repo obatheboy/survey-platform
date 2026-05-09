@@ -1114,14 +1114,14 @@ export default function Dashboard() {
           <div style={{
             fontSize: '14px',
             fontWeight: '900',
-            color: '#d97706',
+            color: '#ea580c',
             lineHeight: '1.3'
           }}>
             Congratulations! You've received a welcome bonus of 
             <span style={{
-              color: '#16a34a',
+              color: '#ea580c',
               fontSize: '20px',
-              fontWeight: '700',
+              fontWeight: '900',
               display: 'inline-block',
               marginLeft: '4px'
             }}>
