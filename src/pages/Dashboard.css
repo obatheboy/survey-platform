@@ -804,17 +804,17 @@ p, span, div, button, a, label {
 }
 
 /* =========================================================
-   WELCOME BONUS CARD - SMALL AND COMPACT WITH BRIGHT COLOR
-   ========================================================= */
+    WELCOME BONUS CARD - SOLID DARK GREEN BACKGROUND
+    ========================================================= */
 .welcome-bonus {
-  background: linear-gradient(135deg, #cc6300, #0122b4, #14e600) !important;
-  border: 2px solid rgba(255, 255, 255, 0.4) !important;
+  background: #1f7405 !important;
+  border: 2px solid #165c03 !important;
   border-radius: var(--radius-md) !important;
   padding: 8px !important;
   margin: 6px 0 !important;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-md), 0 0 20px rgba(234, 88, 12, 0.5) !important;
+  box-shadow: var(--shadow-md), 0 0 20px rgba(0, 0, 0, 0.3) !important;
   animation: scaleIn 0.5s ease;
   max-width: 100%;
 }
@@ -828,6 +828,7 @@ p, span, div, button, a, label {
   opacity: 0.3;
   transform: rotate(15deg);
   z-index: 1;
+  color: white;
 }
 
 .welcome-bonus::after {
@@ -837,7 +838,7 @@ p, span, div, button, a, label {
   right: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(251, 191, 36, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
   z-index: 1;
 }
 
@@ -887,7 +888,7 @@ p, span, div, button, a, label {
 }
 
 .welcome-bonus .bonus-description {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.95);
   font-size: 10px;
   margin: 2px 0 4px;
   line-height: 1.3;
