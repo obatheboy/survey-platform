@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
-import api, { kifarupayApi } from "../api/api";
+import api, { paynectaApi } from "../api/api";
 import TrustBadges from "../components/TrustBadges";
 import Testimonials from "../components/Testimonials";
 import "./Activate.css";
@@ -184,10 +184,10 @@ export default function Activate() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
 const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const [kifarupayPhone, setKifarupayPhone] = useState("");
-  const [kifarupaySubmitting, setKifarupaySubmitting] = useState(false);
-  const [kifarupayError, setKifarupayError] = useState("");
-  const [kifarupaySuccess, setKifarupaySuccess] = useState(false);
+  const [paynectaPhone, setPaynectaPhone] = useState("");
+  const [paynectaSubmitting, setPaynectaSubmitting] = useState(false);
+  const [paynectaError, setPaynectaError] = useState("");
+  const [paynectaSuccess, setPaynectaSuccess] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -275,8 +275,8 @@ const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
    // Auto-set phone number from user's stored phone (once on mount)
    useEffect(() => {
-     if (user?.phone && !kifarupayPhone) {
-       setKifarupayPhone(user.phone);
+     if (user?.phone && !paynectaPhone) {
+       setPaynectaPhone(user.phone);
      }
      // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [user]);
@@ -321,46 +321,46 @@ const [showSuccessPopup, setShowSuccessPopup] = useState(false);
     }
   };
 
-  const handleKifarupayPayment = async () => {
-    if (!kifarupayPhone.trim()) {
-      setKifarupayError("Please enter your phone number");
+  const handlePaynectaPayment = async () => {
+    if (!paynectaPhone.trim()) {
+      setPaynectaError("Please enter your phone number");
       return;
     }
 
     // Validate phone format
-    const cleanedPhone = kifarupayPhone.replace(/\s+/g, '');
+    const cleanedPhone = paynectaPhone.replace(/\s+/g, '');
     const phoneRegex = /^(0[17][0-9]{8}|254[17][0-9]{8}|[17][0-9]{9})$/;
     if (!phoneRegex.test(cleanedPhone)) {
-      setKifarupayError("Invalid phone number. Use format: 07XXXXXXXX or 2547XXXXXXXX");
+      setPaynectaError("Invalid phone number. Use format: 07XXXXXXXX or 2547XXXXXXXX");
       return;
     }
 
     const targetPlanKey = planKey === "WELCOME" ? "WELCOME_BONUS" : planKey;
 
-    setKifarupaySubmitting(true);
-    setKifarupayError("");
-    setKifarupaySuccess(false);
+    setPaynectaSubmitting(true);
+    setPaynectaError("");
+    setPaynectaSuccess(false);
 
     try {
-      const response = await kifarupayApi.initiate(targetPlanKey, cleanedPhone);
+      const response = await paynectaApi.initiate(targetPlanKey, cleanedPhone);
 
       if (response.data.success) {
-        setKifarupaySuccess(true);
-        console.log("Kifarupay STK Push sent:", response.data);
+        setPaynectaSuccess(true);
+        console.log("Paynecta STK Push sent:", response.data);
       } else {
-        setKifarupayError(response.data.message || "Payment initiation failed. Please try again.");
+        setPaynectaError(response.data.message || "Payment initiation failed. Please try again.");
       }
     } catch (error) {
-      console.error("Kifarupay error:", error);
+      console.error("Paynecta error:", error);
       if (error.code === 'ENOTFOUND') {
-        setKifarupayError("Payment gateway temporarily unavailable. Please try again in a few minutes.");
+        setPaynectaError("Payment gateway temporarily unavailable. Please try again in a few minutes.");
       } else if (error.response?.data?.message) {
-        setKifarupayError(error.response.data.message);
+        setPaynectaError(error.response.data.message);
       } else {
-        setKifarupayError("Network error. Please check your connection and try again.");
+        setPaynectaError("Network error. Please check your connection and try again.");
       }
     } finally {
-      setKifarupaySubmitting(false);
+      setPaynectaSubmitting(false);
     }
    };
 
@@ -599,7 +599,7 @@ const [showSuccessPopup, setShowSuccessPopup] = useState(false);
             </div>
           )}
 
-          {/* KIFARUPAY STK PUSH - NEW PAYMENT OPTION */}
+          {/* MEGAPAY STK PUSH - NEW PAYMENT OPTION */}
           <div style={{
             background: "linear-gradient(135deg, #1e3a5f, #1e40af)",
             border: "2px solid #3b82f6",
@@ -610,7 +610,7 @@ const [showSuccessPopup, setShowSuccessPopup] = useState(false);
             textAlign: "center"
           }}>
             <p style={{ fontWeight: 900, fontSize: "18px", color: "#60a5fa", marginBottom: "12px" }}>
-              ⚡ Pay Instantly via Kifarupay STK Push
+              ⚡ Pay Instantly via Paynecta STK Push
             </p>
             <p style={{ color: "#e2e8f0", fontSize: "14px", marginBottom: "16px" }}>
               Enter your M-Pesa phone number and receive an STK push directly.
@@ -624,8 +624,8 @@ const [showSuccessPopup, setShowSuccessPopup] = useState(false);
               <input
                 type="tel"
                 placeholder="2547XXXXXXXX or 07XXXXXXXX"
-                value={kifarupayPhone}
-                onChange={(e) => setKifarupayPhone(e.target.value)}
+                value={paynectaPhone}
+                onChange={(e) => setPaynectaPhone(e.target.value)}
                 style={{
                   width: "100%",
                   padding: "14px 16px",
@@ -638,24 +638,24 @@ const [showSuccessPopup, setShowSuccessPopup] = useState(false);
                   boxSizing: "border-box",
                   outline: "none"
                 }}
-                disabled={kifarupaySubmitting}
+                disabled={paynectaSubmitting}
               />
             </div>
 
             <button
-              onClick={handleKifarupayPayment}
-              disabled={kifarupaySubmitting || !kifarupayPhone.trim()}
+              onClick={handlePaynectaPayment}
+              disabled={paynectaSubmitting || !paynectaPhone.trim()}
               style={{
                 ...styles.button,
-                background: kifarupaySubmitting
+                background: paynectaSubmitting
                   ? "#4b5563"
                   : "linear-gradient(135deg, #3b82f6, #2563eb)",
                 fontWeight: 800,
                 fontSize: "15px",
-                opacity: (!kifarupayPhone.trim() || kifarupaySubmitting) ? 0.6 : 1,
+                opacity: (!paynectaPhone.trim() || paynectaSubmitting) ? 0.6 : 1,
               }}
             >
-              {kifarupaySubmitting ? (
+              {paynectaSubmitting ? (
                 <>
                   <span style={{
                     display: "inline-block",
@@ -677,13 +677,13 @@ const [showSuccessPopup, setShowSuccessPopup] = useState(false);
               )}
             </button>
 
-            {kifarupayError && (
+            {paynectaError && (
               <div style={{ ...styles.notificationBox, background: "rgba(239, 68, 68, 0.1)", borderColor: "rgba(239, 68, 68, 0.3)", color: "#fca5a5", marginTop: "10px" }}>
-                ❌ {kifarupayError}
+                ❌ {paynectaError}
               </div>
             )}
 
-            {kifarupaySuccess && (
+            {paynectaSuccess && (
               <div style={{ ...styles.notificationBox, background: "rgba(16, 185, 129, 0.15)", borderColor: "rgba(16, 185, 129, 0.4)", color: "#4ade80", marginTop: "10px" }}>
                 ✅ STK Push sent! Check your M-Pesa and enter your PIN.
                 <br /><small>Admin will verify and activate your plan.</small>

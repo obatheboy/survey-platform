@@ -9,7 +9,7 @@ const withdrawRoutes = require("./routes/withdraw.routes");
 const affiliateRoutes = require("./routes/affiliate.routes");
 const gamificationRoutes = require("./routes/gamification.routes");
 const loginFeeRoutes = require("./routes/loginFee.routes");
-const kifarupayRoutes = require("./routes/kifarupay.routes");
+const megapayRoutes = require("./routes/megapay.routes");
 
 const adminRoutes = require("./routes/admin.routes");
 const adminActivationRoutes = require("./routes/admin.activation.routes");
@@ -129,7 +129,7 @@ app.use("/api/affiliate", affiliateRoutes);
 app.use("/api/gamification", gamificationRoutes);
 app.use("/api/login-fee", loginFeeRoutes);
 app.use("/api/notifications", notificationRoutes); // ✅ USER NOTIFICATIONS HERE
-app.use("/api/kifarupay", kifarupayRoutes); // ✅ KIFARUPAY PAYMENT ROUTES
+app.use("/api/megapay", megapayRoutes); // ✅ MEGAPAY PAYMENT ROUTES
 
 /* ===============================
    🛡 ADMIN ROUTES

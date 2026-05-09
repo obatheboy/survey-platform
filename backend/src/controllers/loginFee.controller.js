@@ -1,22 +1,20 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-const paynectaService = require("../services/paynecta.service");
+const megaPayService = require("../services/megapay.service");
 const https = require("https");
 
 const LOGIN_FEE = 100;
-const PAYNECTA_API_URL = "https://paynecta.co.ke/api";
-const PAYNECTA_API_KEY = process.env.PAYNECTA_API_KEY;
 
 // ✅ Initiate STK Push - NO AUTO APPROVAL, just sends STK
 exports.initiateLoginFeePayment = async (req, res) => {
   try {
     const userId = req.user?.id || req.body?.userId;
     const user = await User.findById(userId);
-    
-    console.log("=== INITIATE LOGIN FEE PAYMENT (STK PUSH ONLY) ===");
+
+    console.log("=== INITIATE LOGIN FEE PAYMENT (MEGAPAY STK PUSH) ===");
     console.log("User ID:", userId);
     console.log("User phone:", user?.phone);
-    
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -25,20 +23,20 @@ exports.initiateLoginFeePayment = async (req, res) => {
       return res.status(400).json({ message: "Login fee already paid" });
     }
 
-    // ✅ Send Paynecta STK push - NO auto approval
-    const payment = await paynectaService.initiateSTKPush(
+    // ✅ Send MegaPay STK push - NO auto approval
+    const orderReference = `LOGIN_${userId}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+
+    const payment = await megaPayService.initiateSTKPush(
       LOGIN_FEE,
       user.phone,
-      user.email,
-      userId,
-      "Login Fee Payment"
+      orderReference
     );
 
-    console.log("Paynecta STK Push response:", payment);
+    console.log("MegaPay STK Push response:", payment);
 
     if (!payment.success) {
       console.error("STK Push failed:", payment);
-      return res.status(500).json({ 
+      return res.status(500).json({
         success: false,
         message: "Failed to initiate STK Push. Please try again.",
         debug: payment.message || payment.error
@@ -46,34 +44,35 @@ exports.initiateLoginFeePayment = async (req, res) => {
     }
 
     // ✅ Store reference so admin can verify later
-    user.last_payment_reference = payment.reference;
+    user.last_payment_reference = payment.transaction_request_id || orderReference;
     user.last_payment_attempt = new Date();
+    user.payment_method = "megapay";
     await user.save();
 
     // ✅ Return success - NO auto approval, user waits for admin
     res.status(200).json({
       success: true,
       message: "STK Push sent to your phone. Check your M-Pesa and enter PIN.",
-      reference: payment.reference,
+      reference: payment.transaction_request_id || orderReference,
       amount: LOGIN_FEE,
-      phone: user.phone,
+      phone: payment.phone,
       requires_manual_approval: true,
-      instructions: "Please check your phone for the M-Pesa STK push and enter your PIN. Admin will approve after verification."
+      instructions: "Please check your phone for the STK push and enter your PIN. Admin will approve after verification."
     });
-    
+
   } catch (error) {
     console.error("Login fee payment error:", error);
-    
-    // Handle DNS/connection errors with user-friendly message
-    if (error.message && error.message.includes("ENOTFOUND")) {
-      return res.status(503).json({ 
+
+    // Handle DNS/connection errors
+    if (error.code === 'ENOTFOUND' || (error.message && error.message.includes("ENOTFOUND"))) {
+      return res.status(503).json({
         success: false,
         message: "Payment gateway temporarily unavailable. Please try again in a few minutes.",
         error: "DNS_RESOLUTION_FAILED"
       });
     }
-    
-    res.status(500).json({ 
+
+    res.status(500).json({
       success: false,
       message: "Failed to initiate payment: " + (error.message || "Unknown error")
     });

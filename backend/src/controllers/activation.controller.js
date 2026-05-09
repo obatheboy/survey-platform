@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 const Notification = require("../models/Notification");
 const { awardReferralCommission } = require("./affiliate.controller");
-const kifarupayService = require("../services/kifarupay.service");
+const megaPayService = require("../services/megapay.service");
 
 const TOTAL_SURVEYS = 10;
 
@@ -513,14 +513,14 @@ exports.initiateDirectStkPush = async (req, res) => {
     const planKey = is_welcome_bonus ? "WELCOME_BONUS" : (plan?.toUpperCase());
 
     // Validate plan
-    if (!kifarupayService.getPlanAmountByKey(planKey)) {
+    if (!megaPayService.getPlanAmountByKey(planKey)) {
       return res.status(400).json({
         success: false,
         message: "Invalid plan selected"
       });
     }
 
-    const amount = kifarupayService.getPlanAmountByKey(planKey);
+    const amount = megaPayService.getPlanAmountByKey(planKey);
 
     // Get user
     const user = await User.findById(userId);
@@ -559,8 +559,8 @@ exports.initiateDirectStkPush = async (req, res) => {
       });
     }
 
-    // Create new payment reference (user can pay multiple times)
-    const reference = `KFY_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+    // Generate unique order reference for MegaPay
+    const orderReference = `SURVEY_${userId}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
 
     // Store payment info in user record
     if (!user.activation_requests) {
@@ -569,40 +569,42 @@ exports.initiateDirectStkPush = async (req, res) => {
 
     user.activation_requests.push({
       plan: planKey,
-      mpesa_code: reference,
+      mpesa_code: orderReference,
       amount: amount,
       status: 'SUBMITTED',
       created_at: new Date(),
       is_welcome_bonus: !!is_welcome_bonus,
-      payment_method: "kifarupay"
+      payment_method: "megapay"
     });
 
-    user.last_payment_reference = reference;
+    user.last_payment_reference = orderReference;
     user.last_payment_attempt = new Date();
     user.last_payment_plan = planKey;
-    user.payment_method = "kifarupay";
+    user.payment_method = "megapay";
     await user.save();
 
-    // Determine description based on plan
-    const description = is_welcome_bonus
-      ? "Welcome Bonus Activation"
-      : `${planKey} Plan Activation`;
-
-    // Send STK Push via Kifarupay
-    const paymentResult = await kifarupayService.initiateSTKPush(
+    // Send STK Push via MegaPay
+    const paymentResult = await megaPayService.initiateSTKPush(
       amount,
       phone_number,
-      userId,
-      description,
-      reference
+      orderReference
     );
 
     if (paymentResult.success) {
+      // Get actual MegaPay transaction_request_id from response
+      const transactionRequestId = paymentResult.transaction_request_id || orderReference;
+
+      // Update activation request with actual MegaPay reference
+      const lastRequest = user.activation_requests[user.activation_requests.length - 1];
+      lastRequest.mpesa_code = transactionRequestId;
+      user.last_payment_reference = transactionRequestId;
+      await user.save();
+
       return res.json({
         success: true,
         message: "STK Push sent! Check your phone and enter PIN.",
-        reference: reference,
-        checkout_request_id: paymentResult.checkout_request_id,
+        reference: transactionRequestId,
+        transaction_request_id: paymentResult.transaction_request_id || null,
         amount: amount,
         plan: planKey
       });
@@ -619,7 +621,7 @@ exports.initiateDirectStkPush = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error("❌ Direct STK Push error:", error);
+    console.error("❌ MegaPay STK Push error:", error);
 
     // Handle DNS/connection errors
     if (error.code === 'ENOTFOUND' || (error.message && error.message.includes("ENOTFOUND"))) {
