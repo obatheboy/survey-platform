@@ -273,12 +273,13 @@ const [showSuccessPopup, setShowSuccessPopup] = useState(false);
     };
    }, [navigate, searchParams, location.state]);
 
-  // Auto-set phone number from user's stored phone (MOVED BEFORE CONDITIONAL RETURNS)
-  useEffect(() => {
-    if (user?.phone && !kifarupayPhone) {
-      setKifarupayPhone(user.phone);
-    }
-  }, [user, kifarupayPhone]);
+   // Auto-set phone number from user's stored phone (once on mount)
+   useEffect(() => {
+     if (user?.phone && !kifarupayPhone) {
+       setKifarupayPhone(user.phone);
+     }
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [user]);
 
   const copyPhoneNumber = async () => {
     try {
