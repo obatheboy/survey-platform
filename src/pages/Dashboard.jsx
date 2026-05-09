@@ -1053,11 +1053,11 @@ export default function Dashboard() {
         </div>
       </div>
       
-{/* WELCOME BONUS CARD - WHITE BACKGROUND WITH SUBTLE BORDER */}
+{/* WELCOME BONUS CARD - DARK GREEN BACKGROUND */}
 <section ref={welcomeRef}>
   <div className="plan-card welcome-bonus" style={{
-    background: '#ffffff !important',
-    border: '1px solid #e5e5e5 !important',
+    background: '#1f7405 !important',
+    border: '1px solid #165c03 !important',
     borderRadius: '8px !important',
     padding: '10px !important',
     margin: '8px 0 !important',
@@ -1085,7 +1085,7 @@ export default function Dashboard() {
           <span style={{
             fontSize: '18px',
             fontWeight: '700',
-            color: '#d97706',
+            color: '#ffffff',
             letterSpacing: '0.5px'
           }}>
             Welcome Bonus
@@ -1105,10 +1105,10 @@ export default function Dashboard() {
       </div>
       
       <div style={{
-        background: '#fefce8 !important',
+        background: 'rgba(255, 255, 255, 0.95) !important',
         borderRadius: '6px !important',
         padding: '8px !important',
-        border: '1px solid #fef08a !important'
+        border: '1px solid rgba(255, 255, 255, 0.8) !important'
       }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{
