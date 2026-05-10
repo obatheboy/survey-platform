@@ -262,7 +262,8 @@ export default function LoginFeePayment() {
             <p className="benefits-title">✅ After payment, you get:</p>
             <ul>
               <li>🗳️ Access to all paid surveys</li>
-              <li>💰 Earn KES 150 - 500 per survey</li>
+              <li>💰 Get 1200 welcome bonus</li>
+              <li>💰 Earn KES 150 - 500 per each survey</li>
               <li>⚡ Instant M-PESA withdrawals</li>
               <li>🏆 Unlock VIP & VVIP surveys</li>
             </ul>
@@ -271,7 +272,7 @@ export default function LoginFeePayment() {
 
         {/* Support */}
         <div className="support">
-          <p className="support-text">Problem? <button onClick={() => window.open("https://wa.me/254794101450", "_blank")} className="support-link">Chat with support</button></p>
+          <p className="support-text">Any Problem? <button onClick={() => window.open("https://wa.me/254794101450", "_blank")} className="support-link">Chat with support</button></p>
         </div>
       </div>
     </div>
