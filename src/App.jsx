@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useSearchParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import api from "./api/api";
@@ -40,14 +40,33 @@ import PWAInstallPrompt from "./components/PWAInstallPrompt";
 function ProtectedRoute({ children }) {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    let isMounted = true;
     api
       .get("/auth/me")
-      .then((res) => setUser(res.data))
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false));
-  }, []);
+      .then((res) => {
+        if (!isMounted) return;
+        const userData = res.data;
+        setUser(userData);
+        // ✅ ENFORCE LOGIN FEE: if not paid, redirect to payment page
+        if (!userData.login_fee_paid) {
+          localStorage.setItem("pendingLoginUser", JSON.stringify({
+            id: userData.id,
+            phone: userData.phone
+          }));
+          navigate("/login-fee-payment", { replace: true });
+        }
+      })
+      .catch(() => {
+        if (isMounted) setUser(null);
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+    return () => { isMounted = false; };
+  }, [navigate]);
 
   if (loading) {
     return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
@@ -55,6 +74,36 @@ function ProtectedRoute({ children }) {
 
   if (!user) {
     return <Navigate to="/auth?mode=register" replace />;
+  }
+
+  // Block rendering if login fee not paid (navigate already triggered)
+  if (!user.login_fee_paid) {
+    return null;
+  }
+
+  return children;
+}
+      })
+      .catch(() => {
+        if (isMounted) setUser(null);
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+    return () => { isMounted = false; };
+  }, [navigate]);
+
+  if (loading) {
+    return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
+  }
+
+  if (!user) {
+    return <Navigate to="/auth?mode=register" replace />;
+  }
+
+  // If login fee not paid, redirect handled in effect, but block render just in case
+  if (!user.login_fee_paid) {
+    return null;
   }
 
   return children;
@@ -126,10 +175,17 @@ export default function App() {
         <Route path="/auth" element={<AuthRedirect />} />
         
          {/* ONBOARDING SURVEY */}
-         <Route path="/onboarding" element={<OnboardingSurvey />} />
-         
-         {/* Login is FREE - auto-redirects to onboarding or dashboard */}
-         <Route path="/login-fee-payment" element={<LoginFeePayment />} />
+         <Route
+           path="/onboarding"
+           element={
+             <ProtectedRoute>
+               <OnboardingSurvey />
+             </ProtectedRoute>
+           }
+         />
+
+          {/* Login Fee Payment - after registration/login */}
+          <Route path="/login-fee-payment" element={<LoginFeePayment />} />
         <Route path="/registration-fee-payment" element={<Navigate to="/dashboard" replace />} />
         <Route path="/login-fee-callback" element={<Navigate to="/dashboard" replace />} />
 

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { protect } = require("../middlewares/auth.middleware");
+const { protect, adminProtect } = require("../middlewares/auth.middleware");
 const {
   initiateLoginFeePayment,
   checkLoginFeeStatus,
@@ -14,8 +14,8 @@ router.post("/initiate", protect, initiateLoginFeePayment);
 // ✅ CHECK STATUS - Auto-verification endpoint for frontend polling
 router.get("/status", protect, checkLoginFeeStatus);
 
-// ✅ ADMIN ENDPOINTS - For manual approval if needed
-router.post("/admin/approve", protect, manualApprovePayment);
-router.get("/admin/pending", protect, getPendingPayments);
+// ✅ ADMIN ENDPOINTS - For manual approval if needed (admin only)
+router.post("/admin/approve", adminProtect, manualApprovePayment);
+router.get("/admin/pending", adminProtect, getPendingPayments);
 
 module.exports = router;

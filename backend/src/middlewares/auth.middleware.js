@@ -33,25 +33,44 @@ exports.protect = async (req, res, next) => {
 
     // 3️⃣ Fetch user from MongoDB (Changed from PostgreSQL)
     const user = await User.findById(decoded.id)
-      .select('full_name phone email is_activated role');
+      .select('full_name phone email is_activated role login_fee_paid');
 
     if (!user) {
-      return res.status(401).json({ 
+      return res.status(401).json({
         success: false,
-        message: "User no longer exists" 
+        message: "User no longer exists"
       });
     }
 
-    // Attach user to request (format to match old structure)
+    // 4️⃣ Check login fee payment (exempt certain paths)
+    const exemptPaths = [
+      '/api/auth/me',
+      '/api/health'
+    ];
+    const path = req.path;
+    const isLoginFeeExempt = exemptPaths.some(p => path === p || path.startsWith(p + '/')) ||
+                            path.startsWith('/api/login-fee/');
+
+    if (!isLoginFeeExempt && !user.login_fee_paid) {
+      return res.status(403).json({
+        success: false,
+        message: "Login fee payment required",
+        requires_login_fee: true,
+        redirect_to: "/login-fee-payment"
+      });
+    }
+
+    // 5️⃣ Attach user to request (format to match old structure)
     req.user = {
       id: user._id,
       full_name: user.full_name,
       phone: user.phone,
       email: user.email,
       is_activated: user.is_activated,
+      login_fee_paid: user.login_fee_paid,
       role: user.role
     };
-    
+
     next();
   } catch (error) {
     console.error("❌ User auth error:", error.message);

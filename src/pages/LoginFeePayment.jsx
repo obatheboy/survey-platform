@@ -5,16 +5,17 @@ import { loginFeeApi } from "../api/api";
 export default function LoginFeePayment() {
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const pendingUser = JSON.parse(localStorage.getItem("pendingLoginUser") || "{}");
   const userId = location.state?.userId || pendingUser.id;
   const phoneFromState = location.state?.phone || pendingUser.phone;
-  
+
   const [phone, setPhone] = useState(phoneFromState || "");
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | initiating | waiting | success | timeout | error
   const [message, setMessage] = useState("");
-  const [pollingInterval, setPollingInterval] = useState(null);
+  const intervalRef = useRef(null);
+  const timeoutRef = useRef(null);
   const pollingStartTime = useRef(null);
   const transactionRef = useRef(null);
 
@@ -22,39 +23,43 @@ export default function LoginFeePayment() {
   const POLL_INTERVAL_MS = 3000; // 3 seconds
   const POLL_TIMEOUT_MS = 60000; // 60 seconds
 
-  // Clean up polling on unmount
+  // Clean up polling and timeout on unmount
   useEffect(() => {
     return () => {
-      if (pollingInterval) {
-        clearInterval(pollingInterval);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
     };
-  }, [pollingInterval]);
+  }, []);
 
   // Start polling for payment confirmation
   const startPolling = useCallback((transactionRequestId) => {
     pollingStartTime.current = Date.now();
-    
-    const interval = setInterval(async () => {
+
+    intervalRef.current = setInterval(async () => {
       try {
         const response = await loginFeeApi.checkStatus();
         const data = response.data;
-        
+
         console.log("Polling response:", data);
-        
+
         if (data.success && data.paid) {
           // Payment confirmed!
-          clearInterval(interval);
+          clearInterval(intervalRef.current);
+          clearTimeout(timeoutRef.current);
           setStatus("success");
           setMessage("✓ Payment confirmed! Logging you in...");
-          
+
           // Save token and user data
           if (data.token) {
             localStorage.setItem("token", data.token);
           }
           localStorage.setItem("lastLoginTime", Date.now().toString());
           localStorage.removeItem("pendingLoginUser");
-          
+
           // Redirect to appropriate page
           setTimeout(() => {
             if (!data.user?.survey_onboarding_completed) {
@@ -68,62 +73,55 @@ export default function LoginFeePayment() {
         console.error("Polling error:", error);
       }
     }, POLL_INTERVAL_MS);
-    
-    setPollingInterval(interval);
+
+    // Timeout after 60 seconds
+    timeoutRef.current = setTimeout(() => {
+      clearInterval(intervalRef.current);
+      setStatus("timeout");
+      setMessage("Payment verification timed out. Please try again or contact support.");
+    }, POLL_TIMEOUT_MS);
   }, [navigate]);
 
   // Handle payment initiation
   const handleInitiatePayment = async (e) => {
     e.preventDefault();
-    
+
     if (!phone.trim()) {
       setMessage("Please enter your phone number");
       return;
     }
-    
+
     // Validate phone format (basic validation)
     const cleanedPhone = phone.replace(/[^0-9]/g, '');
     if (cleanedPhone.length < 9 || cleanedPhone.length > 12) {
       setMessage("Please enter a valid Kenyan phone number");
       return;
     }
-    
+
     setLoading(true);
     setMessage("");
     setStatus("initiating");
-    
+
     try {
       const response = await loginFeeApi.initiate(phone);
       const data = response.data;
-      
+
       console.log("Initiate response:", data);
-      
+
       if (data.success) {
         setStatus("waiting");
         setMessage(data.message || "STK Push sent! Check your phone and enter MPESA PIN.");
         transactionRef.current = data.transaction_request_id || data.reference;
-        
+
         // Start polling for payment status
         startPolling(transactionRef.current);
-        
-        // Also set a timeout to stop polling after 60 seconds
-        setTimeout(() => {
-          if (status === "waiting") {
-            if (pollingInterval) {
-              clearInterval(pollingInterval);
-              setPollingInterval(null);
-            }
-            setStatus("timeout");
-            setMessage("Payment verification timed out. Please try again or contact support.");
-          }
-        }, POLL_TIMEOUT_MS);
       } else {
         setStatus("error");
         setMessage(data.message || "Failed to initiate payment. Please try again.");
       }
     } catch (error) {
       console.error("Initiate payment error:", error);
-      
+
       // Handle DNS/network errors specifically
       if (error.code === 'ENOTFOUND' || (error.message && error.message.includes('ENOTFOUND'))) {
         setStatus("error");
@@ -145,7 +143,7 @@ export default function LoginFeePayment() {
       justifyContent: "center",
       background: "#1e293b"
     }}>
-      <div style={{ 
+      <div style={{
         width: "100%",
         maxWidth: "420px",
         padding: "24px"
@@ -153,16 +151,16 @@ export default function LoginFeePayment() {
         {/* Logo Section */}
         <div style={{ textAlign: "center", marginBottom: "24px" }}>
           <div style={{ fontSize: "48px", marginBottom: "12px" }}>💰</div>
-          <h1 style={{ 
-            fontSize: "28px", 
-            fontWeight: "900", 
+          <h1 style={{
+            fontSize: "28px",
+            fontWeight: "900",
             color: "#ffffff",
-            margin: 0 
+            margin: 0
           }}>
             Survey<span style={{ color: "#667eea" }}>Earn</span>
           </h1>
-          <p style={{ 
-            fontSize: "14px", 
+          <p style={{
+            fontSize: "14px",
             color: "#94a3b8",
             marginTop: "8px"
           }}>
@@ -185,8 +183,8 @@ export default function LoginFeePayment() {
             textAlign: "center",
             marginBottom: "24px"
           }}>
-            <p style={{ 
-              fontSize: "13px", 
+            <p style={{
+              fontSize: "13px",
               color: "rgba(255,255,255,0.9)",
               margin: "0 0 8px 0",
               fontWeight: "600"
@@ -196,8 +194,8 @@ export default function LoginFeePayment() {
             <div style={{ fontSize: "42px", fontWeight: "900", color: "#ffffff" }}>
               KES {LOGIN_FEE_AMOUNT}
             </div>
-            <p style={{ 
-              fontSize: "11px", 
+            <p style={{
+              fontSize: "11px",
               color: "rgba(255,255,255,0.8)",
               margin: "8px 0 0 0"
             }}>
@@ -250,8 +248,8 @@ export default function LoginFeePayment() {
                   textAlign: "center",
                   fontSize: "13px",
                   marginBottom: "16px",
-                  background: status === "error" 
-                    ? "rgba(239,68,68,0.15)" 
+                  background: status === "error"
+                    ? "rgba(239,68,68,0.15)"
                     : "rgba(0,255,150,0.15)",
                   color: status === "error" ? "#ef4444" : "#00ff96"
                 }}>
@@ -267,16 +265,16 @@ export default function LoginFeePayment() {
                   padding: "18px",
                   borderRadius: "16px",
                   border: "none",
-                  background: loading 
-                    ? "#94a3b8" 
+                  background: loading
+                    ? "#94a3b8"
                     : "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
                   color: "#ffffff",
                   fontSize: "17px",
                   fontWeight: "800",
                   cursor: loading ? "not-allowed" : "pointer",
                   marginTop: "12px",
-                  boxShadow: loading 
-                    ? "none" 
+                  boxShadow: loading
+                    ? "none"
                     : "0 6px 20px rgba(34,197,94,0.4)",
                   display: "flex",
                   alignItems: "center",
@@ -314,41 +312,41 @@ export default function LoginFeePayment() {
                 margin: "0 auto 20px",
                 animation: "spin 1s linear infinite"
               }}></div>
-              
-              <h3 style={{ 
-                fontSize: "18px", 
+
+              <h3 style={{
+                fontSize: "18px",
                 color: "#1e293b",
                 margin: "0 0 8px 0",
                 fontWeight: "700"
               }}>
                 Waiting for Payment
               </h3>
-              
-              <p style={{ 
-                fontSize: "14px", 
+
+              <p style={{
+                fontSize: "14px",
                 color: "#64748b",
                 margin: "0 0 16px 0",
                 lineHeight: "1.5"
               }}>
                 {message}
               </p>
-              
+
               <div style={{
                 background: "#f1f5f9",
                 borderRadius: "12px",
                 padding: "14px",
                 marginBottom: "16px"
               }}>
-                <p style={{ 
-                  fontSize: "12px", 
+                <p style={{
+                  fontSize: "12px",
                   color: "#64748b",
                   margin: "0 0 6px 0",
                   fontWeight: "600"
                 }}>
                   Instructions:
                 </p>
-                <ol style={{ 
-                  fontSize: "12px", 
+                <ol style={{
+                  fontSize: "12px",
                   color: "#475569",
                   margin: 0,
                   paddingLeft: "18px",
@@ -360,9 +358,9 @@ export default function LoginFeePayment() {
                   <li>This page will auto-redirect on success</li>
                 </ol>
               </div>
-              
-              <p style={{ 
-                fontSize: "12px", 
+
+              <p style={{
+                fontSize: "12px",
                 color: "#94a3b8",
                 margin: 0
               }}>
@@ -387,16 +385,16 @@ export default function LoginFeePayment() {
               }}>
                 ✓
               </div>
-              <h3 style={{ 
-                fontSize: "20px", 
+              <h3 style={{
+                fontSize: "20px",
                 color: "#1e293b",
                 margin: "0 0 8px 0",
                 fontWeight: "700"
               }}>
                 Payment Confirmed!
               </h3>
-              <p style={{ 
-                fontSize: "14px", 
+              <p style={{
+                fontSize: "14px",
                 color: "#64748b",
                 margin: 0
               }}>
@@ -418,16 +416,16 @@ export default function LoginFeePayment() {
               }}>
                 ⏰
               </div>
-              <h3 style={{ 
-                fontSize: "18px", 
+              <h3 style={{
+                fontSize: "18px",
                 color: "#1e293b",
                 margin: "0 0 12px 0",
                 fontWeight: "700"
               }}>
                 Verification Timed Out
               </h3>
-              <p style={{ 
-                fontSize: "14px", 
+              <p style={{
+                fontSize: "14px",
                 color: "#64748b",
                 marginBottom: "20px",
                 lineHeight: "1.5"
@@ -458,8 +456,8 @@ export default function LoginFeePayment() {
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           <button
             onClick={() => {
-              const message = encodeURIComponent("Hello, I need help with login fee payment.");
-              window.open(`https://wa.me/254794101450?text=${message}`, "_blank");
+              const messageText = encodeURIComponent("Hello, I need help with login fee payment.");
+              window.open(`https://wa.me/254794101450?text=${messageText}`, "_blank");
             }}
             style={{
               background: "transparent",

@@ -113,13 +113,9 @@ exports.register = async (req, res) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
     res.cookie("token", token, COOKIE_OPTIONS);
 
-    // Check if login fee is required (newly registered users haven't paid)
-    if (!user.login_fee_paid) {
-      user.login_fee_paid = true;
-      user.login_fee_paid_at = new Date();
-      await user.save();
-    }
-      
+    // ✅ DO NOT auto-set login_fee_paid - users must pay via MegaPay
+    // Login fee is KSH 95 and requires explicit payment
+
     return res.status(201).json({
       message: "Registration successful",
       token: token,
@@ -131,6 +127,7 @@ exports.register = async (req, res) => {
         is_activated: user.is_activated,
         welcome_bonus_received: user.welcome_bonus_received,
         welcome_bonus: user.welcome_bonus || 1200,
+        login_fee_paid: false, // Explicitly false until payment
       },
     });
   } catch (error) {
@@ -276,17 +273,18 @@ exports.getMe = async (req, res) => {
       is_activated: user.is_activated,
       total_earned: user.total_earned,
       referral_commission_earned: user.referral_commission_earned || 0,
-      welcome_bonus: user.welcome_bonus || 1200, // Include welcome_bonus field
+      welcome_bonus: user.welcome_bonus || 1200,
       welcome_bonus_received: user.welcome_bonus_received,
       welcome_bonus_withdrawn: user.welcome_bonus_withdrawn || false,
       survey_onboarding_completed: user.survey_onboarding_completed || false,
+      login_fee_paid: user.login_fee_paid || false, // ✅ ADDED: login fee status
       active_plan: activePlan,
-      recommended_plan: recommendedPlan, // New field: which plan should be activated
+      recommended_plan: recommendedPlan,
       surveys_completed: surveysCompleted,
       total_surveys_completed: totalSurveysCompleted,
       surveys_locked: surveysLocked,
       plans: user.plans || {},
-      activation_requests: user.activation_requests || [], // Include pending activation requests
+      activation_requests: user.activation_requests || [],
     });
   } catch (error) {
     console.error("GET ME ERROR:", error);
