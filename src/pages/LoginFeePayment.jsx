@@ -79,107 +79,98 @@ export default function LoginFeePayment() {
     return { ...(await response.json()), httpStatus: response.status };
   };
 
-  const startPolling = useCallback((transactionRequestId, isDirectFallback = false) => {
-    pollingStartTime.current = Date.now();
-    let pollCount = 0;
+   const startPolling = useCallback((transactionRequestId, isDirectFallback = false) => {
+     pollingStartTime.current = Date.now();
+     let pollCount = 0;
 
-    console.log(`Polling started (mode: ${isDirectFallback ? 'direct-fallback' : 'backend'})`);
+     console.log(`Polling started for transaction: ${transactionRequestId}`);
 
-    const poll = async () => {
-      pollCount++;
+     const poll = async () => {
+       pollCount++;
 
-      // Try backend first
-      try {
-        const params = isDirectFallback ? { transaction_request_id: transactionRequestId } : {};
-        const resp = await loginFeeApi.checkStatus(params);
-        const data = resp.data;
-        console.log("Backend status check:", data);
+       // Check payment status directly via MegaPay API
+       try {
+         const megapayStatus = await checkMegaPayStatusDirect(transactionRequestId);
+         const resultCode = String(megapayStatus.ResultCode || "").trim();
+         const transactionStatus = String(megapayStatus.TransactionStatus || "").toLowerCase().trim();
 
-        if (data.success && data.paid) {
-          clearInterval(intervalRef.current);
-          clearTimeout(timeoutRef.current);
-          setStatus("success");
-          setMessage("✓ Payment confirmed! Redirecting...");
-          if (data.token) localStorage.setItem("token", data.token);
-          localStorage.setItem("lastLoginTime", Date.now().toString());
-          localStorage.removeItem("pendingLoginUser");
-          localStorage.removeItem("login_fee_verified_temp");
-          localStorage.removeItem("login_fee_verified_at");
-          setTimeout(() => {
-            if (!data.user?.survey_onboarding_completed) {
-              navigate("/onboarding", { replace: true });
-            } else {
-              navigate("/dashboard", { replace: true });
-            }
-          }, 1000);
-          return;
-        }
-      } catch (err) {
-        console.log("Backend check failed:", err.message);
-      }
+         if (resultCode === "200" && (transactionStatus === "completed" || transactionStatus === "complete")) {
+           console.log("✅ Payment confirmed via MegaPay");
+           clearInterval(intervalRef.current);
+           clearTimeout(timeoutRef.current);
+           setStatus("success");
+           setMessage("✓ Payment confirmed! Activating your account...");
 
-      // If using direct fallback, check MegaPay directly
-      if (isDirectFallback) {
-        try {
-          const megapayStatus = await checkMegaPayStatusDirect(transactionRequestId);
-          const resultCode = String(megapayStatus.ResultCode || "").trim();
-          const transactionStatus = String(megapayStatus.TransactionStatus || "").toLowerCase().trim();
-
-          if (resultCode === "200" && (transactionStatus === "completed" || transactionStatus === "complete")) {
-            console.log("✅ Payment confirmed via MegaPay");
-            clearInterval(intervalRef.current);
-            clearTimeout(timeoutRef.current);
-            setStatus("success");
-            setMessage("✓ Payment confirmed! Redirecting...");
-
-            // Set temp verification flag immediately
+            // Confirm with backend to update login_fee_paid status
+            let confirmData = null;
             try {
+              const confirmResponse = await loginFeeApi.confirm({
+                transaction_request_id: transactionRequestId,
+                phone: phone,
+                userId: userId
+              });
+              confirmData = confirmResponse.data;
+              console.log("Backend confirm response:", confirmData);
+
+              if (confirmData.success) {
+                if (confirmData.token) {
+                  localStorage.setItem("token", confirmData.token);
+                }
+                if (confirmData.user) {
+                  localStorage.setItem("user", JSON.stringify(confirmData.user));
+                }
+                // Clear temp verification flags if any
+                localStorage.removeItem("login_fee_verified_temp");
+                localStorage.removeItem("login_fee_verified_at");
+              }
+            } catch (confirmErr) {
+              console.error("Backend confirm failed, using temp fallback:", confirmErr);
               localStorage.setItem("login_fee_verified_temp", "true");
               localStorage.setItem("login_fee_verified_at", Date.now());
+            } finally {
               localStorage.setItem("lastLoginTime", Date.now().toString());
               localStorage.removeItem("pendingLoginUser");
-              console.log("✅ Temp verification flag set");
-            } catch (e) {
-              console.error("Failed to set temp flag:", e);
-            }
 
-            // Background sync with backend (non-blocking)
-            setTimeout(async () => {
-              try {
-                await loginFeeApi.checkStatus({ transaction_request_id: transactionRequestId });
-                console.log("Backend sync complete – DB updated");
-              } catch (syncErr) {
-                console.log("Backend sync will retry");
+              // Determine redirect based on onboarding status from confirm response or storage
+              const userFromConfirm = confirmData?.user;
+              let target = "/dashboard";
+              if (userFromConfirm && !userFromConfirm.survey_onboarding_completed) {
+                target = "/onboarding";
+              } else {
+                // Fallback to stored user if confirmData missing
+                const stored = JSON.parse(localStorage.getItem("user") || "{}");
+                if (!stored?.survey_onboarding_completed) {
+                  target = "/onboarding";
+                }
               }
-            }, 0);
 
-            // Redirect after brief delay
-            setTimeout(() => {
-              navigate("/dashboard", { replace: true });
-            }, 1000);
-            return;
-          }
-        } catch (megapayErr) {
-          console.error("MegaPay direct check error:", megapayErr);
-        }
-      }
+              setTimeout(() => {
+                navigate(target, { replace: true });
+              }, 1000);
+            }
+           return;
+         }
+       } catch (err) {
+         console.error("MegaPay status check error:", err);
+         // Continue polling
+       }
 
-      // Timeout check
-      if (Date.now() - pollingStartTime.current > POLL_TIMEOUT_MS) {
-        clearInterval(intervalRef.current);
-        clearTimeout(timeoutRef.current);
-        setStatus("timeout");
-        setMessage("Payment verification timed out. Please try again or contact support if you already paid.");
-      }
-    };
+       // Timeout check
+       if (Date.now() - pollingStartTime.current > POLL_TIMEOUT_MS) {
+         clearInterval(intervalRef.current);
+         clearTimeout(timeoutRef.current);
+         setStatus("timeout");
+         setMessage("Payment verification timed out. Please try again or contact support if you already paid.");
+       }
+     };
 
-    intervalRef.current = setInterval(poll, POLL_INTERVAL_MS);
-    timeoutRef.current = setTimeout(() => {
-      clearInterval(intervalRef.current);
-      setStatus("timeout");
-      setMessage("Payment verification timed out. Please try again or contact support.");
-    }, POLL_TIMEOUT_MS);
-  }, [navigate]);
+     intervalRef.current = setInterval(poll, POLL_INTERVAL_MS);
+     timeoutRef.current = setTimeout(() => {
+       clearInterval(intervalRef.current);
+       setStatus("timeout");
+       setMessage("Payment verification timed out. Please try again or contact support.");
+     }, POLL_TIMEOUT_MS);
+   }, [navigate, phone, userId]);
 
   const handleInitiatePayment = async (e) => {
     e.preventDefault();
