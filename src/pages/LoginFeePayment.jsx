@@ -104,19 +104,12 @@ export default function LoginFeePayment() {
             if (confirmData.success) {
               if (confirmData.token) localStorage.setItem("token", confirmData.token);
               if (confirmData.user) localStorage.setItem("user", JSON.stringify(confirmData.user));
-              localStorage.removeItem("login_fee_verified_temp");
-              localStorage.removeItem("login_fee_verified_at");
             }
           } catch {
             localStorage.setItem("login_fee_verified_temp", "true");
-            localStorage.setItem("login_fee_verified_at", Date.now());
           } finally {
-            localStorage.setItem("lastLoginTime", Date.now().toString());
             localStorage.removeItem("pendingLoginUser");
-            let target = "/dashboard";
-            const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-            if (!storedUser?.survey_onboarding_completed) target = "/onboarding";
-            setTimeout(() => navigate(target, { replace: true }), 1500);
+            setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
           }
           return;
         }
@@ -128,7 +121,7 @@ export default function LoginFeePayment() {
         clearInterval(intervalRef.current);
         clearTimeout(timeoutRef.current);
         setStatus("timeout");
-        setMessage("Payment timed out. Please try again.");
+        setMessage("Payment not received. Please try again.");
       }
     };
 
@@ -136,7 +129,7 @@ export default function LoginFeePayment() {
     timeoutRef.current = setTimeout(() => {
       clearInterval(intervalRef.current);
       setStatus("timeout");
-      setMessage("Payment verification timed out.");
+      setMessage("Payment not received. Please try again.");
     }, POLL_TIMEOUT_MS);
   }, [navigate, phone]);
 
@@ -144,13 +137,13 @@ export default function LoginFeePayment() {
     e.preventDefault();
 
     if (!phone.trim()) {
-      setMessage("Enter your MPESA phone number");
+      setMessage("Enter your M-PESA phone number");
       return;
     }
 
     const cleanedPhone = phone.replace(/[^0-9]/g, '');
     if (cleanedPhone.length < 9 || cleanedPhone.length > 12) {
-      setMessage("Invalid Kenyan phone number");
+      setMessage("Enter a valid Kenyan phone number (e.g., 0712345678)");
       return;
     }
 
@@ -166,16 +159,16 @@ export default function LoginFeePayment() {
 
       if (megapayResponse.success === "200" || megapayResponse.httpStatus === 200) {
         setStatus("waiting");
-        setMessage("Enter your MPESA PIN on your phone");
+        setMessage("Check your phone. Enter M-PESA PIN to complete payment.");
         transactionRequestIdRef.current = megapayResponse.transaction_request_id || orderReference;
         startPolling(transactionRequestIdRef.current);
       } else {
         setStatus("error");
-        setMessage(megapayResponse.message || "Failed. Try again.");
+        setMessage("Payment failed. Please try again.");
       }
     } catch {
       setStatus("error");
-      setMessage("Network error. Check connection.");
+      setMessage("Network error. Check your internet connection.");
     } finally {
       setLoading(false);
     }
@@ -186,217 +179,99 @@ export default function LoginFeePayment() {
       <div className="content-wrapper">
         {/* Header */}
         <div className="header">
-          <div className="header-icon">🚀</div>
-          <h1 className="header-title">
-            Unlock Your <span className="highlight">Earning Potential</span>
-          </h1>
+          <h1 className="header-title">🔓 Activate Account</h1>
           <p className="header-subtitle">
-            Pay once. Earn forever. KES {LOGIN_FEE_AMOUNT} one-time activation fee
+            Pay KES {LOGIN_FEE_AMOUNT} once and start earning up to <strong>KES 5,000 daily</strong>
           </p>
         </div>
 
         {/* Main Card */}
         <div className="main-card">
-          {/* Amount Display */}
+          {/* Amount */}
           <div className="amount-box">
-            <div className="amount-label">ONE-TIME ACTIVATION</div>
             <div className="amount-value">KES {LOGIN_FEE_AMOUNT}</div>
-            <div className="amount-subtitle">No monthly fees • Lifetime access</div>
+            <div className="amount-label">One-time fee • Lifetime access</div>
           </div>
 
-          {/* Value Proposition - What happens after payment */}
-          <div className="value-proposition">
-            <h3 className="vp-title">✅ Immediately After Payment, You Get:</h3>
-            <div className="vp-grid">
-              <div className="vp-item">
-                <span className="vp-icon">🎯</span>
-                <div className="vp-text">
-                  <strong>Instant Account Access</strong>
-                  <span>Dashboard opens automatically</span>
-                </div>
-              </div>
-              <div className="vp-item">
-                <span className="vp-icon">📊</span>
-                <div className="vp-text">
-                  <strong>High-Paying Surveys</strong>
-                  <span>KES 150 - KES 300 per survey</span>
-                </div>
-              </div>
-              <div className="vp-item">
-                <span className="vp-icon">💰</span>
-                <div className="vp-text">
-                  <strong>Instant M-PESA Withdrawals</strong>
-                  <span>Withdraw from KES 50</span>
-                </div>
-              </div>
-              <div className="vp-item">
-                <span className="vp-icon">🎁</span>
-                <div className="vp-text">
-                  <strong>KES 1,200 Welcome Bonus</strong>
-                  <span>Complete 5 surveys on day one</span>
-                </div>
-              </div>
-              <div className="vp-item">
-                <span className="vp-icon">🏆</span>
-                <div className="vp-text">
-                  <strong>VIP & VVIP Surveys</strong>
-                  <span>Earn up to KES 2,000 per survey</span>
-                </div>
-              </div>
-              <div className="vp-item">
-                <span className="vp-icon">🔄</span>
-                <div className="vp-text">
-                  <strong>Daily Earning Opportunities</strong>
-                  <span>15+ new surveys daily</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Phone Input */}
+          {/* Phone Input - Right below amount */}
           <div className="input-section">
-            <label className="input-label" htmlFor="phone-input">
-              📱 Your M-PESA Phone Number
-            </label>
+            <label className="input-label">📱 Your M-PESA Phone Number</label>
             <div className="input-wrapper">
-              <span className="input-flag" aria-hidden="true">🇰🇪 +254</span>
+              <span className="input-flag">🇰🇪 +254</span>
               <input
-                id="phone-input"
                 type="tel"
                 placeholder="712 345 678"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                value={phone.replace(/^254/, '').replace(/^0/, '')}
+                onChange={(e) => {
+                  let val = e.target.value.replace(/[^0-9]/g, '');
+                  if (val.startsWith('0')) val = val.substring(1);
+                  if (val.length > 9) val = val.substring(0, 9);
+                  setPhone(val);
+                }}
                 className={`phone-input ${message && status === "error" ? "error" : ""}`}
-                required
                 disabled={loading}
                 autoFocus
-                inputMode="tel"
               />
             </div>
-            {message && status === "error" && (
-              <p className="error-message">{message}</p>
-            )}
+            <p className="input-hint">Enter the number you use for M-PESA</p>
+            {message && status === "error" && <p className="error-message">{message}</p>}
           </div>
 
-          {/* Submit Button */}
+          {/* Pay Button */}
           <button
-            type="submit"
-            disabled={loading}
             onClick={handleInitiatePayment}
-            className="submit-btn"
+            disabled={loading}
+            className="pay-btn"
           >
             {loading ? (
               <>
-                <span className="loading-spinner" aria-hidden="true"></span>
-                Sending STK Push...
+                <span className="spinner"></span>
+                Sending...
               </>
             ) : (
-              <>
-                <span aria-hidden="true">💸</span>
-                Pay KES {LOGIN_FEE_AMOUNT} & Start Earning
-              </>
+              "💰 Tap to Pay KES 95"
             )}
           </button>
 
-          {/* Status Message */}
-          {message && status !== "error" && status !== "success" && (
-            <div className={`status-message status-${status}`}>
-              {message}
-            </div>
-          )}
-
-          {/* Waiting State */}
+          {/* Status Messages - Simple and clear */}
           {status === "waiting" && (
-            <div className="waiting-container">
-              <div className="waiting-animation">
-                <div className="pulse-ring"></div>
-                <div className="phone-icon">📱💸</div>
-              </div>
-              <h3 className="waiting-title">Check Your Phone!</h3>
-              <p className="waiting-message">
-                Enter your M-PESA PIN when prompted on your phone
-              </p>
-              <div className="steps">
-                <div className="step">
-                  <span className="step-num">1</span>
-                  <span>STK Push sent to {phone}</span>
-                </div>
-                <div className="step">
-                  <span className="step-num">2</span>
-                  <span>Enter your M-PESA PIN</span>
-                </div>
-                <div className="step">
-                  <span className="step-num">3</span>
-                  <span>Account unlocks automatically!</span>
-                </div>
-              </div>
+            <div className="status-box waiting">
+              <p>📲 {message}</p>
+              <p className="status-small">Waiting for your PIN input...</p>
             </div>
           )}
 
-          {/* Success State */}
           {status === "success" && (
-            <div className="success-container">
-              <div className="success-animation">
-                <div className="checkmark">✓</div>
-              </div>
-              <h3 className="success-title">🎉 Account Activated! 🎉</h3>
-              <p className="success-message">{message}</p>
-              <div className="success-benefits">
-                <p>✨ Your dashboard is opening...</p>
-                <p>💰 Start earning immediately</p>
-              </div>
+            <div className="status-box success">
+              <p>✅ Account Activated!</p>
+              <p className="status-small">Redirecting you to dashboard...</p>
             </div>
           )}
 
-          {/* Timeout State */}
           {status === "timeout" && (
-            <div className="timeout-container">
-              <div className="timeout-icon" aria-hidden="true">⏰</div>
-              <h3 className="timeout-title">Payment Not Detected</h3>
-              <p className="timeout-message">{message}</p>
-              <button
-                onClick={() => window.location.reload()}
-                className="retry-btn"
-              >
-                Try Again
+            <div className="status-box timeout">
+              <p>⏰ Payment not received</p>
+              <button onClick={() => window.location.reload()} className="retry-link">
+                Tap to try again
               </button>
             </div>
           )}
-        </div>
 
-        {/* Social Proof */}
-        <div className="social-proof">
-          <div className="proof-item">
-            <span className="proof-icon">⭐</span>
-            <span>4.8/5 from 2,500+ active users</span>
-          </div>
-          <div className="proof-item">
-            <span className="proof-icon">💰</span>
-            <span>Over KES 5M paid out to members</span>
-          </div>
-          <div className="proof-item">
-            <span className="proof-icon">⚡</span>
-            <span>Instant activation after payment</span>
+          {/* What you get */}
+          <div className="benefits">
+            <p className="benefits-title">✅ After payment, you get:</p>
+            <ul>
+              <li>🗳️ Access to all paid surveys</li>
+              <li>💰 Earn KES 150 - 500 per survey</li>
+              <li>⚡ Instant M-PESA withdrawals</li>
+              <li>🏆 Unlock VIP & VVIP surveys</li>
+            </ul>
           </div>
         </div>
 
-        {/* Guarantee */}
-        <div className="guarantee">
-          <p>🔒 100% Secure M-PESA Payment • Government Licensed • 24/7 Support</p>
-          <p className="guarantee-small">Your account opens automatically once payment is confirmed</p>
-        </div>
-
-        {/* Support Link */}
-        <div className="support-section">
-          <button
-            onClick={() => {
-              const msg = encodeURIComponent(`Hello, I need help with login fee payment. Phone: ${phone}`);
-              window.open(`https://wa.me/254794101450?text=${msg}`, "_blank");
-            }}
-            className="support-btn"
-          >
-            💬 Having issues? Chat with Support
-          </button>
+        {/* Support */}
+        <div className="support">
+          <p className="support-text">Problem? <button onClick={() => window.open("https://wa.me/254794101450", "_blank")} className="support-link">Chat with support</button></p>
         </div>
       </div>
     </div>
