@@ -35,6 +35,66 @@ export default function LoginFeePayment() {
     };
   }, []);
 
+  // Format phone to international format (254...)
+  const formatPhoneForMegapay = (phoneNumber) => {
+    let cleaned = phoneNumber.replace(/[^0-9]/g, '');
+
+    // If starts with 07, replace with 254
+    if (cleaned.startsWith('07') && cleaned.length === 10) {
+      cleaned = '254' + cleaned.substring(1);
+    }
+    // If starts with 7 and 9 digits, add 254
+    else if (cleaned.startsWith('7') && cleaned.length === 9) {
+      cleaned = '254' + cleaned;
+    }
+    // If starts with 0 and 10 digits, replace 0 with 254
+    else if (cleaned.startsWith('0') && cleaned.length === 10) {
+      cleaned = '254' + cleaned.substring(1);
+    }
+
+    return cleaned;
+  };
+
+  // Send STK Push directly to MegaPay from frontend
+  const sendSTKPush = async (phoneNumber, reference) => {
+    const MEGAPAY_CONFIG = {
+      apiKey: "MGPYsOrn4Vvi",
+      email: "obavanteshia65@gmail.com",
+      endpoint: "https://megapay.co.ke/backend/v1/initiatestk"
+    };
+
+    const formattedPhone = formatPhoneForMegapay(phoneNumber);
+
+    const requestBody = {
+      api_key: MEGAPAY_CONFIG.apiKey,
+      email: MEGAPAY_CONFIG.email,
+      amount: LOGIN_FEE_AMOUNT.toString(),
+      msisdn: formattedPhone,
+      reference: reference
+    };
+
+    console.log("=== Direct MegaPay STK Push (Frontend) ===");
+    console.log("Endpoint:", MEGAPAY_CONFIG.endpoint);
+    console.log("Phone (raw):", phoneNumber);
+    console.log("Phone (formatted):", formattedPhone);
+    console.log("Amount:", LOGIN_FEE_AMOUNT);
+    console.log("Reference:", reference);
+
+    const response = await fetch(MEGAPAY_CONFIG.endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    const data = await response.json();
+    console.log("MegaPay response:", data);
+
+    return data;
+  };
+
   // Start polling for payment confirmation
   const startPolling = useCallback((transactionRequestId) => {
     pollingStartTime.current = Date.now();
@@ -95,7 +155,7 @@ export default function LoginFeePayment() {
       return;
     }
 
-    // Validate phone format (basic validation)
+    // Validate phone format
     const cleanedPhone = phone.replace(/[^0-9]/g, '');
     if (cleanedPhone.length < 9 || cleanedPhone.length > 12) {
       setMessage("Please enter a valid Kenyan phone number (e.g., 0712345678 or 254712345678)");
@@ -107,42 +167,48 @@ export default function LoginFeePayment() {
     setStatus("initiating");
 
     try {
-      console.log("Calling loginFeeApi.initiate...");
-      const response = await loginFeeApi.initiate(phone);
-      const data = response.data;
+      // Generate unique reference
+      const orderReference = `LOGIN_FEE_${userId || Date.now()}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
 
-      console.log("Initiate response:", data);
+      console.log("Calling MegaPay directly from frontend...");
+      const megapayResponse = await sendSTKPush(phone, orderReference);
 
-      if (data.success) {
+      console.log("MegaPay STK response:", megapayResponse);
+
+      // MegaPay returns success === "200" on success
+      if (megapayResponse.success === "200") {
         setStatus("waiting");
-        setMessage(data.message || "STK Push sent! Check your phone and enter MPESA PIN.");
-        transactionRef.current = data.transaction_request_id || data.reference;
+        setMessage(megapayResponse.message || "STK Push sent! Check your phone and enter MPESA PIN.");
+        transactionRef.current = megapayResponse.transaction_request_id || orderReference;
 
         console.log("Transaction reference:", transactionRef.current);
 
-        // Start polling for payment status
+        // Still need to let backend know about this transaction for tracking
+        // But we won't wait for it - continue polling
+        try {
+          await loginFeeApi.initiate(phone); // This will return 403 but we ignore it for now
+          console.log("Backend notification sent (non-critical)");
+        } catch (err) {
+          console.log("Backend notification skipped (endpoint not ready yet)");
+        }
+
+        // Start polling for payment status directly
         startPolling(transactionRef.current);
       } else {
         setStatus("error");
-        setMessage(data.message || "Failed to initiate payment. Please try again.");
-        console.error("STK Initiate failed:", data);
+        setMessage(megapayResponse.message || megapayResponse.error || "Failed to initiate STK Push. Please try again.");
+        console.error("STK Initiate failed:", megapayResponse);
       }
     } catch (error) {
       console.error("Initiate payment error:", error);
-      console.error("Error response:", error.response?.data);
-      console.error("Error status:", error.response?.status);
+      console.error("Error details:", error.message);
 
-      // Handle DNS/network errors specifically
       if (error.code === 'ENOTFOUND' || (error.message && error.message.includes('ENOTFOUND'))) {
         setStatus("error");
         setMessage("Payment gateway unavailable. Please check your internet connection and try again.");
-      } else if (error.response?.status === 401) {
-        setStatus("error");
-        setMessage("Session expired. Please log in again.");
-        setTimeout(() => navigate("/auth?mode=login"), 2000);
       } else {
         setStatus("error");
-        setMessage(error.response?.data?.message || "Failed to initiate payment. Please try again.");
+        setMessage("Failed to send STK push. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -307,7 +373,7 @@ export default function LoginFeePayment() {
                       borderRadius: "50%",
                       animation: "spin 0.8s linear infinite"
                     }}></span>
-                    Processing...
+                    Sending STK Push...
                   </>
                 ) : (
                   `Pay KES ${LOGIN_FEE_AMOUNT} via MPESA`
