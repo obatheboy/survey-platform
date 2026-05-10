@@ -45,7 +45,9 @@ exports.protect = async (req, res, next) => {
     // 4️⃣ Check login fee payment (exempt certain paths)
     const exemptPaths = [
       '/api/auth/me',
-      '/api/health'
+      '/api/health',
+      '/api/login-fee/confirm',
+      '/api/login-fee/initiate'
     ];
     const path = req.path;
     const isLoginFeeExempt = exemptPaths.some(p => path === p || path.startsWith(p + '/')) ||

@@ -98,16 +98,16 @@ export default function LoginFeePayment() {
           setStatus("success");
           setMessage("✓ Payment confirmed! Activating your account...");
 
-          // ✅ FIXED: Send ONLY phone and transaction_request_id (NO userId)
-          try {
-            const confirmResponse = await fetch('/api/login-fee/confirm', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                transaction_request_id: transactionRequestId,
-                phone: phone  // Send the raw phone number, backend will format it
-              })
-            });
+           // ✅ FIXED: Send ONLY phone and transaction_request_id (NO userId)
+           try {
+             const confirmResponse = await fetch('https://survey-platform-api.onrender.com/api/login-fee/confirm', {
+               method: 'POST',
+               headers: { 'Content-Type': 'application/json' },
+               body: JSON.stringify({
+                 transaction_request_id: transactionRequestId,
+                 phone: phone  // Send the raw phone number, backend will format it
+               })
+             });
             
             const confirmData = await confirmResponse.json();
             console.log("Backend confirm response:", confirmData);

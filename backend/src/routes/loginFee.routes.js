@@ -54,7 +54,11 @@ router.post("/initiate", protect, async (req, res) => {
 
 // ✅ CONFIRM LOGIN FEE PAYMENT - NO AUTHENTICATION REQUIRED
 // ✅ FIXED: Removed 'protect' middleware so unpaid users can confirm payment
-router.post("/confirm", confirmLoginFeePayment);
+router.post("/confirm", (req, res, next) => {
+  console.log("🔵 [LoginFee] /confirm endpoint hit - Method:", req.method);
+  console.log("🔵 [LoginFee] Request body:", req.body);
+  next();
+}, confirmLoginFeePayment);
 
 // ✅ CHECK STATUS - Auto-verification endpoint for frontend polling
 // Keep protect - this requires user to be logged in

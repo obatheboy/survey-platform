@@ -5,16 +5,14 @@ const megaPayService = require("../services/megapay.service");
 /**
  * POST /api/login-fee/confirm
  * Frontend calls this after MegaPay confirms payment
- * Verifies transaction with MegaPay and marks user as paid
- * ✅ FIXED: Uses phone number only - no authentication required
+ * ✅ FIXED: No auth required, uses phone only
  */
 const confirmLoginFeePayment = async (req, res) => {
   try {
-    const { transaction_request_id, phone } = req.body;
-
     console.log("=== CONFIRM LOGIN FEE PAYMENT ===");
-    console.log("Transaction ID:", transaction_request_id);
-    console.log("Phone received:", phone);
+    console.log("Request body:", req.body);
+    
+    const { transaction_request_id, phone } = req.body;
 
     if (!transaction_request_id) {
       return res.status(400).json({
@@ -30,45 +28,34 @@ const confirmLoginFeePayment = async (req, res) => {
       });
     }
 
-    // Format phone number to match database format (254XXXXXXXXX)
-    let formattedPhone = phone.replace(/\s+/g, '').replace(/-/g, '');
+    // 🔍 FIXED: Try multiple phone formats to find user
+    console.log("🔍 [LoginFee] Searching for user with phone:", phone);
     
-    // Remove leading + if present
-    if (formattedPhone.startsWith("+")) {
-      formattedPhone = formattedPhone.substring(1);
-    }
+    // 1️⃣ Try raw phone first (as stored during registration)
+    let user = await User.findOne({ phone: phone.trim() });
     
-    // Convert from 07XXXXXXXX to 2547XXXXXXXX
-    if (formattedPhone.startsWith("0")) {
-      formattedPhone = "254" + formattedPhone.substring(1);
+    // 2️⃣ If not found, try formatted international (254...) format
+    if (!user) {
+      let formattedPhone = phone.replace(/\s+/g, '').replace(/-/g, '');
+      if (formattedPhone.startsWith("+")) formattedPhone = formattedPhone.substring(1);
+      if (formattedPhone.startsWith("0")) formattedPhone = "254" + formattedPhone.substring(1);
+      if (formattedPhone.startsWith("7") && formattedPhone.length === 9) formattedPhone = "254" + formattedPhone;
+      if (!formattedPhone.startsWith("254")) formattedPhone = "254" + formattedPhone;
+      
+      console.log("🔍 [LoginFee] Raw phone not found, trying formatted:", formattedPhone);
+      user = await User.findOne({ phone: formattedPhone });
     }
-    // Convert from 7XXXXXXXX to 2547XXXXXXXX (if 9 digits total)
-    else if (formattedPhone.startsWith("7") && formattedPhone.length === 9) {
-      formattedPhone = "254" + formattedPhone;
-    }
-    // Ensure it starts with 254
-    else if (!formattedPhone.startsWith("254")) {
-      formattedPhone = "254" + formattedPhone;
-    }
-    
-    console.log("Formatted phone for search:", formattedPhone);
-
-    // Find user by phone number (no auth required - this is the key fix)
-    const user = await User.findOne({ 
-      phone: formattedPhone
-    });
 
     if (!user) {
-      console.log("User not found for phone:", phone, "formatted:", formattedPhone);
+      console.log("❌ [LoginFee] User not found with any format");
       return res.status(404).json({
         success: false,
         message: "User not found. Please register first."
       });
     }
 
-    console.log("User found:", user._id, user.full_name);
+    console.log("✅ [LoginFee] User found:", user._id, user.full_name, " Paid:", user.login_fee_paid);
 
-    // If already paid, return success with token
     if (user.login_fee_paid) {
       const token = jwt.sign(
         { id: user._id, phone: user.phone, role: user.role },
@@ -91,19 +78,14 @@ const confirmLoginFeePayment = async (req, res) => {
       });
     }
 
-    // Verify with MegaPay directly
     const statusResult = await megaPayService.checkTransactionStatus(transaction_request_id);
-    console.log("MegaPay verification result:", statusResult);
+    console.log("MegaPay result:", statusResult);
 
     if (statusResult.success && statusResult.completed) {
-      // ✅ Payment confirmed - mark user as paid
       user.login_fee_paid = true;
       user.login_fee_paid_at = new Date();
       await user.save();
 
-      console.log(`✅ Login fee marked as paid for: ${user.full_name} (${user.phone})`);
-
-      // Generate token for the user
       const token = jwt.sign(
         { id: user._id, phone: user.phone, role: user.role },
         process.env.JWT_SECRET,
@@ -125,19 +107,20 @@ const confirmLoginFeePayment = async (req, res) => {
         }
       });
     } else {
-      // Payment not yet completed or failed
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
         message: "Payment not yet confirmed by MegaPay",
-        result: statusResult
+        paid: false
       });
     }
   } catch (error) {
-    console.error("Confirm login fee error:", error);
+    console.error("❌ Confirm login fee error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to confirm payment: " + (error.message || "Unknown error")
     });
+  } finally {
+    console.log("✅ [LoginFee] /confirm response sent - Status:", res.statusCode);
   }
 };
 
