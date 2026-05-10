@@ -12,7 +12,7 @@ export default function LoginFeePayment() {
 
   const [phone, setPhone] = useState(phoneFromState || "");
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState("idle"); // idle | initiating | waiting | success | timeout | error
+  const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
   const intervalRef = useRef(null);
   const timeoutRef = useRef(null);
@@ -208,8 +208,9 @@ export default function LoginFeePayment() {
         if (data.success) {
           setStatus("waiting");
           setMessage(data.message || "STK Push sent! Check your phone and enter MPESA PIN.");
-          transactionRef.current = data.transaction_request_id || data.reference;
-          startPolling(transactionRef.current, false);
+          transactionRequestIdRef.current = data.transaction_request_id || data.reference;
+          console.log("Transaction reference:", transactionRequestIdRef.current);
+          startPolling(transactionRequestIdRef.current, false);
           return;
         } else {
           throw new Error(data.message || "Backend initiation failed");
@@ -223,8 +224,9 @@ export default function LoginFeePayment() {
         if (megapayResponse.success === "200" || megapayResponse.httpStatus === 200) {
           setStatus("waiting");
           setMessage(megapayResponse.message || "STK Push sent! Check your phone and enter MPESA PIN.");
-          transactionRef.current = megapayResponse.transaction_request_id || orderReference;
-          startPolling(transactionRef.current, true);
+          transactionRequestIdRef.current = megapayResponse.transaction_request_id || orderReference;
+          console.log("Transaction reference:", transactionRequestIdRef.current);
+          startPolling(transactionRequestIdRef.current, true);
         } else {
           setStatus("error");
           setMessage(megapayResponse.message || megapayResponse.error || "Failed to send STK Push.");
