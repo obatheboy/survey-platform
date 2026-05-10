@@ -9,6 +9,7 @@ const {
 } = require("../controllers/loginFee.controller");
 
 // ✅ INITIATE LOGIN FEE PAYMENT (KSH 95) via MegaPay STK Push
+// Keep protect - user might be logged in
 router.post("/initiate", protect, async (req, res) => {
   try {
     const { phone_number } = req.body;
@@ -51,10 +52,12 @@ router.post("/initiate", protect, async (req, res) => {
   }
 });
 
-// ✅ CONFIRM LOGIN FEE PAYMENT (Frontend-triggered after MegaPay confirms)
-router.post("/confirm", protect, confirmLoginFeePayment);
+// ✅ CONFIRM LOGIN FEE PAYMENT - NO AUTHENTICATION REQUIRED
+// ✅ FIXED: Removed 'protect' middleware so unpaid users can confirm payment
+router.post("/confirm", confirmLoginFeePayment);
 
 // ✅ CHECK STATUS - Auto-verification endpoint for frontend polling
+// Keep protect - this requires user to be logged in
 router.get("/status", protect, async (req, res) => {
   try {
     const { transaction_request_id } = req.query;

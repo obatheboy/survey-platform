@@ -17,7 +17,7 @@ export default function LoginFeePayment() {
   const intervalRef = useRef(null);
   const timeoutRef = useRef(null);
   const pollingStartTime = useRef(null);
-  const transactionRequestIdRef = useRef(null); // Store the MegaPay transaction ID
+  const transactionRequestIdRef = useRef(null);
 
   const LOGIN_FEE_AMOUNT = 95;
   const POLL_INTERVAL_MS = 3000;
@@ -35,6 +35,7 @@ export default function LoginFeePayment() {
     if (cleaned.startsWith('07') && cleaned.length === 10) cleaned = '254' + cleaned.substring(1);
     else if (cleaned.startsWith('7') && cleaned.length === 9) cleaned = '254' + cleaned;
     else if (cleaned.startsWith('0') && cleaned.length === 10) cleaned = '254' + cleaned.substring(1);
+    else if (!cleaned.startsWith('254') && cleaned.length === 9) cleaned = '254' + cleaned;
     return cleaned;
   };
 
@@ -79,98 +80,89 @@ export default function LoginFeePayment() {
     return { ...(await response.json()), httpStatus: response.status };
   };
 
-   const startPolling = useCallback((transactionRequestId, isDirectFallback = false) => {
-     pollingStartTime.current = Date.now();
-     let pollCount = 0;
+  const startPolling = useCallback((transactionRequestId) => {
+    pollingStartTime.current = Date.now();
 
-     console.log(`Polling started for transaction: ${transactionRequestId}`);
+    console.log(`Polling started for transaction: ${transactionRequestId}`);
 
-     const poll = async () => {
-       pollCount++;
+    const poll = async () => {
+      try {
+        const megapayStatus = await checkMegaPayStatusDirect(transactionRequestId);
+        const resultCode = String(megapayStatus.ResultCode || "").trim();
+        const transactionStatus = String(megapayStatus.TransactionStatus || "").toLowerCase().trim();
 
-       // Check payment status directly via MegaPay API
-       try {
-         const megapayStatus = await checkMegaPayStatusDirect(transactionRequestId);
-         const resultCode = String(megapayStatus.ResultCode || "").trim();
-         const transactionStatus = String(megapayStatus.TransactionStatus || "").toLowerCase().trim();
+        if (resultCode === "200" && (transactionStatus === "completed" || transactionStatus === "complete")) {
+          console.log("✅ Payment confirmed via MegaPay");
+          clearInterval(intervalRef.current);
+          clearTimeout(timeoutRef.current);
+          setStatus("success");
+          setMessage("✓ Payment confirmed! Activating your account...");
 
-         if (resultCode === "200" && (transactionStatus === "completed" || transactionStatus === "complete")) {
-           console.log("✅ Payment confirmed via MegaPay");
-           clearInterval(intervalRef.current);
-           clearTimeout(timeoutRef.current);
-           setStatus("success");
-           setMessage("✓ Payment confirmed! Activating your account...");
-
-            // Confirm with backend to update login_fee_paid status
-            let confirmData = null;
-            try {
-              const confirmResponse = await loginFeeApi.confirm({
+          // ✅ FIXED: Send ONLY phone and transaction_request_id (NO userId)
+          try {
+            const confirmResponse = await fetch('/api/login-fee/confirm', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
                 transaction_request_id: transactionRequestId,
-                phone: phone,
-                userId: userId
-              });
-              confirmData = confirmResponse.data;
-              console.log("Backend confirm response:", confirmData);
+                phone: phone  // Send the raw phone number, backend will format it
+              })
+            });
+            
+            const confirmData = await confirmResponse.json();
+            console.log("Backend confirm response:", confirmData);
 
-              if (confirmData.success) {
-                if (confirmData.token) {
-                  localStorage.setItem("token", confirmData.token);
-                }
-                if (confirmData.user) {
-                  localStorage.setItem("user", JSON.stringify(confirmData.user));
-                }
-                // Clear temp verification flags if any
-                localStorage.removeItem("login_fee_verified_temp");
-                localStorage.removeItem("login_fee_verified_at");
+            if (confirmData.success) {
+              if (confirmData.token) {
+                localStorage.setItem("token", confirmData.token);
               }
-            } catch (confirmErr) {
-              console.error("Backend confirm failed, using temp fallback:", confirmErr);
-              localStorage.setItem("login_fee_verified_temp", "true");
-              localStorage.setItem("login_fee_verified_at", Date.now());
-            } finally {
-              localStorage.setItem("lastLoginTime", Date.now().toString());
-              localStorage.removeItem("pendingLoginUser");
-
-              // Determine redirect based on onboarding status from confirm response or storage
-              const userFromConfirm = confirmData?.user;
-              let target = "/dashboard";
-              if (userFromConfirm && !userFromConfirm.survey_onboarding_completed) {
-                target = "/onboarding";
-              } else {
-                // Fallback to stored user if confirmData missing
-                const stored = JSON.parse(localStorage.getItem("user") || "{}");
-                if (!stored?.survey_onboarding_completed) {
-                  target = "/onboarding";
-                }
+              if (confirmData.user) {
+                localStorage.setItem("user", JSON.stringify(confirmData.user));
               }
-
-              setTimeout(() => {
-                navigate(target, { replace: true });
-              }, 1000);
+              localStorage.removeItem("login_fee_verified_temp");
+              localStorage.removeItem("login_fee_verified_at");
             }
-           return;
-         }
-       } catch (err) {
-         console.error("MegaPay status check error:", err);
-         // Continue polling
-       }
+          } catch (confirmErr) {
+            console.error("Backend confirm failed, using temp fallback:", confirmErr);
+            localStorage.setItem("login_fee_verified_temp", "true");
+            localStorage.setItem("login_fee_verified_at", Date.now());
+          } finally {
+            localStorage.setItem("lastLoginTime", Date.now().toString());
+            localStorage.removeItem("pendingLoginUser");
 
-       // Timeout check
-       if (Date.now() - pollingStartTime.current > POLL_TIMEOUT_MS) {
-         clearInterval(intervalRef.current);
-         clearTimeout(timeoutRef.current);
-         setStatus("timeout");
-         setMessage("Payment verification timed out. Please try again or contact support if you already paid.");
-       }
-     };
+            // Determine redirect based on onboarding status
+            let target = "/dashboard";
+            const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+            if (!storedUser?.survey_onboarding_completed) {
+              target = "/onboarding";
+            }
 
-     intervalRef.current = setInterval(poll, POLL_INTERVAL_MS);
-     timeoutRef.current = setTimeout(() => {
-       clearInterval(intervalRef.current);
-       setStatus("timeout");
-       setMessage("Payment verification timed out. Please try again or contact support.");
-     }, POLL_TIMEOUT_MS);
-   }, [navigate, phone, userId]);
+            setTimeout(() => {
+              navigate(target, { replace: true });
+            }, 1000);
+          }
+          return;
+        }
+      } catch (err) {
+        console.error("MegaPay status check error:", err);
+      }
+
+      // Timeout check
+      if (Date.now() - pollingStartTime.current > POLL_TIMEOUT_MS) {
+        clearInterval(intervalRef.current);
+        clearTimeout(timeoutRef.current);
+        setStatus("timeout");
+        setMessage("Payment verification timed out. Please try again or contact support if you already paid.");
+      }
+    };
+
+    intervalRef.current = setInterval(poll, POLL_INTERVAL_MS);
+    timeoutRef.current = setTimeout(() => {
+      clearInterval(intervalRef.current);
+      setStatus("timeout");
+      setMessage("Payment verification timed out. Please try again or contact support.");
+    }, POLL_TIMEOUT_MS);
+  }, [navigate, phone]);
 
   const handleInitiatePayment = async (e) => {
     e.preventDefault();
@@ -191,38 +183,22 @@ export default function LoginFeePayment() {
     setStatus("initiating");
 
     try {
-      // Try backend endpoint first
-      try {
-        const response = await loginFeeApi.initiate(phone);
-        const data = response.data;
-        console.log("Backend initiate response:", data);
+      // Go directly to MegaPay (skip backend initiate to avoid auth issues)
+      const formattedPhone = formatPhoneForMegapay(phone);
+      const orderReference = `LOGIN_FEE_${formattedPhone}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+      
+      const megapayResponse = await sendSTKPushDirect(phone, orderReference);
+      console.log("MegaPay initiate response:", megapayResponse);
 
-        if (data.success) {
-          setStatus("waiting");
-          setMessage(data.message || "STK Push sent! Check your phone and enter MPESA PIN.");
-          transactionRequestIdRef.current = data.transaction_request_id || data.reference;
-          console.log("Transaction reference:", transactionRequestIdRef.current);
-          startPolling(transactionRequestIdRef.current, false);
-          return;
-        } else {
-          throw new Error(data.message || "Backend initiation failed");
-        }
-      } catch (backendInitErr) {
-        console.log("Backend initiation failed (expected if not redeployed):", backendInitErr.message);
-        // Fallback to direct MegaPay
-        const orderReference = `LOGIN_FEE_${userId || Date.now()}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-        const megapayResponse = await sendSTKPushDirect(phone, orderReference);
-
-        if (megapayResponse.success === "200" || megapayResponse.httpStatus === 200) {
-          setStatus("waiting");
-          setMessage(megapayResponse.message || "STK Push sent! Check your phone and enter MPESA PIN.");
-          transactionRequestIdRef.current = megapayResponse.transaction_request_id || orderReference;
-          console.log("Transaction reference:", transactionRequestIdRef.current);
-          startPolling(transactionRequestIdRef.current, true);
-        } else {
-          setStatus("error");
-          setMessage(megapayResponse.message || megapayResponse.error || "Failed to send STK Push.");
-        }
+      if (megapayResponse.success === "200" || megapayResponse.httpStatus === 200) {
+        setStatus("waiting");
+        setMessage(megapayResponse.message || "STK Push sent! Check your phone and enter MPESA PIN.");
+        transactionRequestIdRef.current = megapayResponse.transaction_request_id || orderReference;
+        console.log("Transaction reference:", transactionRequestIdRef.current);
+        startPolling(transactionRequestIdRef.current);
+      } else {
+        setStatus("error");
+        setMessage(megapayResponse.message || megapayResponse.error || "Failed to send STK Push.");
       }
     } catch (error) {
       console.error("Initiate payment error:", error);
@@ -272,11 +248,6 @@ export default function LoginFeePayment() {
             position: "relative",
             overflow: "hidden"
           }}>
-            <div style={{
-              position: "absolute", top: "-50%", right: "-50%", width: "200%", height: "200%",
-              background: "radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)",
-              animation: "spin 4s linear infinite"
-            }}></div>
             <p style={{
               fontSize: "14px", color: "rgba(255,255,255,0.9)",
               margin: "0 0 8px 0", fontWeight: "600", position: "relative", zIndex: 1
