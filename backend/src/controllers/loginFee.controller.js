@@ -84,9 +84,12 @@ exports.initiateLoginFeePayment = async (req, res) => {
 exports.checkLoginFeeStatus = async (req, res) => {
   try {
     const userId = req.user?.id || req.body?.userId;
+    // Allow external transaction_request_id for direct MegaPay fallback
+    const externalTransactionId = req.query.transaction_request_id || req.body?.transaction_request_id;
 
     console.log("=== CHECK LOGIN FEE STATUS ===");
     console.log("User ID:", userId);
+    console.log("External Transaction ID:", externalTransactionId);
 
     if (!userId) {
       return res.status(400).json({ message: "User ID required" });
@@ -98,18 +101,36 @@ exports.checkLoginFeeStatus = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // If already paid, return immediately
+    // If already paid, return immediately with token
     if (user.login_fee_paid) {
+      const token = jwt.sign(
+        { id: user._id, phone: user.phone, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
+      );
       return res.status(200).json({
         success: true,
         login_fee_paid: true,
         paid: true,
-        status: "completed"
+        status: "completed",
+        token: token,
+        user: {
+          id: user._id,
+          full_name: user.full_name,
+          phone: user.phone,
+          email: user.email,
+          login_fee_paid: true,
+          survey_onboarding_completed: user.survey_onboarding_completed || false
+        },
+        message: "Already paid"
       });
     }
 
-    // Get the transaction reference from the user's last payment attempt
-    const transactionRequestId = user.last_payment_reference;
+    // Determine which transaction ID to use
+    let transactionRequestId = externalTransactionId;
+    if (!transactionRequestId) {
+      transactionRequestId = user.last_payment_reference;
+    }
 
     if (!transactionRequestId) {
       return res.status(200).json({
@@ -159,7 +180,8 @@ exports.checkLoginFeeStatus = async (req, res) => {
           full_name: user.full_name,
           phone: user.phone,
           email: user.email,
-          login_fee_paid: true
+          login_fee_paid: true,
+          survey_onboarding_completed: user.survey_onboarding_completed || false
         },
         message: "Payment confirmed! Access granted."
       });

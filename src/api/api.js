@@ -188,18 +188,19 @@ export const gamificationApi = {
 };
 
 /* =====================================================
-    💰 LOGIN FEE API - KSH 95 with Auto-Verification via MegaPay
-    - User selects plan (or defaults to login fee)
-    - User enters ONLY phone number (no amount input)
-    - Amount is KSH 95 automatically
-    - Frontend polls /status endpoint for automatic verification
-==================================================== */
+     💰 LOGIN FEE API - KSH 95 with Auto-Verification via MegaPay
+     - User selects plan (or defaults to login fee)
+     - User enters ONLY phone number (no amount input)
+     - Amount is KSH 95 automatically
+     - Frontend polls /status endpoint for automatic verification
+   ==================================================== */
 export const loginFeeApi = {
   // Initiate KSH 95 login fee payment via MegaPay STK Push
   initiate: (phoneNumber) => api.post("/login-fee/initiate", { phone_number: phoneNumber }),
 
-  // Check payment status - auto-verification endpoint
-  checkStatus: () => api.get("/login-fee/status"),
+  // Check payment status - auto-verification endpoint for frontend polling
+  // Can optionally pass transaction_request_id for direct MegaPay fallback
+  checkStatus: (params) => api.get("/login-fee/status", { params }),
 };
 
 /* =====================================================
