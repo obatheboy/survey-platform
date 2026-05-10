@@ -176,10 +176,10 @@ export default function Auth() {
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("lastLoginTime", Date.now().toString());
-        
+
         const loginFeePaid = res.data.user?.login_fee_paid;
         const onboardingCompleted = res.data.user?.survey_onboarding_completed;
-        
+
         // Check if login fee is required
         if (!loginFeePaid) {
           localStorage.setItem("pendingLoginUser", JSON.stringify({
@@ -197,19 +197,25 @@ export default function Auth() {
       }
       return;
     } catch (err) {
-      if (!navigator.onLine) {
+      console.error("Login error:", err);
+
+      // Network error - no response
+      if (!err.response) {
+        // Check offline mode with cache
         const cachedUser = localStorage.getItem("cachedUser");
         const token = localStorage.getItem("token");
         if (cachedUser && token) {
           setLoginMessage("✓ Offline mode: using saved session.");
-          navigate("/dashboard", { replace: true });
+          setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
           return;
         }
         setLoginMessage("Offline. Connect to the internet to log in.");
         return;
       }
 
-      setLoginMessage(err.response?.data?.message || "Phone number not found");
+      // HTTP error
+      const errorMessage = err.response?.data?.message || "Phone number not found";
+      setLoginMessage(errorMessage);
     } finally {
       setLoading(false);
     }

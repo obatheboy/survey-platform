@@ -86,6 +86,10 @@ export default function LoginFeePayment() {
   const handleInitiatePayment = async (e) => {
     e.preventDefault();
 
+    console.log("=== PAY BUTTON CLICKED ===");
+    console.log("Phone entered:", phone);
+    console.log("Token from localStorage:", localStorage.getItem("token"));
+
     if (!phone.trim()) {
       setMessage("Please enter your phone number");
       return;
@@ -94,7 +98,7 @@ export default function LoginFeePayment() {
     // Validate phone format (basic validation)
     const cleanedPhone = phone.replace(/[^0-9]/g, '');
     if (cleanedPhone.length < 9 || cleanedPhone.length > 12) {
-      setMessage("Please enter a valid Kenyan phone number");
+      setMessage("Please enter a valid Kenyan phone number (e.g., 0712345678 or 254712345678)");
       return;
     }
 
@@ -103,6 +107,7 @@ export default function LoginFeePayment() {
     setStatus("initiating");
 
     try {
+      console.log("Calling loginFeeApi.initiate...");
       const response = await loginFeeApi.initiate(phone);
       const data = response.data;
 
@@ -113,19 +118,28 @@ export default function LoginFeePayment() {
         setMessage(data.message || "STK Push sent! Check your phone and enter MPESA PIN.");
         transactionRef.current = data.transaction_request_id || data.reference;
 
+        console.log("Transaction reference:", transactionRef.current);
+
         // Start polling for payment status
         startPolling(transactionRef.current);
       } else {
         setStatus("error");
         setMessage(data.message || "Failed to initiate payment. Please try again.");
+        console.error("STK Initiate failed:", data);
       }
     } catch (error) {
       console.error("Initiate payment error:", error);
+      console.error("Error response:", error.response?.data);
+      console.error("Error status:", error.response?.status);
 
       // Handle DNS/network errors specifically
       if (error.code === 'ENOTFOUND' || (error.message && error.message.includes('ENOTFOUND'))) {
         setStatus("error");
         setMessage("Payment gateway unavailable. Please check your internet connection and try again.");
+      } else if (error.response?.status === 401) {
+        setStatus("error");
+        setMessage("Session expired. Please log in again.");
+        setTimeout(() => navigate("/auth?mode=login"), 2000);
       } else {
         setStatus("error");
         setMessage(error.response?.data?.message || "Failed to initiate payment. Please try again.");
@@ -204,7 +218,7 @@ export default function LoginFeePayment() {
           </div>
 
           {/* Phone Input Form */}
-          {status === "idle" || status === "error" ? (
+          {(status === "idle" || status === "error" || status === "initiating") ? (
             <form onSubmit={handleInitiatePayment}>
               <div style={{
                 position: "relative",
