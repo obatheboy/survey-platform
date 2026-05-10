@@ -17,6 +17,7 @@ export default function LoginFeePayment() {
   const intervalRef = useRef(null);
   const timeoutRef = useRef(null);
   const pollingStartTime = useRef(null);
+  const transactionRequestIdRef = useRef(null); // Store the MegaPay transaction ID
 
   const LOGIN_FEE_AMOUNT = 95;
   const POLL_INTERVAL_MS = 3000;
