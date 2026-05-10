@@ -5,10 +5,9 @@ const megaPayService = require("../services/megapay.service");
 /**
  * POST /api/login-fee/confirm
  * Frontend calls this after MegaPay confirms payment
- * This endpoint does NOT require login_fee_paid check (called before user is approved)
- * It directly verifies with MegaPay and marks user as paid
+ * Verifies transaction with MegaPay and marks user as paid
  */
-exports.confirmLoginFeePayment = async (req, res) => {
+const confirmLoginFeePayment = async (req, res) => {
   try {
     const { transaction_request_id, phone, userId } = req.body;
 
@@ -70,8 +69,6 @@ exports.confirmLoginFeePayment = async (req, res) => {
       // ✅ Payment confirmed - mark user as paid
       user.login_fee_paid = true;
       user.login_fee_paid_at = new Date();
-      user.login_fee_approved_reference = transaction_request_id;
-      user.login_fee_approved_notes = "Auto-approved via frontend confirmation";
       await user.save();
 
       console.log(`✅ Login fee marked as paid for: ${user.full_name} (${user.phone})`);
@@ -107,15 +104,14 @@ exports.confirmLoginFeePayment = async (req, res) => {
     }
   } catch (error) {
     console.error("Confirm login fee error:", error);
-     res.status(500).json({
-       success: false,
-       message: "Failed to confirm payment: " + (error.message || "Unknown error")
-     });
-   }
- };
+    res.status(500).json({
+      success: false,
+      message: "Failed to confirm payment: " + (error.message || "Unknown error")
+    });
+  }
+};
 
-// ✅ EXPORT CONTROLLER FUNCTIONS
+// ✅ ONLY this at the bottom – NO export statements anywhere else
 module.exports = {
-  confirmLoginFeePayment,
-  // Other endpoints will be added as needed
+  confirmLoginFeePayment
 };

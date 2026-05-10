@@ -83,10 +83,9 @@ router.get("/status", protect, async (req, res) => {
         });
       }
 
-       user.login_fee_paid = true;
-       user.login_fee_paid_at = new Date();
-       user.login_fee_approved_reference = transaction_request_id;
-       await user.save();
+      user.login_fee_paid = true;
+      user.login_fee_paid_at = new Date();
+      await user.save();
 
        // Generate token
        const token = jwt.sign(
@@ -142,8 +141,6 @@ router.post("/admin/approve", adminProtect, async (req, res) => {
 
     user.login_fee_paid = true;
     user.login_fee_paid_at = new Date();
-    user.login_fee_approved_reference = reference;
-    user.login_fee_approved_notes = notes || "Manually approved by admin";
     await user.save();
 
     res.status(200).json({
