@@ -309,7 +309,7 @@ export default function Dashboard() {
       const showAfterDelay = setTimeout(() => {
         setShowWelcomeBonus(true);
         localStorage.removeItem("showWelcomeBonusOnDashboard");
-      }, 1000);
+      }, 2500);
       
       return () => clearTimeout(showAfterDelay);
     }
