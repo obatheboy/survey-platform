@@ -2,21 +2,19 @@ const express = require("express");
 const router = express.Router();
 const { protect } = require("../middlewares/auth.middleware");
 const {
+  initiateLoginFeePayment,
   checkLoginFeeStatus,
   manualApprovePayment,
   getPendingPayments
 } = require("../controllers/loginFee.controller");
 
-// ❌ DISABLED: Automatic payment initiation
-// router.post("/initiate", protect, initiateLoginFeePayment);
+// ✅ INITIATE LOGIN FEE PAYMENT (KSH 95) via MegaPay STK Push
+router.post("/initiate", protect, initiateLoginFeePayment);
 
-// ❌ DISABLED: Paynecta automatic payment
-// router.post("/initiate-paynecta", protect, initiatePaynectaPayment);
-
-// ✅ CHECK STATUS - User can check if they've been approved (for manual flow)
+// ✅ CHECK STATUS - Auto-verification endpoint for frontend polling
 router.get("/status", protect, checkLoginFeeStatus);
 
-// ✅ ADMIN ENDPOINTS - For manual approval after verifying in Paynecta dashboard
+// ✅ ADMIN ENDPOINTS - For manual approval if needed
 router.post("/admin/approve", protect, manualApprovePayment);
 router.get("/admin/pending", protect, getPendingPayments);
 

@@ -188,24 +188,22 @@ export const gamificationApi = {
 };
 
 /* =====================================================
-    💰 LOGIN FEE API - FIXED FOR STK PUSH ONLY
-    - Removed submitMpesaCode (manual submission not needed)
-    - verify endpoint kept but not used for auto-approval
+    💰 LOGIN FEE API - KSH 95 with Auto-Verification via MegaPay
+    - User selects plan (or defaults to login fee)
+    - User enters ONLY phone number (no amount input)
+    - Amount is KSH 95 automatically
+    - Frontend polls /status endpoint for automatic verification
 ==================================================== */
 export const loginFeeApi = {
-  // Kifarupay (legacy - disabled)
-  // initiate: (userId) => api.post("/login-fee/initiate", { userId }),
-  // initiateKifarupay: (userId, slug, amount) => api.post("/login-fee/initiate-kifarupay", { userId, slug, amount }),
+  // Initiate KSH 95 login fee payment via MegaPay STK Push
+  initiate: (phoneNumber) => api.post("/login-fee/initiate", { phone_number: phoneNumber }),
 
-  // MegaPay (active)
-  initiateMegaPay: (plan, phoneNumber) => api.post("/megapay/initiate", { plan, phone_number: phoneNumber }),
-
-  // Status check
-  // checkStatus: (userId) => api.get(`/login-fee/status?userId=${userId}`)
+  // Check payment status - auto-verification endpoint
+  checkStatus: () => api.get("/login-fee/status"),
 };
 
 /* =====================================================
-   👑 ADMIN LOGIN FEE API (For manual approval)
+   👑 ADMIN LOGIN FEE API (For manual approval if needed)
 ==================================================== */
 export const adminLoginFeeApi = {
   // Get all users with pending payment

@@ -3,7 +3,8 @@ const https = require("https");
 const MEGAPAY_CONFIG = {
   apiKey: "MGPYsOrn4Vvi",
   email: "obavanteshia65@gmail.com",
-  endpoint: "https://megapay.co.ke/backend/v1/initiatestk"
+  endpoint: "https://megapay.co.ke/backend/v1/initiatestk",
+  statusEndpoint: "https://megapay.co.ke/backend/v1/transactionstatus"
 };
 
 // Format phone to 07XXXXXXXX format (removes 254 prefix if present)
@@ -24,6 +25,56 @@ const formatPhone = (phone) => {
   return cleaned;
 };
 
+const makeMegaPayRequest = (url, data) => {
+  return new Promise((resolve, reject) => {
+    const parsedUrl = new URL(url);
+
+    const options = {
+      hostname: parsedUrl.hostname,
+      path: parsedUrl.pathname,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      timeout: 30000
+    };
+
+    const postData = JSON.stringify(data);
+    options.headers["Content-Length"] = Buffer.byteLength(postData);
+
+    const req = https.request(options, (res) => {
+      let body = "";
+      res.on("data", chunk => body += chunk);
+      res.on("end", () => {
+        if (!body || body.trim() === "") {
+          resolve({ error: "Empty response from MegaPay" });
+          return;
+        }
+
+        try {
+          const json = JSON.parse(body);
+          resolve(json);
+        } catch (e) {
+          resolve({ error: "Invalid JSON response", raw: body.substring(0, 500) });
+        }
+      });
+    });
+
+    req.on("error", (err) => {
+      reject(err);
+    });
+
+    req.on("timeout", () => {
+      req.destroy();
+      reject(new Error("Request timed out"));
+    });
+
+    req.write(postData);
+    req.end();
+  });
+};
+
 const initiateSTKPush = async (amount, phoneNumber, reference) => {
   try {
     const formattedPhone = formatPhone(phoneNumber);
@@ -41,60 +92,8 @@ const initiateSTKPush = async (amount, phoneNumber, reference) => {
     console.log("Phone:", formattedPhone);
     console.log("Amount:", amount);
     console.log("Reference:", reference);
-    console.log("Body:", JSON.stringify(requestBody, null, 2));
 
-    const response = await new Promise((resolve, reject) => {
-      const url = new URL(MEGAPAY_CONFIG.endpoint);
-
-      const options = {
-        hostname: url.hostname,
-        path: url.pathname,
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        timeout: 30000
-      };
-
-      const postData = JSON.stringify(requestBody);
-      options.headers["Content-Length"] = Buffer.byteLength(postData);
-
-      const req = https.request(options, (res) => {
-        let body = "";
-        res.on("data", chunk => body += chunk);
-        res.on("end", () => {
-          console.log("=== MegaPay Raw Response ===");
-          console.log("Status:", res.statusCode);
-          console.log("Body:", body);
-
-          if (!body || body.trim() === "") {
-            resolve({ success: false, error: "Empty response from MegaPay" });
-            return;
-          }
-
-          try {
-            const json = JSON.parse(body);
-            resolve(json);
-          } catch (e) {
-            resolve({ success: false, error: "Invalid JSON response", raw: body.substring(0, 500) });
-          }
-        });
-      });
-
-      req.on("error", (err) => {
-        console.error("MegaPay request error:", err.message);
-        reject(err);
-      });
-
-      req.on("timeout", () => {
-        req.destroy();
-        reject(new Error("Request timed out"));
-      });
-
-      req.write(postData);
-      req.end();
-    });
+    const response = await makeMegaPayRequest(MEGAPAY_CONFIG.endpoint, requestBody);
 
     // MegaPay returns success === "200" on success
     if (response.success === "200") {
@@ -122,6 +121,57 @@ const initiateSTKPush = async (amount, phoneNumber, reference) => {
   }
 };
 
+/**
+ * Check MegaPay transaction status
+ * Endpoint: POST https://megapay.co.ke/backend/v1/transactionstatus
+ * Success condition: ResultCode === "200" AND TransactionStatus === "Completed"
+ */
+const checkTransactionStatus = async (transactionRequestId) => {
+  try {
+    const requestBody = {
+      api_key: MEGAPAY_CONFIG.apiKey,
+      email: MEGAPAY_CONFIG.email,
+      transaction_request_id: transactionRequestId
+    };
+
+    console.log("=== MegaPay Transaction Status Check ===");
+    console.log("Endpoint:", MEGAPAY_CONFIG.statusEndpoint);
+    console.log("Transaction Request ID:", transactionRequestId);
+
+    const response = await makeMegaPayRequest(MEGAPAY_CONFIG.statusEndpoint, requestBody);
+
+    console.log("MegaPay Status Response:", JSON.stringify(response, null, 2));
+
+    // Success condition: ResultCode === "200" AND TransactionStatus === "Completed"
+    if (response.ResultCode === "200" && response.TransactionStatus === "Completed") {
+      return {
+        success: true,
+        completed: true,
+        amount: response.TransactionAmount,
+        phone: response.Msisdn,
+        reference: response.TransactionReference,
+        resultCode: response.ResultCode,
+        resultDesc: response.ResultDesc
+      };
+    }
+
+    // Payment not yet completed
+    return {
+      success: true,
+      completed: false,
+      status: response.TransactionStatus || "Pending",
+      resultCode: response.ResultCode,
+      resultDesc: response.ResultDesc || "Transaction not yet completed"
+    };
+  } catch (error) {
+    console.error("MegaPay status check error:", error.message);
+    return {
+      success: false,
+      error: error.message || "Failed to check transaction status"
+    };
+  }
+};
+
 // Plan amounts in KES - KEEP EXACTLY THE SAME AS BEFORE
 const PLAN_AMOUNTS = {
   WELCOME_BONUS: 100,
@@ -129,6 +179,8 @@ const PLAN_AMOUNTS = {
   VIP: 200,
   VVIP: 300
 };
+
+const LOGIN_FEE = 95;
 
 const getPlanAmount = (planKey) => {
   return PLAN_AMOUNTS[planKey?.toUpperCase()] || PLAN_AMOUNTS.REGULAR;
@@ -140,7 +192,9 @@ const getPlanAmountByKey = (planKey) => {
 
 module.exports = {
   initiateSTKPush,
+  checkTransactionStatus,
   formatPhone,
+  LOGIN_FEE,
   PLAN_AMOUNTS,
   getPlanAmount,
   getPlanAmountByKey
