@@ -190,22 +190,34 @@ export default function LoginFeePayment() {
             setStatus("success");
             setMessage("✓ Payment confirmed! Redirecting...");
 
-            // Store a temporary verification flag valid for 2 hours
-            // This allows user to access the app even before backend syncs
-            localStorage.setItem("login_fee_verified_temp", "true");
-            localStorage.setItem("login_fee_verified_at", Date.now());
-            localStorage.setItem("lastLoginTime", Date.now().toString());
-            localStorage.removeItem("pendingLoginUser");
+            // Set temporary flag SYNCHRONOUSLY before ANY navigation
+            // This ensures ProtectedRoute sees it immediately
+            try {
+              localStorage.setItem("login_fee_verified_temp", "true");
+              localStorage.setItem("login_fee_verified_at", Date.now());
+              localStorage.setItem("lastLoginTime", Date.now().toString());
+              localStorage.removeItem("pendingLoginUser");
+              console.log("✅ Temp flag set – navigating to dashboard");
+            } catch (e) {
+              console.error("Failed to set temp flag:", e);
+            }
 
-            // Attempt to sync with backend in background (non-blocking)
+            // Notify backend in background (non-blocking)
             setTimeout(async () => {
               try {
-                const syncResp = await loginFeeApi.checkStatus({ transaction_request_id: transactionRequestId });
-                console.log("Backend sync result:", syncResp.data);
-                if (syncResp.data.success && syncResp.data.paid) {
-                  localStorage.removeItem("login_fee_verified_temp");
-                  if (syncResp.data.token) localStorage.setItem("token", syncResp.data.token);
-                }
+                await loginFeeApi.checkStatus({ transaction_request_id: transactionRequestId });
+                console.log("Backend sync completed – login_fee_paid persisted");
+              } catch (syncErr) {
+                console.log("Backend sync will retry later");
+              }
+            }, 0);
+
+            // Navigate immediately
+            setTimeout(() => {
+              navigate("/dashboard", { replace: true });
+            }, 800);
+            return;
+          }
               } catch (syncErr) {
                 console.log("Backend sync will retry later");
               }

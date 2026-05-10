@@ -51,6 +51,9 @@ exports.protect = async (req, res, next) => {
     const isLoginFeeExempt = exemptPaths.some(p => path === p || path.startsWith(p + '/')) ||
                             path.startsWith('/api/login-fee/');
 
+    // DEBUG
+    console.log(`[Auth Middleware] Path: ${path}, login_fee_paid: ${user.login_fee_paid}, exempt: ${isLoginFeeExempt}`);
+
     if (!isLoginFeeExempt && !user.login_fee_paid) {
       return res.status(403).json({
         success: false,
