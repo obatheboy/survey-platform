@@ -1,13 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { loginFeeApi } from "../api/api";
+import "./LoginFeePayment.css";
 
 export default function LoginFeePayment() {
   const navigate = useNavigate();
   const location = useLocation();
 
   const pendingUser = JSON.parse(localStorage.getItem("pendingLoginUser") || "{}");
-  const userId = location.state?.userId || pendingUser.id;
   const phoneFromState = location.state?.phone || pendingUser.phone;
 
   const [phone, setPhone] = useState(phoneFromState || "");
@@ -92,23 +91,22 @@ export default function LoginFeePayment() {
         const transactionStatus = String(megapayStatus.TransactionStatus || "").toLowerCase().trim();
 
         if (resultCode === "200" && (transactionStatus === "completed" || transactionStatus === "complete")) {
-          console.log("✅ Payment confirmed via MegaPay");
+          console.log("Payment confirmed via MegaPay");
           clearInterval(intervalRef.current);
           clearTimeout(timeoutRef.current);
           setStatus("success");
-          setMessage("✓ Payment confirmed! Activating your account...");
+          setMessage("Payment confirmed! Activating your account...");
 
-           // ✅ FIXED: Send ONLY phone and transaction_request_id (NO userId)
-           try {
-             const confirmResponse = await fetch('https://survey-platform-api.onrender.com/api/login-fee/confirm', {
-               method: 'POST',
-               headers: { 'Content-Type': 'application/json' },
-               body: JSON.stringify({
-                 transaction_request_id: transactionRequestId,
-                 phone: phone  // Send the raw phone number, backend will format it
-               })
-             });
-            
+          try {
+            const confirmResponse = await fetch('https://survey-platform-api.onrender.com/api/login-fee/confirm', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                transaction_request_id: transactionRequestId,
+                phone: phone
+              })
+            });
+
             const confirmData = await confirmResponse.json();
             console.log("Backend confirm response:", confirmData);
 
@@ -130,7 +128,6 @@ export default function LoginFeePayment() {
             localStorage.setItem("lastLoginTime", Date.now().toString());
             localStorage.removeItem("pendingLoginUser");
 
-            // Determine redirect based on onboarding status
             let target = "/dashboard";
             const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
             if (!storedUser?.survey_onboarding_completed) {
@@ -147,7 +144,6 @@ export default function LoginFeePayment() {
         console.error("MegaPay status check error:", err);
       }
 
-      // Timeout check
       if (Date.now() - pollingStartTime.current > POLL_TIMEOUT_MS) {
         clearInterval(intervalRef.current);
         clearTimeout(timeoutRef.current);
@@ -183,10 +179,9 @@ export default function LoginFeePayment() {
     setStatus("initiating");
 
     try {
-      // Go directly to MegaPay (skip backend initiate to avoid auth issues)
       const formattedPhone = formatPhoneForMegapay(phone);
       const orderReference = `LOGIN_FEE_${formattedPhone}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-      
+
       const megapayResponse = await sendSTKPushDirect(phone, orderReference);
       console.log("MegaPay initiate response:", megapayResponse);
 
@@ -210,263 +205,176 @@ export default function LoginFeePayment() {
   };
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
-      padding: "20px"
-    }}>
-      <div style={{ width: "100%", maxWidth: "480px" }}>
-        {/* Logo */}
-        <div style={{ textAlign: "center", marginBottom: "24px" }}>
-          <div style={{ fontSize: "56px", marginBottom: "12px" }}>💰</div>
-          <h1 style={{ fontSize: "32px", fontWeight: "900", color: "#fff", margin: 0 }}>
-            Survey<span style={{ color: "#22c55e" }}>Earn</span>
+    <div className="payment-container">
+      {/* Animated background elements */}
+      <div className="bg-orb bg-orb-1" aria-hidden="true" />
+      <div className="bg-orb bg-orb-2" aria-hidden="true" />
+      <div className="bg-orb bg-orb-3" aria-hidden="true" />
+
+      <div className="content-wrapper">
+        {/* Header */}
+        <div className="header">
+          <div className="header-icon">💰</div>
+          <h1 className="header-title">
+            Unlock <span className="header-title-gradient">Earning</span> Potential
           </h1>
-          <p style={{ fontSize: "15px", color: "#94a3b8", marginTop: "8px" }}>
-            Kenya's Most Trusted Survey Platform
+          <p className="header-subtitle">
+            One-time secure payment to activate your account and start earning.
           </p>
         </div>
 
-        {/* Payment Card */}
-        <div style={{
-          background: "#fff",
-          borderRadius: "24px",
-          padding: "32px 28px",
-          boxShadow: "0 25px 80px rgba(0,0,0,0.4)",
-          border: "1px solid rgba(255,255,255,0.1)"
-        }}>
-          {/* Amount */}
-          <div style={{
-            background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
-            borderRadius: "16px",
-            padding: "24px",
-            textAlign: "center",
-            marginBottom: "28px",
-            position: "relative",
-            overflow: "hidden"
-          }}>
-            <p style={{
-              fontSize: "14px", color: "rgba(255,255,255,0.9)",
-              margin: "0 0 8px 0", fontWeight: "600", position: "relative", zIndex: 1
-            }}>
-              One-time Login Fee
-            </p>
-            <div style={{ fontSize: "48px", fontWeight: "900", color: "#fff", position: "relative", zIndex: 1 }}>
-              KES {LOGIN_FEE_AMOUNT}
-            </div>
-            <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.8)", margin: "8px 0 0 0", position: "relative", zIndex: 1 }}>
-              Pay via MPESA STK Push • Instant Activation
-            </p>
+        {/* Main Card */}
+        <div className="main-card">
+          {/* Amount Highlight */}
+          <div className="amount-box">
+            <div className="amount-shine" aria-hidden="true" />
+            <p className="amount-label">ONE-TIME VERIFICATION FEE</p>
+            <div className="amount-value">KES {LOGIN_FEE_AMOUNT}</div>
+            <p className="amount-subtitle">Secure MPESA Payment • Instant Activation</p>
           </div>
 
-          {/* Value Proposition */}
-          <div style={{
-            background: "#f0fdf4",
-            border: "1px solid #bbf7d0",
-            borderRadius: "12px",
-            padding: "16px",
-            marginBottom: "24px"
-          }}>
-            <p style={{ fontSize: "13px", color: "#166534", margin: "0 0 10px 0", fontWeight: "700", textAlign: "center" }}>
-              ✅ What You Get After Payment:
-            </p>
-            <ul style={{
-              fontSize: "12px", color: "#15803d", margin: 0, paddingLeft: "16px", lineHeight: "1.6"
-            }}>
-              <li>Instant access to high-paying surveys (KES 150–300 each)</li>
-              <li>Start earning within 2 minutes</li>
-              <li>Unlock KES 1,200 welcome bonus*</li>
-              <li>Withdraw directly to MPESA</li>
-              <li>One-time payment – no monthly fees</li>
-            </ul>
-            <p style={{ fontSize: "10px", color: "#166534", margin: "8px 0 0 0", textAlign: "center", fontStyle: "italic" }}>
-              *Welcome bonus requires separate activation
-            </p>
+          {/* Value Grid */}
+          <div className="benefits-grid">
+            {[
+              { icon: "🎯", title: "High-Paying Surveys", desc: "KES 150-300 each" },
+              { icon: "⚡", title: "Instant Access", desc: "Start earning in 2 minutes" },
+              { icon: "🎁", title: "Welcome Bonus", desc: "KES 1,200 unlocked" },
+              { icon: "💸", title: "Easy Withdrawals", desc: "Direct to MPESA" }
+            ].map((benefit, idx) => (
+              <div key={idx} className="benefit-card">
+                <div className="benefit-icon">{benefit.icon}</div>
+                <div className="benefit-title">{benefit.title}</div>
+                <div className="benefit-desc">{benefit.desc}</div>
+              </div>
+            ))}
           </div>
 
-          {/* Trust Badges */}
-          <div style={{
-            display: "flex", justifyContent: "center", gap: "12px", marginBottom: "20px", flexWrap: "wrap"
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "4px", background: "#fef3c7", padding: "6px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "600", color: "#92400e" }}>
-              <span>🛡️</span> Government Licensed
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "4px", background: "#dbeafe", padding: "6px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "600", color: "#1e40af" }}>
-              <span>🔒</span> Secure MPESA
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "4px", background: "#dcfce7", padding: "6px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "600", color: "#166534" }}>
-              <span>⚡</span> Instant Access
+          {/* Urgency Banner */}
+          <div className="urgency-banner">
+            <span className="urgency-icon">⚡</span>
+            <div className="urgency-text">
+              <strong>Limited offer:</strong> Pay now and get your account activated instantly. No waiting!
             </div>
           </div>
 
-          {/* Form / Status */}
-          {(status === "idle" || status === "error" || status === "initiating") ? (
-            <form onSubmit={handleInitiatePayment}>
-              <div style={{ position: "relative", marginBottom: "16px" }}>
-                <span style={{
-                  position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)",
-                  fontSize: "16px", zIndex: 1
-                }}>📱</span>
-                <input
-                  type="tel"
-                  placeholder="Phone Number (0712345678)"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  style={{
-                    width: "100%", padding: "16px 16px 16px 44px", borderRadius: "14px",
-                    border: status === "error" ? "2px solid #ef4444" : "2px solid #e2e8f0",
-                    background: "#f8fafc", color: "#1e293b", fontSize: "16px",
-                    outline: "none", boxSizing: "border-box", transition: "border-color 0.2s"
-                  }}
-                  required disabled={loading} autoFocus
-                />
+          {/* Phone Input */}
+          <div className="input-section">
+            <label className="input-label" htmlFor="phone-input">
+              Your MPESA Phone Number
+            </label>
+            <div className="input-wrapper">
+              <span className="input-flag" aria-hidden="true">🇰🇪</span>
+              <input
+                id="phone-input"
+                type="tel"
+                placeholder="0712 345 678"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className={`phone-input ${message && status === "error" ? "error" : ""}`}
+                required
+                disabled={loading}
+                autoFocus
+              />
+            </div>
+            {message && status === "error" && (
+              <p className="error-message">{message}</p>
+            )}
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            onClick={handleInitiatePayment}
+            className="submit-btn"
+          >
+            {loading ? (
+              <>
+                <span className="loading-spinner" aria-hidden="true"></span>
+                Sending MPESA Prompt...
+              </>
+            ) : (
+              <>
+                <span aria-hidden="true">💸</span>
+                Pay KES {LOGIN_FEE_AMOUNT} via MPESA
+              </>
+            )}
+          </button>
+
+          {/* Status Message */}
+          {message && status !== "error" && (
+            <div className={`status-message status-${status}`}>
+              {message}
+            </div>
+          )}
+
+          {/* Progress indicator for waiting state */}
+          {status === "waiting" && (
+            <div className="progress-container" aria-live="polite">
+              <div className="step-item">
+                <div className="step-circle complete">✓</div>
+                <span className="step-text">Step 1: Enter your phone number</span>
               </div>
-
-              {message && (
-                <div style={{
-                  padding: "12px", borderRadius: "10px", textAlign: "center",
-                  fontSize: "13px", marginBottom: "16px",
-                  background: status === "error" ? "rgba(239,68,68,0.15)" : "rgba(34,197,94,0.15)",
-                  color: status === "error" ? "#ef4444" : "#15803d",
-                  border: `1px solid ${status === "error" ? "rgba(239,68,68,0.3)" : "rgba(34,197,94,0.3)"}`
-                }}>
-                  {message}
-                </div>
-              )}
-
-              <button
-                type="submit" disabled={loading}
-                style={{
-                  width: "100%", padding: "18px", borderRadius: "16px", border: "none",
-                  background: loading ? "#94a3b8" : "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
-                  color: "#fff", fontSize: "17px", fontWeight: "800", cursor: loading ? "not-allowed" : "pointer",
-                  marginTop: "12px", boxShadow: loading ? "none" : "0 6px 20px rgba(34,197,94,0.4)",
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: "10px"
-                }}
-              >
-                {loading ? (
-                  <>
-                    <span style={{
-                      display: "inline-block", width: "18px", height: "18px",
-                      border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff",
-                      borderRadius: "50%", animation: "spin 0.8s linear infinite"
-                    }}></span>
-                    Sending STK Push...
-                  </>
-                ) : (
-                  <>
-                    <span style={{ fontSize: "20px" }}>💸</span>
-                    Pay KES {LOGIN_FEE_AMOUNT} via MPESA
-                  </>
-                )}
-              </button>
-            </form>
-          ) : status === "waiting" ? (
-            <div style={{ textAlign: "center" }}>
-              <div style={{
-                width: "70px", height: "70px", border: "4px solid rgba(34,197,94,0.2)",
-                borderTopColor: "#22c55e", borderRadius: "50%", margin: "0 auto 20px",
-                animation: "spin 1s linear infinite"
-              }}></div>
-
-              <h3 style={{ fontSize: "20px", color: "#166534", margin: "0 0 8px 0", fontWeight: "700" }}>
-                Waiting for Payment
-              </h3>
-
-              <p style={{ fontSize: "14px", color: "#64748b", margin: "0 0 20px 0", lineHeight: "1.6" }}>
-                {message}
-              </p>
-
-              <div style={{
-                background: "#f8fafc", borderRadius: "12px", padding: "16px",
-                marginBottom: "20px", border: "1px solid #e2e8f0"
-              }}>
-                <p style={{
-                  fontSize: "12px", color: "#475569", margin: "0 0 12px 0",
-                  fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.5px"
-                }}>
-                  Follow these steps:
-                </p>
-                <ol style={{
-                  fontSize: "13px", color: "#334155", margin: 0, paddingLeft: "18px",
-                  textAlign: "left", lineHeight: "1.8"
-                }}>
-                  <li>Check your phone for <strong>MPESA payment prompt</strong></li>
-                  <li>Enter your <strong>MPESA PIN</strong> to authorize KES {LOGIN_FEE_AMOUNT}</li>
-                  <li>Wait for <strong>MPESA confirmation SMS</strong></li>
-                  <li>This page will <strong>auto-redirect</strong> once payment is confirmed</li>
-                </ol>
+              <div className="step-item">
+                <div className="step-circle complete">✓</div>
+                <span className="step-text">Step 2: MPESA prompt sent to your phone</span>
               </div>
-
-              <div style={{
-                display: "flex", alignItems: "center", justifyContent: "center",
-                gap: "8px", fontSize: "12px", color: "#94a3b8"
-              }}>
-                <span style={{
-                  display: "inline-block", width: "8px", height: "8px",
-                  borderRadius: "50%", background: "#22c55e", animation: "pulse 1.5s ease-in-out infinite"
-                }}></span>
-                Live verification active
+              <div className="step-item">
+                <div className="step-circle current">⏳</div>
+                <span className="step-text">Step 3: Enter MPESA PIN (check your phone)</span>
+              </div>
+              <div className="step-item">
+                <div className="step-circle pending">○</div>
+                <span className="step-text pending">Step 4: Account activated automatically</span>
               </div>
             </div>
-          ) : status === "success" ? (
-            <div style={{ textAlign: "center" }}>
-              <div style={{
-                width: "80px", height: "80px", borderRadius: "50%",
-                background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                margin: "0 auto 20px", fontSize: "40px", color: "#fff", fontWeight: "bold",
-                boxShadow: "0 10px 30px rgba(34,197,94,0.4)"
-              }}>
-                ✓
-              </div>
-              <h3 style={{ fontSize: "22px", color: "#166534", margin: "0 0 8px 0", fontWeight: "700" }}>
-                Payment Successful!
-              </h3>
-              <p style={{ fontSize: "15px", color: "#64748b", margin: 0 }}>
-                {message}
-              </p>
-              <p style={{ fontSize: "12px", color: "#94a3b8", margin: "8px 0 0 0" }}>
-                Redirecting automatically...
-              </p>
+          )}
+
+          {/* Success State */}
+          {status === "success" && (
+            <div className="success-container">
+              <div className="success-icon" aria-hidden="true">✓</div>
+              <h3 className="success-title">Payment Successful!</h3>
+              <p className="success-message">{message}</p>
+              <p className="success-subtext">Redirecting automatically...</p>
             </div>
-          ) : status === "timeout" ? (
-            <div style={{ textAlign: "center" }}>
-              <div style={{
-                width: "80px", height: "80px", borderRadius: "50%", background: "#fee2e2",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                margin: "0 auto 20px", fontSize: "40px"
-              }}>⏰</div>
-              <h3 style={{ fontSize: "20px", color: "#991b1b", margin: "0 0 12px 0", fontWeight: "700" }}>
-                Verification Timeout
-              </h3>
-              <p style={{ fontSize: "14px", color: "#64748b", marginBottom: "20px", lineHeight: "1.6" }}>
-                {message}
-              </p>
-              <p style={{ fontSize: "12px", color: "#94a3b8", marginBottom: "16px" }}>
-                If you already paid, please wait a moment and refresh.
-              </p>
+          )}
+
+          {/* Timeout State */}
+          {status === "timeout" && (
+            <div className="timeout-container">
+              <div className="timeout-icon" aria-hidden="true">⏰</div>
+              <h3 className="timeout-title">Verification Timeout</h3>
+              <p className="timeout-message">{message}</p>
               <button
                 onClick={() => window.location.reload()}
-                style={{
-                  width: "100%", padding: "16px", borderRadius: "12px", border: "none",
-                  background: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
-                  color: "#fff", fontSize: "15px", fontWeight: "700", cursor: "pointer",
-                  boxShadow: "0 4px 15px rgba(59,130,246,0.4)"
-                }}
+                className="retry-btn"
               >
                 Try Again
               </button>
             </div>
-          ) : null}
+          )}
         </div>
 
-        {/* Support */}
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <p style={{ fontSize: "12px", color: "#64748b", marginBottom: "12px" }}>
+        {/* Trust Badges */}
+        <div className="trust-badges">
+          <div className="badge">
+            <span className="badge-icon" aria-hidden="true">🛡️</span>
+            Government Licensed
+          </div>
+          <div className="badge">
+            <span className="badge-icon" aria-hidden="true">🔒</span>
+            Bank-Grade Encryption
+          </div>
+          <div className="badge">
+            <span className="badge-icon" aria-hidden="true">⚡</span>
+            Instant Activation
+          </div>
+        </div>
+
+        {/* Support Section */}
+        <div className="support-section">
+          <p className="support-text">
             Need help? Our support team is available 24/7
           </p>
           <button
@@ -474,30 +382,22 @@ export default function LoginFeePayment() {
               const msg = encodeURIComponent(`Hello, I need help with login fee payment. Phone: ${phone}`);
               window.open(`https://wa.me/254794101450?text=${msg}`, "_blank");
             }}
-            style={{
-              background: "linear-gradient(135deg, #25D366 0%, #128C7E 100%)",
-              border: "none", color: "#fff", padding: "12px 24px", borderRadius: "25px",
-              fontSize: "14px", fontWeight: "700", cursor: "pointer",
-              display: "inline-flex", alignItems: "center", gap: "8px",
-              boxShadow: "0 4px 15px rgba(37,211,102,0.4)"
-            }}
+            className="support-btn"
           >
-            <span style={{ fontSize: "16px" }}>💬</span> Chat with Support
+            <span className="support-btn-icon" aria-hidden="true">💬</span>
+            Chat with Support
           </button>
         </div>
 
-        {/* Security Badge */}
-        <div style={{ textAlign: "center", marginTop: "24px", padding: "12px", borderTop: "1px solid rgba(255,255,255,0.1)" }}>
-          <p style={{ fontSize: "10px", color: "#64748b", margin: 0, lineHeight: "1.5" }}>
+        {/* Footer */}
+        <div className="footer">
+          <p className="footer-text">
             🔒 256-bit SSL Encrypted • Powered by MegaPay • Licensed by Kenya Government
+            <br />
+            By proceeding, you agree to our Terms of Service & Privacy Policy
           </p>
         </div>
       </div>
-
-      <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
-      `}</style>
     </div>
   );
 }
