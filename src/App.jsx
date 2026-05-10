@@ -55,7 +55,7 @@ function ProtectedRoute({ children }) {
         const hasPaid = userData.login_fee_paid;
         const tempVerified = localStorage.getItem("login_fee_verified_temp") === "true";
         const tempVerifiedAt = parseInt(localStorage.getItem("login_fee_verified_at") || "0");
-        const TWO_HOURS = 2 * 60 * 60 * 1000; // 2 hours in ms
+        const TWO_HOURS = 2 * 60 * 60 * 1000;
         const tempStillValid = tempVerified && (Date.now() - tempVerifiedAt) < TWO_HOURS;
 
         if (!hasPaid && !tempStillValid) {
@@ -72,7 +72,7 @@ function ProtectedRoute({ children }) {
       })
       .catch((err) => {
         console.error("Auth check failed:", err);
-        if (isMounted) setUser(null);
+        setUser(null);
       })
       .finally(() => {
         if (isMounted) setLoading(false);
@@ -95,62 +95,6 @@ function ProtectedRoute({ children }) {
   const tempStillValid = tempVerified && (Date.now() - tempVerifiedAt) < TWO_HOURS;
 
   if (!user.login_fee_paid && !tempStillValid) {
-    return null;
-  }
-
-  return children;
-}
-      })
-      .catch(() => {
-        if (isMounted) setUser(null);
-      })
-      .finally(() => {
-        if (isMounted) setLoading(false);
-      });
-    return () => { isMounted = false; };
-  }, [navigate]);
-
-  if (loading) {
-    return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
-  }
-
-  if (!user) {
-    return <Navigate to="/auth?mode=register" replace />;
-  }
-
-  // Allow access if paid OR temporarily verified (pending DB sync)
-  const tempVerified = localStorage.getItem("login_fee_verified_temp") === "true";
-  const tempVerifiedAt = parseInt(localStorage.getItem("login_fee_verified_at") || "0");
-  const TWO_HOURS = 2 * 60 * 60 * 1000;
-  const tempStillValid = tempVerified && (Date.now() - tempVerifiedAt) < TWO_HOURS;
-
-  if (!user.login_fee_paid && !tempStillValid) {
-    return null;
-  }
-
-  return children;
-}
-      })
-      .catch(() => {
-        if (isMounted) setUser(null);
-      })
-      .finally(() => {
-        if (isMounted) setLoading(false);
-      });
-    return () => { isMounted = false; };
-  }, [navigate]);
-
-  if (loading) {
-    return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
-  }
-
-  if (!user) {
-    return <Navigate to="/auth?mode=register" replace />;
-  }
-
-  // Block rendering if login fee not paid AND not temporarily verified
-  const tempVerified = localStorage.getItem("login_fee_verified_temp") === "true";
-  if (!user.login_fee_paid && !tempVerified) {
     return null;
   }
 
@@ -277,7 +221,7 @@ export default function App() {
           }
         />
 
-        {/* OLD WITHDRAW PAGE - You might want to keep or remove this */}
+        {/* OLD WITHDRAW PAGE */}
         <Route
           path="/withdraw"
           element={
@@ -287,7 +231,7 @@ export default function App() {
           }
         />
 
-        {/* NEW WITHDRAW PAGES - Add these routes */}
+        {/* NEW WITHDRAW PAGES */}
         <Route
           path="/withdraw-form"
           element={
