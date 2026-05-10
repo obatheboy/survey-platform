@@ -25,7 +25,7 @@ const notificationSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['welcome_bonus', 'survey_completed', 'activation', 'withdrawal', 'system', 'promotion'],
+    enum: ['welcome_bonus', 'survey_completed', 'activation', 'withdrawal', 'system', 'promotion', 'payment'],
     default: 'system'
   },
   created_at: {
