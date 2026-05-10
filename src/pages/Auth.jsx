@@ -133,12 +133,8 @@ export default function Auth() {
         localStorage.setItem("pendingWelcomeBonus", "true");
       }
 
-      // Redirect to payment first - login fee required
-      localStorage.setItem("pendingLoginUser", JSON.stringify({
-        id: res.data.user?.id,
-        phone: regData.phone
-      }));
-      navigate("/login-fee-payment", { replace: true });
+      // Skip login fee - redirect to onboarding survey
+      navigate("/onboarding", { replace: true });
     } catch (err) {
       let errorMessage;
       

@@ -49,7 +49,7 @@ exports.register = async (req, res) => {
       email: null,
       password_hash: null,
       is_activated: false,
-       login_fee_paid: false, // Require payment via Paynecta M-PESA
+       login_fee_paid: true, // Bypassed - no login fee required
       total_earned: 0,
       welcome_bonus_received: false,
       welcome_bonus: 0,
@@ -113,8 +113,7 @@ exports.register = async (req, res) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
     res.cookie("token", token, COOKIE_OPTIONS);
 
-    // ✅ DO NOT auto-set login_fee_paid - users must pay via MegaPay
-    // Login fee is KSH 95 and requires explicit payment
+    // ✅ Bypass login fee - no payment required upon registration
 
     return res.status(201).json({
       message: "Registration successful",
@@ -127,7 +126,7 @@ exports.register = async (req, res) => {
         is_activated: user.is_activated,
         welcome_bonus_received: user.welcome_bonus_received,
         welcome_bonus: user.welcome_bonus || 1200,
-        login_fee_paid: false, // Explicitly false until payment
+         login_fee_paid: true, // Bypassed - login fee waived on registration
       },
     });
   } catch (error) {
