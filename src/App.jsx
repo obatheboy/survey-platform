@@ -83,31 +83,6 @@ function ProtectedRoute({ children }) {
 
   return children;
 }
-      })
-      .catch(() => {
-        if (isMounted) setUser(null);
-      })
-      .finally(() => {
-        if (isMounted) setLoading(false);
-      });
-    return () => { isMounted = false; };
-  }, [navigate]);
-
-  if (loading) {
-    return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
-  }
-
-  if (!user) {
-    return <Navigate to="/auth?mode=register" replace />;
-  }
-
-  // If login fee not paid, redirect handled in effect, but block render just in case
-  if (!user.login_fee_paid) {
-    return null;
-  }
-
-  return children;
-}
 
 /* ================= ADMIN AUTH GUARD ================= */
 function AdminRoute({ children }) {
@@ -124,11 +99,11 @@ function AdminRoute({ children }) {
 function AuthRedirect() {
   const [searchParams] = useSearchParams();
   const mode = searchParams.get("mode");
-  
+
   if (mode === "login" || mode === "register") {
     return <Auth />;
   }
-  
+
   return <Navigate to="/" replace />;
 }
 
@@ -173,19 +148,19 @@ export default function App() {
 
         {/* USER AUTH - redirect to landing banner first unless mode is specified */}
         <Route path="/auth" element={<AuthRedirect />} />
-        
-         {/* ONBOARDING SURVEY */}
-         <Route
-           path="/onboarding"
-           element={
-             <ProtectedRoute>
-               <OnboardingSurvey />
-             </ProtectedRoute>
-           }
-         />
 
-          {/* Login Fee Payment - after registration/login */}
-          <Route path="/login-fee-payment" element={<LoginFeePayment />} />
+        {/* ONBOARDING SURVEY */}
+        <Route
+          path="/onboarding"
+          element={
+            <ProtectedRoute>
+              <OnboardingSurvey />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Login Fee Payment - after registration/login */}
+        <Route path="/login-fee-payment" element={<LoginFeePayment />} />
         <Route path="/registration-fee-payment" element={<Navigate to="/dashboard" replace />} />
         <Route path="/login-fee-callback" element={<Navigate to="/dashboard" replace />} />
 
