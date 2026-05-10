@@ -186,12 +186,12 @@ export default function LoginFeePayment() {
       <div className="content-wrapper">
         {/* Header */}
         <div className="header">
-          <div className="header-icon">🔒</div>
+          <div className="header-icon">🚀</div>
           <h1 className="header-title">
-            <span className="highlight">Account Activation</span>
+            Unlock Your <span className="highlight">Earning Potential</span>
           </h1>
           <p className="header-subtitle">
-            Pay KES {LOGIN_FEE_AMOUNT} to activate your account and start earning over 3000 daily
+            Pay once. Earn forever. KES {LOGIN_FEE_AMOUNT} one-time activation fee
           </p>
         </div>
 
@@ -199,22 +199,71 @@ export default function LoginFeePayment() {
         <div className="main-card">
           {/* Amount Display */}
           <div className="amount-box">
-            <div className="amount-label">ONE-TIME ACTIVATION FEE</div>
+            <div className="amount-label">ONE-TIME ACTIVATION</div>
             <div className="amount-value">KES {LOGIN_FEE_AMOUNT}</div>
-            <div className="amount-subtitle">Paid via MPESA • Instant activation</div>
+            <div className="amount-subtitle">No monthly fees • Lifetime access</div>
+          </div>
+
+          {/* Value Proposition - What happens after payment */}
+          <div className="value-proposition">
+            <h3 className="vp-title">✅ Immediately After Payment, You Get:</h3>
+            <div className="vp-grid">
+              <div className="vp-item">
+                <span className="vp-icon">🎯</span>
+                <div className="vp-text">
+                  <strong>Instant Account Access</strong>
+                  <span>Dashboard opens automatically</span>
+                </div>
+              </div>
+              <div className="vp-item">
+                <span className="vp-icon">📊</span>
+                <div className="vp-text">
+                  <strong>High-Paying Surveys</strong>
+                  <span>KES 150 - KES 300 per survey</span>
+                </div>
+              </div>
+              <div className="vp-item">
+                <span className="vp-icon">💰</span>
+                <div className="vp-text">
+                  <strong>Instant M-PESA Withdrawals</strong>
+                  <span>Withdraw from KES 50</span>
+                </div>
+              </div>
+              <div className="vp-item">
+                <span className="vp-icon">🎁</span>
+                <div className="vp-text">
+                  <strong>KES 1,200 Welcome Bonus</strong>
+                  <span>Complete 5 surveys on day one</span>
+                </div>
+              </div>
+              <div className="vp-item">
+                <span className="vp-icon">🏆</span>
+                <div className="vp-text">
+                  <strong>VIP & VVIP Surveys</strong>
+                  <span>Earn up to KES 2,000 per survey</span>
+                </div>
+              </div>
+              <div className="vp-item">
+                <span className="vp-icon">🔄</span>
+                <div className="vp-text">
+                  <strong>Daily Earning Opportunities</strong>
+                  <span>15+ new surveys daily</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Phone Input */}
           <div className="input-section">
             <label className="input-label" htmlFor="phone-input">
-              Your MPESA Phone Number
+              📱 Your M-PESA Phone Number
             </label>
             <div className="input-wrapper">
-              <span className="input-flag" aria-hidden="true">🇰🇪</span>
+              <span className="input-flag" aria-hidden="true">🇰🇪 +254</span>
               <input
                 id="phone-input"
                 type="tel"
-                placeholder="0712 345 678"
+                placeholder="712 345 678"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 className={`phone-input ${message && status === "error" ? "error" : ""}`}
@@ -239,29 +288,63 @@ export default function LoginFeePayment() {
             {loading ? (
               <>
                 <span className="loading-spinner" aria-hidden="true"></span>
-                Processing...
+                Sending STK Push...
               </>
             ) : (
               <>
                 <span aria-hidden="true">💸</span>
-                Pay KES {LOGIN_FEE_AMOUNT} via MPESA
+                Pay KES {LOGIN_FEE_AMOUNT} & Start Earning
               </>
             )}
           </button>
 
           {/* Status Message */}
-          {message && status !== "error" && (
+          {message && status !== "error" && status !== "success" && (
             <div className={`status-message status-${status}`}>
               {message}
+            </div>
+          )}
+
+          {/* Waiting State */}
+          {status === "waiting" && (
+            <div className="waiting-container">
+              <div className="waiting-animation">
+                <div className="pulse-ring"></div>
+                <div className="phone-icon">📱💸</div>
+              </div>
+              <h3 className="waiting-title">Check Your Phone!</h3>
+              <p className="waiting-message">
+                Enter your M-PESA PIN when prompted on your phone
+              </p>
+              <div className="steps">
+                <div className="step">
+                  <span className="step-num">1</span>
+                  <span>STK Push sent to {phone}</span>
+                </div>
+                <div className="step">
+                  <span className="step-num">2</span>
+                  <span>Enter your M-PESA PIN</span>
+                </div>
+                <div className="step">
+                  <span className="step-num">3</span>
+                  <span>Account unlocks automatically!</span>
+                </div>
+              </div>
             </div>
           )}
 
           {/* Success State */}
           {status === "success" && (
             <div className="success-container">
-              <div className="success-icon" aria-hidden="true">✓</div>
-              <h3 className="success-title">Payment Successful!</h3>
-              <p className="success-message">Your account is now activated.</p>
+              <div className="success-animation">
+                <div className="checkmark">✓</div>
+              </div>
+              <h3 className="success-title">🎉 Account Activated! 🎉</h3>
+              <p className="success-message">{message}</p>
+              <div className="success-benefits">
+                <p>✨ Your dashboard is opening...</p>
+                <p>💰 Start earning immediately</p>
+              </div>
             </div>
           )}
 
@@ -269,7 +352,7 @@ export default function LoginFeePayment() {
           {status === "timeout" && (
             <div className="timeout-container">
               <div className="timeout-icon" aria-hidden="true">⏰</div>
-              <h3 className="timeout-title">Payment Timeout</h3>
+              <h3 className="timeout-title">Payment Not Detected</h3>
               <p className="timeout-message">{message}</p>
               <button
                 onClick={() => window.location.reload()}
@@ -281,19 +364,38 @@ export default function LoginFeePayment() {
           )}
         </div>
 
+        {/* Social Proof */}
+        <div className="social-proof">
+          <div className="proof-item">
+            <span className="proof-icon">⭐</span>
+            <span>4.8/5 from 2,500+ active users</span>
+          </div>
+          <div className="proof-item">
+            <span className="proof-icon">💰</span>
+            <span>Over KES 5M paid out to members</span>
+          </div>
+          <div className="proof-item">
+            <span className="proof-icon">⚡</span>
+            <span>Instant activation after payment</span>
+          </div>
+        </div>
+
+        {/* Guarantee */}
+        <div className="guarantee">
+          <p>🔒 100% Secure M-PESA Payment • Government Licensed • 24/7 Support</p>
+          <p className="guarantee-small">Your account opens automatically once payment is confirmed</p>
+        </div>
+
         {/* Support Link */}
         <div className="support-section">
-          <p className="support-text">
-            Payment confirmed but account not active? Contact support
-          </p>
           <button
             onClick={() => {
-              const msg = encodeURIComponent(`Hello, I paid KES ${LOGIN_FEE_AMOUNT} but account not activated. Phone: ${phone}`);
+              const msg = encodeURIComponent(`Hello, I need help with login fee payment. Phone: ${phone}`);
               window.open(`https://wa.me/254794101450?text=${msg}`, "_blank");
             }}
             className="support-btn"
           >
-            Contact Support
+            💬 Having issues? Chat with Support
           </button>
         </div>
       </div>
