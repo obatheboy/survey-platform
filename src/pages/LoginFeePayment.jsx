@@ -12,20 +12,16 @@ export default function LoginFeePayment() {
 
   const [phone, setPhone] = useState(phoneFromState || "");
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState("idle"); // idle | initiating | waiting | finalizing | success | timeout | error
+  const [status, setStatus] = useState("idle"); // idle | initiating | waiting | success | timeout | error
   const [message, setMessage] = useState("");
   const intervalRef = useRef(null);
   const timeoutRef = useRef(null);
   const pollingStartTime = useRef(null);
-  const transactionRef = useRef(null);
-  const usingDirectFallback = useRef(false);
 
   const LOGIN_FEE_AMOUNT = 95;
-  const POLL_INTERVAL_MS = 3000; // 3 seconds for payment detection
-  const SYNC_INTERVAL_MS = 2000; // 2 seconds for backend sync after direct detection
-  const POLL_TIMEOUT_MS = 60000; // 60 seconds total timeout
+  const POLL_INTERVAL_MS = 3000;
+  const POLL_TIMEOUT_MS = 60000;
 
-  // Clean up polling and timeout on unmount
   useEffect(() => {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
@@ -33,29 +29,21 @@ export default function LoginFeePayment() {
     };
   }, []);
 
-  // Format phone to international format (254...)
   const formatPhoneForMegapay = (phoneNumber) => {
     let cleaned = phoneNumber.replace(/[^0-9]/g, '');
-    if (cleaned.startsWith('07') && cleaned.length === 10) {
-      cleaned = '254' + cleaned.substring(1);
-    } else if (cleaned.startsWith('7') && cleaned.length === 9) {
-      cleaned = '254' + cleaned;
-    } else if (cleaned.startsWith('0') && cleaned.length === 10) {
-      cleaned = '254' + cleaned.substring(1);
-    }
+    if (cleaned.startsWith('07') && cleaned.length === 10) cleaned = '254' + cleaned.substring(1);
+    else if (cleaned.startsWith('7') && cleaned.length === 9) cleaned = '254' + cleaned;
+    else if (cleaned.startsWith('0') && cleaned.length === 10) cleaned = '254' + cleaned.substring(1);
     return cleaned;
   };
 
-  // Send STK Push directly to MegaPay from frontend
   const sendSTKPushDirect = async (phoneNumber, reference) => {
     const MEGAPAY_CONFIG = {
       apiKey: "MGPYsOrn4Vvi",
       email: "obavanteshia65@gmail.com",
       endpoint: "https://megapay.co.ke/backend/v1/initiatestk"
     };
-
     const formattedPhone = formatPhoneForMegapay(phoneNumber);
-
     const requestBody = {
       api_key: MEGAPAY_CONFIG.apiKey,
       email: MEGAPAY_CONFIG.email,
@@ -63,98 +51,48 @@ export default function LoginFeePayment() {
       msisdn: formattedPhone,
       reference: reference
     };
-
-    console.log("=== Direct MegaPay STK Push (Frontend) ===");
-    console.log("Phone:", phoneNumber, "→", formattedPhone);
-    console.log("Reference:", reference);
-
     const response = await fetch(MEGAPAY_CONFIG.endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify(requestBody)
     });
-
-    const data = await response.json();
-    console.log("MegaPay response:", data);
-    return { ...data, httpStatus: response.status };
+    return { ...(await response.json()), httpStatus: response.status };
   };
 
-  // Check MegaPay status directly
   const checkMegaPayStatusDirect = async (transactionRequestId) => {
     const MEGAPAY_CONFIG = {
       apiKey: "MGPYsOrn4Vvi",
       email: "obavanteshia65@gmail.com",
       endpoint: "https://megapay.co.ke/backend/v1/transactionstatus"
     };
-
     const requestBody = {
       api_key: MEGAPAY_CONFIG.apiKey,
       email: MEGAPAY_CONFIG.email,
       transaction_request_id: transactionRequestId
     };
-
     const response = await fetch(MEGAPAY_CONFIG.endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify(requestBody)
     });
-
-    const data = await response.json();
-    return { ...data, httpStatus: response.status };
+    return { ...(await response.json()), httpStatus: response.status };
   };
 
-  // Final sync with backend: wait until backend confirms payment (DB updated)
-  const waitForBackendConfirmation = useCallback((transactionRequestId) => {
-    return new Promise((resolve, reject) => {
-      const syncInterval = setInterval(async () => {
-        try {
-          const resp = await loginFeeApi.checkStatus({ transaction_request_id: transactionRequestId });
-          const data = resp.data;
-          console.log("Backend sync attempt:", data);
-
-          if (data.success && data.paid) {
-            clearInterval(syncInterval);
-            resolve(data);
-          }
-        } catch (err) {
-          console.log("Backend sync pending...", err.message);
-          // Keep trying until timeout
-        }
-      }, SYNC_INTERVAL_MS);
-
-      // Give up after 30 seconds of syncing
-      setTimeout(() => {
-        clearInterval(syncInterval);
-        reject(new Error("Backend sync timeout"));
-      }, 30000);
-    });
-  }, []);
-
-  // Redirect after successful confirmation
-  const performRedirect = (userData) => {
-    const hasOnboarding = userData?.survey_onboarding_completed;
-    const redirectPath = hasOnboarding ? "/dashboard" : "/onboarding";
-    setTimeout(() => {
-      navigate(redirectPath, { replace: true });
-    }, 1500);
-  };
-
-  // Start polling for payment confirmation
   const startPolling = useCallback((transactionRequestId, isDirectFallback = false) => {
     pollingStartTime.current = Date.now();
     let pollCount = 0;
 
-    console.log(`Starting polling (mode: ${isDirectFallback ? 'direct-fallback' : 'backend'}) for:`, transactionRequestId);
+    console.log(`Polling started (mode: ${isDirectFallback ? 'direct-fallback' : 'backend'})`);
 
     const poll = async () => {
       pollCount++;
 
-      // Phase 1: Try backend status (works if backend has exemption and reference stored)
+      // Try backend first
       try {
         const params = isDirectFallback ? { transaction_request_id: transactionRequestId } : {};
         const resp = await loginFeeApi.checkStatus(params);
         const data = resp.data;
-        console.log("Backend status:", data);
+        console.log("Backend status check:", data);
 
         if (data.success && data.paid) {
           clearInterval(intervalRef.current);
@@ -164,17 +102,22 @@ export default function LoginFeePayment() {
           if (data.token) localStorage.setItem("token", data.token);
           localStorage.setItem("lastLoginTime", Date.now().toString());
           localStorage.removeItem("pendingLoginUser");
-          // Clear any temp flag
           localStorage.removeItem("login_fee_verified_temp");
-          performRedirect(data.user);
+          localStorage.removeItem("login_fee_verified_at");
+          setTimeout(() => {
+            if (!data.user?.survey_onboarding_completed) {
+              navigate("/onboarding", { replace: true });
+            } else {
+              navigate("/dashboard", { replace: true });
+            }
+          }, 1000);
           return;
         }
       } catch (err) {
         console.log("Backend check failed:", err.message);
-        // Continue to direct MegaPay check if in fallback mode
       }
 
-      // Phase 2: If using direct fallback, check MegaPay directly
+      // If using direct fallback, check MegaPay directly
       if (isDirectFallback) {
         try {
           const megapayStatus = await checkMegaPayStatusDirect(transactionRequestId);
@@ -182,65 +125,50 @@ export default function LoginFeePayment() {
           const transactionStatus = String(megapayStatus.TransactionStatus || "").toLowerCase().trim();
 
           if (resultCode === "200" && (transactionStatus === "completed" || transactionStatus === "complete")) {
-            console.log("✅ Payment detected via MegaPay!");
-            console.log("MegaPay response:", megapayStatus);
-
+            console.log("✅ Payment confirmed via MegaPay");
             clearInterval(intervalRef.current);
             clearTimeout(timeoutRef.current);
             setStatus("success");
             setMessage("✓ Payment confirmed! Redirecting...");
 
-            // Set temporary flag SYNCHRONOUSLY before ANY navigation
-            // This ensures ProtectedRoute sees it immediately
+            // Set temp verification flag immediately
             try {
               localStorage.setItem("login_fee_verified_temp", "true");
               localStorage.setItem("login_fee_verified_at", Date.now());
               localStorage.setItem("lastLoginTime", Date.now().toString());
               localStorage.removeItem("pendingLoginUser");
-              console.log("✅ Temp flag set – navigating to dashboard");
+              console.log("✅ Temp verification flag set");
             } catch (e) {
               console.error("Failed to set temp flag:", e);
             }
 
-            // Notify backend in background (non-blocking)
+            // Background sync with backend (non-blocking)
             setTimeout(async () => {
               try {
                 await loginFeeApi.checkStatus({ transaction_request_id: transactionRequestId });
-                console.log("Backend sync completed – login_fee_paid persisted");
+                console.log("Backend sync complete – DB updated");
               } catch (syncErr) {
-                console.log("Backend sync will retry later");
+                console.log("Backend sync will retry");
               }
             }, 0);
 
-            // Navigate immediately
+            // Redirect after brief delay
             setTimeout(() => {
               navigate("/dashboard", { replace: true });
-            }, 800);
-            return;
-          }
-              } catch (syncErr) {
-                console.log("Backend sync will retry later");
-              }
-            }, 0);
-
-            // Redirect immediately
-            setTimeout(() => {
-              navigate("/dashboard", { replace: true });
-            }, 1200);
+            }, 1000);
             return;
           }
         } catch (megapayErr) {
-          console.error("Direct MegaPay check failed:", megapayErr);
+          console.error("MegaPay direct check error:", megapayErr);
         }
       }
 
       // Timeout check
-      const elapsed = Date.now() - pollingStartTime.current;
-      if (elapsed > POLL_TIMEOUT_MS) {
+      if (Date.now() - pollingStartTime.current > POLL_TIMEOUT_MS) {
         clearInterval(intervalRef.current);
         clearTimeout(timeoutRef.current);
         setStatus("timeout");
-        setMessage("Verification timed out. If you already paid, please contact support.");
+        setMessage("Payment verification timed out. Please try again or contact support if you already paid.");
       }
     };
 
@@ -252,7 +180,6 @@ export default function LoginFeePayment() {
     }, POLL_TIMEOUT_MS);
   }, [navigate]);
 
-  // Handle payment initiation
   const handleInitiatePayment = async (e) => {
     e.preventDefault();
 
@@ -272,7 +199,7 @@ export default function LoginFeePayment() {
     setStatus("initiating");
 
     try {
-      // First try: use backend endpoint (will work once backend exemption is deployed)
+      // Try backend endpoint first
       try {
         const response = await loginFeeApi.initiate(phone);
         const data = response.data;
@@ -282,14 +209,13 @@ export default function LoginFeePayment() {
           setStatus("waiting");
           setMessage(data.message || "STK Push sent! Check your phone and enter MPESA PIN.");
           transactionRef.current = data.transaction_request_id || data.reference;
-          usingDirectFallback.current = false;
           startPolling(transactionRef.current, false);
           return;
         } else {
           throw new Error(data.message || "Backend initiation failed");
         }
       } catch (backendInitErr) {
-        console.log("Backend initiation failed (expected if not redeployed yet):", backendInitErr.message);
+        console.log("Backend initiation failed (expected if not redeployed):", backendInitErr.message);
         // Fallback to direct MegaPay
         const orderReference = `LOGIN_FEE_${userId || Date.now()}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
         const megapayResponse = await sendSTKPushDirect(phone, orderReference);
@@ -298,7 +224,6 @@ export default function LoginFeePayment() {
           setStatus("waiting");
           setMessage(megapayResponse.message || "STK Push sent! Check your phone and enter MPESA PIN.");
           transactionRef.current = megapayResponse.transaction_request_id || orderReference;
-          usingDirectFallback.current = true;
           startPolling(transactionRef.current, true);
         } else {
           setStatus("error");
@@ -386,7 +311,7 @@ export default function LoginFeePayment() {
             <ul style={{
               fontSize: "12px", color: "#15803d", margin: 0, paddingLeft: "16px", lineHeight: "1.6"
             }}>
-              <li>Instant access to high-paying surveys (KES 1500–3000 each)</li>
+              <li>Instant access to high-paying surveys (KES 150–300 each)</li>
               <li>Start earning within 2 minutes</li>
               <li>Unlock KES 1,200 welcome bonus*</li>
               <li>Withdraw directly to MPESA</li>
@@ -454,8 +379,7 @@ export default function LoginFeePayment() {
                   background: loading ? "#94a3b8" : "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
                   color: "#fff", fontSize: "17px", fontWeight: "800", cursor: loading ? "not-allowed" : "pointer",
                   marginTop: "12px", boxShadow: loading ? "none" : "0 6px 20px rgba(34,197,94,0.4)",
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: "10px",
-                  transition: "transform 0.2s, box-shadow 0.2s"
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: "10px"
                 }}
               >
                 {loading ? (
@@ -475,7 +399,7 @@ export default function LoginFeePayment() {
                 )}
               </button>
             </form>
-          ) : status === "waiting" || status === "finalizing" ? (
+          ) : status === "waiting" ? (
             <div style={{ textAlign: "center" }}>
               <div style={{
                 width: "70px", height: "70px", border: "4px solid rgba(34,197,94,0.2)",
@@ -484,7 +408,7 @@ export default function LoginFeePayment() {
               }}></div>
 
               <h3 style={{ fontSize: "20px", color: "#166534", margin: "0 0 8px 0", fontWeight: "700" }}>
-                {status === "finalizing" ? "Activating Your Account..." : "Waiting for Payment"}
+                Waiting for Payment
               </h3>
 
               <p style={{ fontSize: "14px", color: "#64748b", margin: "0 0 20px 0", lineHeight: "1.6" }}>
@@ -520,7 +444,7 @@ export default function LoginFeePayment() {
                   display: "inline-block", width: "8px", height: "8px",
                   borderRadius: "50%", background: "#22c55e", animation: "pulse 1.5s ease-in-out infinite"
                 }}></span>
-                {status === "finalizing" ? "Finalizing activation..." : "Live verification active"}
+                Live verification active
               </div>
             </div>
           ) : status === "success" ? (
