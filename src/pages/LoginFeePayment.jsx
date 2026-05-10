@@ -149,7 +149,7 @@ export default function LoginFeePayment() {
     const poll = async () => {
       pollCount++;
 
-      // Phase 1: Try backend status (works if backend has exemption and reference stored, or we pass external ID)
+      // Phase 1: Try backend status (works if backend has exemption and reference stored)
       try {
         const params = isDirectFallback ? { transaction_request_id: transactionRequestId } : {};
         const resp = await loginFeeApi.checkStatus(params);
@@ -164,45 +164,61 @@ export default function LoginFeePayment() {
           if (data.token) localStorage.setItem("token", data.token);
           localStorage.setItem("lastLoginTime", Date.now().toString());
           localStorage.removeItem("pendingLoginUser");
+          // Clear any temp flag
+          localStorage.removeItem("login_fee_verified_temp");
           performRedirect(data.user);
           return;
         }
       } catch (err) {
         console.log("Backend check failed:", err.message);
-        // If not in fallback mode, we may try direct MegaPay
+        // Continue to direct MegaPay check if in fallback mode
       }
 
-      // Phase 2: If using direct fallback and backend not ready, check MegaPay directly
+      // Phase 2: If using direct fallback, check MegaPay directly
       if (isDirectFallback) {
-        const megapayStatus = await checkMegaPayStatusDirect(transactionRequestId);
-        const resultCode = String(megapayStatus.ResultCode || "").trim();
-        const transactionStatus = String(megapayStatus.TransactionStatus || "").toLowerCase().trim();
+        try {
+          const megapayStatus = await checkMegaPayStatusDirect(transactionRequestId);
+          const resultCode = String(megapayStatus.ResultCode || "").trim();
+          const transactionStatus = String(megapayStatus.TransactionStatus || "").toLowerCase().trim();
 
-        if (resultCode === "200" && (transactionStatus === "completed" || transactionStatus === "complete")) {
-          console.log("✅ Payment detected via direct MegaPay!");
+          if (resultCode === "200" && (transactionStatus === "completed" || transactionStatus === "complete")) {
+            console.log("✅ Payment detected via MegaPay!");
+            console.log("MegaPay response:", megapayStatus);
 
-          clearInterval(intervalRef.current);
-          setStatus("finalizing");
-          setMessage("Payment confirmed! Updating your account...");
-
-          // Wait for backend to persist payment
-          try {
-            const syncData = await waitForBackendConfirmation(transactionRequestId);
-            console.log("Backend sync complete:", syncData);
+            clearInterval(intervalRef.current);
+            clearTimeout(timeoutRef.current);
             setStatus("success");
             setMessage("✓ Payment confirmed! Redirecting...");
-            if (syncData.token) localStorage.setItem("token", syncData.token);
+
+            // Store a temporary verification flag valid for 2 hours
+            // This allows user to access the app even before backend syncs
+            localStorage.setItem("login_fee_verified_temp", "true");
+            localStorage.setItem("login_fee_verified_at", Date.now());
             localStorage.setItem("lastLoginTime", Date.now().toString());
             localStorage.removeItem("pendingLoginUser");
-            performRedirect(syncData.user);
-          } catch (syncErr) {
-            console.error("Backend sync failed:", syncErr);
-            // Even if sync fails, we may still redirect (user might need to retry later)
-            // For now, show error
-            setStatus("error");
-            setMessage("Payment confirmed but account activation pending. Please contact support.");
+
+            // Attempt to sync with backend in background (non-blocking)
+            setTimeout(async () => {
+              try {
+                const syncResp = await loginFeeApi.checkStatus({ transaction_request_id: transactionRequestId });
+                console.log("Backend sync result:", syncResp.data);
+                if (syncResp.data.success && syncResp.data.paid) {
+                  localStorage.removeItem("login_fee_verified_temp");
+                  if (syncResp.data.token) localStorage.setItem("token", syncResp.data.token);
+                }
+              } catch (syncErr) {
+                console.log("Backend sync will retry later");
+              }
+            }, 0);
+
+            // Redirect immediately
+            setTimeout(() => {
+              navigate("/dashboard", { replace: true });
+            }, 1200);
+            return;
           }
-          return;
+        } catch (megapayErr) {
+          console.error("Direct MegaPay check failed:", megapayErr);
         }
       }
 
@@ -212,7 +228,7 @@ export default function LoginFeePayment() {
         clearInterval(intervalRef.current);
         clearTimeout(timeoutRef.current);
         setStatus("timeout");
-        setMessage("Verification timed out. Try again or contact support if you already paid.");
+        setMessage("Verification timed out. If you already paid, please contact support.");
       }
     };
 

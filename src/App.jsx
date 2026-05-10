@@ -50,14 +50,56 @@ function ProtectedRoute({ children }) {
         if (!isMounted) return;
         const userData = res.data;
         setUser(userData);
-        // ✅ ENFORCE LOGIN FEE: if not paid, redirect to payment page
-        if (!userData.login_fee_paid) {
+
+        // Check login fee payment OR temporary verification (valid 2 hours)
+        const hasPaid = userData.login_fee_paid;
+        const tempVerified = localStorage.getItem("login_fee_verified_temp") === "true";
+        const tempVerifiedAt = parseInt(localStorage.getItem("login_fee_verified_at") || "0");
+        const TWO_HOURS = 2 * 60 * 60 * 1000; // 2 hours in ms
+        const tempStillValid = tempVerified && (Date.now() - tempVerifiedAt) < TWO_HOURS;
+
+        if (!hasPaid && !tempStillValid) {
           localStorage.setItem("pendingLoginUser", JSON.stringify({
             id: userData.id,
             phone: userData.phone
           }));
           navigate("/login-fee-payment", { replace: true });
+        } else if (hasPaid && tempVerified) {
+          // Backend now confirms payment – clear temp flag
+          localStorage.removeItem("login_fee_verified_temp");
+          localStorage.removeItem("login_fee_verified_at");
         }
+      })
+      .catch((err) => {
+        console.error("Auth check failed:", err);
+        if (isMounted) setUser(null);
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+    return () => { isMounted = false; };
+  }, [navigate]);
+
+  if (loading) {
+    return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
+  }
+
+  if (!user) {
+    return <Navigate to="/auth?mode=register" replace />;
+  }
+
+  // Allow access if paid OR temporarily verified (pending DB sync)
+  const tempVerified = localStorage.getItem("login_fee_verified_temp") === "true";
+  const tempVerifiedAt = parseInt(localStorage.getItem("login_fee_verified_at") || "0");
+  const TWO_HOURS = 2 * 60 * 60 * 1000;
+  const tempStillValid = tempVerified && (Date.now() - tempVerifiedAt) < TWO_HOURS;
+
+  if (!user.login_fee_paid && !tempStillValid) {
+    return null;
+  }
+
+  return children;
+}
       })
       .catch(() => {
         if (isMounted) setUser(null);
@@ -76,8 +118,39 @@ function ProtectedRoute({ children }) {
     return <Navigate to="/auth?mode=register" replace />;
   }
 
-  // Block rendering if login fee not paid (navigate already triggered)
-  if (!user.login_fee_paid) {
+  // Allow access if paid OR temporarily verified (pending DB sync)
+  const tempVerified = localStorage.getItem("login_fee_verified_temp") === "true";
+  const tempVerifiedAt = parseInt(localStorage.getItem("login_fee_verified_at") || "0");
+  const TWO_HOURS = 2 * 60 * 60 * 1000;
+  const tempStillValid = tempVerified && (Date.now() - tempVerifiedAt) < TWO_HOURS;
+
+  if (!user.login_fee_paid && !tempStillValid) {
+    return null;
+  }
+
+  return children;
+}
+      })
+      .catch(() => {
+        if (isMounted) setUser(null);
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+    return () => { isMounted = false; };
+  }, [navigate]);
+
+  if (loading) {
+    return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
+  }
+
+  if (!user) {
+    return <Navigate to="/auth?mode=register" replace />;
+  }
+
+  // Block rendering if login fee not paid AND not temporarily verified
+  const tempVerified = localStorage.getItem("login_fee_verified_temp") === "true";
+  if (!user.login_fee_paid && !tempVerified) {
     return null;
   }
 
