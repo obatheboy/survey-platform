@@ -770,7 +770,7 @@ export default function Dashboard() {
             const planClass = `plan-card ${key.toLowerCase()}`;
             
             return (
-              <div key={key} className={planClass} style={{ '--plan-color': plan.titleColor } as React.CSSProperties}>
+              <div key={key} className={planClass}>
                 <div className="plan-card-header">
                   <span className="plan-icon">{plan.icon}</span>
                   <div className="plan-info">
@@ -796,7 +796,12 @@ export default function Dashboard() {
                   </div>
                   <div className="stat-item">
                     <span className="stat-label">Earned so far</span>
-                    <span className="stat-value earned-amount">KES {earnedSoFar(key).toLocaleString()}</span>
+                    <span 
+                      className="stat-value earned-amount"
+                      style={{ color: plan.titleColor }}
+                    >
+                      KES {earnedSoFar(key).toLocaleString()}
+                    </span>
                   </div>
                 </div>
 
@@ -892,16 +897,141 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* NOTIFICATIONS, LEADERBOARD, ACHIEVEMENTS */}
-      <section className="more-section">
-        <h3>More Ways to Earn</h3>
+      {/* NOTIFICATIONS */}
+      <section className="dashboard-section">
+        <div className="section-heading">
+          <h3>Notifications</h3>
+          <p>Stay updated with your account</p>
+        </div>
         <UserNotifications />
+      </section>
+
+      {/* WHY USERS LOVE OUR PLATFORM */}
+      <section className="dashboard-section features-section">
+        <div className="section-heading">
+          <h3>Why Users Love Our Platform</h3>
+          <p>Discover what makes us the best choice for earning online</p>
+        </div>
+        <div className="feature-grid">
+          <div className="feature-card feature-instant">
+            <div className="feature-icon">⚡</div>
+            <h4>Instant Withdrawals</h4>
+            <p>Request cash anytime.</p>
+          </div>
+          <div className="feature-card feature-verified">
+            <div className="feature-icon">✅</div>
+            <h4>Verified Surveys</h4>
+            <p>High-quality surveys.</p>
+          </div>
+          <div className="feature-card feature-secure">
+            <div className="feature-icon">🔒</div>
+            <h4>Secure Payments</h4>
+            <p>Encrypted transactions.</p>
+          </div>
+          <div className="feature-card feature-support">
+            <div className="feature-icon">💬</div>
+            <h4>24/7 Support</h4>
+            <p>Always here to help.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* QUICK ACTIONS */}
+      <section className="dashboard-section quick-actions-section">
+        <div className="section-heading">
+          <h3>Quick Actions</h3>
+          <p>Complete these tasks to earn bonus points</p>
+        </div>
+        <div className="quick-actions-grid">
+          {quickActions.map(action => (
+            <div key={action.id} className={`quick-action-card ${action.completed ? 'completed' : ''}`}>
+              <span className="action-icon">{action.icon}</span>
+              <div className="action-content">
+                <h4>{action.label}</h4>
+                <p>{action.completed ? 'Completed! +10 points' : 'Earn 10 bonus points'}</p>
+              </div>
+              <button 
+                className={`action-btn ${action.completed ? 'completed' : ''}`}
+                onClick={() => !action.completed && completeQuickAction(action.id)}
+                disabled={action.completed}
+              >
+                {action.completed ? '✓' : 'Start'}
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section className="dashboard-section testimonials-section">
+        <div className="section-heading">
+          <h3>Community Success</h3>
+          <p>See what others are earning</p>
+        </div>
+        <Testimonials variant="grid" />
+      </section>
+
+      {/* LEADERBOARD */}
+      <section className="dashboard-section">
+        <div className="section-heading">
+          <h3>Top Earners</h3>
+          <p>See who's leading the way</p>
+        </div>
         <Leaderboard />
+      </section>
+
+      {/* GAMIFICATION */}
+      <section className="gamification-section">
+        <div className="gamification-grid">
+          <div className="level-streak-card">
+            <div className="level-header">
+              <div className="level-badge">⭐</div>
+              <div>
+                <div className="level-title">Level {gamificationStats.level}</div>
+                <div className="level-subtitle">{gamificationStats.xp} / {gamificationStats.xpToNextLevel} XP</div>
+              </div>
+            </div>
+            <div className="level-progress">
+              <div className="level-progress-bar">
+                <div 
+                  className="level-progress-fill"
+                  style={{ width: `${(gamificationStats.xp / gamificationStats.xpToNextLevel) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+            <div className="streak-badge">
+              🔥 {gamificationStats.currentStreak} day streak
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ACHIEVEMENTS */}
+      <section className="achievements-section">
+        <div className="section-heading">
+          <h3>Achievements</h3>
+          <p>Your milestones and badges</p>
+        </div>
         <Achievements />
       </section>
 
-       {/* BOTTOM NAVIGATION */}
-       <BottomNavigation user={user} />
+      {/* FOOTER */}
+      <footer className="dashboard-footer">
+        <p>
+          Need help? 
+          <button 
+            onClick={openWhatsAppSupport}
+            className="footer-link"
+          >
+            Contact Support
+          </button> 
+          | <a href="/faq" className="footer-link">FAQ</a>
+        </p>
+        <p className="footer-note">© {new Date().getFullYear()} SurveyEarn. All rights reserved.</p>
+      </footer>
+
+      {/* BOTTOM NAVIGATION */}
+      <BottomNavigation user={user} />
      </div>
    );
  }

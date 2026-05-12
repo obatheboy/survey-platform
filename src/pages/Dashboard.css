@@ -225,12 +225,39 @@
 }
 
 /* ============================================
-   LIVE WITHDRAWAL FEED - Top Banner
+   DASHBOARD SECTIONS
    ============================================ */
+
+.dashboard-section {
+  padding: 16px;
+  margin-bottom: 0;
+}
+
+.section-heading {
+  margin-bottom: 14px;
+}
+
+.section-heading h3 {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.02em;
+}
+
+.section-heading p {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0;
+}
 
 .dashboard-section.live-feed {
   padding: 0;
   margin-top: -2px;
+}
+
+.dashboard-section.surveys {
+  padding-top: 4px;
 }
 
 .live-withdrawal-feed {
@@ -561,9 +588,9 @@
   opacity: 0.8;
 }
 
-.plan-card.regular::before { --plan-color: #10b981; }
-.plan-card.vip::before { --plan-color: #6366f1; }
-.plan-card.vvip::before { --plan-color: #f59e0b; }
+.plan-card.regular { --plan-color: #10b981; }
+.plan-card.vip { --plan-color: #6366f1; }
+.plan-card.vvip { --plan-color: #f59e0b; }
 
 .plan-card:hover {
   transform: translateY(-3px);
@@ -660,6 +687,11 @@
   font-weight: 800;
   color: #111827;
   line-height: 1.2;
+  margin: 0;
+}
+
+.earned-amount {
+  font-weight: 900;
 }
 
 /* Progress Bar */
@@ -777,6 +809,19 @@
   transform: none !important;
   box-shadow: none !important;
   background: #9ca3af !important;
+}
+
+/* Pending Withdrawal Notice */
+.pending-notice {
+  margin-bottom: 12px;
+  padding: 10px;
+  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  color: #f59e0b;
+  font-weight: 600;
+  text-align: center;
 }
 
 /* ============================================
@@ -1485,6 +1530,10 @@ button:focus-visible {
 .quick-action-card:not(.completed) .action-btn:hover {
   background: rgba(255, 255, 255, 0.95);
   transform: scale(1.05);
+}
+
+.quick-action-card .action-btn.completed {
+  opacity: 1;
 }
 
 /* ============================================
