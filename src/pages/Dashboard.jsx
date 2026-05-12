@@ -895,132 +895,126 @@ export default function Dashboard() {
       />
 
       {/* LIVE WITHDRAWAL FEED - MOVED TO TOP */}
-      <section className="dashboard-section" style={{ paddingTop: '0', paddingBottom: '0', marginTop: '20px' }}>
+      <section className="dashboard-section" style={{ paddingTop: '0', paddingBottom: '0', marginTop: '10px' }}>
         <LiveWithdrawalFeed />
       </section>
 
-      {/* HERO SECTION - BALANCE ONLY */}
-      <div className="dashboard-section hero-section" style={{
+      {/* HERO SECTION - BALANCE ONLY - FULL WIDTH */}
+      <div style={{
         borderRadius: '0',
-        padding: '12px',
+        padding: '8px 12px',
         background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
-        boxShadow: '0 6px 20px -5px rgba(0, 0, 0, 0.15)',
+        boxShadow: '0 4px 15px -3px rgba(0, 0, 0, 0.12)',
         border: 'none',
-        borderBottom: '1px solid rgba(255,255,255,0.2)',
+        borderBottom: '1px solid rgba(255,255,255,0.15)',
         position: 'relative',
         overflow: 'hidden',
-        marginBottom: '0'
+        marginBottom: '0',
+        width: '100%'
       }}>
         <div style={{
+          background: 'linear-gradient(145deg, #1f7405, #2d9a07)',
+          borderRadius: '10px',
+          padding: '10px',
+          textAlign: 'center',
+          boxShadow: '0 3px 12px rgba(0,0,0,0.08)',
           display: 'flex',
           flexDirection: 'column',
-          gap: '8px'
+          justifyContent: 'center',
+          alignItems: 'center',
+          color: 'white',
+          width: '100%',
+          boxSizing: 'border-box'
         }}>
           <div style={{
-            background: 'linear-gradient(145deg, #1f7405, #2d9a07)',
-            borderRadius: '12px',
-            padding: '8px',
-            textAlign: 'center',
-            boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            color: 'white',
-            position: 'relative',
-            overflow: 'hidden'
+            color: 'rgba(255,255,255,0.85)',
+            fontSize: '10px',
+            fontWeight: '800',
+            textTransform: 'uppercase',
+            letterSpacing: '0.8px',
+            marginBottom: '3px'
           }}>
-            <div style={{
-              color: 'rgba(255,255,255,0.7)',
-              fontSize: '10px',
-              fontWeight: '800',
-              textTransform: 'uppercase',
-              letterSpacing: '1px',
-              marginBottom: '2px'
-            }}>
-              Total Balance
-            </div>
-
-            <div style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              justifyContent: 'center',
-              gap: '2px',
-              marginBottom: '4px'
-            }}>
-              <span style={{
-                color: 'white',
-                fontSize: '11px',
-                fontWeight: '700',
-                marginTop: '2px'
-              }}>
-                KES
-              </span>
-              <div style={{
-                color: 'white',
-                fontSize: '18px',
-                fontWeight: '900',
-                lineHeight: '1'
-              }}>
-                {stats.availableBalance.toLocaleString()}
-              </div>
-            </div>
-            
-            <button 
-              onClick={() => navigate("/withdraw-form")}
-              style={{
-                background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
-                color: 'white',
-                border: '2px solid rgba(255,255,255,0.5)',
-                borderRadius: '6px',
-                padding: '6px 12px',
-                fontSize: '11px',
-                fontWeight: '900',
-                cursor: 'pointer',
-                width: '100%',
-                transition: 'all 0.2s',
-                boxShadow: '0 3px 10px rgba(220, 38, 38, 0.4)',
-                maxWidth: '200px'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 5px 15px rgba(220, 38, 38, 0.6)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 3px 10px rgba(220, 38, 38, 0.4)';
-              }}
-            >
-              WITHDRAW NOW
-            </button>
+            Total Balance
           </div>
+
+          <div style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'center',
+            gap: '3px',
+            marginBottom: '5px'
+          }}>
+            <span style={{
+              color: 'white',
+              fontSize: '12px',
+              fontWeight: '700',
+              marginTop: '3px'
+            }}>
+              KES
+            </span>
+            <div style={{
+              color: 'white',
+              fontSize: '20px',
+              fontWeight: '900',
+              lineHeight: '1'
+            }}>
+              {stats.availableBalance.toLocaleString()}
+            </div>
+          </div>
+          
+          <button 
+            onClick={() => navigate("/withdraw-form")}
+            style={{
+              background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+              color: 'white',
+              border: '2px solid rgba(255,255,255,0.4)',
+              borderRadius: '5px',
+              padding: '7px 14px',
+              fontSize: '12px',
+              fontWeight: '900',
+              cursor: 'pointer',
+              width: '100%',
+              maxWidth: '180px',
+              transition: 'all 0.2s',
+              boxShadow: '0 2px 8px rgba(220, 38, 38, 0.3)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.boxShadow = '0 3px 12px rgba(220, 38, 38, 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(220, 38, 38, 0.3)';
+            }}
+          >
+            WITHDRAW NOW
+          </button>
         </div>
       </div>
       
-      {/* WELCOME BONUS CARD - SMALL HORIZONTAL */}
-      <section ref={welcomeRef}>
+      {/* WELCOME BONUS CARD - FULL WIDTH SMALL BAR */}
+      <section ref={welcomeRef} style={{ margin: '6px 0' }}>
         <div className="plan-card welcome-bonus" style={{
-          background: '#1f7405 !important',
-          border: '1px solid #165c03 !important',
-          borderRadius: '6px !important',
-          padding: '6px 10px !important',
-          margin: '4px 0 !important',
-          boxShadow: '0 1px 4px rgba(0, 0, 0, 0.06) !important',
-          position: 'relative'
+          background: '#1f7405',
+          border: '1px solid #165c03',
+          borderRadius: '5px',
+          padding: '6px 10px',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+          width: '100%',
+          boxSizing: 'border-box'
         }}>
           <div style={{
-            position: 'relative',
-            zIndex: 2,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: '8px',
-            flexWrap: 'nowrap'
+            flexWrap: 'nowrap',
+            width: '100%'
           }}>
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '4px',
+              gap: '6px',
               flex: 1,
               minWidth: 0
             }}>
@@ -1028,8 +1022,7 @@ export default function Dashboard() {
               <span style={{
                 fontSize: '12px',
                 fontWeight: '700',
-                color: '#ffffff',
-                letterSpacing: '0.3px'
+                color: '#ffffff'
               }}>
                 Welcome Bonus: KES 1,200
               </span>
@@ -1039,15 +1032,14 @@ export default function Dashboard() {
               className="start-survey-btn"
               onClick={handleWelcomeBonusWithdraw}
               style={{
-                background: '#dc2626 !important',
-                border: 'none !important',
-                borderRadius: '4px !important',
-                padding: '4px 10px !important',
-                fontWeight: '800 !important',
-                fontSize: '11px !important',
-                color: 'white !important',
+                background: '#dc2626',
+                border: 'none',
+                borderRadius: '4px',
+                padding: '5px 12px',
+                fontWeight: '800',
+                fontSize: '11px',
+                color: 'white',
                 textTransform: 'uppercase',
-                letterSpacing: '0.3px',
                 cursor: 'pointer',
                 flexShrink: 0,
                 whiteSpace: 'nowrap'
