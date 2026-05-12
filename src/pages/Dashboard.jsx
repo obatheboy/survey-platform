@@ -895,11 +895,11 @@ export default function Dashboard() {
       />
 
       {/* LIVE WITHDRAWAL FEED - MOVED TO TOP */}
-      <section className="dashboard-section" style={{ paddingTop: '0', paddingBottom: '0', marginTop: '50px' }}>
+      <section className="dashboard-section" style={{ paddingTop: '0', paddingBottom: '0', marginTop: '20px' }}>
         <LiveWithdrawalFeed />
       </section>
 
-      {/* HERO SECTION - ULTRA COMPACT */}
+      {/* HERO SECTION - BALANCE ONLY */}
       <div className="dashboard-section hero-section" style={{
         borderRadius: '0',
         padding: '12px',
@@ -912,63 +912,16 @@ export default function Dashboard() {
         marginBottom: '0'
       }}>
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '10px',
-          alignItems: 'stretch'
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px'
         }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <button 
-                onClick={goToSurveys}
-                style={{
-                  background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '12px',
-                  padding: '10px',
-                  fontSize: '13px',
-                  fontWeight: '800',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px',
-                  flex: 1
-                }}
-              >
-                <span style={{fontSize: '18px'}}>🚀</span> Start Survey
-              </button>
-              
-              <button 
-                onClick={goToWelcome}
-                style={{
-                  background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '12px',
-                  padding: '10px',
-                  fontSize: '13px',
-                  fontWeight: '800',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 15px rgba(245, 158, 11, 0.3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px',
-                  flex: 1
-                }}
-              >
-                <span style={{fontSize: '18px'}}>🎁</span> Get Bonus
-              </button>
-          </div>
-          
           <div style={{
             background: 'linear-gradient(145deg, #1f7405, #2d9a07)',
-            borderRadius: '16px',
-            padding: '10px',
+            borderRadius: '12px',
+            padding: '8px',
             textAlign: 'center',
-            boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
+            boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
@@ -977,16 +930,6 @@ export default function Dashboard() {
             position: 'relative',
             overflow: 'hidden'
           }}>
-            <div style={{
-              position: 'absolute',
-              top: '-50%',
-              right: '-50%',
-              width: '100%',
-              height: '100%',
-              background: 'radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%)',
-              transform: 'rotate(45deg)'
-            }}></div>
-
             <div style={{
               color: 'rgba(255,255,255,0.7)',
               fontSize: '10px',
@@ -1003,19 +946,19 @@ export default function Dashboard() {
               alignItems: 'flex-start',
               justifyContent: 'center',
               gap: '2px',
-              marginBottom: '6px'
+              marginBottom: '4px'
             }}>
               <span style={{
                 color: 'white',
-                fontSize: '12px',
+                fontSize: '11px',
                 fontWeight: '700',
-                marginTop: '4px'
+                marginTop: '2px'
               }}>
                 KES
               </span>
               <div style={{
                 color: 'white',
-                fontSize: '22px',
+                fontSize: '18px',
                 fontWeight: '900',
                 lineHeight: '1'
               }}>
@@ -1029,22 +972,23 @@ export default function Dashboard() {
                 background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
                 color: 'white',
                 border: '2px solid rgba(255,255,255,0.5)',
-                borderRadius: '8px',
-                padding: '10px 16px',
-                fontSize: '13px',
+                borderRadius: '6px',
+                padding: '6px 12px',
+                fontSize: '11px',
                 fontWeight: '900',
                 cursor: 'pointer',
                 width: '100%',
                 transition: 'all 0.2s',
-                boxShadow: '0 4px 15px rgba(220, 38, 38, 0.5)'
+                boxShadow: '0 3px 10px rgba(220, 38, 38, 0.4)',
+                maxWidth: '200px'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 6px 20px rgba(220, 38, 38, 0.7)';
+                e.currentTarget.style.boxShadow = '0 5px 15px rgba(220, 38, 38, 0.6)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 4px 15px rgba(220, 38, 38, 0.5)';
+                e.currentTarget.style.boxShadow = '0 3px 10px rgba(220, 38, 38, 0.4)';
               }}
             >
               WITHDRAW NOW
@@ -1053,126 +997,67 @@ export default function Dashboard() {
         </div>
       </div>
       
-{/* WELCOME BONUS CARD - DARK GREEN BACKGROUND */}
-<section ref={welcomeRef}>
-  <div className="plan-card welcome-bonus" style={{
-    background: '#1f7405 !important',
-    border: '1px solid #165c03 !important',
-    borderRadius: '8px !important',
-    padding: '10px !important',
-    margin: '8px 0 !important',
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08) !important',
-    position: 'relative'
-  }}>
-    <div style={{
-      position: 'relative',
-      zIndex: 2,
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '6px'
-    }}>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px'
-        }}>
-          <span style={{ fontSize: '20px' }}>🎁</span>
-          <span style={{
-            fontSize: '18px',
-            fontWeight: '700',
-            color: '#ffffff',
-            letterSpacing: '0.5px'
-          }}>
-            Welcome Bonus
-          </span>
-        </div>
-        <span style={{
-          background: '#fef3c7',
-          color: '#d97706',
-          padding: '3px 8px',
-          borderRadius: '12px',
-          fontSize: '10px',
-          fontWeight: '700',
-          textTransform: 'uppercase'
-        }}>
-          New
-        </span>
-      </div>
-      
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.95) !important',
-        borderRadius: '6px !important',
-        padding: '8px !important',
-        border: '1px solid rgba(255, 255, 255, 0.8) !important'
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{
-            fontSize: '14px',
-            fontWeight: '900',
-            color: '#ea580c',
-            lineHeight: '1.3'
-          }}>
-            Congratulations! You've received a welcome bonus of 
-            <span style={{
-              color: '#ea580c',
-              fontSize: '20px',
-              fontWeight: '900',
-              display: 'inline-block',
-              marginLeft: '4px'
-            }}>
-              KES 1,200
-            </span>
-          </div>
-          <span style={{
-            fontSize: '10px !important',
-            fontWeight: '500 !important',
-            color: '#666 !important',
-            display: 'block',
-            marginTop: '2px'
-          }}>
-            Activate your account to withdraw instantly!
-          </span>
-        </div>
-      </div>
-    </div>
-    
-    <div style={{ 
-      marginTop: '8px', 
-      position: 'relative', 
-      zIndex: 2 
-    }}>
-      <button 
-        className="start-survey-btn"
-        onClick={handleWelcomeBonusWithdraw}
-        style={{
-          background: '#dc2626 !important',
-          border: 'none !important',
+      {/* WELCOME BONUS CARD - SMALL HORIZONTAL */}
+      <section ref={welcomeRef}>
+        <div className="plan-card welcome-bonus" style={{
+          background: '#1f7405 !important',
+          border: '1px solid #165c03 !important',
           borderRadius: '6px !important',
-          padding: '10px 14px !important',
-          fontWeight: '900 !important',
-          fontSize: '13px !important',
-          color: 'white !important',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '6px',
-          width: '100%',
-          cursor: 'pointer'
-        }}
-      >
-        <span style={{ fontSize: '12px' }}>🔓</span>
-        TAP HERE TO WITHDRAW
-      </button>
-    </div>
-  </div>
-</section>
+          padding: '6px 10px !important',
+          margin: '4px 0 !important',
+          boxShadow: '0 1px 4px rgba(0, 0, 0, 0.06) !important',
+          position: 'relative'
+        }}>
+          <div style={{
+            position: 'relative',
+            zIndex: 2,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '8px',
+            flexWrap: 'nowrap'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              flex: 1,
+              minWidth: 0
+            }}>
+              <span style={{ fontSize: '14px' }}>🎁</span>
+              <span style={{
+                fontSize: '12px',
+                fontWeight: '700',
+                color: '#ffffff',
+                letterSpacing: '0.3px'
+              }}>
+                Welcome Bonus: KES 1,200
+              </span>
+            </div>
+            
+            <button 
+              className="start-survey-btn"
+              onClick={handleWelcomeBonusWithdraw}
+              style={{
+                background: '#dc2626 !important',
+                border: 'none !important',
+                borderRadius: '4px !important',
+                padding: '4px 10px !important',
+                fontWeight: '800 !important',
+                fontSize: '11px !important',
+                color: 'white !important',
+                textTransform: 'uppercase',
+                letterSpacing: '0.3px',
+                cursor: 'pointer',
+                flexShrink: 0,
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Activate
+            </button>
+          </div>
+        </div>
+      </section>
       {/* SURVEY PLANS - Shown after Welcome Bonus (ONLY ONE INSTANCE) */}
       <section className="dashboard-section" id="surveys-section" ref={surveysSectionRef}>
         <div className="section-heading">
