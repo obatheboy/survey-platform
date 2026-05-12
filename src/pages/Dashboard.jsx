@@ -1,60 +1,60 @@
- // ========================= Dashboard.jsx =========================
+// ========================= Dashboard.jsx =========================
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 import MainMenuDrawer from "./components/MainMenuDrawer.jsx";
-import LiveWithdrawalFeed from "./components/LiveWithdrawalFeed.jsx";
+// Remove direct imports of lazy components - use lazy versions only
 import UserNotifications from "../components/UserNotifications.jsx";
 import Testimonials from "../components/Testimonials.jsx";
-import Leaderboard from "./components/Leaderboard.jsx";
 import Achievements from "./components/Achievements.jsx";
 import DailyRewardPopup from "./components/DailyRewardPopup.jsx";
 import WelcomeBonusPopup from "./components/WelcomeBonusPopup.jsx";
 import { gamificationApi } from "../api/api";
 import { DashboardSkeleton } from "../components/LoadingSkeleton";
 import BottomNavigation from "./components/BottomNavigation.jsx";
-import { hapticLight, hapticMedium, hapticSuccess, hapticError, hapticWarning } from "../utils/haptic";
+import { hapticLight, hapticMedium, hapticSuccess, hapticError } from "../utils/haptic";
 import "./Dashboard.css";
 
-// Lazy load heavy components for performance
+// ========== FIXED LAZY IMPORTS ==========
 const LazyLiveWithdrawalFeed = lazy(() => 
-  import("./components/LiveWithdrawalFeed.jsx").then(module => ({
-    default: module.LiveWithdrawalFeed
-  }))
+  import("./components/LiveWithdrawalFeed.jsx")
 );
 
 const LazyUserNotifications = lazy(() => 
-  import("../components/UserNotifications.jsx").then(module => ({
-    default: module.UserNotifications || module.default
-  }))
+  import("../components/UserNotifications.jsx")
 );
 
 const LazyTestimonials = lazy(() => 
-  import("../components/Testimonials.jsx").then(module => ({
-    default: module.Testimonials || module.default
-  }))
+  import("../components/Testimonials.jsx")
 );
 
 const LazyLeaderboard = lazy(() => 
-  import("./components/Leaderboard.jsx").then(module => ({
-    default: module.Leaderboard || module.default
-  }))
+  import("./components/Leaderboard.jsx")
 );
 
 const LazyAchievements = lazy(() => 
-  import("./components/Achievements.jsx").then(module => ({
-    default: module.Achievements || module.default
-  }))
+  import("./components/Achievements.jsx")
 );
-
-// Custom hooks removed - replaced with direct useEffect calls
-
-// Custom Hook: Use Debounce for performance
-const useDebounce = (value, delay) => {
+// Custom Hook: Use Intersection Observer for scroll animations
+const useScrollAnimation = (threshold = 0.1) => {
   useEffect(() => {
-    const timer = setTimeout(() => {}, delay);
-    return () => clearTimeout(timer);
-  }, [value, delay]);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold, rootMargin: "0px 0px -50px 0px" }
+    );
+
+    const elements = document.querySelectorAll(".animate-on-scroll");
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [threshold]);
 };
 
 const PLANS = {
@@ -106,6 +106,9 @@ const TOTAL_SURVEYS = 10;
 // Theme removed - light mode only
 
 export default function Dashboard() {
+  // Initialize scroll animations
+  useScrollAnimation(0.1);
+  
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("OVERVIEW");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -146,60 +149,75 @@ export default function Dashboard() {
     const handleOpenMenu = () => setMenuOpen(true);
     window.addEventListener('open-main-menu', handleOpenMenu);
     return () => window.removeEventListener('open-main-menu', handleOpenMenu);
-   }, []);
+  }, []);
 
-   const surveyRef = useRef(null);
+  const surveyRef = useRef(null);
   const welcomeRef = useRef(null);
   const dashboardRef = useRef(null);
   const surveysSectionRef = useRef(null);
 
+  // Define goToSurveys function
+  const goToSurveys = () => {
+    setActiveTab("SURVEYS");
+    setTimeout(() => {
+      const element = document.getElementById('surveys-section');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (surveysSectionRef.current) {
+        surveysSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  };
 
+  // Define goToWelcome function
+  const goToWelcome = () => {
+    setActiveTab("OVERVIEW");
+    setTimeout(() => {
+      welcomeRef.current?.scrollIntoView({ 
+        behavior: "smooth",
+        block: "start"
+      });
+    }, 50);
+  };
 
-
+  // Define hapticWarning fallback
+  const hapticWarning = () => {
+    if (window.navigator && window.navigator.vibrate) {
+      window.navigator.vibrate(200);
+    }
+  };
 
   /* =========================
-     THEME EFFECT
+     SCROLL WHEN TAB CHANGES
   ========================= */
-  // Theme removed - light mode only
+  useEffect(() => {
+    if (activeTab === "SURVEYS") {
+      hapticLight();
+      setTimeout(() => {
+        const element = document.getElementById('surveys-section');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else if (surveysSectionRef.current) {
+          surveysSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  }, [activeTab]);
 
-  // Theme removed - light mode only
-
-
-
-   /* =========================
-      SCROLL WHEN TAB CHANGES
-      ========================= */
-   useEffect(() => {
-     if (activeTab === "SURVEYS") {
-       hapticLight();
-       setTimeout(() => {
-         const element = document.getElementById('surveys-section');
-         if (element) {
-           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-         } else if (surveysSectionRef.current) {
-           surveysSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-         }
-       }, 100);
-     }
-   }, [activeTab]);
-
-/* =========================
-      GAMIFICATION - CHECK WELCOME BONUS
-    ========================= */
+  /* =========================
+     GAMIFICATION - CHECK WELCOME BONUS
+  ========================= */
   useEffect(() => {
     if (!user) return;
     
     const bonusAmount = user.welcome_bonus;
-    const isActivated = user.is_activated || user.account_activated;
-    const showOnLogin = localStorage.getItem("showWelcomeBonusOnDashboard");
     const onboardingCompleted = user.survey_onboarding_completed;
     
-    if (bonusAmount && showOnLogin && onboardingCompleted) {
+    if (bonusAmount && onboardingCompleted) {
       setWelcomeBonusAmount(bonusAmount);
       
       const showAfterDelay = setTimeout(() => {
         setShowWelcomeBonus(true);
-        localStorage.removeItem("showWelcomeBonusOnDashboard");
       }, 2500);
       
       return () => clearTimeout(showAfterDelay);
@@ -215,8 +233,6 @@ export default function Dashboard() {
           const response = await gamificationApi.checkDailyReward();
           if (response.data.can_claim) {
             setCanClaimDailyReward(true);
-            // Daily reward popup disabled
-            // setShowDailyReward(true);
           }
         } catch (error) {
           console.error('Error checking daily reward:', error);
@@ -276,8 +292,10 @@ export default function Dashboard() {
     }
     return plans[plan]?.surveys_completed || 0;
   };
+  
   const isCompleted = (plan) => surveysDone(plan) >= TOTAL_SURVEYS;
   const isActivated = (plan) => plans[plan]?.is_activated === true;
+  
   const earnedSoFar = (plan) => {
     const count = surveysDone(plan);
     if (count >= TOTAL_SURVEYS) {
@@ -285,6 +303,7 @@ export default function Dashboard() {
     }
     return count * PLANS[plan].perSurvey;
   };
+  
   const progressPercentage = (plan) => (surveysDone(plan) / TOTAL_SURVEYS) * 100;
 
   const hasPendingActivation = (plan) => {
@@ -293,102 +312,53 @@ export default function Dashboard() {
     );
   };
 
-   const getPlanStatus = (plan) => {
-     if (isActivated(plan)) return { status: "activated", label: "Active", icon: "✅" };
-     if (hasPendingActivation(plan)) return { status: "pending-approval", label: "Pending Approval", icon: "⏳" };
-     if (isCompleted(plan)) return { status: "completed", label: "Ready to Activate", icon: "✅" };
-     if (surveysDone(plan) > 0) return { status: "in-progress", label: "In Progress", icon: "⏳" };
-     return { status: "not-started", label: "Start Earning", icon: "🚀" };
-   };
+  const getPlanStatus = (plan) => {
+    if (isActivated(plan)) return { status: "activated", label: "Active", icon: "✅" };
+    if (hasPendingActivation(plan)) return { status: "pending-approval", label: "Pending Approval", icon: "⏳" };
+    if (isCompleted(plan)) return { status: "completed", label: "Ready to Activate", icon: "✅" };
+    if (surveysDone(plan) > 0) return { status: "in-progress", label: "In Progress", icon: "⏳" };
+    return { status: "not-started", label: "Start Earning", icon: "🚀" };
+  };
 
-   /* =========================
-      LOAD PENDING WITHDRAWALS
-      ========================= */
-   const loadPendingWithdrawals = async () => {
-     try {
-       const response = await api.get("/withdraw/history");
-       const withdrawals = response.data;
-       
-       // Filter for pending withdrawals (SUBMITTED, PROCESSING, PENDING)
-       const pending = {};
-       
-       withdrawals.forEach(withdrawal => {
-         if (['SUBMITTED', 'PROCESSING', 'PENDING'].includes(withdrawal.status)) {
-           // Map withdrawal type to plan key
-           // The type can be 'REGULAR', 'VIP', 'VVIP', 'affiliate', 'welcome_bonus'
-           const planKey = withdrawal.type === 'affiliate' ? 'AFFILIATE' : 
-                          withdrawal.type === 'welcome_bonus' ? 'WELCOME_BONUS' :
-                          withdrawal.type || '';
-           
-           if (planKey) {
-             pending[planKey] = withdrawal;
-           }
-         }
-       });
-       
-       setPendingWithdrawals(pending);
-     } catch (error) {
-       console.error("Error loading pending withdrawals:", error);
-     }
-   };
+  /* =========================
+     TOAST NOTIFICATION HELPER
+  ========================= */
+  const showToastNotification = (message, type = 'success') => {
+    switch(type) {
+      case 'error':
+        hapticError();
+        break;
+      case 'warning':
+        hapticWarning();
+        break;
+      case 'success':
+        hapticSuccess();
+        break;
+      default:
+        hapticLight();
+    }
 
-   /* =========================
-      GO TO SURVEYS SECTION
-      ========================= */
-   const goToSurveys = () => {
-     hapticLight();
-     setActiveTab("SURVEYS");
-     setTimeout(() => {
-       const element = document.getElementById('surveys-section');
-       if (element) {
-         element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-       } else if (surveysSectionRef.current) {
-         surveysSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-       }
-     }, 100);
-   };
+    const existingToast = document.querySelector('.toast-notification');
+    if (existingToast) {
+      existingToast.remove();
+    }
 
-    /* =========================
-       TOAST NOTIFICATION HELPER
-       ========================= */
-   const showToastNotification = (message, type = 'success') => {
-     // Haptic feedback based on type
-     switch(type) {
-       case 'error':
-         hapticError();
-         break;
-       case 'warning':
-         hapticWarning();
-         break;
-       case 'success':
-         hapticSuccess();
-         break;
-       default:
-         hapticLight();
-     }
+    const toastElement = document.createElement('div');
+    toastElement.className = `toast-notification ${type}`;
+    toastElement.textContent = message;
+    toastElement.setAttribute('role', 'alert');
+    toastElement.setAttribute('aria-live', 'polite');
+    document.body.appendChild(toastElement);
 
-     // Custom toast implementation without external dependency
-     const existingToast = document.querySelector('.toast-notification');
-     if (existingToast) {
-       existingToast.remove();
-     }
-
-     const toast = document.createElement('div');
-     toast.className = `toast-notification ${type}`;
-     toast.textContent = message;
-     toast.setAttribute('role', 'alert');
-     toast.setAttribute('aria-live', 'polite');
-     document.body.appendChild(toast);
-
-     setTimeout(() => {
-       toast.classList.add('hiding');
-       setTimeout(() => toast.remove(), 300);
-     }, 3000);
-   };
+    setTimeout(() => {
+      toastElement.classList.add('hiding');
+      setTimeout(() => toastElement.remove(), 300);
+    }, 3000);
+  };
 
   /* =========================
      SCROLL BEHAVIOR
-     ========================= */
+  ========================= */
   useEffect(() => {
     const handleSmoothScroll = (e) => {
       if (e.target.closest('a[href^="#"]')) {
@@ -407,7 +377,7 @@ export default function Dashboard() {
 
   /* =========================
      INTERSECTION OBSERVER - Scroll Animations
-     ========================= */
+  ========================= */
   useEffect(() => {
     const observerOptions = {
       root: null,
@@ -428,33 +398,11 @@ export default function Dashboard() {
     animatedElements.forEach(el => observer.observe(el));
 
     return () => observer.disconnect();
-   }, []);
+  }, []);
 
-   /* =========================
-      SCROLL ANIMATIONS
-      ========================= */
-   useEffect(() => {
-     const observer = new IntersectionObserver(
-       (entries) => {
-         entries.forEach((entry) => {
-           if (entry.isIntersecting) {
-             entry.target.classList.add("is-visible");
-             observer.unobserve(entry.target);
-           }
-         });
-       },
-       { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
-     );
-
-     const elements = document.querySelectorAll(".animate-on-scroll");
-     elements.forEach((el) => observer.observe(el));
-
-     return () => observer.disconnect();
-   }, []);
-
-   /* =========================
-      LOAD DASHBOARD
-      ========================= */
+  /* =========================
+     LOAD DASHBOARD
+  ========================= */
   useEffect(() => {
     let alive = true;
 
@@ -489,7 +437,7 @@ export default function Dashboard() {
         
         const expectedBalance = surveyEarnings - totalWithdrawals;
         if (expectedBalance > availableBalance) {
-            availableBalance = expectedBalance;
+          availableBalance = expectedBalance;
         }
         
         setStats({
@@ -518,6 +466,21 @@ export default function Dashboard() {
       }
     };
 
+    const loadPendingWithdrawals = async () => {
+      try {
+        const response = await api.get('/withdrawals/pending');
+        const pending = {};
+        response.data.forEach(w => {
+          if (w.status === 'PENDING' || w.status === 'APPROVED') {
+            pending[w.plan] = w;
+          }
+        });
+        setPendingWithdrawals(pending);
+      } catch (error) {
+        console.error('Failed to load pending withdrawals:', error);
+      }
+    };
+
     load();
     const interval = setInterval(load, 5000);
     window.addEventListener("focus", load);
@@ -527,103 +490,79 @@ export default function Dashboard() {
       clearInterval(interval);
       window.removeEventListener("focus", load);
     };
-   }, []);
+  }, []);
 
-   // Scroll when tab changes to SURVEYS
-  useEffect(() => {
-    if (activeTab === "SURVEYS") {
-      setTimeout(() => {
-        const element = document.getElementById('surveys-section');
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else if (surveysSectionRef.current) {
-          surveysSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
+  /* =========================
+     SURVEY ACTION
+  ========================= */
+  const startSurvey = async (plan) => {
+    hapticMedium();
+    try {
+      localStorage.setItem("active_plan", plan);
+      await api.post("/surveys/select-plan", { plan });
+      navigate("/surveys");
+    } catch {
+      hapticError();
+      setToast("Failed to start survey. Please try again.");
+      setTimeout(() => setToast(""), 3000);
     }
-  }, [activeTab]);
-
-  const goToWelcome = () => {
-    setActiveTab("OVERVIEW");
-    setTimeout(() => {
-      welcomeRef.current?.scrollIntoView({ 
-        behavior: "smooth",
-        block: "start"
-      });
-    }, 50);
   };
 
-   /* =========================
-      SURVEY ACTION
-   ========================= */
-   const startSurvey = async (plan) => {
-     hapticMedium();
-     try {
-       localStorage.setItem("active_plan", plan);
-       await api.post("/surveys/select-plan", { plan });
-       navigate("/surveys");
-     } catch {
-       hapticError();
-       setToast("Failed to start survey. Please try again.");
-       setTimeout(() => setToast(""), 3000);
-     }
-   };
+  /* =========================
+     WITHDRAW LOGIC - SIMPLIFIED
+  ========================= */
+  const handleWithdrawClick = async (plan) => {
+    const now = Date.now();
+    const lastClickTime = localStorage.getItem(`lastWithdrawClick_${plan}`);
+    if (lastClickTime && (now - parseInt(lastClickTime)) < 2000) {
+      hapticLight();
+      setToast("Please wait before clicking again");
+      setTimeout(() => setToast(""), 3000);
+      return;
+    }
+    localStorage.setItem(`lastWithdrawClick_${plan}`, now.toString());
 
-   /* =========================
-      WITHDRAW LOGIC - SIMPLIFIED
-   ========================= */
-   const handleWithdrawClick = async (plan) => {
-     const now = Date.now();
-     const lastClickTime = localStorage.getItem(`lastWithdrawClick_${plan}`);
-     if (lastClickTime && (now - parseInt(lastClickTime)) < 2000) {
-       hapticLight();
-       setToast("Please wait before clicking again");
-       setTimeout(() => setToast(""), 3000);
-       return;
-     }
-     localStorage.setItem(`lastWithdrawClick_${plan}`, now.toString());
+    if (!isCompleted(plan)) {
+      hapticError();
+      setToast(`Complete ${TOTAL_SURVEYS - surveysDone(plan)} more surveys to withdraw`);
+      goToSurveys();
+      setTimeout(() => setToast(""), 4000);
+      return;
+    }
 
-     if (!isCompleted(plan)) {
-       hapticError();
-       setToast(`Complete ${TOTAL_SURVEYS - surveysDone(plan)} more surveys to withdraw`);
-       goToSurveys();
-       setTimeout(() => setToast(""), 4000);
-       return;
-     }
+    if (!isActivated(plan)) {
+      hapticMedium();
+      try {
+        await api.post("/surveys/select-plan", { plan });
+      } catch (error) {
+        console.error("Failed to set active plan:", error);
+      }
+      
+      const planLower = plan.toLowerCase();
+      navigate(`/activate?plan=${planLower}`, { 
+        state: { 
+          planKey: plan,
+          amount: PLANS[plan].total
+        }
+      });
+      return;
+    }
 
-     if (!isActivated(plan)) {
-       hapticMedium();
-       try {
-         await api.post("/surveys/select-plan", { plan });
-       } catch (error) {
-         console.error("Failed to set active plan:", error);
-       }
-       
-       const planLower = plan.toLowerCase();
-       navigate(`/activate?plan=${planLower}`, { 
-         state: { 
-           planKey: plan,
-           amount: PLANS[plan].total
-         }
-       });
-       return;
-     }
+    if (pendingWithdrawals[plan]) {
+      hapticSuccess();
+      window.scrollTo(0, 0);
+      navigate("/withdraw-success", {
+        state: {
+          withdrawal: pendingWithdrawals[plan],
+          plan: PLANS[plan]
+        }
+      });
+      return;
+    }
 
-     if (pendingWithdrawals[plan]) {
-       hapticSuccess();
-       window.scrollTo(0, 0);
-       navigate("/withdraw-success", {
-         state: {
-           withdrawal: pendingWithdrawals[plan],
-           plan: PLANS[plan]
-         }
-       });
-       return;
-     }
-
-     hapticMedium();
-     navigate("/withdraw-form", { state: { plan } });
-   };
+    hapticMedium();
+    navigate("/withdraw-form", { state: { plan } });
+  };
 
   /* =========================
      WELCOME BONUS
@@ -640,27 +579,27 @@ export default function Dashboard() {
     });
   };
 
-   /* =========================
-      QUICK ACTIONS
-   ========================= */
-   const completeQuickAction = (id) => {
-     hapticLight();
-     const action = quickActions.find(a => a.id === id);
-     setQuickActions(prev =>
-       prev.map(a =>
-         a.id === id ? { ...a, completed: true } : a
-       )
-     );
+  /* =========================
+     QUICK ACTIONS
+  ========================= */
+  const completeQuickAction = (id) => {
+    hapticLight();
+    const action = quickActions.find(a => a.id === id);
+    setQuickActions(prev =>
+      prev.map(a =>
+        a.id === id ? { ...a, completed: true } : a
+      )
+    );
 
-     if (action?.action === "activate") {
-       navigate("/activate");
-       return;
-     }
+    if (action?.action === "activate") {
+      navigate("/activate");
+      return;
+    }
 
-     hapticSuccess();
-     setToast("Action completed! +10 points awarded");
-     setTimeout(() => setToast(""), 3000);
-   };
+    hapticSuccess();
+    setToast("Action completed! +10 points awarded");
+    setTimeout(() => setToast(""), 3000);
+  };
 
   /* =========================
      WHATSAPP SUPPORT FUNCTION
@@ -674,19 +613,19 @@ export default function Dashboard() {
   // ============================================
   // COMPONENT: Header
   // ============================================
-   const Header = ({ user, menuOpen, setMenuOpen, openWhatsAppSupport, activationRequests, navigate }) => (
-     <header className="dashboard-main-header">
-       <div className="header-title-container">
-         <button 
-           className="menu-btn" 
-           onClick={() => {
-             hapticLight();
-             setMenuOpen(true);
-           }}
-           aria-label="Open navigation menu"
-         >
-           <span className="menu-icon" aria-hidden="true">☰</span>
-         </button>
+  const Header = ({ user, menuOpen, setMenuOpen, openWhatsAppSupport, activationRequests, navigate }) => (
+    <header className="dashboard-main-header">
+      <div className="header-title-container">
+        <button 
+          className="menu-btn" 
+          onClick={() => {
+            hapticLight();
+            setMenuOpen(true);
+          }}
+          aria-label="Open navigation menu"
+        >
+          <span className="menu-icon" aria-hidden="true">☰</span>
+        </button>
         <h1 className="dashboard-main-title">Dashboard</h1>
         <button
           onClick={openWhatsAppSupport}
@@ -725,7 +664,7 @@ export default function Dashboard() {
 
       <div className="header-activation-container">
         {user && (
-          activationRequests.some(req =>req.status === 'SUBMITTED') ? (
+          activationRequests.some(req => req.status === 'SUBMITTED') ? (
             <button
               disabled
               className="activate-btn-pulse"
@@ -913,7 +852,6 @@ export default function Dashboard() {
       const progress = progressPercentage(key);
       const hasPending = !!pendingWithdrawals[key];
       
-      // Set CSS variable for accent color
       const accentColor = plan.titleColor || '#3b82f6';
 
       return (
@@ -1137,11 +1075,10 @@ export default function Dashboard() {
   // ============================================
   const QuickActions = ({ quickActions, completeQuickAction }) => (
     <div className="quick-actions-grid animate-on-scroll">
-      {quickActions.map((action, index) => (
+      {quickActions.map((action) => (
         <div 
           key={action.id} 
           className={`quick-action-card ${action.completed ? 'completed' : ''}`}
-          style={{ '--delay': `${index * 100}ms` }}
           role="listitem"
         >
           <span className="action-icon" aria-hidden="true">{action.icon}</span>
@@ -1204,7 +1141,11 @@ export default function Dashboard() {
               🔥 {gamificationStats.currentStreak} day streak
             </div>
             {canClaimDailyReward && (
-              <button className="daily-reward-btn" aria-label="Claim your daily reward">
+              <button 
+                className="daily-reward-btn" 
+                onClick={() => setShowDailyReward(true)}
+                aria-label="Claim your daily reward"
+              >
                 🎁 Claim Daily Reward
               </button>
             )}
@@ -1247,12 +1188,10 @@ export default function Dashboard() {
       </p>
     </footer>
   );
-  
-  // Theme toggle removed - light mode only
 
   /* =========================
      RENDER LOADING & NO USER
-     ========================= */
+  ========================= */
   if (loading) {
     return <DashboardSkeleton />;
   }
@@ -1293,335 +1232,345 @@ export default function Dashboard() {
     );
   }
 
-   return (
-     <div className="dashboard" ref={dashboardRef}>
-       {/* Skip link for screen readers */}
-       <a href="#main-content" className="skip-link">
-         Skip to main content
-       </a>
+  return (
+    <div className="dashboard" ref={dashboardRef}>
+      {/* Skip link for screen readers */}
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
 
-       {/* TOAST NOTIFICATION */}
-       {toast && (
-         <div 
-           className="toast-notification" 
-           role="alert" 
-           aria-live="polite"
-         >
-           {toast}
-         </div>
-       )}
+      {/* TOAST NOTIFICATION */}
+      {toast && (
+        <div 
+          className="toast-notification" 
+          role="alert" 
+          aria-live="polite"
+        >
+          {toast}
+        </div>
+      )}
 
-       {/* FULL SCREEN NOTIFICATION */}
-       {fullScreenNotification && (
-         <div 
-           className="modal-overlay"
-           role="dialog"
-           aria-modal="true"
-           aria-labelledby="modal-title"
-         >
-           <div className="modal-content">
-             <div style={{
-               fontSize: '48px',
-               marginBottom: '16px',
-               animation: 'pulse 2s infinite'
-             }}>
-               🎁
-             </div>
-             
-             <h3 id="modal-title" style={{
-               color: 'white',
-               margin: '0 0 12px 0',
-               fontSize: '24px',
-               fontWeight: '800'
-             }}>
-               Welcome Bonus!
-             </h3>
-             
-             <p style={{
-               color: 'rgba(255, 255, 255, 0.95)',
-               fontSize: '16px',
-               lineHeight: '1.5',
-               marginBottom: '24px'
-             }}>
-               {fullScreenNotification.message}
-             </p>
-             
-             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-               {fullScreenNotification.redirect && (
-                 <button
-                   onClick={() => {
-                     setFullScreenNotification(null);
-                     navigate(fullScreenNotification.redirect);
-                   }}
-                   className="btn btn-primary btn-lg"
-                   style={{
-                     background: 'var(--gradient-danger)',
-                     borderRadius: '12px',
-                     padding: '16px 24px',
-                     fontSize: '16px',
-                     fontWeight: '700',
-                     cursor: 'pointer',
-                     border: '2px solid rgba(255, 255, 255, 0.5)',
-                     transition: 'all 0.3s ease',
-                     width: '100%',
-                     display: 'flex',
-                     alignItems: 'center',
-                     justifyContent: 'center',
-                     gap: '8px',
-                     minHeight: '48px',
-                     position: 'relative',
-                     overflow: 'hidden'
-                   }}
-                   onMouseOver={(e) => {
-                     e.currentTarget.style.transform = 'translateY(-2px)';
-                     e.currentTarget.style.boxShadow = '0 8px 25px rgba(220, 38, 38, 0.4)';
-                   }}
-                   onMouseOut={(e) => {
-                     e.currentTarget.style.transform = 'translateY(0)';
-                     e.currentTarget.style.boxShadow = '0 4px 15px rgba(220, 38, 38, 0.3)';
-                   }}
-                 >
-                   <span style={{ fontSize: '20px' }}>🔓</span>
-                   Activate Account Now
-                 </button>
-               )}
-               
-               <button
-                 onClick={() => setFullScreenNotification(null)}
-                 className="btn btn-secondary"
-                 style={{
-                   background: 'rgba(255, 255, 255, 0.1)',
-                   color: 'white',
-                   border: '1px solid rgba(255, 255, 255, 0.2)',
-                   borderRadius: '12px',
-                   padding: '14px 20px',
-                   fontSize: '15px',
-                   fontWeight: '600',
-                   cursor: 'pointer',
-                   transition: 'all 0.3s ease',
-                   width: '100%',
-                   backdropFilter: 'blur(10px)',
-                   minHeight: '48px'
-                 }}
-                 onMouseOver={(e) => {
-                   e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-                 }}
-                 onMouseOut={(e) => {
-                   e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                 }}
-               >
-                 Maybe Later
-               </button>
-             </div>
-             
-             <div style={{
-               marginTop: '24px',
-               padding: '16px',
-               background: 'rgba(255, 255, 255, 0.08)',
-               borderRadius: '12px',
-               border: '1px solid rgba(255, 255, 255, 0.1)',
-               fontSize: '13px',
-               color: 'rgba(255, 255, 255, 0.8)',
-               display: 'flex',
-               flexDirection: 'column',
-               gap: '12px'
-             }}>
-               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                 <span>✅</span>
-                 <span>Instant activation upon payment</span>
-               </div>
-               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                 <span>🔒</span>
-                 <span>Secure M-Pesa payment</span>
-               </div>
-             </div>
-           </div>
-         </div>
-       )}
+      {/* FULL SCREEN NOTIFICATION */}
+      {fullScreenNotification && (
+        <div 
+          className="modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+        >
+          <div className="modal-content">
+            <div style={{
+              fontSize: '48px',
+              marginBottom: '16px',
+              animation: 'pulse 2s infinite'
+            }}>
+              🎁
+            </div>
+            
+            <h3 id="modal-title" style={{
+              color: 'white',
+              margin: '0 0 12px 0',
+              fontSize: '24px',
+              fontWeight: '800'
+            }}>
+              Welcome Bonus!
+            </h3>
+            
+            <p style={{
+              color: 'rgba(255, 255, 255, 0.95)',
+              fontSize: '16px',
+              lineHeight: '1.5',
+              marginBottom: '24px'
+            }}>
+              {fullScreenNotification.message}
+            </p>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {fullScreenNotification.redirect && (
+                <button
+                  onClick={() => {
+                    setFullScreenNotification(null);
+                    navigate(fullScreenNotification.redirect);
+                  }}
+                  className="btn btn-primary btn-lg"
+                  style={{
+                    background: 'var(--gradient-danger)',
+                    borderRadius: '12px',
+                    padding: '16px 24px',
+                    fontSize: '16px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    border: '2px solid rgba(255, 255, 255, 0.5)',
+                    transition: 'all 0.3s ease',
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    minHeight: '48px',
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(220, 38, 38, 0.4)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 4px 15px rgba(220, 38, 38, 0.3)';
+                  }}
+                >
+                  <span style={{ fontSize: '20px' }}>🔓</span>
+                  Activate Account Now
+                </button>
+              )}
+              
+              <button
+                onClick={() => setFullScreenNotification(null)}
+                className="btn btn-secondary"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  color: 'white',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '12px',
+                  padding: '14px 20px',
+                  fontSize: '15px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  width: '100%',
+                  backdropFilter: 'blur(10px)',
+                  minHeight: '48px'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                }}
+              >
+                Maybe Later
+              </button>
+            </div>
+            
+            <div style={{
+              marginTop: '24px',
+              padding: '16px',
+              background: 'rgba(255, 255, 255, 0.08)',
+              borderRadius: '12px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              fontSize: '13px',
+              color: 'rgba(255, 255, 255, 0.8)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span>✅</span>
+                <span>Instant activation upon payment</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span>🔒</span>
+                <span>Secure M-Pesa payment</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
-       {/* MAIN HEADER */}
-       <Header
-         user={user}
-         menuOpen={menuOpen}
-         setMenuOpen={setMenuOpen}
-         openWhatsAppSupport={openWhatsAppSupport}
-         activationRequests={activationRequests}
-         navigate={navigate}
-       />
+      {/* MAIN HEADER */}
+      <Header
+        user={user}
+        menuOpen={menuOpen}
+        setMenuOpen={setMenuOpen}
+        openWhatsAppSupport={openWhatsAppSupport}
+        activationRequests={activationRequests}
+        navigate={navigate}
+      />
 
-       {/* MAIN MENU DRAWER */}
-       <MainMenuDrawer 
-         open={menuOpen} 
-         onClose={() => setMenuOpen(false)} 
-         user={user}
-         goToSurveys={goToSurveys}
-         onNavigate={(path) => {
-           setMenuOpen(false);
-           if (path) navigate(path);
-         }}
-       />
+      {/* MAIN MENU DRAWER */}
+      <MainMenuDrawer 
+        open={menuOpen} 
+        onClose={() => setMenuOpen(false)} 
+        user={user}
+        goToSurveys={goToSurveys}
+        onNavigate={(path) => {
+          setMenuOpen(false);
+          if (path) navigate(path);
+        }}
+      />
 
-        {/* LIVE WITHDRAWAL FEED */}
-        <section className="dashboard-section animate-on-scroll" aria-labelledby="live-feed-title">
-          <Suspense fallback={<div className="skeleton skeleton-earning-card" style={{ height: '200px' }}></div>}>
-            <LazyLiveWithdrawalFeed />
+      {/* LIVE WITHDRAWAL FEED */}
+      <section className="dashboard-section animate-on-scroll" aria-labelledby="live-feed-title">
+        <Suspense fallback={<div className="skeleton skeleton-earning-card" style={{ height: '200px' }}></div>}>
+          <LazyLiveWithdrawalFeed />
+        </Suspense>
+      </section>
+
+      {/* HERO SECTION */}
+      <main id="main-content">
+        <section 
+          className="hero-section animate-on-scroll" 
+          aria-labelledby="hero-title"
+        >
+          <div className="hero-grid">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+              <button 
+                onClick={goToSurveys}
+                className="hero-btn btn-primary"
+                aria-label="Start earning with surveys"
+              >
+                <span className="btn-icon">🚀</span>
+                Start Survey
+              </button>
+              
+              <button 
+                onClick={() => navigate('/affiliate')}
+                className="hero-btn"
+                aria-label="Invite friends and earn rewards"
+                style={{
+                  background: 'var(--gradient-warning)'
+                }}
+              >
+                <span className="btn-icon">👥</span>
+                Invite & Earn
+              </button>
+            </div>
+            
+            <BalanceCard
+              stats={stats}
+              onWithdraw={() => navigate("/withdraw-form")}
+            />
+          </div>
+        </section>
+
+        {/* WELCOME BONUS CARD */}
+        <WelcomeBonusCard
+          showWelcomeBonus={showWelcomeBonus}
+          handleWelcomeBonusWithdraw={handleWelcomeBonusWithdraw}
+          welcomeBonusAmount={welcomeBonusAmount}
+        />
+
+        {/* SURVEY PLANS SECTION */}
+        <section 
+          id="surveys-section"
+          ref={surveysSectionRef}
+          className="dashboard-section animate-on-scroll"
+          aria-labelledby="plans-title"
+        >
+          <div className="section-heading">
+            <h3 id="plans-title">Survey Plans Available</h3>
+            <p>Complete surveys to earn money</p>
+          </div>
+          
+          <SurveyPlans
+            plans={PLANS}
+            stats={stats}
+            getPlanStatus={getPlanStatus}
+            isActivated={isActivated}
+            isCompleted={isCompleted}
+            surveysDone={surveysDone}
+            earnedSoFar={earnedSoFar}
+            progressPercentage={progressPercentage}
+            hasPendingActivation={hasPendingActivation}
+            pendingWithdrawals={pendingWithdrawals}
+            startSurvey={startSurvey}
+            handleWithdrawClick={handleWithdrawClick}
+            navigate={navigate}
+          />
+        </section>
+
+        {/* STATS DASHBOARD */}
+        <section className="dashboard-section animate-on-scroll" aria-labelledby="stats-title">
+          <div className="section-heading">
+            <h3 id="stats-title">Your Earnings</h3>
+            <p>Real-time overview of your account</p>
+          </div>
+          
+          <StatsDashboard stats={stats} />
+        </section>
+
+        {/* USER NOTIFICATIONS */}
+        <section className="dashboard-section animate-on-scroll" aria-labelledby="notifications-title">
+          <Suspense fallback={<div className="skeleton skeleton-card" style={{ height: '300px' }}></div>}>
+            <LazyUserNotifications />
           </Suspense>
         </section>
 
-       {/* HERO SECTION */}
-       <main id="main-content">
-         <section 
-           className="hero-section animate-on-scroll" 
-           aria-labelledby="hero-title"
-         >
-           <div className="hero-grid">
-             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-               <button 
-                 onClick={goToSurveys}
-                 className="hero-btn btn-primary"
-                 aria-label="Start earning with surveys"
-               >
-                 <span className="btn-icon">🚀</span>
-                 Start Survey
-               </button>
-               
-               <button 
-                 onClick={() => navigate('/affiliate')}
-                 className="hero-btn"
-                 aria-label="Invite friends and earn rewards"
-                 style={{
-                   background: 'var(--gradient-warning)'
-                 }}
-               >
-                 <span className="btn-icon">👥</span>
-                 Invite & Earn
-               </button>
-             </div>
-             
-             <BalanceCard
-               stats={stats}
-               onWithdraw={() => navigate("/withdraw-form")}
-             />
-           </div>
-         </section>
+        {/* FEATURES & BENEFITS */}
+        <section className="dashboard-section animate-on-scroll" aria-labelledby="features-title">
+          <div className="section-heading">
+            <h3 id="features-title">Why Choose SurveyEarn</h3>
+            <p>Join thousands of earners worldwide</p>
+          </div>
+          
+          <FeaturesSection />
+        </section>
 
-         {/* WELCOME BONUS CARD */}
-         <WelcomeBonusCard
-           showWelcomeBonus={showWelcomeBonus}
-           handleWelcomeBonusWithdraw={handleWelcomeBonusWithdraw}
-           welcomeBonusAmount={welcomeBonusAmount}
-         />
+        {/* QUICK ACTIONS */}
+        <section className="dashboard-section animate-on-scroll" aria-labelledby="actions-title">
+          <div className="section-heading">
+            <h3 id="actions-title">Quick Actions</h3>
+            <p>Complete tasks to boost your earnings</p>
+          </div>
+          
+          <QuickActions
+            quickActions={quickActions}
+            completeQuickAction={completeQuickAction}
+          />
+        </section>
 
-         {/* SURVEY PLANS SECTION */}
-         <section 
-           id="surveys-section"
-           className="dashboard-section animate-on-scroll"
-           aria-labelledby="plans-title"
-         >
-           <div className="section-heading">
-             <h3 id="plans-title">Survey Plans Available</h3>
-             <p>Complete surveys to earn money</p>
-           </div>
-           
-           <SurveyPlans
-             plans={PLANS}
-             stats={stats}
-             getPlanStatus={getPlanStatus}
-             isActivated={isActivated}
-             isCompleted={isCompleted}
-             surveysDone={surveysDone}
-             earnedSoFar={earnedSoFar}
-             progressPercentage={progressPercentage}
-             hasPendingActivation={hasPendingActivation}
-             pendingWithdrawals={pendingWithdrawals}
-             startSurvey={startSurvey}
-             handleWithdrawClick={handleWithdrawClick}
-             navigate={navigate}
-           />
-         </section>
+        {/* TESTIMONIALS */}
+        <section className="dashboard-section animate-on-scroll" aria-labelledby="success-title">
+          <div className="section-heading">
+            <h3 id="success-title">Community Success Stories</h3>
+            <p>Real earnings from real members</p>
+          </div>
+          
+          <Suspense fallback={<div className="skeleton skeleton-card" style={{ height: '300px' }}></div>}>
+            <LazyTestimonials variant="grid" />
+          </Suspense>
+        </section>
 
-         {/* STATS DASHBOARD */}
-         <section className="dashboard-section animate-on-scroll" aria-labelledby="stats-title">
-           <div className="section-heading">
-             <h3 id="stats-title">Your Earnings</h3>
-             <p>Real-time overview of your account</p>
-           </div>
-           
-           <StatsDashboard stats={stats} />
-         </section>
-
-         {/* USER NOTIFICATIONS */}
-         <section className="dashboard-section animate-on-scroll" aria-labelledby="notifications-title">
-           <UserNotifications />
-         </section>
-
-         {/* FEATURES & BENEFITS */}
-         <section className="dashboard-section animate-on-scroll" aria-labelledby="features-title">
-           <div className="section-heading">
-             <h3 id="features-title">Why Choose SurveyEarn</h3>
-             <p>Join thousands of earners worldwide</p>
-           </div>
-           
-           <FeaturesSection />
-         </section>
-
-         {/* QUICK ACTIONS */}
-         <section className="dashboard-section animate-on-scroll" aria-labelledby="actions-title">
-           <div className="section-heading">
-             <h3 id="actions-title">Quick Actions</h3>
-             <p>Complete tasks to boost your earnings</p>
-           </div>
-           
-           <QuickActions
-             quickActions={quickActions}
-             completeQuickAction={completeQuickAction}
-           />
-         </section>
-
-         {/* TESTIMONIALS */}
-         <section className="dashboard-section animate-on-scroll" aria-labelledby="success-title">
-           <div className="section-heading">
-             <h3 id="success-title">Community Success Stories</h3>
-             <p>Real earnings from real members</p>
-           </div>
-           
-           <Testimonials variant="grid" />
-         </section>
-
-         {/* GAMIFICATION SECTION */}
-         <GamificationSection
-           gamificationStats={gamificationStats}
-           canClaimDailyReward={canClaimDailyReward}
-         />
-
-         {/* ACHIEVEMENTS */}
-         <section className="dashboard-section animate-on-scroll" aria-labelledby="achievements-title">
-           <div className="section-heading">
-             <h3 id="achievements-title">Your Achievements</h3>
-             <p>Track your milestones</p>
-           </div>
-           
-           <Achievements />
-         </section>
-
-         {/* FOOTER */}
-         <Footer openWhatsAppSupport={openWhatsAppSupport} />
-        </main>
-        {/* BOTTOM NAVIGATION - Mobile First */}
-        <BottomNavigation user={user} />
-        {/* WELCOME BONUS POPUP */}
-        <WelcomeBonusPopup
-          isOpen={showWelcomeBonus}
-          onClose={handleWelcomeBonusClose}
-          bonusAmount={welcomeBonusAmount}
-          onActivate={() => navigate('/activate?welcome_bonus=true')}
+        {/* GAMIFICATION SECTION */}
+        <GamificationSection
+          gamificationStats={gamificationStats}
+          canClaimDailyReward={canClaimDailyReward}
         />
-        {/* DAILY REWARD POPUP */}
-        <DailyRewardPopup
-          isOpen={showDailyReward}
-          onClose={() => setShowDailyReward(false)}
-          onRewardClaimed={handleDailyRewardClaimed}
-        />
-      </div>
-    );
-  }
+
+        {/* ACHIEVEMENTS */}
+        <section className="dashboard-section animate-on-scroll" aria-labelledby="achievements-title">
+          <div className="section-heading">
+            <h3 id="achievements-title">Your Achievements</h3>
+            <p>Track your milestones</p>
+          </div>
+          
+          <Suspense fallback={<div className="skeleton skeleton-card" style={{ height: '200px' }}></div>}>
+            <LazyAchievements />
+          </Suspense>
+        </section>
+
+        {/* FOOTER */}
+        <Footer openWhatsAppSupport={openWhatsAppSupport} />
+      </main>
+
+      {/* BOTTOM NAVIGATION - Mobile First */}
+      <BottomNavigation user={user} />
+
+      {/* WELCOME BONUS POPUP */}
+      <WelcomeBonusPopup
+        isOpen={showWelcomeBonus}
+        onClose={handleWelcomeBonusClose}
+        bonusAmount={welcomeBonusAmount}
+        onActivate={() => navigate('/activate?welcome_bonus=true')}
+      />
+
+      {/* DAILY REWARD POPUP */}
+      <DailyRewardPopup
+        isOpen={showDailyReward}
+        onClose={() => setShowDailyReward(false)}
+        onRewardClaimed={handleDailyRewardClaimed}
+      />
+    </div>
+  );
+}
