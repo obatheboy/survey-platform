@@ -42,8 +42,11 @@
       ]
     }
   ],
-  "rewrites": [
+   "rewrites": [
     { "source": "/assets/(.*)", "destination": "/assets/$1" },
+    { "source": "/manifest.json", "destination": "/manifest.json" },
+    { "source": "/icon.svg", "destination": "/icon.svg" },
+    { "source": "/sw.js", "destination": "/sw.js" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

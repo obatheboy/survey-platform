@@ -13,7 +13,7 @@ import WelcomeBonusPopup from "./components/WelcomeBonusPopup.jsx";
 import { gamificationApi } from "../api/api";
 import { DashboardSkeleton } from "../components/LoadingSkeleton";
 import BottomNavigation from "./components/BottomNavigation.jsx";
-import { hapticLight, hapticMedium, hapticSuccess, hapticError } from "../utils/haptic";
+import { hapticLight, hapticMedium, hapticSuccess, hapticError, hapticWarning } from "../utils/haptic";
 import "./Dashboard.css";
 
 // Lazy load heavy components for performance
@@ -316,17 +316,64 @@ export default function Dashboard() {
     );
   };
 
-  const getPlanStatus = (plan) => {
-    if (isActivated(plan)) return { status: "activated", label: "Active", icon: "✅" };
-    if (hasPendingActivation(plan)) return { status: "pending-approval", label: "Pending Approval", icon: "⏳" };
-    if (isCompleted(plan)) return { status: "completed", label: "Ready to Activate", icon: "✅" };
-    if (surveysDone(plan) > 0) return { status: "in-progress", label: "In Progress", icon: "⏳" };
-    return { status: "not-started", label: "Start Earning", icon: "🚀" };
-  };
+   const getPlanStatus = (plan) => {
+     if (isActivated(plan)) return { status: "activated", label: "Active", icon: "✅" };
+     if (hasPendingActivation(plan)) return { status: "pending-approval", label: "Pending Approval", icon: "⏳" };
+     if (isCompleted(plan)) return { status: "completed", label: "Ready to Activate", icon: "✅" };
+     if (surveysDone(plan) > 0) return { status: "in-progress", label: "In Progress", icon: "⏳" };
+     return { status: "not-started", label: "Start Earning", icon: "🚀" };
+   };
 
    /* =========================
-      TOAST NOTIFICATION HELPER
+      LOAD PENDING WITHDRAWALS
       ========================= */
+   const loadPendingWithdrawals = async () => {
+     try {
+       const response = await api.get("/withdraw/history");
+       const withdrawals = response.data;
+       
+       // Filter for pending withdrawals (SUBMITTED, PROCESSING, PENDING)
+       const pending = {};
+       
+       withdrawals.forEach(withdrawal => {
+         if (['SUBMITTED', 'PROCESSING', 'PENDING'].includes(withdrawal.status)) {
+           // Map withdrawal type to plan key
+           // The type can be 'REGULAR', 'VIP', 'VVIP', 'affiliate', 'welcome_bonus'
+           const planKey = withdrawal.type === 'affiliate' ? 'AFFILIATE' : 
+                          withdrawal.type === 'welcome_bonus' ? 'WELCOME_BONUS' :
+                          withdrawal.type || '';
+           
+           if (planKey) {
+             pending[planKey] = withdrawal;
+           }
+         }
+       });
+       
+       setPendingWithdrawals(pending);
+     } catch (error) {
+       console.error("Error loading pending withdrawals:", error);
+     }
+   };
+
+   /* =========================
+      GO TO SURVEYS SECTION
+      ========================= */
+   const goToSurveys = () => {
+     hapticLight();
+     setActiveTab("SURVEYS");
+     setTimeout(() => {
+       const element = document.getElementById('surveys-section');
+       if (element) {
+         element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+       } else if (surveysSectionRef.current) {
+         surveysSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+       }
+     }, 100);
+   };
+
+    /* =========================
+       TOAST NOTIFICATION HELPER
+       ========================= */
    const showToastNotification = (message, type = 'success') => {
      // Haptic feedback based on type
      switch(type) {
