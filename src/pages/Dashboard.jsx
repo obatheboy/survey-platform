@@ -12,7 +12,7 @@ import WelcomeBonusPopup from "./components/WelcomeBonusPopup.jsx";
 import { gamificationApi } from "../api/api";
 import { DashboardSkeleton } from "../components/LoadingSkeleton";
 import BottomNavigation from "./components/BottomNavigation.jsx";
-import { hapticLight, hapticMedium, hapticSuccess, hapticError, hapticWarning } from "../utils/haptic";
+import { hapticLight, hapticMedium, hapticSuccess, hapticError } from "../utils/haptic";
 import "./Dashboard.css";
 
 // ========== FIXED LAZY IMPORTS ==========
