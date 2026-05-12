@@ -282,7 +282,7 @@
   background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
   border-radius: 0 !important;
   padding: 16px !important;
-  box-shadow: 
+  box-shadow:
     0 6px 20px -5px rgba(30, 64, 175, 0.3),
     0 1px 3px rgba(0, 0, 0, 0.1);
   border: none !important;
@@ -301,6 +301,77 @@
   background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
   transform: rotate(45deg);
   pointer-events: none;
+}
+
+/* Balance display container */
+.balance-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.balance-card {
+  background: linear-gradient(145deg, #1f7405, #2d9a07) !important;
+  border-radius: 16px !important;
+  padding: 20px 24px !important;
+  text-align: center;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.balance-card::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  left: -40%;
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.balance-label {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 0.875rem !important;
+  font-weight: 700 !important;
+  textTransform: uppercase !important;
+  letterSpacing: '0.8px' !important;
+  marginBottom: '8px' !important;
+}
+
+.balance-amount-row {
+  display: flex;
+  alignItems: 'flex-start';
+  justifyContent: 'center';
+  gap: '6px';
+  marginBottom: '12px';
+  width: '100%'
+}
+
+.balance-currency {
+  color: white !important;
+  font-size: '1rem' !important;
+  fontWeight: 700 !important;
+  marginTop: '3px' !important;
+}
+
+.balance-value {
+  color: white !important;
+  font-size: '2.5rem' !important;
+  fontWeight: 900 !important;
+  lineHeight: 1 !important;
+  letter-spacing: -0.03em !important;
 }
 
 /* ============================================

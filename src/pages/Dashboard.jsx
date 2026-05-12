@@ -899,10 +899,10 @@ export default function Dashboard() {
         <LiveWithdrawalFeed />
       </section>
 
-      {/* HERO SECTION - BALANCE ONLY - FULL WIDTH */}
+      {/* HERO SECTION - BALANCE ONLY - FULL WIDTH EDGE-TO-EDGE */}
       <div style={{
         borderRadius: '0',
-        padding: '8px 12px',
+        padding: '12px 0',
         background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
         boxShadow: '0 4px 15px -3px rgba(0, 0, 0, 0.12)',
         border: 'none',
@@ -910,22 +910,25 @@ export default function Dashboard() {
         position: 'relative',
         overflow: 'hidden',
         marginBottom: '0',
-        width: '100%'
+        width: '100%',
+        boxSizing: 'border-box'
       }}>
-        <div style={{
-          background: 'linear-gradient(145deg, #1f7405, #2d9a07)',
-          borderRadius: '10px',
-          padding: '10px',
-          textAlign: 'center',
-          boxShadow: '0 3px 12px rgba(0,0,0,0.08)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          color: 'white',
-          width: '100%',
-          boxSizing: 'border-box'
-        }}>
+          <div style={{
+            background: 'linear-gradient(145deg, #1f7405, #2d9a07)',
+            borderRadius: '12px',
+            padding: '16px',
+            textAlign: 'center',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            color: 'white',
+            width: 'calc(100% - 24px)',
+            maxWidth: '400px',
+            margin: '0 auto',
+            boxSizing: 'border-box'
+          }}>
           <div style={{
             color: 'rgba(255,255,255,0.85)',
             fontSize: '10px',
@@ -962,22 +965,23 @@ export default function Dashboard() {
             </div>
           </div>
           
-          <button 
-            onClick={() => navigate("/withdraw-form")}
-            style={{
-              background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
-              color: 'white',
-              border: '2px solid rgba(255,255,255,0.4)',
-              borderRadius: '5px',
-              padding: '7px 14px',
-              fontSize: '12px',
-              fontWeight: '900',
-              cursor: 'pointer',
-              width: '100%',
-              maxWidth: '180px',
-              transition: 'all 0.2s',
-              boxShadow: '0 2px 8px rgba(220, 38, 38, 0.3)'
-            }}
+           <button
+             onClick={() => navigate("/withdraw-form")}
+             style={{
+               background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+               color: 'white',
+               border: '2px solid rgba(255,255,255,0.4)',
+               borderRadius: '8px',
+               padding: '10px 20px',
+               fontSize: '13px',
+               fontWeight: '900',
+               cursor: 'pointer',
+               width: '100%',
+               maxWidth: '200px',
+               transition: 'all 0.2s',
+               boxShadow: '0 4px 15px rgba(220, 38, 38, 0.4)',
+               marginTop: '8px'
+             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-1px)';
               e.currentTarget.style.boxShadow = '0 3px 12px rgba(220, 38, 38, 0.5)';
@@ -992,60 +996,88 @@ export default function Dashboard() {
         </div>
       </div>
       
-      {/* WELCOME BONUS CARD - FULL WIDTH SMALL BAR */}
-      <section ref={welcomeRef} style={{ margin: '6px 0' }}>
+      {/* WELCOME BONUS CARD - FULL WIDTH EDGE-TO-EDGE */}
+      <section ref={welcomeRef} style={{ margin: '8px 0', padding: '0 16px' }}>
         <div className="plan-card welcome-bonus" style={{
-          background: '#1f7405',
-          border: '1px solid #165c03',
-          borderRadius: '5px',
-          padding: '6px 10px',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+          background: 'linear-gradient(135deg, #1f7405 0%, #166534 100%)',
+          border: '1px solid #14532d',
+          borderRadius: '12px',
+          padding: '0',
+          boxShadow: '0 6px 25px rgba(22, 101, 52, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1)',
           width: '100%',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
+          overflow: 'hidden'
         }}>
           <div style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            gap: '8px',
-            flexWrap: 'nowrap',
-            width: '100%'
+            gap: '12px',
+            flexWrap: 'wrap',
+            width: '100%',
+            padding: '14px 16px'
           }}>
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
-              flex: 1,
-              minWidth: 0
+              gap: '10px',
+              flex: '1 1 60%',
+              minWidth: '200px'
             }}>
-              <span style={{ fontSize: '14px' }}>🎁</span>
-              <span style={{
-                fontSize: '12px',
-                fontWeight: '700',
-                color: '#ffffff'
+              <span style={{ fontSize: '18px', flexShrink: 0 }}>🎁</span>
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '2px'
               }}>
-                Welcome Bonus: KES 1,200
-              </span>
+                <span style={{
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  color: 'rgba(255,255,255,0.8)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>
+                  Welcome Bonus Available
+                </span>
+                <span style={{
+                  fontSize: '16px',
+                  fontWeight: '900',
+                  color: '#ffffff',
+                  letterSpacing: '-0.02em'
+                }}>
+                  KES 1,200
+                </span>
+              </div>
             </div>
-            
-            <button 
+
+            <button
               className="start-survey-btn"
               onClick={handleWelcomeBonusWithdraw}
               style={{
-                background: '#dc2626',
+                background: 'linear-gradient(135deg, #f87171, #dc2626)',
                 border: 'none',
-                borderRadius: '4px',
-                padding: '5px 12px',
+                borderRadius: '8px',
+                padding: '10px 20px',
                 fontWeight: '800',
-                fontSize: '11px',
+                fontSize: '12px',
                 color: 'white',
                 textTransform: 'uppercase',
                 cursor: 'pointer',
                 flexShrink: 0,
-                whiteSpace: 'nowrap'
+                whiteSpace: 'nowrap',
+                boxShadow: '0 4px 12px rgba(220, 38, 38, 0.4)',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 6px 16px rgba(220, 38, 38, 0.5)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(220, 38, 38, 0.4)';
               }}
             >
-              Activate
+              Activate Now →
             </button>
           </div>
         </div>
