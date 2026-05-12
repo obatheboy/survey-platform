@@ -1008,9 +1008,9 @@ export default function Dashboard() {
                  e.currentTarget.style.transform = 'translateY(0)';
                  e.currentTarget.style.boxShadow = '0 3px 10px rgba(220, 38, 38, 0.4)';
                }}
-             >
-               Activate
-             </button>
+              >
+                CLAIM NOW
+              </button>
            </div>
          </div>
        </section>
