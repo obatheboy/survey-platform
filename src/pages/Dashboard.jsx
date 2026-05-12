@@ -12,7 +12,7 @@ import WelcomeBonusPopup from "./components/WelcomeBonusPopup.jsx";
 import { gamificationApi } from "../api/api";
 import { DashboardSkeleton } from "../components/LoadingSkeleton";
 import BottomNavigation from "./components/BottomNavigation.jsx";
-import { hapticLight, hapticMedium, hapticSuccess, hapticError } from "../utils/haptic";
+import { hapticLight, hapticMedium, hapticSuccess, hapticError, hapticWarning } from "../utils/haptic";
 import "./Dashboard.css";
 
 // ========== FIXED LAZY IMPORTS ==========
@@ -32,32 +32,11 @@ const LazyLeaderboard = lazy(() =>
   import("./components/Leaderboard.jsx")
 );
 
-const LazyAchievements = lazy(() => 
-  import("./components/Achievements.jsx")
-);
-// Custom Hook: Use Intersection Observer for scroll animations
-const useScrollAnimation = (threshold = 0.1) => {
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold, rootMargin: "0px 0px -50px 0px" }
-    );
+ const LazyAchievements = lazy(() => 
+   import("./components/Achievements.jsx")
+ );
 
-    const elements = document.querySelectorAll(".animate-on-scroll");
-    elements.forEach((el) => observer.observe(el));
-
-    return () => observer.disconnect();
-  }, [threshold]);
-};
-
-const PLANS = {
+ const PLANS = {
   REGULAR: { 
     name: "REGULAR SURVEYS", 
     icon: "⭐", 
@@ -106,9 +85,6 @@ const TOTAL_SURVEYS = 10;
 // Theme removed - light mode only
 
 export default function Dashboard() {
-  // Initialize scroll animations
-  useScrollAnimation(0.1);
-  
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("OVERVIEW");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -144,14 +120,36 @@ export default function Dashboard() {
     totalWithdrawals: 0
   });
 
-  // Handle bottom nav menu click
-  useEffect(() => {
-    const handleOpenMenu = () => setMenuOpen(true);
-    window.addEventListener('open-main-menu', handleOpenMenu);
-    return () => window.removeEventListener('open-main-menu', handleOpenMenu);
-  }, []);
+   // Handle bottom nav menu click
+   useEffect(() => {
+     const handleOpenMenu = () => setMenuOpen(true);
+     window.addEventListener('open-main-menu', handleOpenMenu);
+     return () => window.removeEventListener('open-main-menu', handleOpenMenu);
+   }, []);
 
-  const surveyRef = useRef(null);
+   /* =========================
+      SCROLL ANIMATIONS
+      ========================= */
+   useEffect(() => {
+     const observer = new IntersectionObserver(
+       (entries) => {
+         entries.forEach((entry) => {
+           if (entry.isIntersecting) {
+             entry.target.classList.add("is-visible");
+             observer.unobserve(entry.target);
+           }
+         });
+       },
+       { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+     );
+
+     const elements = document.querySelectorAll(".animate-on-scroll");
+     elements.forEach((el) => observer.observe(el));
+
+     return () => observer.disconnect();
+   }, []);
+
+   const surveyRef = useRef(null);
   const welcomeRef = useRef(null);
   const dashboardRef = useRef(null);
   const surveysSectionRef = useRef(null);
@@ -466,20 +464,29 @@ export default function Dashboard() {
       }
     };
 
-    const loadPendingWithdrawals = async () => {
-      try {
-        const response = await api.get('/withdrawals/pending');
-        const pending = {};
-        response.data.forEach(w => {
-          if (w.status === 'PENDING' || w.status === 'APPROVED') {
-            pending[w.plan] = w;
-          }
-        });
-        setPendingWithdrawals(pending);
-      } catch (error) {
-        console.error('Failed to load pending withdrawals:', error);
-      }
-    };
+     const loadPendingWithdrawals = async () => {
+       try {
+         const response = await api.get("/withdraw/history");
+         const withdrawals = response.data;
+         const pending = {};
+         
+         withdrawals.forEach(w => {
+           if (['SUBMITTED', 'PROCESSING', 'PENDING'].includes(w.status)) {
+             // Map withdrawal type to plan key for display
+             const planKey = w.type === 'affiliate' ? 'AFFILIATE' : 
+                            w.type === 'welcome_bonus' ? 'WELCOME_BONUS' :
+                            w.type || '';
+             if (planKey) {
+               pending[planKey] = w;
+             }
+           }
+         });
+         
+         setPendingWithdrawals(pending);
+       } catch (error) {
+         console.error('Failed to load pending withdrawals:', error);
+       }
+     };
 
     load();
     const interval = setInterval(load, 5000);
