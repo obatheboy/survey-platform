@@ -21,7 +21,7 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
   const openWhatsAppSupport = () => {
     const message = encodeURIComponent("Hello Survey App Kenya Support, I need help with my survey account.");
     const whatsappUrl = `https://wa.me/254794101450?text=${message}`;
-    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');  
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
     onClose();
   };
 
@@ -56,7 +56,6 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
     setToast("🔄 Refreshing app...");
     setTimeout(() => setToast(""), 2000);
     onClose();
-    // Small delay to allow drawer to close
     setTimeout(() => {
       refreshApp();
     }, 300);
@@ -66,17 +65,14 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
     try {
       await api.post("/auth/logout");
     } catch (error) {
-      // Log for debugging but don't prevent logout
       console.warn("Logout API failed, proceeding with client-side logout:", error);
     }
-    
-    // Always clear localStorage and redirect even if API fails
+
     localStorage.removeItem("token");
     localStorage.removeItem("active_plan");
     localStorage.removeItem("cachedUser");
     localStorage.removeItem("user");
-    
-    // Use replace: true to prevent going back
+
     navigate("/auth", { replace: true });
     onClose();
   };
@@ -84,92 +80,82 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
   return (
     <>
       {toast && (
-        <div style={toastStyle}>
+        <div className="drawer-toast">
           {toast}
         </div>
       )}
 
       {/* OVERLAY */}
-      <div className="drawer-overlay" style={overlay} onClick={onClose} />
+      <div className="drawer-overlay" onClick={onClose} />
 
       {/* DRAWER */}
-      <div className="drawer-content" style={drawer}>
+      <div className="drawer-content">
         {/* PROFILE */}
-        <div style={profileCard}>
-          <div style={avatar}>
+        <div className="drawer-profile">
+          <div className="drawer-avatar">
             {user.full_name?.charAt(0).toUpperCase() || "U"}
           </div>
-          <div style={{ flex: 1 }}>
-            <strong style={{ color: "#ffffff" }}>{user.full_name}</strong>
+          <div className="drawer-user-info">
+            <p className="drawer-user-name">{user.full_name}</p>
           </div>
-          <button style={profileBtn} onClick={() => setToast("Profile settings coming soon!")}>
+          <button className="drawer-profile-btn" onClick={() => setToast("Profile settings coming soon!")}>
             Profile
           </button>
         </div>
 
-        <hr style={divider} />
+        <hr className="drawer-divider" />
 
         {/* NEW FEATURES */}
-        <h4 style={withdrawTitle}>Quick Navigation</h4>
+        <h4 className="drawer-section-title">Quick Navigation</h4>
         <MenuItem label="Home" icon="home" onClick={() => { onClose(); }} />
-        <button 
-          onClick={() => { 
-            onClose(); 
+        <button
+          onClick={() => {
+            onClose();
             if (goToSurveys) {
               goToSurveys();
             } else {
               navigate('/dashboard#surveys-section');
             }
-          }} 
-          style={{
-            width: "100%",
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-            padding: "14px 12px",
-            background: "transparent",
-            border: "none",
-            borderRadius: "12px",
-            fontSize: "14px",
-            color: "#1e293b",
-            cursor: "pointer",
-            textAlign: "left"
           }}
+          className="drawer-menu-item"
         >
-          <span style={{ fontSize: "18px" }}>📋</span>
-          <span style={{ fontWeight: "600" }}>Surveys</span>
+          <span className="drawer-menu-icon">📋</span>
+          <span>Surveys</span>
         </button>
         <MenuItem label="Affiliate" icon="affiliate" onClick={() => onNavigate('/affiliate')} />
         <MenuItem label="Withdraw" icon="withdraw" onClick={() => onNavigate('/withdraw-form')} />
         <MenuItem label="Activate" icon="activate" onClick={() => { onClose(); navigate('/activate'); }} />
 
-        <hr style={divider} />
+        <hr className="drawer-divider" />
 
-         <h4 style={withdrawTitle}>App Menu</h4>
-         <MenuItem label="FAQ & Help" icon="help" onClick={() => onNavigate('/faq')} />
-         <MenuItem label="Account Stats" icon="stats" onClick={showAccountStats} />
-         <MenuItem label="Contact Support" icon="support" onClick={openWhatsAppSupport} />
-         <MenuItem label="Refresh App" icon="refresh" onClick={handleRefreshApp} />
+        <h4 className="drawer-section-title">App Menu</h4>
+        <MenuItem label="FAQ & Help" icon="help" onClick={() => onNavigate('/faq')} />
+        <MenuItem label="Account Stats" icon="stats" onClick={showAccountStats} />
+        <MenuItem label="Contact Support" icon="support" onClick={openWhatsAppSupport} />
+        <MenuItem label="Refresh App" icon="refresh" onClick={handleRefreshApp} />
 
-        <hr style={divider} />
+        <hr className="drawer-divider" />
 
-        <h4 style={withdrawTitle}>Invite & Earn</h4>
-        <p style={referralCaption}>
+        <h4 className="drawer-section-title">Invite & Earn</h4>
+        <p className="drawer-referral-caption">
           Earn <strong>KES 250</strong> for every friend who signs up and activates.
         </p>
-        <div style={shareButtonsContainer}>
-            <button style={{...shareBtn, background: '#25D366'}} onClick={shareToWhatsApp}>
-                <span style={shareIconStyle}>WhatsApp</span>
-            </button>
-            <button style={{...shareBtn, background: '#3b82f6'}} onClick={shareToSMS}>
-                <span style={shareIconStyle}>SMS</span>
-            </button>
-            <button style={{...shareBtn, background: '#64748b'}} onClick={copyLink}>
-                <span style={shareIconStyle}>Copy</span>
-            </button>
+        <div className="drawer-share-buttons">
+          <button className="drawer-share-btn drawer-share-whatsapp" onClick={shareToWhatsApp}>
+            <span className="drawer-share-icon">📱</span>
+            <span>WhatsApp</span>
+          </button>
+          <button className="drawer-share-btn drawer-share-sms" onClick={shareToSMS}>
+            <span className="drawer-share-icon">💬</span>
+            <span>SMS</span>
+          </button>
+          <button className="drawer-share-btn drawer-share-copy" onClick={copyLink}>
+            <span className="drawer-share-icon">🔗</span>
+            <span>Copy</span>
+          </button>
         </div>
 
-        <hr style={divider} />
+        <hr className="drawer-divider" />
         <MenuItem label="Back to Dashboard" icon="dashboard" onClick={onClose} />
         <MenuItem label="Logout" icon="logout" danger onClick={logout} />
       </div>
@@ -192,168 +178,24 @@ function MenuItem({ label, onClick, danger, icon }) {
       support: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>,
       dashboard: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>,
       logout: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>,
-       activate: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>,
+      activate: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>,
       refresh: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>,
     };
     return iconMap[icon] || null;
   };
 
   return (
-    <div
+    <button
       onClick={onClick}
-      style={{
-        padding: "14px 16px",
-        marginBottom: 10,
-        borderRadius: 12,
-        cursor: "pointer",
-        fontWeight: 500,
-        display: "flex",
-        alignItems: "center",
-        gap: "12px",
-        background: danger
-          ? "rgba(239, 68, 68, 0.1)"
-          : "rgba(255, 255, 255, 0.08)",
-        color: danger ? "#ef4444" : "#ffffff",
-        border: `1px solid ${danger ? "rgba(239, 68, 68, 0.3)" : "rgba(255, 255, 255, 0.1)"}`,
-        transition: "all 0.2s ease",
-      }}
-      onMouseOver={(e) => {
-        e.currentTarget.style.background = danger ? "rgba(239, 68, 68, 0.2)" : "rgba(255, 255, 255, 0.12)";
-        e.currentTarget.style.transform = "translateX(4px)";
-      }}
-      onMouseOut={(e) => {
-        e.currentTarget.style.background = danger ? "rgba(239, 68, 68, 0.1)" : "rgba(255, 255, 255, 0.08)";
-        e.currentTarget.style.transform = "translateX(0)";
-      }}
+      className={`drawer-menu-item ${danger ? 'danger' : ''}`}
     >
-      <span style={{ fontSize: "18px", display: 'flex' }}>{getIcon()}</span>
+      <span className="drawer-menu-icon">{getIcon()}</span>
       {label}
-    </div>
+    </button>
   );
 }
 
 /* =========================
-   STYLES
+   STYLES - REMOVED: Using CSS classes instead
 ========================= */
-const overlay = {
-  position: "fixed",
-  inset: 0,
-  background: "rgba(0, 0, 0, 0.85)",
-  zIndex: 99998,
-};
-
-const drawer = {
-  position: "fixed",
-  top: 0,
-  left: 0,
-  height: "100%",
-  width: "85vw",
-  maxWidth: 320,
-  background: "#1e3a8a",
-  zIndex: 99999,
-  padding: "24px 20px",
-  boxShadow: "10px 0 30px rgba(0, 0, 0, 0.5)",
-  overflowY: "auto",
-  borderRight: "1px solid rgba(255, 255, 255, 0.1)",
-};
-
-const profileCard = { 
-  display: "flex", 
-  alignItems: "center", 
-  gap: 14,
-  background: "rgba(255, 255, 255, 0.15)",
-  padding: "16px",
-  borderRadius: "16px",
-  border: "1px solid rgba(255, 255, 255, 0.2)",
-  marginBottom: "24px"
-};
-
-const avatar = {
-  width: 50,
-  height: 50,
-  borderRadius: "14px",
-  background: "linear-gradient(135deg, #1f7405, #3cb308)",
-  color: "#ffffff",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "20px",
-  fontWeight: 800,
-  boxShadow: "0 4px 20px rgba(31, 116, 5, 0.5)",
-};
-
-const profileBtn = {
-  border: "1px solid rgba(255, 255, 255, 0.4)",
-  background: "rgba(255, 255, 255, 0.15)",
-  color: "#ffffff",
-  padding: "6px 14px",
-  borderRadius: 10,
-  fontSize: "12px",
-  fontWeight: "700",
-  cursor: "pointer",
-  transition: "all 0.2s ease"
-};
-
-const divider = { margin: "24px 0", border: "none", borderTop: "1px solid rgba(255, 255, 255, 0.1)" };
-
-const withdrawTitle = { 
-  marginBottom: 16, 
-  color: "#ffffff", 
-  fontSize: "16px", 
-  fontWeight: "800",
-  display: "flex",
-  alignItems: "center",
-  gap: "8px"
-};
-
-const referralCaption = {
-  fontSize: "13px",
-  color: "#e6ffe6",
-  textAlign: "center",
-  margin: "12px 0 24px",
-  padding: "12px",
-  background: "rgba(255, 255, 255, 0.1)",
-  borderRadius: "12px",
-  border: "1px solid rgba(59, 130, 246, 0.1)"
-};
-
-const shareButtonsContainer = {
-  display: 'grid',
-  gridTemplateColumns: '1fr 1fr 1fr',
-  gap: '10px',
-  marginBottom: '24px'
-};
-
-const shareBtn = {
-  border: 'none',
-  borderRadius: '12px',
-  padding: '12px 8px',
-  color: 'white',
-  fontWeight: '700',
-  fontSize: '12px',
-  cursor: 'pointer',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '6px',
-  transition: 'transform 0.2s ease'
-};
-
-const shareIconStyle = {
-  fontSize: '20px'
-};
-
-const toastStyle = {
-  position: "fixed",
-  top: 24,
-  left: "50%",
-  transform: "translateX(-50%)",
-  background: "#10b981",
-  color: "#fff",
-  padding: "12px 24px",
-  borderRadius: "12px",
-  zIndex: 100000,
-  fontWeight: 800,
-  boxShadow: "0 10px 25px rgba(16, 185, 129, 0.3)",
-};
+// Inline styles removed, CSS classes defined in MainMenuDrawer.css
