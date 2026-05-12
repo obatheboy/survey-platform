@@ -1,0 +1,262 @@
+/* ============================================
+   BOTTOM NAVIGATION - Mobile First
+   ============================================ */
+
+.bottom-navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.1);
+  z-index: var(--z-header);
+  animation: slideUpIn 0.4s var(--ease-out);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+@keyframes slideUpIn {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.bottom-nav-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  max-width: 600px;
+  margin: 0 auto;
+  height: 64px;
+}
+
+.bottom-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-2);
+  position: relative;
+  color: var(--text-tertiary);
+  transition: all var(--duration-fast) var(--ease-default);
+  min-height: 64px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bottom-nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 3px;
+  background: var(--gradient-primary);
+  border-radius: 0 0 var(--radius-full) var(--radius-full);
+  transition: width var(--duration-normal) var(--ease-out);
+}
+
+.bottom-nav-item:hover {
+  color: var(--color-primary);
+  background: rgba(59, 130, 246, 0.04);
+}
+
+.bottom-nav-item:active {
+  transform: scale(0.95);
+}
+
+.bottom-nav-item.active {
+  color: var(--color-primary);
+}
+
+.bottom-nav-item.active::before {
+  width: 100%;
+}
+
+.bottom-nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--duration-fast) var(--ease-default);
+  width: 24px;
+  height: 24px;
+}
+
+.bottom-nav-item.active .bottom-nav-icon {
+  transform: scale(1.1);
+}
+
+.bottom-nav-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  opacity: 0.8;
+  transition: opacity var(--duration-fast) var(--ease-default);
+}
+
+.bottom-nav-item.active .bottom-nav-label {
+  opacity: 1;
+  font-weight: var(--font-semibold);
+}
+
+.bottom-nav-indicator {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  opacity: 0;
+  animation: bounceIn 0.3s var(--ease-bounce);
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/* Staggered animation for nav items */
+.bottom-nav-item {
+  opacity: 0;
+  animation: fadeInUp 0.4s var(--ease-out) forwards;
+  animation-delay: var(--delay, 0ms);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Haptic feedback simulation on touch */
+@media (hover: none) {
+  .bottom-nav-item:active {
+    transform: scale(0.92);
+    background: rgba(59, 130, 246, 0.08);
+  }
+}
+
+/* Ripple effect */
+.bottom-nav-item .ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.3);
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Safe area for notched devices */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .bottom-navigation {
+    padding-bottom: calc(var(--space-2) + env(safe-area-inset-bottom));
+  }
+
+  .bottom-nav-container {
+    height: calc(64px + env(safe-area-inset-bottom));
+  }
+
+  .bottom-nav-item {
+    min-height: calc(64px + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Hide on tablets and up */
+@media (min-width: 769px) {
+  .bottom-navigation {
+    display: none;
+  }
+}
+
+/* Ensure main content has space for bottom nav on mobile */
+@media (max-width: 768px) {
+  .dashboard {
+    padding-bottom: 80px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .bottom-navigation {
+    animation: none;
+  }
+
+  .bottom-nav-item {
+    opacity: 1;
+    animation: none;
+  }
+
+  .bottom-nav-item.active .bottom-nav-indicator {
+    animation: none;
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .bottom-nav-item.active {
+    color: var(--color-primary);
+  }
+
+  .bottom-nav-item.active::before {
+    height: 4px;
+  }
+}
+
+/* Dark mode support */
+[data-theme="dark"] .bottom-navigation {
+  background: rgba(15, 23, 42, 0.95);
+  border-top-color: rgba(51, 65, 85, 0.5);
+}
+
+[data-theme="dark"] .bottom-nav-item {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .bottom-nav-item:hover {
+  color: var(--text-primary);
+  background: rgba(96, 165, 250, 0.1);
+}
+
+[data-theme="dark"] .bottom-nav-item.active {
+  color: var(--color-primary-light);
+}
