@@ -47,27 +47,7 @@ const LazyAchievements = lazy(() =>
   }))
 );
 
-// Custom Hook: Use Intersection Observer for scroll animations
-const useScrollAnimation = (threshold = 0.1) => {
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold, rootMargin: "0px 0px -50px 0px" }
-    );
-
-    const elements = document.querySelectorAll(".animate-on-scroll");
-    elements.forEach((el) => observer.observe(el));
-
-    return () => observer.disconnect();
-  }, [threshold]);
-};
+// Custom hooks removed - replaced with direct useEffect calls
 
 // Custom Hook: Use Debounce for performance
 const useDebounce = (value, delay) => {
@@ -126,9 +106,6 @@ const TOTAL_SURVEYS = 10;
 // Theme removed - light mode only
 
 export default function Dashboard() {
-  // Initialize scroll animations
-  useScrollAnimation(0.1);
-  
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("OVERVIEW");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -451,11 +428,33 @@ export default function Dashboard() {
     animatedElements.forEach(el => observer.observe(el));
 
     return () => observer.disconnect();
-  }, []);
+   }, []);
 
-  /* =========================
-     LOAD DASHBOARD
-     ========================= */
+   /* =========================
+      SCROLL ANIMATIONS
+      ========================= */
+   useEffect(() => {
+     const observer = new IntersectionObserver(
+       (entries) => {
+         entries.forEach((entry) => {
+           if (entry.isIntersecting) {
+             entry.target.classList.add("is-visible");
+             observer.unobserve(entry.target);
+           }
+         });
+       },
+       { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+     );
+
+     const elements = document.querySelectorAll(".animate-on-scroll");
+     elements.forEach((el) => observer.observe(el));
+
+     return () => observer.disconnect();
+   }, []);
+
+   /* =========================
+      LOAD DASHBOARD
+      ========================= */
   useEffect(() => {
     let alive = true;
 
