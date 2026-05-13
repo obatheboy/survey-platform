@@ -899,121 +899,144 @@ export default function Dashboard() {
         <LiveWithdrawalFeed />
       </section>
 
-       {/* COMBINED BALANCE & WELCOME BONUS CARD - EDGE-TO-EDGE, COMPACT */}
-       <section ref={welcomeRef} style={{ margin: '6px 0', padding: '0 16px' }}>
-         <div style={{
-           background: 'linear-gradient(135deg, #1f7405 0%, #166534 100%)',
-           border: '1px solid #14532d',
-           borderRadius: '12px',
-           padding: '0',
-           boxShadow: '0 6px 25px rgba(22, 101, 52, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1)',
-           width: '100%',
-           boxSizing: 'border-box',
-           overflow: 'hidden'
-         }}>
-           {/* Row 1: Total Balance */}
-           <div style={{
-             display: 'flex',
-             alignItems: 'center',
-             justifyContent: 'space-between',
-             flexWrap: 'wrap',
-             gap: '10px',
-             padding: '14px 16px 10px',
-             borderBottom: '1px solid rgba(255,255,255,0.15)'
-           }}>
-             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-               <span style={{ fontSize: '18px', flexShrink: 0 }}>💰</span>
-               <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                 <span style={{ fontSize: '10px', fontWeight: '600', color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                   Total Balance
-                 </span>
-                 <span style={{ fontSize: '22px', fontWeight: '900', color: '#ffffff', letterSpacing: '-0.02em', lineHeight: '1' }}>
-                   KES {stats.availableBalance.toLocaleString()}
-                 </span>
-               </div>
-             </div>
-             <button
-               onClick={() => navigate("/withdraw-form")}
-               style={{
-                 background: 'linear-gradient(135deg, #f87171, #dc2626)',
-                 border: 'none',
-                 borderRadius: '6px',
-                 padding: '8px 16px',
-                 fontWeight: '800',
-                 fontSize: '11px',
-                 color: 'white',
-                 textTransform: 'uppercase',
-                 cursor: 'pointer',
-                 flexShrink: 0,
-                 whiteSpace: 'nowrap',
-                 boxShadow: '0 3px 10px rgba(220, 38, 38, 0.4)',
-                 transition: 'all 0.2s ease'
-               }}
-               onMouseEnter={(e) => {
-                 e.currentTarget.style.transform = 'translateY(-1px)';
-                 e.currentTarget.style.boxShadow = '0 4px 14px rgba(220, 38, 38, 0.5)';
-               }}
-               onMouseLeave={(e) => {
-                 e.currentTarget.style.transform = 'translateY(0)';
-                 e.currentTarget.style.boxShadow = '0 3px 10px rgba(220, 38, 38, 0.4)';
-               }}
-             >
-               Withdraw Now
-             </button>
-           </div>
+      {/* COMBINED BALANCE & WELCOME BONUS CARD - EDGE-TO-EDGE, COMPACT */}
+      <section ref={welcomeRef} style={{ margin: '6px 0', padding: '0 16px' }}>
+        <div style={{
+          background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+          border: '1px solid #1e40af',
+          borderRadius: '12px',
+          padding: '0',
+          boxShadow: '0 6px 25px rgba(37, 99, 235, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1)',
+          width: '100%',
+          boxSizing: 'border-box',
+          overflow: 'hidden'
+        }}>
+          {/* Row 1: Total Balance */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '10px',
+            padding: '14px 16px 10px',
+            borderBottom: '1px solid rgba(255,255,255,0.2)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '18px', flexShrink: 0 }}>💰</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                <span style={{
+                  fontSize: '10px',
+                  fontWeight: '600',
+                  color: 'rgba(255,255,255,0.8)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>
+                  Total Balance
+                </span>
+                <span style={{
+                  fontSize: '22px',
+                  fontWeight: '900',
+                  color: '#ffffff',
+                  letterSpacing: '-0.02em',
+                  lineHeight: '1'
+                }}>
+                  KES {stats.availableBalance.toLocaleString()}
+                </span>
+              </div>
+            </div>
+            <button
+              onClick={() => navigate("/withdraw-form")}
+              style={{
+                background: 'linear-gradient(135deg, #f87171, #dc2626)',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '8px 16px',
+                fontWeight: '800',
+                fontSize: '11px',
+                color: 'white',
+                textTransform: 'uppercase',
+                cursor: 'pointer',
+                flexShrink: 0,
+                whiteSpace: 'nowrap',
+                boxShadow: '0 3px 10px rgba(220, 38, 38, 0.4)',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 4px 14px rgba(220, 38, 38, 0.5)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 3px 10px rgba(220, 38, 38, 0.4)';
+              }}
+            >
+              Withdraw Now
+            </button>
+          </div>
 
-           {/* Row 2: Welcome Bonus */}
-           <div style={{
-             display: 'flex',
-             alignItems: 'center',
-             justifyContent: 'space-between',
-             flexWrap: 'wrap',
-             gap: '10px',
-             padding: '10px 16px 14px'
-           }}>
-             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 60%', minWidth: '200px' }}>
-               <span style={{ fontSize: '18px', flexShrink: 0 }}>🎁</span>
-               <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                 <span style={{ fontSize: '10px', fontWeight: '600', color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                   Welcome Bonus
-                 </span>
-                 <span style={{ fontSize: '16px', fontWeight: '900', color: '#ffffff', letterSpacing: '-0.02em' }}>
-                   KES 1,200
-                 </span>
-               </div>
-             </div>
-             <button
-               className="start-survey-btn"
-               onClick={handleWelcomeBonusWithdraw}
-               style={{
-                 background: 'linear-gradient(135deg, #f87171, #dc2626)',
-                 border: 'none',
-                 borderRadius: '6px',
-                 padding: '8px 16px',
-                 fontWeight: '800',
-                 fontSize: '11px',
-                 color: 'white',
-                 textTransform: 'uppercase',
-                 cursor: 'pointer',
-                 flexShrink: 0,
-                 whiteSpace: 'nowrap',
-                 boxShadow: '0 3px 10px rgba(220, 38, 38, 0.4)',
-                 transition: 'all 0.2s ease'
-               }}
-               onMouseEnter={(e) => {
-                 e.currentTarget.style.transform = 'translateY(-1px)';
-                 e.currentTarget.style.boxShadow = '0 4px 14px rgba(220, 38, 38, 0.5)';
-               }}
-               onMouseLeave={(e) => {
-                 e.currentTarget.style.transform = 'translateY(0)';
-                 e.currentTarget.style.boxShadow = '0 3px 10px rgba(220, 38, 38, 0.4)';
-               }}
-              >
-                CLAIM NOW
-              </button>
-           </div>
-         </div>
-       </section>
+          {/* Row 2: Welcome Bonus */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '10px',
+            padding: '10px 16px 14px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 60%', minWidth: '200px' }}>
+              <span style={{ fontSize: '18px', flexShrink: 0 }}>🎁</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                <span style={{
+                  fontSize: '10px',
+                  fontWeight: '600',
+                  color: 'rgba(255,255,255,0.8)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>
+                  Welcome Bonus
+                </span>
+                <span style={{
+                  fontSize: '16px',
+                  fontWeight: '900',
+                  color: '#ffffff',
+                  letterSpacing: '-0.02em'
+                }}>
+                  KES 1,200
+                </span>
+              </div>
+            </div>
+            <button
+              className="start-survey-btn"
+              onClick={handleWelcomeBonusWithdraw}
+              style={{
+                background: 'linear-gradient(135deg, #f87171, #dc2626)',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '8px 16px',
+                fontWeight: '800',
+                fontSize: '11px',
+                color: 'white',
+                textTransform: 'uppercase',
+                cursor: 'pointer',
+                flexShrink: 0,
+                whiteSpace: 'nowrap',
+                boxShadow: '0 3px 10px rgba(220, 38, 38, 0.4)',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 4px 14px rgba(220, 38, 38, 0.5)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 3px 10px rgba(220, 38, 38, 0.4)';
+              }}
+            >
+              CLAIM NOW
+            </button>
+          </div>
+        </div>
+      </section>
       {/* SURVEY PLANS - Shown after Welcome Bonus (ONLY ONE INSTANCE) */}
       <section className="dashboard-section" id="surveys-section" ref={surveysSectionRef}>
         <div className="section-heading">
@@ -1026,92 +1049,79 @@ export default function Dashboard() {
             const activated = isActivated(key);
             const hasPending = !!pendingWithdrawals[key];
             
-            return (
-              <div key={key} className="progress-card" style={{
-                background: '#ffffff',
-                borderRadius: '8px',
-                padding: '10px',
-                marginBottom: '0',
-                border: '1px solid #e5e5e5'
-              }}>
+             return (
+               <div key={key} className="progress-card" style={{
+                 background: '#ffffff',
+                 borderRadius: '8px',
+                 padding: '10px',
+                 marginBottom: '0',
+                 border: '1px solid #2563eb',
+                 boxShadow: '0 2px 8px rgba(37, 99, 235, 0.08)'
+               }}>
                 <div className="progress-card-header" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                   <span className="plan-icon" style={{ fontSize: '24px' }}>{plan.icon}</span>
-                  <h4 style={{ flex: 1, fontSize: '16px', fontWeight: '900', color: plan.titleColor }}>{plan.name}</h4>
-                  <span className={`status-badge ${status.status}`} style={{
-                    padding: '2px 8px',
-                    borderRadius: '12px',
-                    fontSize: '10px',
-                    fontWeight: '700',
-                    background: status.status === 'completed' ? 'rgba(72, 187, 120, 0.2)' : 
-                                status.status === 'in-progress' ? 'rgba(251, 191, 36, 0.2)' : 
-                                'rgba(0, 0, 0, 0.05)',
-                    border: `1px solid ${
-                      status.status === 'completed' ? '#48bb78' : 
-                      status.status === 'in-progress' ? '#fbbf24' : 
-                      '#e5e5e5'
-                    }`,
-                    color: status.status === 'completed' ? '#48bb78' : 
-                           status.status === 'in-progress' ? '#fbbf24' : 
-                           '#666'
-                  }}>
-                    {status.icon} {status.label}
-                  </span>
-                </div>
-                <div className="progress-card-body">
-                  <div className="progress-info" style={{ background: '#f9f9f9', borderRadius: '6px', padding: '8px', marginBottom: '8px' }}>
-                    <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid #e5e5e5' }}>
-                      <span style={{ color: '#666', fontSize: '12px' }}>Total to earn:</span>
-                      <strong style={{ color: plan.titleColor, fontSize: '14px', fontWeight: '900' }}>KES {plan.total}</strong>
-                    </div>
-                    <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid #e5e5e5' }}>
-                      <span style={{ color: '#666', fontSize: '12px' }}>Per Survey:</span>
-                      <strong style={{ color: '#333', fontSize: '12px', fontWeight: '700' }}>KES {plan.perSurvey}</strong>
-                    </div>
-                    <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid #e5e5e5' }}>
-                      <span style={{ color: '#666', fontSize: '12px' }}>Progress:</span>
-                      <strong style={{ color: '#333', fontSize: '12px', fontWeight: '700' }}>{surveysDone(key)}/{TOTAL_SURVEYS}</strong>
-                    </div>
-                    <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}>
-                      <span style={{ color: '#666', fontSize: '12px' }}>Earned so far:</span>
-                      <strong className="earned-amount" style={{ 
-                        color: plan.titleColor,
-                        fontWeight: '900',
-                        fontSize: '14px'
+                   <h4 style={{ flex: 1, fontSize: '16px', fontWeight: '900', color: '#1e40af' }}>{plan.name}</h4>
+                      <span className={`status-badge ${status.status}`} style={{
+                        padding: '2px 8px',
+                        borderRadius: '12px',
+                        fontSize: '10px',
+                        fontWeight: '700',
+                        background: 'linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%)',
+                        border: '1px solid #2563eb',
+                        color: '#1e40af'
                       }}>
-                        KES {earnedSoFar(key).toLocaleString()}
-                      </strong>
+                        {status.icon} {status.label}
+                      </span>
+                </div>
+                 <div className="progress-card-body">
+                   <div className="progress-info" style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', borderRadius: '6px', padding: '8px', marginBottom: '8px' }}>
+                     <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid rgba(37, 99, 235, 0.15)' }}>
+                        <span style={{ color: '#2563eb', fontSize: '12px' }}>Total to earn:</span>
+                       <strong style={{ color: '#1e40af', fontSize: '14px', fontWeight: '900' }}>KES {plan.total}</strong>
+                    </div>
+                     <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid rgba(37, 99, 235, 0.15)' }}>
+                       <span style={{ color: '#2563eb', fontSize: '12px' }}>Per Survey:</span>
+                       <strong style={{ color: '#1e40af', fontSize: '12px', fontWeight: '700' }}>KES {plan.perSurvey}</strong>
+                     </div>
+                     <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid rgba(37, 99, 235, 0.15)' }}>
+                       <span style={{ color: '#2563eb', fontSize: '12px' }}>Progress:</span>
+                       <strong style={{ color: '#1e40af', fontSize: '12px', fontWeight: '700' }}>{surveysDone(key)}/{TOTAL_SURVEYS}</strong>
+                    </div>
+                     <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid rgba(37, 99, 235, 0.15)' }}>
+                       <span style={{ color: '#2563eb', fontSize: '12px' }}>Earned so far:</span>
+                       <strong style={{ color: '#1e40af', fontSize: '14px', fontWeight: '900' }}>KES {earnedSoFar(key).toLocaleString()}</strong>
                     </div>
                   </div>
                   
-                  <div className="progress-bar" style={{ height: '6px', background: '#e5e5e5', borderRadius: '3px', overflow: 'hidden', marginBottom: '8px' }}>
-                    <div 
-                      className="progress-bar-fill"
-                      style={{ 
-                        width: `${progressPercentage(key)}%`,
-                        height: '100%',
-                        background: plan.titleColor,
-                        borderRadius: '3px',
-                        transition: 'width 0.5s ease'
-                      }}
-                    ></div>
-                  </div>
+                   <div className="progress-bar" style={{ height: '6px', background: 'linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%)', borderRadius: '3px', overflow: 'hidden', marginBottom: '8px', border: '1px solid rgba(37, 99, 235, 0.1)' }}>
+                     <div
+                       className="progress-bar-fill"
+                       style={{
+                         width: `${progressPercentage(key)}%`,
+                         height: '100%',
+                         background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                         borderRadius: '3px',
+                         transition: 'width 0.5s ease'
+                       }}
+                     ></div>
+                   </div>
                   
-                  {hasPending && (
-                    <div style={{
-                      marginTop: '6px',
-                      padding: '6px',
-                      background: 'rgba(251, 191, 36, 0.1)',
-                      border: '1px solid rgba(251, 191, 36, 0.3)',
-                      borderRadius: '6px',
-                      fontSize: '11px',
-                      color: '#f59e0b',
-                      fontWeight: '600',
-                      textAlign: 'center',
-                      marginBottom: '8px'
-                    }}>
-                      ⏳ Withdrawal Pending - Click to Manage
-                    </div>
-                  )}
+                    {hasPending && (
+                      <div style={{
+                        marginTop: '6px',
+                        padding: '6px',
+                        background: 'linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%)',
+                        border: '1px solid #2563eb',
+                        borderRadius: '6px',
+                        fontSize: '11px',
+                        color: '#1e40af',
+                        fontWeight: '600',
+                        textAlign: 'center',
+                        marginBottom: '8px'
+                      }}>
+                        ⏳ Withdrawal Pending - Click to Manage
+                      </div>
+                    )}
                   
                   <div className="progress-card-actions" style={{ display: 'flex', gap: '6px' }}>
                     <button 
@@ -1191,19 +1201,19 @@ export default function Dashboard() {
           <h3>Your Earnings Dashboard</h3>
           <p>Track your progress and earnings across all plans</p>
         </div>
-        <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px' }}>
-          <div className="stats-card" style={{ background: '#10b981', borderRadius: '8px', padding: '14px' }}>
-            <div className="stats-card-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-              <span className="stats-icon" style={{ fontSize: '20px' }}>💰</span>
-              <h4 style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '12px' }}>Total Earnings</h4>
-            </div>
-            <div className="stats-card-body">
-              <span className="stats-value" style={{ color: '#ffffff', fontSize: '20px', fontWeight: '900', display: 'block' }}>KES {stats.totalEarned.toLocaleString()}</span>
-              <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '10px' }}>Lifetime earnings</span>
-            </div>
-          </div>
+          <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px' }}>
+            <div className="stats-card" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: '8px', padding: '14px' }}>
+             <div className="stats-card-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+               <span className="stats-icon" style={{ fontSize: '20px' }}>💰</span>
+               <h4 style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '12px' }}>Total Earnings</h4>
+             </div>
+             <div className="stats-card-body">
+               <span className="stats-value" style={{ color: '#ffffff', fontSize: '20px', fontWeight: '900', display: 'block' }}>KES {stats.totalEarned.toLocaleString()}</span>
+               <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '10px' }}>Lifetime earnings</span>
+             </div>
+           </div>
 
-          <div className="stats-card" style={{ background: '#3b82f6', borderRadius: '8px', padding: '14px' }}>
+           <div className="stats-card" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: '8px', padding: '14px' }}>
             <div className="stats-card-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
               <span className="stats-icon" style={{ fontSize: '20px' }}>💳</span>
               <h4 style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '12px' }}>Available</h4>
@@ -1212,20 +1222,20 @@ export default function Dashboard() {
               <span className="stats-value" style={{ color: '#ffffff', fontSize: '20px', fontWeight: '900', display: 'block' }}>KES {stats.availableBalance.toLocaleString()}</span>
               <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '10px' }}>Ready to withdraw</span>
             </div>
-          </div>
+           </div>
 
-          <div className="stats-card" style={{ background: '#1f7405', borderRadius: '8px', padding: '14px' }}>
-            <div className="stats-card-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-              <span className="stats-icon" style={{ fontSize: '20px' }}>🎁</span>
-              <h4 style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '12px' }}>Affiliate</h4>
-            </div>
-            <div className="stats-card-body">
-              <span className="stats-value" style={{ color: '#ffffff', fontSize: '20px', fontWeight: '900', display: 'block' }}>KES {(stats.affiliateEarnings || 0).toLocaleString()}</span>
-              <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '10px' }}>From referrals</span>
-            </div>
-          </div>
+           <div className="stats-card" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: '8px', padding: '14px' }}>
+             <div className="stats-card-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+               <span className="stats-icon" style={{ fontSize: '20px' }}>🎁</span>
+               <h4 style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '12px' }}>Affiliate</h4>
+             </div>
+             <div className="stats-card-body">
+               <span className="stats-value" style={{ color: '#ffffff', fontSize: '20px', fontWeight: '900', display: 'block' }}>KES {(stats.affiliateEarnings || 0).toLocaleString()}</span>
+               <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '10px' }}>From referrals</span>
+             </div>
+           </div>
 
-          <div className="stats-card" style={{ background: '#8b5cf6', borderRadius: '8px', padding: '14px' }}>
+           <div className="stats-card" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: '8px', padding: '14px' }}>
             <div className="stats-card-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
               <span className="stats-icon" style={{ fontSize: '20px' }}>📊</span>
               <h4 style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '12px' }}>Surveys</h4>
@@ -1254,22 +1264,22 @@ export default function Dashboard() {
           <p>Discover what makes us the best choice for earning online</p>
         </div>
         <div className="feature-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px' }}>
-          <div className="feature-card" style={{ background: '#ed64a6', borderRadius: '8px', padding: '14px', textAlign: 'center' }}>
+          <div className="feature-card" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: '8px', padding: '14px', textAlign: 'center' }}>
             <div className="feature-icon" style={{ fontSize: '28px', marginBottom: '6px' }}>⚡</div>
             <h4 style={{ fontSize: '13px', fontWeight: '800', color: 'white', marginBottom: '4px' }}>Instant Withdrawals</h4>
             <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.9)' }}>Request cash anytime.</p>
           </div>
-          <div className="feature-card" style={{ background: '#fbbf24', borderRadius: '8px', padding: '14px', textAlign: 'center' }}>
+          <div className="feature-card" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: '8px', padding: '14px', textAlign: 'center' }}>
             <div className="feature-icon" style={{ fontSize: '28px', marginBottom: '6px' }}>✅</div>
             <h4 style={{ fontSize: '13px', fontWeight: '800', color: 'white', marginBottom: '4px' }}>Verified Surveys</h4>
             <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.9)' }}>High-quality surveys.</p>
           </div>
-          <div className="feature-card" style={{ background: '#4299e1', borderRadius: '8px', padding: '14px', textAlign: 'center' }}>
+          <div className="feature-card" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: '8px', padding: '14px', textAlign: 'center' }}>
             <div className="feature-icon" style={{ fontSize: '28px', marginBottom: '6px' }}>🔒</div>
             <h4 style={{ fontSize: '13px', fontWeight: '800', color: 'white', marginBottom: '4px' }}>Secure Payments</h4>
             <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.9)' }}>Encrypted transactions.</p>
           </div>
-          <div className="feature-card" style={{ background: '#48bb78', borderRadius: '8px', padding: '14px', textAlign: 'center' }}>
+          <div className="feature-card" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: '8px', padding: '14px', textAlign: 'center' }}>
             <div className="feature-icon" style={{ fontSize: '28px', marginBottom: '6px' }}>💬</div>
             <h4 style={{ fontSize: '13px', fontWeight: '800', color: 'white', marginBottom: '4px' }}>24/7 Support</h4>
             <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.9)' }}>Always here to help.</p>
@@ -1283,40 +1293,43 @@ export default function Dashboard() {
           <h3>Quick Actions</h3>
           <p>Complete these tasks to earn bonus points</p>
         </div>
-        <div className="quick-actions-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
-          {quickActions.map(action => (
-            <div key={action.id} className={`quick-action-card ${action.completed ? 'completed' : ''}`} style={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: '16px',
-              background: action.completed ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #3b82f6, #2563eb)',
-              borderRadius: '16px',
-              color: 'white'
-            }}>
+         <div className="quick-actions-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
+           {quickActions.map(action => (
+             <div key={action.id} className={`quick-action-card ${action.completed ? 'completed' : ''}`} style={{
+               display: 'flex',
+               alignItems: 'center',
+               padding: '16px',
+               background: action.completed ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' : 'linear-gradient(135deg, #3b82f6, #2563eb)',
+               borderRadius: '16px',
+               color: 'white',
+               border: action.completed ? '1px solid rgba(255,255,255,0.2)' : 'none'
+             }}>
               <span className="action-icon" style={{ fontSize: '24px', marginRight: '12px' }}>{action.icon}</span>
               <div className="action-content" style={{ flex: 1 }}>
-                <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: '700' }}>{action.label}</h4>
-                <p style={{ margin: '0', fontSize: '12px', color: 'rgba(255,255,255,0.9)' }}>
-                  {action.completed ? 'Completed! +10 points' : 'Earn 10 bonus points'}
-                </p>
-              </div>
-              <button 
-                className={`action-btn ${action.completed ? 'completed' : ''}`}
-                onClick={() => !action.completed && completeQuickAction(action.id)}
-                disabled={action.completed}
-                style={{
-                  padding: '8px 16px',
-                  borderRadius: '10px',
-                  border: '2px solid rgba(255,255,255,0.5)',
-                  background: action.completed ? 'rgba(255,255,255,0.2)' : 'white',
-                  color: action.completed ? 'white' : '#2563eb',
-                  fontWeight: '600',
-                  fontSize: '13px',
-                  cursor: action.completed ? 'default' : 'pointer'
-                }}
-              >
-                {action.completed ? '✓' : 'Start'}
-              </button>
+               <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: '700' }}>{action.label}</h4>
+               <p style={{ margin: '0', fontSize: '12px', color: 'rgba(255,255,255,0.9)' }}>
+                 {action.completed ? 'Completed! +10 points' : 'Earn 10 bonus points'}
+               </p>
+             </div>
+             <button
+               onClick={() => completeQuickAction(action.id)}
+               disabled={action.completed}
+               style={{
+                 background: action.completed ? 'rgba(255,255,255,0.15)' : 'linear-gradient(135deg, #f87171, #dc2626)',
+                 border: action.completed ? '1px solid rgba(255,255,255,0.3)' : 'none',
+                 borderRadius: '12px',
+                 padding: '8px 16px',
+                 fontWeight: '800',
+                 fontSize: '12px',
+                 color: 'white',
+                 cursor: action.completed ? 'default' : 'pointer',
+                 transition: 'all 0.2s ease',
+                 flexShrink: 0,
+                 boxShadow: action.completed ? 'none' : '0 3px 10px rgba(220, 38, 38, 0.4)'
+               }}
+             >
+               {action.completed ? '✓' : '→'}
+             </button>
             </div>
           ))}
         </div>
@@ -1340,11 +1353,11 @@ export default function Dashboard() {
         display: 'flex',
         justifyContent: 'space-around',
         alignItems: 'center',
-        background: '#ffffff',
+        background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
         padding: '8px 12px',
-        boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)',
+        boxShadow: '0 -2px 10px rgba(37, 99, 235, 0.2)',
         zIndex: 1000,
-        borderTop: '1px solid #e5e5e5'
+        borderTop: '1px solid rgba(255,255,255,0.2)'
       }}>
         <button
           className="nav-btn"
@@ -1390,46 +1403,46 @@ export default function Dashboard() {
           <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Surveys</span>
         </button>
 
-        <button
-          className="nav-btn"
-          onClick={() => navigate('/affiliate')}
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '2px',
-            padding: '6px',
-            background: '#8b5cf6',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer'
-          }}
-        >
-          <span className="nav-icon" style={{ fontSize: '20px' }}>👥</span>
-          <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Affiliate</span>
-        </button>
-        
-        <button
-          className="nav-btn"
-          onClick={() => navigate('/withdraw-form')}
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '2px',
-            padding: '6px',
-            background: '#dc2626',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer'
-          }}
-        >
+         <button
+           className="nav-btn"
+           onClick={() => navigate('/affiliate')}
+           style={{
+             flex: 1,
+             display: 'flex',
+             flexDirection: 'column',
+             alignItems: 'center',
+             justifyContent: 'center',
+             gap: '2px',
+             padding: '6px',
+             background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+             color: 'white',
+             border: 'none',
+             borderRadius: '8px',
+             cursor: 'pointer'
+           }}
+         >
+           <span className="nav-icon" style={{ fontSize: '20px' }}>👥</span>
+           <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Affiliate</span>
+         </button>
+
+         <button
+           className="nav-btn"
+           onClick={() => navigate('/withdraw-form')}
+           style={{
+             flex: 1,
+             display: 'flex',
+             flexDirection: 'column',
+             alignItems: 'center',
+             justifyContent: 'center',
+             gap: '2px',
+             padding: '6px',
+             background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+             color: 'white',
+             border: 'none',
+             borderRadius: '8px',
+             cursor: 'pointer'
+           }}
+         >
           <span className="nav-icon" style={{ fontSize: '20px' }}>💸</span>
           <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Withdraw</span>
         </button>
@@ -1442,34 +1455,35 @@ export default function Dashboard() {
           gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: '16px'
         }}>
-          <div className="level-streak-card" style={{
-            background: 'linear-gradient(135deg, #1f7405 0%, #2d9a07 100%)',
-            borderRadius: '16px',
-            padding: '20px',
-            color: 'white'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-              <div style={{
-                background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
-                borderRadius: '12px',
-                padding: '12px',
-                fontSize: '1.5rem'
-              }}>⭐</div>
-              <div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#fbbf24' }}>Level {gamificationStats.level}</div>
-                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)' }}>{gamificationStats.xp} / {gamificationStats.xpToNextLevel} XP</div>
-              </div>
-            </div>
-            <div style={{ marginBottom: '12px' }}>
-              <div style={{ height: '8px', background: 'rgba(255,255,255,0.2)', borderRadius: '4px', overflow: 'hidden' }}>
-                <div style={{
-                  height: '100%',
-                  width: `${(gamificationStats.xp / gamificationStats.xpToNextLevel) * 100}%`,
-                  background: 'linear-gradient(90deg, #8b5cf6, #a78bfa)',
-                  borderRadius: '4px'
-                }}></div>
-              </div>
-            </div>
+           <div className="level-streak-card" style={{
+             background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+             borderRadius: '16px',
+             padding: '20px',
+             color: 'white'
+           }}>
+             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+               <div style={{
+                 background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                 borderRadius: '12px',
+                 padding: '12px',
+                 fontSize: '1.5rem',
+                 border: '1px solid rgba(255,255,255,0.2)'
+               }}>⭐</div>
+                <div>
+                 <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#ffffff' }}>Level {gamificationStats.level}</div>
+                 <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)' }}>{gamificationStats.xp} / {gamificationStats.xpToNextLevel} XP</div>
+               </div>
+             </div>
+             <div style={{ marginBottom: '12px' }}>
+               <div style={{ height: '8px', background: 'rgba(255,255,255,0.2)', borderRadius: '4px', overflow: 'hidden' }}>
+                 <div style={{
+                   height: '100%',
+                   width: `${(gamificationStats.xp / gamificationStats.xpToNextLevel) * 100}%`,
+                   background: 'linear-gradient(90deg, #60a5fa, #93c5fd)',
+                   borderRadius: '4px'
+                 }}></div>
+               </div>
+             </div>
             <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
               {/* Daily Reward button hidden - popup disabled */}
               <div style={{
