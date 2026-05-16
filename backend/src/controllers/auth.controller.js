@@ -50,9 +50,9 @@ exports.register = async (req, res) => {
       password_hash: null,
       is_activated: false,
        login_fee_paid: true, // Bypassed - no login fee required
-      total_earned: 0,
-      welcome_bonus_received: false,
-      welcome_bonus: 0,
+      total_earned: 1200,      // ✅ Welcome bonus credited immediately on registration
+      welcome_bonus_received: true,  // ✅ Marked as received so Activate.jsx shows the plan
+      welcome_bonus: 1200,
       referral_code: newReferralCode, // ✅ Generate referral code
       // Initialize empty plans structure
       plans: {

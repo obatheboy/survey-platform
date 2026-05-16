@@ -916,14 +916,13 @@ export default function Dashboard() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            flexWrap: 'wrap',
             gap: '10px',
             padding: '14px 16px 10px',
             borderBottom: '1px solid rgba(255,255,255,0.2)'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 auto', minWidth: 0, overflow: 'hidden' }}>
               <span style={{ fontSize: '18px', flexShrink: 0 }}>💰</span>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', minWidth: 0, overflow: 'hidden' }}>
                 <span style={{
                   fontSize: '10px',
                   fontWeight: '600',
@@ -938,7 +937,10 @@ export default function Dashboard() {
                   fontWeight: '900',
                   color: '#ffffff',
                   letterSpacing: '-0.02em',
-                  lineHeight: '1'
+                  lineHeight: '1',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
                 }}>
                   KES {stats.availableBalance.toLocaleString()}
                 </span>
@@ -979,13 +981,12 @@ export default function Dashboard() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            flexWrap: 'wrap',
             gap: '10px',
             padding: '10px 16px 14px'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 60%', minWidth: '200px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 auto', minWidth: 0, overflow: 'hidden' }}>
               <span style={{ fontSize: '18px', flexShrink: 0 }}>🎁</span>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', minWidth: 0, overflow: 'hidden' }}>
                 <span style={{
                   fontSize: '10px',
                   fontWeight: '600',
@@ -999,7 +1000,10 @@ export default function Dashboard() {
                   fontSize: '16px',
                   fontWeight: '900',
                   color: '#ffffff',
-                  letterSpacing: '-0.02em'
+                  letterSpacing: '-0.02em',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
                 }}>
                   KES 1,200
                 </span>
