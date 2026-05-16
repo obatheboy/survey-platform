@@ -120,8 +120,10 @@ exports.submitSurvey = async (req, res) => {
       
       console.log(`🎉 Plan completed - User: ${user.full_name || user.email}, Plan: ${plan}`);
       
-      // ✅ FIX: Do NOT add earnings here - they will be added during activation
-      // Earnings are only added when admin approves activation
+      // ✅ Credit survey earnings to total_earned immediately on 10th survey
+      const completionEarnings = PLAN_TOTAL_EARNINGS[plan] || 0;
+      user.total_earned = (user.total_earned || 0) + completionEarnings;
+      console.log(`💰 Credited KES ${completionEarnings} to total_earned for ${plan} completion`);
 
       // Create notification for survey completion
       try {
@@ -239,7 +241,10 @@ exports.batchSubmitSurveys = async (req, res) => {
       
       console.log(`🎉 Plan completed via batch - User: ${user.full_name || user.email}, Plan: ${plan}`);
       
-      // ✅ FIX: Do NOT add earnings here - they will be added during activation
+      // ✅ Credit survey earnings to total_earned immediately on 10th survey
+      const completionEarnings = PLAN_TOTAL_EARNINGS[plan] || 0;
+      user.total_earned = (user.total_earned || 0) + completionEarnings;
+      console.log(`💰 Credited KES ${completionEarnings} to total_earned for ${plan} completion`);
 
       try {
         const notification = new Notification({

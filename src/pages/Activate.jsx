@@ -268,12 +268,46 @@ const [showSuccessPopup, setShowSuccessPopup] = useState(false);
     };
 
     load();
+
+    // ========================================================
+    //  BACK-BUTTON GUARD  (runs inside the compounded effect)
+    //
+    //  Handles two scenarios:
+    //  A) Activate came from Surveys.jsx via submitBatchSurveys():
+    //       History stack = [...prev] → /dashboard → /activate
+    //       Back from /activate  →  /dashboard   ← submitBatchSurveys() already
+    //                               handled this. This handler is a safety net.
+    //  B) Activate was loaded directly / via a stale entry pointing
+    //     to /surveys behind it:
+    //       History stack = [...prev] → /surveys → /activate
+    //       Back from /activate  →  /surveys  →  !popstate fires before React
+    //                               unmounts Activate.jsx  →  handler call:
+    //                               replaceState(null, "", "/dashboard")
+    //                                   then browser processes:
+    //                               [..prev] → /dashboard (instead of /surveys)
+    //
+    //  In B) the popstate event fires BEFORE Activate.jsx unmounts
+    //  (React unmounts synchronously in the commit phase, which
+    //  happens AFTER synchronous browser-level events), so the old
+    //  DOM still owns the listener long enough for this handler to
+    //  fire and call history.replaceState before page switches to
+    //  /surveys.
+    // ========================================================
+    const preventBackToSurveys = () => {
+      if (window.location.pathname.startsWith("/surveys")) {
+        window.history.replaceState(null, "", "/dashboard");
+      }
+    };
+
+    window.addEventListener("popstate", preventBackToSurveys);
+
     return () => {
       isMounted = false;
+      window.removeEventListener("popstate", preventBackToSurveys);
     };
    }, [navigate, searchParams, location.state]);
 
-   // Auto-set phone number from user's stored phone (once on mount)
+    // Auto-set phone number from user's stored phone (once on mount)
    useEffect(() => {
      if (user?.phone && !paynectaPhone) {
        setPaynectaPhone(user.phone);

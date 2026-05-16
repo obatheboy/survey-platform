@@ -223,17 +223,22 @@ exports.approveActivation = async (req, res) => {
     user.activated_by = plan;
     user.activated_at = new Date();
 
-    // Credit earnings: for welcome bonus use welcome_bonus amount, otherwise use plan earnings
+    // Credit earnings to total_earned:
+    // Welcome bonus: credited here only (earnings were earned via signup, not surveys)
+    // Regular/VIP/VVIP: earnings already credited on 10th survey completion (survey.controller.js)
     let creditAmount;
     if (isWelcomeBonus) {
       creditAmount = user.welcome_bonus || 1200;
       user.welcome_bonus_received = true;
     } else {
-      creditAmount = PLAN_EARNINGS[plan] || 0;
+      creditAmount = 0; // Earnings already credited when 10th survey was completed
     }
     
     const oldBalance = user.total_earned || 0;
-    user.total_earned = oldBalance + creditAmount;
+    // Only apply credit for welcome bonus; keep existing balance for normal plans
+    if (creditAmount > 0) {
+      user.total_earned = oldBalance + creditAmount;
+    }
     
     console.log(`💰 Added KES ${creditAmount} to user balance for ${plan} plan activation${isWelcomeBonus ? ' (welcome bonus)' : ''}`);
     console.log(`💰 Old balance: KES ${oldBalance}, New balance: KES ${user.total_earned}`);
@@ -245,7 +250,7 @@ exports.approveActivation = async (req, res) => {
       const notification = new Notification({
         user_id: user._id,
         title: `✅ ${plan} Plan Activated!`,
-        message: `Your ${plan} plan has been successfully activated! KES ${creditAmount} has been added to your balance. You can now withdraw your earnings.`,
+        message: `Your ${plan} plan has been successfully activated! You can now withdraw your earnings of KES ${PLAN_EARNINGS[plan] || 0}.`,
         action_route: "/withdraw",
         type: "activation"
       });

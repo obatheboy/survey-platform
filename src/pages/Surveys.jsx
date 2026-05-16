@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/api";
 import { SURVEY_QUESTIONS } from "./components/surveyQuestions.js";
 import "./Surveys.css";
@@ -18,13 +18,52 @@ const STORAGE_KEYS = {
 
 export default function Surveys() {
   const navigate = useNavigate();
-  
+  const location = useLocation();
+    
   const [activePlan, setActivePlan] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [isCompleting, setIsCompleting] = useState(false);
   const [submitProgress, setSubmitProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+
+  // ========================================================
+  //  BACK-BUTTON GUARD
+  //  When user taps the browser back button from Activate.jsx
+  //  after completing all surveys, history.replaceState inserts
+  //  /dashboard as the entry behind /activate. This popstate
+  //  handler fires the instant the URL ticks back to /surveys
+  //  (or lands on /surveys via any manual URL-to-/surveys
+  //  navigation) and redirects to /dashboard before the rest
+  //  of the UI body has a chance to render questions.
+  //
+  //  Skip on first mount to avoid racing with checkSurveyStatus
+  //  below (which is the authoritative source for the
+  //  initial localStorage check). This effect only intercepts
+  //  subsequent pathname changes — i.e. back/forward presses.
+  // ========================================================
+  // useState(true) → first render sets firstPopstate=true
+  // First-useEffect runs after first render (true → skip)
+  // After return, mountSurveys becomes false (skip only first time)
+  // -----------------------
+  const [isFirstSurveysMount, setIsFirstSurveysMount] = useState(true);
+
+  useEffect(() => {
+    if (isFirstSurveysMount) {
+      setIsFirstSurveysMount(false);
+      return;
+    }
+
+    if (location.pathname !== "/surveys") return;
+
+    const userData = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_DATA) || "{}");
+    const plan = localStorage.getItem(STORAGE_KEYS.ACTIVE_PLAN);
+    const currentCount = userData.plans?.[plan]?.surveys_completed || 0;
+
+    if (currentCount >= 10) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [location.pathname, navigate, isFirstSurveysMount]);
 
   const questions = useMemo(() => {
     return activePlan ? SURVEY_QUESTIONS[activePlan] : [];
@@ -71,7 +110,7 @@ const navigateToActivation = useCallback((plan) => {
             if (plan && SURVEY_QUESTIONS[plan]) {
               localStorage.setItem(STORAGE_KEYS.ACTIVE_PLAN, plan);
             }
-          } catch (apiError) {
+          } catch ( apiError) {
             console.error("API error:", apiError);
           }
         }
@@ -154,8 +193,6 @@ const navigateToActivation = useCallback((plan) => {
       count: surveysNeeded
     });
     
-    setSubmitProgress(80);
-    
     const { data } = response;
     console.log(`Submitted ${data.added || surveysNeeded} surveys`);
     
@@ -163,21 +200,43 @@ const navigateToActivation = useCallback((plan) => {
     const reward = PLANS_CONFIG[plan]?.total || 0;
     const currentBalance = Number(userData.total_earned || 0);
     
-    updateLocalStorageAfterSubmission(userData, plan, newCount, currentBalance, reward);
+    // ✅ Mark surveys as completed in localStorage to prevent redo
+    const updatedData = {
+      ...userData,
+      total_earned: currentBalance + reward,
+      plans: {
+        ...userData.plans,
+        [plan]: {
+          surveys_completed: newCount,
+          completed: newCount >= 10,
+          is_activated: userData.plans?.[plan]?.is_activated || false
+        }
+      }
+    };
+    localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(updatedData));
+    localStorage.setItem(STORAGE_KEYS.CACHED_BALANCE, (currentBalance + reward).toString());
     
-     setSubmitProgress(100);
-     
-     const planLower = plan.toLowerCase();
-     navigate(`/activate?plan=${planLower}`, {
-       state: {
-         planKey: plan,
-         amount: reward,
-         instant: true,
-         surveysAdded: data.added || surveysNeeded,
-         totalCompleted: data.surveys_completed || newCount
-       }
-     });
-  }, [navigate, updateLocalStorageAfterSubmission]);
+    setSubmitProgress(100);
+    
+    if (newCount >= 10) {
+      // ✅ Replace /surveys history entry with /dashboard FIRST,
+      //   so the browser back button takes the user straight to
+      //   /dashboard — not back to /surveys — when they exit Activate.
+      window.history.replaceState(null, "", "/dashboard");
+      // Now push /activate on top of the /dashboard entry.
+      navigate(`/activate?plan=${plan.toLowerCase()}`, {
+        state: {
+          planKey: plan,
+          amount: reward,
+          instant: true,
+          surveysAdded: data.added || surveysNeeded,
+          totalCompleted: data.surveys_completed || newCount
+        }
+      });
+    } else {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
 
   const handleSubmissionError = useCallback((plan) => {
     const userData = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_DATA) || "{}");
@@ -186,7 +245,7 @@ const navigateToActivation = useCallback((plan) => {
     const newCount = currentCount + surveysNeeded;
     const reward = PLANS_CONFIG[plan]?.total || 0;
     const currentBalance = Number(userData.total_earned || 0);
-    
+     
      updateLocalStorageAfterSubmission(userData, plan, newCount, currentBalance, reward);
      
      const planLower = plan.toLowerCase();
@@ -218,16 +277,15 @@ const navigateToActivation = useCallback((plan) => {
       const surveysNeeded = Math.max(0, 10 - currentCount);
       
       if (surveysNeeded <= 0) {
-        navigateToActivation(activePlan);
+        navigate("/activate");
         return;
       }
-
       setSubmitProgress(50);
       await submitBatchSurveys(activePlan, surveysNeeded, userData, currentCount);
       
     } catch (error) {
       console.error("Submission failed:", error);
-      handleSubmissionError(activePlan);
+      navigate("/dashboard");
     }
   }, [activePlan, navigateToActivation, submitBatchSurveys, handleSubmissionError, questions, answers]);
 
