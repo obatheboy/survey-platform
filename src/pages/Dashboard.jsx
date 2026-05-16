@@ -453,7 +453,7 @@ export default function Dashboard() {
     try {
       localStorage.setItem("active_plan", plan);
       await api.post("/surveys/select-plan", { plan });
-      navigate("/surveys");
+      navigate("/surveys?justStarted=true");
     } catch {
       setToast("Failed to start survey. Please try again.");
       setTimeout(() => setToast(""), 3000);

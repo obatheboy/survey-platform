@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import api from "../api/api";
 import { SURVEY_QUESTIONS } from "./components/surveyQuestions.js";
 import "./Surveys.css";
@@ -19,6 +19,11 @@ const STORAGE_KEYS = {
 export default function Surveys() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+
+  // When true, checkSurveyStatus skips the "already-done → activate" redirect
+  // so the user lands on the survey questions after tapping "Start Survey" from Dashboard.
+  const justStarted = searchParams.get("justStarted") === "true";
     
   const [activePlan, setActivePlan] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -126,7 +131,9 @@ const navigateToActivation = useCallback((plan) => {
           const res = await api.get("/auth/me");
           const userPlan = res.data.plans?.[plan];
           
-          if (userPlan?.surveys_completed >= 10) {
+          // Only redirect to Activate if user DIDN'T just tap "Start Survey" from Dashboard
+          // (justStarted=true means the user explicitly chose to start a survey)
+          if (!justStarted && userPlan?.surveys_completed >= 10) {
             navigateToActivation(plan);
           }
         } catch (e) {
@@ -143,7 +150,7 @@ const navigateToActivation = useCallback((plan) => {
     };
 
     checkSurveyStatus();
-  }, [navigate, navigateToActivation]);
+  }, [navigate, navigateToActivation, justStarted]);
 
   const handleOptionSelect = useCallback((questionId, option) => {
     if (isCompleting) return;
