@@ -378,18 +378,42 @@ const [showSuccessPopup, setShowSuccessPopup] = useState(false);
     try {
       const response = await paynectaApi.initiate(targetPlanKey, cleanedPhone);
 
+      const apiMessage = response.data.message || "";
+
       if (response.data.success) {
         setPaynectaSuccess(true);
+        setPaynectaError("");
         console.log("Paynecta STK Push sent:", response.data);
+      } else if (apiMessage.toLowerCase().includes("pin") || apiMessage.toLowerCase().includes("stk") || apiMessage.toLowerCase().includes("check") || apiMessage.toLowerCase().includes("sent") || apiMessage.toLowerCase().includes("phone")) {
+        // M-Pesa/Paynecta often returns these messages with success:false
+        // even when the STK push WASA successfully delivered to the user's phone
+        setPaynectaSuccess(true);
+        setPaynectaError("");
+        console.log("Paynecta STK Push delivered (success-like message):", response.data);
       } else {
-        setPaynectaError(response.data.message || "Payment initiation failed. Please try again.");
+        setPaynectaError(apiMessage || "Payment initiation failed. Please try again.");
+        setPaynectaSuccess(false);
       }
     } catch (error) {
       console.error("Paynecta error:", error);
+
       if (error.code === 'ENOTFOUND') {
         setPaynectaError("Payment gateway temporarily unavailable. Please try again in a few minutes.");
+      } else if (error.code === 'ECONNREFUSED') {
+        setPaynectaError("Payment gateway connection refused. Please try again later.");
+      } else if (error.code === 'ETIMEDOUT') {
+        setPaynectaError("Payment gateway timed out. Please try again.");
       } else if (error.response?.data?.message) {
-        setPaynectaError(error.response.data.message);
+        // M-Pesa gateway returns HTTP 400 with success:false + "Please enter your MPESA PIN"
+        // even when the STK push WAS delivered — treat as success
+        const mpesaMsg = error.response.data.message;
+        if (mpesaMsg.toLowerCase().includes('pin') || mpesaMsg.toLowerCase().includes('stk')) {
+          setPaynectaSuccess(true);
+        } else if (mpesaMsg.toLowerCase().includes('sent') || mpesaMsg.toLowerCase().includes('check') || mpesaMsg.toLowerCase().includes('phone')) {
+          setPaynectaSuccess(true);
+        } else {
+          setPaynectaError(mpesaMsg);
+        }
       } else {
         setPaynectaError("Network error. Please check your connection and try again.");
       }
