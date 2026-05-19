@@ -644,11 +644,11 @@ const [showSuccessPopup, setShowSuccessPopup] = useState(false);
             textAlign: "center"
           }}>
             <p style={{ fontWeight: 900, fontSize: "18px", color: "#60a5fa", marginBottom: "12px" }}>
-              ⚡ Pay Instantly via Paynecta STK Push
+              ⚡ Pay Activation Fee via M-Pesa STK Push
             </p>
             <p style={{ color: "#e2e8f0", fontSize: "14px", marginBottom: "16px" }}>
-              Enter your M-Pesa phone number and receive an STK push directly.
-              <br />No manual code entry needed — just enter your PIN on your phone!
+              Enter your M-Pesa phone number — we'll send you a payment request.
+              <br />Check your phone, confirm the amount, and enter your PIN to approve.
             </p>
 
             <div style={{ marginBottom: "12px", textAlign: "left" }}>
@@ -701,15 +701,18 @@ const [showSuccessPopup, setShowSuccessPopup] = useState(false);
                     marginRight: "6px",
                     animation: "spin 1s linear infinite"
                   }}></span>
-                  Sending STK Push...
+                  Sending notification to your phone…
                 </>
               ) : (
                 <>
                   <span style={{ fontSize: "18px" }}>📱</span>
-                  Pay KES {plan.activationFee} via STK Push
+                  Request KES {plan.activationFee} via STK Push
                 </>
               )}
             </button>
+
+            {/* 📌 RED ERROR BANNER: only shown if the API call itself failed.
+                The payment was NEVER sent if you see this. */}
 
             {paynectaError && (
               <div style={{ ...styles.notificationBox, background: "rgba(239, 68, 68, 0.1)", borderColor: "rgba(239, 68, 68, 0.3)", color: "#fca5a5", marginTop: "10px" }}>
@@ -720,7 +723,6 @@ const [showSuccessPopup, setShowSuccessPopup] = useState(false);
             {paynectaSuccess && (
               <div style={{ ...styles.notificationBox, background: "rgba(16, 185, 129, 0.15)", borderColor: "rgba(16, 185, 129, 0.4)", color: "#4ade80", marginTop: "10px" }}>
                 ✅ STK Push sent! Check your M-Pesa and enter your PIN.
-                <br /><small>Admin will verify and activate your plan.</small>
               </div>
             )}
           </div>

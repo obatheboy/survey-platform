@@ -122,7 +122,7 @@ exports.initiatePaynectaPayment = async (req, res) => {
         const notification = new Notification({
           user_id: user._id,
           title: `🔔 ${isWelcomeBonus ? 'Welcome Bonus' : planKey} Payment`,
-          message: `STK push of KES ${amount} sent to ${phone_number}. Complete payment to activate your plan. Admin will verify and activate.`,
+          message: `STK push of KES ${amount} sent to ${phone_number}. Enter your M-Pesa PIN to complete payment. Your plan will be activated after payment is confirmed.`,
           action_route: "/activate",
           type: "payment"
         });
@@ -133,14 +133,14 @@ exports.initiatePaynectaPayment = async (req, res) => {
 
       return res.status(200).json({
         success: true,
-        message: "STK Push sent! Check your phone and enter PIN.",
+        message: "STK Push sent! Check your M-Pesa and enter your PIN.",
         reference: transactionRequestId,
         transaction_request_id: paymentResult.transaction_request_id || null,
         amount: amount,
         plan: planKey,
         phone: paymentResult.phone,
         requires_manual_approval: true,
-        instructions: "Please check your phone for the STK push, enter your PIN. Admin will verify and activate your plan."
+        instructions: "Please check your phone for the STK push and enter your PIN to complete payment."
       });
     } else {
       // Clear the stored reference if payment failed
