@@ -24,14 +24,14 @@ const PLAN_EARNINGS = {
 };
 
 /* =====================================
-   PAYNECTA STK PUSH - INITIATE PAYMENT
-   ===================================== */
+     MEGAPAY STK PUSH - INITIATE PAYMENT (ONLY ACTIVE GATEWAY)
+     ===================================== */
 exports.initiatePaynectaPayment = async (req, res) => {
   try {
     const { plan, phone_number } = req.body;
     const userId = req.user?.id || req.body?.userId;
 
-    console.log("=== PAYNECTA INITIATE PAYMENT ===");
+    console.log("=== MEGAPAY INITIATE PAYMENT ===");
     console.log("User ID:", userId);
     console.log("Plan:", plan);
     console.log("Phone:", phone_number);
@@ -148,7 +148,7 @@ exports.initiatePaynectaPayment = async (req, res) => {
       user.last_payment_reference = null;
       await user.save();
 
-      console.error("❌ Paynecta STK Push failed:", paymentResult.message);
+      console.error("❌ MegaPay STK Push failed:", paymentResult.message);
 
       return res.status(400).json({
         success: false,
@@ -158,7 +158,7 @@ exports.initiatePaynectaPayment = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error("❌ Paynecta initiation error:", error);
+    console.error("❌ MegaPay initiation error:", error);
 
     // Handle DNS/connection errors
     if (error.code === 'ENOTFOUND' || (error.message && error.message.includes("ENOTFOUND"))) {
@@ -288,14 +288,14 @@ exports.getLastPaymentReference = async (req, res) => {
 };
 
 /* =====================================
-   ADMIN - MANUAL APPROVAL AFTER PAYNECTA VERIFICATION
-   ===================================== */
+    ADMIN - MANUAL APPROVAL AFTER MEGAPAY VERIFICATION
+    ===================================== */
 exports.manualApprovePaynectaPayment = async (req, res) => {
   try {
     const { userId, activationId, notes } = req.body;
     const adminId = req.user?.id;
 
-    console.log("=== MANUAL PAYNECTA APPROVAL ===");
+    console.log("=== MANUAL MEGAPAY APPROVAL ===");
     console.log("Admin ID:", adminId);
     console.log("User ID:", userId);
     console.log("Activation ID:", activationId);
@@ -369,7 +369,7 @@ exports.manualApprovePaynectaPayment = async (req, res) => {
     activationRequest.status = 'APPROVED';
     activationRequest.processed_at = new Date();
     activationRequest.approved_by = adminId;
-    activationRequest.admin_notes = notes || "Manually approved after Paynecta verification";
+    activationRequest.admin_notes = notes || "Manually approved after MegaPay verification";
 
     // Activate the plan
     if (userPlan) {
@@ -394,7 +394,7 @@ exports.manualApprovePaynectaPayment = async (req, res) => {
     const oldBalance = user.total_earned || 0;
     user.total_earned = oldBalance + creditAmount;
 
-    console.log(`✅ Manually approved Paynecta payment - ${plan} plan for user ${user.full_name}`);
+    console.log(`✅ Manually approved MegaPay payment - ${plan} plan for user ${user.full_name}`);
     console.log(`💰 Added KES ${creditAmount} - Old: ${oldBalance}, New: ${user.total_earned}`);
 
     await user.save();
@@ -445,8 +445,8 @@ exports.manualApprovePaynectaPayment = async (req, res) => {
 };
 
 /* =====================================
-   ADMIN - REJECT PAYNECTA PAYMENT
-   ===================================== */
+    ADMIN - REJECT MEGAPAY PAYMENT
+    ===================================== */
 exports.rejectPaynectaPayment = async (req, res) => {
   try {
     const { userId, activationId, reason } = req.body;
@@ -525,8 +525,8 @@ exports.rejectPaynectaPayment = async (req, res) => {
 };
 
 /* =====================================
-   ADMIN - GET PENDING PAYNECTA PAYMENTS
-   ===================================== */
+    ADMIN - GET PENDING MEGAPAY PAYMENTS
+    ===================================== */
 exports.getPendingPaynectaPayments = async (req, res) => {
   try {
     const users = await User.find({
@@ -571,8 +571,8 @@ exports.getPendingPaynectaPayments = async (req, res) => {
 };
 
 /* =====================================
-   ADMIN - GET ALL PAYNECTA PAYMENTS
-   ===================================== */
+    ADMIN - GET ALL MEGAPAY PAYMENTS
+    ===================================== */
 exports.getAllPaynectaPayments = async (req, res) => {
   try {
     const users = await User.find({
@@ -619,8 +619,8 @@ exports.getAllPaynectaPayments = async (req, res) => {
 };
 
 /* =====================================
-   ADMIN - GET PAYNECTA PLAN AMOUNTS
-   ===================================== */
+    ADMIN - GET MEGAPAY PLAN AMOUNTS
+    ===================================== */
 exports.getPlanAmounts = async (req, res) => {
   try {
     res.status(200).json({

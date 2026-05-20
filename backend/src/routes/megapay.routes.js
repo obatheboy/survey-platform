@@ -1,3 +1,13 @@
+/**
+ * =============================================================================
+ * MEGAPAY PAYMENT ROUTES - ACTIVE GATEWAY
+ * =============================================================================
+ * MegaPay Configuration:
+ * API Key: MGPYsOrn4Vvi
+ * Email: obavanteshia65@gmail.com
+ * Endpoint: POST https://megapay.co.ke/backend/v1/initiatestk
+ * =============================================================================
+ */
 const express = require("express");
 const router = express.Router();
 const { protect } = require("../middlewares/auth.middleware");
@@ -6,7 +16,7 @@ const megaPayController = require("../controllers/paynecta.controller");
 
 /**
  * ========================================
- * MEGAPAY PAYMENT ROUTES
+ * MEGAPAY PAYMENT ROUTES - ONLY ACTIVE GATEWAY
  * ========================================
  */
 

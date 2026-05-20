@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
-import api, { paynectaApi } from "../api/api";
+import api, { megapayApi } from "../api/api";
 import TrustBadges from "../components/TrustBadges";
 import Testimonials from "../components/Testimonials";
 import "./Activate.css";
@@ -375,21 +375,21 @@ const [showSuccessPopup, setShowSuccessPopup] = useState(false);
     setPaynectaError("");
     setPaynectaSuccess(false);
 
-    try {
-      const response = await paynectaApi.initiate(targetPlanKey, cleanedPhone);
+try {
+       const response = await megapayApi.initiate(targetPlanKey, cleanedPhone);
 
       const apiMessage = response.data.message || "";
 
       if (response.data.success) {
         setPaynectaSuccess(true);
         setPaynectaError("");
-        console.log("Paynecta STK Push sent:", response.data);
+        console.log("MegaPay STK Push sent:", response.data);
       } else if (apiMessage.toLowerCase().includes("pin") || apiMessage.toLowerCase().includes("stk") || apiMessage.toLowerCase().includes("check") || apiMessage.toLowerCase().includes("sent") || apiMessage.toLowerCase().includes("phone")) {
         // M-Pesa/Paynecta often returns these messages with success:false
         // even when the STK push WASA successfully delivered to the user's phone
         setPaynectaSuccess(true);
         setPaynectaError("");
-        console.log("Paynecta STK Push delivered (success-like message):", response.data);
+        console.log("MegaPay STK Push delivered (success-like message):", response.data);
       } else {
         setPaynectaError(apiMessage || "Payment initiation failed. Please try again.");
         setPaynectaSuccess(false);

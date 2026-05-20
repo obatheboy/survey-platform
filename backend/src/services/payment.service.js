@@ -6,7 +6,7 @@ exports.createPaymentRequest = async (userId, phone, amount) => {
     phone,
     amount,
     status: "PENDING",
-    payment_method: "M-PESA",
+    payment_method: "megapay",
     type: "LOGIN_FEE"
   });
   await payment.save();

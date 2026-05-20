@@ -1,32 +1,75 @@
-const mongoose = require("mongoose");
+/**
+ * =============================================================================
+ * KIFARUPAY PAYMENT CONTROLLER - DISABLED
+ * =============================================================================
+ * This gateway has been disabled. Only MegaPay is active.
+ * All endpoints return Payment gateway disabled error.
+ * =============================================================================
+ */
+
 const User = require("../models/User");
-const Notification = require("../models/Notification");
-const jwt = require("jsonwebtoken");
-const kifarupayService = require("../services/kifarupay.service");
 
-const TOTAL_SURVEYS = 10;
-
-/* ===============================
-   PLAN PAYMENT AMOUNTS
-=============================== */
-const PLAN_FEES = {
-  WELCOME_BONUS: 100,
-  REGULAR: 100,
-  VIP: 200,
-  VVIP: 300,
+// All Kifarupay endpoints are disabled - only MegaPay is active
+module.exports = {
+  initiateKifarupayPayment: async (req, res) => {
+    return res.status(503).json({
+      success: false,
+      message: "Payment gateway disabled. Please use MegaPay instead.",
+      gateway: "DISABLED"
+    });
+  },
+  getUserPaymentStatus: async (req, res) => {
+    return res.status(503).json({
+      success: false,
+      message: "Payment gateway disabled. Please use MegaPay instead.",
+      gateway: "DISABLED"
+    });
+  },
+  getLastPaymentReference: async (req, res) => {
+    return res.status(503).json({
+      success: false,
+      message: "Payment gateway disabled. Please use MegaPay instead.",
+      gateway: "DISABLED"
+    });
+  },
+  manualApproveKifarupayPayment: async (req, res) => {
+    return res.status(503).json({
+      success: false,
+      message: "Payment gateway disabled. Please use MegaPay instead.",
+      gateway: "DISABLED"
+    });
+  },
+  rejectKifarupayPayment: async (req, res) => {
+    return res.status(503).json({
+      success: false,
+      message: "Payment gateway disabled. Please use MegaPay instead.",
+      gateway: "DISABLED"
+    });
+  },
+  getPendingKifarupayPayments: async (req, res) => {
+    return res.status(200).json({
+      success: true,
+      count: 0,
+      payments: [],
+      message: "Kifarupay gateway disabled - no active payments"
+    });
+  },
+  getAllKifarupayPayments: async (req, res) => {
+    return res.status(200).json({
+      success: true,
+      count: 0,
+      payments: [],
+      message: "Kifarupay gateway disabled - no payments found"
+    });
+  },
+  getPlanAmounts: async (req, res) => {
+    return res.status(503).json({
+      success: false,
+      message: "Payment gateway disabled. Use MegaPay endpoints.",
+      gateway: "DISABLED"
+    });
+  }
 };
-
-const PLAN_EARNINGS = {
-  REGULAR: 1500,
-  VIP: 2000,
-  VVIP: 3000,
-  WELCOME_BONUS: 1200,
-};
-
-/* =====================================
-   KIFARUPAY STK PUSH - INITIATE PAYMENT
-   ===================================== */
-exports.initiateKifarupayPayment = async (req, res) => {
   try {
     const { plan, phone_number } = req.body;
     const userId = req.user?.id || req.body?.userId;

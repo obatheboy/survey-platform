@@ -220,9 +220,9 @@ export const adminLoginFeeApi = {
 };
 
 /* =====================================================
-    🚀 KIFARUPAY PAYMENT API (STK PUSH) - NOW MEGAPAY
-    ===================================================== */
-export const paynectaApi = {
+    🚀 MEGAPAY PAYMENT API
+    ===================================================================================== */
+export const megapayApi = {
   // Initiate STK Push payment via MegaPay
   // plan: "welcome_bonus" | "regular" | "vip" | "vvip"
   // User enters ONLY phone number - amount is pulled from plan prices automatically
@@ -235,10 +235,13 @@ export const paynectaApi = {
   getLastReference: () => api.get("/megapay/last-reference"),
 };
 
+// Legacy alias for backwards compatibility
+export const paynectaApi = megapayApi;
+
 /* =====================================================
-   👑 ADMIN KIFARUPAY API (NOW MEGAPAY)
-   ===================================================== */
-export const adminPaynectaApi = {
+    👑 ADMIN MEGAPAY API
+    ===================================================================================== */
+export const adminMegapayApi = {
   // Get all pending payments for admin verification
   getPending: () => adminApi.get("/megapay/admin/pending"),
 
@@ -254,6 +257,9 @@ export const adminPaynectaApi = {
   // Get plan amounts
   getPlanAmounts: () => adminApi.get("/megapay/admin/plan-amounts"),
 };
+
+// Legacy alias for backwards compatibility
+export const adminPaynectaApi = adminMegapayApi;
 
 /* =====================================================
    📦 DEFAULT EXPORT

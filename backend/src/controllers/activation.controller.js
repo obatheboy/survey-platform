@@ -90,14 +90,15 @@ exports.submitActivationPayment = async (req, res) => {
     
     // Add new activation request (include is_welcome_bonus flag)
     // Users can submit multiple payment attempts - admin will see all
-    user.activation_requests.push({
-      plan: planKey,
-      mpesa_code: paymentReference,
-      amount: PLAN_FEES[planKey],
-      status: 'SUBMITTED',
-      created_at: new Date(),
-      is_welcome_bonus: !!is_welcome_bonus
-    });
+user.activation_requests.push({
+       plan: planKey,
+       mpesa_code: paymentReference,
+       amount: PLAN_FEES[planKey],
+       status: 'SUBMITTED',
+       created_at: new Date(),
+       is_welcome_bonus: !!is_welcome_bonus,
+       payment_method: "megapay"
+     });
     
     await user.save();
 
