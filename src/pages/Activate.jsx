@@ -730,7 +730,7 @@ try {
               ) : (
                 <>
                   <span style={{ fontSize: "18px" }}>📱</span>
-                  Request KES {plan.activationFee} via STK Push
+                  Pay KES {plan.activationFee} Automatic and Activate
                 </>
               )}
             </button>
