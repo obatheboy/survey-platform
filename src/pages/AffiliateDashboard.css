@@ -208,8 +208,8 @@
   transition: all 0.2s;
 }
 
-.share-btn.whatsapp {
-  background: #25d366;
+.share-btn.telegram {
+  background: #0088cc;
   color: white;
 }
 

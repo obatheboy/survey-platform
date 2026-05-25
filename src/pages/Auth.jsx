@@ -404,17 +404,17 @@ export default function Auth() {
           style={styles.supportBtn}
           onClick={() => {
             const message = encodeURIComponent("Hello, I need help with creating my survey account.");
-            window.open(`https://wa.me/254140834185?text=${message}`, "_blank");
+            window.open(`https://t.me/SurveyEarn_kenya?text=${message}`, "_blank");
           }}
         >
           💬 Chat Support
         </button>
 
         <button
-          style={styles.whatsappGroupBtn}
-          onClick={() => window.open("https://chat.whatsapp.com/JK0iFcp09DYIEmkRD8wyCN", "_blank")}
+          style={styles.telegramGroupBtn}
+          onClick={() => window.open("https://t.me/SurveyEarn_kenya", "_blank")}
         >
-          👥 Join WhatsApp Group
+          👥 Join Telegram Group
         </button>
 
         {/* Footer */}
@@ -697,19 +697,19 @@ const styles = {
     padding: "12px",
     borderRadius: "12px",
     border: "none",
-    background: "#25D366",
+    background: "#0088cc",
     color: "#ffffff",
     fontSize: "14px",
     fontWeight: "700",
     cursor: "pointer",
     marginBottom: "8px",
   },
-  whatsappGroupBtn: {
+  telegramGroupBtn: {
     width: "100%",
     padding: "12px",
     borderRadius: "12px",
     border: "none",
-    background: "linear-gradient(135deg, #128C7E, #25D366)",
+    background: "linear-gradient(135deg, #0088cc, #0066b3)",
     color: "#ffffff",
     fontSize: "14px",
     fontWeight: "700",

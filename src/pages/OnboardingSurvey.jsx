@@ -6,13 +6,13 @@ const ONBOARDING_QUESTIONS = [
   {
     id: 1,
     question: "How did you hear about us?",
-    options: [
-      "Facebook",
-      "WhatsApp",
-      "Friend/Relative",
-      "Google Search",
-      "Other"
-    ]
+options: [
+       "Facebook",
+       "Telegram",
+       "Friend/Relative",
+       "Google Search",
+       "Other"
+     ]
   },
   {
     id: 2,

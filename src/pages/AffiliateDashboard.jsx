@@ -49,12 +49,12 @@ export default function AffiliateDashboard() {
     }
   };
 
-  const shareToWhatsApp = () => {
+  const shareToTelegram = () => {
     const message = encodeURIComponent(
       `Hey! I'm earning real money by completing simple surveys on SurveyEarn. 💰\n\nJoin using my link and get a KES 1,200 welcome bonus! 🎁\n\n${stats?.referral_link}`
     );
-    const whatsappUrl = `https://wa.me/?text=${message}`;
-    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+    const telegramUrl = `https://t.me/share/url?text=${message}`;
+    window.open(telegramUrl, "_blank", "noopener,noreferrer");
   };
 
   const formatDate = (dateString) => {
@@ -149,9 +149,9 @@ export default function AffiliateDashboard() {
           Your Code: <strong>{stats?.referral_code}</strong>
         </p>
         <div className="share-buttons">
-          <button className="share-btn whatsapp" onClick={shareToWhatsApp}>
-            💬 Share on WhatsApp
-          </button>
+<button className="share-btn telegram" onClick={shareToTelegram}>
+             💬 Share on Telegram
+           </button>
         </div>
       </div>
 

@@ -112,10 +112,10 @@ export default function Withdraw() {
     }
   };
 
-  const shareToWhatsApp = () => {
+  const shareToTelegram = () => {
     const text = `Hey! I'm earning money on the Survey App. Join me and complete surveys to earn cash! 🎉\n\nDownload now: ${window.location.origin}\n\nCode: ${withdrawalCode}`;
     window.open(
-      `https://wa.me/?text=${encodeURIComponent(text)}`,
+      `https://t.me/share/url?url=${encodeURIComponent(window.location.origin)}&text=${encodeURIComponent(text)}`,
       "_blank"
     );
     incrementShareCount();
@@ -225,13 +225,13 @@ export default function Withdraw() {
               <p style={styles.shareInstruction}>Share via:</p>
 
               <div style={styles.shareButtons}>
-                <button
-                  onClick={shareToWhatsApp}
-                  style={styles.whatsappBtn}
-                  title="Share on WhatsApp"
-                >
-                  💬 WhatsApp
-                </button>
+<button
+                   onClick={shareToTelegram}
+                   style={styles.telegramBtn}
+                   title="Share on Telegram"
+                 >
+                   💬 Telegram
+                 </button>
                 <button
                   onClick={shareToEmail}
                   style={styles.emailBtn}
@@ -507,11 +507,11 @@ const styles = {
     marginBottom: 20,
   },
 
-  whatsappBtn: {
+  telegramBtn: {
     padding: 12,
     borderRadius: 12,
     border: "none",
-    background: "#25D366",
+    background: "#0088cc",
     color: "#fff",
     fontWeight: 700,
     cursor: "pointer",

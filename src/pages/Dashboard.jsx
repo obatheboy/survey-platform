@@ -549,10 +549,10 @@ export default function Dashboard() {
   /* =========================
      WHATSAPP SUPPORT FUNCTION
   ========================= */
-  const openWhatsAppSupport = () => {
+const openTelegramSupport = () => {
     const message = encodeURIComponent("Hello SurveyEarn Support, I need help with my survey account.");
-    const whatsappUrl = `https://wa.me/254140834185?text=${message}`;
-    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+    const telegramUrl = `https://t.me/SurveyEarn_kenya?text=${message}`;
+    window.open(telegramUrl, '_blank', 'noopener,noreferrer');
   };
   
   // Theme toggle removed - light mode only
@@ -757,25 +757,25 @@ export default function Dashboard() {
           <h1 className="dashboard-main-title">Dashboard</h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <button
-              onClick={openWhatsAppSupport}
-              style={{
-                background: '#25D366',
-                color: 'white',
-                border: 'none',
-                borderRadius: '20px',
-                padding: '8px 14px',
-                fontSize: '14px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-              }}
-              title="Contact Support on WhatsApp"
-            >
-              <span style={{ fontSize: '16px' }}>💬</span>
-              <span>CHAT US</span>
-            </button>
+onClick={openTelegramSupport}
+               style={{
+                 background: '#0088cc',
+                 color: 'white',
+                 border: 'none',
+                 borderRadius: '20px',
+                 padding: '8px 14px',
+                 fontSize: '14px',
+                 fontWeight: '600',
+                 cursor: 'pointer',
+                 display: 'flex',
+                 alignItems: 'center',
+                 gap: '6px',
+               }}
+               title="Contact Support on Telegram"
+             >
+               <span style={{ fontSize: '16px' }}>💬</span>
+               <span>CHAT US</span>
+             </button>
 
           </div>
         </div>
@@ -1520,27 +1520,27 @@ export default function Dashboard() {
       </div>
 
       {/* FOOTER */}
-      <footer className="dashboard-footer" style={{ textAlign: 'center', padding: '20px', marginTop: '20px', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
-        <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}>
-          Need help? 
-          <button 
-            onClick={openWhatsAppSupport}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#3b82f6',
-              textDecoration: 'underline',
-              cursor: 'pointer',
-              fontSize: '12px',
-              margin: '0 5px'
-            }}
-          >
-            Contact Support
-          </button> 
-          | <a href="/faq" style={{ color: '#3b82f6', textDecoration: 'none' }}>FAQ</a>
-        </p>
-        <p className="footer-note" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>© {new Date().getFullYear()} SurveyEarn. All rights reserved.</p>
-      </footer>
+<footer className="dashboard-footer" style={{ textAlign: 'center', padding: '20px', marginTop: '20px', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+         <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}>
+           Need help? 
+           <button 
+             onClick={openTelegramSupport}
+             style={{
+               background: 'none',
+               border: 'none',
+               color: '#3b82f6',
+               textDecoration: 'underline',
+               cursor: 'pointer',
+               fontSize: '12px',
+               margin: '0 5px'
+             }}
+           >
+             Contact Support
+           </button> 
+           | <a href="/faq" style={{ color: '#3b82f6', textDecoration: 'none' }}>FAQ</a>
+         </p>
+         <p className="footer-note" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>© {new Date().getFullYear()} SurveyEarn. All rights reserved.</p>
+       </footer>
 
       {/* WELCOME BONUS POPUP */}
       <WelcomeBonusPopup

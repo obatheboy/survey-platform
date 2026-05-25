@@ -238,10 +238,9 @@
   transform: scale(0.95);
 }
 
-.drawer-share-icon {
-  font-size: 20px;
-  line-height: 1;
-}
+.drawer-share-telegram {
+   background: linear-gradient(135deg, #0088cc, #0066b3);
+ }
 
 /* Toast Notification */
 .drawer-toast {
