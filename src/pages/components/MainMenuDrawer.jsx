@@ -21,7 +21,7 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
 
   const openWhatsAppSupport = () => {
     const message = encodeURIComponent("Hello Survey App Kenya Support, I need help with my survey account.");
-    const whatsappUrl = `https://wa.me/254118468826?text=${message}`;
+    const whatsappUrl = `https://wa.me/254106926547?text=${message}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
     onClose();
   };
