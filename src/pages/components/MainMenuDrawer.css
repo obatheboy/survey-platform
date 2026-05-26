@@ -238,8 +238,8 @@
   transform: scale(0.95);
 }
 
-.drawer-share-telegram {
-   background: linear-gradient(135deg, #0088cc, #0066b3);
+.drawer-share-whatsapp {
+   background: linear-gradient(135deg, #25D366, #128C7E);
  }
 
 /* Toast Notification */

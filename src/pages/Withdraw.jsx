@@ -112,10 +112,10 @@ export default function Withdraw() {
     }
   };
 
-  const shareToTelegram = () => {
+  const shareToWhatsApp = () => {
     const text = `Hey! I'm earning money on the Survey App. Join me and complete surveys to earn cash! 🎉\n\nDownload now: ${window.location.origin}\n\nCode: ${withdrawalCode}`;
     window.open(
-      `https://t.me/share/url?url=${encodeURIComponent(window.location.origin)}&text=${encodeURIComponent(text)}`,
+      `https://wa.me/?text=${encodeURIComponent(text)}`,
       "_blank"
     );
     incrementShareCount();
@@ -226,11 +226,11 @@ export default function Withdraw() {
 
               <div style={styles.shareButtons}>
 <button
-                   onClick={shareToTelegram}
-                   style={styles.telegramBtn}
-                   title="Share on Telegram"
+                   onClick={shareToWhatsApp}
+                   style={styles.whatsappBtn}
+                   title="Share on WhatsApp"
                  >
-                   💬 Telegram
+                   💬 WhatsApp
                  </button>
                 <button
                   onClick={shareToEmail}
@@ -277,13 +277,33 @@ export default function Withdraw() {
                 </span>
               </div>
 
-              {withdrawalStatus === "REJECTED" && (
-                <div style={styles.rejectedBox}>
-                  <p style={styles.rejectedText}>
-                    ❌ Your withdrawal has been rejected. Please contact admin for details.
-                  </p>
-                </div>
-              )}
+{withdrawalStatus === "REJECTED" && (
+                 <div style={styles.rejectedBox}>
+                   <p style={styles.rejectedText}>
+                     ❌ Your withdrawal has been rejected. Please contact admin for details.
+                   </p>
+                   <p style={{ textAlign: 'center', marginTop: 12 }}>
+                     <button
+                       onClick={() => {
+                         const message = encodeURIComponent("Hello, I need help with my withdrawal rejection.");
+                         window.open(`https://wa.me/254140834185?text=${message}`, "_blank");
+                       }}
+                       style={{
+                         background: '#25D366',
+                         color: 'white',
+                         border: 'none',
+                         borderRadius: 8,
+                         padding: '8px 16px',
+                         fontSize: 14,
+                         fontWeight: 600,
+                         cursor: 'pointer'
+                       }}
+                     >
+                       📱 Chat on WhatsApp
+                     </button>
+                   </p>
+                 </div>
+               )}
 
               {withdrawalStatus === "APPROVED" && (
                 <div style={styles.approvedBox}>
@@ -507,11 +527,11 @@ const styles = {
     marginBottom: 20,
   },
 
-  telegramBtn: {
+  whatsappBtn: {
     padding: 12,
     borderRadius: 12,
     border: "none",
-    background: "#0088cc",
+    background: "#25D366",
     color: "#fff",
     fontWeight: 700,
     cursor: "pointer",

@@ -19,10 +19,8 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
 
   if (!open || !user) return null;
 
-  const openTelegramSupport = () => {
-    const message = encodeURIComponent("Hello Survey App Kenya Support, I need help with my survey account.");
-    const telegramUrl = `https://t.me/SurveyEarn_kenya?text=${message}`;
-    window.open(telegramUrl, '_blank', 'noopener,noreferrer');
+  const openWhatsAppGroup = () => {
+    window.open("https://chat.whatsapp.com/JK0iFcp09DYIEmkRD8wyCN", "_blank");
     onClose();
   };
 
@@ -30,9 +28,9 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
   const referralLink = `${window.location.origin}/auth?ref=${referralCode}`;
   const shareMessage = `Hey! I'm earning rewards by completing simple surveys on Survey App Kenya.\n\nJoin using my link and get started!\n\n${referralLink}`;
 
-  const shareToTelegram = () => {
-    const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareMessage)}`;
-    window.open(telegramUrl, '_blank', 'noopener,noreferrer');
+  const shareToWhatsApp = () => {
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
     onClose();
   };
 
@@ -132,19 +130,10 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
         <h4 className="drawer-section-title">App Menu</h4>
         <MenuItem label="FAQ & Help" icon="help" onClick={() => onNavigate('/faq')} />
         <MenuItem label="Account Stats" icon="stats" onClick={showAccountStats} />
-        <MenuItem label="Contact Support" icon="support" onClick={openTelegramSupport} />
-        <MenuItem label="Refresh App" icon="refresh" onClick={handleRefreshApp} />
-
-        <hr className="drawer-divider" />
-
-        <h4 className="drawer-section-title">Invite & Earn</h4>
-        <p className="drawer-referral-caption">
-          Earn <strong>KES 250</strong> for every friend who signs up and activates.
-        </p>
-        <div className="drawer-share-buttons">
-<button className="drawer-share-btn drawer-share-telegram" onClick={shareToTelegram}>
+<MenuItem label="Contact Support" icon="support" onClick={openWhatsAppGroup} />
+         <button className="drawer-share-btn drawer-share-whatsapp" onClick={shareToWhatsApp}>
              <span className="drawer-share-icon">📱</span>
-             <span>Telegram</span>
+             <span>WhatsApp</span>
            </button>
           <button className="drawer-share-btn drawer-share-sms" onClick={shareToSMS}>
             <span className="drawer-share-icon">💬</span>

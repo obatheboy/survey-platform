@@ -46,9 +46,9 @@ export default function WithdrawSuccess() {
 
   const referralLink = `${window.location.origin}/auth?ref=${withdrawal.referral_code}`;
   
-  const shareToTelegram = () => {
+  const shareToWhatsApp = () => {
     const text = `Hey! I'm earning money doing simple surveys on Survey App Kenya! 🎉\n\nJoin me using this link and get KES 1,200 welcome bonus:\n\n${referralLink}\n\nUse code: ${withdrawal.referral_code}`;
-    window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(text)}`, "_blank");
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
     incrementShareCount();
   };
 
@@ -205,11 +205,11 @@ export default function WithdrawSuccess() {
 
         <div className="share-buttons-grid">
           <button 
-            className="share-btn telegram-btn"
-            onClick={shareToTelegram}
+            className="share-btn whatsapp-btn"
+            onClick={shareToWhatsApp}
           >
             <span className="btn-icon">💬</span>
-            <span className="btn-text">Telegram</span>
+            <span className="btn-text">WhatsApp</span>
           </button>
           
           <button 
@@ -279,7 +279,7 @@ export default function WithdrawSuccess() {
         <p>Contact support if you have any questions about your withdrawal</p>
         <button 
           className="support-btn"
-          onClick={() => window.open(`https://t.me/SurveyEarn_kenya?text=Hello%20Support,%20I%20need%20help%20with%20my%20withdrawal%20${withdrawal.id}`, '_blank')}
+          onClick={() => window.open("https://chat.whatsapp.com/JK0iFcp09DYIEmkRD8wyCN", '_blank')}
         >
           💬 Chat with Support
         </button>

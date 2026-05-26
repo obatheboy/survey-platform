@@ -85,14 +85,14 @@
   line-height: 1;
 }
 
-/* Telegram Support Button */
-.telegram-btn {
+/* WhatsApp Support Button */
+.whatsapp-btn {
   flex-shrink: 0;
-  box-shadow: 0 4px 15px rgba(0, 136, 204, 0.4);
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
 }
 
-.telegram-btn:hover {
-  box-shadow: 0 6px 20px rgba(0, 136, 204, 0.5);
+.whatsapp-btn:hover {
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
 }
 
 /* Activation Button */

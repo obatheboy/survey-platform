@@ -546,13 +546,11 @@ export default function Dashboard() {
     setTimeout(() => setToast(""), 3000);
   };
 
-  /* =========================
-     WHATSAPP SUPPORT FUNCTION
-  ========================= */
-const openTelegramSupport = () => {
-    const message = encodeURIComponent("Hello SurveyEarn Support, I need help with my survey account.");
-    const telegramUrl = `https://t.me/SurveyEarn_kenya?text=${message}`;
-    window.open(telegramUrl, '_blank', 'noopener,noreferrer');
+/* =========================
+      WHATSAPP SUPPORT FUNCTION
+   ========================= */
+  const openWhatsAppSupport = () => {
+    window.open("https://chat.whatsapp.com/JK0iFcp09DYIEmkRD8wyCN", "_blank");
   };
   
   // Theme toggle removed - light mode only
@@ -757,9 +755,9 @@ const openTelegramSupport = () => {
           <h1 className="dashboard-main-title">Dashboard</h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <button
-onClick={openTelegramSupport}
+onClick={openWhatsAppSupport}
                style={{
-                 background: '#0088cc',
+                 background: '#25D366',
                  color: 'white',
                  border: 'none',
                  borderRadius: '20px',
@@ -771,7 +769,7 @@ onClick={openTelegramSupport}
                  alignItems: 'center',
                  gap: '6px',
                }}
-               title="Contact Support on Telegram"
+               title="Contact Support on WhatsApp"
              >
                <span style={{ fontSize: '16px' }}>💬</span>
                <span>CHAT US</span>
@@ -1524,7 +1522,7 @@ onClick={openTelegramSupport}
          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}>
            Need help? 
            <button 
-             onClick={openTelegramSupport}
+             onClick={openWhatsAppSupport}
              style={{
                background: 'none',
                border: 'none',
