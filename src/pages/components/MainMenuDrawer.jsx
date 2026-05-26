@@ -131,19 +131,18 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
         <MenuItem label="FAQ & Help" icon="help" onClick={() => onNavigate('/faq')} />
         <MenuItem label="Account Stats" icon="stats" onClick={showAccountStats} />
 <MenuItem label="Contact Support" icon="support" onClick={openWhatsAppGroup} />
-         <button className="drawer-share-btn drawer-share-whatsapp" onClick={shareToWhatsApp}>
-             <span className="drawer-share-icon">📱</span>
-             <span>WhatsApp</span>
+          <button className="drawer-share-btn drawer-share-whatsapp" onClick={shareToWhatsApp}>
+              <span className="drawer-share-icon">📱</span>
+              <span>WhatsApp</span>
+            </button>
+           <button className="drawer-share-btn drawer-share-sms" onClick={shareToSMS}>
+             <span className="drawer-share-icon">💬</span>
+             <span>SMS</span>
            </button>
-          <button className="drawer-share-btn drawer-share-sms" onClick={shareToSMS}>
-            <span className="drawer-share-icon">💬</span>
-            <span>SMS</span>
-          </button>
-          <button className="drawer-share-btn drawer-share-copy" onClick={copyLink}>
-            <span className="drawer-share-icon">🔗</span>
-            <span>Copy</span>
-          </button>
-        </div>
+           <button className="drawer-share-btn drawer-share-copy" onClick={copyLink}>
+             <span className="drawer-share-icon">🔗</span>
+             <span>Copy</span>
+           </button>
 
         <hr className="drawer-divider" />
         <MenuItem label="Back to Dashboard" icon="dashboard" onClick={onClose} />
