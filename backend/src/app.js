@@ -1,4 +1,4 @@
-const express = require("express");
+﻿const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
@@ -18,110 +18,66 @@ const notificationRoutes = require("./routes/notification.routes");
 
 const app = express();
 
-
 app.set("trust proxy", 1);
 
-/* ===============================
-    🌍 CORS (DEV + LIVE + POSTMAN SAFE)
-    ✅ Supports any Vercel subdomain
-=============================== */
 const allowedOrigins = [
-  "http://localhost:5173", // local dev
-  "http://localhost:3000", // local dev alt
-  "https://survey-platform-three.vercel.app", // old live frontend
-  "https://www.survey-platform-three.vercel.app", // old www
-  "https://survey-platform-h4o7mczvu-obatheboys-projects.vercel.app", // new frontend
-  "https://survey-platform-bp8bfyhia-obatheboys-projects.vercel.app", // newest frontend
-  "https://survey-platform-mg3gi5tri-obatheboys-projects.vercel.app", // current frontend
-  "https://survey-platform-khyljxvov-obatheboys-projects.vercel.app", // current frontend
-  "https://survey-platform-fyeqhj2n4-obatheboys-projects.vercel.app", // current frontend
-  "https://survey-platform-opaseqfmd-obatheboys-projects.vercel.app", // current frontend
-  "https://survey-platform-fhdaed3c0-obatheboys-projects.vercel.app", // current frontend
-  "https://survey-platform-jsm75f44a-obatheboys-projects.vercel.app", // latest frontend
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://survey-platform-three.vercel.app"
 ];
 
-// CORS regex patterns - checked AFTER explicit origins
 const allowedOriginPatterns = [
-  /\.vercel\.app$/, // matches any vercel deployment
-  /\.onrender\.com$/, // matches any render deployment
+  /\.vercel\.app$/,
+  /\.onrender\.com$/
 ];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Allow no origin (Postman / server-to-server calls)
-      if (!origin) return callback(null, true);
+const corsMiddleware = cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    const cleanOrigin = origin.replace(/\/$/, "");
+    if (allowedOrigins.includes(cleanOrigin)) {
+      return callback(null, true);
+    }
+    const matchesPattern = allowedOriginPatterns.some((pattern) =>
+      pattern.test(cleanOrigin)
+    );
+    if (matchesPattern) {
+      return callback(null, true);
+    }
+    console.warn("Blocked by CORS:", origin);
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+  exposedHeaders: ["Content-Length", "X-Requested-With"]
+});
 
-      const cleanOrigin = origin.replace(/\/$/, "");
+app.use(corsMiddleware);
 
-      // First, check explicit origins list
-      if (allowedOrigins.includes(cleanOrigin)) {
-        return callback(null, true);
-      }
-
-      // Second, check regex patterns
-      const matchesPattern = allowedOriginPatterns.some((pattern) =>
-        pattern.test(cleanOrigin)
-      );
-
-      if (matchesPattern) {
-        return callback(null, true);
-      }
-
-      console.warn("Blocked by CORS:", origin);
-      return callback(new Error(`CORS not allowed for ${origin}`));
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
-    exposedHeaders: ["Content-Length", "X-Requested-With"],
-  })
-);
-
-/* ===============================
-   🧩 MIDDLEWARE
-   =============================== */
 app.use(express.json());
 app.use(cookieParser());
 
-/* ===============================
-   🔄 CACHE BUSTING HEADERS
-   Apply to all API routes
-   =============================== */
 app.use((req, res, next) => {
-  // Set cache-control headers for all API responses
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
+  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
   next();
 });
 
-/* ===============================
-   ⚡️ CORS PREFLIGHT HANDLER
-   =============================== */
-app.options("*", cors());
+app.options("*", corsMiddleware);
 
-/* ===============================
-   🩺 HEALTH CHECK (RENDER WAKE-UP)
-   MUST BE /api/health
-================================ */
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "awake" });
 });
 
-/* ===============================
-   🏠 ROOT INFO
-================================ */
 app.get("/", (req, res) => {
   res.status(200).json({
     status: "OK",
-    service: "Survey Platform API",
+    service: "Survey Platform API"
   });
 });
 
-/* ===============================
-   👤 USER ROUTES
-================================ */
 app.use("/api/auth", authRoutes);
 app.use("/api/surveys", surveyRoutes);
 app.use("/api/activation", activationRoutes);
@@ -129,19 +85,13 @@ app.use("/api/withdraw", withdrawRoutes);
 app.use("/api/affiliate", affiliateRoutes);
 app.use("/api/gamification", gamificationRoutes);
 app.use("/api/login-fee", loginFeeRoutes);
-app.use("/api/notifications", notificationRoutes); // ✅ USER NOTIFICATIONS HERE
-app.use("/api/megapay", megapayRoutes); // ✅ MEGAPAY PAYMENT ROUTES
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/megapay", megapayRoutes);
 
-/* ===============================
-   🛡 ADMIN ROUTES
-================================ */
 app.use("/api/admin/auth", adminAuthRoutes);
-app.use("/api/admin", adminRoutes); // ✅ ADMIN NOTIFICATION SENDING IS IN HERE
+app.use("/api/admin", adminRoutes);
 app.use("/api/admin", adminActivationRoutes);
 
-/* ===============================
-   ❌ GLOBAL ERROR HANDLER
-================================ */
 app.use((err, req, res, next) => {
   console.error("Global error:", err.message || err);
   res.status(500).json({ message: err.message || "Server error" });

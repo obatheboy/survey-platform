@@ -19,12 +19,14 @@ const PLAN_EARNINGS = {
 ===================================================== */
 
 /**
- * 🔍 GET ALL ACTIVATION PAYMENTS
+ * 🔍 GET ALL ACTIVATION PAYMENTS (with pagination)
  */
 exports.getActivationPayments = async (req, res) => {
   try {
-    console.log("📞 GET /admin/activations called");
-    
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+    const skip = (page - 1) * limit;
+
     const users = await User.find({
       $or: [
         { 'activation_requests.0': { $exists: true } },
@@ -32,22 +34,22 @@ exports.getActivationPayments = async (req, res) => {
       ]
     })
     .select('full_name email phone activation_requests withdrawal_requests welcome_bonus_withdrawn')
+    .sort({ created_at: -1 })
+    .skip(skip)
+    .limit(limit)
     .lean();
 
-    console.log(`✅ Found ${users.length} users with payments`);
-
     const allPayments = [];
-    
+
     users.forEach(user => {
-      // 1. Regular activation payments
       if (user.activation_requests && user.activation_requests.length > 0) {
         user.activation_requests.forEach(payment => {
           const isWelcomeBonus = payment.plan === 'WELCOME_BONUS' || payment.type === 'welcome_bonus_withdrawal';
-          
+
           if (isWelcomeBonus && payment.status === 'APPROVED') {
             return;
           }
-          
+
           allPayments.push({
             id: payment._id || payment.id,
             user_id: user._id,
@@ -63,17 +65,16 @@ exports.getActivationPayments = async (req, res) => {
           });
         });
       }
-      
-      // 2. Welcome bonus withdrawals from withdrawal_requests
+
       if (user.withdrawal_requests && user.withdrawal_requests.length > 0) {
         user.withdrawal_requests.forEach(withdrawal => {
           if (withdrawal.type === 'welcome_bonus' && withdrawal.status === 'SUBMITTED') {
-            const alreadyAdded = allPayments.some(p => 
-              p.type === 'welcome_bonus' && 
+            const alreadyAdded = allPayments.some(p =>
+              p.type === 'welcome_bonus' &&
               p.user_id.toString() === user._id.toString() &&
               p.mpesa_code === withdrawal.mpesa_code
             );
-            
+
             if (!alreadyAdded) {
               allPayments.push({
                 id: withdrawal._id || withdrawal.id,
@@ -99,14 +100,16 @@ exports.getActivationPayments = async (req, res) => {
     res.json({
       success: true,
       count: allPayments.length,
+      page,
+      limit,
       payments: allPayments
     });
   } catch (error) {
     console.error("❌ Get activation payments error:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
       message: "Failed to load activation payments",
-      error: error.message 
+      error: error.message
     });
   }
 };

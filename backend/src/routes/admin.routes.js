@@ -84,4 +84,11 @@ router.delete("/notifications/cleanup", adminController.deleteOldNotifications);
  */
 router.get("/stats", adminController.getAdminStats);
 
+/**
+ * =========================================
+ * 🧹 CLEANUP OLD DATA
+ * =========================================
+ */
+router.delete("/cleanup/old-users", adminController.deleteOldUsers);
+
 module.exports = router;

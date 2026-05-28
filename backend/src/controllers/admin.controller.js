@@ -25,18 +25,22 @@ exports.getAdminMe = async (req, res) => {
 ====================================================== */
 
 /**
- * GET ALL USERS - FIXED: active_plan undefined error
+ * GET ALL USERS - FIXED: active_plan undefined error (with pagination)
  */
 exports.getAllUsers = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 100;
+    const skip = (page - 1) * limit;
+
     const users = await User.find()
       .select('full_name email phone is_activated total_earned welcome_bonus welcome_bonus_withdrawn plans status created_at')
       .sort({ created_at: -1 })
+      .skip(skip)
+      .limit(limit)
       .lean();
 
-    // Format the response - FIXED VERSION
     const formattedUsers = users.map(user => {
-      // Calculate surveys completed
       let surveys_completed = 0;
       if (user.plans) {
         Object.values(user.plans).forEach(plan => {
@@ -46,14 +50,13 @@ exports.getAllUsers = async (req, res) => {
         });
       }
 
-      // Get active plan - FIXED: Handle undefined properly
       let active_plan = null;
       if (user.plans) {
-        const planKey = Object.keys(user.plans).find(plan => 
+        const planKey = Object.keys(user.plans).find(plan =>
           user.plans[plan] && !user.plans[plan].is_activated
         );
         if (planKey) {
-          active_plan = planKey; // Already uppercase like "REGULAR", "VIP", "VVIP"
+          active_plan = planKey;
         }
       }
 
@@ -63,17 +66,25 @@ exports.getAllUsers = async (req, res) => {
         email: user.email || '',
         phone: user.phone || '',
         is_activated: user.is_activated || false,
-        status: user.status || 'ACTIVE', // Default status
+        status: user.status || 'ACTIVE',
         total_earned: user.total_earned || 0,
         welcome_bonus: user.welcome_bonus || 1200,
         welcome_bonus_withdrawn: user.welcome_bonus_withdrawn || false,
         surveys_completed: surveys_completed,
-        active_plan: active_plan, // Now never undefined
+        active_plan: active_plan,
         created_at: user.created_at
       };
     });
 
-    res.json(formattedUsers);
+    const totalUsers = await User.countDocuments();
+
+    res.json({
+      users: formattedUsers,
+      page,
+      limit,
+      total: totalUsers,
+      totalPages: Math.ceil(totalUsers / limit)
+    });
   } catch (error) {
     console.error("Admin get users error:", error);
     res.status(500).json({ message: "Server error" });
@@ -87,7 +98,6 @@ exports.getUserById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validate ID
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
@@ -100,7 +110,6 @@ exports.getUserById = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Calculate total surveys completed
     let totalSurveysCompleted = 0;
     if (user.plans) {
       for (const planKey in user.plans) {
@@ -110,10 +119,9 @@ exports.getUserById = async (req, res) => {
       }
     }
 
-    // Get active plan - FIXED: Handle undefined
     let active_plan = null;
     if (user.plans) {
-      const planKey = Object.keys(user.plans).find(plan => 
+      const planKey = Object.keys(user.plans).find(plan =>
         user.plans[plan] && !user.plans[plan].is_activated
       );
       if (planKey) {
@@ -121,12 +129,10 @@ exports.getUserById = async (req, res) => {
       }
     }
 
-    // Get pending activations count
-    const pendingActivations = user.activation_requests ? 
+    const pendingActivations = user.activation_requests ?
       user.activation_requests.filter(req => req.status === 'SUBMITTED').length : 0;
 
-    // Get pending withdrawals count
-    const pendingWithdrawals = user.withdrawal_requests ? 
+    const pendingWithdrawals = user.withdrawal_requests ?
       user.withdrawal_requests.filter(req => ['PROCESSING', 'PENDING'].includes(req.status)).length : 0;
 
     res.json({
@@ -139,7 +145,7 @@ exports.getUserById = async (req, res) => {
       welcome_bonus: user.welcome_bonus || 1200,
       welcome_bonus_withdrawn: user.welcome_bonus_withdrawn || false,
       surveys_completed: totalSurveysCompleted,
-      active_plan: active_plan, // FIXED: Now never undefined
+      active_plan: active_plan,
       pending_activations: pendingActivations,
       pending_withdrawals: pendingWithdrawals,
       plans: user.plans || {},
@@ -153,15 +159,12 @@ exports.getUserById = async (req, res) => {
 
 /**
  * UPDATE USER STATUS
- * Note: In MongoDB, we don't have a 'status' field in User model.
- * We'll add it or use is_activated field
  */
 exports.updateUserStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
-    // Validate ID
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
@@ -172,7 +175,6 @@ exports.updateUserStatus = async (req, res) => {
       });
     }
 
-    // For MongoDB, we'll store status in a new field
     const user = await User.findByIdAndUpdate(
       id,
       { $set: { status: status.toUpperCase() } },
@@ -205,7 +207,6 @@ exports.updateUserRole = async (req, res) => {
     const { id } = req.params;
     const { role } = req.body;
 
-    // Validate ID
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
@@ -215,7 +216,7 @@ exports.updateUserRole = async (req, res) => {
     }
 
     const normalizedRole = role.toLowerCase();
-    
+
     const user = await User.findByIdAndUpdate(
       id,
       { $set: { role: normalizedRole } },
@@ -247,7 +248,6 @@ exports.activateUser = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validate ID
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
@@ -286,7 +286,6 @@ exports.adjustUserBalance = async (req, res) => {
     const { id } = req.params;
     let { amount, type } = req.body;
 
-    // Validate ID
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
@@ -302,7 +301,7 @@ exports.adjustUserBalance = async (req, res) => {
     }
 
     const normalizedType = type.toUpperCase();
-    
+
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -311,14 +310,14 @@ exports.adjustUserBalance = async (req, res) => {
     const currentBalance = user.total_earned || 0;
 
     if (normalizedType === "DEBIT" && currentBalance < amount) {
-      return res.status(400).json({ 
-        message: "Insufficient balance", 
+      return res.status(400).json({
+        message: "Insufficient balance",
         currentBalance: currentBalance,
-        requestedDebit: amount 
+        requestedDebit: amount
       });
     }
 
-    const newBalance = normalizedType === "CREDIT" ? 
+    const newBalance = normalizedType === "CREDIT" ?
       currentBalance + amount : currentBalance - amount;
 
     user.total_earned = newBalance;
@@ -345,7 +344,6 @@ exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validate ID
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
@@ -356,12 +354,11 @@ exports.deleteUser = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Also delete user's notifications
     await Notification.deleteMany({ user_id: id });
 
-    res.json({ 
+    res.json({
       message: "User deleted successfully",
-      deletedId: user._id 
+      deletedId: user._id
     });
   } catch (error) {
     console.error("Admin delete user error:", error);
@@ -380,19 +377,15 @@ exports.deleteBulkUsers = async (req, res) => {
       return res.status(400).json({ message: "Invalid user IDs provided" });
     }
 
-    // Validate all IDs are valid ObjectIds
     const invalidIds = userIds.filter(id => !mongoose.Types.ObjectId.isValid(id));
     if (invalidIds.length > 0) {
-      return res.status(400).json({ 
-        message: "Invalid user IDs detected", 
-        invalidIds 
+      return res.status(400).json({
+        message: "Invalid user IDs detected",
+        invalidIds
       });
     }
 
-    // Delete users
     const deleteResult = await User.deleteMany({ _id: { $in: userIds } });
-
-    // Delete their notifications
     await Notification.deleteMany({ user_id: { $in: userIds } });
 
     res.json({
@@ -410,7 +403,7 @@ exports.deleteBulkUsers = async (req, res) => {
 ====================================================== */
 
 /**
- * SEND BULK NOTIFICATION
+ * SEND BULK NOTIFICATION (FIXED: batch processing to avoid memory issues)
  */
 exports.sendBulkNotification = async (req, res) => {
   const { title, message } = req.body;
@@ -419,7 +412,6 @@ exports.sendBulkNotification = async (req, res) => {
     return res.status(400).json({ message: "Title and message are required" });
   }
 
-  // Validate length
   if (title.length > 100) {
     return res.status(400).json({ message: "Title too long (max 100 chars)" });
   }
@@ -429,30 +421,39 @@ exports.sendBulkNotification = async (req, res) => {
   }
 
   try {
-    // Get all active users (users without suspended status)
-    const activeUsers = await User.find({ 
-      $or: [{ status: { $ne: 'SUSPENDED' } }, { status: { $exists: false } }] 
-    }).select('_id');
+    const BATCH_SIZE = 1000;
+    let sentCount = 0;
+    let skip = 0;
 
-    if (activeUsers.length === 0) {
+    const totalActiveUsers = await User.countDocuments({
+      $or: [{ status: { $ne: 'SUSPENDED' } }, { status: { $exists: false } }]
+    });
+
+    if (totalActiveUsers === 0) {
       return res.status(404).json({ message: "No active users found" });
     }
 
-    // Prepare notifications for batch insert
-    const notifications = activeUsers.map(user => ({
-      user_id: user._id,
-      title: title.trim(),
-      message: message.trim(),
-      type: 'bulk',
-      created_at: new Date()
-    }));
+    while (skip < totalActiveUsers) {
+      const activeUsers = await User.find({
+        $or: [{ status: { $ne: 'SUSPENDED' } }, { status: { $exists: false } }]
+      }).select('_id').skip(skip).limit(BATCH_SIZE);
 
-    // Insert all notifications
-    const result = await Notification.insertMany(notifications);
+      const notifications = activeUsers.map(user => ({
+        user_id: user._id,
+        title: title.trim(),
+        message: message.trim(),
+        type: 'bulk',
+        created_at: new Date()
+      }));
+
+      const result = await Notification.insertMany(notifications);
+      sentCount += result.length;
+      skip += BATCH_SIZE;
+    }
 
     res.status(200).json({
-      message: `Notification sent to ${result.length} active users.`,
-      sentCount: result.length
+      message: `Notification sent to ${sentCount} active users.`,
+      sentCount
     });
   } catch (error) {
     console.error("Admin send bulk notification error:", error);
@@ -471,13 +472,12 @@ exports.sendBulkNotification = async (req, res) => {
 exports.getAllNotifications = async (req, res) => {
   try {
     const { type, limit = 100, offset = 0 } = req.query;
-    
-    // Build query
+
     const query = {};
     if (type) {
       query.type = type;
     }
-    
+
     const notifications = await Notification.find(query)
       .populate('user_id', 'full_name email')
       .sort({ created_at: -1 })
@@ -485,7 +485,6 @@ exports.getAllNotifications = async (req, res) => {
       .limit(parseInt(limit))
       .lean();
 
-    // Format response
     const formattedNotifications = notifications.map(notif => ({
       id: notif._id,
       title: notif.title,
@@ -497,11 +496,10 @@ exports.getAllNotifications = async (req, res) => {
       user_name: notif.user_id?.full_name || 'Unknown User',
       user_email: notif.user_id?.email || 'No email'
     }));
-    
-    // Get stats
+
     const totalCount = await Notification.countDocuments();
     const unreadCount = await Notification.countDocuments({ is_read: false });
-    
+
     const typeStats = await Notification.aggregate([
       { $group: { _id: "$type", count: { $sum: 1 } } },
       { $sort: { count: -1 } }
@@ -539,7 +537,6 @@ exports.deleteNotificationForAllUsers = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validate ID
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
@@ -613,7 +610,7 @@ exports.deleteNotificationsByType = async (req, res) => {
 exports.deleteOldNotifications = async (req, res) => {
   try {
     const days = parseInt(req.query.days) || 30;
-    
+
     if (days < 1) {
       return res.status(400).json({
         success: false,
@@ -624,8 +621,8 @@ exports.deleteOldNotifications = async (req, res) => {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
 
-    const result = await Notification.deleteMany({ 
-      created_at: { $lt: cutoffDate } 
+    const result = await Notification.deleteMany({
+      created_at: { $lt: cutoffDate }
     });
 
     return res.json({
@@ -644,94 +641,116 @@ exports.deleteOldNotifications = async (req, res) => {
 };
 
 /* ======================================================
-   📊 ADMIN DASHBOARD STATS
+   📊 ADMIN DASHBOARD STATS (FIXED: uses aggregation instead of loading all docs)
 ====================================================== */
 exports.getAdminStats = async (req, res) => {
   try {
-    // Get all users count
     const totalUsers = await User.countDocuments();
-    
-    // Calculate total revenue from activation requests
-    const allUsers = await User.find().select('activation_requests');
-    let totalRevenue = 0;
-    allUsers.forEach(user => {
-      if (user.activation_requests) {
-        user.activation_requests.forEach(activation => {
-          if (activation.status === 'APPROVED') {
-            totalRevenue += activation.amount || 0;
-          }
-        });
-      }
-    });
-    
-    // Calculate total withdrawals
-    let totalWithdrawals = 0;
-    let pendingWithdrawals = 0;
-    allUsers.forEach(user => {
-      if (user.withdrawal_requests) {
-        user.withdrawal_requests.forEach(withdrawal => {
-          if (withdrawal.status === 'APPROVED') {
-            totalWithdrawals += withdrawal.amount || 0;
-          } else if (withdrawal.status === 'PROCESSING') {
-            pendingWithdrawals++;
-          }
-        });
-      }
-    });
-    
-    // Calculate pending activations
-    let pendingActivations = 0;
-    allUsers.forEach(user => {
-      if (user.activation_requests) {
-        pendingActivations += user.activation_requests.filter(
-          req => req.status === 'SUBMITTED'
-        ).length;
-      }
-    });
-    
-    // Calculate surveys completed
-    let surveysCompleted = 0;
-    allUsers.forEach(user => {
-      if (user.plans) {
-        for (const planKey in user.plans) {
-          if (user.plans[planKey]) {
-            surveysCompleted += user.plans[planKey].surveys_completed || 0;
-          }
+
+    const totalRevenue = await User.aggregate([
+      { $match: { activation_requests: { $exists: true, $ne: [] } } },
+      { $unwind: { path: "$activation_requests", preserveNullAndEmptyArrays: true } },
+      { $match: { "activation_requests.status": "APPROVED" } },
+      { $group: { _id: null, sum: { $sum: "$activation_requests.amount" } } }
+    ]);
+
+    const todayRevenue = await User.aggregate([
+      { $match: { activation_requests: { $exists: true, $ne: [] } } },
+      { $unwind: { path: "$activation_requests", preserveNullAndEmptyArrays: true } },
+      { $match: {
+          "activation_requests.status": "APPROVED",
+          "activation_requests.processed_at": { $gte: new Date(new Date().setHours(0, 0, 0, 0)) }
         }
-      }
-    });
-    
-    // Calculate today's revenue
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    let todayRevenue = 0;
-    allUsers.forEach(user => {
-      if (user.activation_requests) {
-        user.activation_requests.forEach(activation => {
-          if (activation.status === 'APPROVED' && activation.processed_at) {
-            const activationDate = new Date(activation.processed_at);
-            if (activationDate >= today) {
-              todayRevenue += activation.amount || 0;
-            }
+      },
+      { $group: { _id: null, sum: { $sum: "$activation_requests.amount" } } }
+    ]);
+
+    const pendingActivations = await User.aggregate([
+      { $match: { activation_requests: { $exists: true, $ne: [] } } },
+      { $unwind: { path: "$activation_requests", preserveNullAndEmptyArrays: true } },
+      { $match: { "activation_requests.status": "SUBMITTED" } },
+      { $count: "count" }
+    ]);
+
+    const surveysCompleted = await User.aggregate([
+      { $group: { _id: null, sum: {
+          $sum: {
+            $add: [
+              { $ifNull: ["$plans.REGULAR.surveys_completed", 0] },
+              { $ifNull: ["$plans.VIP.surveys_completed", 0] },
+              { $ifNull: ["$plans.VVIP.surveys_completed", 0] }
+            ]
           }
-        });
-      }
-    });
+        } } }
+    ]);
+
+    const totalWithdrawals = await User.aggregate([
+      { $unwind: { path: "$withdrawal_requests", preserveNullAndEmptyArrays: true } },
+      { $match: { "withdrawal_requests.status": "APPROVED" } },
+      { $group: { _id: null, sum: { $sum: "$withdrawal_requests.amount" } } }
+    ]);
+
+    const pendingWithdrawals = await User.aggregate([
+      { $unwind: { path: "$withdrawal_requests", preserveNullAndEmptyArrays: true } },
+      { $match: { "withdrawal_requests.status": "PROCESSING" } },
+      { $count: "count" }
+    ]);
+
+    const loginFeeApproved = await User.countDocuments({ login_fee_paid: true });
+    const loginFeePending = await User.countDocuments({ "login_fee_pending.status": "PENDING" });
 
     res.json({
       totalUsers,
-      totalRevenue,
-      totalWithdrawals,
-      pendingActivations,
-      pendingWithdrawals,
-      surveysCompleted,
-      todayRevenue,
-      netProfit: totalRevenue - totalWithdrawals,
-      loginFeeApproved: allUsers.filter(u => u.login_fee_paid).length,
-      loginFeePending: allUsers.filter(u => u.login_fee_pending && u.login_fee_pending.status === 'PENDING').length,
+      totalRevenue: totalRevenue[0]?.sum || 0,
+      totalWithdrawals: totalWithdrawals[0]?.sum || 0,
+      pendingActivations: pendingActivations[0]?.count || 0,
+      pendingWithdrawals: pendingWithdrawals[0]?.count || 0,
+      surveysCompleted: surveysCompleted[0]?.sum || 0,
+      todayRevenue: todayRevenue[0]?.sum || 0,
+      netProfit: (totalRevenue[0]?.sum || 0) - (totalWithdrawals[0]?.sum || 0),
+      loginFeeApproved,
+      loginFeePending,
     });
   } catch (error) {
     console.error("Admin stats error:", error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+/**
+ * ❌ DELETE OLD USERS (OLDER THAN 30 DAYS)
+ * DELETE /api/admin/cleanup/old-users?days=30
+ */
+exports.deleteOldUsers = async (req, res) => {
+  try {
+    const days = parseInt(req.query.days) || 30;
+
+    if (days < 1) {
+      return res.status(400).json({
+        success: false,
+        message: "Days must be at least 1"
+      });
+    }
+
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+
+    const result = await User.deleteMany({
+      created_at: { $lt: cutoffDate },
+      status: { $ne: 'SUSPENDED' }
+    });
+
+    return res.json({
+      success: true,
+      message: `Deleted ${result.deletedCount} users older than ${days} days`,
+      deletedCount: result.deletedCount,
+      days
+    });
+  } catch (error) {
+    console.error("❌ Admin delete old users error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error deleting old users"
+    });
   }
 };
