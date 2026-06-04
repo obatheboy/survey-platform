@@ -41,6 +41,7 @@ export default function Activate() {
   const [message, setMessage] = useState("");
   const intervalRef = useRef(null);
   const timeoutRef = useRef(null);
+  const phoneTouchedRef = useRef(false);
 
   useEffect(() => {
     return () => {
@@ -72,7 +73,7 @@ export default function Activate() {
   useEffect(() => { fetchStatus(); }, [fetchStatus]);
 
   useEffect(() => {
-    if (user?.phone && !phone) {
+    if (user?.phone && !phone && !phoneTouchedRef.current) {
       setPhone(user.phone);
     }
   }, [user, phone]);
@@ -107,7 +108,13 @@ export default function Activate() {
 
     try {
       const res = await planPaymentApi.initiate(selectedPlan, phone);
+      const apiMessage = (res.data.message || "").toLowerCase();
+
       if (res.data.success) {
+        setPaymentState("waiting");
+        setMessage("Check your M-Pesa and enter your PIN to complete payment.");
+        startPolling(res.data.transaction_request_id);
+      } else if (apiMessage.includes("pin") || apiMessage.includes("stk") || apiMessage.includes("check") || apiMessage.includes("sent") || apiMessage.includes("phone")) {
         setPaymentState("waiting");
         setMessage("Check your M-Pesa and enter your PIN to complete payment.");
         startPolling(res.data.transaction_request_id);
@@ -116,12 +123,18 @@ export default function Activate() {
         setMessage(res.data.message || "Payment initiation failed");
       }
     } catch (_payErr) {
-      setPaymentState("error");
-      if (_payErr.code === "ENOTFOUND") {
+      const errMsg = (_payErr.response?.data?.message || "").toLowerCase();
+      if (errMsg.includes("pin") || errMsg.includes("stk") || errMsg.includes("check") || errMsg.includes("sent") || errMsg.includes("phone")) {
+        setPaymentState("waiting");
+        setMessage("Check your M-Pesa and enter your PIN to complete payment.");
+      } else if (_payErr.code === "ENOTFOUND") {
+        setPaymentState("error");
         setMessage("Payment gateway unavailable. Please try again later.");
       } else if (_payErr.response?.data?.message) {
+        setPaymentState("error");
         setMessage(_payErr.response.data.message);
       } else {
+        setPaymentState("error");
         setMessage("Network error. Please try again.");
       }
     } finally {
@@ -301,7 +314,7 @@ export default function Activate() {
               <input
                 type="tel"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => { phoneTouchedRef.current = true; setPhone(e.target.value); }}
                 placeholder="2547XXXXXXXX or 07XXXXXXXX"
                 style={{ width: "100%", padding: "14px 16px", borderRadius: "10px", border: "2px solid #334155", background: "#1e293b", color: "#ffffff", fontSize: "16px", fontWeight: 600, boxSizing: "border-box", outline: "none" }}
                 disabled={paying || isWaitingOrConfirming}
@@ -309,9 +322,9 @@ export default function Activate() {
             </div>
 
             {isWaitingOrConfirming && (
-              <div style={{ background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.3)", borderRadius: "12px", padding: "16px", textAlign: "center" }}>
-                <p style={{ color: "#fbbf24", fontWeight: 600, marginBottom: "8px" }}>⏳ Waiting for payment...</p>
-                <p style={{ color: "#94a3b8", fontSize: "13px", marginBottom: "12px" }}>Check your M-Pesa and enter your PIN.</p>
+              <div style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.3)", borderRadius: "12px", padding: "16px", textAlign: "center" }}>
+                <p style={{ color: "#10b981", fontWeight: 600, marginBottom: "8px" }}>✅ STK Push Sent!</p>
+                <p style={{ color: "#94a3b8", fontSize: "13px", marginBottom: "12px" }}>Check your M-Pesa and enter your PIN to complete payment.</p>
                 {paymentState === "confirming" && (
                   <div style={{ marginBottom: "12px" }}>
                     <div style={{ width: "20px", height: "20px", border: "2px solid rgba(255,255,255,0.2)", borderTopColor: "#10b981", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto" }}></div>
