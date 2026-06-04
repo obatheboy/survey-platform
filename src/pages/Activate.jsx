@@ -276,7 +276,7 @@ export default function Activate() {
       </div>
 
       {/* 🎉 Congratulations Screen - shown after completing 10 surveys */}
-      {congratsData && !allCompleted && (
+      {congratsData && !allCompleted && !selectedPlan && (
         <div style={{ width: "100%", maxWidth: "600px", background: "linear-gradient(135deg, rgba(16,185,129,0.15), rgba(99,102,241,0.15))", border: "2px solid #10b981", borderRadius: "20px", padding: "28px", textAlign: "center", marginBottom: "24px", boxShadow: "0 0 40px rgba(16,185,129,0.15)" }}>
           <div style={{ fontSize: "56px", marginBottom: "12px" }}>🎉</div>
           <h2 style={{ color: "#10b981", fontSize: "24px", fontWeight: 800, margin: "0 0 6px" }}>
