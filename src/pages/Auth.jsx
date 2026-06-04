@@ -400,12 +400,19 @@ export default function Auth() {
           </div>
         </div>
 
-        <button
-          style={styles.whatsappGroupBtn}
-          onClick={() => window.open("https://chat.whatsapp.com/JK0iFcp09DYIEmkRD8wyCN", "_blank")}
-        >
-          👥 Join WhatsApp Group
-        </button>
+<button
+           style={styles.whatsappGroupBtn}
+           onClick={() => window.open("https://chat.whatsapp.com/JK0iFcp09DYIEmkRD8wyCN", "_blank")}
+         >
+           👥 Join WhatsApp Group
+         </button>
+
+         <button
+           style={styles.callBtn}
+           onClick={() => window.open("tel:0140834185", "_blank")}
+         >
+           📞 Call Support: 0140834185
+         </button>
 
         {/* Footer */}
         <p style={styles.footer}>
@@ -700,6 +707,22 @@ const styles = {
     borderRadius: "12px",
     border: "none",
     background: "linear-gradient(135deg, #128C7E, #25D366)",
+    color: "#ffffff",
+    fontSize: "14px",
+    fontWeight: "700",
+    cursor: "pointer",
+    marginBottom: "12px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+  },
+  callBtn: {
+    width: "100%",
+    padding: "12px",
+    borderRadius: "12px",
+    border: "none",
+    background: "#3b82f6",
     color: "#ffffff",
     fontSize: "14px",
     fontWeight: "700",

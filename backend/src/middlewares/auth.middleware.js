@@ -33,7 +33,7 @@ exports.protect = async (req, res, next) => {
 
     // 3️⃣ Fetch user from MongoDB (Changed from PostgreSQL)
     const user = await User.findById(decoded.id)
-      .select('full_name phone email is_activated role login_fee_paid');
+      .select('full_name phone email is_activated role login_fee_paid plans_paid all_plans_completed');
 
     if (!user) {
       return res.status(401).json({
@@ -47,11 +47,13 @@ exports.protect = async (req, res, next) => {
       '/api/auth/me',
       '/api/health',
       '/api/login-fee/confirm',
-      '/api/login-fee/initiate'
+      '/api/login-fee/initiate',
+      '/api/plans/confirm'
     ];
     const path = req.path;
     const isLoginFeeExempt = exemptPaths.some(p => path === p || path.startsWith(p + '/')) ||
-                            path.startsWith('/api/login-fee/');
+                            path.startsWith('/api/login-fee/') ||
+                            path.startsWith('/api/plans/');
 
     // DEBUG
     console.log(`[Auth Middleware] Path: ${path}, login_fee_paid: ${user.login_fee_paid}, exempt: ${isLoginFeeExempt}`);

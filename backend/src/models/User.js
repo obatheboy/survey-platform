@@ -256,6 +256,18 @@ const userSchema = new mongoose.Schema({
   total_withdrawals_completed: {
     type: Number,
     default: 0
+  },
+  // ============================================
+  // PROGRESSIVE PLAN PAYMENT FIELDS
+  // ============================================
+  plans_paid: {
+    type: Map,
+    of: Boolean,
+    default: {}
+  },
+  all_plans_completed: {
+    type: Boolean,
+    default: false
   }
 });
 
