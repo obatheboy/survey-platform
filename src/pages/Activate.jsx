@@ -298,13 +298,8 @@ export default function Activate() {
 
           <button
             onClick={() => {
-              const planKey = congratsData.planKey || user?.active_plan;
-              if (planKey) {
-                const planLower = planKey.toLowerCase();
-                navigate(`/activate?plan=${planLower}`, { replace: true });
-              } else {
-                navigate("/activate", { replace: true });
-              }
+              const planKey = congratsData?.planKey || user?.active_plan;
+              if (planKey) handleSelectPlan(planKey);
             }}
             style={{ width: "100%", padding: "16px", borderRadius: "14px", border: "none", background: "linear-gradient(135deg, #10b981, #059669)", color: "#ffffff", fontWeight: 800, fontSize: "16px", cursor: "pointer", boxShadow: "0 6px 20px rgba(16,185,129,0.35)", marginBottom: "10px" }}
           >
