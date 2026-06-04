@@ -43,6 +43,7 @@ export default function Activate() {
   const intervalRef = useRef(null);
   const timeoutRef = useRef(null);
   const phoneTouchedRef = useRef(false);
+  const phoneInputRef = useRef(null);
 
   useEffect(() => {
     return () => {
@@ -79,6 +80,14 @@ export default function Activate() {
       setCongratsData(location.state);
     }
   }, [location.state, congratsData]);
+
+  useEffect(() => {
+    if (selectedPlan && phoneInputRef.current) {
+      setTimeout(() => {
+        phoneInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 300);
+    }
+  }, [selectedPlan]);
 
   useEffect(() => {
     if (user?.phone && !phone && !phoneTouchedRef.current) {
@@ -372,6 +381,7 @@ export default function Activate() {
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               <label style={{ color: "#e2e8f0", fontWeight: 700, fontSize: "14px" }}>📱 M-Pesa Phone Number</label>
               <input
+                ref={phoneInputRef}
                 type="tel"
                 value={phone}
                 onChange={(e) => { phoneTouchedRef.current = true; setPhone(e.target.value); }}
