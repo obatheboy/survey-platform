@@ -754,26 +754,47 @@ export default function Dashboard() {
           </button>
           <h1 className="dashboard-main-title">Dashboard</h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button
-onClick={openWhatsAppSupport}
-               style={{
-                 background: '#25D366',
-                 color: 'white',
-                 border: 'none',
-                 borderRadius: '20px',
-                 padding: '8px 14px',
-                 fontSize: '14px',
-                 fontWeight: '600',
-                 cursor: 'pointer',
-                 display: 'flex',
-                 alignItems: 'center',
-                 gap: '6px',
-               }}
-               title="Contact Support on WhatsApp"
-             >
-               <span style={{ fontSize: '16px' }}>💬</span>
-               <span>CHAT US</span>
-             </button>
+<button
+ onClick={openWhatsAppSupport}
+                style={{
+                  background: '#25D366',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '20px',
+                  padding: '8px 14px',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+                title="Contact Support on WhatsApp"
+              >
+                <span style={{ fontSize: '16px' }}>💬</span>
+                <span>CHAT US</span>
+              </button>
+
+              <button
+                onClick={() => window.open("tel:0140834185", "_blank")}
+                style={{
+                  background: '#3b82f6',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '20px',
+                  padding: '8px 14px',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+                title="Call Support"
+              >
+                <span style={{ fontSize: '16px' }}>📞</span>
+                <span>0140834185</span>
+              </button>
 
           </div>
         </div>
@@ -1517,28 +1538,27 @@ onClick={openWhatsAppSupport}
         <Achievements />
       </div>
 
-      {/* FOOTER */}
+{/* FOOTER */}
 <footer className="dashboard-footer" style={{ textAlign: 'center', padding: '20px', marginTop: '20px', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
-         <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}>
-           Need help? 
-           <button 
-             onClick={openWhatsAppSupport}
-             style={{
-               background: 'none',
-               border: 'none',
-               color: '#3b82f6',
-               textDecoration: 'underline',
-               cursor: 'pointer',
-               fontSize: '12px',
-               margin: '0 5px'
-             }}
-           >
-             Contact Support
-           </button> 
-           | <a href="/faq" style={{ color: '#3b82f6', textDecoration: 'none' }}>FAQ</a>
-         </p>
-         <p className="footer-note" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>© {new Date().getFullYear()} SurveyEarn. All rights reserved.</p>
-       </footer>
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}>
+            Need help? 
+            <button 
+              onClick={() => window.open("tel:0140834185", "_blank")}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#3b82f6',
+                textDecoration: 'underline',
+                cursor: 'pointer',
+                fontSize: '12px',
+                margin: '0 5px'
+              }}
+            >
+              Call: 0140834185
+            </button>
+          </p>
+          <p className="footer-note" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>© {new Date().getFullYear()} SurveyEarn. All rights reserved.</p>
+        </footer>
 
       {/* WELCOME BONUS POPUP */}
       <WelcomeBonusPopup

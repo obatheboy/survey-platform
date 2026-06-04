@@ -74,7 +74,8 @@ exports.register = async (req, res) => {
           is_activated: false,
           total_surveys: 10
         }
-      }
+      },
+      all_plans_completed: false
     });
 
     await user.save();
@@ -127,6 +128,8 @@ exports.register = async (req, res) => {
         welcome_bonus_received: user.welcome_bonus_received,
         welcome_bonus: user.welcome_bonus || 1200,
          login_fee_paid: true, // Bypassed - login fee waived on registration
+        plans_paid: user.plans_paid || {},
+        all_plans_completed: user.all_plans_completed || false
       },
     });
   } catch (error) {
@@ -166,7 +169,10 @@ exports.login = async (req, res) => {
         id: user._id,
         phone: user.phone,
         login_fee_paid: user.login_fee_paid || false,
-        survey_onboarding_completed: user.survey_onboarding_completed || false
+        survey_onboarding_completed: user.survey_onboarding_completed || false,
+        plans_paid: user.plans_paid || {},
+        all_plans_completed: user.all_plans_completed || false,
+        plans: user.plans || {}
       }
     });
 } catch (error) {
@@ -276,7 +282,7 @@ exports.getMe = async (req, res) => {
       welcome_bonus_received: user.welcome_bonus_received,
       welcome_bonus_withdrawn: user.welcome_bonus_withdrawn || false,
       survey_onboarding_completed: user.survey_onboarding_completed || false,
-      login_fee_paid: user.login_fee_paid || false, // ✅ ADDED: login fee status
+      login_fee_paid: user.login_fee_paid || false,
       active_plan: activePlan,
       recommended_plan: recommendedPlan,
       surveys_completed: surveysCompleted,
@@ -284,6 +290,8 @@ exports.getMe = async (req, res) => {
       surveys_locked: surveysLocked,
       plans: user.plans || {},
       activation_requests: user.activation_requests || [],
+      plans_paid: user.plans_paid || {},
+      all_plans_completed: user.all_plans_completed || false
     });
   } catch (error) {
     console.error("GET ME ERROR:", error);

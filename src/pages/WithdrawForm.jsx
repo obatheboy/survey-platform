@@ -703,14 +703,14 @@ export default function WithdrawForm() {
         )}
       </div>
 
-      <div className="support-fixed">
-        <button 
-          className="support-btn"
-          onClick={() => window.open('https://wa.me/254140834185?text=Hello%20Support,%20I%20need%20help%20with%20withdrawal', '_blank')}
-        >
-          💬 Need Help?
-        </button>
-      </div>
+<div className="support-fixed">
+         <button 
+           className="support-btn"
+           onClick={() => window.open('tel:0140834185', '_blank')}
+         >
+           📞 Call Support: 0140834185
+         </button>
+       </div>
     </div>
   );
 }

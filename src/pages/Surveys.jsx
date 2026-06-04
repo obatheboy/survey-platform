@@ -90,12 +90,13 @@ export default function Surveys() {
     return currentQuestion && Boolean(answers[currentQuestion.id]);
   }, [currentQuestion, answers]);
 
-const navigateToActivation = useCallback((plan) => {
+ const navigateToActivation = useCallback((plan, congratsData = null) => {
   const planLower = plan.toLowerCase();
   navigate(`/activate?plan=${planLower}`, {
     state: {
       planKey: plan,
-      amount: PLANS_CONFIG[plan]?.total || 0
+      amount: PLANS_CONFIG[plan]?.total || 0,
+      congrats: congratsData
     }
   });
 }, [navigate]);
@@ -134,7 +135,7 @@ const navigateToActivation = useCallback((plan) => {
           // Only redirect to Activate if user DIDN'T just tap "Start Survey" from Dashboard
           // (justStarted=true means the user explicitly chose to start a survey)
           if (!justStarted && userPlan?.surveys_completed >= 10) {
-            navigateToActivation(plan);
+            navigateToActivation(plan, { congrats: true, planKey: plan, amount: PLANS_CONFIG[plan]?.total || 0, totalCompleted: userPlan.surveys_completed });
           }
         } catch (e) {
           console.error("Check status error:", e);
@@ -237,7 +238,8 @@ const navigateToActivation = useCallback((plan) => {
           amount: reward,
           instant: true,
           surveysAdded: data.added || surveysNeeded,
-          totalCompleted: data.surveys_completed || newCount
+          totalCompleted: data.surveys_completed || newCount,
+          congrats: true
         }
       });
     } else {

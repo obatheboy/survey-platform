@@ -10,6 +10,7 @@ const affiliateRoutes = require("./routes/affiliate.routes");
 const gamificationRoutes = require("./routes/gamification.routes");
 const loginFeeRoutes = require("./routes/loginFee.routes");
 const megapayRoutes = require("./routes/megapay.routes");
+const planPaymentRoutes = require("./routes/planPayment.routes");
 
 const adminRoutes = require("./routes/admin.routes");
 const adminActivationRoutes = require("./routes/admin.activation.routes");
@@ -87,6 +88,7 @@ app.use("/api/gamification", gamificationRoutes);
 app.use("/api/login-fee", loginFeeRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/megapay", megapayRoutes);
+app.use("/api/plans", planPaymentRoutes);
 
 app.use("/api/admin/auth", adminAuthRoutes);
 app.use("/api/admin", adminRoutes);

@@ -224,8 +224,6 @@ export const adminLoginFeeApi = {
     ===================================================================================== */
 export const megapayApi = {
   // Initiate STK Push payment via MegaPay
-  // plan: "welcome_bonus" | "regular" | "vip" | "vvip"
-  // User enters ONLY phone number - amount is pulled from plan prices automatically
   initiate: (plan, phoneNumber) => api.post("/megapay/initiate", { plan, phone_number: phoneNumber }),
 
   // Check payment/activation status
@@ -237,6 +235,22 @@ export const megapayApi = {
 
 // Legacy alias for backwards compatibility
 export const paynectaApi = megapayApi;
+
+/* =====================================================
+     💳 PROGRESSIVE PLAN PAYMENT API
+     - 4 plans: Welcome Bonus (KES 100), Regular (KES 100), VIP (KES 200), VVIP (KES 300)
+     - Auto-verify via MegaPay polling
+     - Sequential payment flow with next-plan linking
+     ==================================================== */
+export const planPaymentApi = {
+  initiate: (plan, phoneNumber) => api.post("/plans/initiate", { plan, phone_number: phoneNumber }),
+
+  confirm: (data) => api.post("/plans/confirm", data),
+
+  getStatus: () => api.get("/plans/status"),
+
+  getNext: () => api.get("/plans/next"),
+};
 
 /* =====================================================
     👑 ADMIN MEGAPAY API

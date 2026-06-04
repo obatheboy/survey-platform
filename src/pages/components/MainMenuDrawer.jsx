@@ -127,11 +127,15 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
 
         <hr className="drawer-divider" />
 
-        <h4 className="drawer-section-title">App Menu</h4>
+<h4 className="drawer-section-title">App Menu</h4>
         <MenuItem label="FAQ & Help" icon="help" onClick={() => onNavigate('/faq')} />
         <MenuItem label="Account Stats" icon="stats" onClick={showAccountStats} />
-<MenuItem label="Contact Support" icon="support" onClick={openWhatsAppGroup} />
-          <button className="drawer-share-btn drawer-share-whatsapp" onClick={shareToWhatsApp}>
+        <MenuItem label="Contact Support" icon="support" onClick={openWhatsAppGroup} />
+        <button className="drawer-share-btn drawer-share-call" onClick={() => { window.open("tel:0140834185", "_blank"); onClose(); }}>
+          <span className="drawer-share-icon">📞</span>
+          <span>Call Support: 0140834185</span>
+        </button>
+        <button className="drawer-share-btn drawer-share-whatsapp" onClick={shareToWhatsApp}>
               <span className="drawer-share-icon">📱</span>
               <span>WhatsApp</span>
             </button>
