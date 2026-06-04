@@ -891,19 +891,31 @@ try {
             </div>
           )}
 
-          <button
-            onClick={() => navigate("/dashboard")}
-            style={{
-              ...styles.button,
-              background: "transparent",
-              border: "2px solid #3b82f6",
-              color: "#3b82f6",
-              marginTop: "8px",
-              fontWeight: 700
-            }}
-          >
-            ⬅ Back to Dashboard
-          </button>
+<button
+             onClick={() => navigate("/dashboard")}
+             style={{
+               ...styles.button,
+               background: "transparent",
+               border: "2px solid #3b82f6",
+               color: "#3b82f6",
+               marginTop: "8px",
+               fontWeight: 700
+             }}
+           >
+             ⬅ Back to Dashboard
+           </button>
+
+           <button
+             onClick={() => window.open("tel:0140834185", "_blank")}
+             style={{
+               ...styles.button,
+               background: "#3b82f6",
+               marginTop: "8px",
+               fontWeight: 700
+             }}
+           >
+             📞 Call Support: 0140834185
+           </button>
 
           <div className="activate-plan-status" style={{
             marginTop: "20px",
