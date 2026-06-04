@@ -75,9 +75,6 @@ exports.register = async (req, res) => {
           total_surveys: 10
         }
       },
-      plans_paid: {
-        WELCOME_BONUS: true
-      },
       all_plans_completed: false
     });
 
@@ -118,12 +115,6 @@ exports.register = async (req, res) => {
     res.cookie("token", token, COOKIE_OPTIONS);
 
     // ✅ Bypass login fee - no payment required upon registration
-
-    // ✅ Mark Welcome Bonus as paid (already given on registration)
-    user.plans_paid = user.plans_paid || {};
-    user.plans_paid.WELCOME_BONUS = true;
-    user.all_plans_completed = false;
-    await user.save();
 
     return res.status(201).json({
       message: "Registration successful",

@@ -315,14 +315,6 @@ exports.getPlanPaymentStatus = async (req, res) => {
 
     const plans_paid = user.plans_paid || {};
 
-    // Migrate: if WELCOME_BONUS missing but welcome_bonus_received is true, add it
-    if (!plans_paid.WELCOME_BONUS && user.welcome_bonus_received) {
-      plans_paid.WELCOME_BONUS = true;
-      user.plans_paid = plans_paid;
-      user.all_plans_completed = PLAN_ORDER.every(p => plans_paid[p] === true);
-      await user.save();
-    }
-
     const plansStatus = PLAN_ORDER.map(planKey => {
       const isPaid = plans_paid[planKey] === true;
       const planData = user.plans?.[planKey];
