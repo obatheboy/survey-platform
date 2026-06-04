@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import api, { planPaymentApi } from "../api/api";
 
 const ALL_PLANS = [
@@ -39,6 +39,7 @@ export default function Activate() {
   const [paying, setPaying] = useState(false);
   const [paymentState, setPaymentState] = useState("idle");
   const [message, setMessage] = useState("");
+  const [congratsData, setCongratsData] = useState(null);
   const intervalRef = useRef(null);
   const timeoutRef = useRef(null);
   const phoneTouchedRef = useRef(false);
@@ -72,6 +73,13 @@ export default function Activate() {
 
   useEffect(() => { fetchStatus(); }, [fetchStatus]);
 
+  const location = useLocation();
+  useEffect(() => {
+    if (location.state?.congrats && !congratsData) {
+      setCongratsData(location.state);
+    }
+  }, [location.state, congratsData]);
+
   useEffect(() => {
     if (user?.phone && !phone && !phoneTouchedRef.current) {
       setPhone(user.phone);
@@ -85,6 +93,7 @@ export default function Activate() {
   const handleSelectPlan = (planKey) => {
     const planData = plansStatus.find(p => p.plan === planKey);
     if (planData?.paid) return;
+    setCongratsData(null);
     setSelectedPlan(planKey);
     setPaymentState("idle");
     setMessage("");
@@ -256,6 +265,60 @@ export default function Activate() {
           </p>
         </div>
       </div>
+
+      {/* 🎉 Congratulations Screen - shown after completing 10 surveys */}
+      {congratsData && !allCompleted && (
+        <div style={{ width: "100%", maxWidth: "600px", background: "linear-gradient(135deg, rgba(16,185,129,0.15), rgba(99,102,241,0.15))", border: "2px solid #10b981", borderRadius: "20px", padding: "28px", textAlign: "center", marginBottom: "24px", boxShadow: "0 0 40px rgba(16,185,129,0.15)" }}>
+          <div style={{ fontSize: "56px", marginBottom: "12px" }}>🎉</div>
+          <h2 style={{ color: "#10b981", fontSize: "24px", fontWeight: 800, margin: "0 0 6px" }}>
+            Amazing Work!
+          </h2>
+          <p style={{ color: "#fbbf24", fontSize: "16px", fontWeight: 700, margin: "0 0 16px" }}>
+            You completed all 10 surveys for <strong>{ALL_PLANS.find(p => p.key === (congratsData.planKey || user?.active_plan))?.label || "your plan"}</strong>!
+          </p>
+
+          <div style={{ background: "rgba(255,255,255,0.05)", borderRadius: "14px", padding: "18px", marginBottom: "18px", border: "1px solid rgba(255,255,255,0.1)" }}>
+            <p style={{ color: "#94a3b8", fontSize: "13px", margin: "0 0 6px" }}>💰 Amount Earned</p>
+            <p style={{ color: "#ffffff", fontSize: "32px", fontWeight: 900, margin: "0 0 10px" }}>
+              KES {(congratsData.amount || 0).toLocaleString()}
+            </p>
+            <p style={{ color: "#10b981", fontSize: "14px", fontWeight: 600, margin: 0 }}>
+              ✅ {congratsData.totalCompleted || 10}/10 surveys completed
+            </p>
+          </div>
+
+          <div style={{ textAlign: "left", background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.2)", borderRadius: "12px", padding: "16px", marginBottom: "20px" }}>
+            <p style={{ color: "#fbbf24", fontWeight: 700, fontSize: "14px", margin: "0 0 10px" }}>⚠️ To withdraw your earnings, you need to:</p>
+            <ul style={{ color: "#e2e8f0", fontSize: "14px", margin: 0, paddingLeft: "20px", lineHeight: 1.8 }}>
+              <li>Pay the one-time <strong>activation fee</strong> for this plan</li>
+              <li>This unlocks your <strong>KES {(congratsData.amount || 0).toLocaleString()}</strong> for withdrawal</li>
+              <li>You can then withdraw instantly via M-Pesa</li>
+            </ul>
+          </div>
+
+          <button
+            onClick={() => {
+              const planKey = congratsData.planKey || user?.active_plan;
+              if (planKey) {
+                const planLower = planKey.toLowerCase();
+                navigate(`/activate?plan=${planLower}`, { replace: true });
+              } else {
+                navigate("/activate", { replace: true });
+              }
+            }}
+            style={{ width: "100%", padding: "16px", borderRadius: "14px", border: "none", background: "linear-gradient(135deg, #10b981, #059669)", color: "#ffffff", fontWeight: 800, fontSize: "16px", cursor: "pointer", boxShadow: "0 6px 20px rgba(16,185,129,0.35)", marginBottom: "10px" }}
+          >
+            🔓 Activate & Withdraw My Earnings
+          </button>
+
+          <button
+            onClick={() => navigate("/dashboard")}
+            style={{ width: "100%", padding: "10px", borderRadius: "10px", border: "2px solid #334155", background: "transparent", color: "#94a3b8", fontWeight: 600, fontSize: "13px", cursor: "pointer" }}
+          >
+            Back to Dashboard
+          </button>
+        </div>
+      )}
 
       {/* All Completed Banner */}
       {allCompleted && (
