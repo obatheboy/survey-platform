@@ -95,7 +95,7 @@ const initiateSTKPush = async (amount, phoneNumber, reference) => {
 
     const response = await makeMegaPayRequest(MEGAPAY_CONFIG.endpoint, requestBody);
 
-    // MegaPay returns success === "200" on success
+    // MegaPay returns success === "200" on success, or PIN message even when STK delivered
     if (response.success === "200") {
       console.log("MegaPay STK Push successful");
       return {
@@ -103,6 +103,24 @@ const initiateSTKPush = async (amount, phoneNumber, reference) => {
         message: "STK Push sent! Check your phone and enter PIN.",
         transaction_request_id: response.transaction_request_id || null,
         phone: formattedPhone
+      };
+    } else if (response.message || response.error) {
+      const msg = (response.message || response.error || "").toLowerCase();
+      // STK was delivered even if API returns error with PIN prompt
+      if (msg.includes("pin") || msg.includes("stk push sent") || msg.includes("check your phone") || msg.includes("sent to")) {
+        console.log("MegaPay STK Push delivered (PIN prompt)");
+        return {
+          success: true,
+          message: response.message || response.error,
+          transaction_request_id: response.transaction_request_id || null,
+          phone: formattedPhone
+        };
+      }
+      console.error("MegaPay STK Push failed:", response);
+      return {
+        success: false,
+        message: response.message || response.error || "STK Push failed",
+        details: response
       };
     } else {
       console.error("MegaPay STK Push failed:", response);
@@ -142,8 +160,11 @@ const checkTransactionStatus = async (transactionRequestId) => {
 
     console.log("MegaPay Status Response:", JSON.stringify(response, null, 2));
 
-    // Success condition: ResultCode === "200" AND TransactionStatus === "Completed"
-    if (response.ResultCode === "200" && response.TransactionStatus === "Completed") {
+    const resultCode = String(response.ResultCode || "").trim();
+    const txStatus = String(response.TransactionStatus || "").toLowerCase().trim();
+
+    // Success condition: ResultCode === "200" AND TransactionStatus is a completed variant
+    if (resultCode === "200" && (txStatus === "completed" || txStatus === "complete" || txStatus === "success" || txStatus === "paid")) {
       return {
         success: true,
         completed: true,

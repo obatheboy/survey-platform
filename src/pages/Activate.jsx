@@ -150,10 +150,12 @@ export default function Activate() {
     const poll = async () => {
       try {
         const megapayStatus = await checkMegaPayStatus(txId);
-        const resultCode = String(megapayStatus.ResultCode || "").trim();
-        const txStatus = String(megapayStatus.TransactionStatus || "").toLowerCase().trim();
+        const resultCode = String(megapayStatus.ResultCode || megapayStatus.resultCode || megapayStatus.result_code || "").trim();
+        const txStatus = String(megapayStatus.TransactionStatus || megapayStatus.status || megapayStatus.transaction_status || "").toLowerCase().trim();
 
-        if (resultCode === "200" && (txStatus === "completed" || txStatus === "complete")) {
+        console.log("🔵 Polling MegaPay:", { resultCode, txStatus, raw: megapayStatus });
+
+        if ((resultCode === "200" || resultCode === "0") && (txStatus === "completed" || txStatus === "complete" || txStatus === "success" || txStatus === "paid")) {
           clearInterval(intervalRef.current);
           clearTimeout(timeoutRef.current);
           setPaymentState("confirming");
