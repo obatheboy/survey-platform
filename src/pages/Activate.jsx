@@ -83,6 +83,14 @@ export default function Activate() {
   }, [location.state, congratsData]);
 
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("welcome_bonus") === "true" && !showWelcomeIntro && !selectedPlan) {
+      setShowWelcomeIntro(true);
+      setCongratsData(null);
+    }
+  }, [location.search, showWelcomeIntro, selectedPlan, congratsData]);
+
+  useEffect(() => {
     if (selectedPlan && phoneInputRef.current) {
       setTimeout(() => {
         phoneInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
