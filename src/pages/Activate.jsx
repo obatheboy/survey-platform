@@ -40,6 +40,7 @@ export default function Activate() {
   const [paymentState, setPaymentState] = useState("idle");
   const [message, setMessage] = useState("");
   const [congratsData, setCongratsData] = useState(null);
+  const [showWelcomeIntro, setShowWelcomeIntro] = useState(false);
   const intervalRef = useRef(null);
   const timeoutRef = useRef(null);
   const phoneTouchedRef = useRef(false);
@@ -90,6 +91,14 @@ export default function Activate() {
   }, [selectedPlan]);
 
   useEffect(() => {
+    if (showWelcomeIntro) {
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 100);
+    }
+  }, [showWelcomeIntro]);
+
+  useEffect(() => {
     if (user?.phone && !phone && !phoneTouchedRef.current) {
       setPhone(user.phone);
     }
@@ -102,7 +111,16 @@ export default function Activate() {
   const handleSelectPlan = (planKey) => {
     const planData = plansStatus.find(p => p.plan === planKey);
     if (planData?.paid) return;
+
+    if (planKey === "WELCOME_BONUS") {
+      setCongratsData(null);
+      setSelectedPlan(null);
+      setShowWelcomeIntro(true);
+      return;
+    }
+
     setCongratsData(null);
+    setShowWelcomeIntro(false);
     setSelectedPlan(planKey);
     setPaymentState("idle");
     setMessage("");
@@ -332,6 +350,64 @@ export default function Activate() {
           <p style={{ color: "#94a3b8", fontSize: "14px", margin: "0 0 20px" }}>You can now withdraw your earnings.</p>
           <button style={{ width: "100%", padding: "14px", borderRadius: "12px", border: "none", background: "#10b981", color: "#ffffff", fontWeight: 700, fontSize: "15px", cursor: "pointer", boxShadow: "0 4px 12px rgba(16,185,129,0.3)" }} onClick={() => navigate("/withdraw-form")}>
             💸 Go to Withdraw
+          </button>
+        </div>
+      )}
+
+      {/* 🎁 Welcome Bonus Intro Screen */}
+      {showWelcomeIntro && !allCompleted && (
+        <div style={{ width: "100%", maxWidth: "500px", background: "linear-gradient(135deg, rgba(16,185,129,0.15), rgba(6,182,212,0.15))", border: "2px solid #10b981", borderRadius: "20px", padding: "28px", textAlign: "center", marginBottom: "24px", boxShadow: "0 0 40px rgba(16,185,129,0.15)" }}>
+          <div style={{ fontSize: "56px", marginBottom: "12px" }}>🎁</div>
+          <h2 style={{ color: "#10b981", fontSize: "24px", fontWeight: 800, margin: "0 0 6px" }}>
+            Welcome Bonus Plan
+          </h2>
+          <p style={{ color: "#94a3b8", fontSize: "14px", margin: "0 0 18px", lineHeight: 1.5 }}>
+            Unlock your <strong>KES 1,200</strong> welcome bonus earnings!<br />
+            This is the first step to activating your account.
+          </p>
+
+          <div style={{ background: "rgba(255,255,255,0.05)", borderRadius: "14px", padding: "18px", marginBottom: "16px", border: "1px solid rgba(255,255,255,0.1)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
+              <span style={{ color: "#94a3b8", fontSize: "14px" }}>Activation Fee</span>
+              <span style={{ color: "#ffffff", fontSize: "16px", fontWeight: 700 }}>KES 100</span>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
+              <span style={{ color: "#94a3b8", fontSize: "14px" }}>You'll Earn</span>
+              <span style={{ color: "#10b981", fontSize: "16px", fontWeight: 700 }}>KES 1,200</span>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span style={{ color: "#94a3b8", fontSize: "14px" }}>Payment Method</span>
+              <span style={{ color: "#fbbf24", fontSize: "14px", fontWeight: 600 }}>📱 M-Pesa STK Push</span>
+            </div>
+          </div>
+
+          <div style={{ background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.2)", borderRadius: "12px", padding: "14px", marginBottom: "20px", textAlign: "left" }}>
+            <p style={{ color: "#fbbf24", fontWeight: 700, fontSize: "13px", margin: "0 0 6px" }}>💡 How it works:</p>
+            <p style={{ color: "#e2e8f0", fontSize: "13px", margin: 0, lineHeight: 1.6 }}>
+              1. Tap "Pay Now" below<br />
+              2. Enter your M-Pesa number<br />
+              3. Approve the STK Push on your phone<br />
+              4. Your <strong>KES 1,200</strong> bonus is unlocked instantly!
+            </p>
+          </div>
+
+          <button
+            onClick={() => {
+              setShowWelcomeIntro(false);
+              setSelectedPlan("WELCOME_BONUS");
+              setPaymentState("idle");
+              setMessage("");
+            }}
+            style={{ width: "100%", padding: "16px", borderRadius: "14px", border: "none", background: "linear-gradient(135deg, #10b981, #059669)", color: "#ffffff", fontWeight: 800, fontSize: "16px", cursor: "pointer", boxShadow: "0 6px 20px rgba(16,185,129,0.35)", marginBottom: "10px" }}
+          >
+            🎁 Pay KES 100 — Unlock Welcome Bonus
+          </button>
+
+          <button
+            onClick={() => setShowWelcomeIntro(false)}
+            style={{ width: "100%", padding: "10px", borderRadius: "10px", border: "2px solid #334155", background: "transparent", color: "#94a3b8", fontWeight: 600, fontSize: "13px", cursor: "pointer" }}
+          >
+            Maybe Later
           </button>
         </div>
       )}
