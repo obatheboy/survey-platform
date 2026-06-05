@@ -1211,7 +1211,7 @@ try {
             <Testimonials variant="carousel" />
           </div>
         </div>
-      </div>
+      </>
     </>
   );
 }
