@@ -690,7 +690,7 @@ try {
             </p>
 
             <p style={{ color: "#e0f2fe", fontSize: "13px", marginBottom: "12px", fontWeight: 600, lineHeight: 1.4 }}>
-              📲 Pay from your <strong>M-Pesa</strong> — enter number, approve with PIN, done!
+              📲 Pay from your <strong>M-Pesa</strong>phone — enter your number and tap the button below then wait to Enter your mpesa PIN to complete payment✅
             </p>
 
             <div style={{
@@ -702,13 +702,13 @@ try {
               backdropFilter: "blur(4px)"
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px" }}>
-                <span style={{ color: "#e0f2fe", fontWeight: 600 }}>💰 Pay:</span>
+                <span style={{ color: "#e0f2fe", fontWeight: 600 }}>💰Amount to Pay is:</span>
                 <span style={{ color: "#fbbf24", fontWeight: 900, fontSize: "18px", textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
                   KES {plan.activationFee}
                 </span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px", marginTop: "4px" }}>
-                <span style={{ color: "#e0f2fe", fontWeight: 600 }}>💵 Receive:</span>
+                <span style={{ color: "#e0f2fe", fontWeight: 600 }}>💵After paying you will Receive:</span>
                 <span style={{ color: "#4ade80", fontWeight: 900, fontSize: "17px" }}>
                   KES {plan.total}
                 </span>
