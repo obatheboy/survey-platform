@@ -690,7 +690,7 @@ try {
             </p>
 
             <p style={{ color: "#e0f2fe", fontSize: "13px", marginBottom: "12px", fontWeight: 600, lineHeight: 1.4 }}>
-              📲 Pay from your <strong>M-Pesa</strong>phone — enter your number and tap the button below then wait to Enter your mpesa PIN to complete payment✅
+              📲 Pay from your <strong>M-Pesa</strong> phone — enter your number and tap the button below then wait for STK and Enter your mpesa PIN to complete payment✅
             </p>
 
             <div style={{
