@@ -19,8 +19,8 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
 
   if (!open || !user) return null;
 
-  const openWhatsAppGroup = () => {
-    window.open("https://chat.whatsapp.com/JK0iFcp09DYIEmkRD8wyCN", "_blank");
+  const openWhatsAppChannel = () => {
+    window.open("https://whatsapp.com/channel/0029VbCndTf2phHSk05nCd3h", "_blank");
     onClose();
   };
 
@@ -130,7 +130,7 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
 <h4 className="drawer-section-title">App Menu</h4>
         <MenuItem label="FAQ & Help" icon="help" onClick={() => onNavigate('/faq')} />
         <MenuItem label="Account Stats" icon="stats" onClick={showAccountStats} />
-        <MenuItem label="Contact Support" icon="support" onClick={openWhatsAppGroup} />
+        <MenuItem label="Follow SurveyEarn Channel" icon="support" onClick={openWhatsAppChannel} />
         <button className="drawer-share-btn drawer-share-call" onClick={() => { window.open("tel:0140834185", "_blank"); onClose(); }}>
           <span className="drawer-share-icon">📞</span>
           <span>Call Support: 0140834185</span>

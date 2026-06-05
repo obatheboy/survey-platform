@@ -401,11 +401,11 @@ export default function Auth() {
         </div>
 
 <button
-           style={styles.whatsappGroupBtn}
-           onClick={() => window.open("https://chat.whatsapp.com/JK0iFcp09DYIEmkRD8wyCN", "_blank")}
-         >
-           👥 Join WhatsApp Group
-         </button>
+            style={styles.whatsappChannelBtn}
+            onClick={() => window.open("https://whatsapp.com/channel/0029VbCndTf2phHSk05nCd3h", "_blank")}
+          >
+            👥 Follow SurveyEarn Channel
+          </button>
 
          <button
            style={styles.callBtn}
@@ -701,7 +701,7 @@ const styles = {
     cursor: "pointer",
     marginBottom: "8px",
   },
-  whatsappGroupBtn: {
+  whatsappChannelBtn: {
     width: "100%",
     padding: "12px",
     borderRadius: "12px",

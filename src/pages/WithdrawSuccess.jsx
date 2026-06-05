@@ -277,12 +277,12 @@ export default function WithdrawSuccess() {
        <div className="help-section">
          <h3>Need Help?</h3>
          <p>Contact support if you have any questions about your withdrawal</p>
-         <button 
-           className="support-btn"
-           onClick={() => window.open("https://chat.whatsapp.com/JK0iFcp09DYIEmkRD8wyCN", '_blank')}
-         >
-           👥 Join WhatsApp Group
-         </button>
+<button 
+            className="support-btn"
+            onClick={() => window.open("https://whatsapp.com/channel/0029VbCndTf2phHSk05nCd3h", '_blank')}
+          >
+            👥 Follow SurveyEarn Channel
+          </button>
        </div>
     </div>
   );

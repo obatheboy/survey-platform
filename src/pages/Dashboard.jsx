@@ -550,7 +550,7 @@ export default function Dashboard() {
       WHATSAPP SUPPORT FUNCTION
    ========================= */
   const openWhatsAppSupport = () => {
-    window.open("https://chat.whatsapp.com/JK0iFcp09DYIEmkRD8wyCN", "_blank");
+    window.open("https://whatsapp.com/channel/0029VbCndTf2phHSk05nCd3h", "_blank");
   };
   
   // Theme toggle removed - light mode only
@@ -769,10 +769,10 @@ export default function Dashboard() {
                   alignItems: 'center',
                   gap: '6px',
                 }}
-                title="Contact Support on WhatsApp"
-              >
-                <span style={{ fontSize: '16px' }}>💬</span>
-                <span>CHAT US</span>
+title="Follow SurveyEarn Channel on WhatsApp"
+               >
+                 <span style={{ fontSize: '16px' }}>💬</span>
+                 <span>CHANNEL</span>
               </button>
 
               <button
