@@ -659,25 +659,66 @@ try {
 
           {/* MEGAPAY STK PUSH - NEW PAYMENT OPTION */}
           <div style={{
-            background: "linear-gradient(135deg, #1e3a5f, #1e40af)",
-            border: "2px solid #3b82f6",
-            borderRadius: "16px",
-            padding: "20px",
+            background: "linear-gradient(135deg, #0c4a6e 0%, #1d4ed8 50%, #7c3aed 100%)",
+            border: "3px solid #60a5fa",
+            borderRadius: "20px",
+            padding: "24px",
             marginBottom: "20px",
-            boxShadow: "0 8px 25px rgba(37, 99, 235, 0.3)",
-            textAlign: "center"
+            boxShadow: "0 0 30px rgba(59, 130, 246, 0.5), 0 0 60px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255,255,255,0.15)",
+            textAlign: "center",
+            position: "relative",
+            overflow: "hidden",
+            animation: "pulse-border 2s ease-in-out infinite"
           }}>
-            <p style={{ fontWeight: 900, fontSize: "18px", color: "#60a5fa", marginBottom: "12px" }}>
-              ⚡ Pay Activation Fee via M-Pesa STK Push
-            </p>
-            <p style={{ color: "#e2e8f0", fontSize: "14px", marginBottom: "16px" }}>
-              Enter your M-Pesa phone number — we'll send you a payment request.
-              <br />Check your phone, confirm the amount, and enter your PIN to approve.
+            {/* Shine effect overlay */}
+            <div style={{
+              position: "absolute",
+              top: 0,
+              left: "-100%",
+              width: "100%",
+              height: "100%",
+              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)",
+              animation: "shimmer 3s ease-in-out infinite"
+            }}></div>
+
+            <div style={{ fontSize: "40px", marginBottom: "8px", animation: "bounce 2s infinite" }}>
+              ⚡📱
+            </div>
+
+            <p style={{ fontWeight: 900, fontSize: "20px", color: "#ffffff", marginBottom: "8px", textShadow: "0 2px 8px rgba(0,0,0,0.3)", letterSpacing: "0.5px" }}>
+              FAST & EASY ACTIVATION
             </p>
 
-            <div style={{ marginBottom: "12px", textAlign: "left" }}>
-              <label style={{ ...styles.caption, color: "#93c5fd", fontWeight: "700" }}>
-                📱 M-Pesa Phone Number
+            <p style={{ color: "#e0f2fe", fontSize: "15px", marginBottom: "18px", fontWeight: 600, lineHeight: 1.5 }}>
+              📲 Pay directly from your <strong>M-Pesa</strong> phone.<br />
+              Just enter your number — we send the request. You approve with your PIN. Done!
+            </p>
+
+            <div style={{
+              background: "rgba(255, 255, 255, 0.1)",
+              borderRadius: "12px",
+              padding: "14px",
+              marginBottom: "16px",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+              backdropFilter: "blur(4px)"
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "14px" }}>
+                <span style={{ color: "#e0f2fe", fontWeight: 600 }}>💰 Amount to pay:</span>
+                <span style={{ color: "#fbbf24", fontWeight: 900, fontSize: "22px", textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
+                  KES {plan.activationFee}
+                </span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "14px", marginTop: "6px" }}>
+                <span style={{ color: "#e0f2fe", fontWeight: 600 }}>💵 You'll receive:</span>
+                <span style={{ color: "#4ade80", fontWeight: 900, fontSize: "20px" }}>
+                  KES {plan.total}
+                </span>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: "14px", textAlign: "left" }}>
+              <label style={{ ...styles.caption, color: "#93c5fd", fontWeight: "800", fontSize: "14px", marginBottom: "6px", display: "block" }}>
+                📱 Enter Your M-Pesa Number
               </label>
               <input
                 type="tel"
@@ -686,15 +727,17 @@ try {
                 onChange={(e) => setPaynectaPhone(e.target.value)}
                 style={{
                   width: "100%",
-                  padding: "14px 16px",
-                  borderRadius: "10px",
-                  border: "2px solid #334155",
-                  background: "#0f172a",
+                  padding: "16px",
+                  borderRadius: "12px",
+                  border: "2px solid rgba(96, 165, 250, 0.4)",
+                  background: "rgba(15, 23, 42, 0.8)",
                   color: "#ffffff",
-                  fontSize: "16px",
-                  fontWeight: "600",
+                  fontSize: "18px",
+                  fontWeight: "700",
                   boxSizing: "border-box",
-                  outline: "none"
+                  outline: "none",
+                  boxShadow: "inset 0 2px 4px rgba(0,0,0,0.2)",
+                  letterSpacing: "1px"
                 }}
                 disabled={paynectaSubmitting}
               />
@@ -704,49 +747,83 @@ try {
               onClick={handlePaynectaPayment}
               disabled={paynectaSubmitting || !paynectaPhone.trim()}
               style={{
-                ...styles.button,
+                width: "100%",
+                marginTop: "8px",
+                padding: "18px",
+                borderRadius: "14px",
+                fontWeight: 900,
+                fontSize: "17px",
+                cursor: "pointer",
+                border: "none",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "10px",
+                minHeight: "56px",
                 background: paynectaSubmitting
                   ? "#4b5563"
-                  : "linear-gradient(135deg, #3b82f6, #2563eb)",
-                fontWeight: 800,
-                fontSize: "15px",
-                opacity: (!paynectaPhone.trim() || paynectaSubmitting) ? 0.6 : 1,
+                  : "linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #ef4444 100%)",
+                color: "#ffffff",
+                boxShadow: paynectaSubmitting
+                  ? "none"
+                  : "0 8px 25px rgba(245, 158, 11, 0.5), 0 0 40px rgba(249, 115, 22, 0.3)",
+                textShadow: "0 1px 2px rgba(0,0,0,0.3)",
+                letterSpacing: "0.5px",
+                animation: paynectaSubmitting ? "none" : "pulse-btn 1.5s ease-in-out infinite"
               }}
             >
               {paynectaSubmitting ? (
                 <>
                   <span style={{
                     display: "inline-block",
-                    width: "14px",
-                    height: "14px",
-                    border: "2px solid rgba(255,255,255,0.3)",
+                    width: "18px",
+                    height: "18px",
+                    border: "3px solid rgba(255,255,255,0.3)",
                     borderTopColor: "white",
                     borderRadius: "50%",
-                    marginRight: "6px",
                     animation: "spin 1s linear infinite"
                   }}></span>
-                  Sending notification to your phone…
+                  <span style={{ fontSize: "16px" }}>Sending to your phone…</span>
                 </>
               ) : (
                 <>
-                  <span style={{ fontSize: "18px" }}>📱</span>
-                  Pay KES {plan.activationFee} Automatic and Activate
+                  <span style={{ fontSize: "22px" }}>📱</span>
+                  <span>Pay KES {plan.activationFee} — Instant Activation!</span>
+                  <span style={{ fontSize: "18px" }}>⚡</span>
                 </>
               )}
             </button>
 
-            {/* 📌 RED ERROR BANNER: only shown if the API call itself failed.
-                The payment was NEVER sent if you see this. */}
-
+            {/* Error banner */}
             {paynectaError && (
-              <div style={{ ...styles.notificationBox, background: "rgba(239, 68, 68, 0.1)", borderColor: "rgba(239, 68, 68, 0.3)", color: "#fca5a5", marginTop: "10px" }}>
+              <div style={{
+                marginTop: "12px",
+                padding: "12px",
+                borderRadius: "10px",
+                background: "rgba(239, 68, 68, 0.2)",
+                border: "2px solid rgba(239, 68, 68, 0.5)",
+                color: "#fca5a5",
+                fontWeight: 700,
+                fontSize: "13px"
+              }}>
                 ❌ {paynectaError}
               </div>
             )}
 
+            {/* Success banner */}
             {paynectaSuccess && (
-              <div style={{ ...styles.notificationBox, background: "rgba(16, 185, 129, 0.15)", borderColor: "rgba(16, 185, 129, 0.4)", color: "#4ade80", marginTop: "10px" }}>
-                ✅ STK Push sent! Check your M-Pesa and enter your PIN.
+              <div style={{
+                marginTop: "12px",
+                padding: "14px",
+                borderRadius: "10px",
+                background: "rgba(16, 185, 129, 0.2)",
+                border: "2px solid rgba(16, 185, 129, 0.5)",
+                color: "#4ade80",
+                fontWeight: 800,
+                fontSize: "14px",
+                animation: "fadeInUp 0.4s ease"
+              }}>
+                ✅ STK Push sent! Check your M-Pesa and enter your PIN to approve.
               </div>
             )}
           </div>

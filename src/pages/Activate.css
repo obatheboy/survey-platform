@@ -136,6 +136,26 @@
   50% { transform: translateY(-10px); }
 }
 
+@keyframes pulse-border {
+  0%, 100% { border-color: #60a5fa; box-shadow: 0 0 30px rgba(59, 130, 246, 0.5), 0 0 60px rgba(99, 102, 241, 0.3); }
+  50% { border-color: #93c5fd; box-shadow: 0 0 40px rgba(59, 130, 246, 0.7), 0 0 80px rgba(99, 102, 241, 0.5); }
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+@keyframes pulse-btn {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .activate-page {

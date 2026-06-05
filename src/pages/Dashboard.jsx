@@ -752,7 +752,7 @@ export default function Dashboard() {
           <button className="menu-btn" onClick={() => setMenuOpen(true)}>
             <span className="menu-icon">☰</span>
           </button>
-          <h1 className="dashboard-main-title">Dashboard</h1>
+          <h1 className="dashboard-main-title">SURVEY</h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
 <button
  onClick={openWhatsAppSupport}
