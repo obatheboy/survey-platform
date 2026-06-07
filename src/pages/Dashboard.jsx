@@ -550,7 +550,7 @@ export default function Dashboard() {
       WHATSAPP SUPPORT FUNCTION
    ========================= */
   const openWhatsAppSupport = () => {
-    window.open("https://whatsapp.com/channel/0029VbCndTf2phHSk05nCd3h", "_blank");
+    window.open("https://chat.whatsapp.com/CE838NJLdvl0PjdWoGKgTj?s=cl&p=a&ilr=4&amv=0", "_blank");
   };
   
   // Theme toggle removed - light mode only
@@ -769,10 +769,10 @@ export default function Dashboard() {
                   alignItems: 'center',
                   gap: '6px',
                 }}
-title="Follow SurveyEarn Channel on WhatsApp"
-               >
-                 <span style={{ fontSize: '16px' }}>💬</span>
-                 <span>CHANNEL</span>
+title="Join WhatsApp Group"
+                >
+                  <span style={{ fontSize: '16px' }}>💬</span>
+                  <span>Chat Us</span>
               </button>
 
               <button
@@ -782,17 +782,18 @@ title="Follow SurveyEarn Channel on WhatsApp"
                   color: 'white',
                   border: 'none',
                   borderRadius: '20px',
-                  padding: '8px 14px',
-                  fontSize: '14px',
+                  padding: '8px 10px',
+                  fontSize: '13px',
                   fontWeight: '600',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
+                  gap: '4px',
+                  minWidth: '100px',
                 }}
                 title="Call Support"
               >
-                <span style={{ fontSize: '16px' }}>📞</span>
+                <span style={{ fontSize: '14px' }}>📞</span>
                 <span>0140834185</span>
               </button>
 
