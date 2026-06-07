@@ -292,22 +292,24 @@ export default function Dashboard() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [showScrollReminder]);
 
-/* =========================
-      GAMIFICATION - CHECK WELCOME BONUS
-    ========================= */
+  /* =========================
+     GAMIFICATION - CHECK WELCOME BONUS
+   ========================= */
   useEffect(() => {
     if (!user) return;
     
     const bonusAmount = user.welcome_bonus;
     const isActivated = user.is_activated || user.account_activated;
     const showOnLogin = localStorage.getItem("showWelcomeBonusOnDashboard");
-    const onboardingCompleted = user.survey_onboarding_completed;
-    
-    if (bonusAmount && showOnLogin && onboardingCompleted) {
+    const onboardCompleted = user.survey_onboarding_completed;
+    const hasShownWelcomeBonus = localStorage.getItem("welcomeBonusShown");
+
+    if (bonusAmount && showOnLogin && onboardCompleted && !hasShownWelcomeBonus && !isActivated) {
       setWelcomeBonusAmount(bonusAmount);
       
       const showAfterDelay = setTimeout(() => {
         setShowWelcomeBonus(true);
+        localStorage.setItem("welcomeBonusShown", "true");
         localStorage.removeItem("showWelcomeBonusOnDashboard");
       }, 2500);
       

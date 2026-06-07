@@ -44,24 +44,44 @@ export default function Auth() {
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      if (!hasSeenInstallPrompt) {
-        setTimeout(() => setShowInstallPrompt(true), 1500);
-      }
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    
+    if (!hasSeenInstallPrompt) {
+      const alreadyHasPrompt = localStorage.getItem("hasInstallPromptShown");
+      if (!alreadyHasPrompt) {
+        setShowInstallPrompt(true);
+        localStorage.setItem("hasInstallPromptShown", "true");
+      }
+    }
+    
     return () => window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
   }, []);
 
   const handleInstall = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") {
-      localStorage.setItem("hasSeenInstallPrompt", "true");
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") {
+        localStorage.setItem("hasSeenInstallPrompt", "true");
+      }
+      setDeferredPrompt(null);
+      setShowInstallPrompt(false);
+      return;
     }
-    setDeferredPrompt(null);
+    
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+      setShowInstallPrompt(false);
+      return;
+    }
+    
+    localStorage.setItem("hasSeenInstallPrompt", "true");
     setShowInstallPrompt(false);
+    
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
   };
 
   const dismissInstall = () => {
