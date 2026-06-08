@@ -281,7 +281,7 @@ export default function WithdrawSuccess() {
             className="support-btn"
             onClick={() => window.open("https://chat.whatsapp.com/CE838NJLdvl0PjdWoGKgTj?s=cl&p=a&ilr=4&amv=0", '_blank')}
           >
-            👥 Join WhatsApp Group
+            👥 Join Our Group
           </button>
        </div>
     </div>

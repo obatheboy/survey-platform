@@ -150,12 +150,12 @@ export default function AffiliateDashboard() {
         </p>
 <div className="share-buttons">
 <button className="share-btn whatsapp" onClick={shareToWhatsApp}>
-              💬 Share on WhatsApp
-            </button>
-            <button className="share-btn call" onClick={() => window.open("tel:0140834185", "_blank")}>
-              📞 Call Support: 0140834185
-            </button>
-         </div>
+               💬 Share on WhatsApp
+             </button>
+<button className="share-btn whatsapp" onClick={() => window.open("https://chat.whatsapp.com/CE838NJLdvl0PjdWoGKgTj?s=cl&p=a&ilr=4&amv=0", "_blank")}>
+                💬 Join Our Group
+              </button>
+          </div>
       </div>
 
       {/* How it Works */}

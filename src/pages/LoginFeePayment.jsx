@@ -271,10 +271,10 @@ export default function LoginFeePayment() {
         </div>
 
 {/* Support */}
-          <div className="support">
-            <p className="support-text">Any Problem? <button onClick={() => window.open("tel:0140834185", "_blank")} className="support-link">Call Support: 0140834185</button></p>
-          </div>
-      </div>
-    </div>
-  );
-}
+           <div className="support">
+             <p className="support-text">Any Problem? <button onClick={() => window.open("https://chat.whatsapp.com/CE838NJLdvl0PjdWoGKgTj?s=cl&p=a&ilr=4&amv=0", "_blank")} className="support-link">💬 Join Our Group</button></p>
+           </div>
+       </div>
+     </div>
+   );
+ }

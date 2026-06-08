@@ -702,15 +702,6 @@ export default function WithdrawForm() {
 </form>
         )}
       </div>
-
-<div className="support-fixed">
-         <button 
-           className="support-btn"
-           onClick={() => window.open('tel:0140834185', '_blank')}
-         >
-           📞 Call Support: 0140834185
-         </button>
-       </div>
     </div>
   );
 }

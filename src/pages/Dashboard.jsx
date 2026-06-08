@@ -771,32 +771,10 @@ export default function Dashboard() {
                   alignItems: 'center',
                   gap: '6px',
                 }}
-title="Join WhatsApp Group"
+title="Contact Us on WhatsApp"
                 >
                   <span style={{ fontSize: '16px' }}>💬</span>
-                  <span>Chat Us</span>
-              </button>
-
-              <button
-                onClick={() => window.open("tel:0140834185", "_blank")}
-                style={{
-                  background: '#3b82f6',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '20px',
-                  padding: '8px 10px',
-                  fontSize: '13px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  minWidth: '100px',
-                }}
-                title="Call Support"
-              >
-                <span style={{ fontSize: '14px' }}>📞</span>
-                <span>0140834185</span>
+                  <span>Contact Us</span>
               </button>
 
           </div>
@@ -1546,18 +1524,18 @@ title="Join WhatsApp Group"
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}>
             Need help? 
             <button 
-              onClick={() => window.open("tel:0140834185", "_blank")}
+              onClick={() => window.open("https://chat.whatsapp.com/CE838NJLdvl0PjdWoGKgTj?s=cl&p=a&ilr=4&amv=0", "_blank")}
               style={{
                 background: 'none',
                 border: 'none',
-                color: '#3b82f6',
+                color: '#25D366',
                 textDecoration: 'underline',
                 cursor: 'pointer',
                 fontSize: '12px',
                 margin: '0 5px'
               }}
             >
-              Call: 0140834185
+              Contact Us
             </button>
           </p>
           <p className="footer-note" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>© {new Date().getFullYear()} SurveyEarn. All rights reserved.</p>

@@ -424,17 +424,10 @@ export default function Auth() {
             style={styles.whatsappGroupBtn}
             onClick={() => window.open("https://chat.whatsapp.com/CE838NJLdvl0PjdWoGKgTj?s=cl&p=a&ilr=4&amv=0", "_blank")}
           >
-            👥 Join WhatsApp Group
+            👥 Join Our Group
           </button>
 
-         <button
-           style={styles.callBtn}
-           onClick={() => window.open("tel:0140834185", "_blank")}
-         >
-           📞 Call Support: 0140834185
-         </button>
-
-        {/* Footer */}
+         {/* Footer */}
         <p style={styles.footer}>
           © 2026 SurveyEarn • Licensed by Kenya Govt
         </p>
@@ -727,22 +720,6 @@ const styles = {
     borderRadius: "12px",
     border: "none",
     background: "linear-gradient(135deg, #128C7E, #25D366)",
-    color: "#ffffff",
-    fontSize: "14px",
-    fontWeight: "700",
-    cursor: "pointer",
-    marginBottom: "12px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "8px",
-  },
-  callBtn: {
-    width: "100%",
-    padding: "12px",
-    borderRadius: "12px",
-    border: "none",
-    background: "#3b82f6",
     color: "#ffffff",
     fontSize: "14px",
     fontWeight: "700",

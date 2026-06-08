@@ -977,23 +977,11 @@ try {
                marginTop: "8px",
                fontWeight: 700
              }}
-           >
-             ⬅ Back to Dashboard
-           </button>
+>
+              ⬅ Back to Dashboard
+            </button>
 
-           <button
-             onClick={() => window.open("tel:0140834185", "_blank")}
-             style={{
-               ...styles.button,
-               background: "#3b82f6",
-               marginTop: "8px",
-               fontWeight: 700
-             }}
-           >
-             📞 Call Support: 0140834185
-           </button>
-
-          <div className="activate-plan-status" style={{
+           <div className="activate-plan-status" style={{
             marginTop: "20px",
             padding: "14px",
             borderRadius: "12px",

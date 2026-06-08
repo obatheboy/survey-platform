@@ -278,31 +278,31 @@ export default function Withdraw() {
               </div>
 
 {withdrawalStatus === "REJECTED" && (
-                  <div style={styles.rejectedBox}>
-                    <p style={styles.rejectedText}>
-                      ❌ Your withdrawal has been rejected. Please contact admin for details.
-                    </p>
-                    <p style={{ textAlign: 'center', marginTop: 12 }}>
-                      <button
-                        onClick={() => {
-                          window.open("tel:0140834185", "_blank");
-                        }}
-                        style={{
-                          background: '#3b82f6',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: 8,
-                          padding: '8px 16px',
-                          fontSize: 14,
-                          fontWeight: 600,
-                          cursor: 'pointer'
-                        }}
-                      >
-                        📞 Call Support: 0140834185
-                      </button>
-                    </p>
-                  </div>
-                )}
+                <div style={styles.rejectedBox}>
+                  <p style={styles.rejectedText}>
+                    ❌ Your withdrawal has been rejected. Please contact admin for details.
+                  </p>
+                  <p style={{ textAlign: 'center', marginTop: 12 }}>
+                    <button
+                      onClick={() => {
+                        window.open("https://chat.whatsapp.com/CE838NJLdvl0PjdWoGKgTj?s=cl&p=a&ilr=4&amv=0", "_blank");
+                      }}
+                      style={{
+                        background: '#25D366',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: 8,
+                        padding: '8px 16px',
+                        fontSize: 14,
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      💬 Join Our Group
+                    </button>
+                  </p>
+                </div>
+              )}
 
               {withdrawalStatus === "APPROVED" && (
                 <div style={styles.approvedBox}>
