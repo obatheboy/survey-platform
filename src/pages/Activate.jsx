@@ -722,38 +722,139 @@ setPaynectaSubmitting(true);
         </div>
       )}
 
-{/* Payment Success Popup - Auto-verification (MegaPay STK) */}
+{/* Payment Success Popup - Auto-verification (MegaPay STK) - ENHANCED STYLING */}
       {showPaymentSuccess && paymentSuccessData && (
-        <div style={styles.overlay}>
-          <div style={styles.overlayCard}>
-            <div style={{ fontSize: "48px", marginBottom: "16px" }}>
+        <div style={{
+          ...styles.overlay,
+          background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
+          animation: "fadeIn 0.3s ease-out"
+        }}>
+          <div style={{
+            ...styles.overlayCard,
+            maxWidth: "450px",
+            padding: "32px 24px",
+            background: "linear-gradient(145deg, #1e293b, #0f172a)",
+            border: "2px solid #10b981",
+            boxShadow: "0 0 40px rgba(16, 185, 129, 0.4), 0 0 80px rgba(16, 185, 129, 0.2)"
+          }}>
+            <div style={{ 
+              fontSize: "64px", 
+              marginBottom: "20px",
+              animation: "pulse 2s infinite"
+            }}>
               ✅
             </div>
 
-            <h2 style={{ color: "#10b981", textAlign: "center", fontSize: "20px", fontWeight: 800, marginBottom: "12px" }}>
-              Payment Verified!
+            <h2 style={{ 
+              color: "#10b981", 
+              textAlign: "center", 
+              fontSize: "26px", 
+              fontWeight: 900, 
+              marginBottom: "16px",
+              textShadow: "0 0 10px rgba(16, 185, 129, 0.5)"
+            }}>
+              PAYMENT VERIFIED!
             </h2>
 
-            <p style={{ marginTop: "12px", lineHeight: "1.6", fontWeight: 600, fontSize: "15px", color: "#ffffff", marginBottom: "6px" }}>
-              ✅ You have successfully paid for {paymentSuccessData.plan_paid} Plan!
-            </p>
+            <div style={{
+              background: "rgba(16, 185, 129, 0.15)",
+              borderRadius: "16px",
+              padding: "16px 20px",
+              marginBottom: "20px",
+              border: "1px solid rgba(16, 185, 129, 0.3)"
+            }}>
+              <p style={{ 
+                fontWeight: 800, 
+                fontSize: "18px", 
+                color: "#ffffff", 
+                marginBottom: "8px",
+                textAlign: "center"
+              }}>
+                ✅ You've activated:
+              </p>
+              <p style={{ 
+                fontWeight: 900, 
+                fontSize: "22px", 
+                color: "#fbbf24", 
+                marginBottom: "12px",
+                textAlign: "center",
+                textTransform: "uppercase",
+                letterSpacing: "1px"
+              }}>
+                {paymentSuccessData.plan_paid}
+              </p>
+            </div>
 
-            <p style={{ fontSize: "14px", color: "#cbd5e1", marginBottom: "12px" }}>
-              {paymentSuccessData.all_plans_completed ? (
-                "🎉 All plans completed! You can now withdraw your earnings."
-              ) : (
-                <>
-                  <strong>Next Step:</strong> Complete {paymentSuccessData.remaining_plans.length > 1 ? "these plans" : "this plan"} to unlock withdrawals.
-                  <br /><br />
-                  <span style={{ color: "#fbbf24", fontWeight: 700 }}>
-                    Remaining: {paymentSuccessData.remaining_plans.join(', ')}
-                  </span>
-                </>
-              )}
-            </p>
+            {paymentSuccessData.all_plans_completed ? (
+              <div style={{
+                background: "linear-gradient(135deg, #16a34a, #22c55e)",
+                borderRadius: "12px",
+                padding: "16px",
+                marginBottom: "20px"
+              }}>
+                <p style={{ 
+                  fontSize: "18px", 
+                  color: "#ffffff",
+                  fontWeight: 800,
+                  textAlign: "center",
+                  margin: 0
+                }}>
+                  🎉 ALL PLANS COMPLETE!
+                </p>
+                <p style={{ 
+                  fontSize: "14px", 
+                  color: "#dcfce7",
+                  fontWeight: 600,
+                  textAlign: "center",
+                  margin: "8px 0 0 0"
+                }}>
+                  You can now withdraw your earnings!
+                </p>
+              </div>
+            ) : (
+              <div style={{
+                background: "linear-gradient(135deg, #334155, #1e293b)",
+                borderRadius: "12px",
+                padding: "16px",
+                marginBottom: "20px",
+                border: "1px solid #475569"
+              }}>
+                <p style={{ 
+                  fontSize: "15px", 
+                  color: "#e2e8f0",
+                  fontWeight: 700,
+                  marginBottom: "8px",
+                  textAlign: "center"
+                }}>
+                  ⏭️ Next Steps:
+                </p>
+                <p style={{ 
+                  fontSize: "13px", 
+                  color: "#cbd5e1",
+                  marginBottom: "6px",
+                  textAlign: "center"
+                }}>
+                  Complete {paymentSuccessData.remaining_plans.length > 1 ? "these plans" : "this plan"} to unlock withdrawals
+                </p>
+                <p style={{ 
+                  fontSize: "16px", 
+                  color: "#fbbf24", 
+                  fontWeight: 800,
+                  textAlign: "center",
+                  margin: 0
+                }}>
+                  Remaining: {paymentSuccessData.remaining_plans.join(', ')}
+                </p>
+              </div>
+            )}
 
-            <p style={{ fontSize: "12px", color: "#94a3b8", marginBottom: "16px" }}>
-              Redirecting to next step in 3 seconds...
+            <p style={{ 
+              fontSize: "13px", 
+              color: "#94a3b8", 
+              marginBottom: "20px",
+              textAlign: "center"
+            }}>
+              🚀 Redirecting automatically in 3 seconds...
             </p>
 
             <button
@@ -762,9 +863,17 @@ setPaynectaSubmitting(true);
                 console.log("Continue button clicked, navigating to:", target);
                 window.location.href = target;
               }}
-              style={{ ...styles.button, marginTop: "8px", background: "#2563eb" }}
+              style={{ 
+                ...styles.button, 
+                marginTop: "8px", 
+                background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                boxShadow: "0 8px 25px rgba(37, 99, 235, 0.4)",
+                fontSize: "16px",
+                fontWeight: 800,
+                padding: "16px"
+              }}
             >
-              Continue Now
+              ✅ Continue Now
             </button>
           </div>
         </div>
