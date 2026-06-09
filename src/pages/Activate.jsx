@@ -406,13 +406,13 @@ const submitActivation = async () => {
           });
           setShowPaymentSuccess(true);
 
-          // Auto-redirect after 3 seconds
+          // Auto-redirect after 4 seconds
           const redirectTarget = redirect_to || "/dashboard";
           if (redirectTarget) {
             console.log("Auto-redirecting to:", redirectTarget);
             setTimeout(() => {
               window.location.href = redirectTarget;
-            }, 3000);
+            }, 4000);
           }
         } else if (pollCount >= maxPolls) {
           clearInterval(pollInterval);
@@ -854,7 +854,7 @@ setPaynectaSubmitting(true);
               marginBottom: "20px",
               textAlign: "center"
             }}>
-              🚀 Redirecting automatically in 3 seconds...
+              🚀 Auto-redirecting in 4 seconds... Tap below to continue now
             </p>
 
             <button
