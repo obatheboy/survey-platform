@@ -235,14 +235,13 @@ exports.confirmPlanPayment = async (req, res) => {
       user.welcome_bonus_received = true;
     }
 
-    // Check if all 4 plans are paid (only REGULAR, VIP, VVIP - welcome bonus is separate)
-    const planPaymentTypes = ["REGULAR", "VIP", "VVIP"];
-    const allPaid = planPaymentTypes.every(p => user.plans_paid[p] === true);
+    // Check if all 4 plans are paid (WELCOME_BONUS, REGULAR, VIP, VVIP)
+    const allPlansTypes = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
+    const allPaid = allPlansTypes.every(p => user.plans_paid[p] === true);
     user.all_plans_completed = allPaid;
 
     // Calculate remaining unpaid plans
-    const allPlans = PLAN_ORDER;
-    const remainingPlans = allPlans.filter(p => user.plans_paid[p] !== true);
+    const remainingPlans = allPlansTypes.filter(p => user.plans_paid[p] !== true);
 
     // Determine redirect target
     let redirectTo;
@@ -252,7 +251,7 @@ exports.confirmPlanPayment = async (req, res) => {
       const nextPlanKey = remainingPlans[0];
       redirectTo = nextPlanKey === "WELCOME_BONUS" ? "/activate?welcome_bonus=true" : `/activate?plan=${nextPlanKey.toLowerCase()}`;
     } else {
-      redirectTo = "/dashboard";
+      redirectTo = "/withdraw";
     }
 
     // Clear pending payment info
@@ -309,8 +308,7 @@ exports.confirmPlanPayment = async (req, res) => {
       },
       balance_before: oldBalance,
       balance_added: earnings,
-      new_balance: user.total_earned,
-      all_plans_completed: allPaid
+      new_balance: user.total_earned
     });
   } catch (error) {
     console.error("❌ Confirm plan payment error:", error);

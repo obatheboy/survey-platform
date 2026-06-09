@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
-import api, { megapayApi } from "../api/api";
+import api from "../api/api";
 import TrustBadges from "../components/TrustBadges";
 import Testimonials from "../components/Testimonials";
 import "./Activate.css";
@@ -10,6 +10,13 @@ const PHONE_NUMBER = "0140834185";
 const BUSINESS_NAME = "OBADIAH OTOKI";
 
 const PLAN_CONFIG = {
+  WELCOME_BONUS: {
+    label: "Welcome Bonus",
+    total: 1200,
+    activationFee: 100,
+    color: "#10b981",
+    glow: "rgba(16, 185, 129, 0.2)"
+  },
   REGULAR: {
     label: "REGULAR SURVEYS",
     total: 1500,
@@ -251,7 +258,7 @@ const [planKey, setPlanKey] = useState(null);
           plan = { is_activated: false };
         }
 
-        if (!plan || (planFromQuery !== "WELCOME" && plan.is_activated)) {
+        if (!plan || (planFromQuery !== "WELCOME" && plan.is_activated) || (planFromQuery === "WELCOME" && res.data.plans_paid?.WELCOME_BONUS)) {
           setPlanKey(null);
           setPlanState(null);
           setLoading(false);
@@ -373,16 +380,29 @@ const submitActivation = async () => {
 
         if (confirmRes.data?.success) {
           clearInterval(pollInterval);
-          const { remaining_plans, redirect_to, plan_paid } = confirmRes.data;
+          const { remaining_plans, redirect_to, plan_paid, all_plans_completed, token, user: userData } = confirmRes.data;
+
+          // Update token and user state
+          if (token) localStorage.setItem("token", token);
+          if (userData) {
+            setUser(prev => ({
+              ...prev,
+              ...userData,
+              plans_paid: userData.plans_paid || prev?.plans_paid
+            }));
+          }
 
           // Show success message with remaining plans
           const planLabel = plan_paid === "WELCOME_BONUS" ? "Welcome Bonus" : plan_paid;
+          const remainingLabelCount = remaining_plans?.length || 0;
+          const remainingLabel = remainingLabelCount > 0 ? remaining_plans.join(', ') : 'none';
 
           setPaymentSuccessData({
             plan_paid: planLabel,
             remaining_plans: remaining_plans || [],
             redirect_to: redirect_to,
-            all_plans_completed: confirmRes.data.all_plans_completed
+            all_plans_completed: all_plans_completed || false,
+            remaining_label: remainingLabel
           });
           setShowPaymentSuccess(true);
 
@@ -398,7 +418,7 @@ const submitActivation = async () => {
         }
 
         pollCount++;
-      } catch (pollError) {
+      } catch (error) {
         if (pollCount >= maxPolls) {
           clearInterval(pollInterval);
         }
@@ -423,71 +443,71 @@ const submitActivation = async () => {
 
     const targetPlanKey = planKey === "WELCOME" ? "WELCOME_BONUS" : planKey;
 
-    setPaynectaSubmitting(true);
+setPaynectaSubmitting(true);
     setPaynectaError("");
     setPaynectaSuccess(false);
 
-try {
-        const response = await planPaymentApi.initiate(targetPlanKey, cleanedPhone);
+    try {
+      const response = await planPaymentApi.initiate(targetPlanKey, cleanedPhone);
 
-        const apiMessage = response.data.message || "";
+      const apiMessage = response.data.message || "";
 
-        if (response.data.success) {
-          setPaynectaSuccess(true);
-          setPaynectaError("");
-          const transactionRequestId = response.data.transaction_request_id;
+      if (response.data.success) {
+        setPaynectaSuccess(true);
+        setPaynectaError("");
+        const transactionRequestId = response.data.transaction_request_id;
 
-          // Start polling for payment confirmation
+        // Start polling for payment confirmation
+        startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
+      } else if (apiMessage.toLowerCase().includes("pin") || apiMessage.toLowerCase().includes("stk") || apiMessage.toLowerCase().includes("check") || apiMessage.toLowerCase().includes("sent") || apiMessage.toLowerCase().includes("phone")) {
+        // M-Pesa/Paynecta often returns these messages with success:false
+        // even when the STK push WASA successfully delivered to the user's phone
+        setPaynectaSuccess(true);
+        setPaynectaError("");
+        const transactionRequestId = response.data.transaction_request_id;
+        if (transactionRequestId) {
           startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
-        } else if (apiMessage.toLowerCase().includes("pin") || apiMessage.toLowerCase().includes("stk") || apiMessage.toLowerCase().includes("check") || apiMessage.toLowerCase().includes("sent") || apiMessage.toLowerCase().includes("phone")) {
-          // M-Pesa/Paynecta often returns these messages with success:false
-          // even when the STK push WASA successfully delivered to the user's phone
+        }
+        console.log("MegaPay STK Push delivered (success-like message):", response.data);
+      } else {
+        setPaynectaError(apiMessage || "Payment initiation failed. Please try again.");
+        setPaynectaSuccess(false);
+      }
+    } catch (error) {
+      console.error("Paynecta error:", error);
+
+      if (error.code === 'ENOTFOUND') {
+        setPaynectaError("Payment gateway temporarily unavailable. Please try again in a few minutes.");
+      } else if (error.code === 'ECONNREFUSED') {
+        setPaynectaError("Payment gateway connection refused. Please try again later.");
+      } else if (error.code === 'ETIMEDOUT') {
+        setPaynectaError("Payment gateway timed out. Please try again.");
+      } else if (error.response?.data?.message) {
+        // M-Pesa gateway returns HTTP 400 with success:false + "Please enter your MPESA PIN"
+        // even when the STK push WAS delivered — treat as success
+        const mpesaMsg = error.response.data.message;
+        if (mpesaMsg.toLowerCase().includes('pin') || mpesaMsg.toLowerCase().includes('stk')) {
           setPaynectaSuccess(true);
-          setPaynectaError("");
-          const transactionRequestId = response.data.transaction_request_id;
+          const transactionRequestId = error.response.data.transaction_request_id;
           if (transactionRequestId) {
             startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
           }
-          console.log("MegaPay STK Push delivered (success-like message):", response.data);
-        } else {
-          setPaynectaError(apiMessage || "Payment initiation failed. Please try again.");
-          setPaynectaSuccess(false);
-        }
-      } catch (error) {
-        console.error("Paynecta error:", error);
-
-        if (error.code === 'ENOTFOUND') {
-          setPaynectaError("Payment gateway temporarily unavailable. Please try again in a few minutes.");
-        } else if (error.code === 'ECONNREFUSED') {
-          setPaynectaError("Payment gateway connection refused. Please try again later.");
-        } else if (error.code === 'ETIMEDOUT') {
-          setPaynectaError("Payment gateway timed out. Please try again.");
-        } else if (error.response?.data?.message) {
-          // M-Pesa gateway returns HTTP 400 with success:false + "Please enter your MPESA PIN"
-          // even when the STK push WAS delivered — treat as success
-          const mpesaMsg = error.response.data.message;
-          if (mpesaMsg.toLowerCase().includes('pin') || mpesaMsg.toLowerCase().includes('stk')) {
-            setPaynectaSuccess(true);
-            const transactionRequestId = error.response.data.transaction_request_id;
-            if (transactionRequestId) {
-              startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
-            }
-          } else if (mpesaMsg.toLowerCase().includes('sent') || mpesaMsg.toLowerCase().includes('check') || mpesaMsg.toLowerCase().includes('phone')) {
-            setPaynectaSuccess(true);
-            const transactionRequestId = error.response.data.transaction_request_id;
-            if (transactionRequestId) {
-              startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
-            }
-          } else {
-            setPaynectaError(mpesaMsg);
+        } else if (mpesaMsg.toLowerCase().includes('sent') || mpesaMsg.toLowerCase().includes('check') || mpesaMsg.toLowerCase().includes('phone')) {
+          setPaynectaSuccess(true);
+          const transactionRequestId = error.response.data.transaction_request_id;
+          if (transactionRequestId) {
+            startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
           }
         } else {
-          setPaynectaError("Network error. Please check your connection and try again.");
+          setPaynectaError(mpesaMsg);
         }
-} finally {
-        setPaynectaSubmitting(false);
+      } else {
+        setPaynectaError("Network error. Please check your connection and try again.");
       }
-    };
+    } finally {
+      setPaynectaSubmitting(false);
+    }
+  };
 
     if (loading) {
     return (
@@ -523,30 +543,21 @@ try {
           padding: '24px',
           boxShadow: '0 10px 40px rgba(0,0,0,0.1)'
         }}>
-          <h2 style={{ textAlign: 'center', marginBottom: '8px', color: '#1e293b' }}>
-            🚀 Start Your Plan
-          </h2>
-          <p style={{ textAlign: 'center', marginBottom: '24px', color: '#64748b' }}>
-            Select a plan to start completing surveys and earn money!
-          </p>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {['REGULAR', 'VIP', 'VVIP'].map((p) => {
-              const planData = user?.plans?.[p];
-              const isCompleted = planData?.completed;
-              const isActivated = planData?.is_activated;
-              const config = PLAN_CONFIG[p];
-              
-              return (
+<h2 style={{ textAlign: 'center', marginBottom: '8px', color: '#1e293b' }}>
+             🚀 Start Your Plan
+           </h2>
+           <p style={{ textAlign: 'center', marginBottom: '24px', color: '#64748b' }}>
+             Select a plan to start completing surveys and earn money!
+           </p>
+           
+<div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {/* Welcome Bonus Button - for users who haven't received it yet */}
+              {user?.welcome_bonus_received === false && (
                 <button
-                  key={p}
+                  key="WELCOME_BONUS"
                   onClick={() => {
-                    if (isCompleted && !isActivated) {
-                      localStorage.setItem('active_plan', p);
-                      navigate('/surveys');
-                    }
+                    navigate('/activate?welcome_bonus=true');
                   }}
-                  disabled={!isCompleted || isActivated}
                   style={{
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -554,39 +565,90 @@ try {
                     padding: '16px 20px',
                     border: 'none',
                     borderRadius: '12px',
-                    background: isActivated 
-                      ? 'rgba(16, 185, 129, 0.1)' 
-                      : isCompleted 
-                        ? `linear-gradient(135deg, ${config.color}, ${config.color}dd)`
-                        : 'rgba(100, 116, 139, 0.1)',
-                    color: isActivated ? '#10b981' : isCompleted ? 'white' : '#64748b',
-                    cursor: isCompleted && !isActivated ? 'pointer' : 'not-allowed',
-                    opacity: isCompleted && !isActivated ? 1 : 0.6,
+                    background: 'linear-gradient(135deg, #10b981, #059669)',
+                    color: 'white',
+                    cursor: 'pointer',
+                    opacity: 1,
                     transition: 'all 0.2s',
-                    boxShadow: isCompleted && !isActivated ? '0 4px 15px rgba(0,0,0,0.1)' : 'none'
+                    boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
                   }}
                 >
                   <div style={{ textAlign: 'left' }}>
                     <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
-                      {config?.label || p}
+                      {PLAN_CONFIG.WELCOME_BONUS?.label}
                     </div>
                     <div style={{ fontSize: '0.85rem', opacity: 0.9 }}>
-                      Earn up to KES {config?.total || 0}
+                      Earn up to KES {PLAN_CONFIG.WELCOME_BONUS?.total}
                     </div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    {isActivated ? (
-                      <span style={{ fontWeight: 'bold' }}>✅ Activated</span>
-                    ) : isCompleted ? (
-                      <span style={{ fontWeight: 'bold' }}>▶ Start Surveys</span>
-                    ) : (
-                      <span>{planData?.surveys_completed || 0}/10 surveys</span>
-                    )}
+                    <span style={{ fontWeight: 'bold' }}>▶ Claim Now</span>
                   </div>
                 </button>
-              );
-            })}
-          </div>
+              )}
+              {['REGULAR', 'VIP', 'VVIP'].map((p) => {
+               const planData = user?.plans?.[p];
+               const isCompleted = planData?.completed;
+               const isActivated = planData?.is_activated;
+               const planPaid = user?.plans_paid?.[p];
+               const config = PLAN_CONFIG[p];
+               
+               return (
+                 <button
+                   key={p}
+                   onClick={() => {
+                     if (!isCompleted) {
+                       return; // Can't access - not completed surveys yet
+                     }
+                     if (isCompleted && !isActivated && !planPaid) {
+                       // Need to pay activation fee
+                       navigate('/activate?plan=' + p.toLowerCase());
+                     } else if (isActivated || planPaid) {
+                       localStorage.setItem('active_plan', p);
+                       navigate('/surveys');
+                     }
+                   }}
+                   disabled={!isCompleted}
+                   style={{
+                     display: 'flex',
+                     justifyContent: 'space-between',
+                     alignItems: 'center',
+                     padding: '16px 20px',
+                     border: 'none',
+                     borderRadius: '12px',
+                     background: isActivated || planPaid
+                       ? 'rgba(16, 185, 129, 0.1)' 
+                       : isCompleted 
+                         ? `linear-gradient(135deg, ${config.color}, ${config.color}dd)`
+                         : 'rgba(100, 116, 139, 0.1)',
+                     color: isActivated || planPaid ? '#10b981' : isCompleted ? 'white' : '#64748b',
+                     cursor: isCompleted ? 'pointer' : 'not-allowed',
+                     opacity: isCompleted ? 1 : 0.6,
+                     transition: 'all 0.2s',
+                     boxShadow: isCompleted ? '0 4px 15px rgba(0,0,0,0.1)' : 'none'
+                   }}
+                 >
+                   <div style={{ textAlign: 'left' }}>
+                     <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
+                       {config?.label || p}
+                     </div>
+                     <div style={{ fontSize: '0.85rem', opacity: 0.9 }}>
+                       Earn up to KES {config?.total || 0}
+                     </div>
+                   </div>
+                   <div style={{ textAlign: 'right' }}>
+                     {isActivated || planPaid ? (
+                       <span style={{ fontWeight: 'bold' }}>✅ Activated</span>
+                     ) : isCompleted ? (
+                       <span style={{ fontWeight: 'bold' }}>▶ Pay Now</span>
+                     ) : (
+                       <span>{planData?.surveys_completed || 0}/10 surveys</span>
+                     )}
+                   </div>
+                 </button>
+               );
+             })}
+           </div>
           
           <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.85rem', color: '#94a3b8' }}>
             Complete 10 surveys to unlock each plan, then start earning!
@@ -658,7 +720,7 @@ try {
         </div>
       )}
 
-       {showPaymentSuccess && paymentSuccessData && (
+{showPaymentSuccess && paymentSuccessData && (
         <div style={styles.overlay}>
           <div style={styles.overlayCard}>
             <div style={{ fontSize: "48px", marginBottom: "16px" }}>
@@ -670,13 +732,13 @@ try {
             </h2>
 
             <p style={{ marginTop: "12px", lineHeight: "1.6", fontWeight: 500, fontSize: "14px", color: "#475569", marginBottom: "8px" }}>
-              You have successfully paid for {paymentSuccessData.plan_paid} Plan!
+              ✅ You have successfully paid for {paymentSuccessData.plan_paid} Plan!
             </p>
 
             <p style={{ fontSize: "13px", color: "#64748b", marginBottom: "16px" }}>
               {paymentSuccessData.all_plans_completed
                 ? "🎉 All plans completed! You can now withdraw your earnings."
-                : `You have ${paymentSuccessData.remaining_plans.length} plan${paymentSuccessData.remaining_plans.length > 1 ? 's' : ''} remaining: ${paymentSuccessData.remaining_plans.join(', ')}`}
+                : `You have ${paymentSuccessData.remaining_plans.length} plan${paymentSuccessData.remaining_plans.length > 1 ? 's' : ''} remaining${paymentSuccessData.remaining_plans.length > 0 ? ': ' + paymentSuccessData.remaining_plans.join(', ') : '.'}`}
             </p>
 
             <p style={{ fontSize: "11px", color: "#94a3b8", marginBottom: "16px" }}>
