@@ -243,25 +243,26 @@ exports.confirmPlanPayment = async (req, res) => {
     // Calculate remaining unpaid plans
     const remainingPlans = allPlansTypes.filter(p => user.plans_paid[p] !== true);
 
-    // Determine redirect target
+    // Determine redirect target - go to activate page for the next unpaid plan
     let redirectTo;
     if (allPaid) {
       redirectTo = "/withdraw";
     } else if (remainingPlans.length > 0) {
       const nextPlanKey = remainingPlans[0];
-      // For WELCOME_BONUS, user goes to activate page to claim it
-      // For other plans, check if surveys are completed - if not, go to dashboard
-      // If surveys are completed, go to activate page for payment
       if (nextPlanKey === "WELCOME_BONUS") {
         redirectTo = "/activate?welcome_bonus=true";
-      } else if (user.plans?.[nextPlanKey]?.completed) {
-        redirectTo = `/activate?plan=${nextPlanKey.toLowerCase()}`;
       } else {
-        // Surveys not completed yet, go to dashboard to complete them
-        redirectTo = "/dashboard";
+        // Check if surveys are completed for this plan - user can only activate if surveys done
+        const planData = user.plans?.[nextPlanKey];
+        if (planData?.completed && !planData?.is_activated && !user.plans_paid?.[nextPlanKey]) {
+          redirectTo = `/activate?plan=${nextPlanKey.toLowerCase()}`;
+        } else {
+          // Surveys not completed yet - go to dashboard to complete them first
+          redirectTo = "/dashboard";
+        }
       }
     } else {
-      redirectTo = "/withdraw";
+      redirectTo = "/dashboard";
     }
 
     // Clear pending payment info

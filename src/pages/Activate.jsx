@@ -411,7 +411,7 @@ const submitActivation = async () => {
           if (redirectTarget) {
             console.log("Auto-redirecting to:", redirectTarget);
             setTimeout(() => {
-              navigate(redirectTarget, { replace: true });
+              window.location.href = redirectTarget;
             }, 3000);
           }
         } else if (pollCount >= maxPolls) {
@@ -752,7 +752,7 @@ setPaynectaSubmitting(true);
               onClick={() => {
                 const target = paymentSuccessData.redirect_to || "/dashboard";
                 console.log("Continue button clicked, navigating to:", target);
-                navigate(target, { replace: true });
+                window.location.href = target;
               }}
               style={{ ...styles.button, marginTop: "8px", background: "#2563eb" }}
             >

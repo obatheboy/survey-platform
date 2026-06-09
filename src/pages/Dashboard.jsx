@@ -126,9 +126,11 @@ export default function Dashboard() {
     longestStreak: 0
   });
 
-  /* =========================
-     LOAD DASHBOARD
-  ========================= */
+/* =========================
+      LOAD DASHBOARD
+   ========================= */
+  const location = useLocation();
+  
   useEffect(() => {
     let alive = true;
 
@@ -206,12 +208,28 @@ export default function Dashboard() {
     };
   }, []);
 
-  /* =========================
-     THEME EFFECT
-  ========================= */
-  // Theme removed - light mode only
+/* =========================
+      PLAN PAYMENT REDIRECT HANDLER
+   ========================= */
+  useEffect(() => {
+    const planParam = new URLSearchParams(location.search).get("plan");
+    if (planParam && user?.plans_paid) {
+      // After payment, scroll to surveys section to show next plan
+      setTimeout(() => {
+        const element = document.getElementById('surveys-section');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 500);
+    }
+  }, [location.search, user]);
 
-  // Theme removed - light mode only
+  /* =========================
+      THEME EFFECT
+   ========================= */
+   // Theme removed - light mode only
+
+   // Theme removed - light mode only
 
   /* =========================
      LOAD PENDING WITHDRAWALS
