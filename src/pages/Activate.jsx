@@ -4,6 +4,7 @@ import api, { megapayApi } from "../api/api";
 import TrustBadges from "../components/TrustBadges";
 import Testimonials from "../components/Testimonials";
 import "./Activate.css";
+import { planPaymentApi } from "../api/api";
 
 const PHONE_NUMBER = "0140834185";
 const BUSINESS_NAME = "OBADIAH OTOKI";
@@ -175,7 +176,7 @@ export default function Activate() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
 
-  const [planKey, setPlanKey] = useState(null);
+const [planKey, setPlanKey] = useState(null);
   const [planState, setPlanState] = useState(null);
   const [paymentText, setPaymentText] = useState("");
   const [notification, setNotification] = useState(null);
@@ -183,11 +184,13 @@ export default function Activate() {
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
-const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [paynectaPhone, setPaynectaPhone] = useState("");
   const [paynectaSubmitting, setPaynectaSubmitting] = useState(false);
   const [paynectaError, setPaynectaError] = useState("");
   const [paynectaSuccess, setPaynectaSuccess] = useState(false);
+  const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
+  const [paymentSuccessData, setPaymentSuccessData] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -325,7 +328,7 @@ const [showSuccessPopup, setShowSuccessPopup] = useState(false);
     }
   };
 
-  const submitActivation = async () => {
+const submitActivation = async () => {
     if (!paymentText.trim()) {
       setNotification("❌ Paste the FULL M-Pesa confirmation message.");
       return;
@@ -355,6 +358,55 @@ const [showSuccessPopup, setShowSuccessPopup] = useState(false);
     }
   };
 
+  // Poll for payment confirmation
+  const startPaymentPolling = (transactionRequestId, phone, planKey) => {
+    let pollCount = 0;
+    const maxPolls = 30; // Maximum 30 polls (2.5 minutes at 5s intervals)
+
+    const pollInterval = setInterval(async () => {
+      try {
+        const confirmRes = await planPaymentApi.confirm({
+          transaction_request_id: transactionRequestId,
+          phone: phone,
+          plan: planKey
+        });
+
+        if (confirmRes.data?.success) {
+          clearInterval(pollInterval);
+          const { remaining_plans, redirect_to, plan_paid } = confirmRes.data;
+
+          // Show success message with remaining plans
+          const planLabel = plan_paid === "WELCOME_BONUS" ? "Welcome Bonus" : plan_paid;
+
+          setPaymentSuccessData({
+            plan_paid: planLabel,
+            remaining_plans: remaining_plans || [],
+            redirect_to: redirect_to,
+            all_plans_completed: confirmRes.data.all_plans_completed
+          });
+          setShowPaymentSuccess(true);
+
+          // Auto-redirect after 3 seconds
+          if (redirect_to) {
+            setTimeout(() => {
+              navigate(redirect_to, { replace: true });
+            }, 3000);
+          }
+        } else if (pollCount >= maxPolls) {
+          clearInterval(pollInterval);
+          setPaynectaError("Payment confirmation timed out. Please try again.");
+        }
+
+        pollCount++;
+      } catch (pollError) {
+        if (pollCount >= maxPolls) {
+          clearInterval(pollInterval);
+        }
+        pollCount++;
+      }
+    }, 5000);
+  };
+
   const handlePaynectaPayment = async () => {
     if (!paynectaPhone.trim()) {
       setPaynectaError("Please enter your phone number");
@@ -376,53 +428,68 @@ const [showSuccessPopup, setShowSuccessPopup] = useState(false);
     setPaynectaSuccess(false);
 
 try {
-       const response = await megapayApi.initiate(targetPlanKey, cleanedPhone);
+        const response = await planPaymentApi.initiate(targetPlanKey, cleanedPhone);
 
-      const apiMessage = response.data.message || "";
+        const apiMessage = response.data.message || "";
 
-      if (response.data.success) {
-        setPaynectaSuccess(true);
-        setPaynectaError("");
-        console.log("MegaPay STK Push sent:", response.data);
-      } else if (apiMessage.toLowerCase().includes("pin") || apiMessage.toLowerCase().includes("stk") || apiMessage.toLowerCase().includes("check") || apiMessage.toLowerCase().includes("sent") || apiMessage.toLowerCase().includes("phone")) {
-        // M-Pesa/Paynecta often returns these messages with success:false
-        // even when the STK push WASA successfully delivered to the user's phone
-        setPaynectaSuccess(true);
-        setPaynectaError("");
-        console.log("MegaPay STK Push delivered (success-like message):", response.data);
-      } else {
-        setPaynectaError(apiMessage || "Payment initiation failed. Please try again.");
-        setPaynectaSuccess(false);
-      }
-    } catch (error) {
-      console.error("Paynecta error:", error);
-
-      if (error.code === 'ENOTFOUND') {
-        setPaynectaError("Payment gateway temporarily unavailable. Please try again in a few minutes.");
-      } else if (error.code === 'ECONNREFUSED') {
-        setPaynectaError("Payment gateway connection refused. Please try again later.");
-      } else if (error.code === 'ETIMEDOUT') {
-        setPaynectaError("Payment gateway timed out. Please try again.");
-      } else if (error.response?.data?.message) {
-        // M-Pesa gateway returns HTTP 400 with success:false + "Please enter your MPESA PIN"
-        // even when the STK push WAS delivered — treat as success
-        const mpesaMsg = error.response.data.message;
-        if (mpesaMsg.toLowerCase().includes('pin') || mpesaMsg.toLowerCase().includes('stk')) {
+        if (response.data.success) {
           setPaynectaSuccess(true);
-        } else if (mpesaMsg.toLowerCase().includes('sent') || mpesaMsg.toLowerCase().includes('check') || mpesaMsg.toLowerCase().includes('phone')) {
+          setPaynectaError("");
+          const transactionRequestId = response.data.transaction_request_id;
+
+          // Start polling for payment confirmation
+          startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
+        } else if (apiMessage.toLowerCase().includes("pin") || apiMessage.toLowerCase().includes("stk") || apiMessage.toLowerCase().includes("check") || apiMessage.toLowerCase().includes("sent") || apiMessage.toLowerCase().includes("phone")) {
+          // M-Pesa/Paynecta often returns these messages with success:false
+          // even when the STK push WASA successfully delivered to the user's phone
           setPaynectaSuccess(true);
+          setPaynectaError("");
+          const transactionRequestId = response.data.transaction_request_id;
+          if (transactionRequestId) {
+            startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
+          }
+          console.log("MegaPay STK Push delivered (success-like message):", response.data);
         } else {
-          setPaynectaError(mpesaMsg);
+          setPaynectaError(apiMessage || "Payment initiation failed. Please try again.");
+          setPaynectaSuccess(false);
         }
-      } else {
-        setPaynectaError("Network error. Please check your connection and try again.");
-      }
-    } finally {
-      setPaynectaSubmitting(false);
-    }
-   };
+      } catch (error) {
+        console.error("Paynecta error:", error);
 
-   if (loading) {
+        if (error.code === 'ENOTFOUND') {
+          setPaynectaError("Payment gateway temporarily unavailable. Please try again in a few minutes.");
+        } else if (error.code === 'ECONNREFUSED') {
+          setPaynectaError("Payment gateway connection refused. Please try again later.");
+        } else if (error.code === 'ETIMEDOUT') {
+          setPaynectaError("Payment gateway timed out. Please try again.");
+        } else if (error.response?.data?.message) {
+          // M-Pesa gateway returns HTTP 400 with success:false + "Please enter your MPESA PIN"
+          // even when the STK push WAS delivered — treat as success
+          const mpesaMsg = error.response.data.message;
+          if (mpesaMsg.toLowerCase().includes('pin') || mpesaMsg.toLowerCase().includes('stk')) {
+            setPaynectaSuccess(true);
+            const transactionRequestId = error.response.data.transaction_request_id;
+            if (transactionRequestId) {
+              startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
+            }
+          } else if (mpesaMsg.toLowerCase().includes('sent') || mpesaMsg.toLowerCase().includes('check') || mpesaMsg.toLowerCase().includes('phone')) {
+            setPaynectaSuccess(true);
+            const transactionRequestId = error.response.data.transaction_request_id;
+            if (transactionRequestId) {
+              startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
+            }
+          } else {
+            setPaynectaError(mpesaMsg);
+          }
+        } else {
+          setPaynectaError("Network error. Please check your connection and try again.");
+        }
+} finally {
+        setPaynectaSubmitting(false);
+      }
+    };
+
+    if (loading) {
     return (
       <div style={styles.loadingContainer}>
         <div style={{ textAlign: "center" }}>
@@ -586,6 +653,41 @@ try {
               style={{ ...styles.button, marginTop: "20px", background: "#2563eb" }}
             >
               Go to Dashboard
+            </button>
+          </div>
+        </div>
+      )}
+
+       {showPaymentSuccess && paymentSuccessData && (
+        <div style={styles.overlay}>
+          <div style={styles.overlayCard}>
+            <div style={{ fontSize: "48px", marginBottom: "16px" }}>
+              ✅
+            </div>
+
+            <h2 style={{ color: "#10b981", textAlign: "center", fontSize: "20px", fontWeight: 800, marginBottom: "12px" }}>
+              Payment Successful!
+            </h2>
+
+            <p style={{ marginTop: "12px", lineHeight: "1.6", fontWeight: 500, fontSize: "14px", color: "#475569", marginBottom: "8px" }}>
+              You have successfully paid for {paymentSuccessData.plan_paid} Plan!
+            </p>
+
+            <p style={{ fontSize: "13px", color: "#64748b", marginBottom: "16px" }}>
+              {paymentSuccessData.all_plans_completed
+                ? "🎉 All plans completed! You can now withdraw your earnings."
+                : `You have ${paymentSuccessData.remaining_plans.length} plan${paymentSuccessData.remaining_plans.length > 1 ? 's' : ''} remaining: ${paymentSuccessData.remaining_plans.join(', ')}`}
+            </p>
+
+            <p style={{ fontSize: "11px", color: "#94a3b8", marginBottom: "16px" }}>
+              Redirecting in 3 seconds...
+            </p>
+
+            <button
+              onClick={() => navigate(paymentSuccessData.redirect_to, { replace: true })}
+              style={{ ...styles.button, marginTop: "8px", background: "#2563eb" }}
+            >
+              Continue Now
             </button>
           </div>
         </div>

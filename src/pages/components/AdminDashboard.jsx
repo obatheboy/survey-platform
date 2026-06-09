@@ -18,7 +18,7 @@ const StatCard = ({ title, value, icon, color, loading }) => (
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
-    totalUsers: 0,
+    totalUsers: 0,    
     totalWithdrawals: 0,
     totalRevenue: 0,
     pendingActivations: 0,
@@ -67,7 +67,7 @@ export default function AdminDashboard() {
         <StatCard
           title="Total Users"
           value={stats.totalUsers.toLocaleString()}
-          icon="👥"
+          icon="👥"\
           color="#3b82f6"
           loading={loading}
         />

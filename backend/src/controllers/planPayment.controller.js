@@ -235,9 +235,25 @@ exports.confirmPlanPayment = async (req, res) => {
       user.welcome_bonus_received = true;
     }
 
-    // Check if all 4 plans are paid
-    const allPaid = PLAN_ORDER.every(p => user.plans_paid[p] === true);
+    // Check if all 4 plans are paid (only REGULAR, VIP, VVIP - welcome bonus is separate)
+    const planPaymentTypes = ["REGULAR", "VIP", "VVIP"];
+    const allPaid = planPaymentTypes.every(p => user.plans_paid[p] === true);
     user.all_plans_completed = allPaid;
+
+    // Calculate remaining unpaid plans
+    const allPlans = PLAN_ORDER;
+    const remainingPlans = allPlans.filter(p => user.plans_paid[p] !== true);
+
+    // Determine redirect target
+    let redirectTo;
+    if (allPaid) {
+      redirectTo = "/withdraw";
+    } else if (remainingPlans.length > 0) {
+      const nextPlanKey = remainingPlans[0];
+      redirectTo = nextPlanKey === "WELCOME_BONUS" ? "/activate?welcome_bonus=true" : `/activate?plan=${nextPlanKey.toLowerCase()}`;
+    } else {
+      redirectTo = "/dashboard";
+    }
 
     // Clear pending payment info
     user.last_payment_reference = null;
@@ -249,6 +265,7 @@ exports.confirmPlanPayment = async (req, res) => {
     console.log(`✅ Plan payment confirmed - ${planKey} for user ${user.full_name}`);
     console.log(`💰 Added KES ${earnings} - Old: ${oldBalance}, New: ${user.total_earned}`);
     console.log(`📋 All plans completed: ${allPaid}`);
+    console.log(`➡️ Redirect to: ${redirectTo}`);
 
     // Create notification
     try {
@@ -271,10 +288,17 @@ exports.confirmPlanPayment = async (req, res) => {
       { expiresIn: "7d" }
     );
 
+    // Format plan label for message
+    const planLabel = planKey === "WELCOME_BONUS" ? "Welcome Bonus" : planKey;
+    const remainingLabels = remainingPlans.map(p => p === "WELCOME_BONUS" ? "Welcome Bonus" : p);
+
     return res.status(200).json({
       success: true,
-      message: `${planKey.replace(/_/g, ' ')} plan paid successfully!`,
-      plan: planKey,
+      message: `You have successfully paid for ${planLabel} Plan!`,
+      plan_paid: planKey,
+      remaining_plans: remainingLabels,
+      redirect_to: redirectTo,
+      all_plans_completed: allPaid,
       token,
       user: {
         id: user._id,
