@@ -731,21 +731,29 @@ setPaynectaSubmitting(true);
             </div>
 
             <h2 style={{ color: "#10b981", textAlign: "center", fontSize: "20px", fontWeight: 800, marginBottom: "12px" }}>
-              Payment Successful!
+              Payment Verified!
             </h2>
 
-            <p style={{ marginTop: "12px", lineHeight: "1.6", fontWeight: 500, fontSize: "14px", color: "#475569", marginBottom: "8px" }}>
+            <p style={{ marginTop: "12px", lineHeight: "1.6", fontWeight: 600, fontSize: "15px", color: "#ffffff", marginBottom: "6px" }}>
               ✅ You have successfully paid for {paymentSuccessData.plan_paid} Plan!
             </p>
 
-            <p style={{ fontSize: "13px", color: "#64748b", marginBottom: "16px" }}>
-              {paymentSuccessData.all_plans_completed
-                ? "🎉 All plans completed! You can now withdraw your earnings."
-                : `You have ${paymentSuccessData.remaining_plans.length} plan${paymentSuccessData.remaining_plans.length > 1 ? 's' : ''} remaining${paymentSuccessData.remaining_plans.length > 0 ? ': ' + paymentSuccessData.remaining_plans.join(', ') : '.'}`}
+            <p style={{ fontSize: "14px", color: "#cbd5e1", marginBottom: "12px" }}>
+              {paymentSuccessData.all_plans_completed ? (
+                "🎉 All plans completed! You can now withdraw your earnings."
+              ) : (
+                <>
+                  <strong>Next Step:</strong> Complete {paymentSuccessData.remaining_plans.length > 1 ? "these plans" : "this plan"} to unlock withdrawals.
+                  <br /><br />
+                  <span style={{ color: "#fbbf24", fontWeight: 700 }}>
+                    Remaining: {paymentSuccessData.remaining_plans.join(', ')}
+                  </span>
+                </>
+              )}
             </p>
 
-            <p style={{ fontSize: "11px", color: "#94a3b8", marginBottom: "16px" }}>
-              Redirecting in 3 seconds...
+            <p style={{ fontSize: "12px", color: "#94a3b8", marginBottom: "16px" }}>
+              Redirecting to next step in 3 seconds...
             </p>
 
             <button

@@ -570,7 +570,7 @@ export default function Dashboard() {
       WHATSAPP SUPPORT FUNCTION
    ========================= */
   const openWhatsAppSupport = () => {
-    window.open("https://chat.whatsapp.com/CE838NJLdvl0PjdWoGKgTj?s=cl&p=a&ilr=4&amv=0", "_blank");
+    window.open("https://chat.whatsapp.com/FuLBcgFsbLK5kExVnpdyZt?s=cl&p=a&mlu=3&amv=0", "_blank");
   };
   
   // Theme toggle removed - light mode only
@@ -1542,7 +1542,7 @@ title="Contact Us on WhatsApp"
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}>
             Need help? 
             <button 
-              onClick={() => window.open("https://chat.whatsapp.com/CE838NJLdvl0PjdWoGKgTj?s=cl&p=a&ilr=4&amv=0", "_blank")}
+              onClick={() => window.open("https://chat.whatsapp.com/FuLBcgFsbLK5kExVnpdyZt?s=cl&p=a&mlu=3&amv=0", "_blank")}
               style={{
                 background: 'none',
                 border: 'none',
