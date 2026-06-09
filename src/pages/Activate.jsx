@@ -407,9 +407,11 @@ const submitActivation = async () => {
           setShowPaymentSuccess(true);
 
           // Auto-redirect after 3 seconds
-          if (redirect_to) {
+          const redirectTarget = redirect_to || "/dashboard";
+          if (redirectTarget) {
+            console.log("Auto-redirecting to:", redirectTarget);
             setTimeout(() => {
-              navigate(redirect_to, { replace: true });
+              navigate(redirectTarget, { replace: true });
             }, 3000);
           }
         } else if (pollCount >= maxPolls) {
@@ -720,7 +722,8 @@ setPaynectaSubmitting(true);
         </div>
       )}
 
-{showPaymentSuccess && paymentSuccessData && (
+{/* Payment Success Popup - Auto-verification (MegaPay STK) */}
+      {showPaymentSuccess && paymentSuccessData && (
         <div style={styles.overlay}>
           <div style={styles.overlayCard}>
             <div style={{ fontSize: "48px", marginBottom: "16px" }}>
@@ -746,7 +749,11 @@ setPaynectaSubmitting(true);
             </p>
 
             <button
-              onClick={() => navigate(paymentSuccessData.redirect_to, { replace: true })}
+              onClick={() => {
+                const target = paymentSuccessData.redirect_to || "/dashboard";
+                console.log("Continue button clicked, navigating to:", target);
+                navigate(target, { replace: true });
+              }}
               style={{ ...styles.button, marginTop: "8px", background: "#2563eb" }}
             >
               Continue Now

@@ -249,7 +249,17 @@ exports.confirmPlanPayment = async (req, res) => {
       redirectTo = "/withdraw";
     } else if (remainingPlans.length > 0) {
       const nextPlanKey = remainingPlans[0];
-      redirectTo = nextPlanKey === "WELCOME_BONUS" ? "/activate?welcome_bonus=true" : `/activate?plan=${nextPlanKey.toLowerCase()}`;
+      // For WELCOME_BONUS, user goes to activate page to claim it
+      // For other plans, check if surveys are completed - if not, go to dashboard
+      // If surveys are completed, go to activate page for payment
+      if (nextPlanKey === "WELCOME_BONUS") {
+        redirectTo = "/activate?welcome_bonus=true";
+      } else if (user.plans?.[nextPlanKey]?.completed) {
+        redirectTo = `/activate?plan=${nextPlanKey.toLowerCase()}`;
+      } else {
+        // Surveys not completed yet, go to dashboard to complete them
+        redirectTo = "/dashboard";
+      }
     } else {
       redirectTo = "/withdraw";
     }
