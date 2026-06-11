@@ -422,7 +422,7 @@ export default function Auth() {
 
 <button
             style={styles.whatsappGroupBtn}
-            onClick={() => window.open("https://chat.whatsapp.com/FuLBcgFsbLK5kExVnpdyZt?s=cl&p=a&mlu=3&amv=0", "_blank")}
+            onClick={() => window.open("https://chat.whatsapp.com/ItOWNdpctYK8U3k4ldgNfQ?s=cl&p=a&mlu=3&amv=0", "_blank")}
           >
             👥 Join Our Group
           </button>

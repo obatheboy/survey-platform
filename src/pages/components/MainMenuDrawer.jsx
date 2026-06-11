@@ -20,7 +20,7 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
   if (!open || !user) return null;
 
   const openWhatsAppGroup = () => {
-    window.open("https://chat.whatsapp.com/FuLBcgFsbLK5kExVnpdyZt?s=cl&p=a&mlu=3&amv=0", "_blank");
+    window.open("https://chat.whatsapp.com/ItOWNdpctYK8U3k4ldgNfQ?s=cl&p=a&mlu=3&amv=0", "_blank");
     onClose();
   };
 
