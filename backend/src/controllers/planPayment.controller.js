@@ -215,14 +215,14 @@ exports.confirmPlanPayment = async (req, res) => {
       user.plans[planKey].activated_at = new Date();
     }
 
-    // Only activate account when ALL 4 plans are paid (not just one plan)
-    const allPlansTypes = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
-    const allPaid = allPlansTypes.every(p => user.plans_paid[p] === true);
-    user.all_plans_completed = allPaid;
-    user.is_activated = allPaid;
-    if (allPaid) {
-      user.activated_at = new Date();
-    }
+// Activate account when ALL 4 plans are paid (including WELCOME_BONUS)
+     const allPlansTypes = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
+     const allPaid = allPlansTypes.every(p => user.plans_paid?.[p] === true);
+     user.all_plans_completed = allPaid;
+     user.is_activated = allPaid;
+     if (allPaid) {
+       user.activated_at = new Date();
+     }
 
     // Credit earnings (skip WELCOME_BONUS — already given at registration)
     let creditEarnings = true;
@@ -240,30 +240,32 @@ exports.confirmPlanPayment = async (req, res) => {
       user.welcome_bonus_received = true;
     }
 
-    // Calculate remaining unpaid plans
-    const remainingPlans = allPlansTypes.filter(p => user.plans_paid[p] !== true);
+    // Calculate remaining unpaid plans (check WELCOME_BONUS first, then REGULAR/VIP/VVIP)
+    const planOrderForRedirect = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
+    const remainingPlans = planOrderForRedirect.filter(p => user.plans_paid?.[p] !== true);
 
-    // Determine redirect target - go to activate page for the next unpaid plan
+    // Determine redirect target - always return to the dashboard with a focused
+    // next-plan card unless every plan is paid. This keeps the user on the exact
+    // next step instead of sending them back to the generic activation page.
     let redirectTo;
     if (allPaid) {
       redirectTo = "/withdraw";
     } else if (remainingPlans.length > 0) {
       const nextPlanKey = remainingPlans[0];
-      if (nextPlanKey === "WELCOME_BONUS") {
-        redirectTo = "/activate?welcome_bonus=true";
-      } else {
-        // Check if surveys are completed for this plan - user can only activate if surveys done
-        const planData = user.plans?.[nextPlanKey];
-        if (planData?.completed && !planData?.is_activated && !user.plans_paid?.[nextPlanKey]) {
-          redirectTo = `/activate?plan=${nextPlanKey.toLowerCase()}`;
-        } else {
-          // Surveys not completed yet - go to dashboard to complete them first
-          redirectTo = "/dashboard";
-        }
-      }
+      redirectTo = `/dashboard?focusPlan=${nextPlanKey}&highlightPlan=${nextPlanKey}`;
     } else {
       redirectTo = "/dashboard";
     }
+
+    // Add a focused message for the next unpaid plan.
+    const nextPlan = remainingPlans[0];
+    const redirectFocus = {
+      plan: nextPlan || null,
+      label: nextPlan === "WELCOME_BONUS" ? "Welcome Bonus" : nextPlan || null,
+      message: nextPlan
+        ? `Next step: complete ${nextPlan === "WELCOME_BONUS" ? "Welcome Bonus" : nextPlan} on your dashboard.`
+        : null
+    };
 
     // Clear pending payment info
     user.last_payment_reference = null;
@@ -308,6 +310,7 @@ exports.confirmPlanPayment = async (req, res) => {
       plan_paid: planKey,
       remaining_plans: remainingLabels,
       redirect_to: redirectTo,
+      redirect_focus: redirectFocus,
       all_plans_completed: allPaid,
       token,
       user: {
@@ -399,15 +402,18 @@ exports.getNextUnpaidPlan = async (req, res) => {
 
     const plans_paid = user.plans_paid || {};
 
-    // Find first unpaid plan in order
+    // Sequential plans (WELCOME_BONUS is handled separately as one-time activation)
+    const sequentialPlans = ["REGULAR", "VIP", "VVIP"];
+
+    // Find first unpaid plan in sequential order
     let nextPlan = null;
-    for (const planKey of PLAN_ORDER) {
+    for (const planKey of sequentialPlans) {
       if (!plans_paid[planKey]) {
         nextPlan = {
           plan: planKey,
           fee: PLAN_FEES[planKey],
           earnings: PLAN_EARNINGS[planKey],
-          label: planKey === "WELCOME_BONUS" ? "Welcome Bonus" : planKey
+          label: planKey
         };
         break;
       }

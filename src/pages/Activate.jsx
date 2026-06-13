@@ -380,7 +380,7 @@ const submitActivation = async () => {
 
         if (confirmRes.data?.success) {
           clearInterval(pollInterval);
-          const { remaining_plans, redirect_to, plan_paid, all_plans_completed, token, user: userData } = confirmRes.data;
+          const { remaining_plans, redirect_to, plan_paid, all_plans_completed, token, user: userData, redirect_focus } = confirmRes.data;
 
           // Update token and user state
           if (token) localStorage.setItem("token", token);
@@ -401,6 +401,7 @@ const submitActivation = async () => {
             plan_paid: planLabel,
             remaining_plans: remaining_plans || [],
             redirect_to: redirect_to,
+            redirect_focus: redirect_focus || null,
             all_plans_completed: all_plans_completed || false,
             remaining_label: remainingLabel
           });

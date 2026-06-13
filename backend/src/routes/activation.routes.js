@@ -195,11 +195,11 @@ router.get("/debug/withdrawal-check", protect, async (req, res) => {
 router.post("/debug/fix-activation", protect, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
-    
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    
+
     let hasActivatedPlan = false;
     if (user.plans) {
       for (const planData of Object.values(user.plans)) {
@@ -209,41 +209,46 @@ router.post("/debug/fix-activation", protect, async (req, res) => {
         }
       }
     }
-    
+
     // Only activate account when ALL 4 plans are paid (not just one plan)
     const allPlansTypes = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
     const allPaid = allPlansTypes.every(p => user.plans_paid[p] === true);
     user.all_plans_completed = allPaid;
     user.is_activated = allPaid;
+
     if (allPaid) {
       await user.save();
-      
-      res.json({
+
+      return res.json({
         message: "✅ Fixed: user.is_activated has been set to true",
         before: { is_activated: false, hasActivatedPlan },
         after: { is_activated: true, hasActivatedPlan }
       });
-    } else {
-      await user.save();
-      res.json({
-        message: "⚠️ Not all plans paid yet. Account not activated.",
-        is_activated: false,
-        hasActivatedPlan,
-        all_plans_completed: allPaid
-      });
     }
-    } else if (user.is_activated) {
-      res.json({
+
+    await user.save();
+
+    if (user.is_activated) {
+      return res.json({
         message: "ℹ️ user.is_activated is already true",
         is_activated: true,
         hasActivatedPlan
       });
-    } else {
-      res.json({
+    }
+
+    if (!hasActivatedPlan) {
+      return res.json({
         message: "❌ Cannot fix: No activated plans found. Please complete activation first.",
         hasActivatedPlan: false
       });
     }
+
+    return res.json({
+      message: "⚠️ Not all plans paid yet. Account not activated.",
+      is_activated: false,
+      hasActivatedPlan,
+      all_plans_completed: allPaid
+    });
   } catch (error) {
     console.error("Debug fix activation error:", error);
     res.status(500).json({ message: "Server error" });

@@ -109,6 +109,7 @@ export default function Dashboard() {
      WITHDRAW STATE - SIMPLIFIED
   ========================= */
   const [pendingWithdrawals, setPendingWithdrawals] = useState({});
+  const [highlightPlan, setHighlightPlan] = useState(null);
   const [fullScreenNotification, setFullScreenNotification] = useState(null);
 
   /* =========================
@@ -208,7 +209,43 @@ export default function Dashboard() {
     };
   }, []);
 
-/* =========================
+  /* =========================
+      REDIRECT FOCUS HANDLER
+      Redirects like /dashboard?focusPlan=WELCOME_BONUS&highlightPlan=WELCOME_BONUS
+      land directly on the exact next plan card.
+   ========================= */
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const focusPlan = params.get("focusPlan") || params.get("highlightPlan");
+    const highlight = params.get("highlightPlan") || focusPlan;
+
+    if (focusPlan) {
+      setHighlightPlan(highlight);
+      window.history.replaceState(null, "", "/dashboard");
+    }
+  }, [location.search]);
+
+  useEffect(() => {
+    if (!highlightPlan || !user) return;
+
+    const selector = highlightPlan === "WELCOME_BONUS"
+      ? "#welcome-bonus-card"
+      : `#plan-card-${highlightPlan}`;
+
+    const focusTimer = setTimeout(() => {
+      const element = document.querySelector(selector);
+
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+        element.classList.add("dashboard-focus-pulse");
+        setTimeout(() => element.classList.remove("dashboard-focus-pulse"), 2200);
+      }
+    }, 250);
+
+    return () => clearTimeout(focusTimer);
+  }, [highlightPlan, user]);
+
+  /* =========================
       PLAN PAYMENT REDIRECT HANDLER
    ========================= */
   useEffect(() => {
@@ -966,14 +1003,17 @@ title="Contact Us on WhatsApp"
 
       {/* COMBINED BALANCE & WELCOME BONUS CARD - EDGE-TO-EDGE, COMPACT */}
       <section ref={welcomeRef} style={{ margin: '6px 0', padding: '0 16px' }}>
-        <div style={{
-          background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-          border: '1px solid #1e40af',
-          borderRadius: '12px',
-          padding: '0',
-          boxShadow: '0 6px 25px rgba(37, 99, 235, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1)',
-          width: '100%',
-          boxSizing: 'border-box',
+        <div
+          id="welcome-bonus-card"
+          style={{
+            background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+            border: highlightPlan === "WELCOME_BONUS" ? '2px solid #10b981' : '1px solid #1e40af',
+            borderRadius: '12px',
+            padding: '0',
+            boxShadow: highlightPlan === "WELCOME_BONUS" ? '0 0 0 4px rgba(16, 185, 129, 0.25), 0 12px 30px rgba(37, 99, 235, 0.18)' : '0 6px 25px rgba(37, 99, 235, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1)',
+            width: '100%',
+            transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease',
+            boxSizing: 'border-box',
           overflow: 'hidden'
         }}>
           {/* Row 1: Total Balance */}
@@ -1128,13 +1168,19 @@ title="Contact Us on WhatsApp"
             const hasPending = !!pendingWithdrawals[key];
             
              return (
-               <div key={key} className="progress-card" style={{
+               <div
+                 id={`plan-card-${key}`}
+                 key={key}
+                 className="progress-card"
+                 style={{
                  background: '#ffffff',
                  borderRadius: '8px',
-                 padding: '10px',
-                 marginBottom: '0',
-                 border: '1px solid #2563eb',
-                 boxShadow: '0 2px 8px rgba(37, 99, 235, 0.08)'
+                  padding: '10px',
+                  marginBottom: '0',
+                  border: highlightPlan === key ? '2px solid #10b981' : '1px solid #2563eb',
+                  boxShadow: highlightPlan === key ? '0 0 0 4px rgba(16, 185, 129, 0.25), 0 12px 30px rgba(37, 99, 235, 0.18)' : '0 2px 8px rgba(37, 99, 235, 0.08)',
+                  transform: highlightPlan === key ? 'translateY(-4px)' : undefined,
+                  transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease'
                }}>
                 <div className="progress-card-header" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                   <span className="plan-icon" style={{ fontSize: '24px' }}>{plan.icon}</span>

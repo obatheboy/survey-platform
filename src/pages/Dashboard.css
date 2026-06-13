@@ -10,6 +10,19 @@
   overflow-x: hidden;
 }
 
+.dashboard-focus-pulse {
+  animation: dashboard-focus-pulse 2.2s ease-in-out 3;
+}
+
+@keyframes dashboard-focus-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.25), 0 12px 30px rgba(37, 99, 235, 0.18);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0.45), 0 18px 40px rgba(37, 99, 235, 0.25);
+  }
+}
+
 /* Mobile optimizations */
 @media (max-width: 768px) {
   .dashboard {

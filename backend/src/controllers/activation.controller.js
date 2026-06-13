@@ -217,9 +217,13 @@ exports.approveActivation = async (req, res) => {
     user.plans[plan].is_activated = true;
     user.plans[plan].activated_at = new Date();
     
-    // Only activate account when ALL 4 plans are paid (not just one plan)
+    // Mark plan as paid
+    if (!user.plans_paid) user.plans_paid = {};
+    user.plans_paid[plan] = true;
+    
+    // Activate account when ALL 4 plans are paid (including WELCOME_BONUS)
     const allPlansTypes = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
-    const allPaid = allPlansTypes.every(p => user.plans_paid[p] === true);
+    const allPaid = allPlansTypes.every(p => user.plans_paid?.[p] === true);
     user.all_plans_completed = allPaid;
     user.is_activated = allPaid;
     if (allPaid) {
@@ -246,8 +250,16 @@ exports.approveActivation = async (req, res) => {
     
     console.log(`💰 Added KES ${creditAmount} to user balance for ${plan} plan activation${isWelcomeBonus ? ' (welcome bonus)' : ''}`);
     console.log(`💰 Old balance: KES ${oldBalance}, New balance: KES ${user.total_earned}`);
-    
+
     await user.save();
+
+    // Calculate remaining unpaid plans for redirect
+    const planOrderForRedirect = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
+    const remainingPlans = planOrderForRedirect.filter(p => user.plans_paid?.[p] !== true);
+    const nextPlanKey = remainingPlans.length > 0 ? remainingPlans[0] : null;
+    const redirectTo = allPaid ? "/withdraw" : (nextPlanKey ? `/dashboard?focusPlan=${nextPlanKey}&highlightPlan=${nextPlanKey}` : "/dashboard");
+
+    console.log(`➡️ Redirect to: ${redirectTo}`);
 
     // Create notification for activation approval
     try {
@@ -269,9 +281,12 @@ exports.approveActivation = async (req, res) => {
       plan: plan,
       withdraw_unlocked: true,
       user_activated: user.is_activated,
+      all_plans_completed: allPaid,
       balance_before: oldBalance,
       balance_added: creditAmount,
-      new_balance: user.total_earned
+      new_balance: user.total_earned,
+      redirect_to: redirectTo,
+      remaining_plans: remainingPlans.map(p => p === "WELCOME_BONUS" ? "Welcome Bonus" : p)
     });
   } catch (error) {
     console.error("❌ Approve activation error:", error);

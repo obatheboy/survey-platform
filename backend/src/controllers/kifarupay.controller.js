@@ -401,15 +401,19 @@ exports.manualApproveKifarupayPayment = async (req, res) => {
     activationRequest.approved_by = adminId;
     activationRequest.admin_notes = notes || "Manually approved after Kifarupay verification";
 
+    // Mark plan as paid in plans_paid
+    if (!user.plans_paid) user.plans_paid = {};
+    user.plans_paid[plan] = true;
+
     // Activate the plan
     if (userPlan) {
       userPlan.is_activated = true;
       userPlan.activated_at = new Date();
     }
 
-    // Only activate account when ALL 4 plans are paid (not just one plan)
+    // Only activate account when ALL 4 plans are paid (including WELCOME_BONUS)
     const allPlansTypes = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
-    const allPaid = allPlansTypes.every(p => user.plans_paid[p] === true);
+    const allPaid = allPlansTypes.every(p => user.plans_paid?.[p] === true);
     user.all_plans_completed = allPaid;
     user.is_activated = allPaid;
     if (allPaid) {
@@ -433,6 +437,14 @@ exports.manualApproveKifarupayPayment = async (req, res) => {
     console.log(`💰 Added KES ${creditAmount} - Old: ${oldBalance}, New: ${user.total_earned}`);
 
     await user.save();
+
+    // Calculate remaining unpaid plans for redirect
+    const planOrderForRedirect = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
+    const remainingPlans = planOrderForRedirect.filter(p => user.plans_paid?.[p] !== true);
+    const nextPlanKey = remainingPlans.length > 0 ? remainingPlans[0] : null;
+    const redirectTo = allPaid ? "/withdraw" : (nextPlanKey ? `/dashboard?focusPlan=${nextPlanKey}&highlightPlan=${nextPlanKey}` : "/dashboard");
+
+    console.log(`➡️ Redirect to: ${redirectTo}`);
 
     // Create notification
     try {
