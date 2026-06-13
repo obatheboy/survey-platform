@@ -30,6 +30,11 @@ export default function Withdraw() {
           return;
         }
 
+        if (!u.all_plans_completed) {
+          navigate("/dashboard", { replace: true });
+          return;
+        }
+
         if (u.surveys_completed < TOTAL_SURVEYS) {
           navigate("/dashboard", { replace: true });
           return;

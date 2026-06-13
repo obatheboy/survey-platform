@@ -62,6 +62,7 @@ export default function WithdrawForm() {
   const [showActivationModal, setShowActivationModal] = useState(false);
   const [selectedPlanForActivation, setSelectedPlanForActivation] = useState(null);
   const [isUserActivated, setIsUserActivated] = useState(false);
+  const [allPlansCompleted, setAllPlansCompleted] = useState(false);
   const [userPlans, setUserPlans] = useState({});
   const [affiliateBalance, setAffiliateBalance] = useState(0);
 
@@ -83,24 +84,11 @@ export default function WithdrawForm() {
         const res = await api.get(`/auth/me?_t=${Date.now()}`);
         const userData = res.data;
         
-        // Check user activation status
+// Check user activation status
         const activated = userData?.is_activated || userData?.account_activated || false;
+        const allPlansPaid = userData?.all_plans_completed === true;
         setIsUserActivated(activated);
-        
-        // Store user plans to check individual plan activation
-        setUserPlans(userData.plans || {});
-        
-        // Store affiliate balance for affiliate withdrawals
-        setAffiliateBalance(userData.referral_commission_earned || 0);
-        
-        // Update cache
-        localStorage.setItem("cachedUser", JSON.stringify(userData));
-      } catch (err) {
-        console.error("Failed to load user:", err);
-        navigate("/login");
-      } finally {
-        setLoading(false);
-      }
+        setAllPlansCompleted(allPlansPaid);
     };
 
     loadUser();
@@ -130,6 +118,12 @@ export default function WithdrawForm() {
       // Show activation modal
       setSelectedPlanForActivation(planKey);
       setShowActivationModal(true);
+      return;
+    }
+    
+    // Check if all plans are completed
+    if (!allPlansCompleted && !isAffiliateWithdraw) {
+      alert("Complete all plans (Welcome Bonus, Regular, VIP, VVIP) to unlock withdrawals");
       return;
     }
     
@@ -424,6 +418,16 @@ export default function WithdrawForm() {
               </div>
             )}
             
+            {!isAffiliateWithdraw && isUserActivated && !allPlansCompleted && (
+              <div className="activation-notice">
+                <div className="notice-icon">⏳</div>
+                <div className="notice-content">
+                  <strong>COMPLETE ALL PLANS</strong>
+                  <p>Please complete all plans (Welcome Bonus, Regular, VIP, VVIP) to unlock withdrawals.</p>
+                </div>
+              </div>
+            )}
+            
             <div className="plan-selection-cards">
               {Object.entries(PLANS).map(([key, planData]) => {
                 // Skip affiliate in plan selection - it's handled separately
@@ -439,8 +443,8 @@ export default function WithdrawForm() {
                     style={{
                       borderColor: planData.color,
                       background: `linear-gradient(135deg, ${planData.color}20, transparent)`,
-                      opacity: !isUserActivated ? 0.9 : 1,
-                      cursor: 'pointer'
+                      opacity: !isUserActivated || (!allPlansCompleted && !isAffiliateWithdraw) ? 0.9 : 1,
+                      cursor: isUserActivated && allPlansCompleted ? 'pointer' : 'not-allowed'
                     }}
                   >
                     <div className="plan-selection-header">
@@ -460,7 +464,7 @@ export default function WithdrawForm() {
                     </div>
                     
                     <p className="plan-description">
-                      {isActivated ? "Available for withdrawal" : "One-time activation required"}
+                      {!allPlansCompleted && !isAffiliateWithdraw ? "Complete all plans to unlock withdrawals" : isActivated ? "Available for withdrawal" : "One-time activation required"}
                     </p>
                     
                     {/* ===== FIXED: BOLD ONE-TIME ACTIVATION CAPTION WITH !important ===== */}
@@ -590,7 +594,7 @@ export default function WithdrawForm() {
                   min={isAffiliateWithdraw ? 50 : 100}
                   max={isAffiliateWithdraw ? affiliateBalance : PLANS[plan]?.total}
                   required
-                  disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && !isPlanActivated(plan))}
+                  disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && (!isPlanActivated(plan) || !allPlansCompleted))}
                 />
               </div>
               <div className="amount-helper">
@@ -599,7 +603,7 @@ export default function WithdrawForm() {
                   type="button" 
                   className="use-max-btn"
                   onClick={() => setAmount(isAffiliateWithdraw ? (affiliateBalance || 0).toString() : (PLANS[plan]?.total || 0).toString())}
-                  disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && !isPlanActivated(plan))}
+                  disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && (!isPlanActivated(plan) || !allPlansCompleted))}
                 >
                   Use Max
                 </button>
@@ -620,7 +624,7 @@ export default function WithdrawForm() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 required
-                disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && !isPlanActivated(plan))}
+                disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && (!isPlanActivated(plan) || !allPlansCompleted))}
               />
               <p className="input-helper">Enter your M-Pesa number (e.g., 0712345678 or 0112345678)</p>
             </div>
@@ -646,17 +650,22 @@ export default function WithdrawForm() {
               <button 
                 type="submit" 
                 className="submit-btn"
-                disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && !isPlanActivated(plan))}
+                disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && (!isPlanActivated(plan) || !allPlansCompleted))}
                 style={{ 
                   background: isAffiliateWithdraw ? 'linear-gradient(135deg, #8b5cf6, #6d28d9)' : PLANS[plan]?.gradient,
-                  opacity: (!isAffiliateWithdraw && !isPlanActivated(plan)) ? 0.6 : 1,
-                  cursor: (!isAffiliateWithdraw && !isPlanActivated(plan)) ? 'not-allowed' : 'pointer'
+                  opacity: (!isAffiliateWithdraw && (!isPlanActivated(plan) || !allPlansCompleted)) ? 0.6 : 1,
+                  cursor: (!isAffiliateWithdraw && (!isPlanActivated(plan) || !allPlansCompleted)) ? 'not-allowed' : 'pointer'
                 }}
               >
                 {(!isAffiliateWithdraw && !isPlanActivated(plan)) ? (
                   <>
                     <span className="btn-icon">🔒</span>
                     ACTIVATION REQUIRED
+                  </>
+                ) : (!isAffiliateWithdraw && !allPlansCompleted) ? (
+                  <>
+                    <span className="btn-icon">⏳</span>
+                    COMPLETE ALL PLANS FIRST
                   </>
                 ) : submitting ? (
                   <>
@@ -695,6 +704,11 @@ export default function WithdrawForm() {
                 {!isAffiliateWithdraw && !isPlanActivated(plan) && (
                   <span className="activation-required-text">
                     ⚠️ One-time activation required for this plan. Fee: KES {PLANS[plan]?.activationFee}
+                  </span>
+                )}
+                {!isAffiliateWithdraw && !allPlansCompleted && (
+                  <span className="activation-required-text">
+                    ⚠️ Complete all plans (Welcome Bonus, Regular, VIP, VVIP) to unlock withdrawals.
                   </span>
                 )}
               </p>

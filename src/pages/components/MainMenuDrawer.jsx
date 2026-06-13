@@ -122,7 +122,9 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
           <span>Surveys</span>
         </button>
         <MenuItem label="Affiliate" icon="affiliate" onClick={() => onNavigate('/affiliate')} />
-        <MenuItem label="Withdraw" icon="withdraw" onClick={() => onNavigate('/withdraw-form')} />
+        {user?.all_plans_completed && (
+          <MenuItem label="Withdraw" icon="withdraw" onClick={() => onNavigate('/withdraw-form')} />
+        )}
         <MenuItem label="Activate" icon="activate" onClick={() => { onClose(); navigate('/activate'); }} />
 
         <hr className="drawer-divider" />

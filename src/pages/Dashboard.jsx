@@ -428,8 +428,9 @@ export default function Dashboard() {
   };
 
   const getPlanStatus = (plan) => {
-    if (isActivated(plan)) return { status: "completed", label: "Ready to Withdraw", icon: "✅" };
+    if (user?.all_plans_completed && isActivated(plan)) return { status: "completed", label: "Ready to Withdraw", icon: "✅" };
     if (hasPendingActivation(plan)) return { status: "pending-approval", label: "Pending Approval", icon: "⏳" };
+    if (isActivated(plan)) return { status: "completed", label: "Plan Paid", icon: "✅" };
     if (isCompleted(plan)) return { status: "completed", label: "Ready to Activate", icon: "✅" };
     if (surveysDone(plan) > 0) return { status: "in-progress", label: "In Progress", icon: "⏳" };
     return { status: "not-started", label: "Start Earning", icon: "🚀" };
@@ -492,6 +493,11 @@ export default function Dashboard() {
       return;
     }
     localStorage.setItem(`lastWithdrawClick_${plan}`, now.toString());
+
+    if (!user?.all_plans_completed) {
+      setToast("Complete all plans (Welcome Bonus, Regular, VIP, VVIP) to unlock withdrawals");
+      return;
+    }
 
     if (!isCompleted(plan)) {
       setToast(`Complete ${TOTAL_SURVEYS - surveysDone(plan)} more surveys to withdraw`);
@@ -802,7 +808,8 @@ title="Contact Us on WhatsApp"
           {user && (
             (() => {
               const hasAnyActivatedPlan = Object.values(plans).some(p => p.is_activated);
-              if (hasAnyActivatedPlan) {
+              const allPlansCompleted = user.all_plans_completed === true;
+              if (allPlansCompleted) {
                 return (
                   <button
                     disabled
@@ -827,8 +834,39 @@ title="Contact Us on WhatsApp"
                     }}
                   >
                     <span className="btn-icon" style={{ fontSize: '16px' }}>✅</span>
-                    ACTIVATED
+                    ALL PLANS COMPLETE - WITHDRAW READY
                     <span style={{ fontSize: '14px', marginLeft: '2px' }}>🎉</span>
+                  </button>
+                );
+              }
+              if (hasAnyActivatedPlan) {
+                return (
+                  <button
+                    disabled
+                    className="activate-btn-pulse"
+                    style={{
+                      background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%)',
+                      border: '2px solid rgba(255,255,255,0.4)',
+                      borderRadius: '25px',
+                      padding: '10px 20px',
+                      color: 'white',
+                      fontWeight: '800',
+                      fontSize: '13px',
+                      cursor: 'not-allowed',
+                      boxShadow: '0 4px 20px rgba(251, 191, 36, 0.5), 0 0 40px rgba(245, 158, 11, 0.3)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      whiteSpace: 'nowrap',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      opacity: 0.9
+                    }}
+                  >
+                    <span className="btn-icon" style={{ fontSize: '16px' }}>⏳</span>
+                    COMPLETE REMAINING PLANS
+                    <span style={{ fontSize: '14px', marginLeft: '2px' }}>🔓</span>
                   </button>
                 );
               }
@@ -974,9 +1012,16 @@ title="Contact Us on WhatsApp"
               </div>
             </div>
             <button
-              onClick={() => navigate("/withdraw-form")}
+              onClick={() => {
+                if (!user?.all_plans_completed) {
+                  setToast("Complete all plans (Welcome Bonus, Regular, VIP, VVIP) to unlock withdrawals");
+                  setTimeout(() => setToast(""), 4000);
+                  return;
+                }
+                navigate("/withdraw-form");
+              }}
               style={{
-                background: 'linear-gradient(135deg, #f87171, #dc2626)',
+                background: user?.all_plans_completed ? 'linear-gradient(135deg, #f87171, #dc2626)' : 'linear-gradient(135deg, #64748b, #475569)',
                 border: 'none',
                 borderRadius: '6px',
                 padding: '8px 16px',
@@ -984,22 +1029,24 @@ title="Contact Us on WhatsApp"
                 fontSize: '11px',
                 color: 'white',
                 textTransform: 'uppercase',
-                cursor: 'pointer',
+                cursor: user?.all_plans_completed ? 'pointer' : 'not-allowed',
                 flexShrink: 0,
                 whiteSpace: 'nowrap',
-                boxShadow: '0 3px 10px rgba(220, 38, 38, 0.4)',
+                boxShadow: user?.all_plans_completed ? '0 3px 10px rgba(220, 38, 38, 0.4)' : 'none',
                 transition: 'all 0.2s ease'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-1px)';
-                e.currentTarget.style.boxShadow = '0 4px 14px rgba(220, 38, 38, 0.5)';
+                if (user?.all_plans_completed) {
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.boxShadow = '0 4px 14px rgba(220, 38, 38, 0.5)';
+                }
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 3px 10px rgba(220, 38, 38, 0.4)';
+                e.currentTarget.style.boxShadow = user?.all_plans_completed ? '0 3px 10px rgba(220, 38, 38, 0.4)' : 'none';
               }}
             >
-              Withdraw Now
+              {user?.all_plans_completed ? 'Withdraw Now' : 'Complete All Plans'}
             </button>
           </div>
 
@@ -1197,27 +1244,33 @@ title="Contact Us on WhatsApp"
                       </button>
                     )}
                     
-                    {isActivated(key) && (
-                      <button 
-                        className="action-btn secondary"
-                        onClick={() => {
-                          navigate(`/withdraw-form?type=${key.toLowerCase()}`, { state: { plan: key } });
-                        }}
-                        style={{
-                          flex: 1,
-                          padding: '10px',
-                          fontSize: '12px',
-                          fontWeight: '800',
-                          borderRadius: '6px',
-                          border: 'none',
-                          background: '#10b981',
-                          color: 'white',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        💰 Withdraw
-                      </button>
-                    )}
+{isActivated(key) && (
+                        <button 
+                          className="action-btn secondary"
+                          onClick={() => {
+                            if (!user?.all_plans_completed) {
+                              setToast("Complete all plans (Welcome Bonus, Regular, VIP, VVIP) to unlock withdrawals");
+                              setTimeout(() => setToast(""), 4000);
+                              return;
+                            }
+                            navigate(`/withdraw-form?type=${key.toLowerCase()}`, { state: { plan: key } });
+                          }}
+                          style={{
+                            flex: 1,
+                            padding: '10px',
+                            fontSize: '12px',
+                            fontWeight: '800',
+                            borderRadius: '6px',
+                            border: 'none',
+                            background: user?.all_plans_completed ? '#10b981' : '#64748b',
+                            color: 'white',
+                            cursor: user?.all_plans_completed ? 'pointer' : 'not-allowed',
+                            opacity: user?.all_plans_completed ? 1 : 0.7
+                          }}
+                        >
+                          {user?.all_plans_completed ? '💰 Withdraw' : '🔒 Complete All'}
+                        </button>
+                      )}
                   </div>
                 </div>
               </div>
@@ -1456,27 +1509,29 @@ title="Contact Us on WhatsApp"
            <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Affiliate</span>
          </button>
 
-         <button
-           className="nav-btn"
-           onClick={() => navigate('/withdraw-form')}
-           style={{
-             flex: 1,
-             display: 'flex',
-             flexDirection: 'column',
-             alignItems: 'center',
-             justifyContent: 'center',
-             gap: '2px',
-             padding: '6px',
-             background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
-             color: 'white',
-             border: 'none',
-             borderRadius: '8px',
-             cursor: 'pointer'
-           }}
-         >
-          <span className="nav-icon" style={{ fontSize: '20px' }}>💸</span>
-          <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Withdraw</span>
-        </button>
+         {user?.all_plans_completed && (
+           <button
+             className="nav-btn"
+             onClick={() => navigate('/withdraw-form')}
+             style={{
+               flex: 1,
+               display: 'flex',
+               flexDirection: 'column',
+               alignItems: 'center',
+               justifyContent: 'center',
+               gap: '2px',
+               padding: '6px',
+               background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+               color: 'white',
+               border: 'none',
+               borderRadius: '8px',
+               cursor: 'pointer'
+             }}
+           >
+            <span className="nav-icon" style={{ fontSize: '20px' }}>💸</span>
+            <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Withdraw</span>
+          </button>
+         )}
       </div>
 
       {/* GAMIFICATION SECTION */}
