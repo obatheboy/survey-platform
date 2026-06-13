@@ -220,12 +220,16 @@ exports.approveActivation = async (req, res) => {
     // Mark plan as paid
     if (!user.plans_paid) user.plans_paid = {};
     user.plans_paid[plan] = true;
-    
+
+    // Check if all plans are paid OR all plans are activated (manual activation)
     const allPlansTypes = ["REGULAR", "VIP", "VVIP"];
     const allPaid = allPlansTypes.every(p => user.plans_paid?.[p] === true);
+    const allManuallyActivated = allPlansTypes.every(p => user.plans?.[p]?.is_activated === true);
+    const shouldActivate = allPaid || allManuallyActivated;
+    
     user.all_plans_completed = allPaid;
-    user.is_activated = allPaid;
-    if (allPaid) {
+    user.is_activated = shouldActivate;
+    if (shouldActivate && !user.activated_at) {
       user.activated_at = new Date();
       user.activated_by = plan;
     }
@@ -254,9 +258,9 @@ exports.approveActivation = async (req, res) => {
 
     // Calculate remaining unpaid plans for redirect
     const planOrderForRedirect = ["REGULAR", "VIP", "VVIP"];
-    const remainingPlans = planOrderForRedirect.filter(p => user.plans_paid?.[p] !== true);
+    const remainingPlans = planOrderForRedirect.filter(p => user.plans_paid?.[p] !== true && !user.plans?.[p]?.is_activated);
     const nextPlanKey = remainingPlans.length > 0 ? remainingPlans[0] : null;
-    const redirectTo = allPaid ? "/withdraw" : (nextPlanKey ? `/dashboard?focusPlan=${nextPlanKey}&highlightPlan=${nextPlanKey}` : "/dashboard");
+    const redirectTo = shouldActivate ? "/withdraw" : (nextPlanKey ? `/dashboard?focusPlan=${nextPlanKey}&highlightPlan=${nextPlanKey}` : "/dashboard");
 
     console.log(`➡️ Redirect to: ${redirectTo}`);
 

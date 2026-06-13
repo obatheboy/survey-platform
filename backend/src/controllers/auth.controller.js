@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const { syncActivationStatus } = require("../utils/activationStatus");
 const Notification = require("../models/Notification"); // ✅ ADDED: Import Notification model
 const { registerWithReferral, awardReferralCommission } = require("./affiliate.controller");
 
@@ -196,6 +197,11 @@ exports.getMe = async (req, res) => {
     // ✅ CHANGED: MongoDB findById instead of pool.query
     const user = await User.findById(req.user.id);
     if (!user) return res.status(401).json({ message: "Invalid session" });
+
+    const { changed } = syncActivationStatus(user);
+    if (changed) {
+      await user.save();
+    }
 
     // Calculate active plan and totals from plans structure
     let activePlan = null;

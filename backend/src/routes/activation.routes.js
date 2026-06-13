@@ -149,39 +149,40 @@ router.get("/debug/withdrawal-check", protect, async (req, res) => {
       }
     }
     
-    const checks = {
-      is_activated: user.is_activated === true,
-      hasActivatedPlan: plansActivated.length > 0,
-      hasCompletedSurveys: totalSurveysCompleted >= 10,
-      is_activated_matches_plans: user.is_activated === (plansActivated.length > 0),
-      hasPendingActivation: user.activation_requests?.some(req => req.status === 'SUBMITTED') || false,
-      all_plans_paid: user.all_plans_completed === true
-    };
-    
-    let failureReason = null;
-    if (!checks.hasActivatedPlan) {
-      failureReason = "No plan has been activated yet";
-    } else if (!checks.hasCompletedSurveys) {
-      failureReason = `Insufficient surveys completed: ${totalSurveysCompleted}/10`;
-    } else if (!checks.all_plans_paid) {
-      failureReason = "Not all plans have been paid yet";
-    }
-    
-    res.json({
-      timestamp: new Date().toISOString(),
-      totals: {
-        totalSurveysCompleted,
-        surveysNeeded: 10,
-        surveysRemaining: Math.max(0, 10 - totalSurveysCompleted),
-        plansActivated,
-        plansCompleted
-      },
-      withdrawal_check: {
-        can_withdraw: checks.all_plans_paid && checks.hasActivatedPlan && checks.hasCompletedSurveys && user.is_activated === true,
-        checks: checks,
-        failure_reason: failureReason
-      }
-    });
+const checks = {
+       is_activated: user.is_activated === true,
+       hasActivatedPlan: plansActivated.length > 0,
+       hasCompletedSurveys: totalSurveysCompleted >= 10,
+       is_activated_matches_plans: user.is_activated === (plansActivated.length > 0),
+       hasPendingActivation: user.activation_requests?.some(req => req.status === 'SUBMITTED') || false,
+       all_plans_paid: user.all_plans_completed === true,
+       all_plans_manually_activated: ["REGULAR", "VIP", "VVIP"].every(p => user.plans?.[p]?.is_activated === true)
+     };
+     
+     let failureReason = null;
+     if (!checks.hasActivatedPlan) {
+       failureReason = "No plan has been activated yet";
+     } else if (!checks.hasCompletedSurveys) {
+       failureReason = `Insufficient surveys completed: ${totalSurveysCompleted}/10`;
+     } else if (!checks.all_plans_paid && !checks.all_plans_manually_activated) {
+       failureReason = "Not all plans have been paid or manually activated yet";
+     }
+     
+     res.json({
+       timestamp: new Date().toISOString(),
+       totals: {
+         totalSurveysCompleted,
+         surveysNeeded: 10,
+         surveysRemaining: Math.max(0, 10 - totalSurveysCompleted),
+         plansActivated,
+         plansCompleted
+       },
+       withdrawal_check: {
+         can_withdraw: (checks.all_plans_paid || checks.all_plans_manually_activated) && checks.hasActivatedPlan && checks.hasCompletedSurveys && user.is_activated === true,
+         checks: checks,
+         failure_reason: failureReason
+       }
+     });
   } catch (error) {
     console.error("Debug withdrawal check error:", error);
     res.status(500).json({ message: "Server error" });
@@ -189,69 +190,60 @@ router.get("/debug/withdrawal-check", protect, async (req, res) => {
 });
 
 /**
- * POST /api/activation/debug/fix-activation
- * DEBUG - Fix user.is_activated for testing
- */
-router.post("/debug/fix-activation", protect, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
+  * POST /api/activation/debug/fix-activation
+  * DEBUG - Fix user.is_activated for testing
+  */
+ router.post("/debug/fix-activation", protect, async (req, res) => {
+   try {
+     const user = await User.findById(req.user.id);
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+     if (!user) {
+       return res.status(404).json({ message: "User not found" });
+     }
 
-    let hasActivatedPlan = false;
-    if (user.plans) {
-      for (const planData of Object.values(user.plans)) {
-        if (planData && planData.is_activated) {
-          hasActivatedPlan = true;
-          break;
-        }
-      }
-    }
+     let hasActivatedPlan = false;
+     if (user.plans) {
+       for (const planData of Object.values(user.plans)) {
+         if (planData && planData.is_activated) {
+           hasActivatedPlan = true;
+           break;
+         }
+       }
+     }
 
-    const allPlansTypes = ["REGULAR", "VIP", "VVIP"];
-    const allPaid = allPlansTypes.every(p => user.plans_paid[p] === true);
-    user.all_plans_completed = allPaid;
-    user.is_activated = allPaid;
+     const allPlansTypes = ["REGULAR", "VIP", "VVIP"];
+     const allPaid = allPlansTypes.every(p => user.plans_paid?.[p] === true);
+     const allManuallyActivated = allPlansTypes.every(p => user.plans?.[p]?.is_activated === true);
+     const shouldActivate = allPaid || allManuallyActivated;
+     
+     user.all_plans_completed = allPaid;
+     user.is_activated = shouldActivate;
 
-    if (allPaid) {
-      await user.save();
+     if (user.is_activated) {
+       return res.json({
+         message: "✅ Fixed: user.is_activated has been set to true",
+         before: { is_activated: false, hasActivatedPlan },
+         after: { is_activated: true, hasActivatedPlan }
+       });
+     }
 
-      return res.json({
-        message: "✅ Fixed: user.is_activated has been set to true",
-        before: { is_activated: false, hasActivatedPlan },
-        after: { is_activated: true, hasActivatedPlan }
-      });
-    }
+     if (!hasActivatedPlan) {
+       return res.json({
+         message: "❌ Cannot fix: No activated plans found. Please complete activation first.",
+         hasActivatedPlan: false
+       });
+     }
 
-    await user.save();
+     return res.json({
+       message: "⚠️ Not all plans paid/activated yet. Account not activated.",
+       is_activated: false,
+       hasActivatedPlan,
+       all_plans_completed: allPaid
+     });
+   } catch (error) {
+     console.error("Debug fix activation error:", error);
+     res.status(500).json({ message: "Server error" });
+   }
+ });
 
-    if (user.is_activated) {
-      return res.json({
-        message: "ℹ️ user.is_activated is already true",
-        is_activated: true,
-        hasActivatedPlan
-      });
-    }
-
-    if (!hasActivatedPlan) {
-      return res.json({
-        message: "❌ Cannot fix: No activated plans found. Please complete activation first.",
-        hasActivatedPlan: false
-      });
-    }
-
-    return res.json({
-      message: "⚠️ Not all plans paid yet. Account not activated.",
-      is_activated: false,
-      hasActivatedPlan,
-      all_plans_completed: allPaid
-    });
-  } catch (error) {
-    console.error("Debug fix activation error:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-module.exports = router;
+ module.exports = router;

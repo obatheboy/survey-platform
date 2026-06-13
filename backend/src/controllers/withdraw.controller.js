@@ -85,14 +85,16 @@ exports.requestWithdraw = async (req, res) => {
     console.log("User all_plans_completed:", user.all_plans_completed);
     console.log("User plans_paid:", user.plans_paid);
     
-    // Only allow withdrawals when REGULAR, VIP, and VVIP plans are paid
+    // Only allow withdrawals when REGULAR, VIP, and VVIP plans are paid OR all manually activated
     const allPlansTypes = ["REGULAR", "VIP", "VVIP"];
-    const allPlansPaid = allPlansTypes.every(p => user.plans_paid[p] === true);
-    if (!allPlansPaid && type !== "affiliate") {
-      console.log("❌ Not all plans paid yet");
+    const allPlansPaid = allPlansTypes.every(p => user.plans_paid?.[p] === true);
+    const allPlansManuallyActivated = allPlansTypes.every(p => user.plans?.[p]?.is_activated === true);
+    const canWithdraw = allPlansPaid || allPlansManuallyActivated;
+    if (!canWithdraw && type !== "affiliate") {
+      console.log("❌ Not all plans paid or activated yet:", { allPlansPaid, allPlansManuallyActivated });
       return res.status(403).json({
         message: "⚠️ Please complete REGULAR, VIP, and VVIP plans before withdrawing.",
-        all_plans_completed: false,
+        all_plans_completed: allPlansPaid,
         plans_paid: user.plans_paid || {}
       });
     }
@@ -154,7 +156,7 @@ exports.requestWithdraw = async (req, res) => {
         req => req.type === 'welcome_bonus' && req.status === 'REJECTED'
       );
       
-      if (user.welcome_bonus_withdrawn && !previousRejected) {
+if (user.welcome_bonus_withdrawn && !previousRejected) {
         console.log("❌ Welcome bonus already withdrawn");
         return res.status(400).json({ message: "Welcome bonus already withdrawn" });
       }
@@ -170,11 +172,16 @@ exports.requestWithdraw = async (req, res) => {
         });
       }
 
-      if (!allPlansPaid) {
-        console.log("❌ Not all plans paid yet for welcome bonus withdrawal");
+      // Check if all plans are paid OR all plans are activated (manual activation)
+      const allPlansTypes = ["REGULAR", "VIP", "VVIP"];
+      const allPlansPaid = allPlansTypes.every(p => user.plans_paid?.[p] === true);
+      const allPlansManuallyActivated = allPlansTypes.every(p => user.plans?.[p]?.is_activated === true);
+      
+      if (!allPlansPaid && !allPlansManuallyActivated) {
+        console.log("❌ Not all plans paid/activated yet for welcome bonus withdrawal");
         return res.status(403).json({
           message: "⚠️ Please complete REGULAR, VIP, and VVIP plans before withdrawing.",
-          all_plans_completed: false,
+          all_plans_completed: allPlansPaid,
           plans_paid: user.plans_paid || {}
         });
       }

@@ -2,6 +2,7 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const megaPayService = require("../services/megapay.service");
 const Notification = require("../models/Notification");
+const { ACTIVATION_PLANS, syncActivationStatus } = require("../utils/activationStatus");
 
 const PLAN_FEES = {
   WELCOME_BONUS: 100,
@@ -17,7 +18,6 @@ const PLAN_EARNINGS = {
   WELCOME_BONUS: 1200,
 };
 
-const ACTIVATION_PLANS = ["REGULAR", "VIP", "VVIP"];
 const PLAN_STATUS_ORDER = ["WELCOME_BONUS", ...ACTIVATION_PLANS];
 
 /* =====================================
@@ -178,12 +178,21 @@ exports.confirmPlanPayment = async (req, res) => {
     // Check if already paid
     const isAlreadyPaid = user.plans_paid?.[planKey];
     if (isAlreadyPaid) {
+      syncActivationStatus(user);
+      await user.save();
+
       return res.status(200).json({
         success: true,
         message: `${planKey} plan already paid.`,
         already_paid: true,
         all_plans_completed: user.all_plans_completed || false,
-        plans_paid: user.plans_paid || {}
+        plans_paid: user.plans_paid || {},
+        user: {
+          id: user._id,
+          is_activated: user.is_activated,
+          all_plans_completed: user.all_plans_completed || false,
+          plans_paid: user.plans_paid || {}
+        }
       });
     }
 
@@ -216,13 +225,10 @@ exports.confirmPlanPayment = async (req, res) => {
       user.plans[planKey].activated_at = new Date();
     }
 
-     const allPlansTypes = ACTIVATION_PLANS;
-     const allPaid = allPlansTypes.every(p => user.plans_paid?.[p] === true);
-     user.all_plans_completed = allPaid;
-     user.is_activated = allPaid;
-     if (allPaid) {
-       user.activated_at = new Date();
-     }
+    syncActivationStatus(user);
+    await user.save();
+
+    const allPaid = user.all_plans_completed === true;
 
     // Credit earnings (skip WELCOME_BONUS — already given at registration)
     let creditEarnings = true;
@@ -240,9 +246,11 @@ exports.confirmPlanPayment = async (req, res) => {
       user.welcome_bonus_received = true;
     }
 
-    // Calculate remaining unpaid activation plans.
+// Calculate remaining unpaid activation plans (consider both paid and manually activated)
     const planOrderForRedirect = ACTIVATION_PLANS;
-    const remainingPlans = planOrderForRedirect.filter(p => user.plans_paid?.[p] !== true);
+    const remainingPlans = planOrderForRedirect.filter(p => 
+      user.plans_paid?.[p] !== true && !user.plans?.[p]?.is_activated
+    );
 
     // Determine redirect target - always return to the dashboard with a focused
     // next-plan card unless every plan is paid. This keeps the user on the exact
@@ -350,6 +358,7 @@ exports.getPlanPaymentStatus = async (req, res) => {
     }
 
     const plans_paid = user.plans_paid || {};
+    syncActivationStatus(user);
 
     const plansStatus = PLAN_STATUS_ORDER.map(planKey => {
       const isPaid = plans_paid[planKey] === true;
@@ -401,6 +410,7 @@ exports.getNextUnpaidPlan = async (req, res) => {
     }
 
     const plans_paid = user.plans_paid || {};
+    syncActivationStatus(user);
 
     // Sequential plans (WELCOME_BONUS is handled separately as one-time activation)
     const sequentialPlans = ACTIVATION_PLANS;

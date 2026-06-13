@@ -373,7 +373,7 @@ exports.approveActivation = async (req, res) => {
       });
     }
 
-    if (userPlan.is_activated) {
+if (userPlan.is_activated) {
       await session.abortTransaction();
       return res.status(400).json({
         success: false,
@@ -389,11 +389,19 @@ exports.approveActivation = async (req, res) => {
     user.plans[plan].is_activated = true;
     user.plans[plan].activated_at = new Date();
     
+    // Mark plan as paid
+    if (!user.plans_paid) user.plans_paid = {};
+    user.plans_paid[plan] = true;
+    
+    // Check if all plans are paid OR all plans are activated (manual activation)
     const allPlansTypes = ["REGULAR", "VIP", "VVIP"];
-    const allPaid = allPlansTypes.every(p => user.plans_paid[p] === true);
+    const allPaid = allPlansTypes.every(p => user.plans_paid?.[p] === true);
+    const allManuallyActivated = allPlansTypes.every(p => user.plans?.[p]?.is_activated === true);
+    const shouldActivate = allPaid || allManuallyActivated;
+    
     user.all_plans_completed = allPaid;
-    user.is_activated = allPaid;
-    if (allPaid) {
+    user.is_activated = shouldActivate;
+    if (shouldActivate && !user.activated_at) {
       user.activated_at = new Date();
     }
     
