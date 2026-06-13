@@ -532,7 +532,7 @@ export default function Dashboard() {
     localStorage.setItem(`lastWithdrawClick_${plan}`, now.toString());
 
     if (!user?.all_plans_completed) {
-      setToast("Complete all plans (Welcome Bonus, Regular, VIP, VVIP) to unlock withdrawals");
+      setToast("Complete REGULAR, VIP, and VVIP plans to unlock withdrawals");
       return;
     }
 
@@ -1054,7 +1054,7 @@ title="Contact Us on WhatsApp"
             <button
               onClick={() => {
                 if (!user?.all_plans_completed) {
-                  setToast("Complete all plans (Welcome Bonus, Regular, VIP, VVIP) to unlock withdrawals");
+                  setToast("Complete REGULAR, VIP, and VVIP plans to unlock withdrawals");
                   setTimeout(() => setToast(""), 4000);
                   return;
                 }
@@ -1295,7 +1295,7 @@ title="Contact Us on WhatsApp"
                           className="action-btn secondary"
                           onClick={() => {
                             if (!user?.all_plans_completed) {
-                              setToast("Complete all plans (Welcome Bonus, Regular, VIP, VVIP) to unlock withdrawals");
+                              setToast("Complete REGULAR, VIP, and VVIP plans to unlock withdrawals");
                               setTimeout(() => setToast(""), 4000);
                               return;
                             }

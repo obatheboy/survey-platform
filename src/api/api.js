@@ -238,7 +238,7 @@ export const paynectaApi = megapayApi;
 
 /* =====================================================
      💳 PROGRESSIVE PLAN PAYMENT API
-     - 4 plans: Welcome Bonus (KES 100), Regular (KES 100), VIP (KES 200), VVIP (KES 300)
+     - 3 activation plans: Regular (KES 100), VIP (KES 200), VVIP (KES 300)
      - Auto-verify via MegaPay polling
      - Sequential payment flow with next-plan linking
      ==================================================== */

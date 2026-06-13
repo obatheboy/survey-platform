@@ -85,13 +85,13 @@ exports.requestWithdraw = async (req, res) => {
     console.log("User all_plans_completed:", user.all_plans_completed);
     console.log("User plans_paid:", user.plans_paid);
     
-    // Only allow withdrawals when all 4 plans are paid
-    const allPlansTypes = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
+    // Only allow withdrawals when REGULAR, VIP, and VVIP plans are paid
+    const allPlansTypes = ["REGULAR", "VIP", "VVIP"];
     const allPlansPaid = allPlansTypes.every(p => user.plans_paid[p] === true);
     if (!allPlansPaid && type !== "affiliate") {
       console.log("❌ Not all plans paid yet");
       return res.status(403).json({
-        message: "⚠️ Please complete all plans (Welcome Bonus, Regular, VIP, VVIP) before withdrawing.",
+        message: "⚠️ Please complete REGULAR, VIP, and VVIP plans before withdrawing.",
         all_plans_completed: false,
         plans_paid: user.plans_paid || {}
       });
@@ -173,7 +173,7 @@ exports.requestWithdraw = async (req, res) => {
       if (!allPlansPaid) {
         console.log("❌ Not all plans paid yet for welcome bonus withdrawal");
         return res.status(403).json({
-          message: "⚠️ Please complete all plans (Welcome Bonus, Regular, VIP, VVIP) before withdrawing.",
+          message: "⚠️ Please complete REGULAR, VIP, and VVIP plans before withdrawing.",
           all_plans_completed: false,
           plans_paid: user.plans_paid || {}
         });

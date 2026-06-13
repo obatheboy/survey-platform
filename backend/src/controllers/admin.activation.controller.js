@@ -389,8 +389,7 @@ exports.approveActivation = async (req, res) => {
     user.plans[plan].is_activated = true;
     user.plans[plan].activated_at = new Date();
     
-    // Only activate account when ALL 4 plans are paid (not just one plan)
-    const allPlansTypes = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
+    const allPlansTypes = ["REGULAR", "VIP", "VVIP"];
     const allPaid = allPlansTypes.every(p => user.plans_paid[p] === true);
     user.all_plans_completed = allPaid;
     user.is_activated = allPaid;

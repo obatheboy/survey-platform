@@ -138,7 +138,7 @@ export default function WithdrawForm() {
     
     // Check if all plans are completed
     if (!allPlansCompleted && !isAffiliateWithdraw) {
-      alert("Complete all plans (Welcome Bonus, Regular, VIP, VVIP) to unlock withdrawals");
+      alert("Complete REGULAR, VIP, and VVIP plans to unlock withdrawals");
       return;
     }
     
@@ -190,7 +190,7 @@ export default function WithdrawForm() {
     }
     
     if (!isAffiliateWithdraw && !allPlansCompleted) {
-      setError("Complete all plans (Welcome Bonus, Regular, VIP, VVIP) to unlock withdrawals.");
+      setError("Complete REGULAR, VIP, and VVIP plans to unlock withdrawals.");
       return;
     }
     
@@ -443,7 +443,7 @@ export default function WithdrawForm() {
                 <div className="notice-icon">⏳</div>
                 <div className="notice-content">
                   <strong>COMPLETE ALL PLANS</strong>
-                  <p>Please complete all plans (Welcome Bonus, Regular, VIP, VVIP) to unlock withdrawals.</p>
+                  <p>Please complete REGULAR, VIP, and VVIP plans to unlock withdrawals.</p>
                 </div>
               </div>
             )}
@@ -484,7 +484,7 @@ export default function WithdrawForm() {
                     </div>
                     
                     <p className="plan-description">
-                      {!allPlansCompleted && !isAffiliateWithdraw ? "Complete all plans to unlock withdrawals" : isActivated ? "Available for withdrawal" : "One-time activation required"}
+                      {!allPlansCompleted && !isAffiliateWithdraw ? "Complete REGULAR, VIP, and VVIP plans to unlock withdrawals" : isActivated ? "Available for withdrawal" : "One-time activation required"}
                     </p>
                     
                     {/* ===== FIXED: BOLD ONE-TIME ACTIVATION CAPTION WITH !important ===== */}
@@ -728,7 +728,7 @@ export default function WithdrawForm() {
                 )}
                 {!isAffiliateWithdraw && !allPlansCompleted && (
                   <span className="activation-required-text">
-                    ⚠️ Complete all plans (Welcome Bonus, Regular, VIP, VVIP) to unlock withdrawals.
+                    ⚠️ Complete REGULAR, VIP, and VVIP plans to unlock withdrawals.
                   </span>
                 )}
               </p>

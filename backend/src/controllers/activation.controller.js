@@ -221,8 +221,7 @@ exports.approveActivation = async (req, res) => {
     if (!user.plans_paid) user.plans_paid = {};
     user.plans_paid[plan] = true;
     
-    // Activate account when ALL 4 plans are paid (including WELCOME_BONUS)
-    const allPlansTypes = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
+    const allPlansTypes = ["REGULAR", "VIP", "VVIP"];
     const allPaid = allPlansTypes.every(p => user.plans_paid?.[p] === true);
     user.all_plans_completed = allPaid;
     user.is_activated = allPaid;
@@ -254,7 +253,7 @@ exports.approveActivation = async (req, res) => {
     await user.save();
 
     // Calculate remaining unpaid plans for redirect
-    const planOrderForRedirect = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
+    const planOrderForRedirect = ["REGULAR", "VIP", "VVIP"];
     const remainingPlans = planOrderForRedirect.filter(p => user.plans_paid?.[p] !== true);
     const nextPlanKey = remainingPlans.length > 0 ? remainingPlans[0] : null;
     const redirectTo = allPaid ? "/withdraw" : (nextPlanKey ? `/dashboard?focusPlan=${nextPlanKey}&highlightPlan=${nextPlanKey}` : "/dashboard");

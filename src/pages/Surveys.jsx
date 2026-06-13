@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import api from "../api/api";
 import { SURVEY_QUESTIONS } from "./components/surveyQuestions.js";
@@ -33,33 +33,27 @@ export default function Surveys() {
   const [isLoading, setIsLoading] = useState(true);
 
   // ========================================================
-  //  BACK-BUTTON GUARD
-  //  When user taps the browser back button from Activate.jsx
-  //  after completing all surveys, history.replaceState inserts
-  //  /dashboard as the entry behind /activate. This popstate
-  //  handler fires the instant the URL ticks back to /surveys
-  //  (or lands on /surveys via any manual URL-to-/surveys
-  //  navigation) and redirects to /dashboard before the rest
-  //  of the UI body has a chance to render questions.
-  //
-  //  Skip on first mount to avoid racing with checkSurveyStatus
-  //  below (which is the authoritative source for the
-  //  initial localStorage check). This effect only intercepts
-  //  subsequent pathname changes — i.e. back/forward presses.
+  //  BACK-BUTTON GUARD  (useRef — no re-render)
+  //  useState was causing a double-fire: setIsFirstSurveysMount(false)
+  //  triggers a re-render, and on that second render the effect below
+  //  runs again with isFirstSurveysMount=false, reading stale localStorage
+  //  and redirecting to /dashboard even when justStarted=true.
+  //  useRef solves this: reading/writing does not re-render.
   // ========================================================
-  // useState(true) → first render sets firstPopstate=true
-  // First-useEffect runs after first render (true → skip)
-  // After return, mountSurveys becomes false (skip only first time)
-  // -----------------------
-  const [isFirstSurveysMount, setIsFirstSurveysMount] = useState(true);
+  const isFirstSurveysMount = useRef(true);
 
-  useEffect(() => {
-    if (isFirstSurveysMount) {
-      setIsFirstSurveysMount(false);
+   useEffect(() => {
+    // useRef — no re-render, so just flip the flag silently
+    if (isFirstSurveysMount.current) {
+      isFirstSurveysMount.current = false;
       return;
     }
 
     if (location.pathname !== "/surveys") return;
+
+    // If user just tapped "Start Survey" on dashboard, let them in
+    // regardless of cached count (the API is the source of truth).
+    if (justStarted) return;
 
     const userData = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_DATA) || "{}");
     const plan = localStorage.getItem(STORAGE_KEYS.ACTIVE_PLAN);
@@ -68,7 +62,7 @@ export default function Surveys() {
     if (currentCount >= 10) {
       navigate("/dashboard", { replace: true });
     }
-  }, [location.pathname, navigate, isFirstSurveysMount]);
+  }, [location.pathname, navigate, justStarted]);
 
   const questions = useMemo(() => {
     return activePlan ? SURVEY_QUESTIONS[activePlan] : [];

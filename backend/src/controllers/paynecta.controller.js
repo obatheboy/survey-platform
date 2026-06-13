@@ -381,8 +381,7 @@ exports.manualApprovePaynectaPayment = async (req, res) => {
       userPlan.activated_at = new Date();
     }
 
-    // Only activate account when ALL 4 plans are paid (not just one plan)
-    const allPlansTypes = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
+    const allPlansTypes = ["REGULAR", "VIP", "VVIP"];
     const allPaid = allPlansTypes.every(p => user.plans_paid?.[p] === true);
     user.all_plans_completed = allPaid;
     user.is_activated = allPaid;
@@ -409,7 +408,7 @@ exports.manualApprovePaynectaPayment = async (req, res) => {
     await user.save();
 
     // Calculate remaining unpaid plans for redirect
-    const planOrderForRedirect = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
+    const planOrderForRedirect = ["REGULAR", "VIP", "VVIP"];
     const remainingPlans = planOrderForRedirect.filter(p => user.plans_paid?.[p] !== true);
     const nextPlanKey = remainingPlans.length > 0 ? remainingPlans[0] : null;
     const redirectTo = allPaid ? "/withdraw" : (nextPlanKey ? `/dashboard?focusPlan=${nextPlanKey}&highlightPlan=${nextPlanKey}` : "/dashboard");

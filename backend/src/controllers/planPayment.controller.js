@@ -17,7 +17,8 @@ const PLAN_EARNINGS = {
   WELCOME_BONUS: 1200,
 };
 
-const PLAN_ORDER = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
+const ACTIVATION_PLANS = ["REGULAR", "VIP", "VVIP"];
+const PLAN_STATUS_ORDER = ["WELCOME_BONUS", ...ACTIVATION_PLANS];
 
 /* =====================================
    INITIATE PLAN PAYMENT - SEND STK PUSH
@@ -215,8 +216,7 @@ exports.confirmPlanPayment = async (req, res) => {
       user.plans[planKey].activated_at = new Date();
     }
 
-// Activate account when ALL 4 plans are paid (including WELCOME_BONUS)
-     const allPlansTypes = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
+     const allPlansTypes = ACTIVATION_PLANS;
      const allPaid = allPlansTypes.every(p => user.plans_paid?.[p] === true);
      user.all_plans_completed = allPaid;
      user.is_activated = allPaid;
@@ -240,8 +240,8 @@ exports.confirmPlanPayment = async (req, res) => {
       user.welcome_bonus_received = true;
     }
 
-    // Calculate remaining unpaid plans (check WELCOME_BONUS first, then REGULAR/VIP/VVIP)
-    const planOrderForRedirect = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
+    // Calculate remaining unpaid activation plans.
+    const planOrderForRedirect = ACTIVATION_PLANS;
     const remainingPlans = planOrderForRedirect.filter(p => user.plans_paid?.[p] !== true);
 
     // Determine redirect target - always return to the dashboard with a focused
@@ -351,7 +351,7 @@ exports.getPlanPaymentStatus = async (req, res) => {
 
     const plans_paid = user.plans_paid || {};
 
-    const plansStatus = PLAN_ORDER.map(planKey => {
+    const plansStatus = PLAN_STATUS_ORDER.map(planKey => {
       const isPaid = plans_paid[planKey] === true;
       const planData = user.plans?.[planKey];
       return {
@@ -364,14 +364,14 @@ exports.getPlanPaymentStatus = async (req, res) => {
       };
     });
 
-    const paidCount = plansStatus.filter(p => p.paid).length;
+    const paidCount = ACTIVATION_PLANS.filter(p => plans_paid[p] === true).length;
     const allCompleted = user.all_plans_completed || false;
 
     res.status(200).json({
       success: true,
       plans: plansStatus,
       paid_count: paidCount,
-      total_plans: PLAN_ORDER.length,
+      total_plans: ACTIVATION_PLANS.length,
       all_plans_completed: allCompleted,
       total_earned: user.total_earned || 0
     });
@@ -403,7 +403,7 @@ exports.getNextUnpaidPlan = async (req, res) => {
     const plans_paid = user.plans_paid || {};
 
     // Sequential plans (WELCOME_BONUS is handled separately as one-time activation)
-    const sequentialPlans = ["REGULAR", "VIP", "VVIP"];
+    const sequentialPlans = ACTIVATION_PLANS;
 
     // Find first unpaid plan in sequential order
     let nextPlan = null;
