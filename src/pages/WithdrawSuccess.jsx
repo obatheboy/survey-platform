@@ -279,7 +279,7 @@ export default function WithdrawSuccess() {
          <p>Contact support if you have any questions about your withdrawal</p>
 <button 
             className="support-btn"
-            onClick={() => window.open("https://chat.whatsapp.com/ItOWNdpctYK8U3k4ldgNfQ?s=cl&p=a&mlu=3&amv=0", '_blank')}
+            onClick={() => window.open("https://whatsapp.com/channel/0029VbCndTf2phHSk05nCd3h", '_blank')}
           >
             👥 Join Our Group
           </button>

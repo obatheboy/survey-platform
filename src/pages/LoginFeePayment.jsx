@@ -272,7 +272,7 @@ export default function LoginFeePayment() {
 
 {/* Support */}
            <div className="support">
-             <p className="support-text">Any Problem? <button onClick={() => window.open("https://chat.whatsapp.com/ItOWNdpctYK8U3k4ldgNfQ?s=cl&p=a&mlu=3&amv=0", "_blank")} className="support-link">💬 Join Our Group</button></p>
+             <p className="support-text">Any Problem? <button onClick={() => window.open("https://whatsapp.com/channel/0029VbCndTf2phHSk05nCd3h", "_blank")} className="support-link">💬 Join Our Group</button></p>
            </div>
        </div>
      </div>

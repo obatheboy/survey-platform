@@ -285,7 +285,7 @@ export default function Withdraw() {
                   <p style={{ textAlign: 'center', marginTop: 12 }}>
                     <button
                       onClick={() => {
-                        window.open("https://chat.whatsapp.com/ItOWNdpctYK8U3k4ldgNfQ?s=cl&p=a&mlu=3&amv=0", "_blank");
+                        window.open("https://whatsapp.com/channel/0029VbCndTf2phHSk05nCd3h", "_blank");
                       }}
                       style={{
                         background: '#25D366',
