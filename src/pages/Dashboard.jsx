@@ -584,7 +584,7 @@ export default function Dashboard() {
     document.body.style.height = '100%';
 
     setFullScreenNotification({
-      message: "🎁 Activate your account with KES 100 to unlock your KES 1,200 welcome bonus! Pay directly on this page.",
+      message: "🎁 Claim your welcome bonus after completing the survey plans.",
       redirect: "/activate?welcome_bonus=true",
     });
   };

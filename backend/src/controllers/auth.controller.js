@@ -161,6 +161,11 @@ exports.login = async (req, res) => {
     // Generate token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
     res.cookie("token", token, COOKIE_OPTIONS);
+
+    const { changed } = syncActivationStatus(user);
+    if (changed) {
+      await user.save();
+    }
     
     // Return actual login_fee_paid status - frontend will redirect if false
     return res.json({

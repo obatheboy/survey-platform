@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 
-const TOTAL_SURVEYS = 10;
-
 export default function Withdraw() {
   const navigate = useNavigate();
 
@@ -31,12 +29,7 @@ export default function Withdraw() {
         }
 
         if (!u.all_plans_completed) {
-          navigate("/dashboard", { replace: true });
-          return;
-        }
-
-        if (u.surveys_completed < TOTAL_SURVEYS) {
-          navigate("/dashboard", { replace: true });
+          navigate("/withdraw-form", { replace: true });
           return;
         }
 

@@ -20,6 +20,70 @@ const PLAN_EARNINGS = {
 
 const PLAN_STATUS_ORDER = ["WELCOME_BONUS", ...ACTIVATION_PLANS];
 
+const isPlanDone = (user, planKey) => {
+  return user.plans_paid?.[planKey] === true || user.plans?.[planKey]?.is_activated === true;
+};
+
+const getRemainingActivationPlans = (user) => {
+  return ACTIVATION_PLANS.filter(planKey => !isPlanDone(user, planKey));
+};
+
+const buildRedirect = (user) => {
+  const remainingPlans = getRemainingActivationPlans(user);
+  if (remainingPlans.length === 0) {
+    return {
+      redirect_to: "/withdraw-form",
+      next_plan: null,
+      remaining_plans: []
+    };
+  }
+
+  const nextPlan = remainingPlans[0];
+  return {
+    redirect_to: `/dashboard?focusPlan=${nextPlan}&highlightPlan=${nextPlan}`,
+    next_plan: nextPlan,
+    remaining_plans: remainingPlans
+  };
+};
+
+const assertPlanOrder = (user, planKey) => {
+  if (planKey === "WELCOME_BONUS") {
+    return { ok: true };
+  }
+
+  const planIndex = ACTIVATION_PLANS.indexOf(planKey);
+  for (let i = 0; i < planIndex; i += 1) {
+    if (!isPlanDone(user, ACTIVATION_PLANS[i])) {
+      return {
+        ok: false,
+        next_plan: ACTIVATION_PLANS[i],
+        message: `Complete ${ACTIVATION_PLANS[i]} before ${planKey}.`
+      };
+    }
+  }
+
+  return { ok: true };
+};
+
+const assertSurveyCompleted = (user, planKey) => {
+  const planData = user.plans?.[planKey];
+  if (!planData) {
+    return {
+      ok: false,
+      message: "Plan not found"
+    };
+  }
+
+  if ((planData.surveys_completed || 0) < 10 || planData.completed !== true) {
+    return {
+      ok: false,
+      message: `Complete all 10 surveys for ${planKey} before activation.`
+    };
+  }
+
+  return { ok: true };
+};
+
 /* =====================================
    INITIATE PLAN PAYMENT - SEND STK PUSH
    ===================================== */
@@ -58,13 +122,37 @@ exports.initiatePlanPayment = async (req, res) => {
     }
 
     // Check if already paid
-    const isPaid = user.plans_paid?.[planKey];
+    const isPaid = planKey === "WELCOME_BONUS"
+      ? user.welcome_bonus_received === true || user.plans_paid?.WELCOME_BONUS === true
+      : user.plans_paid?.[planKey];
     if (isPaid) {
       return res.status(400).json({
         success: false,
         message: `${planKey} plan is already paid.`,
         already_paid: true
       });
+    }
+
+    const orderCheck = assertPlanOrder(user, planKey);
+    if (!orderCheck.ok) {
+      const redirect = buildRedirect(user);
+      return res.status(400).json({
+        success: false,
+        message: orderCheck.message,
+        next_plan: orderCheck.next_plan,
+        redirect_to: redirect.redirect_to
+      });
+    }
+
+    if (planKey !== "WELCOME_BONUS") {
+      const surveyCheck = assertSurveyCompleted(user, planKey);
+      if (!surveyCheck.ok) {
+        return res.status(400).json({
+          success: false,
+          message: surveyCheck.message,
+          redirect_to: `/dashboard?focusPlan=${planKey}&highlightPlan=${planKey}`
+        });
+      }
     }
 
     // Generate order reference
@@ -176,9 +264,12 @@ exports.confirmPlanPayment = async (req, res) => {
     }
 
     // Check if already paid
-    const isAlreadyPaid = user.plans_paid?.[planKey];
+    const isAlreadyPaid = planKey === "WELCOME_BONUS"
+      ? user.welcome_bonus_received === true || user.plans_paid?.WELCOME_BONUS === true
+      : user.plans_paid?.[planKey] || user.plans?.[planKey]?.is_activated;
     if (isAlreadyPaid) {
       syncActivationStatus(user);
+      const redirect = buildRedirect(user);
       await user.save();
 
       return res.status(200).json({
@@ -187,13 +278,40 @@ exports.confirmPlanPayment = async (req, res) => {
         already_paid: true,
         all_plans_completed: user.all_plans_completed || false,
         plans_paid: user.plans_paid || {},
+        redirect_to: redirect.redirect_to,
+        next_plan: redirect.next_plan,
+        remaining_plans: redirect.remaining_plans,
         user: {
           id: user._id,
           is_activated: user.is_activated,
           all_plans_completed: user.all_plans_completed || false,
-          plans_paid: user.plans_paid || {}
+          plans_paid: user.plans_paid || {},
+          plans: user.plans || {}
         }
       });
+    }
+
+    const orderCheck = assertPlanOrder(user, planKey);
+    if (!orderCheck.ok) {
+      const redirect = buildRedirect(user);
+      return res.status(409).json({
+        success: false,
+        message: orderCheck.message,
+        next_plan: orderCheck.next_plan,
+        redirect_to: redirect.redirect_to,
+        remaining_plans: redirect.remaining_plans
+      });
+    }
+
+    if (planKey !== "WELCOME_BONUS") {
+      const surveyCheck = assertSurveyCompleted(user, planKey);
+      if (!surveyCheck.ok) {
+        return res.status(400).json({
+          success: false,
+          message: surveyCheck.message,
+          redirect_to: `/dashboard?focusPlan=${planKey}&highlightPlan=${planKey}`
+        });
+      }
     }
 
     // Verify with MegaPay
@@ -244,35 +362,20 @@ exports.confirmPlanPayment = async (req, res) => {
     // Special handling for welcome bonus
     if (planKey === "WELCOME_BONUS") {
       user.welcome_bonus_received = true;
+      if (!user.plans_paid) user.plans_paid = {};
+      user.plans_paid.WELCOME_BONUS = true;
     }
 
-// Calculate remaining unpaid activation plans (consider both paid and manually activated)
-    const planOrderForRedirect = ACTIVATION_PLANS;
-    const remainingPlans = planOrderForRedirect.filter(p => 
-      user.plans_paid?.[p] !== true && !user.plans?.[p]?.is_activated
-    );
-
-    // Determine redirect target - always return to the dashboard with a focused
-    // next-plan card unless every plan is paid. This keeps the user on the exact
-    // next step instead of sending them back to the generic activation page.
-    let redirectTo;
-    if (allPaid) {
-      redirectTo = "/withdraw";
-    } else if (remainingPlans.length > 0) {
-      const nextPlanKey = remainingPlans[0];
-      redirectTo = `/dashboard?focusPlan=${nextPlanKey}&highlightPlan=${nextPlanKey}`;
-    } else {
-      redirectTo = "/dashboard";
-    }
+    const redirect = buildRedirect(user);
 
     // Add a focused message for the next unpaid plan.
-    const nextPlan = remainingPlans[0];
+    const nextPlan = redirect.next_plan;
     const redirectFocus = {
       plan: nextPlan || null,
-      label: nextPlan === "WELCOME_BONUS" ? "Welcome Bonus" : nextPlan || null,
+      label: nextPlan || null,
       message: nextPlan
-        ? `Next step: complete ${nextPlan === "WELCOME_BONUS" ? "Welcome Bonus" : nextPlan} on your dashboard.`
-        : null
+        ? `Next step: continue with ${nextPlan} on your dashboard.`
+        : "All REGULAR, VIP, and VVIP plans are complete. You can withdraw now."
     };
 
     // Clear pending payment info
@@ -285,7 +388,7 @@ exports.confirmPlanPayment = async (req, res) => {
     console.log(`✅ Plan payment confirmed - ${planKey} for user ${user.full_name}`);
     console.log(`💰 Added KES ${earnings} - Old: ${oldBalance}, New: ${user.total_earned}`);
     console.log(`📋 All plans completed: ${allPaid}`);
-    console.log(`➡️ Redirect to: ${redirectTo}`);
+    console.log(`➡️ Redirect to: ${redirect.redirect_to}`);
 
     // Create notification
     try {
@@ -293,7 +396,7 @@ exports.confirmPlanPayment = async (req, res) => {
         user_id: user._id,
         title: `✅ ${planKey.replace(/_/g, ' ')} Plan Paid!`,
         message: `You have successfully paid for ${planKey.replace(/_/g, ' ')} plan! KES ${earnings} has been added to your balance.${allPaid ? ' All plans completed! You can now withdraw.' : ''}`,
-        action_route: "/activate",
+        action_route: redirect.redirect_to,
         type: "payment"
       });
       await notification.save();
@@ -310,23 +413,27 @@ exports.confirmPlanPayment = async (req, res) => {
 
     // Format plan label for message
     const planLabel = planKey === "WELCOME_BONUS" ? "Welcome Bonus" : planKey;
-    const remainingLabels = remainingPlans.map(p => p === "WELCOME_BONUS" ? "Welcome Bonus" : p);
+    const remainingLabels = redirect.remaining_plans;
 
     return res.status(200).json({
       success: true,
       message: `You have successfully paid for ${planLabel} Plan!`,
       plan_paid: planKey,
-      remaining_plans: remainingLabels,
-      redirect_to: redirectTo,
+      redirect_to: redirect.redirect_to,
       redirect_focus: redirectFocus,
       all_plans_completed: allPaid,
+      user_activated: user.is_activated || false,
+      next_plan: redirect.next_plan,
+      remaining_plans: remainingLabels,
       token,
       user: {
         id: user._id,
         full_name: user.full_name,
         phone: user.phone,
         all_plans_completed: allPaid,
-        plans_paid: user.plans_paid
+        user_activated: user.is_activated || false,
+        plans_paid: user.plans_paid,
+        plans: user.plans || {}
       },
       balance_before: oldBalance,
       balance_added: earnings,
@@ -357,11 +464,10 @@ exports.getPlanPaymentStatus = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const plans_paid = user.plans_paid || {};
     syncActivationStatus(user);
 
     const plansStatus = PLAN_STATUS_ORDER.map(planKey => {
-      const isPaid = plans_paid[planKey] === true;
+      const isPaid = plans_paid[planKey] === true || user.plans?.[planKey]?.is_activated === true;
       const planData = user.plans?.[planKey];
       return {
         plan: planKey,
@@ -373,8 +479,11 @@ exports.getPlanPaymentStatus = async (req, res) => {
       };
     });
 
-    const paidCount = ACTIVATION_PLANS.filter(p => plans_paid[p] === true).length;
+    const paidCount = ACTIVATION_PLANS.filter(p => isPlanDone(user, p)).length;
     const allCompleted = user.all_plans_completed || false;
+    const remainingPlans = getRemainingActivationPlans(user);
+    const nextPlan = remainingPlans[0] || null;
+    const redirect = buildRedirect(user);
 
     res.status(200).json({
       success: true,
@@ -382,6 +491,15 @@ exports.getPlanPaymentStatus = async (req, res) => {
       paid_count: paidCount,
       total_plans: ACTIVATION_PLANS.length,
       all_plans_completed: allCompleted,
+      user_activated: user.is_activated || false,
+      next_plan: nextPlan ? {
+        plan: nextPlan,
+        fee: PLAN_FEES[nextPlan],
+        earnings: PLAN_EARNINGS[nextPlan],
+        label: nextPlan
+      } : null,
+      redirect_to: redirect.redirect_to,
+      remaining_plans: remainingPlans,
       total_earned: user.total_earned || 0
     });
   } catch (error) {
@@ -409,39 +527,36 @@ exports.getNextUnpaidPlan = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const plans_paid = user.plans_paid || {};
     syncActivationStatus(user);
 
-    // Sequential plans (WELCOME_BONUS is handled separately as one-time activation)
-    const sequentialPlans = ACTIVATION_PLANS;
+    const remainingPlans = getRemainingActivationPlans(user);
+    const nextPlanKey = remainingPlans[0] || null;
 
-    // Find first unpaid plan in sequential order
-    let nextPlan = null;
-    for (const planKey of sequentialPlans) {
-      if (!plans_paid[planKey]) {
-        nextPlan = {
-          plan: planKey,
-          fee: PLAN_FEES[planKey],
-          earnings: PLAN_EARNINGS[planKey],
-          label: planKey
-        };
-        break;
-      }
-    }
-
-    if (!nextPlan) {
+    if (!nextPlanKey) {
       return res.status(200).json({
         success: true,
         next_plan: null,
         all_plans_completed: true,
+        user_activated: user.is_activated || false,
+        redirect_to: "/withdraw-form",
         message: "All plans have been paid!"
       });
     }
 
+    const redirect = buildRedirect(user);
+
     res.status(200).json({
       success: true,
-      next_plan: nextPlan,
-      all_plans_completed: false
+      next_plan: {
+        plan: nextPlanKey,
+        fee: PLAN_FEES[nextPlanKey],
+        earnings: PLAN_EARNINGS[nextPlanKey],
+        label: nextPlanKey
+      },
+      all_plans_completed: user.all_plans_completed || false,
+      user_activated: user.is_activated || false,
+      redirect_to: redirect.redirect_to,
+      remaining_plans: remainingPlans
     });
   } catch (error) {
     console.error("Get next plan error:", error);

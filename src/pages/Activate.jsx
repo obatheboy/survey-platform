@@ -40,6 +40,25 @@ const PLAN_CONFIG = {
   },
 };
 
+const ACTIVATION_PLANS = ["REGULAR", "VIP", "VVIP"];
+
+const isPlanDone = (user, planKey) => {
+  return user?.plans_paid?.[planKey] === true || user?.plans?.[planKey]?.is_activated === true;
+};
+
+const getRemainingActivationPlans = (user) => {
+  return ACTIVATION_PLANS.filter(planKey => !isPlanDone(user, planKey));
+};
+
+const getNextActivationPlan = (user) => {
+  return getRemainingActivationPlans(user)[0] || null;
+};
+
+const getDashboardFocusUrl = (planKey) => {
+  return `/dashboard?focusPlan=${planKey}&highlightPlan=${planKey}`;
+};
+
+
 const styles = {
   overlay: {
     position: "fixed",
@@ -212,53 +231,79 @@ const [planKey, setPlanKey] = useState(null);
         const isWelcome = searchParams.get("welcome_bonus");
         const planFromUrl = searchParams.get("plan");
 
-        let planFromQuery;
+        let planFromQuery = null;
         if (isWelcome) {
-          planFromQuery = "WELCOME";
+          planFromQuery = "WELCOME_BONUS";
         } else if (planFromUrl && PLAN_CONFIG[planFromUrl.toUpperCase()]) {
           planFromQuery = planFromUrl.toUpperCase();
         } else if (statePlanKey && PLAN_CONFIG[statePlanKey.toUpperCase()]) {
           planFromQuery = statePlanKey.toUpperCase();
-        } else {
-          const userPlans = res.data.plans || {};
-          let highestPlan = null;
+        }
 
-          if (userPlans.VVIP && userPlans.VVIP.completed && !userPlans.VVIP.is_activated) {
-            highestPlan = "VVIP";
-          } else if (userPlans.VIP && userPlans.VIP.completed && !userPlans.VIP.is_activated) {
-            highestPlan = "VIP";
-          } else if (userPlans.REGULAR && userPlans.REGULAR.completed && !userPlans.REGULAR.is_activated) {
-            highestPlan = "REGULAR";
+        if (planFromQuery === "WELCOME_BONUS") {
+          if (res.data.welcome_bonus_received !== false && !res.data.plans_paid?.WELCOME_BONUS) {
+            const nextPlan = getNextActivationPlan(res.data) || "REGULAR";
+            navigate(getDashboardFocusUrl(nextPlan), { replace: true });
+            return;
+          }
+        }
+
+        if (planFromQuery && ACTIVATION_PLANS.includes(planFromQuery)) {
+          const nextPlan = getNextActivationPlan(res.data);
+
+          if (isPlanDone(res.data, planFromQuery)) {
+            if (nextPlan) {
+              navigate(getDashboardFocusUrl(nextPlan), { replace: true });
+            } else {
+              navigate("/withdraw-form", { replace: true });
+            }
+            return;
           }
 
-          planFromQuery = highestPlan || null;
+          if (nextPlan && nextPlan !== planFromQuery) {
+            navigate(getDashboardFocusUrl(nextPlan), { replace: true });
+            return;
+          }
+
+          const planData = res.data.plans?.[planFromQuery];
+          if (!planData || (planData.surveys_completed || 0) < 10 || planData.completed !== true) {
+            navigate(getDashboardFocusUrl(planFromQuery), { replace: true });
+            return;
+          }
+        }
+
+        if (!planFromQuery) {
+          const nextPlan = getNextActivationPlan(res.data);
+          if (!nextPlan) {
+            navigate("/withdraw-form", { replace: true });
+            return;
+          }
+
+          const planData = res.data.plans?.[nextPlan];
+          if (planData?.completed === true || (planData?.surveys_completed || 0) >= 10) {
+            navigate(`/activate?plan=${nextPlan.toLowerCase()}`, { replace: true });
+          } else {
+            navigate(getDashboardFocusUrl(nextPlan), { replace: true });
+          }
+          return;
         }
 
         let plan;
-        if (planFromQuery === "WELCOME") {
+        if (planFromQuery === "WELCOME_BONUS") {
           plan = {
             is_activated: false,
             completed: true,
             total: res.data.welcome_bonus || 1200
           };
-        } else if (!planFromQuery) {
-          plan = null;
         } else {
           plan = res.data.plans?.[planFromQuery];
-        }
-
-        if (!planFromQuery) {
-          setPlanKey(null);
-          setPlanState(null);
-          setLoading(false);
-          return;
         }
 
         if (!plan && PLAN_CONFIG[planFromQuery]) {
           plan = { is_activated: false };
         }
 
-        if (!plan || (planFromQuery !== "WELCOME" && plan.is_activated) || (planFromQuery === "WELCOME" && res.data.plans_paid?.WELCOME_BONUS)) {
+        if (!plan || (planFromQuery !== "WELCOME_BONUS" && plan.is_activated)) {
           setPlanKey(null);
           setPlanState(null);
           setLoading(false);
@@ -347,12 +392,25 @@ const submitActivation = async () => {
     try {
       const requestData = {
         mpesa_code: paymentText.trim(),
-        plan: planKey === "WELCOME" ? "REGULAR" : planKey,
+        plan: planKey === "WELCOME_BONUS" ? "WELCOME_BONUS" : planKey,
       };
       
-      await api.post("/activation/submit", requestData);
+      const submitRes = await api.post("/activation/submit", requestData);
       
-      setShowSuccessPopup(true);
+      const redirect = submitRes.data?.redirect_to || getDashboardFocusUrl(getNextActivationPlan(user) || "REGULAR");
+      setPaymentSuccessData({
+        plan_paid: planKey === "WELCOME_BONUS" ? "Welcome Bonus" : planKey,
+        remaining_plans: submitRes.data?.remaining_plans || getRemainingActivationPlans(user),
+        redirect_to: redirect,
+        redirect_focus: submitRes.data?.redirect_focus || null,
+        all_plans_completed: submitRes.data?.all_plans_completed || false,
+        remaining_label: submitRes.data?.remaining_plans?.join(', ') || getRemainingActivationPlans(user).join(', ')
+      });
+      setShowPaymentSuccess(true);
+      setTimeout(() => {
+        window.location.href = redirect;
+      }, 2500);
+      return;
     } catch (error) {
       console.error("❌ Activation submission failed:", error);
       if (error.response) {
@@ -444,7 +502,7 @@ const submitActivation = async () => {
       return;
     }
 
-    const targetPlanKey = planKey === "WELCOME" ? "WELCOME_BONUS" : planKey;
+    const targetPlanKey = planKey === "WELCOME_BONUS" ? "WELCOME_BONUS" : planKey;
 
 setPaynectaSubmitting(true);
     setPaynectaError("");
@@ -590,11 +648,11 @@ setPaynectaSubmitting(true);
                 </button>
               )}
               {['REGULAR', 'VIP', 'VVIP'].map((p) => {
-               const planData = user?.plans?.[p];
-               const isCompleted = planData?.completed;
-               const isActivated = planData?.is_activated;
-               const planPaid = user?.plans_paid?.[p];
-               const config = PLAN_CONFIG[p];
+                const planData = user?.plans?.[p];
+                const isCompleted = planData?.completed || (planData?.surveys_completed || 0) >= 10;
+                const isActivated = planData?.is_activated || user?.plans_paid?.[p] === true;
+                const planPaid = user?.plans_paid?.[p];
+                const config = PLAN_CONFIG[p];
                
                return (
                  <button
@@ -664,7 +722,7 @@ setPaynectaSubmitting(true);
   if (!planKey || !planState || !user) return null;
 
   const plan =
-    planKey === "WELCOME"
+    planKey === "WELCOME_BONUS"
       ? { 
           label: "Welcome Bonus", 
           total: user.welcome_bonus || 1200, 
@@ -698,7 +756,7 @@ setPaynectaSubmitting(true);
               <br />
               1. Go back to dashboard
               <br />
-              {planKey === "WELCOME" ? (
+              {planKey === "WELCOME_BONUS" ? (
                 <>
                   2. Complete VIP SURVEY PLAN (150)
                   <br />
@@ -1293,7 +1351,8 @@ setPaynectaSubmitting(true);
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               {['REGULAR', 'VIP', 'VVIP'].map((p) => {
                 const planData = user?.plans?.[p];
-                const isCurrent = planKey === p || (planKey === 'WELCOME' && p === 'REGULAR');
+                const isCurrent = planKey === p || (planKey === 'WELCOME_BONUS' && p === 'REGULAR');
+                const isPaid = planData?.is_activated || user?.plans_paid?.[p] === true;
                 return (
                   <div key={p} style={{
                     display: "flex",
@@ -1310,7 +1369,7 @@ setPaynectaSubmitting(true);
                       color: isCurrent ? "#60a5fa" : "#e2e8f0"
                     }}>
                       {p}
-                      {isCurrent && planKey === "WELCOME" && p === "REGULAR" && " (Welcome)"}
+                      {isCurrent && planKey === "WELCOME_BONUS" && p === "REGULAR" && " (Welcome)"}
                     </span>
                     <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                       <span style={{
@@ -1324,11 +1383,11 @@ setPaynectaSubmitting(true);
                         color: planData?.is_activated ? "#4ade80" : "#fbbf24",
                         fontSize: "11px",
                         fontWeight: 700,
-                        background: planData?.is_activated ? "rgba(74, 222, 128, 0.15)" : "rgba(251, 191, 36, 0.15)",
+                        background: isPaid ? "rgba(74, 222, 128, 0.15)" : "rgba(251, 191, 36, 0.15)",
                         padding: "2px 8px",
                         borderRadius: "20px"
                       }}>
-                        {planData?.is_activated ? "Activated" : "Pending"}
+                        {isPaid ? "Activated" : "Pending"}
                       </span>
                     </div>
                   </div>

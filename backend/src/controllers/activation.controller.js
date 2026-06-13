@@ -3,6 +3,7 @@ const User = require("../models/User");
 const Notification = require("../models/Notification");
 const { awardReferralCommission } = require("./affiliate.controller");
 const megaPayService = require("../services/megapay.service");
+const { ACTIVATION_PLANS, syncActivationStatus, buildActivationRedirect } = require("../utils/activationStatus");
 
 const TOTAL_SURVEYS = 10;
 
@@ -10,6 +11,7 @@ const TOTAL_SURVEYS = 10;
    PLAN ACTIVATION FEES (AMOUNT USER PAYS)
 ================================ */
 const PLAN_FEES = {
+  WELCOME_BONUS: 100,
   REGULAR: 100,
   VIP: 200,
   VVIP: 300,
@@ -22,6 +24,7 @@ const PLAN_EARNINGS = {
   REGULAR: 1500,
   VIP: 2000,
   VVIP: 3000,
+  WELCOME_BONUS: 1200,
 };
 
 /* =====================================
@@ -39,7 +42,7 @@ exports.submitActivationPayment = async (req, res) => {
     const { mpesa_code, plan, is_welcome_bonus } = req.body;
     const paymentReference = String(mpesa_code || "").trim();
     // Determine plan key - welcome bonus uses REGULAR plan
-    const planKey = is_welcome_bonus ? "REGULAR" : (plan?.toUpperCase());
+    const planKey = is_welcome_bonus ? "WELCOME_BONUS" : (plan?.toUpperCase());
 
     console.log("PLAN_FEES for this plan:", PLAN_FEES[planKey]);
     
@@ -60,15 +63,17 @@ exports.submitActivationPayment = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Check if user has the plan
-    if (!user.plans || !user.plans[planKey]) {
-      return res.status(400).json({ message: "Survey plan not found" });
+    // Welcome bonus does not use the REGULAR/VIP/VVIP plan structure.
+    if (planKey !== "WELCOME_BONUS") {
+      if (!user.plans || !user.plans[planKey]) {
+        return res.status(400).json({ message: "Survey plan not found" });
+      }
     }
 
-    const userPlan = user.plans[planKey];
+    const userPlan = user.plans?.[planKey];
 
     // Skip survey completion check for welcome bonus
-    if (!is_welcome_bonus) {
+    if (planKey !== "WELCOME_BONUS") {
       if (!userPlan.completed || userPlan.surveys_completed !== TOTAL_SURVEYS) {
         return res.status(400).json({
           message: "Complete all surveys before activation",
@@ -77,7 +82,7 @@ exports.submitActivationPayment = async (req, res) => {
     }
 
     // Check if already activated
-    if (userPlan.is_activated) {
+    if (planKey !== "WELCOME_BONUS" && userPlan?.is_activated) {
       return res.status(400).json({
         message: "Plan already activated",
       });
@@ -124,10 +129,21 @@ user.activation_requests.push({
       console.error("❌ Activation submission notification error:", notifError);
     }
 
+    const redirect = buildActivationRedirect(user);
+
     return res.json({
       activation_status: "SUBMITTED",
       activation_required: true,
-      withdraw_unlocked: false,
+      withdraw_unlocked: user.is_activated === true,
+      user_activated: user.is_activated === true,
+      all_plans_completed: user.all_plans_completed === true,
+      redirect_to: redirect.redirect_to,
+      redirect_focus: {
+        plan: redirect.next_plan,
+        label: redirect.next_plan,
+        message: redirect.next_plan ? `Next step: continue with ${redirect.next_plan} on your dashboard.` : "All plans are complete. You can withdraw now."
+      },
+      remaining_plans: redirect.remaining_plans,
       message: "Payment submitted successfully. Awaiting admin approval.",
     });
   } catch (error) {
@@ -189,21 +205,11 @@ exports.approveActivation = async (req, res) => {
         });
       }
     } else {
-      // Ensure user has a plan entry (should exist from registration). Create if missing.
       if (!user.plans) user.plans = {};
-      if (!user.plans[plan]) {
-        user.plans[plan] = {
-          surveys_completed: 0,
-          completed: false,
-          is_activated: false,
-          total_surveys: 10,
-          activated_at: null
-        };
-      }
     }
 
     // Check if already activated
-    if (user.plans[plan].is_activated) {
+    if (plan !== "WELCOME_BONUS" && user.plans[plan]?.is_activated) {
       return res.status(400).json({
         message: "Plan already activated",
       });
@@ -214,20 +220,25 @@ exports.approveActivation = async (req, res) => {
     activationRequest.processed_at = new Date();
 
     // Activate the plan
-    user.plans[plan].is_activated = true;
-    user.plans[plan].activated_at = new Date();
+    if (plan !== "WELCOME_BONUS" && user.plans[plan]) {
+      user.plans[plan].is_activated = true;
+      user.plans[plan].activated_at = new Date();
+    }
     
     // Mark plan as paid
-    if (!user.plans_paid) user.plans_paid = {};
-    user.plans_paid[plan] = true;
+    if (plan !== "WELCOME_BONUS") {
+      if (!user.plans_paid) user.plans_paid = {};
+      user.plans_paid[plan] = true;
+    }
 
     // Check if all plans are paid OR all plans are activated (manual activation)
-    const allPlansTypes = ["REGULAR", "VIP", "VVIP"];
-    const allPaid = allPlansTypes.every(p => user.plans_paid?.[p] === true);
-    const allManuallyActivated = allPlansTypes.every(p => user.plans?.[p]?.is_activated === true);
-    const shouldActivate = allPaid || allManuallyActivated;
+    syncActivationStatus(user);
+    const shouldActivate = user.is_activated === true;
+    const allPaid = ACTIVATION_PLANS.every(p => user.plans_paid?.[p] === true);
     
-    user.all_plans_completed = allPaid;
+    const redirect = buildActivationRedirect(user);
+    
+    user.all_plans_completed = shouldActivate;
     user.is_activated = shouldActivate;
     if (shouldActivate && !user.activated_at) {
       user.activated_at = new Date();
@@ -241,6 +252,8 @@ exports.approveActivation = async (req, res) => {
     if (isWelcomeBonus) {
       creditAmount = user.welcome_bonus || 1200;
       user.welcome_bonus_received = true;
+      if (!user.plans_paid) user.plans_paid = {};
+      user.plans_paid.WELCOME_BONUS = true;
     } else {
       creditAmount = 0; // Earnings already credited when 10th survey was completed
     }
@@ -257,10 +270,7 @@ exports.approveActivation = async (req, res) => {
     await user.save();
 
     // Calculate remaining unpaid plans for redirect
-    const planOrderForRedirect = ["REGULAR", "VIP", "VVIP"];
-    const remainingPlans = planOrderForRedirect.filter(p => user.plans_paid?.[p] !== true && !user.plans?.[p]?.is_activated);
-    const nextPlanKey = remainingPlans.length > 0 ? remainingPlans[0] : null;
-    const redirectTo = shouldActivate ? "/withdraw" : (nextPlanKey ? `/dashboard?focusPlan=${nextPlanKey}&highlightPlan=${nextPlanKey}` : "/dashboard");
+    const redirectTo = redirect.redirect_to;
 
     console.log(`➡️ Redirect to: ${redirectTo}`);
 
@@ -289,7 +299,12 @@ exports.approveActivation = async (req, res) => {
       balance_added: creditAmount,
       new_balance: user.total_earned,
       redirect_to: redirectTo,
-      remaining_plans: remainingPlans.map(p => p === "WELCOME_BONUS" ? "Welcome Bonus" : p)
+      redirect_focus: {
+        plan: redirect.next_plan,
+        label: redirect.next_plan,
+        message: redirect.next_plan ? `Next step: continue with ${redirect.next_plan} on your dashboard.` : "All plans are complete. You can withdraw now."
+      },
+      remaining_plans: redirect.remaining_plans
     });
   } catch (error) {
     console.error("❌ Approve activation error:", error);

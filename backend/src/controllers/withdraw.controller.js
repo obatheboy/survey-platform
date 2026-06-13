@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const User = require("../models/User");
+const { ACTIVATION_PLANS, syncActivationStatus } = require("../utils/activationStatus");
 
 /* ===============================
    CONFIG
@@ -76,6 +77,11 @@ exports.requestWithdraw = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    const { changed } = syncActivationStatus(user);
+    if (changed) {
+      await user.save();
+    }
+
     // 🟢 DEBUG: Log complete user data
     console.log("\n📊 USER DATA FROM DATABASE:");
     console.log("User name:", user.full_name);
@@ -86,15 +92,14 @@ exports.requestWithdraw = async (req, res) => {
     console.log("User plans_paid:", user.plans_paid);
     
     // Only allow withdrawals when REGULAR, VIP, and VVIP plans are paid OR all manually activated
-    const allPlansTypes = ["REGULAR", "VIP", "VVIP"];
-    const allPlansPaid = allPlansTypes.every(p => user.plans_paid?.[p] === true);
-    const allPlansManuallyActivated = allPlansTypes.every(p => user.plans?.[p]?.is_activated === true);
+    const allPlansPaid = ACTIVATION_PLANS.every(p => user.plans_paid?.[p] === true);
+    const allPlansManuallyActivated = ACTIVATION_PLANS.every(p => user.plans?.[p]?.is_activated === true);
     const canWithdraw = allPlansPaid || allPlansManuallyActivated;
     if (!canWithdraw && type !== "affiliate") {
       console.log("❌ Not all plans paid or activated yet:", { allPlansPaid, allPlansManuallyActivated });
       return res.status(403).json({
         message: "⚠️ Please complete REGULAR, VIP, and VVIP plans before withdrawing.",
-        all_plans_completed: allPlansPaid,
+        all_plans_completed: user.all_plans_completed || false,
         plans_paid: user.plans_paid || {}
       });
     }
@@ -173,15 +178,14 @@ if (user.welcome_bonus_withdrawn && !previousRejected) {
       }
 
       // Check if all plans are paid OR all plans are activated (manual activation)
-      const allPlansTypes = ["REGULAR", "VIP", "VVIP"];
-      const allPlansPaid = allPlansTypes.every(p => user.plans_paid?.[p] === true);
-      const allPlansManuallyActivated = allPlansTypes.every(p => user.plans?.[p]?.is_activated === true);
+      const allPlansPaid = ACTIVATION_PLANS.every(p => user.plans_paid?.[p] === true);
+      const allPlansManuallyActivated = ACTIVATION_PLANS.every(p => user.plans?.[p]?.is_activated === true);
       
       if (!allPlansPaid && !allPlansManuallyActivated) {
         console.log("❌ Not all plans paid/activated yet for welcome bonus withdrawal");
         return res.status(403).json({
           message: "⚠️ Please complete REGULAR, VIP, and VVIP plans before withdrawing.",
-          all_plans_completed: allPlansPaid,
+          all_plans_completed: user.all_plans_completed || false,
           plans_paid: user.plans_paid || {}
         });
       }

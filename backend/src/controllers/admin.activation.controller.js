@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const { ACTIVATION_PLANS, syncActivationStatus, buildActivationRedirect } = require("../utils/activationStatus");
 
 const TOTAL_SURVEYS = 10;
 
@@ -274,6 +275,9 @@ exports.approveActivation = async (req, res) => {
       // 🔥 ADD WELCOME BONUS TO BALANCE
       const oldBalance = user.total_earned || 0;
       user.total_earned = oldBalance + PLAN_EARNINGS.WELCOME_BONUS;
+      user.welcome_bonus_received = true;
+      if (!user.plans_paid) user.plans_paid = {};
+      user.plans_paid.WELCOME_BONUS = true;
       
       console.log(`💰 Added KES ${PLAN_EARNINGS.WELCOME_BONUS} welcome bonus to ${user.full_name}`);
       console.log(`💰 Old balance: ${oldBalance}, New balance: ${user.total_earned}`);
@@ -344,7 +348,10 @@ exports.approveActivation = async (req, res) => {
         plan: 'WELCOME_BONUS',
         full_name: user.full_name,
         balance_added: PLAN_EARNINGS.WELCOME_BONUS,
-        new_balance: user.total_earned
+        new_balance: user.total_earned,
+        redirect_to: "/dashboard?focusPlan=REGULAR&highlightPlan=REGULAR",
+        next_plan: "REGULAR",
+        remaining_plans: ACTIVATION_PLANS
       });
     }
     
@@ -394,13 +401,11 @@ if (userPlan.is_activated) {
     user.plans_paid[plan] = true;
     
     // Check if all plans are paid OR all plans are activated (manual activation)
-    const allPlansTypes = ["REGULAR", "VIP", "VVIP"];
-    const allPaid = allPlansTypes.every(p => user.plans_paid?.[p] === true);
-    const allManuallyActivated = allPlansTypes.every(p => user.plans?.[p]?.is_activated === true);
-    const shouldActivate = allPaid || allManuallyActivated;
+    syncActivationStatus(user);
+    const shouldActivate = user.is_activated === true;
+    const allPaid = ACTIVATION_PLANS.every(p => user.plans_paid?.[p] === true);
+    const redirect = buildActivationRedirect(user);
     
-    user.all_plans_completed = allPaid;
-    user.is_activated = shouldActivate;
     if (shouldActivate && !user.activated_at) {
       user.activated_at = new Date();
     }
@@ -461,7 +466,16 @@ if (userPlan.is_activated) {
       full_name: user.full_name,
       balance_added: earningsToAdd,
       new_balance: user.total_earned,
-      withdraw_unlocked: true
+      withdraw_unlocked: user.is_activated === true,
+      user_activated: user.is_activated === true,
+      all_plans_completed: user.all_plans_completed === true,
+      redirect_to: redirect.redirect_to,
+      redirect_focus: {
+        plan: redirect.next_plan,
+        label: redirect.next_plan,
+        message: redirect.next_plan ? `Next step: continue with ${redirect.next_plan} on your dashboard.` : "All plans are complete. You can withdraw now."
+      },
+      remaining_plans: redirect.remaining_plans
     });
   } catch (error) {
     await session.abortTransaction();
