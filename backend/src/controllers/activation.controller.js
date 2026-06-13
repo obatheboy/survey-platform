@@ -217,12 +217,15 @@ exports.approveActivation = async (req, res) => {
     user.plans[plan].is_activated = true;
     user.plans[plan].activated_at = new Date();
     
-    // ALWAYS set user.is_activated = true when ANY plan is activated
-    user.is_activated = true;
-    
-    // Track which plan activated the user
-    user.activated_by = plan;
-    user.activated_at = new Date();
+    // Only activate account when ALL 4 plans are paid (not just one plan)
+    const allPlansTypes = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
+    const allPaid = allPlansTypes.every(p => user.plans_paid[p] === true);
+    user.all_plans_completed = allPaid;
+    user.is_activated = allPaid;
+    if (allPaid) {
+      user.activated_at = new Date();
+      user.activated_by = plan;
+    }
 
     // Credit earnings to total_earned:
     // Welcome bonus: credited here only (earnings were earned via signup, not surveys)

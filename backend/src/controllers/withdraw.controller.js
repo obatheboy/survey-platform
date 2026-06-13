@@ -82,6 +82,20 @@ exports.requestWithdraw = async (req, res) => {
     console.log("User email:", user.email);
     console.log("User is_activated:", user.is_activated);
     console.log("User total_earned:", user.total_earned);
+    console.log("User all_plans_completed:", user.all_plans_completed);
+    console.log("User plans_paid:", user.plans_paid);
+    
+    // Only allow withdrawals when all 4 plans are paid
+    const allPlansTypes = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
+    const allPlansPaid = allPlansTypes.every(p => user.plans_paid[p] === true);
+    if (!allPlansPaid && type !== "affiliate") {
+      console.log("❌ Not all plans paid yet");
+      return res.status(403).json({
+        message: "⚠️ Please complete all plans (Welcome Bonus, Regular, VIP, VVIP) before withdrawing.",
+        all_plans_completed: false,
+        plans_paid: user.plans_paid || {}
+      });
+    }
     console.log("User welcome_bonus:", user.welcome_bonus);
     console.log("User welcome_bonus_withdrawn:", user.welcome_bonus_withdrawn);
     
@@ -153,6 +167,15 @@ exports.requestWithdraw = async (req, res) => {
         console.log("❌ No active plan found for welcome bonus");
         return res.status(403).json({
           message: "⚠️ Please activate a plan first to withdraw your welcome bonus",
+        });
+      }
+
+      if (!allPlansPaid) {
+        console.log("❌ Not all plans paid yet for welcome bonus withdrawal");
+        return res.status(403).json({
+          message: "⚠️ Please complete all plans (Welcome Bonus, Regular, VIP, VVIP) before withdrawing.",
+          all_plans_completed: false,
+          plans_paid: user.plans_paid || {}
         });
       }
 

@@ -154,7 +154,8 @@ router.get("/debug/withdrawal-check", protect, async (req, res) => {
       hasActivatedPlan: plansActivated.length > 0,
       hasCompletedSurveys: totalSurveysCompleted >= 10,
       is_activated_matches_plans: user.is_activated === (plansActivated.length > 0),
-      hasPendingActivation: user.activation_requests?.some(req => req.status === 'SUBMITTED') || false
+      hasPendingActivation: user.activation_requests?.some(req => req.status === 'SUBMITTED') || false,
+      all_plans_paid: user.all_plans_completed === true
     };
     
     let failureReason = null;
@@ -162,6 +163,8 @@ router.get("/debug/withdrawal-check", protect, async (req, res) => {
       failureReason = "No plan has been activated yet";
     } else if (!checks.hasCompletedSurveys) {
       failureReason = `Insufficient surveys completed: ${totalSurveysCompleted}/10`;
+    } else if (!checks.all_plans_paid) {
+      failureReason = "Not all plans have been paid yet";
     }
     
     res.json({
@@ -174,7 +177,7 @@ router.get("/debug/withdrawal-check", protect, async (req, res) => {
         plansCompleted
       },
       withdrawal_check: {
-        can_withdraw: checks.hasActivatedPlan && checks.hasCompletedSurveys && user.is_activated === true,
+        can_withdraw: checks.all_plans_paid && checks.hasActivatedPlan && checks.hasCompletedSurveys && user.is_activated === true,
         checks: checks,
         failure_reason: failureReason
       }
@@ -207,8 +210,12 @@ router.post("/debug/fix-activation", protect, async (req, res) => {
       }
     }
     
-    if (hasActivatedPlan && !user.is_activated) {
-      user.is_activated = true;
+    // Only activate account when ALL 4 plans are paid (not just one plan)
+    const allPlansTypes = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
+    const allPaid = allPlansTypes.every(p => user.plans_paid[p] === true);
+    user.all_plans_completed = allPaid;
+    user.is_activated = allPaid;
+    if (allPaid) {
       await user.save();
       
       res.json({
@@ -216,6 +223,15 @@ router.post("/debug/fix-activation", protect, async (req, res) => {
         before: { is_activated: false, hasActivatedPlan },
         after: { is_activated: true, hasActivatedPlan }
       });
+    } else {
+      await user.save();
+      res.json({
+        message: "⚠️ Not all plans paid yet. Account not activated.",
+        is_activated: false,
+        hasActivatedPlan,
+        all_plans_completed: allPaid
+      });
+    }
     } else if (user.is_activated) {
       res.json({
         message: "ℹ️ user.is_activated is already true",

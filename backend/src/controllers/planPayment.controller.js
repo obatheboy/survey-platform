@@ -215,9 +215,14 @@ exports.confirmPlanPayment = async (req, res) => {
       user.plans[planKey].activated_at = new Date();
     }
 
-    // Always set user.is_activated = true when ANY plan is paid
-    user.is_activated = true;
-    user.activated_at = new Date();
+    // Only activate account when ALL 4 plans are paid (not just one plan)
+    const allPlansTypes = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
+    const allPaid = allPlansTypes.every(p => user.plans_paid[p] === true);
+    user.all_plans_completed = allPaid;
+    user.is_activated = allPaid;
+    if (allPaid) {
+      user.activated_at = new Date();
+    }
 
     // Credit earnings (skip WELCOME_BONUS — already given at registration)
     let creditEarnings = true;
@@ -234,11 +239,6 @@ exports.confirmPlanPayment = async (req, res) => {
     if (planKey === "WELCOME_BONUS") {
       user.welcome_bonus_received = true;
     }
-
-    // Check if all 4 plans are paid (WELCOME_BONUS, REGULAR, VIP, VVIP)
-    const allPlansTypes = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
-    const allPaid = allPlansTypes.every(p => user.plans_paid[p] === true);
-    user.all_plans_completed = allPaid;
 
     // Calculate remaining unpaid plans
     const remainingPlans = allPlansTypes.filter(p => user.plans_paid[p] !== true);

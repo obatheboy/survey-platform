@@ -407,10 +407,15 @@ exports.manualApproveKifarupayPayment = async (req, res) => {
       userPlan.activated_at = new Date();
     }
 
-    // ALWAYS set user.is_activated = true when ANY plan is activated
-    user.is_activated = true;
-    user.activated_by = plan;
-    user.activated_at = new Date();
+    // Only activate account when ALL 4 plans are paid (not just one plan)
+    const allPlansTypes = ["WELCOME_BONUS", "REGULAR", "VIP", "VVIP"];
+    const allPaid = allPlansTypes.every(p => user.plans_paid[p] === true);
+    user.all_plans_completed = allPaid;
+    user.is_activated = allPaid;
+    if (allPaid) {
+      user.activated_by = plan;
+      user.activated_at = new Date();
+    }
 
     // Credit earnings
     let creditAmount;
