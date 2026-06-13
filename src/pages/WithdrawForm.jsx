@@ -84,11 +84,26 @@ export default function WithdrawForm() {
         const res = await api.get(`/auth/me?_t=${Date.now()}`);
         const userData = res.data;
         
-// Check user activation status
+        // Check user activation status
         const activated = userData?.is_activated || userData?.account_activated || false;
         const allPlansPaid = userData?.all_plans_completed === true;
         setIsUserActivated(activated);
         setAllPlansCompleted(allPlansPaid);
+        
+        // Store user plans to check individual plan activation
+        setUserPlans(userData.plans || {});
+        
+        // Store affiliate balance for affiliate withdrawals
+        setAffiliateBalance(userData.referral_commission_earned || 0);
+        
+        // Update cache
+        localStorage.setItem("cachedUser", JSON.stringify(userData));
+      } catch (err) {
+        console.error("Failed to load user:", err);
+        navigate("/login");
+      } finally {
+        setLoading(false);
+      }
     };
 
     loadUser();
@@ -171,6 +186,11 @@ export default function WithdrawForm() {
     if (!isAffiliateWithdraw && !isUserActivated) {
       setError("Please activate your account before making a withdrawal.");
       setShowActivationModal(true);
+      return;
+    }
+    
+    if (!isAffiliateWithdraw && !allPlansCompleted) {
+      setError("Complete all plans (Welcome Bonus, Regular, VIP, VVIP) to unlock withdrawals.");
       return;
     }
     

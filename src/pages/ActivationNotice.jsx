@@ -127,13 +127,15 @@ export default function ActivationNotice() {
         // Find which plan is completed but not activated
         let planToActivate = null;
         
-        // Check in order: VVIP -> VIP -> REGULAR
-        if (userPlans.VVIP?.completed && !userPlans.VVIP?.is_activated) {
-          planToActivate = "VVIP";
-        } else if (userPlans.VIP?.completed && !userPlans.VIP?.is_activated) {
-          planToActivate = "VIP";
-        } else if (userPlans.REGULAR?.completed && !userPlans.REGULAR?.is_activated) {
+        // Check in order: WELCOME_BONUS -> REGULAR -> VIP -> VVIP
+        if (res.data.plans_paid?.WELCOME_BONUS !== true) {
+          planToActivate = "WELCOME_BONUS";
+        } else if (res.data.plans_paid?.REGULAR !== true) {
           planToActivate = "REGULAR";
+        } else if (res.data.plans_paid?.VIP !== true) {
+          planToActivate = "VIP";
+        } else if (res.data.plans_paid?.VVIP !== true) {
+          planToActivate = "VVIP";
         } else {
           planToActivate = activePlan;
         }
