@@ -279,10 +279,10 @@ export default function Surveys() {
       
       const surveysNeeded = Math.max(0, 10 - currentCount);
       
-      if (surveysNeeded <= 0) {
-        navigate("/activate");
-        return;
-      }
+if (surveysNeeded <= 0) {
+         navigate(`/activate?plan=${activePlan.toLowerCase()}`);
+         return;
+       }
       setSubmitProgress(50);
       await submitBatchSurveys(activePlan, surveysNeeded, userData, currentCount);
       

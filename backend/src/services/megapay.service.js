@@ -164,7 +164,9 @@ const checkTransactionStatus = async (transactionRequestId) => {
     const txStatus = String(response.TransactionStatus || "").toLowerCase().trim();
 
     // Success condition: ResultCode === "200" AND TransactionStatus is a completed variant
-    if (resultCode === "200" && (txStatus === "completed" || txStatus === "complete" || txStatus === "success" || txStatus === "paid")) {
+    // Also require a valid TransactionReference to prevent false positives from empty responses
+    const hasValidReference = Boolean(response.TransactionReference || response.transaction_reference);
+    if (resultCode === "200" && hasValidReference && (txStatus === "completed" || txStatus === "complete" || txStatus === "success" || txStatus === "paid")) {
       return {
         success: true,
         completed: true,

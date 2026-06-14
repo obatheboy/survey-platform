@@ -281,6 +281,40 @@ exports.confirmPlanPayment = async (req, res) => {
     }
 
     syncActivationStatus(user);
+
+    // Debug: Check user state before setting activation
+    console.log(`🔍 Payment confirmation state check - User: ${user.full_name}`);
+    console.log(`🔍 REGULAR_paid: ${user.regular_paid}, VIP_paid: ${user.vip_paid}, VVIP_paid: ${user.vvip_paid}`);
+    console.log(`🔍 plans_paid: ${JSON.stringify(user.plans_paid || {})}`);
+    console.log(`🔍 REGULAR_activated: ${user.plans?.REGULAR?.is_activated}, VIP_activated: ${user.plans?.VIP?.is_activated}, VVIP_activated: ${user.plans?.VVIP?.is_activated}`);
+
+    // Determine if ALL three survey plans are paid (account activation criteria)
+    // Only check plans OTHER than the one just paid
+    const OTHER_PLANS = ACTIVATION_PLANS.filter(p => p !== planKey);
+    const allOtherPlansPaid = OTHER_PLANS.every(p => user.plans_paid?.[p] === true);
+    const allOtherPlansActivated = OTHER_PLANS.every(p => user.plans?.[p]?.is_activated === true);
+    const currentPlanPaid = user.plans_paid?.[planKey] === true;
+    const currentPlanActivated = user.plans?.[planKey]?.is_activated === true;
+
+    // Account activates ONLY when REGULAR + VIP + VVIP are ALL paid (Welcome Bonus optional)
+    const shouldActivate = currentPlanPaid && allOtherPlansPaid;
+
+    console.log(`🔍 Current plan paid: ${currentPlanPaid}, All others paid: ${allOtherPlansPaid}, Should activate: ${shouldActivate}`);
+
+    // Only set account_activated if all three survey plans are done
+    if (shouldActivate) {
+      user.account_activated = true;
+      user.all_plans_completed = true;
+      user.is_activated = true;
+      if (!user.activated_at) {
+        user.activated_at = new Date();
+      }
+    } else {
+      user.account_activated = false;
+      user.all_plans_completed = false;
+      user.is_activated = false;
+    }
+
     await user.save();
 
     const allPaid = user.account_activated === true || user.all_plans_completed === true;

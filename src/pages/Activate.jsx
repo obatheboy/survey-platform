@@ -398,14 +398,18 @@ const submitActivation = async () => {
       
       const submitRes = await api.post("/activation/submit", requestData);
       
-      const redirect = submitRes.data?.redirect_to || getDashboardFocusUrl(getNextActivationPlan(user) || "REGULAR");
+      const remainingPlans = submitRes.data?.remaining_plans || getRemainingActivationPlans(user);
+      const hasRemainingPlans = remainingPlans && remainingPlans.length > 0;
+      
       setPaymentSuccessData({
         plan_paid: planKey === "WELCOME_BONUS" ? "Welcome Bonus" : planKey,
-        remaining_plans: submitRes.data?.remaining_plans || getRemainingActivationPlans(user),
-        redirect_to: redirect,
+        remaining_plans: remainingPlans,
+        redirect_to: submitRes.data?.redirect_to || "/dashboard",
         redirect_focus: submitRes.data?.redirect_focus || null,
-        all_plans_completed: submitRes.data?.all_plans_completed || false,
-        remaining_label: submitRes.data?.remaining_plans?.join(', ') || getRemainingActivationPlans(user).join(', ')
+        all_plans_completed: false, // Manual submission always requires admin approval
+        remaining_label: hasRemainingPlans
+          ? `Remaining: ${remainingPlans.join(', ')}`
+          : "Awaiting admin approval"
       });
       setShowSuccessPopup(true);
       return;
@@ -448,19 +452,26 @@ const submitActivation = async () => {
             }));
           }
 
-          // Show success message with remaining plans
-          const planLabel = plan_paid === "WELCOME_BONUS" ? "Welcome Bonus" : plan_paid;
-          const remainingLabelCount = remaining_plans?.length || 0;
-          const remainingLabel = remainingLabelCount > 0 ? remaining_plans.join(', ') : 'none';
+// Show success message with remaining plans
+           const planLabel = plan_paid === "WELCOME_BONUS" ? "Welcome Bonus" : plan_paid;
+           const remainingLabelCount = remaining_plans?.length || 0;
+           const remainingLabel = remainingLabelCount > 0 ? remaining_plans.join(', ') : null;
 
-          setPaymentSuccessData({
-            plan_paid: planLabel,
-            remaining_plans: remaining_plans || [],
-            redirect_to: redirect_to,
-            redirect_focus: redirect_focus || null,
-            all_plans_completed: all_plans_completed || false,
-            remaining_label: remainingLabel
-          });
+           // Determine if account is fully activated - only when REGULAR + VIP + VVIP all paid
+           const isAccountActivated = (remainingLabelCount === 0 && planKey !== "WELCOME_BONUS");
+
+           setPaymentSuccessData({
+             plan_paid: planLabel,
+             remaining_plans: remaining_plans || [],
+             redirect_to: redirect_to,
+             redirect_focus: redirect_focus || null,
+             all_plans_completed: isAccountActivated,
+             remaining_label: remainingLabelCount > 0
+               ? `Next: ${remaining_plans.join(', ')}`
+               : planKey === "WELCOME_BONUS"
+                 ? "Continue to Regular plan to activate your account"
+                 : "Account activated! Ready to withdraw."
+           });
           setShowPaymentSuccess(true);
 
           // Auto-redirect after 4 seconds
