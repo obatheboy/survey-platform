@@ -441,7 +441,23 @@ const submitActivation = async () => {
           plan: planKey
         });
 
-if (confirmRes.data?.success) {
+        if (confirmRes.data?.success) {
+          // Additional frontend validation - only accept if we have real completion data
+          const hasRealCompletion = confirmRes.data.plan_paid || 
+            confirmRes.data.user?.plans_paid || 
+            confirmRes.data.remaining_plans;
+          
+          if (!hasRealCompletion) {
+            console.log("⚠️ Rejecting suspicious success response, continuing to poll...");
+            pollCount++;
+            if (pollCount >= maxPolls) {
+              clearInterval(pollInterval);
+              setPaynectaWaiting(false);
+              setPaynectaError("Payment confirmation timed out. Please try again.");
+            }
+            return;
+          }
+
           clearInterval(pollInterval);
           setPaynectaWaiting(false);
           const { remaining_plans, redirect_to, plan_paid, token, user: userData, redirect_focus } = confirmRes.data;
@@ -456,36 +472,36 @@ if (confirmRes.data?.success) {
             }));
           }
 
-           // Show success message with remaining plans
-             const planLabel = plan_paid === "WELCOME_BONUS" ? "Welcome Bonus" : plan_paid;
-             const remainingLabelCount = remaining_plans?.length || 0;
+          // Show success message with remaining plans
+          const planLabel = plan_paid === "WELCOME_BONUS" ? "Welcome Bonus" : plan_paid;
+          const remainingLabelCount = remaining_plans?.length || 0;
 
-             // Determine if account is fully activated - only when REGULAR + VIP + VVIP all paid
-             const isAccountActivated = (remainingLabelCount === 0 && planKey !== "WELCOME_BONUS");
+          // Determine if account is fully activated - only when REGULAR + VIP + VVIP all paid
+          const isAccountActivated = (remainingLabelCount === 0 && planKey !== "WELCOME_BONUS");
 
-             setPaymentSuccessData({
-               plan_paid: planLabel,
-               remaining_plans: remaining_plans || [],
-               redirect_to: redirect_to,
-               redirect_focus: redirect_focus || null,
-               all_plans_completed: isAccountActivated,
-               remaining_label: remainingLabelCount > 0
-                 ? `Next: ${remaining_plans.join(', ')}`
-                 : planKey === "WELCOME_BONUS"
-                   ? "Continue to Regular plan to activate your account"
-                   : "Account activated! Ready to withdraw."
-             });
-           setShowPaymentSuccess(true);
+          setPaymentSuccessData({
+            plan_paid: planLabel,
+            remaining_plans: remaining_plans || [],
+            redirect_to: redirect_to,
+            redirect_focus: redirect_focus || null,
+            all_plans_completed: isAccountActivated,
+            remaining_label: remainingLabelCount > 0
+              ? `Next: ${remaining_plans.join(', ')}`
+              : planKey === "WELCOME_BONUS"
+                ? "Continue to Regular plan to activate your account"
+                : "Account activated! Ready to withdraw."
+          });
+          setShowPaymentSuccess(true);
 
-           // Auto-redirect after 4 seconds
-           const redirectTarget = redirect_to || "/dashboard";
-           if (redirectTarget) {
-             console.log("Auto-redirecting to:", redirectTarget);
-             setTimeout(() => {
-               window.location.href = redirectTarget;
-             }, 4000);
-           }
-         } else if (pollCount >= maxPolls) {
+          // Auto-redirect after 4 seconds
+          const redirectTarget = redirect_to || "/dashboard";
+          if (redirectTarget) {
+            console.log("Auto-redirecting to:", redirectTarget);
+            setTimeout(() => {
+              window.location.href = redirectTarget;
+            }, 4000);
+          }
+        } else if (pollCount >= maxPolls) {
           clearInterval(pollInterval);
           setPaynectaWaiting(false);
           setPaynectaError("Payment confirmation timed out. Please try again.");
