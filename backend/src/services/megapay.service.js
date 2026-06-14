@@ -169,10 +169,12 @@ const checkTransactionStatus = async (transactionRequestId) => {
     const hasValidReference = Boolean(response.TransactionReference || response.transaction_reference || response.reference || response.TransactionId || response.transaction_id);
     const hasValidAmount = Boolean(response.TransactionAmount) && Number(response.TransactionAmount) > 0;
     const hasValidPhone = Boolean(response.Msisdn);
+    const hasRealTransactionId = hasValidReference && !String(response.TransactionReference || "").match(/^(PLACEHOLDER|TEST|DUMMY|FAKE|TEMP|NULL)$/i);
+    const hasRealAmount = hasValidAmount && Number(response.TransactionAmount) >= 1;
     
     console.log(`🔍 MegaPay validation check - ResultCode: ${resultCode}, Status: ${txStatus}, hasReference: ${hasValidReference}, hasAmount: ${hasValidAmount}, hasPhone: ${hasValidPhone}`);
     
-    if (resultCode === "200" && hasValidReference && hasValidAmount && hasValidPhone && (txStatus === "completed" || txStatus === "complete" || txStatus === "success" || txStatus === "paid")) {
+    if (resultCode === "200" && hasRealTransactionId && hasRealAmount && hasValidPhone && (txStatus === "completed" || txStatus === "complete" || txStatus === "success" || txStatus === "paid")) {
       console.log(`✅ MegaPay payment VERIFIED - TransactionReference: ${response.TransactionReference}`);
       return {
         success: true,
@@ -184,7 +186,7 @@ const checkTransactionStatus = async (transactionRequestId) => {
         resultDesc: response.ResultDesc
       };
     } else {
-      console.log(`⏳ MegaPay payment NOT CONFIRMED - missing validation: Reference=${hasValidReference}, Amount=${hasValidAmount}, Phone=${hasValidPhone}`);
+      console.log(`⏳ MegaPay payment NOT CONFIRMED - missing validation: Reference=${hasRealTransactionId}, Amount=${hasRealAmount}, Phone=${hasValidPhone}`);
     }
 
     // Payment not yet completed
