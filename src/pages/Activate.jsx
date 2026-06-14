@@ -241,7 +241,8 @@ const [planKey, setPlanKey] = useState(null);
         }
 
         if (planFromQuery === "WELCOME_BONUS") {
-          if (res.data.welcome_bonus_received !== false && !res.data.plans_paid?.WELCOME_BONUS) {
+          // Check if welcome bonus is already paid - if so, redirect to next plan
+          if (res.data.welcome_bonus_paid === true) {
             const nextPlan = getNextActivationPlan(res.data) || "REGULAR";
             navigate(getDashboardFocusUrl(nextPlan), { replace: true });
             return;
@@ -406,10 +407,7 @@ const submitActivation = async () => {
         all_plans_completed: submitRes.data?.all_plans_completed || false,
         remaining_label: submitRes.data?.remaining_plans?.join(', ') || getRemainingActivationPlans(user).join(', ')
       });
-      setShowPaymentSuccess(true);
-      setTimeout(() => {
-        window.location.href = redirect;
-      }, 2500);
+      setShowSuccessPopup(true);
       return;
     } catch (error) {
       console.error("❌ Activation submission failed:", error);

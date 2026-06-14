@@ -554,19 +554,11 @@ export default function Dashboard() {
     navigate("/withdraw-form", { state: { plan } });
   };
 
-  /* =========================
-     WELCOME BONUS
-  ========================= */
+/* =========================
+      WELCOME BONUS
+   ========================= */
   const handleWelcomeBonusWithdraw = () => {
-    document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
-    document.body.style.height = '100%';
-
-    setFullScreenNotification({
-      message: "🎁 Claim your welcome bonus after completing the survey plans.",
-      redirect: "/activate?welcome_bonus=true",
-    });
+    navigate("/activate?welcome_bonus=true");
   };
 
   /* =========================
@@ -1641,12 +1633,11 @@ title="Contact Us on WhatsApp"
         </footer>
 
 {/* WELCOME BONUS POPUP */}
-       <WelcomeBonusPopup
-         isOpen={showWelcomeBonus}
-         onClose={handleWelcomeBonusClose}
-         onActivate={() => navigate('/activate?welcome_bonus=true')}
-         showMaybeLater={true}
-       />
+        <WelcomeBonusPopup
+          isOpen={showWelcomeBonus}
+          onClose={handleWelcomeBonusClose}
+          onActivate={() => navigate('/activate?welcome_bonus=true')}
+        />
 
       {/* DAILY REWARD POPUP */}
       <DailyRewardPopup
