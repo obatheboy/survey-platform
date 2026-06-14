@@ -32,19 +32,14 @@ const PLAN_CONFIG = {
 };
 
 export default function ActivationNotice() {
-  const navigate = useNavigate();
-  const location = useLocation();
+   const navigate = useNavigate();
+   const location = useLocation();
 
-  const [planKey, setPlanKey] = useState(null);
-  const [totalEarned, setTotalEarned] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [userName, setUserName] = useState("");
-  
-  // Check if we're in development mode (simpler approach)
-  const isDevelopment = window.location.hostname === 'localhost' || 
-                        window.location.hostname === '127.0.0.1' ||
-                        window.location.hostname.includes('local');
+   const [planKey, setPlanKey] = useState(null);
+   const [totalEarned, setTotalEarned] = useState(0);
+   const [loading, setLoading] = useState(true);
+   const [error, setError] = useState("");
+   const [userName, setUserName] = useState("");
 
   /* =========================
      SCROLL TO TOP ON MOUNT
@@ -183,28 +178,9 @@ export default function ActivationNotice() {
     loadData();
   }, [navigate, location.state]);
 
-  const handleActivate = () => {
-    console.log("🟢 ===== ACTIVATION NOTICE DEBUG =====");
-    console.log("🟢 Current planKey:", planKey);
-    console.log("🟢 Plan config for this key:", PLAN_CONFIG[planKey]);
-    console.log("🟢 User name:", userName);
-    
-    // FIX: Make sure we're passing planKey (string), not plan object
-    navigate("/activate", { 
-      state: { 
-        planKey: planKey,  // This MUST be a string like "VVIP"
-        activationFee: PLAN_CONFIG[planKey]?.activationFee,
-        amount: totalEarned,
-        userName: userName
-      }
-    });
-    
-    console.log("🟢 Navigating to /activate with state:", { 
-      planKey: planKey,
-      activationFee: PLAN_CONFIG[planKey]?.activationFee,
-      amount: totalEarned 
-    });
-  };
+const handleActivate = () => {
+     navigate("/withdraw-form");
+   };
 
   /* =========================
      LOADING STATE
@@ -316,57 +292,14 @@ export default function ActivationNotice() {
            <p className="earnings-note">Now Activate your Account and Withdraw Immediately</p>
          </div>
 
-         {/* CALL TO ACTION */}
-         <div className="simple-action">
-           <h3>Tap the button below,Follow all steps and withdraw your money. 🚀</h3>
-           <p className="action-description"></p>
-         </div>
+{/* CALL TO ACTION */}
+          <div className="simple-action">
+            <h3>Tap the button below,Follow all steps and withdraw your money. 🚀</h3>
+            <p className="action-description"></p>
+          </div>
 
-         {/* PLAN SELECTION - Show 3 plans with Activate/Withdraw buttons */}
-         <div className="plan-selection-section" style={{ marginTop: "20px", width: "100%" }}>
-           {["REGULAR", "VIP", "VVIP"].map((p) => {
-             const planData = PLAN_CONFIG[p];
-             const isSelected = planKey === p;
-             
-             return (
-               <div key={p} style={{
-                 padding: "14px",
-                 border: `2px solid ${planData.color}`,
-                 borderRadius: "12px",
-                 marginBottom: "10px",
-                 background: isSelected ? `${planData.color}20` : "rgba(30, 41, 59, 0.5)",
-                 cursor: "pointer",
-                 transition: "all 0.2s"
-               }} onClick={() => navigate("/activate?plan=" + p.toLowerCase())}>
-                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                   <div style={{ textAlign: "left" }}>
-                     <div style={{ fontWeight: 800, fontSize: "15px", color: planData.color }}>
-                       {planData.icon} {planData.label} Plan
-                     </div>
-                     <div style={{ fontSize: "12px", color: "#94a3b8", marginTop: "4px" }}>
-                       Earnings: KES {planData.total.toLocaleString()}
-                     </div>
-                   </div>
-                   <button style={{
-                     padding: "8px 16px",
-                     border: "none",
-                     borderRadius: "8px",
-                     background: planData.color,
-                     color: "white",
-                     fontWeight: 700,
-                     fontSize: "12px",
-                     cursor: "pointer"
-                   }}>
-                     {isSelected ? "Activate Now" : "Select Plan"}
-                   </button>
-                 </div>
-               </div>
-             );
-           })}
-         </div>
-
-         {/* ACTIVATE BUTTON - Primary action */}
-         <button
+          {/* ACTIVATE BUTTON - Primary action */}
+<button
            onClick={handleActivate}
            className="simple-activate-button"
            style={{ background: plan.color }}
@@ -375,42 +308,20 @@ export default function ActivationNotice() {
            Activate & Withdraw Now
            <span className="button-arrow">→</span>
          </button>
-        
-        <div className="info-item">
-          <span className="info-icon">👑</span>
-          <span className="info-text">One-time activation fee</span>
-        </div>
+         
+         <div className="info-item">
+           <span className="info-icon">👑</span>
+           <span className="info-text">One-time activation fee</span>
+         </div>
 
-        {/* DEBUG INFO - Shows in local development */}
-        {isDevelopment && (
-          <div style={{
-            marginTop: '15px',
-            padding: '10px',
-            background: 'rgba(59, 130, 246, 0.1)',
-            border: '1px solid rgba(59, 130, 246, 0.3)',
-            borderRadius: '8px',
-            fontSize: '12px',
-            color: '#3b82f6'
-          }}>
-            <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>🔍 DEBUG INFO:</div>
-            <div>Plan Key: <strong>{planKey}</strong></div>
-            <div>Plan Label: <strong>{plan.label}</strong></div>
-            <div>Activation Fee: <strong>KES {plan.activationFee}</strong></div>
-            <div>Total Earned: <strong>KES {totalEarned}</strong></div>
-            <div style={{ marginTop: '8px', fontSize: '11px', color: '#6b7280' }}>
-              This debug info only shows on localhost
-            </div>
-          </div>
-        )}
-
-        {/* BACK BUTTON */}
-        <button
-          onClick={() => navigate("/dashboard")}
-          className="simple-back-button"
-        >
-          ← Back to Dashboard
-        </button>
-      </div>
-    </div>
-  );
+         {/* BACK BUTTON */}
+         <button
+           onClick={() => navigate("/dashboard")}
+           className="simple-back-button"
+         >
+           ← Back to Dashboard
+         </button>
+       </div>
+     </div>
+   );
 }
