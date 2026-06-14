@@ -169,11 +169,11 @@ const checkTransactionStatus = async (transactionRequestId) => {
     // MegaPay returns TransactionReference which is different from transaction_request_id we sent
     const hasValidReference = Boolean(
       (response.TransactionReference && response.TransactionReference !== transactionRequestId && 
-       !String(response.TransactionReference).match(/^(PLACEHOLDER|TEST|DUMMY|FAKE|TEMP|NULL|undefined|null|none|NA|N\\/A)$/i)) ||
-      (response.transaction_reference && !String(response.transaction_reference).match(/^(PLACEHOLDER|TEST|DUMMY|FAKE|TEMP|NULL|undefined|null|none|NA|N\\/A)$/i)) ||
-      (response.reference && !String(response.reference).match(/^(PLACEHOLDER|TEST|DUMMY|FAKE|TEMP|NULL|undefined|null|none|NA|N\\/A)$/i)) ||
-      (response.TransactionId && response.TransactionId !== transactionRequestId && !String(response.TransactionId).match(/^(PLACEHOLDER|TEST|DUMMY|FAKE|TEMP|NULL|undefined|null|none|NA|N\\/A)$/i)) ||
-      (response.transaction_id && !String(response.transaction_id).match(/^(PLACEHOLDER|TEST|DUMMY|FAKE|TEMP|NULL|undefined|null|none|NA|N\\/A)$/i))
+       !['PLACEHOLDER','TEST','DUMMY','FAKE','TEMP','NULL','undefined','null','none','NA','N/A'].includes(String(response.TransactionReference).toUpperCase())) ||
+      (response.transaction_reference && !['PLACEHOLDER','TEST','DUMMY','FAKE','TEMP','NULL','undefined','null','none','NA','N/A'].includes(String(response.transaction_reference).toUpperCase())) ||
+      (response.reference && !['PLACEHOLDER','TEST','DUMMY','FAKE','TEMP','NULL','undefined','null','none','NA','N/A'].includes(String(response.reference).toUpperCase())) ||
+      (response.TransactionId && response.TransactionId !== transactionRequestId && !['PLACEHOLDER','TEST','DUMMY','FAKE','TEMP','NULL','undefined','null','none','NA','N/A'].includes(String(response.TransactionId).toUpperCase())) ||
+      (response.transaction_id && !['PLACEHOLDER','TEST','DUMMY','FAKE','TEMP','NULL','undefined','null','none','NA','N/A'].includes(String(response.transaction_id).toUpperCase()))
     );
     const hasValidAmount = Boolean(response.TransactionAmount) && Number(response.TransactionAmount) > 0;
     const hasValidPhone = Boolean(response.Msisdn);
