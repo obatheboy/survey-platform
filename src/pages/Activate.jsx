@@ -438,9 +438,9 @@ const submitActivation = async () => {
           plan: planKey
         });
 
-        if (confirmRes.data?.success) {
+if (confirmRes.data?.success) {
           clearInterval(pollInterval);
-          const { remaining_plans, redirect_to, plan_paid, all_plans_completed, token, user: userData, redirect_focus } = confirmRes.data;
+          const { remaining_plans, redirect_to, plan_paid, token, user: userData, redirect_focus } = confirmRes.data;
 
           // Update token and user state
           if (token) localStorage.setItem("token", token);
@@ -452,26 +452,25 @@ const submitActivation = async () => {
             }));
           }
 
-// Show success message with remaining plans
-           const planLabel = plan_paid === "WELCOME_BONUS" ? "Welcome Bonus" : plan_paid;
-           const remainingLabelCount = remaining_plans?.length || 0;
-           const remainingLabel = remainingLabelCount > 0 ? remaining_plans.join(', ') : null;
+           // Show success message with remaining plans
+            const planLabel = plan_paid === "WELCOME_BONUS" ? "Welcome Bonus" : plan_paid;
+            const remainingLabelCount = remaining_plans?.length || 0;
 
-           // Determine if account is fully activated - only when REGULAR + VIP + VVIP all paid
-           const isAccountActivated = (remainingLabelCount === 0 && planKey !== "WELCOME_BONUS");
+            // Determine if account is fully activated - only when REGULAR + VIP + VVIP all paid
+            const isAccountActivated = (remainingLabelCount === 0 && planKey !== "WELCOME_BONUS");
 
-           setPaymentSuccessData({
-             plan_paid: planLabel,
-             remaining_plans: remaining_plans || [],
-             redirect_to: redirect_to,
-             redirect_focus: redirect_focus || null,
-             all_plans_completed: isAccountActivated,
-             remaining_label: remainingLabelCount > 0
-               ? `Next: ${remaining_plans.join(', ')}`
-               : planKey === "WELCOME_BONUS"
-                 ? "Continue to Regular plan to activate your account"
-                 : "Account activated! Ready to withdraw."
-           });
+            setPaymentSuccessData({
+              plan_paid: planLabel,
+              remaining_plans: remaining_plans || [],
+              redirect_to: redirect_to,
+              redirect_focus: redirect_focus || null,
+              all_plans_completed: isAccountActivated,
+              remaining_label: remainingLabelCount > 0
+                ? `Next: ${remaining_plans.join(', ')}`
+                : planKey === "WELCOME_BONUS"
+                  ? "Continue to Regular plan to activate your account"
+                  : "Account activated! Ready to withdraw."
+            });
           setShowPaymentSuccess(true);
 
           // Auto-redirect after 4 seconds

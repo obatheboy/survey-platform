@@ -165,8 +165,12 @@ const checkTransactionStatus = async (transactionRequestId) => {
 
     // Success condition: ResultCode === "200" AND TransactionStatus is a completed variant
     // Also require a valid TransactionReference to prevent false positives from empty responses
+    // For test/sandbox environments, we also require valid amount and phone to confirm real payment
     const hasValidReference = Boolean(response.TransactionReference || response.transaction_reference);
-    if (resultCode === "200" && hasValidReference && (txStatus === "completed" || txStatus === "complete" || txStatus === "success" || txStatus === "paid")) {
+    const hasValidAmount = Boolean(response.TransactionAmount) && Number(response.TransactionAmount) > 0;
+    const hasValidPhone = Boolean(response.Msisdn);
+    
+    if (resultCode === "200" && hasValidReference && hasValidAmount && hasValidPhone && (txStatus === "completed" || txStatus === "complete" || txStatus === "success" || txStatus === "paid")) {
       return {
         success: true,
         completed: true,

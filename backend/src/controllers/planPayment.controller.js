@@ -292,9 +292,7 @@ exports.confirmPlanPayment = async (req, res) => {
     // Only check plans OTHER than the one just paid
     const OTHER_PLANS = ACTIVATION_PLANS.filter(p => p !== planKey);
     const allOtherPlansPaid = OTHER_PLANS.every(p => user.plans_paid?.[p] === true);
-    const allOtherPlansActivated = OTHER_PLANS.every(p => user.plans?.[p]?.is_activated === true);
     const currentPlanPaid = user.plans_paid?.[planKey] === true;
-    const currentPlanActivated = user.plans?.[planKey]?.is_activated === true;
 
     // Account activates ONLY when REGULAR + VIP + VVIP are ALL paid (Welcome Bonus optional)
     const shouldActivate = currentPlanPaid && allOtherPlansPaid;
@@ -381,8 +379,6 @@ exports.confirmPlanPayment = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    // Format plan label for message
-    const planLabel = planKey === "WELCOME_BONUS" ? "Welcome Bonus" : planKey;
     const remainingLabels = redirect.remaining_plans;
 
     return res.status(200).json({
