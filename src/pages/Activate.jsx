@@ -43,20 +43,22 @@ const PLAN_CONFIG = {
 const ACTIVATION_PLANS = ["REGULAR", "VIP", "VVIP"];
 
 const isPlanDone = (user, planKey) => {
-  return user?.plans_paid?.[planKey] === true || user?.plans?.[planKey]?.is_activated === true;
-};
+   return user?.plans_paid?.[planKey] === true || user?.plans?.[planKey]?.is_activated === true;
+ };
 
-const getRemainingActivationPlans = (user) => {
-  return ACTIVATION_PLANS.filter(planKey => !isPlanDone(user, planKey));
-};
+ const getRemainingActivationPlans = (user) => {
+   return ACTIVATION_PLANS.filter(planKey => !isPlanDone(user, planKey));
+ };
 
-const getNextActivationPlan = (user) => {
-  return getRemainingActivationPlans(user)[0] || null;
-};
+ const getNextActivationPlan = (user) => {
+   return getRemainingActivationPlans(user)[0] || null;
+ };
 
-const getDashboardFocusUrl = (planKey) => {
-  return `/dashboard?focusPlan=${planKey}&highlightPlan=${planKey}`;
-};
+ const getDashboardFocusUrl = (planKey) => {
+   return `/dashboard?focusPlan=${planKey}&highlightPlan=${planKey}`;
+ };
+
+ const isComingFromWithdraw = location.state?.from === "withdraw" || location.state?.showPayment !== undefined;
 
 
 const styles = {
@@ -240,38 +242,43 @@ const [planKey, setPlanKey] = useState(null);
           planFromQuery = statePlanKey.toUpperCase();
         }
 
-        if (planFromQuery === "WELCOME_BONUS") {
-          // Check if welcome bonus is already paid - if so, redirect to next plan
-          if (res.data.welcome_bonus_paid === true) {
-            const nextPlan = getNextActivationPlan(res.data) || "REGULAR";
-            navigate(getDashboardFocusUrl(nextPlan), { replace: true });
-            return;
-          }
-        }
+if (planFromQuery === "WELCOME_BONUS") {
+           // Show activate page for welcome bonus if not paid
+           if (res.data.welcome_bonus_paid === true) {
+             const nextPlan = getNextActivationPlan(res.data) || "REGULAR";
+             if (nextPlan) {
+               navigate(getDashboardFocusUrl(nextPlan), { replace: true });
+             } else {
+               navigate("/withdraw-form", { replace: true });
+             }
+             return;
+           }
+         }
 
-        if (planFromQuery && ACTIVATION_PLANS.includes(planFromQuery)) {
-          const nextPlan = getNextActivationPlan(res.data);
+if (planFromQuery && ACTIVATION_PLANS.includes(planFromQuery)) {
+           const nextPlan = getNextActivationPlan(res.data);
 
-          if (isPlanDone(res.data, planFromQuery)) {
-            if (nextPlan) {
-              navigate(getDashboardFocusUrl(nextPlan), { replace: true });
-            } else {
-              navigate("/withdraw-form", { replace: true });
-            }
-            return;
-          }
+           // Skip redirect if coming from withdraw form
+           if (!isComingFromWithdraw && isPlanDone(res.data, planFromQuery)) {
+             if (nextPlan) {
+               navigate(getDashboardFocusUrl(nextPlan), { replace: true });
+             } else {
+               navigate("/withdraw-form", { replace: true });
+             }
+             return;
+           }
 
-          if (nextPlan && nextPlan !== planFromQuery) {
-            navigate(getDashboardFocusUrl(nextPlan), { replace: true });
-            return;
-          }
+           if (!isComingFromWithdraw && nextPlan && nextPlan !== planFromQuery) {
+             navigate(getDashboardFocusUrl(nextPlan), { replace: true });
+             return;
+           }
 
-          const planData = res.data.plans?.[planFromQuery];
-          if (!planData || (planData.surveys_completed || 0) < 10 || planData.completed !== true) {
-            navigate(getDashboardFocusUrl(planFromQuery), { replace: true });
-            return;
-          }
-        }
+           const planData = res.data.plans?.[planFromQuery];
+           if (!isComingFromWithdraw && (!planData || (planData.surveys_completed || 0) < 10 || planData.completed !== true)) {
+             navigate(getDashboardFocusUrl(planFromQuery), { replace: true });
+             return;
+           }
+         }
 
         if (!planFromQuery) {
           const nextPlan = getNextActivationPlan(res.data);

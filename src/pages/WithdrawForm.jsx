@@ -126,52 +126,64 @@ export default function WithdrawForm() {
     return userPlans[planKey]?.is_activated === true;
   };
 
-  // Handle plan selection with activation check
-  const handlePlanSelection = (planKey) => {
-    // Check if user is activated globally
-    if (!isUserActivated) {
-      // Show activation modal
-      setSelectedPlanForActivation(planKey);
-      setShowActivationModal(true);
-      return;
-    }
-    
-    // Check if all plans are completed
-    if (!allPlansCompleted && !isAffiliateWithdraw) {
-      alert("Complete REGULAR, VIP, and VVIP plans to unlock withdrawals");
-      return;
-    }
-    
-    // Check if specific plan is activated
-    if (!isPlanActivated(planKey)) {
-      // Show activation modal for this specific plan
-      setSelectedPlanForActivation(planKey);
-      setShowActivationModal(true);
-      return;
-    }
-    
-    // If activated, proceed normally
-    setPlan(planKey);
-  };
+// Handle plan selection with activation check
+   const handlePlanSelection = (planKey) => {
+     // Check if user is activated globally
+     if (!isUserActivated) {
+       // Navigate to activation page for this plan
+       navigate(`/activate?plan=${planKey.toLowerCase()}`, { 
+         state: { 
+           planKey: planKey,
+           from: "withdraw"
+         },
+         replace: true
+       });
+       return;
+     }
+     
+     // Check if all plans are completed
+     if (!allPlansCompleted && !isAffiliateWithdraw) {
+       alert("Complete REGULAR, VIP, and VVIP plans to unlock withdrawals");
+       return;
+     }
+     
+     // Check if specific plan is activated
+     if (!isPlanActivated(planKey)) {
+       // Navigate to activation page for this specific plan
+       navigate(`/activate?plan=${planKey.toLowerCase()}`, { 
+         state: { 
+           planKey: planKey,
+           from: "withdraw"
+         },
+         replace: true
+       });
+       return;
+     }
+     
+     // If activated, proceed normally
+     setPlan(planKey);
+   };
 
-  // Handle activation redirect
-  const handleActivationRedirect = () => {
-    if (selectedPlanForActivation) {
-      const planData = PLANS[selectedPlanForActivation];
-      const planLower = selectedPlanForActivation.toLowerCase();
-      // Navigate to activation page with plan info
-      navigate(`/activate?plan=${planLower}`, { 
-        state: { 
-          planKey: selectedPlanForActivation,
-          activationFee: planData.activationFee,
-          planName: planData.name
-        }
-      });
-    } else {
-      // Fallback to generic activation page
-      navigate("/activate");
-    }
-  };
+// Handle activation redirect
+   const handleActivationRedirect = () => {
+     if (selectedPlanForActivation) {
+       const planData = PLANS[selectedPlanForActivation];
+       const planLower = selectedPlanForActivation.toLowerCase();
+       // Navigate to activation page with plan info
+       navigate(`/activate?plan=${planLower}`, { 
+         state: { 
+           planKey: selectedPlanForActivation,
+           activationFee: planData.activationFee,
+           planName: planData.name,
+           from: "withdraw"
+         },
+         replace: true
+       });
+     } else {
+       // Fallback to generic activation page
+       navigate("/activate", { state: { from: "withdraw" }, replace: true });
+     }
+   };
 
   const closeActivationModal = () => {
     setShowActivationModal(false);
@@ -584,19 +596,24 @@ export default function WithdrawForm() {
                   You need to activate your <strong>{PLANS[plan].name} Plan</strong> before withdrawing. 
                   Activation fee: <strong>KES {PLANS[plan].activationFee}</strong>
                 </p>
-                <button 
-                  type="button"
-                  className="activate-now-btn"
-                  onClick={() => {
-                    setSelectedPlanForActivation(plan);
-                    setShowActivationModal(true);
-                  }}
-                  style={{ 
-                    background: 'linear-gradient(135deg, #ef4444, #dc2626)'
-                  }}
-                >
-                  <span className="btn-icon">🔓</span>
-                  ACTIVATE NOW - KES {PLANS[plan].activationFee}
+<button 
+                   type="button"
+                   className="activate-now-btn"
+                   onClick={() => {
+                     navigate(`/activate?plan=${plan.toLowerCase()}`, { 
+                       state: { 
+                         planKey: plan,
+                         from: "withdraw"
+                       },
+                       replace: true
+                     });
+                   }}
+                   style={{ 
+                     background: 'linear-gradient(135deg, #ef4444, #dc2626)'
+                   }}
+                 >
+                   <span className="btn-icon">🔓</span>
+                   ACTIVATE NOW - KES {PLANS[plan].activationFee}
                 </button>
               </div>
             )}
