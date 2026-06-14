@@ -220,32 +220,57 @@ const [planKey, setPlanKey] = useState(null);
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
   const [paymentSuccessData, setPaymentSuccessData] = useState(null);
 
-  useEffect(() => {
-    let isMounted = true;
+useEffect(() => {
+     let isMounted = true;
 
-    const load = async () => {
-      try {
-        const res = await api.get(`/auth/me?_t=${Date.now()}`);
-        if (!isMounted) return;
-        setUser(res.data);
+     const load = async () => {
+       try {
+         const res = await api.get(`/auth/me?_t=${Date.now()}`);
+         if (!isMounted) return;
+         setUser(res.data);
 
-        const statePlanKey = location.state?.planKey;
-        const isWelcome = searchParams.get("welcome_bonus");
-        const planFromUrl = searchParams.get("plan");
+         const statePlanKey = location.state?.planKey;
+         const isWelcome = searchParams.get("welcome_bonus");
+         const planFromUrl = searchParams.get("plan");
 
-        let planFromQuery = null;
-        if (isWelcome) {
-          planFromQuery = "WELCOME_BONUS";
-        } else if (planFromUrl && PLAN_CONFIG[planFromUrl.toUpperCase()]) {
-          planFromQuery = planFromUrl.toUpperCase();
-        } else if (statePlanKey && PLAN_CONFIG[statePlanKey.toUpperCase()]) {
-          planFromQuery = statePlanKey.toUpperCase();
-        }
+         let planFromQuery = null;
+         if (isWelcome) {
+           planFromQuery = "WELCOME_BONUS";
+         } else if (planFromUrl && PLAN_CONFIG[planFromUrl.toUpperCase()]) {
+           planFromQuery = planFromUrl.toUpperCase();
+         } else if (statePlanKey && PLAN_CONFIG[statePlanKey.toUpperCase()]) {
+           planFromQuery = statePlanKey.toUpperCase();
+         }
 
-if (planFromQuery === "WELCOME_BONUS") {
-           // Show activate page for welcome bonus if not paid
+         // If coming from withdraw, always show the activation page
+         // Don't redirect based on plan status - user can decide to activate
+         if (isComingFromWithdraw) {
+           if (planFromQuery && PLAN_CONFIG[planFromQuery]) {
+             let plan;
+             if (planFromQuery === "WELCOME_BONUS") {
+               plan = {
+                 is_activated: false,
+                 completed: true,
+                 total: res.data.welcome_bonus || 1200
+               };
+             } else {
+               plan = res.data.plans?.[planFromQuery] || { is_activated: false };
+             }
+             setPlanKey(planFromQuery);
+             setPlanState(plan);
+           } else {
+             // No specific plan, show welcome bonus or first available
+             setPlanKey("REGULAR");
+             setPlanState({ is_activated: false, completed: false });
+           }
+           setLoading(false);
+           return;
+         }
+
+         // Normal flow (not from withdraw)
+         if (planFromQuery === "WELCOME_BONUS") {
            if (res.data.welcome_bonus_paid === true) {
-             const nextPlan = getNextActivationPlan(res.data) || "REGULAR";
+             const nextPlan = getNextActivationPlan(res.data);
              if (nextPlan) {
                navigate(getDashboardFocusUrl(nextPlan), { replace: true });
              } else {
@@ -255,11 +280,10 @@ if (planFromQuery === "WELCOME_BONUS") {
            }
          }
 
-if (planFromQuery && ACTIVATION_PLANS.includes(planFromQuery)) {
+         if (planFromQuery && ACTIVATION_PLANS.includes(planFromQuery)) {
            const nextPlan = getNextActivationPlan(res.data);
 
-           // Skip redirect if coming from withdraw form
-           if (!isComingFromWithdraw && isPlanDone(res.data, planFromQuery)) {
+           if (isPlanDone(res.data, planFromQuery)) {
              if (nextPlan) {
                navigate(getDashboardFocusUrl(nextPlan), { replace: true });
              } else {
@@ -268,69 +292,69 @@ if (planFromQuery && ACTIVATION_PLANS.includes(planFromQuery)) {
              return;
            }
 
-           if (!isComingFromWithdraw && nextPlan && nextPlan !== planFromQuery) {
+           if (nextPlan && nextPlan !== planFromQuery) {
              navigate(getDashboardFocusUrl(nextPlan), { replace: true });
              return;
            }
 
            const planData = res.data.plans?.[planFromQuery];
-           if (!isComingFromWithdraw && (!planData || (planData.surveys_completed || 0) < 10 || planData.completed !== true)) {
+           if (!planData || (planData.surveys_completed || 0) < 10 || planData.completed !== true) {
              navigate(getDashboardFocusUrl(planFromQuery), { replace: true });
              return;
            }
          }
 
-        if (!planFromQuery) {
-          const nextPlan = getNextActivationPlan(res.data);
-          if (!nextPlan) {
-            navigate("/withdraw-form", { replace: true });
-            return;
-          }
+         if (!planFromQuery) {
+           const nextPlan = getNextActivationPlan(res.data);
+           if (!nextPlan) {
+             navigate("/withdraw-form", { replace: true });
+             return;
+           }
 
-          const planData = res.data.plans?.[nextPlan];
-          if (planData?.completed === true || (planData?.surveys_completed || 0) >= 10) {
-            navigate(`/activate?plan=${nextPlan.toLowerCase()}`, { replace: true });
-          } else {
-            navigate(getDashboardFocusUrl(nextPlan), { replace: true });
-          }
-          return;
-        }
+           const planData = res.data.plans?.[nextPlan];
+           if (planData?.completed === true || (planData?.surveys_completed || 0) >= 10) {
+             navigate(`/activate?plan=${nextPlan.toLowerCase()}`, { replace: true });
+           } else {
+             navigate(getDashboardFocusUrl(nextPlan), { replace: true });
+           }
+           return;
+         }
 
-        let plan;
-        if (planFromQuery === "WELCOME_BONUS") {
-          plan = {
-            is_activated: false,
-            completed: true,
-            total: res.data.welcome_bonus || 1200
-          };
-        } else {
-          plan = res.data.plans?.[planFromQuery];
-        }
+         let plan;
+         if (planFromQuery === "WELCOME_BONUS") {
+           plan = {
+             is_activated: false,
+             completed: true,
+             total: res.data.welcome_bonus || 1200
+           };
+         } else {
+           plan = res.data.plans?.[planFromQuery];
+         }
 
-        if (!plan && PLAN_CONFIG[planFromQuery]) {
-          plan = { is_activated: false };
-        }
+         if (!plan && PLAN_CONFIG[planFromQuery]) {
+           plan = { is_activated: false };
+         }
 
-        if (!plan || (planFromQuery !== "WELCOME_BONUS" && plan.is_activated)) {
-          setPlanKey(null);
-          setPlanState(null);
-          setLoading(false);
-          return;
-        }
+         if (!plan || (planFromQuery !== "WELCOME_BONUS" && plan.is_activated)) {
+           setPlanKey(null);
+           setPlanState(null);
+           setLoading(false);
+           return;
+         }
 
-        setPlanKey(planFromQuery);
-        setPlanState(plan);
+         setPlanKey(planFromQuery);
+         setPlanState(plan);
 
-      } catch (error) {
-        console.error("Failed to load user:", error);
-        if (!isMounted) return;
-        navigate("/login");
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
+       } catch (error) {
+         console.error("Failed to load user:", error);
+         if (!isMounted) return;
+         navigate("/login");
+       } finally {
+         if (isMounted) setLoading(false);
+       }
+     };
 
-    load();
+     load();
 
     // ========================================================
     //  BACK-BUTTON GUARD  (runs inside the compounded effect)
