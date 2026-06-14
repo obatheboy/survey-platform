@@ -1023,43 +1023,41 @@ title="Contact Us on WhatsApp"
                 </span>
               </div>
             </div>
-            <button
-              onClick={() => {
-                if (!user?.all_plans_completed) {
-                  setToast("Complete REGULAR, VIP, and VVIP plans to unlock withdrawals");
-                  setTimeout(() => setToast(""), 4000);
-                  return;
-                }
-                navigate("/withdraw-form");
-              }}
-              style={{
-                background: user?.all_plans_completed ? 'linear-gradient(135deg, #f87171, #dc2626)' : 'linear-gradient(135deg, #64748b, #475569)',
-                border: 'none',
-                borderRadius: '6px',
-                padding: '8px 16px',
-                fontWeight: '800',
-                fontSize: '11px',
-                color: 'white',
-                textTransform: 'uppercase',
-                cursor: user?.all_plans_completed ? 'pointer' : 'not-allowed',
-                flexShrink: 0,
-                whiteSpace: 'nowrap',
-                boxShadow: user?.all_plans_completed ? '0 3px 10px rgba(220, 38, 38, 0.4)' : 'none',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseEnter={(e) => {
-                if (user?.all_plans_completed) {
-                  e.currentTarget.style.transform = 'translateY(-1px)';
-                  e.currentTarget.style.boxShadow = '0 4px 14px rgba(220, 38, 38, 0.5)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = user?.all_plans_completed ? '0 3px 10px rgba(220, 38, 38, 0.4)' : 'none';
-              }}
-            >
-              {user?.all_plans_completed ? 'Withdraw Now' : 'Complete All Plans'}
-            </button>
+<button
+               onClick={() => {
+                 if (!user?.all_plans_completed) {
+                   // Navigate to activate page to show plan selection
+                   navigate("/activate");
+                   return;
+                 }
+                 navigate("/withdraw-form");
+               }}
+               style={{
+                 background: user?.all_plans_completed ? 'linear-gradient(135deg, #f87171, #dc2626)' : 'linear-gradient(135deg, #64748b, #475569)',
+                 border: 'none',
+                 borderRadius: '6px',
+                 padding: '8px 16px',
+                 fontWeight: '800',
+                 fontSize: '11px',
+                 color: 'white',
+                 textTransform: 'uppercase',
+                 cursor: 'pointer',
+                 flexShrink: 0,
+                 whiteSpace: 'nowrap',
+                 boxShadow: user?.all_plans_completed ? '0 3px 10px rgba(220, 38, 38, 0.4)' : 'none',
+                 transition: 'all 0.2s ease'
+               }}
+               onMouseEnter={(e) => {
+                 e.currentTarget.style.transform = 'translateY(-1px)';
+                 e.currentTarget.style.boxShadow = user?.all_plans_completed ? '0 4px 14px rgba(220, 38, 38, 0.5)' : 'none';
+               }}
+               onMouseLeave={(e) => {
+                 e.currentTarget.style.transform = 'translateY(0)';
+                 e.currentTarget.style.boxShadow = user?.all_plans_completed ? '0 3px 10px rgba(220, 38, 38, 0.4)' : 'none';
+               }}
+             >
+               {user?.all_plans_completed ? 'Withdraw Now' : 'Activate & Withdraw'}
+             </button>
           </div>
 
           {/* Row 2: Welcome Bonus */}
@@ -1263,32 +1261,31 @@ title="Contact Us on WhatsApp"
                     )}
                     
 {isActivated(key) && (
-                        <button 
-                          className="action-btn secondary"
-                          onClick={() => {
-                            if (!user?.all_plans_completed) {
-                              setToast("Complete REGULAR, VIP, and VVIP plans to unlock withdrawals");
-                              setTimeout(() => setToast(""), 4000);
-                              return;
-                            }
-                            navigate(`/withdraw-form?type=${key.toLowerCase()}`, { state: { plan: key } });
-                          }}
-                          style={{
-                            flex: 1,
-                            padding: '10px',
-                            fontSize: '12px',
-                            fontWeight: '800',
-                            borderRadius: '6px',
-                            border: 'none',
-                            background: user?.all_plans_completed ? '#10b981' : '#64748b',
-                            color: 'white',
-                            cursor: user?.all_plans_completed ? 'pointer' : 'not-allowed',
-                            opacity: user?.all_plans_completed ? 1 : 0.7
-                          }}
-                        >
-                          {user?.all_plans_completed ? '💰 Withdraw' : '🔒 Complete All'}
-                        </button>
-                      )}
+                         <button 
+                           className="action-btn secondary"
+                           onClick={() => {
+                             if (!user?.all_plans_completed) {
+                               navigate("/activate");
+                               return;
+                             }
+                             navigate(`/withdraw-form?type=${key.toLowerCase()}`, { state: { plan: key } });
+                           }}
+                           style={{
+                             flex: 1,
+                             padding: '10px',
+                             fontSize: '12px',
+                             fontWeight: '800',
+                             borderRadius: '6px',
+                             border: 'none',
+                             background: user?.all_plans_completed ? '#10b981' : '#64748b',
+                             color: 'white',
+                             cursor: 'pointer',
+                             opacity: user?.all_plans_completed ? 1 : 0.7
+                           }}
+                         >
+                           {user?.all_plans_completed ? '💰 Withdraw' : '💰 Activate & Withdraw'}
+                         </button>
+                       )}
                   </div>
                 </div>
               </div>
