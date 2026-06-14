@@ -17,6 +17,8 @@ router.post("/login", authController.login);
 // ✅ Get logged-in user (COOKIE + JWT)
 router.get("/me", protect, authController.getMe);
 
+router.post("/mark-welcome-popup-seen", protect, authController.markWelcomePopupSeen);
+
 // ✅ Save survey onboarding answers
 router.post("/survey-onboarding", protect, authController.saveSurveyOnboarding);
 

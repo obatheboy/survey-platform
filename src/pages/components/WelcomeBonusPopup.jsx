@@ -1,7 +1,7 @@
 import React from 'react';
 import './WelcomeBonusPopup.css';
 
-export default function WelcomeBonusPopup({ isOpen, onClose, bonusAmount = 1200, onActivate }) {
+export default function WelcomeBonusPopup({ isOpen, onClose, onActivate, showMaybeLater = true }) {
   if (!isOpen) return null;
 
   return (
@@ -15,54 +15,74 @@ export default function WelcomeBonusPopup({ isOpen, onClose, bonusAmount = 1200,
               <div className="welcome-bonus-icon">🎉</div>
               <div className="icon-ring"></div>
             </div>
-            <h2>Welcome Bonus!</h2>
-            <p>Congratulations for joining our company!</p>
+            <h2>Activate Your Welcome Bonus!</h2>
+            <p>Pay KES 100 and get extra earnings</p>
           </div>
 
-          <div className="welcome-bonus-amount">
-            <div className="bonus-amount-inner">
-              <div className="welcome-bonus-label">Your Welcome Bonus Is</div>
-              <div className="welcome-bonus-value">
-                <span>KSh </span>{bonusAmount.toLocaleString()}
-              </div>
-              <div className="bonus-coin coin-1">🪙</div>
-              <div className="bonus-coin coin-2">💎</div>
-            </div>
+          <div className="welcome-bonus-message" style={{ fontSize: '14px', marginBottom: '20px' }}>
+            Welcome Bonus gives you additional earning opportunities. 
+            <span className="highlight-text">It's optional and doesn't affect account activation.</span>
           </div>
 
-          <div className="welcome-bonus-message">
-            You haveReceived <strong>KSh {bonusAmount.toLocaleString()}</strong>   -
-            <span className="highlight-text">Activate to withdraw!</span>
-          </div>
-
-          <button 
-            className="welcome-bonus-button" 
-            onClick={() => {
-              if (onActivate) {
-                onActivate();
-              } else {
+          <div style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
+            <button 
+              className="welcome-bonus-button" 
+              onClick={() => {
+                if (onActivate) {
+                  onActivate();
+                }
                 onClose();
-              }
-            }}
-          >
-            <span className="button-content">
-              <span className="button-icon">🚀</span>
-            <span className="button-text">Activate to Withdraw</span>
-            </span>
-          </button>
+              }}
+              style={{
+                background: 'linear-gradient(135deg, #10b981, #059669)',
+                color: 'white',
+                border: 'none',
+                padding: '12px 20px',
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                width: '100%'
+              }}
+            >
+              <span className="button-content">
+                <span className="button-icon">⚡</span>
+                <span className="button-text">Activate Now</span>
+              </span>
+            </button>
+
+            {showMaybeLater && (
+              <button 
+                onClick={onClose}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  color: '#e2e8f0',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  padding: '12px 20px',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  width: '100%'
+                }}
+              >
+                Maybe Later
+              </button>
+            )}
+          </div>
 
           <div className="welcome-bonus-features">
             <div className="feature-item">
               <span className="feature-icon">✓</span>
-              <span>Instant</span>
+              <span>Optional</span>
             </div>
             <div className="feature-item">
               <span className="feature-icon">✓</span>
-              <span>Easy</span>
+              <span>KES 100</span>
             </div>
             <div className="feature-item">
               <span className="feature-icon">✓</span>
-              <span>Earn</span>
+              <span>Extra Earnings</span>
             </div>
           </div>
 

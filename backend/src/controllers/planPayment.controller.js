@@ -2,7 +2,7 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const megaPayService = require("../services/megapay.service");
 const Notification = require("../models/Notification");
-const { ACTIVATION_PLANS, syncActivationStatus } = require("../utils/activationStatus");
+const { ACTIVATION_PLANS, buildPaymentRedirect, getRemainingActivationPlans, isPlanDone, isWelcomeBonusPaid, syncActivationStatus } = require("../utils/activationStatus");
 
 const PLAN_FEES = {
   WELCOME_BONUS: 100,
@@ -20,51 +20,7 @@ const PLAN_EARNINGS = {
 
 const PLAN_STATUS_ORDER = ["WELCOME_BONUS", ...ACTIVATION_PLANS];
 
-const isPlanDone = (user, planKey) => {
-  return user.plans_paid?.[planKey] === true || user.plans?.[planKey]?.is_activated === true;
-};
-
-const getRemainingActivationPlans = (user) => {
-  return ACTIVATION_PLANS.filter(planKey => !isPlanDone(user, planKey));
-};
-
-const buildRedirect = (user) => {
-  const remainingPlans = getRemainingActivationPlans(user);
-  if (remainingPlans.length === 0) {
-    return {
-      redirect_to: "/withdraw-form",
-      next_plan: null,
-      remaining_plans: []
-    };
-  }
-
-  const nextPlan = remainingPlans[0];
-  return {
-    redirect_to: `/dashboard?focusPlan=${nextPlan}&highlightPlan=${nextPlan}`,
-    next_plan: nextPlan,
-    remaining_plans: remainingPlans
-  };
-};
-
-const assertPlanOrder = (user, planKey) => {
-  if (planKey === "WELCOME_BONUS") {
-    return { ok: true };
-  }
-
-  const planIndex = ACTIVATION_PLANS.indexOf(planKey);
-  for (let i = 0; i < planIndex; i += 1) {
-    if (!isPlanDone(user, ACTIVATION_PLANS[i])) {
-      return {
-        ok: false,
-        next_plan: ACTIVATION_PLANS[i],
-        message: `Complete ${ACTIVATION_PLANS[i]} before ${planKey}.`
-      };
-    }
-  }
-
-  return { ok: true };
-};
-
+const buildRedirect = (user) => buildPaymentRedirect(user);
 const assertSurveyCompleted = (user, planKey) => {
   const planData = user.plans?.[planKey];
   if (!planData) {
@@ -123,24 +79,13 @@ exports.initiatePlanPayment = async (req, res) => {
 
     // Check if already paid
     const isPaid = planKey === "WELCOME_BONUS"
-      ? user.welcome_bonus_received === true || user.plans_paid?.WELCOME_BONUS === true
-      : user.plans_paid?.[planKey];
+      ? isWelcomeBonusPaid(user)
+      : isPlanDone(user, planKey);
     if (isPaid) {
       return res.status(400).json({
         success: false,
         message: `${planKey} plan is already paid.`,
         already_paid: true
-      });
-    }
-
-    const orderCheck = assertPlanOrder(user, planKey);
-    if (!orderCheck.ok) {
-      const redirect = buildRedirect(user);
-      return res.status(400).json({
-        success: false,
-        message: orderCheck.message,
-        next_plan: orderCheck.next_plan,
-        redirect_to: redirect.redirect_to
       });
     }
 
@@ -265,8 +210,8 @@ exports.confirmPlanPayment = async (req, res) => {
 
     // Check if already paid
     const isAlreadyPaid = planKey === "WELCOME_BONUS"
-      ? user.welcome_bonus_received === true || user.plans_paid?.WELCOME_BONUS === true
-      : user.plans_paid?.[planKey] || user.plans?.[planKey]?.is_activated;
+      ? isWelcomeBonusPaid(user)
+      : isPlanDone(user, planKey);
     if (isAlreadyPaid) {
       syncActivationStatus(user);
       const redirect = buildRedirect(user);
@@ -288,18 +233,6 @@ exports.confirmPlanPayment = async (req, res) => {
           plans_paid: user.plans_paid || {},
           plans: user.plans || {}
         }
-      });
-    }
-
-    const orderCheck = assertPlanOrder(user, planKey);
-    if (!orderCheck.ok) {
-      const redirect = buildRedirect(user);
-      return res.status(409).json({
-        success: false,
-        message: orderCheck.message,
-        next_plan: orderCheck.next_plan,
-        redirect_to: redirect.redirect_to,
-        remaining_plans: redirect.remaining_plans
       });
     }
 
@@ -333,22 +266,25 @@ exports.confirmPlanPayment = async (req, res) => {
       });
     }
 
-    // Payment confirmed! Mark plan as paid
     if (!user.plans_paid) user.plans_paid = {};
     user.plans_paid[planKey] = true;
 
-    // Also mark the plan as activated in the plans structure
-    if (user.plans && user.plans[planKey]) {
-      user.plans[planKey].is_activated = true;
-      user.plans[planKey].activated_at = new Date();
+    if (planKey === "WELCOME_BONUS") {
+      user.welcome_bonus_paid = true;
+      user.welcome_bonus_received = true;
+    } else {
+      user[`${planKey.toLowerCase()}_paid`] = true;
+      if (user.plans && user.plans[planKey]) {
+        user.plans[planKey].is_activated = true;
+        user.plans[planKey].activated_at = new Date();
+      }
     }
 
     syncActivationStatus(user);
     await user.save();
 
-    const allPaid = user.all_plans_completed === true;
+    const allPaid = user.account_activated === true || user.all_plans_completed === true;
 
-    // Credit earnings (skip WELCOME_BONUS — already given at registration)
     let creditEarnings = true;
     let earnings = PLAN_EARNINGS[planKey] || 0;
     if (planKey === "WELCOME_BONUS") {
@@ -359,16 +295,10 @@ exports.confirmPlanPayment = async (req, res) => {
       user.total_earned = oldBalance + earnings;
     }
 
-    // Special handling for welcome bonus
-    if (planKey === "WELCOME_BONUS") {
-      user.welcome_bonus_received = true;
-      if (!user.plans_paid) user.plans_paid = {};
-      user.plans_paid.WELCOME_BONUS = true;
-    }
-
     const redirect = buildRedirect(user);
+    const remainingSurveyPlans = getRemainingActivationPlans(user);
+    const remainingSurveyText = remainingSurveyPlans.length > 0 ? remainingSurveyPlans.join(', ') : 'none';
 
-    // Add a focused message for the next unpaid plan.
     const nextPlan = redirect.next_plan;
     const redirectFocus = {
       plan: nextPlan || null,
@@ -377,6 +307,12 @@ exports.confirmPlanPayment = async (req, res) => {
         ? `Next step: continue with ${nextPlan} on your dashboard.`
         : "All REGULAR, VIP, and VVIP plans are complete. You can withdraw now."
     };
+
+    const successMessage = planKey === "WELCOME_BONUS"
+      ? "✅ Welcome Bonus activated! Redirecting to Regular plan..."
+      : allPaid
+        ? "🎉 Congratulations! Your account is now ACTIVE!\nYou can now withdraw your earnings!"
+        : `✅ You have successfully paid for ${planKey.replace(/_/g, ' ')}!\nRemaining survey plans: ${remainingSurveyText}`;
 
     // Clear pending payment info
     user.last_payment_reference = null;
@@ -417,22 +353,31 @@ exports.confirmPlanPayment = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: `You have successfully paid for ${planLabel} Plan!`,
+      message: successMessage,
+      success_message: successMessage,
       plan_paid: planKey,
       redirect_to: redirect.redirect_to,
       redirect_focus: redirectFocus,
       all_plans_completed: allPaid,
+      account_activated: user.account_activated === true,
       user_activated: user.is_activated || false,
       next_plan: redirect.next_plan,
       remaining_plans: remainingLabels,
+      remaining_survey_plans: remainingSurveyPlans,
       token,
       user: {
         id: user._id,
         full_name: user.full_name,
         phone: user.phone,
         all_plans_completed: allPaid,
+        account_activated: user.account_activated === true,
         user_activated: user.is_activated || false,
         plans_paid: user.plans_paid,
+        regular_paid: user.regular_paid === true,
+        vip_paid: user.vip_paid === true,
+        vvip_paid: user.vvip_paid === true,
+        welcome_bonus_paid: user.welcome_bonus_paid === true,
+        has_seen_welcome_popup: user.has_seen_welcome_popup === true,
         plans: user.plans || {}
       },
       balance_before: oldBalance,
@@ -467,7 +412,7 @@ exports.getPlanPaymentStatus = async (req, res) => {
     syncActivationStatus(user);
 
     const plansStatus = PLAN_STATUS_ORDER.map(planKey => {
-      const isPaid = plans_paid[planKey] === true || user.plans?.[planKey]?.is_activated === true;
+      const isPaid = isPlanDone(user, planKey) || (planKey === "WELCOME_BONUS" && isWelcomeBonusPaid(user));
       const planData = user.plans?.[planKey];
       return {
         plan: planKey,

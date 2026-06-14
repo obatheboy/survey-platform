@@ -18,6 +18,24 @@ const COOKIE_OPTIONS = {
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
+const userActivationFields = {
+  welcome_bonus_paid: false,
+  regular_paid: false,
+  vip_paid: false,
+  vvip_paid: false,
+  account_activated: false,
+  has_seen_welcome_popup: false
+};
+
+const publicUserActivationFields = (user) => ({
+  welcome_bonus_paid: user.welcome_bonus_paid === true,
+  regular_paid: user.regular_paid === true,
+  vip_paid: user.vip_paid === true,
+  vvip_paid: user.vvip_paid === true,
+  account_activated: user.account_activated === true,
+  has_seen_welcome_popup: user.has_seen_welcome_popup === true
+});
+
 /* ===============================
    REGISTER
 ================================ */
@@ -49,8 +67,9 @@ exports.register = async (req, res) => {
       phone,
       email: null,
       password_hash: null,
-      is_activated: false,
+       is_activated: false,
        login_fee_paid: true, // Bypassed - no login fee required
+       ...userActivationFields,
       total_earned: 1200,      // ✅ Welcome bonus credited immediately on registration
       welcome_bonus_received: true,  // ✅ Marked as received so Activate.jsx shows the plan
       welcome_bonus: 1200,
@@ -127,10 +146,11 @@ exports.register = async (req, res) => {
         email: user.email,
         is_activated: user.is_activated,
         welcome_bonus_received: user.welcome_bonus_received,
-        welcome_bonus: user.welcome_bonus || 1200,
-         login_fee_paid: true, // Bypassed - login fee waived on registration
+         welcome_bonus: user.welcome_bonus || 1200,
+          login_fee_paid: true, // Bypassed - login fee waived on registration
         plans_paid: user.plans_paid || {},
-        all_plans_completed: user.all_plans_completed || false
+        all_plans_completed: user.all_plans_completed || false,
+        ...publicUserActivationFields(user)
       },
     });
   } catch (error) {
@@ -178,7 +198,8 @@ exports.login = async (req, res) => {
         survey_onboarding_completed: user.survey_onboarding_completed || false,
         plans_paid: user.plans_paid || {},
         all_plans_completed: user.all_plans_completed || false,
-        plans: user.plans || {}
+        plans: user.plans || {},
+        ...publicUserActivationFields(user)
       }
     });
 } catch (error) {
@@ -302,10 +323,32 @@ exports.getMe = async (req, res) => {
       plans: user.plans || {},
       activation_requests: user.activation_requests || [],
       plans_paid: user.plans_paid || {},
-      all_plans_completed: user.all_plans_completed || false
+      all_plans_completed: user.all_plans_completed || false,
+      ...publicUserActivationFields(user)
     });
   } catch (error) {
     console.error("GET ME ERROR:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.markWelcomePopupSeen = async (req, res) => {
+  try {
+    if (!req.user?.id) return res.status(401).json({ message: "Invalid session" });
+
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(401).json({ message: "Invalid session" });
+
+    user.has_seen_welcome_popup = true;
+    await user.save();
+
+    res.json({
+      success: true,
+      has_seen_welcome_popup: true,
+      ...publicUserActivationFields(user)
+    });
+  } catch (error) {
+    console.error("MARK WELCOME POPUP SEEN ERROR:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

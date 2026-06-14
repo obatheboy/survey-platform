@@ -39,6 +39,30 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  welcome_bonus_paid: {
+    type: Boolean,
+    default: false
+  },
+  regular_paid: {
+    type: Boolean,
+    default: false
+  },
+  vip_paid: {
+    type: Boolean,
+    default: false
+  },
+  vvip_paid: {
+    type: Boolean,
+    default: false
+  },
+  account_activated: {
+    type: Boolean,
+    default: false
+  },
+  has_seen_welcome_popup: {
+    type: Boolean,
+    default: false
+  },
   login_fee_paid_at: {
     type: Date
   },

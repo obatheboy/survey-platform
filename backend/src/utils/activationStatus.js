@@ -1,5 +1,11 @@
 const ACTIVATION_PLANS = ["REGULAR", "VIP", "VVIP"];
 
+const PLAN_FIELD_MAP = {
+  REGULAR: "regular_paid",
+  VIP: "vip_paid",
+  VVIP: "vvip_paid",
+};
+
 const ensurePlanEntry = (user, planKey) => {
   if (!user.plans) {
     user.plans = {};
@@ -21,7 +27,18 @@ const ensurePlanEntry = (user, planKey) => {
 };
 
 const isPlanDone = (user, planKey) => {
-  return user.plans_paid?.[planKey] === true || user.plans?.[planKey]?.is_activated === true;
+  if (PLAN_FIELD_MAP[planKey] && user[PLAN_FIELD_MAP[planKey]] === true) return true;
+  if (user.plans_paid?.[planKey] === true) return true;
+  return user.plans?.[planKey]?.is_activated === true;
+};
+
+const getNextUnpaidPlanForRedirect = (user) => {
+  const unpaidPlans = ACTIVATION_PLANS.filter(planKey => !isPlanDone(user, planKey));
+  return unpaidPlans[0] || null;
+};
+
+const isWelcomeBonusPaid = (user) => {
+  return user.welcome_bonus_paid === true || user.plans_paid?.WELCOME_BONUS === true;
 };
 
 const getRemainingActivationPlans = (user) => {
@@ -34,13 +51,14 @@ const getNextActivationPlan = (user) => {
 
 const buildActivationRedirect = (user) => {
   const remainingPlans = getRemainingActivationPlans(user);
-  const allDone = remainingPlans.length === 0;
+  const accountActivated = user.account_activated === true || user.all_plans_completed === true || user.is_activated === true;
 
-  if (allDone) {
+  if (remainingPlans.length === 0) {
     return {
-      redirect_to: "/withdraw-form",
+      redirect_to: "/dashboard",
       remaining_plans: [],
-      next_plan: null
+      next_plan: null,
+      dashboard: true
     };
   }
 
@@ -49,29 +67,55 @@ const buildActivationRedirect = (user) => {
   return {
     redirect_to: `/dashboard?focusPlan=${nextPlan}&highlightPlan=${nextPlan}`,
     remaining_plans: remainingPlans,
-    next_plan: nextPlan
+    next_plan: nextPlan,
+    dashboard: false
+  };
+};
+
+const buildPaymentRedirect = (user) => {
+  const remainingSurveyPlans = getRemainingActivationPlans(user);
+
+  if (remainingSurveyPlans.length > 0) {
+    const nextPlan = remainingSurveyPlans[0];
+    return {
+      redirect_to: `/dashboard?focusPlan=${nextPlan}&highlightPlan=${nextPlan}`,
+      next_plan: nextPlan,
+      remaining_plans: remainingSurveyPlans,
+      dashboard: false
+    };
+  }
+
+  return {
+    redirect_to: "/dashboard",
+    next_plan: null,
+    remaining_plans: [],
+    dashboard: true
   };
 };
 
 const syncActivationStatus = (user) => {
   let changed = false;
   let allPaid = true;
-  let allManuallyActivated = true;
 
   ACTIVATION_PLANS.forEach((planKey) => {
     changed = ensurePlanEntry(user, planKey) || changed;
 
-    const paid = user.plans_paid?.[planKey] === true;
+    const paid = isPlanDone(user, planKey);
     const activated = user.plans[planKey].is_activated === true;
     const isDone = paid || activated;
 
-    if (!paid) allPaid = false;
-    if (!activated) allManuallyActivated = false;
+    if (!isDone) allPaid = false;
 
     if (isDone) {
       if (!user.plans_paid) user.plans_paid = {};
-      if (!user.plans_paid[planKey]) {
+      if (user.plans_paid[planKey] !== true) {
         user.plans_paid[planKey] = true;
+        changed = true;
+      }
+
+      const field = PLAN_FIELD_MAP[planKey];
+      if (user[field] !== true) {
+        user[field] = true;
         changed = true;
       }
 
@@ -87,7 +131,12 @@ const syncActivationStatus = (user) => {
     }
   });
 
-  const shouldActivate = allPaid || allManuallyActivated;
+  const shouldActivate = allPaid;
+
+  if (user.account_activated !== shouldActivate) {
+    user.account_activated = shouldActivate;
+    changed = true;
+  }
 
   if (user.all_plans_completed !== shouldActivate) {
     user.all_plans_completed = shouldActivate;
@@ -116,7 +165,10 @@ module.exports = {
   ACTIVATION_PLANS,
   syncActivationStatus,
   isPlanDone,
+  isWelcomeBonusPaid,
   getRemainingActivationPlans,
   getNextActivationPlan,
+  getNextUnpaidPlanForRedirect,
   buildActivationRedirect,
+  buildPaymentRedirect,
 };

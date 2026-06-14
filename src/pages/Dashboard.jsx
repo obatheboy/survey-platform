@@ -118,7 +118,6 @@ export default function Dashboard() {
   const [showDailyReward, setShowDailyReward] = useState(false);
   const [canClaimDailyReward, setCanClaimDailyReward] = useState(false);
   const [showWelcomeBonus, setShowWelcomeBonus] = useState(false);
-  const [welcomeBonusAmount, setWelcomeBonusAmount] = useState(1200);
   const [gamificationStats, setGamificationStats] = useState({
     level: 1,
     xp: 0,
@@ -347,49 +346,30 @@ export default function Dashboard() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [showScrollReminder]);
 
-  /* =========================
-     GAMIFICATION - CHECK WELCOME BONUS
+/* =========================
+   GAMIFICATION - CHECK WELCOME BONUS POPUP ON FIRST SIGN-IN
    ========================= */
-  useEffect(() => {
-    if (!user) return;
-    
-    const bonusAmount = user.welcome_bonus;
-    const isActivated = user.is_activated || user.account_activated;
-    const showOnLogin = localStorage.getItem("showWelcomeBonusOnDashboard");
-    const onboardCompleted = user.survey_onboarding_completed;
-    const hasShownWelcomeBonus = localStorage.getItem("welcomeBonusShown");
+   useEffect(() => {
+     if (!user) return;
+     
+     const isActivated = user.is_activated || user.account_activated;
+     const hasSeenPopup = user.has_seen_welcome_popup === true;
+     const welcomeBonusNotPaid = user.welcome_bonus_paid !== true;
 
-    if (bonusAmount && showOnLogin && onboardCompleted && !hasShownWelcomeBonus && !isActivated) {
-      setWelcomeBonusAmount(bonusAmount);
-      
-      const showAfterDelay = setTimeout(() => {
-        setShowWelcomeBonus(true);
-        localStorage.setItem("welcomeBonusShown", "true");
-        localStorage.removeItem("showWelcomeBonusOnDashboard");
-      }, 2500);
-      
-      return () => clearTimeout(showAfterDelay);
-    }
-  }, [user]);
+     if (!hasSeenPopup && welcomeBonusNotPaid && !isActivated) {
+       const showAfterDelay = setTimeout(() => {
+         setShowWelcomeBonus(true);
+         api.post("/auth/mark-welcome-popup-seen").catch(err => {
+           console.error("Failed to mark welcome popup seen:", err);
+         });
+       }, 1500);
+       
+       return () => clearTimeout(showAfterDelay);
+     }
+   }, [user]);
 
   const handleWelcomeBonusClose = () => {
     setShowWelcomeBonus(false);
-    
-    setTimeout(() => {
-      const checkAndShowDailyReward = async () => {
-        try {
-          const response = await gamificationApi.checkDailyReward();
-          if (response.data.can_claim) {
-            setCanClaimDailyReward(true);
-            // Daily reward popup disabled
-            // setShowDailyReward(true);
-          }
-        } catch (error) {
-          console.error('Error checking daily reward:', error);
-        }
-      };
-      checkAndShowDailyReward();
-    }, 1500);
   };
 
   /* =========================
@@ -1660,13 +1640,13 @@ title="Contact Us on WhatsApp"
           <p className="footer-note" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)' }}>© {new Date().getFullYear()} SurveyEarn. All rights reserved.</p>
         </footer>
 
-      {/* WELCOME BONUS POPUP */}
-      <WelcomeBonusPopup
-        isOpen={showWelcomeBonus}
-        onClose={handleWelcomeBonusClose}
-        bonusAmount={welcomeBonusAmount}
-        onActivate={() => navigate('/activate?welcome_bonus=true')}
-      />
+{/* WELCOME BONUS POPUP */}
+       <WelcomeBonusPopup
+         isOpen={showWelcomeBonus}
+         onClose={handleWelcomeBonusClose}
+         onActivate={() => navigate('/activate?welcome_bonus=true')}
+         showMaybeLater={true}
+       />
 
       {/* DAILY REWARD POPUP */}
       <DailyRewardPopup

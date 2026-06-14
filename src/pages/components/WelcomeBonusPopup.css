@@ -1,5 +1,5 @@
 /* =========================================================
-   WELCOME BONUS POPUP - COMPACT VERSION
+   WELCOME BONUS POPUP - FIRST SIGN-IN VERSION
    ========================================================= */
 
 .welcome-bonus-overlay {
@@ -21,10 +21,10 @@
   background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
   border-radius: 16px;
   padding: 0;
-  max-width: 300px;
+  max-width: 320px;
   width: 100%;
   position: relative;
-  border: 2px solid rgba(251, 191, 36, 0.3);
+  border: 2px solid rgba(16, 185, 129, 0.3);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
   overflow: hidden;
 }
@@ -56,7 +56,7 @@
 .welcome-bonus-content {
   position: relative;
   z-index: 10;
-  padding: 16px;
+  padding: 20px;
   text-align: center;
 }
 
@@ -64,58 +64,44 @@
   margin-bottom: 12px;
 }
 
+.bonus-icon-wrapper {
+  margin-bottom: 8px;
+}
+
+.icon-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  border: 2px solid rgba(16, 185, 129, 0.3);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
 .welcome-bonus-icon {
-  font-size: 2rem;
+  font-size: 2.5rem;
 }
 
 .welcome-bonus-header h2 {
   margin: 8px 0 4px 0;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 800;
-  color: #fbbf24;
+  color: #10b981;
 }
 
 .welcome-bonus-header p {
   margin: 0;
   color: rgba(255, 255, 255, 0.7);
-  font-size: 0.75rem;
-}
-
-.welcome-bonus-amount {
-  margin: 12px 0;
-}
-
-.bonus-amount-inner {
-  background: rgba(251, 191, 36, 0.15);
-  border: 1px solid rgba(251, 191, 36, 0.4);
-  border-radius: 12px;
-  padding: 12px;
-}
-
-.welcome-bonus-label {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 4px;
-}
-
-.welcome-bonus-value {
-  font-size: 1.5rem;
-  font-weight: 900;
-  color: #fbbf24;
-}
-
-.welcome-bonus-value span {
-  font-size: 0.8rem;
-}
-
-.bonus-coin {
-  display: none;
+  font-size: 0.85rem;
 }
 
 .welcome-bonus-message {
   color: rgba(255, 255, 255, 0.85);
-  font-size: 0.8rem;
-  margin-bottom: 12px;
+  font-size: 0.85rem;
+  margin: 16px 0;
+  line-height: 1.4;
 }
 
 .welcome-bonus-message strong {
@@ -123,42 +109,44 @@
 }
 
 .highlight-text {
-  color: #f97316;
-  font-weight: 600;
-}
-
-.welcome-bonus-button {
-  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
-  border: none;
-  padding: 10px 20px;
-  border-radius: 30px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: white;
-  cursor: pointer;
-  width: 100%;
-  display: block;
-  box-shadow: 0 4px 15px rgba(234, 88, 12, 0.4);
-}
-
-.welcome-bonus-button:hover {
-  transform: scale(1.02);
-  box-shadow: 0 6px 20px rgba(234, 88, 12, 0.5);
-}
-
-.button-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+  color: #94a3b8;
+  font-weight: 400;
+  font-size: 0.75rem;
 }
 
 .welcome-bonus-features {
-  display: none;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin: 12px 0;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.feature-icon {
+  color: #10b981;
+  font-weight: 600;
 }
 
 .welcome-bonus-note {
-  margin-top: 10px;
-  font-size: 0.65rem;
+  margin-top: 12px;
+  font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.5);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+  }
 }
