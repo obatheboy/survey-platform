@@ -1238,7 +1238,10 @@ setPaynectaSubmitting(true);
              onClick={() => {
                // Check if plan is already activated (paid)
                if (user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated) {
-                 navigate("/withdraw-form");
+                 // Already activated - go back to withdraw form
+                 if (location.state?.from === "withdraw") {
+                   navigate("/withdraw-form");
+                 }
                  return;
                }
                submitActivation();
@@ -1256,7 +1259,7 @@ setPaynectaSubmitting(true);
              }}
            >
              {user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated ? (
-               "✅ Activated - Go to Withdraw"
+               "✅ Activated"
              ) : submitting ? (
                <>
                  <span style={{
@@ -1283,7 +1286,7 @@ setPaynectaSubmitting(true);
           )}
 
 <button
-              onClick={() => navigate(location.state?.from === "withdraw" ? "/withdraw-form" : "/dashboard")}
+              onClick={() => navigate("/dashboard")}
               style={{
                 ...styles.button,
                 background: "transparent",
@@ -1293,7 +1296,7 @@ setPaynectaSubmitting(true);
                 fontWeight: 700
               }}
 >
-               ⬅ {location.state?.from === "withdraw" ? "Back to Plans" : "Back to Dashboard"}
+               ⬅ Back to Dashboard
              </button>
 
            <div className="activate-plan-status" style={{
