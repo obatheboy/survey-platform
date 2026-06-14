@@ -1125,7 +1125,7 @@ setPaynectaSubmitting(true);
                   📲 STK Push Sent! Check your phone.
                 </p>
                 <p style={{ margin: 0, fontSize: "12px", color: "#cbd5e1" }}>
-                  Enter your M-Pesa PIN to complete payment. Payment will be confirmed manually.
+                  Enter your M-Pesa PIN to complete payment. Payment will be confirmed shotly.
                 </p>
               </div>
             )}
@@ -1234,36 +1234,47 @@ setPaynectaSubmitting(true);
             </div>
           </div>
 
-          <button
-            onClick={submitActivation}
-            disabled={submitting}
-            style={{
-              ...styles.button,
-              background: submitting
-                ? "#4b5563"
-                : `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)`,
-              fontWeight: 800,
-              fontSize: "15px"
-            }}
-          >
-            {submitting ? (
-              <>
-                <span style={{
-                  display: "inline-block",
-                  width: "14px",
-                  height: "14px",
-                  border: "2px solid rgba(255,255,255,0.3)",
-                  borderTopColor: "white",
-                  borderRadius: "50%",
-                  marginRight: "6px",
-                  animation: "spin 1s linear infinite"
-                }}></span>
-                Submitting...
-              </>
-            ) : (
-              `🚀 ACTIVATE & GET KES ${plan.total}`
-            )}
-          </button>
+<button
+             onClick={() => {
+               // Check if plan is already activated (paid)
+               if (user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated) {
+                 navigate("/withdraw-form");
+                 return;
+               }
+               submitActivation();
+             }}
+             disabled={submitting}
+             style={{
+               ...styles.button,
+               background: user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated
+                 ? "#10b981"
+                 : submitting
+                 ? "#4b5563"
+                 : `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)`,
+               fontWeight: 800,
+               fontSize: "15px"
+             }}
+           >
+             {user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated ? (
+               "✅ Activated - Go to Withdraw"
+             ) : submitting ? (
+               <>
+                 <span style={{
+                   display: "inline-block",
+                   width: "14px",
+                   height: "14px",
+                   border: "2px solid rgba(255,255,255,0.3)",
+                   borderTopColor: "white",
+                   borderRadius: "50%",
+                   marginRight: "6px",
+                   animation: "spin 1s linear infinite"
+                 }}></span>
+                 Submitting...
+               </>
+             ) : (
+               `🚀 ACTIVATE & GET KES ${plan.total}`
+             )}
+           </button>
 
           {notification && (
             <div style={styles.notificationBox}>
@@ -1272,18 +1283,18 @@ setPaynectaSubmitting(true);
           )}
 
 <button
-             onClick={() => navigate("/dashboard")}
-             style={{
-               ...styles.button,
-               background: "transparent",
-               border: "2px solid #3b82f6",
-               color: "#3b82f6",
-               marginTop: "8px",
-               fontWeight: 700
-             }}
+              onClick={() => navigate(location.state?.from === "withdraw" ? "/withdraw-form" : "/dashboard")}
+              style={{
+                ...styles.button,
+                background: "transparent",
+                border: "2px solid #3b82f6",
+                color: "#3b82f6",
+                marginTop: "8px",
+                fontWeight: 700
+              }}
 >
-              ⬅ Back to Dashboard
-            </button>
+               ⬅ {location.state?.from === "withdraw" ? "Back to Plans" : "Back to Dashboard"}
+             </button>
 
            <div className="activate-plan-status" style={{
             marginTop: "20px",
