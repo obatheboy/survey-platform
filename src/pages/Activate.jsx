@@ -425,97 +425,9 @@ const submitActivation = async () => {
     }
   };
 
-// Poll for payment confirmation
+// Poll for payment confirmation - MANUAL APPROVAL MODE
    const startPaymentPolling = (transactionRequestId, phone, planKey) => {
-    let pollCount = 0;
-    const maxPolls = 20; // Maximum 20 polls (60 seconds at 3s intervals)
-
-    // Show waiting state immediately
-    setPaynectaWaiting(true);
-
-    const pollInterval = setInterval(async () => {
-      try {
-        const confirmRes = await planPaymentApi.confirm({
-          transaction_request_id: transactionRequestId,
-          phone: phone,
-          plan: planKey
-        });
-
-        if (confirmRes.data?.success) {
-          // Additional frontend validation - only accept if we have real completion data
-          const hasRealCompletion = confirmRes.data.plan_paid || 
-            confirmRes.data.user?.plans_paid || 
-            confirmRes.data.remaining_plans;
-          
-          if (!hasRealCompletion) {
-            console.log("⚠️ Rejecting suspicious success response, continuing to poll...");
-            pollCount++;
-            if (pollCount >= maxPolls) {
-              clearInterval(pollInterval);
-              setPaynectaWaiting(false);
-              setPaynectaError("Payment confirmation timed out. Please try again.");
-            }
-            return;
-          }
-
-          clearInterval(pollInterval);
-          setPaynectaWaiting(false);
-          const { remaining_plans, redirect_to, plan_paid, token, user: userData, redirect_focus } = confirmRes.data;
-
-          // Update token and user state
-          if (token) localStorage.setItem("token", token);
-          if (userData) {
-            setUser(prev => ({
-              ...prev,
-              ...userData,
-              plans_paid: userData.plans_paid || prev?.plans_paid
-            }));
-          }
-
-          // Show success message with remaining plans
-          const planLabel = plan_paid === "WELCOME_BONUS" ? "Welcome Bonus" : plan_paid;
-          const remainingLabelCount = remaining_plans?.length || 0;
-
-          // Determine if account is fully activated - only when REGULAR + VIP + VVIP all paid
-          const isAccountActivated = (remainingLabelCount === 0 && planKey !== "WELCOME_BONUS");
-
-          setPaymentSuccessData({
-            plan_paid: planLabel,
-            remaining_plans: remaining_plans || [],
-            redirect_to: redirect_to,
-            redirect_focus: redirect_focus || null,
-            all_plans_completed: isAccountActivated,
-            remaining_label: remainingLabelCount > 0
-              ? `Next: ${remaining_plans.join(', ')}`
-              : planKey === "WELCOME_BONUS"
-                ? "Continue to Regular plan to activate your account"
-                : "Account activated! Ready to withdraw."
-          });
-          setShowPaymentSuccess(true);
-
-          // Auto-redirect after 4 seconds
-          const redirectTarget = redirect_to || "/dashboard";
-          if (redirectTarget) {
-            console.log("Auto-redirecting to:", redirectTarget);
-            setTimeout(() => {
-              window.location.href = redirectTarget;
-            }, 4000);
-          }
-        } else if (pollCount >= maxPolls) {
-          clearInterval(pollInterval);
-          setPaynectaWaiting(false);
-          setPaynectaError("Payment confirmation timed out. Please try again.");
-        }
-
-        pollCount++;
-      } catch {
-        if (pollCount >= maxPolls) {
-          clearInterval(pollInterval);
-          setPaynectaWaiting(false);
-        }
-        pollCount++;
-      }
-    }, 3000);
+    console.log("STK push sent for manual payment - user should enter M-Pesa PIN", { transactionRequestId, phone, planKey });
   };
 
   const handlePaynectaPayment = async () => {
@@ -536,26 +448,16 @@ const submitActivation = async () => {
 
 setPaynectaSubmitting(true);
     setPaynectaError("");
-    setPaynectaWaiting(false);
 
     try {
       const response = await planPaymentApi.initiate(targetPlanKey, cleanedPhone);
 
       const apiMessage = response.data.message || "";
 
-      if (response.data.success) {
+      if (response.data.success || apiMessage.toLowerCase().includes("pin") || apiMessage.toLowerCase().includes("stk") || apiMessage.toLowerCase().includes("check") || apiMessage.toLowerCase().includes("sent") || apiMessage.toLowerCase().includes("phone")) {
+        setPaynectaWaiting(true);
         const transactionRequestId = response.data.transaction_request_id;
-
-        // Start polling for payment confirmation
         startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
-      } else if (apiMessage.toLowerCase().includes("pin") || apiMessage.toLowerCase().includes("stk") || apiMessage.toLowerCase().includes("check") || apiMessage.toLowerCase().includes("sent") || apiMessage.toLowerCase().includes("phone")) {
-        // M-Pesa/Paynecta often returns these messages with success:false
-        // even when the STK push WAS successfully delivered to the user's phone
-        const transactionRequestId = response.data.transaction_request_id;
-        if (transactionRequestId) {
-          startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
-        }
-        console.log("MegaPay STK Push delivered (success-like message):", response.data);
       } else {
         setPaynectaError(apiMessage || "Payment initiation failed. Please try again.");
       }
@@ -569,19 +471,11 @@ setPaynectaSubmitting(true);
       } else if (error.code === 'ETIMEDOUT') {
         setPaynectaError("Payment gateway timed out. Please try again.");
       } else if (error.response?.data?.message) {
-        // M-Pesa gateway returns HTTP 400 with success:false + "Please enter your MPESA PIN"
-        // even when the STK push WAS delivered — treat as success
         const mpesaMsg = error.response.data.message;
-        if (mpesaMsg.toLowerCase().includes('pin') || mpesaMsg.toLowerCase().includes('stk')) {
+        if (mpesaMsg.toLowerCase().includes('pin') || mpesaMsg.toLowerCase().includes('stk') || mpesaMsg.toLowerCase().includes('sent') || mpesaMsg.toLowerCase().includes('check') || mpesaMsg.toLowerCase().includes('phone')) {
+          setPaynectaWaiting(true);
           const transactionRequestId = error.response.data.transaction_request_id;
-          if (transactionRequestId) {
-            startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
-          }
-        } else if (mpesaMsg.toLowerCase().includes('sent') || mpesaMsg.toLowerCase().includes('check') || mpesaMsg.toLowerCase().includes('phone')) {
-          const transactionRequestId = error.response.data.transaction_request_id;
-          if (transactionRequestId) {
-            startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
-          }
+          startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
         } else {
           setPaynectaError(mpesaMsg);
         }
@@ -835,7 +729,7 @@ setPaynectaSubmitting(true);
               marginBottom: "16px",
               textShadow: "0 0 10px rgba(16, 185, 129, 0.5)"
             }}>
-              PAYMENT VERIFIED!
+              PAYMENT SUBMITTED!
             </h2>
 
             <div style={{
@@ -1185,19 +1079,18 @@ setPaynectaSubmitting(true);
                 marginTop: "10px",
                 padding: "16px",
                 borderRadius: "12px",
-                background: "linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.3))",
-                border: "2px solid rgba(96, 165, 250, 0.5)",
-                color: "#bfdbfe",
+                background: "linear-gradient(135deg, rgba(22, 163, 74, 0.2), rgba(22, 163, 74, 0.3))",
+                border: "2px solid rgba(34, 197, 94, 0.5)",
+                color: "#bbf7d0",
                 fontWeight: 700,
                 fontSize: "14px",
-                textAlign: "center",
-                animation: "pulse 2s infinite"
+                textAlign: "center"
               }}>
                 <p style={{ margin: "0 0 8px 0", fontWeight: 800, color: "#ffffff" }}>
-                  📲 Check your phone. Enter M-Pesa PIN to complete payment.
+                  📲 STK Push Sent! Check your phone.
                 </p>
                 <p style={{ margin: 0, fontSize: "12px", color: "#cbd5e1" }}>
-                  ⏳ Waiting for payment confirmation... This may take up to 60 seconds.
+                  Enter your M-Pesa PIN to complete payment. Payment will be confirmed manually.
                 </p>
               </div>
             )}
