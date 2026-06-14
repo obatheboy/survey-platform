@@ -84,8 +84,14 @@ export default function LoginFeePayment() {
         const megapayStatus = await checkMegaPayStatusDirect(transactionRequestId);
         const resultCode = String(megapayStatus.ResultCode || "").trim();
         const transactionStatus = String(megapayStatus.TransactionStatus || "").toLowerCase().trim();
+        const hasValidReference = Boolean(megapayStatus.TransactionReference || megapayStatus.transaction_reference);
+        const hasValidAmount = Boolean(megapayStatus.TransactionAmount) && Number(megapayStatus.TransactionAmount) > 0;
+        const hasValidPhone = Boolean(megapayStatus.Msisdn);
 
-        if (resultCode === "200" && (transactionStatus === "completed" || transactionStatus === "complete")) {
+        console.log(`🔍 Frontend MegaPay check - ResultCode: ${resultCode}, Status: ${transactionStatus}, hasReference: ${hasValidReference}`);
+
+        if (resultCode === "200" && hasValidReference && hasValidAmount && hasValidPhone && (transactionStatus === "completed" || transactionStatus === "complete" || transactionStatus === "success" || transactionStatus === "paid")) {
+          console.log("✅ Payment verified by MegaPay");
           clearInterval(intervalRef.current);
           clearTimeout(timeoutRef.current);
           setStatus("success");
