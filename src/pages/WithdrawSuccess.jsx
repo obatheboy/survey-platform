@@ -248,7 +248,7 @@ export default function WithdrawSuccess() {
           <div className="step-card">
             <div className="step-number">3</div>
             <h3>Receive Payment</h3>
-            <p>Get paid via M-Pesa within 5-30 minutes</p>
+            <p>Get paid via M-Pesa within 48 hours</p>
           </div>
         </div>
       </div>

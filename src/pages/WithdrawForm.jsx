@@ -669,7 +669,7 @@ export default function WithdrawForm() {
             <div className="processing-info">
               <div className="info-item">
                 <span className="info-icon">⏱️</span>
-                <span>Processing Time: 5-30 minutes</span>
+                <span>Processing Time: Within 48 hours</span>
               </div>
               <div className="info-item">
                 <span className="info-icon">💳</span>
@@ -735,7 +735,7 @@ export default function WithdrawForm() {
             <div className="terms-notice">
               <p>
                 <strong>Important:</strong> By withdrawing, you agree to our terms. 
-                Processing may take 5-30 minutes. You'll receive an SMS confirmation from M-Pesa.
+                Processing may take up to 48 hours. You'll receive an SMS confirmation from M-Pesa.
                 Ensure your phone number is correct.
                 {!isAffiliateWithdraw && !isPlanActivated(plan) && (
                   <span className="activation-required-text">
