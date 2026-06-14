@@ -460,10 +460,125 @@ const submitActivation = async () => {
     }
   };
 
-// Poll for payment confirmation - MANUAL APPROVAL MODE
-   const startPaymentPolling = (transactionRequestId, phone, planKey) => {
-    console.log("STK push sent for manual payment - user should enter M-Pesa PIN", { transactionRequestId, phone, planKey });
+const [pollInterval, setPollInterval] = useState(null);
+  const [pollCount, setPollCount] = useState(0);
+
+  const startPaymentPolling = (transactionRequestId, phone, targetPlanKey) => {
+    console.log("Starting payment polling for:", { transactionRequestId, phone, plan: targetPlanKey });
+    let attempts = 0;
+    const maxAttempts = 30;
+
+    const interval = setInterval(async () => {
+      attempts++;
+      setPollCount(attempts);
+
+      try {
+        const confirmRes = await planPaymentApi.confirm({
+          transaction_request_id: transactionRequestId,
+          phone: phone,
+          plan: targetPlanKey
+        });
+
+        console.log(`Poll attempt ${attempts} - confirm response:`, confirmRes.data);
+
+        if (confirmRes.data.success && confirmRes.data.all_plans_completed === true) {
+          clearInterval(interval);
+          setPollInterval(null);
+          setPaynectaWaiting(false);
+          setPaymentSuccessData({
+            plan_paid: confirmRes.data.plan_paid || targetPlanKey,
+            remaining_plans: confirmRes.data.remaining_plans || [],
+            redirect_to: confirmRes.data.redirect_to || "/withdraw-form",
+            all_plans_completed: true,
+            success_message: confirmRes.data.success_message || "All plans complete! You can now withdraw!"
+          });
+          setShowPaymentSuccess(true);
+          setUser(prev => ({
+            ...prev,
+            all_plans_completed: true,
+            account_activated: true,
+            is_activated: true,
+            plans_paid: { ...prev.plans_paid, [targetPlanKey]: true },
+            [`${targetPlanKey.toLowerCase()}_paid`]: true
+          }));
+          return;
+        }
+
+        if (confirmRes.data.success && confirmRes.data.plan_paid) {
+          clearInterval(interval);
+          setPollInterval(null);
+          setPaynectaWaiting(false);
+          setPaymentSuccessData({
+            plan_paid: confirmRes.data.plan_paid,
+            remaining_plans: confirmRes.data.remaining_plans || [],
+            redirect_to: confirmRes.data.redirect_to || "/dashboard",
+            all_plans_completed: confirmRes.data.all_plans_completed || false,
+            success_message: confirmRes.data.success_message || `Successfully paid for ${confirmRes.data.plan_paid}!`
+          });
+          setShowPaymentSuccess(true);
+          if (confirmRes.data.user) {
+            setUser(prev => ({ ...prev, ...confirmRes.data.user }));
+          }
+          return;
+        }
+
+        if (confirmRes.data.paid === true || confirmRes.data.success === true) {
+          clearInterval(interval);
+          setPollInterval(null);
+          setPaynectaWaiting(false);
+          const remainingPlans = confirmRes.data.remaining_plans || [];
+          const redirectTo = confirmRes.data.redirect_to || (remainingPlans.length > 0 ? `/dashboard?focusPlan=${remainingPlans[0]}&highlightPlan=${remainingPlans[0]}` : "/dashboard");
+          setPaymentSuccessData({
+            plan_paid: targetPlanKey,
+            remaining_plans: remainingPlans,
+            redirect_to: redirectTo,
+            all_plans_completed: confirmRes.data.all_plans_completed || false,
+            success_message: confirmRes.data.message || `Successfully paid for ${targetPlanKey}!`
+          });
+          setShowPaymentSuccess(true);
+          if (confirmRes.data.user) {
+            setUser(prev => ({ ...prev, ...confirmRes.data.user }));
+          }
+          return;
+        }
+
+        if (attempts >= maxAttempts) {
+          clearInterval(interval);
+          setPollInterval(null);
+          setPaynectaWaiting(false);
+          setPaynectaError("Payment verification timeout. Please check your M-Pesa and try submitting the confirmation message manually, or contact support.");
+        }
+      } catch (error) {
+        console.error(`Poll attempt ${attempts} error:`, error);
+        if (attempts >= maxAttempts) {
+          clearInterval(interval);
+          setPollInterval(null);
+          setPaynectaWaiting(false);
+          setPaynectaError("Payment verification timeout. Please check your M-Pesa and try again.");
+        }
+      }
+    }, 4000);
+
+    setPollInterval(interval);
   };
+
+  useEffect(() => {
+    return () => {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+      }
+    };
+  }, [pollInterval]);
+
+  useEffect(() => {
+    if (showPaymentSuccess && paymentSuccessData) {
+      const timer = setTimeout(() => {
+        const target = paymentSuccessData.redirect_to || "/dashboard";
+        window.location.href = target;
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [showPaymentSuccess, paymentSuccessData]);
 
   const handlePaynectaPayment = async () => {
     if (!paynectaPhone.trim()) {
