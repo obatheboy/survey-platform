@@ -1275,7 +1275,7 @@ setPaynectaSubmitting(true);
                  Submitting...
                </>
              ) : (
-               `🚀 ACTIVATE & GET KES ${plan.total}`
+               "SUBMIT MESSAGE FOR APPROVAL"
              )}
            </button>
 
