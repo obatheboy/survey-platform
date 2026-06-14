@@ -58,8 +58,6 @@ const isPlanDone = (user, planKey) => {
    return `/dashboard?focusPlan=${planKey}&highlightPlan=${planKey}`;
  };
 
- const isComingFromWithdraw = location.state?.from === "withdraw" || location.state?.showPayment !== undefined;
-
 
 const styles = {
   overlay: {
@@ -241,6 +239,12 @@ useEffect(() => {
          } else if (statePlanKey && PLAN_CONFIG[statePlanKey.toUpperCase()]) {
            planFromQuery = statePlanKey.toUpperCase();
          }
+
+         // Check if coming from withdraw form (handles both state and URL param)
+         const isComingFromWithdraw = location.state?.from === "withdraw" || 
+           location.state?.showPayment !== undefined ||
+           location.state?.planKey !== undefined ||
+           document.referrer.includes("withdraw-form");
 
          // If coming from withdraw, always show the activation page
          // Don't redirect based on plan status - user can decide to activate
