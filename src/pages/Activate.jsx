@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import api from "../api/api";
 import TrustBadges from "../components/TrustBadges";
@@ -217,136 +217,61 @@ const [planKey, setPlanKey] = useState(null);
   const [paynectaWaiting, setPaynectaWaiting] = useState(false);
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
   const [paymentSuccessData, setPaymentSuccessData] = useState(null);
+  const pollRef = useRef(null);
 
   const startPaymentPolling = (transactionRequestId, phone, targetPlanKey) => {
-    console.log("Starting payment polling for:", { transactionRequestId, phone, plan: targetPlanKey });
     let attempts = 0;
+    let pollTimer = null;
+    let fallbackTimer = null;
     const maxAttempts = 30;
-    const INITIAL_DELAY_MS = 15000;
-    const POLL_INTERVAL_MS = 5000;
+    const POLL_INTERVAL_MS = 6000;
 
-    let pollIntervalRef = null;
-    let fbackRef = null;
+    const stop = () => {
+      if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+      if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
+      setPaynectaWaiting(false);
+    };
 
     const doPoll = async () => {
       attempts++;
-      setPollCount(attempts);
-
       try {
         const confirmRes = await planPaymentApi.confirm({
           transaction_request_id: transactionRequestId,
           phone: phone,
           plan: targetPlanKey
         });
+        console.log(`Poll attempt ${attempts}`, confirmRes.data);
 
-        console.log(`Poll attempt ${attempts} - confirm response:`, confirmRes.data);
-
-        if (confirmRes.data.success && confirmRes.data.all_plans_completed === true) {
-          clearInterval(pollIntervalRef);
-          clearTimeout(fbackRef);
-          setPollInterval(null);
-          setPaynectaWaiting(false);
+        if (confirmRes.data.success && (confirmRes.data.plan_paid || confirmRes.data.paid === true || confirmRes.data.all_plans_completed === true)) {
+          stop();
+          const remainingPlans = confirmRes.data.remaining_plans || [];
           setPaymentSuccessData({
             plan_paid: confirmRes.data.plan_paid || targetPlanKey,
-            remaining_plans: confirmRes.data.remaining_plans || [],
-            redirect_to: confirmRes.data.redirect_to || "/withdraw-form",
-            all_plans_completed: true,
-            success_message: confirmRes.data.success_message || "All plans complete! You can now withdraw!"
-          });
-          setShowPaymentSuccess(true);
-          if (confirmRes.data.user) {
-            setUser(prev => ({ ...prev, ...confirmRes.data.user }));
-          }
-          return;
-        }
-
-        if (confirmRes.data.success && confirmRes.data.plan_paid) {
-          clearInterval(pollIntervalRef);
-          clearTimeout(fbackRef);
-          setPollInterval(null);
-          setPaynectaWaiting(false);
-          setPaymentSuccessData({
-            plan_paid: confirmRes.data.plan_paid,
-            remaining_plans: confirmRes.data.remaining_plans || [],
-            redirect_to: confirmRes.data.redirect_to || "/dashboard",
-            all_plans_completed: confirmRes.data.all_plans_completed || false,
-            success_message: confirmRes.data.success_message || `Successfully paid for ${confirmRes.data.plan_paid}!`
-          });
-          setShowPaymentSuccess(true);
-          if (confirmRes.data.user) {
-            setUser(prev => ({ ...prev, ...confirmRes.data.user }));
-          }
-          return;
-        }
-
-        if (confirmRes.data.paid === true || (confirmRes.data.success && !confirmRes.data.plan_paid)) {
-          clearInterval(pollIntervalRef);
-          clearTimeout(fbackRef);
-          setPollInterval(null);
-          setPaynectaWaiting(false);
-          const remainingPlans = confirmRes.data.remaining_plans || [];
-          const redirectTo = confirmRes.data.redirect_to || (remainingPlans.length > 0
-            ? `/dashboard?focusPlan=${remainingPlans[0]}&highlightPlan=${remainingPlans[0]}`
-            : "/dashboard");
-          setPaymentSuccessData({
-            plan_paid: targetPlanKey,
             remaining_plans: remainingPlans,
-            redirect_to: redirectTo,
+            redirect_to: confirmRes.data.redirect_to || (remainingPlans.length > 0
+              ? `/dashboard?focusPlan=${remainingPlans[0]}&highlightPlan=${remainingPlans[0]}`
+              : "/dashboard"),
             all_plans_completed: confirmRes.data.all_plans_completed || false,
-            success_message: confirmRes.data.message || `Successfully paid for ${targetPlanKey}!`
+            success_message: confirmRes.data.success_message || confirmRes.data.message || `Payment successful for ${confirmRes.data.plan_paid || targetPlanKey}!`
           });
           setShowPaymentSuccess(true);
-          if (confirmRes.data.user) {
-            setUser(prev => ({ ...prev, ...confirmRes.data.user }));
-          }
-          return;
+          if (confirmRes.data.user) setUser(prev => ({ ...prev, ...confirmRes.data.user }));
         }
-
+      } catch (err) {
+        console.error(`Poll attempt ${attempts} error:`, err);
         if (attempts >= maxAttempts) {
-          clearInterval(pollIntervalRef);
-          clearTimeout(fbackRef);
-          setPollInterval(null);
-          setPaynectaWaiting(false);
-          setPaynectaError("Payment verification timeout. Please check your M-Pesa and try again.");
-        }
-      } catch (error) {
-        console.error(`Poll attempt ${attempts} error:`, error);
-        if (attempts >= maxAttempts) {
-          clearInterval(pollIntervalRef);
-          clearTimeout(fbackRef);
-          setPollInterval(null);
-          setPaynectaWaiting(false);
-          setPaynectaError("Payment verification timeout. Please check your M-Pesa and try again.");
+          stop();
+          setPaynectaError("Payment verification timeout. Please try again or use manual payment.");
         }
       }
     };
 
-    setTimeout(() => {
-      pollIntervalRef = setInterval(doPoll, POLL_INTERVAL_MS);
-      fbackRef = setTimeout(() => {
-        clearInterval(pollIntervalRef);
-        clearTimeout(fbackRef);
-        setPollInterval(null);
-        setPaynectaWaiting(false);
-        setPaynectaError("Payment not yet confirmed. Please enter your M-Pesa PIN and try again.");
-      }, INITIAL_DELAY_MS + 12000);
-
-      setPollInterval({
-        clear: () => {
-          clearInterval(pollIntervalRef);
-          clearTimeout(fbackRef);
-        }
-      });
-    }, INITIAL_DELAY_MS);
+    pollTimer = setInterval(doPoll, POLL_INTERVAL_MS);
+    fallbackTimer = setTimeout(() => {
+      stop();
+      setPaynectaError("Payment not confirmed yet. Please check your M-Pesa and try again.");
+    }, 120000);
   };
-
-  useEffect(() => {
-    return () => {
-      if (pollInterval && pollInterval.clear) {
-        pollInterval.clear();
-      }
-    };
-  }, [pollInterval]);
 
   useEffect(() => {
      let isMounted = true;
