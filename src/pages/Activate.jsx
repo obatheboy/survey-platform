@@ -215,13 +215,140 @@ const [planKey, setPlanKey] = useState(null);
   const [paynectaSubmitting, setPaynectaSubmitting] = useState(false);
   const [paynectaError, setPaynectaError] = useState("");
   const [paynectaWaiting, setPaynectaWaiting] = useState(false);
-  const [verifiedTransactionId, setVerifiedTransactionId] = useState(null);
-  const [currentPaymentPlan, setCurrentPaymentPlan] = useState(null);
-  const [currentPaymentPhone, setCurrentPaymentPhone] = useState(null);
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
   const [paymentSuccessData, setPaymentSuccessData] = useState(null);
 
-useEffect(() => {
+  const startPaymentPolling = (transactionRequestId, phone, targetPlanKey) => {
+    console.log("Starting payment polling for:", { transactionRequestId, phone, plan: targetPlanKey });
+    let attempts = 0;
+    const maxAttempts = 30;
+    const INITIAL_DELAY_MS = 15000;
+    const POLL_INTERVAL_MS = 5000;
+
+    let pollIntervalRef = null;
+    let fbackRef = null;
+
+    const doPoll = async () => {
+      attempts++;
+      setPollCount(attempts);
+
+      try {
+        const confirmRes = await planPaymentApi.confirm({
+          transaction_request_id: transactionRequestId,
+          phone: phone,
+          plan: targetPlanKey
+        });
+
+        console.log(`Poll attempt ${attempts} - confirm response:`, confirmRes.data);
+
+        if (confirmRes.data.success && confirmRes.data.all_plans_completed === true) {
+          clearInterval(pollIntervalRef);
+          clearTimeout(fbackRef);
+          setPollInterval(null);
+          setPaynectaWaiting(false);
+          setPaymentSuccessData({
+            plan_paid: confirmRes.data.plan_paid || targetPlanKey,
+            remaining_plans: confirmRes.data.remaining_plans || [],
+            redirect_to: confirmRes.data.redirect_to || "/withdraw-form",
+            all_plans_completed: true,
+            success_message: confirmRes.data.success_message || "All plans complete! You can now withdraw!"
+          });
+          setShowPaymentSuccess(true);
+          if (confirmRes.data.user) {
+            setUser(prev => ({ ...prev, ...confirmRes.data.user }));
+          }
+          return;
+        }
+
+        if (confirmRes.data.success && confirmRes.data.plan_paid) {
+          clearInterval(pollIntervalRef);
+          clearTimeout(fbackRef);
+          setPollInterval(null);
+          setPaynectaWaiting(false);
+          setPaymentSuccessData({
+            plan_paid: confirmRes.data.plan_paid,
+            remaining_plans: confirmRes.data.remaining_plans || [],
+            redirect_to: confirmRes.data.redirect_to || "/dashboard",
+            all_plans_completed: confirmRes.data.all_plans_completed || false,
+            success_message: confirmRes.data.success_message || `Successfully paid for ${confirmRes.data.plan_paid}!`
+          });
+          setShowPaymentSuccess(true);
+          if (confirmRes.data.user) {
+            setUser(prev => ({ ...prev, ...confirmRes.data.user }));
+          }
+          return;
+        }
+
+        if (confirmRes.data.paid === true || (confirmRes.data.success && !confirmRes.data.plan_paid)) {
+          clearInterval(pollIntervalRef);
+          clearTimeout(fbackRef);
+          setPollInterval(null);
+          setPaynectaWaiting(false);
+          const remainingPlans = confirmRes.data.remaining_plans || [];
+          const redirectTo = confirmRes.data.redirect_to || (remainingPlans.length > 0
+            ? `/dashboard?focusPlan=${remainingPlans[0]}&highlightPlan=${remainingPlans[0]}`
+            : "/dashboard");
+          setPaymentSuccessData({
+            plan_paid: targetPlanKey,
+            remaining_plans: remainingPlans,
+            redirect_to: redirectTo,
+            all_plans_completed: confirmRes.data.all_plans_completed || false,
+            success_message: confirmRes.data.message || `Successfully paid for ${targetPlanKey}!`
+          });
+          setShowPaymentSuccess(true);
+          if (confirmRes.data.user) {
+            setUser(prev => ({ ...prev, ...confirmRes.data.user }));
+          }
+          return;
+        }
+
+        if (attempts >= maxAttempts) {
+          clearInterval(pollIntervalRef);
+          clearTimeout(fbackRef);
+          setPollInterval(null);
+          setPaynectaWaiting(false);
+          setPaynectaError("Payment verification timeout. Please check your M-Pesa and try again.");
+        }
+      } catch (error) {
+        console.error(`Poll attempt ${attempts} error:`, error);
+        if (attempts >= maxAttempts) {
+          clearInterval(pollIntervalRef);
+          clearTimeout(fbackRef);
+          setPollInterval(null);
+          setPaynectaWaiting(false);
+          setPaynectaError("Payment verification timeout. Please check your M-Pesa and try again.");
+        }
+      }
+    };
+
+    setTimeout(() => {
+      pollIntervalRef = setInterval(doPoll, POLL_INTERVAL_MS);
+      fbackRef = setTimeout(() => {
+        clearInterval(pollIntervalRef);
+        clearTimeout(fbackRef);
+        setPollInterval(null);
+        setPaynectaWaiting(false);
+        setPaynectaError("Payment not yet confirmed. Please enter your M-Pesa PIN and try again.");
+      }, INITIAL_DELAY_MS + 12000);
+
+      setPollInterval({
+        clear: () => {
+          clearInterval(pollIntervalRef);
+          clearTimeout(fbackRef);
+        }
+      });
+    }, INITIAL_DELAY_MS);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (pollInterval && pollInterval.clear) {
+        pollInterval.clear();
+      }
+    };
+  }, [pollInterval]);
+
+  useEffect(() => {
      let isMounted = true;
 
      const load = async () => {
@@ -499,9 +626,8 @@ setPaynectaSubmitting(true);
 
       if (response.data.success || apiMessage.toLowerCase().includes("pin") || apiMessage.toLowerCase().includes("stk") || apiMessage.toLowerCase().includes("check") || apiMessage.toLowerCase().includes("sent") || apiMessage.toLowerCase().includes("phone")) {
         setPaynectaWaiting(true);
-        setVerifiedTransactionId(response.data.transaction_request_id);
-        setCurrentPaymentPlan(targetPlanKey);
-        setCurrentPaymentPhone(cleanedPhone);
+        const transactionRequestId = response.data.transaction_request_id;
+        startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
       } else {
         setPaynectaError(apiMessage || "Payment initiation failed. Please try again.");
       }
@@ -518,9 +644,8 @@ setPaynectaSubmitting(true);
         const mpesaMsg = error.response.data.message;
         if (mpesaMsg.toLowerCase().includes('pin') || mpesaMsg.toLowerCase().includes('stk') || mpesaMsg.toLowerCase().includes('sent') || mpesaMsg.toLowerCase().includes('check') || mpesaMsg.toLowerCase().includes('phone')) {
           setPaynectaWaiting(true);
-          setVerifiedTransactionId(error.response.data.transaction_request_id);
-          setCurrentPaymentPlan(targetPlanKey);
-          setCurrentPaymentPhone(cleanedPhone);
+          const transactionRequestId = error.response.data.transaction_request_id;
+          startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
         } else {
           setPaynectaError(mpesaMsg);
         }
@@ -1118,130 +1243,30 @@ setPaynectaSubmitting(true);
               </div>
             )}
 
-             {/* Waiting for payment banner - shown after STK is sent */}
-             {paynectaWaiting && (
-               <div style={{
-                 marginTop: "10px",
-                 padding: "16px",
-                 borderRadius: "12px",
-                 background: "linear-gradient(135deg, rgba(22, 163, 74, 0.2), rgba(22, 163, 74, 0.3))",
-                 border: "2px solid rgba(34, 197, 94, 0.5)",
-                 color: "#bbf7d0",
-                 fontWeight: 700,
-                 fontSize: "14px",
-                 textAlign: "center"
-               }}>
-                 <p style={{ margin: "0 0 8px 0", fontWeight: 800, color: "#ffffff" }}>
-                   📲 STK Push Sent! Check your phone.
-                 </p>
-                 <p style={{ margin: 0, fontSize: "12px", color: "#cbd5e1" }}>
-                   Enter your M-Pesa PIN to complete payment.
-                 </p>
+              {/* Waiting for payment banner - shown after STK is sent */}
+              {paynectaWaiting && (
+                <div style={{
+                  marginTop: "10px",
+                  padding: "16px",
+                  borderRadius: "12px",
+                  background: "linear-gradient(135deg, rgba(22, 163, 74, 0.2), rgba(22, 163, 74, 0.3))",
+                  border: "2px solid rgba(34, 197, 94, 0.5)",
+                  color: "#bbf7d0",
+                  fontWeight: 700,
+                  fontSize: "14px",
+                  textAlign: "center"
+                }}>
+                  <p style={{ margin: "0 0 8px 0", fontWeight: 800, color: "#ffffff" }}>
+                    📲 STK Push Sent! Check your phone.
+                  </p>
+                  <p style={{ margin: 0, fontSize: "12px", color: "#cbd5e1" }}>
+                    Enter your M-Pesa PIN to complete payment. Verifying automatically...
+                  </p>
+                </div>
+              )}
+           </div>
 
-                 <button
-                   onClick={async () => {
-                     if (!verifiedTransactionId || !currentPaymentPlan || !currentPaymentPhone) return;
-                     const submitPlanKey = currentPaymentPlan;
-                     const submitPhone = currentPaymentPhone;
-                      setPaynectaSubmitting(true);
-                      setPaynectaError("");
-                      try {
-                        const confirmRes = await planPaymentApi.confirm({
-                          transaction_request_id: verifiedTransactionId,
-                          phone: submitPhone,
-                          plan: submitPlanKey
-                        });
-
-                        console.log("Verify payment response:", confirmRes.data);
-
-                        if (confirmRes.data.success && (confirmRes.data.plan_paid || confirmRes.data.paid === true)) {
-                          setPaynectaWaiting(false);
-                          const remainingPlans = confirmRes.data.remaining_plans || [];
-                          setPaymentSuccessData({
-                            plan_paid: confirmRes.data.plan_paid || submitPlanKey,
-                            remaining_plans: remainingPlans,
-                            redirect_to: confirmRes.data.redirect_to || (remainingPlans.length > 0
-                              ? `/dashboard?focusPlan=${remainingPlans[0]}&highlightPlan=${remainingPlans[0]}`
-                              : "/withdraw-form"),
-                            all_plans_completed: confirmRes.data.all_plans_completed || false,
-                            success_message: confirmRes.data.success_message || confirmRes.data.message || `Successfully paid for ${confirmRes.data.plan_paid || submitPlanKey}!`
-                          });
-                          setShowPaymentSuccess(true);
-                          if (confirmRes.data.user) {
-                            setUser(prev => ({ ...prev, ...confirmRes.data.user }));
-                          } else {
-                            setUser(prev => ({
-                              ...prev,
-                              plans_paid: { ...prev.plans_paid, [submitPlanKey]: true },
-                              [`${submitPlanKey.toLowerCase()}_paid`]: true,
-                             all_plans_completed: confirmRes.data.all_plans_completed || false,
-                             account_activated: confirmRes.data.account_activated || false,
-                             is_activated: confirmRes.data.user_activated || prev.is_activated
-                           }));
-                         }
-                       } else {
-                         setPaynectaError(confirmRes.data.message || "Payment not yet confirmed by MegaPay. Make sure you entered your PIN and completed the payment.");
-                       }
-                     } catch (error) {
-                       console.error("Verify payment error:", error);
-                       setPaynectaError("Verification failed. Please try again or contact support.");
-                     } finally {
-                       setPaynectaSubmitting(false);
-                     }
-                   }}
-                   disabled={paynectaSubmitting}
-                   style={{
-                     width: "100%",
-                     marginTop: "12px",
-                     padding: "14px",
-                     borderRadius: "12px",
-                     fontWeight: 900,
-                     fontSize: "15px",
-                     cursor: paynectaSubmitting ? "not-allowed" : "pointer",
-                     border: "none",
-                     display: "flex",
-                     alignItems: "center",
-                     justifyContent: "center",
-                     gap: "8px",
-                     minHeight: "48px",
-                     background: paynectaSubmitting
-                       ? "#4b5563"
-                       : "linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)",
-                     color: "#ffffff",
-                     boxShadow: paynectaSubmitting
-                       ? "none"
-                       : "0 8px 25px rgba(16, 185, 129, 0.4)",
-                   }}
-                 >
-                   {paynectaSubmitting ? (
-                     <>
-                       <span style={{
-                         display: "inline-block",
-                         width: "16px",
-                         height: "16px",
-                         border: "3px solid rgba(255,255,255,0.3)",
-                         borderTopColor: "white",
-                         borderRadius: "50%",
-                         animation: "spin 1s linear infinite"
-                       }}></span>
-                       Verifying...
-                     </>
-                   ) : (
-                     <>
-                       <span>✅</span>
-                       <span>I've Paid - Verify Payment Now</span>
-                     </>
-                   )}
-                 </button>
-
-                 <p style={{ marginTop: "8px", fontSize: "11px", color: "#94a3b8" }}>
-                   Tap this button AFTER entering your M-Pesa PIN
-                 </p>
-               </div>
-             )}
-          </div>
-
-          {/* AUTO-PAY DISABLED - MANUAL PAYMENT ONLY */}
+           {/* AUTO-PAY DISABLED - MANUAL PAYMENT ONLY */}
           <div style={{
             background: "#fff7ed",
             border: "3px solid #ea580c",

@@ -247,8 +247,9 @@ exports.confirmPlanPayment = async (req, res) => {
       }
     }
 
-    // Verify with MegaPay
-    const statusResult = await megaPayService.checkTransactionStatus(transaction_request_id);
+    // Verify with MegaPay (including exact amount match)
+    const expectedAmount = PLAN_FEES[planKey];
+    const statusResult = await megaPayService.checkTransactionStatus(transaction_request_id, expectedAmount);
 
     if (!statusResult.success) {
       return res.status(500).json({

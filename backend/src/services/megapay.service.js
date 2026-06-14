@@ -142,9 +142,9 @@ const initiateSTKPush = async (amount, phoneNumber, reference) => {
 /**
  * Check MegaPay transaction status
  * Endpoint: POST https://megapay.co.ke/backend/v1/transactionstatus
- * Success condition: ResultCode === "200" AND TransactionStatus === "Completed"
+ * Success condition: ResultCode === "200" AND TransactionStatus === "Completed" AND amount matches expected
  */
-const checkTransactionStatus = async (transactionRequestId) => {
+const checkTransactionStatus = async (transactionRequestId, expectedAmount) => {
   try {
     const requestBody = {
       api_key: MEGAPAY_CONFIG.apiKey,
@@ -155,6 +155,7 @@ const checkTransactionStatus = async (transactionRequestId) => {
     console.log("=== MegaPay Transaction Status Check ===");
     console.log("Endpoint:", MEGAPAY_CONFIG.statusEndpoint);
     console.log("Transaction Request ID:", transactionRequestId);
+    console.log("Expected Amount:", expectedAmount);
 
     const response = await makeMegaPayRequest(MEGAPAY_CONFIG.statusEndpoint, requestBody);
 
@@ -162,11 +163,9 @@ const checkTransactionStatus = async (transactionRequestId) => {
 
     const resultCode = String(response.ResultCode || "").trim();
     const txStatus = String(response.TransactionStatus || "").toLowerCase().trim();
+    const actualAmount = Number(response.TransactionAmount);
 
     // Success condition: ResultCode === "200" AND TransactionStatus is a completed variant
-    // CRITICAL: Must require TransactionReference to prevent false positives from test/sandbox responses
-    // Test environments often return "Completed" immediately without actual payment reference
-    // MegaPay returns TransactionReference which is different from transaction_request_id we sent
     const hasValidReference = Boolean(
       (response.TransactionReference && response.TransactionReference !== transactionRequestId && 
        !['PLACEHOLDER','TEST','DUMMY','FAKE','TEMP','NULL','undefined','null','none','NA','N/A'].includes(String(response.TransactionReference).toUpperCase())) ||
@@ -175,34 +174,37 @@ const checkTransactionStatus = async (transactionRequestId) => {
       (response.TransactionId && response.TransactionId !== transactionRequestId && !['PLACEHOLDER','TEST','DUMMY','FAKE','TEMP','NULL','undefined','null','none','NA','N/A'].includes(String(response.TransactionId).toUpperCase())) ||
       (response.transaction_id && !['PLACEHOLDER','TEST','DUMMY','FAKE','TEMP','NULL','undefined','null','none','NA','N/A'].includes(String(response.transaction_id).toUpperCase()))
     );
-    const hasValidAmount = Boolean(response.TransactionAmount) && Number(response.TransactionAmount) > 0;
+    const hasValidAmount = !isNaN(actualAmount) && actualAmount > 0;
+    const amountMatches = !isNaN(expectedAmount) && !isNaN(actualAmount) && actualAmount === Number(expectedAmount);
     const hasValidPhone = Boolean(response.Msisdn);
-    const hasRealAmount = hasValidAmount && Number(response.TransactionAmount) >= 1;
     
-    console.log(`🔍 MegaPay validation check - ResultCode: ${resultCode}, Status: ${txStatus}, hasReference: ${hasValidReference}, hasAmount: ${hasValidAmount}, hasPhone: ${hasValidPhone}`);
+    console.log(`🔍 MegaPay validation check - ResultCode: ${resultCode}, Status: ${txStatus}, hasReference: ${hasValidReference}, amount=${actualAmount} (expected=${expectedAmount}, match=${amountMatches}), hasPhone: ${hasValidPhone}`);
     
-    if (resultCode === "200" && hasValidReference && hasRealAmount && hasValidPhone && (txStatus === "completed" || txStatus === "complete" || txStatus === "success" || txStatus === "paid")) {
-      console.log(`✅ MegaPay payment VERIFIED - TransactionReference: ${response.TransactionReference}`);
+    if (resultCode === "200" && hasValidReference && amountMatches && hasValidPhone && (txStatus === "completed" || txStatus === "complete" || txStatus === "success" || txStatus === "paid")) {
+      console.log(`✅ MegaPay payment VERIFIED - TransactionReference: ${response.TransactionReference}, Amount: KES ${actualAmount}`);
       return {
         success: true,
         completed: true,
-        amount: response.TransactionAmount,
+        amount: actualAmount,
         phone: response.Msisdn,
         reference: response.TransactionReference || response.transaction_reference || response.reference || response.TransactionId || response.transaction_id,
         resultCode: response.ResultCode,
         resultDesc: response.ResultDesc
       };
+    } else if (resultCode === "200" && hasValidReference && hasValidAmount && !amountMatches && hasValidPhone && (txStatus === "completed" || txStatus === "complete" || txStatus === "success" || txStatus === "paid")) {
+      console.log(`❌ Amount mismatch - expected KES ${expectedAmount} but got KES ${actualAmount}`);
     } else {
-      console.log(`⏳ MegaPay payment NOT CONFIRMED - missing validation: Reference=${hasValidReference}, Amount=${hasRealAmount}, Phone=${hasValidPhone}`);
+      console.log(`⏳ MegaPay payment NOT CONFIRMED - missing validation: Reference=${hasValidReference}, AmountMatch=${amountMatches}(${actualAmount}/${expectedAmount}), Phone=${hasValidPhone}`);
     }
 
-    // Payment not yet completed
+    // Payment not yet completed or doesn't match expected amount
     return {
       success: true,
       completed: false,
+      amount: actualAmount,
       status: response.TransactionStatus || "Pending",
       resultCode: response.ResultCode,
-      resultDesc: response.ResultDesc || "Transaction not yet completed"
+      resultDesc: response.ResultDesc || (amountMatches ? "Transaction not yet completed" : "Amount does not match expected payment")
     };
   } catch (error) {
     console.error("MegaPay status check error:", error.message);
