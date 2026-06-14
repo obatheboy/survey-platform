@@ -128,6 +128,12 @@ export default function WithdrawForm() {
 
 // Handle plan selection with activation check
    const handlePlanSelection = (planKey) => {
+     // Check if specific plan is activated - allow withdraw if so
+     if (isPlanActivated(planKey)) {
+       setPlan(planKey);
+       return;
+     }
+     
      // Check if user is activated globally
      if (!isUserActivated) {
        // Navigate to activation page for this plan
@@ -147,21 +153,14 @@ export default function WithdrawForm() {
        return;
      }
      
-     // Check if specific plan is activated
-     if (!isPlanActivated(planKey)) {
-       // Navigate to activation page for this specific plan
-       navigate(`/activate?plan=${planKey.toLowerCase()}`, { 
-         state: { 
-           planKey: planKey,
-           from: "withdraw"
-         },
-         replace: true
-       });
-       return;
-     }
-     
-     // If activated, proceed normally
-     setPlan(planKey);
+     // Not activated - go to activate page
+     navigate(`/activate?plan=${planKey.toLowerCase()}`, { 
+       state: { 
+         planKey: planKey,
+         from: "withdraw"
+       },
+       replace: true
+     });
    };
 
 // Handle activation redirect
@@ -475,8 +474,8 @@ export default function WithdrawForm() {
                     style={{
                       borderColor: planData.color,
                       background: `linear-gradient(135deg, ${planData.color}20, transparent)`,
-                      opacity: !isUserActivated || (!allPlansCompleted && !isAffiliateWithdraw) ? 0.9 : 1,
-                      cursor: isUserActivated && allPlansCompleted ? 'pointer' : 'not-allowed'
+                      opacity: 1,
+                      cursor: 'pointer'
                     }}
                   >
                     <div className="plan-selection-header">
