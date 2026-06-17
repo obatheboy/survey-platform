@@ -16,7 +16,7 @@ const BASE_URL = RAW_BASE.endsWith("/api") ? RAW_BASE : `${RAW_BASE}/api`;
 const api = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
-  timeout: 30000,
+  timeout: 120000, // 120s for payment verification (STK + PIN entry + MegaPay status check)
 });
 
 /* 🔐 ADD TOKEN FROM LOCALSTORAGE (MOBILE FIX) + CACHE BUSTING */

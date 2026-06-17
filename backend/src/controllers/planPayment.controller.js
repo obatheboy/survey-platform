@@ -212,14 +212,6 @@ exports.confirmPlanPayment = async (req, res) => {
 
   console.log(`🔔 CONFIRM PLAN PAYMENT - User: ${user._id} (${user.full_name || user.email}), Plan: ${planKey}, Phone: ${phone}`);
 
-  if (!user) {
-    return res.status(404).json({
-      success: false,
-      message: "User not found. Please login again.",
-      paid: false
-    });
-  }
-
   if (user.plans_paid?.[normalizedPlanKey]) {
     const rPaid = user.plans_paid?.REGULAR === true;
     const vPaid = user.plans_paid?.VIP === true;
