@@ -305,132 +305,161 @@ exports.confirmPlanPayment = async (req, res) => {
 
   await user.save();
 
-    const allPaid = user.account_activated === true || user.all_plans_completed === true;
-
-    let creditEarnings = true;
-    let earnings = PLAN_EARNINGS[normalizedPlanKey] || 0;
-    if (normalizedPlanKey === "WELCOME_BONUS") {
-      creditEarnings = false;
-    }
-    const oldBalance = user.total_earned || 0;
-    if (creditEarnings) {
-      user.total_earned = oldBalance + earnings;
-    }
-
-    let redirectTo;
-    let remainingPlansList;
-    let nextPlanKey;
-
-    if (allThreePaid) {
-      redirectTo = "/dashboard";
-      remainingPlansList = [];
-      nextPlanKey = null;
-    } else {
-      const remaining = ACTIVATION_PLANS.filter(p => {
-        if (p === "REGULAR") return !regularPaid;
-        if (p === "VIP") return !vipPaid;
-        if (p === "VVIP") return !vvipPaid;
-        return true;
-      });
-      remainingPlansList = remaining;
-      nextPlanKey = remaining.length > 0 ? remaining[0] : null;
-
-      if (nextPlanKey) {
-        redirectTo = `/activate?plan=${nextPlanKey.toLowerCase()}`;
-      } else {
-        redirectTo = "/dashboard";
-      }
-    }
-
-    const successMessage = normalizedPlanKey === "WELCOME_BONUS"
-      ? "✅ Welcome Bonus activated! Redirecting to next plan..."
-      : allThreePaid
-        ? "🎉 Congratulations! Your account is now ACTIVE!\nYou can now withdraw your earnings!"
-        : `✅ You have successfully paid for ${normalizedPlanKey.replace(/_/g, ' ')}!\nRemaining survey plans: ${remainingPlansList.length > 0 ? remainingPlansList.join(', ') : 'none'}`;
-
-    console.log(`✅ Redirect: ${redirectTo}, Remaining: ${remainingPlansList.join(', ') || 'none'}, AllThreePaid: ${allThreePaid}`);
-
-    // Clear pending payment info
-    user.last_payment_reference = null;
-    user.last_payment_plan = null;
-    user.payment_method = null;
-
-    await user.save();
-
-    console.log(`✅ Plan payment confirmed - ${normalizedPlanKey} for user ${user.full_name}`);
-    console.log(`💰 Added KES ${earnings} - Old: ${oldBalance}, New: ${user.total_earned}`);
-    console.log(`📋 All plans completed: ${allThreePaid}`);
-    console.log(`➡️ Redirect to: ${redirectTo}`);
-
-    // Create notification
-    try {
-      const notification = new Notification({
-        user_id: user._id,
-        title: `✅ ${normalizedPlanKey.replace(/_/g, ' ')} Plan Paid!`,
-        message: `You have successfully paid for ${normalizedPlanKey.replace(/_/g, ' ')} plan! KES ${earnings} has been added to your balance.${allThreePaid ? ' All plans completed! You can now withdraw.' : ''}`,
-        action_route: redirectTo,
-        type: "payment"
-      });
-      await notification.save();
-    } catch (notifError) {
-      console.error("Notification error:", notifError);
-    }
-
-    // Generate token
-    const token = jwt.sign(
-      { id: user._id, phone: user.phone, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    const remainingLabels = remainingPlansList;
-
-    return res.status(200).json({
-      success: true,
-      message: successMessage,
-      success_message: successMessage,
-      plan_paid: normalizedPlanKey,
-      redirect_to: redirectTo,
-      redirect_focus: {
-        plan: nextPlanKey,
-        label: nextPlanKey,
-        message: nextPlanKey
-          ? `Next step: complete ${nextPlanKey} activation.`
-          : "All plans complete! You can now withdraw."
-      },
-      all_plans_completed: allThreePaid,
-      account_activated: user.account_activated === true,
-      user_activated: user.is_activated || false,
-      next_plan: nextPlanKey,
-      remaining_plans: remainingLabels,
-      remaining_survey_plans: remainingPlansList,
-      token,
-      user: {
-        id: user._id,
-        full_name: user.full_name,
-        phone: user.phone,
-        all_plans_completed: allThreePaid,
-        account_activated: user.account_activated === true,
-        user_activated: user.is_activated || false,
-        plans_paid: user.plans_paid,
-        regular_paid: regularPaid,
-        vip_paid: vipPaid,
-        vvip_paid: vvipPaid,
-        welcome_bonus_paid: user.welcome_bonus_paid === true,
-        has_seen_welcome_popup: user.has_seen_welcome_popup === true,
-        plans: user.plans || {}
-      },
-      balance_before: oldBalance,
-      balance_added: earnings,
-      new_balance: user.total_earned
-    });
-  } catch (error) {
-    console.error("❌ Confirm plan payment error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to confirm payment: " + (error.message || "Unknown error")
-    });
+  // CRITICAL: Re-read user from DB to get fresh state (bypass Mongoose cache)
+  const freshUser = await User.findById(user._id);
+  if (!freshUser) {
+    return res.status(500).json({ success: false, message: "Failed to reload user after save" });
   }
+
+  // Compute activation from FRESH data only
+  const rPaid = freshUser.regular_paid === true || freshUser.plans_paid?.REGULAR === true;
+  const vPaid = freshUser.vip_paid === true || freshUser.plans_paid?.VIP === true;
+  const vvPaid = freshUser.vvip_paid === true || freshUser.plans_paid?.VVIP === true;
+  const trulyAllThree = rPaid && vPaid && vvPaid;
+
+  console.log(`🔍 FRESH check after save - REGULAR: ${rPaid}, VIP: ${vPaid}, VVIP: ${vvPaid}, AllThree: ${trulyAllThree}`);
+
+  // If DB has stale all_plans_completed=true but not all 3 paid, force-correct it
+  if (!trulyAllThree && (freshUser.all_plans_completed === true || freshUser.account_activated === true)) {
+    console.log(`⚠️ Stale activation data detected! Fixing DB for user ${freshUser._id}`);
+    freshUser.account_activated = false;
+    freshUser.all_plans_completed = false;
+    freshUser.is_activated = false;
+    await freshUser.save();
+    console.log(`✅ Fixed stale activation data for user ${freshUser._id}`);
+  }
+
+  // Use FRESH data from DB for all calculations
+  const finalAllThreePaid = trulyAllThree;
+  const finalRegularPaid = freshUser.regular_paid === true || freshUser.plans_paid?.REGULAR === true;
+  const finalVipPaid = freshUser.vip_paid === true || freshUser.plans_paid?.VIP === true;
+  const finalVvipPaid = freshUser.vvip_paid === true || freshUser.plans_paid?.VVIP === true;
+
+  let allPaid = finalAllThreePaid;
+
+  let creditEarnings = true;
+  let earnings = PLAN_EARNINGS[normalizedPlanKey] || 0;
+  if (normalizedPlanKey === "WELCOME_BONUS") {
+    creditEarnings = false;
+  }
+  const oldBalance = freshUser.total_earned || 0;
+  if (creditEarnings) {
+    freshUser.total_earned = oldBalance + earnings;
+  }
+
+  let redirectTo;
+  let remainingPlansList;
+  let nextPlanKey;
+
+  if (finalAllThreePaid) {
+    redirectTo = "/dashboard";
+    remainingPlansList = [];
+    nextPlanKey = null;
+  } else {
+    const remaining = ACTIVATION_PLANS.filter(p => {
+      if (p === "REGULAR") return !finalRegularPaid;
+      if (p === "VIP") return !finalVipPaid;
+      if (p === "VVIP") return !finalVvipPaid;
+      return true;
+    });
+    remainingPlansList = remaining;
+    nextPlanKey = remaining.length > 0 ? remaining[0] : null;
+
+    if (nextPlanKey) {
+      redirectTo = `/activate?plan=${nextPlanKey.toLowerCase()}`;
+    } else {
+      redirectTo = "/dashboard";
+    }
+  }
+
+  const successMessage = normalizedPlanKey === "WELCOME_BONUS"
+    ? "✅ Welcome Bonus activated! Redirecting to next plan..."
+    : finalAllThreePaid
+      ? "🎉 Congratulations! Your account is now ACTIVE!\nYou can now withdraw your earnings!"
+      : `✅ You have successfully paid for ${normalizedPlanKey.replace(/_/g, ' ')}!\nRemaining survey plans: ${remainingPlansList.length > 0 ? remainingPlansList.join(', ') : 'none'}`;
+
+  console.log(`✅ Redirect: ${redirectTo}, Remaining: ${remainingPlansList.join(', ') || 'none'}, AllThreePaid: ${finalAllThreePaid}`);
+
+  // Clear pending payment info
+  freshUser.last_payment_reference = null;
+  freshUser.last_payment_plan = null;
+  freshUser.payment_method = null;
+
+  await freshUser.save();
+
+  console.log(`✅ Plan payment confirmed - ${normalizedPlanKey} for user ${freshUser.full_name}`);
+  console.log(`💰 Added KES ${earnings} - Old: ${oldBalance}, New: ${freshUser.total_earned}`);
+  console.log(`📋 All plans completed: ${finalAllThreePaid}`);
+  console.log(`➡️ Redirect to: ${redirectTo}`);
+
+  // Create notification
+  try {
+    const notification = new Notification({
+      user_id: freshUser._id,
+      title: `✅ ${normalizedPlanKey.replace(/_/g, ' ')} Plan Paid!`,
+      message: `You have successfully paid for ${normalizedPlanKey.replace(/_/g, ' ')} plan! KES ${earnings} has been added to your balance.${finalAllThreePaid ? ' All plans completed! You can now withdraw.' : ''}`,
+      action_route: redirectTo,
+      type: "payment"
+    });
+    await notification.save();
+  } catch (notifError) {
+    console.error("Notification error:", notifError);
+  }
+
+  // Generate token
+  const token = jwt.sign(
+    { id: freshUser._id, phone: freshUser.phone, role: freshUser.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" }
+  );
+
+  return res.status(200).json({
+    success: true,
+    message: successMessage,
+    success_message: successMessage,
+    plan_paid: normalizedPlanKey,
+    redirect_to: redirectTo,
+    redirect_focus: {
+      plan: nextPlanKey,
+      label: nextPlanKey,
+      message: nextPlanKey
+        ? `Next step: complete ${nextPlanKey} activation.`
+        : "All plans complete! You can now withdraw."
+    },
+    all_plans_completed: finalAllThreePaid,
+    account_activated: freshUser.account_activated === true,
+    user_activated: freshUser.is_activated || false,
+    next_plan: nextPlanKey,
+    remaining_plans: remainingPlansList,
+    remaining_survey_plans: remainingPlansList,
+    token,
+    user: {
+      id: freshUser._id,
+      full_name: freshUser.full_name,
+      phone: freshUser.phone,
+      all_plans_completed: finalAllThreePaid,
+      account_activated: freshUser.account_activated === true,
+      user_activated: freshUser.is_activated || false,
+      plans_paid: freshUser.plans_paid,
+      regular_paid: finalRegularPaid,
+      vip_paid: finalVipPaid,
+      vvip_paid: finalVvipPaid,
+      welcome_bonus_paid: freshUser.welcome_bonus_paid === true,
+      has_seen_welcome_popup: freshUser.has_seen_welcome_popup === true,
+      plans: freshUser.plans || {}
+    },
+    balance_before: oldBalance,
+    balance_added: earnings,
+    new_balance: freshUser.total_earned
+  });
+
+} catch (error) {
+  console.error("❌ Confirm plan payment error:", error);
+  return res.status(500).json({
+    success: false,
+    message: "Failed to confirm payment: " + (error.message || "Unknown error")
+  });
+}
 };
 
 /* =====================================
@@ -538,16 +567,27 @@ exports.getNextUnpaidPlan = async (req, res) => {
         earnings: PLAN_EARNINGS[nextPlanKey],
         label: nextPlanKey
       },
-      all_plans_completed: user.all_plans_completed || false,
-      user_activated: user.is_activated || false,
-      redirect_to: redirect.redirect_to,
-      remaining_plans: remainingPlans
-    });
-  } catch (error) {
-    console.error("Get next plan error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to get next plan"
-    });
-  }
+       all_plans_completed: user.all_plans_completed || false,
+       user_activated: user.is_activated || false,
+       redirect_to: redirect.redirect_to,
+       remaining_plans: remainingPlans
+     });
+   } catch (error) {
+     console.error("Get next plan error:", error);
+     res.status(500).json({
+       success: false,
+       message: "Failed to get next plan"
+     });
+   }
+};
+
+/* =====================================
+   END OF EXPORTS
+   ===================================== */
+
+module.exports = {
+  initiatePlanPayment: exports.initiatePlanPayment,
+  confirmPlanPayment: exports.confirmPlanPayment,
+  getPlanPaymentStatus: exports.getPlanPaymentStatus,
+  getNextUnpaidPlan: exports.getNextUnpaidPlan,
 };
