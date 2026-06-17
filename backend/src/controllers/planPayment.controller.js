@@ -260,18 +260,18 @@ exports.confirmPlanPayment = async (req, res) => {
   if (!user.plans_paid) user.plans_paid = {};
   user.plans_paid[normalizedPlanKey] = true;
 
-    if (planKey === "WELCOME_BONUS") {
-      user.welcome_bonus_paid = true;
-      user.welcome_bonus_received = true;
-    } else {
-      user[`${planKey.toLowerCase()}_paid`] = true;
-      if (user.plans && user.plans[planKey]) {
-        user.plans[planKey].is_activated = true;
-        user.plans[planKey].activated_at = new Date();
-      }
+  if (normalizedPlanKey === "WELCOME_BONUS") {
+    user.welcome_bonus_paid = true;
+    user.welcome_bonus_received = true;
+  } else {
+    user[`${normalizedPlanKey.toLowerCase()}_paid`] = true;
+    if (user.plans && user.plans[normalizedPlanKey]) {
+      user.plans[normalizedPlanKey].is_activated = true;
+      user.plans[normalizedPlanKey].activated_at = new Date();
     }
+  }
 
-    syncActivationStatus(user);
+  syncActivationStatus(user);
 
     // Debug: Check user state before setting activation
     console.log(`🔍 Payment confirmation state check - User: ${user.full_name}`);
@@ -279,38 +279,17 @@ exports.confirmPlanPayment = async (req, res) => {
     console.log(`🔍 plans_paid: ${JSON.stringify(user.plans_paid || {})}`);
     console.log(`🔍 REGULAR_activated: ${user.plans?.REGULAR?.is_activated}, VIP_activated: ${user.plans?.VIP?.is_activated}, VVIP_activated: ${user.plans?.VVIP?.is_activated}`);
 
-    // Determine if ALL three survey plans are paid (account activation criteria)
-    // Only check plans OTHER than the one just paid
-    const OTHER_PLANS = ACTIVATION_PLANS.filter(p => p !== planKey);
-    const allOtherPlansPaid = OTHER_PLANS.every(p => user.plans_paid?.[p] === true);
-    const currentPlanPaid = user.plans_paid?.[planKey] === true;
-
-    // Account activates ONLY when REGULAR + VIP + VVIP are ALL paid (Welcome Bonus optional)
-    const shouldActivate = currentPlanPaid && allOtherPlansPaid;
-
-    console.log(`🔍 Current plan paid: ${currentPlanPaid}, All others paid: ${allOtherPlansPaid}, Should activate: ${shouldActivate}`);
-
-    // Only set account_activated if all three survey plans are done
-    if (shouldActivate) {
-      user.account_activated = true;
-      user.all_plans_completed = true;
-      user.is_activated = true;
-      if (!user.activated_at) {
-        user.activated_at = new Date();
-      }
-    } else {
-      user.account_activated = false;
-      user.all_plans_completed = false;
-      user.is_activated = false;
-    }
+    // syncActivationStatus already set account_activated/all_plans_completed/is_activated correctly
+    // Account activates when REGULAR + VIP + VVIP are ALL paid (Welcome Bonus optional)
+    console.log(`🔍 Account activated: ${user.account_activated}, All plans completed: ${user.all_plans_completed}`);
 
     await user.save();
 
     const allPaid = user.account_activated === true || user.all_plans_completed === true;
 
     let creditEarnings = true;
-    let earnings = PLAN_EARNINGS[planKey] || 0;
-    if (planKey === "WELCOME_BONUS") {
+    let earnings = PLAN_EARNINGS[normalizedPlanKey] || 0;
+    if (normalizedPlanKey === "WELCOME_BONUS") {
       creditEarnings = false;
     }
     const oldBalance = user.total_earned || 0;
@@ -331,11 +310,11 @@ exports.confirmPlanPayment = async (req, res) => {
         : "All REGULAR, VIP, and VVIP plans are complete. You can withdraw now."
     };
 
-    const successMessage = planKey === "WELCOME_BONUS"
+    const successMessage = normalizedPlanKey === "WELCOME_BONUS"
       ? "✅ Welcome Bonus activated! Redirecting to Regular plan..."
       : allPaid
         ? "🎉 Congratulations! Your account is now ACTIVE!\nYou can now withdraw your earnings!"
-        : `✅ You have successfully paid for ${planKey.replace(/_/g, ' ')}!\nRemaining survey plans: ${remainingSurveyText}`;
+        : `✅ You have successfully paid for ${normalizedPlanKey.replace(/_/g, ' ')}!\nRemaining survey plans: ${remainingSurveyText}`;
 
     // Clear pending payment info
     user.last_payment_reference = null;
@@ -344,7 +323,7 @@ exports.confirmPlanPayment = async (req, res) => {
 
     await user.save();
 
-    console.log(`✅ Plan payment confirmed - ${planKey} for user ${user.full_name}`);
+    console.log(`✅ Plan payment confirmed - ${normalizedPlanKey} for user ${user.full_name}`);
     console.log(`💰 Added KES ${earnings} - Old: ${oldBalance}, New: ${user.total_earned}`);
     console.log(`📋 All plans completed: ${allPaid}`);
     console.log(`➡️ Redirect to: ${redirect.redirect_to}`);
@@ -353,8 +332,8 @@ exports.confirmPlanPayment = async (req, res) => {
     try {
       const notification = new Notification({
         user_id: user._id,
-        title: `✅ ${planKey.replace(/_/g, ' ')} Plan Paid!`,
-        message: `You have successfully paid for ${planKey.replace(/_/g, ' ')} plan! KES ${earnings} has been added to your balance.${allPaid ? ' All plans completed! You can now withdraw.' : ''}`,
+        title: `✅ ${normalizedPlanKey.replace(/_/g, ' ')} Plan Paid!`,
+        message: `You have successfully paid for ${normalizedPlanKey.replace(/_/g, ' ')} plan! KES ${earnings} has been added to your balance.${allPaid ? ' All plans completed! You can now withdraw.' : ''}`,
         action_route: redirect.redirect_to,
         type: "payment"
       });
@@ -376,7 +355,7 @@ exports.confirmPlanPayment = async (req, res) => {
       success: true,
       message: successMessage,
       success_message: successMessage,
-      plan_paid: planKey,
+      plan_paid: normalizedPlanKey,
       redirect_to: redirect.redirect_to,
       redirect_focus: redirectFocus,
       all_plans_completed: allPaid,
