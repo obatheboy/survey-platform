@@ -185,7 +185,7 @@ exports.confirmPlanPayment = async (req, res) => {
   }
 
   const normalizedPlanKey = planKey.toUpperCase();
-  if (!PLAN_AMOUNTS[normalizedPlanKey]) {
+  if (!PLAN_FEES[normalizedPlanKey]) {
     return res.status(400).json({
       success: false,
       message: `Invalid plan: ${planKey}`,
