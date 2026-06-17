@@ -231,7 +231,7 @@ exports.confirmPlanPayment = async (req, res) => {
     });
   }
 
-  // Verify with MegaPay (including exact amount match)
+  try {
   const expectedAmount = PLAN_FEES[normalizedPlanKey];
   console.log(`💰 Verifying payment: txId=${transaction_request_id}, phone=${phone}, plan=${normalizedPlanKey}, expected=${expectedAmount}`);
   const statusResult = await megaPayService.checkTransactionStatus(transaction_request_id, expectedAmount);
@@ -256,7 +256,6 @@ exports.confirmPlanPayment = async (req, res) => {
     });
   }
 
-  try {
   if (!user.plans_paid) user.plans_paid = {};
   user.plans_paid[normalizedPlanKey] = true;
 
@@ -265,25 +264,45 @@ exports.confirmPlanPayment = async (req, res) => {
     user.welcome_bonus_received = true;
   } else {
     user[`${normalizedPlanKey.toLowerCase()}_paid`] = true;
-    if (user.plans && user.plans[normalizedPlanKey]) {
-      user.plans[normalizedPlanKey].is_activated = true;
-      user.plans[normalizedPlanKey].activated_at = new Date();
-    }
   }
 
-  syncActivationStatus(user);
+  // Mark the specific plan as activated
+  if (user.plans && user.plans[normalizedPlanKey]) {
+    user.plans[normalizedPlanKey].is_activated = true;
+    user.plans[normalizedPlanKey].activated_at = new Date();
+  } else {
+    user.plans = user.plans || {};
+    user.plans[normalizedPlanKey] = {
+      surveys_completed: 10,
+      completed: true,
+      is_activated: true,
+      total_surveys: 10,
+      activated_at: new Date()
+    };
+  }
 
-    // Debug: Check user state before setting activation
-    console.log(`🔍 Payment confirmation state check - User: ${user.full_name}`);
-    console.log(`🔍 REGULAR_paid: ${user.regular_paid}, VIP_paid: ${user.vip_paid}, VVIP_paid: ${user.vvip_paid}`);
-    console.log(`🔍 plans_paid: ${JSON.stringify(user.plans_paid || {})}`);
-    console.log(`🔍 REGULAR_activated: ${user.plans?.REGULAR?.is_activated}, VIP_activated: ${user.plans?.VIP?.is_activated}, VVIP_activated: ${user.plans?.VVIP?.is_activated}`);
+  // Check if all 3 survey plans are now paid (Welcome Bonus optional)
+  const regularPaid = user.regular_paid === true || user.plans_paid?.REGULAR === true || user.plans?.REGULAR?.is_activated === true;
+  const vipPaid = user.vip_paid === true || user.plans_paid?.VIP === true || user.plans?.VIP?.is_activated === true;
+  const vvipPaid = user.vvip_paid === true || user.plans_paid?.VVIP === true || user.plans?.VVIP?.is_activated === true;
+  const allThreePaid = regularPaid && vipPaid && vvipPaid;
 
-    // syncActivationStatus already set account_activated/all_plans_completed/is_activated correctly
-    // Account activates when REGULAR + VIP + VVIP are ALL paid (Welcome Bonus optional)
-    console.log(`🔍 Account activated: ${user.account_activated}, All plans completed: ${user.all_plans_completed}`);
+  console.log(`🔍 Activation check - REGULAR: ${regularPaid}, VIP: ${vipPaid}, VVIP: ${vvipPaid}, All three: ${allThreePaid}`);
 
-    await user.save();
+  if (allThreePaid) {
+    user.account_activated = true;
+    user.all_plans_completed = true;
+    user.is_activated = true;
+    if (!user.activated_at) {
+      user.activated_at = new Date();
+    }
+  } else {
+    user.account_activated = false;
+    user.all_plans_completed = false;
+    user.is_activated = false;
+  }
+
+  await user.save();
 
     const allPaid = user.account_activated === true || user.all_plans_completed === true;
 
@@ -297,24 +316,38 @@ exports.confirmPlanPayment = async (req, res) => {
       user.total_earned = oldBalance + earnings;
     }
 
-    const redirect = buildRedirect(user);
-    const remainingSurveyPlans = getRemainingActivationPlans(user);
-    const remainingSurveyText = remainingSurveyPlans.length > 0 ? remainingSurveyPlans.join(', ') : 'none';
+    let redirectTo;
+    let remainingPlansList;
+    let nextPlanKey;
 
-    const nextPlan = redirect.next_plan;
-    const redirectFocus = {
-      plan: nextPlan || null,
-      label: nextPlan || null,
-      message: nextPlan
-        ? `Next step: continue with ${nextPlan} on your dashboard.`
-        : "All REGULAR, VIP, and VVIP plans are complete. You can withdraw now."
-    };
+    if (allThreePaid) {
+      redirectTo = "/dashboard";
+      remainingPlansList = [];
+      nextPlanKey = null;
+    } else {
+      const remaining = ACTIVATION_PLANS.filter(p => {
+        if (p === "REGULAR") return !regularPaid;
+        if (p === "VIP") return !vipPaid;
+        if (p === "VVIP") return !vvipPaid;
+        return true;
+      });
+      remainingPlansList = remaining;
+      nextPlanKey = remaining.length > 0 ? remaining[0] : null;
+
+      if (nextPlanKey) {
+        redirectTo = `/activate?plan=${nextPlanKey.toLowerCase()}`;
+      } else {
+        redirectTo = "/dashboard";
+      }
+    }
 
     const successMessage = normalizedPlanKey === "WELCOME_BONUS"
-      ? "✅ Welcome Bonus activated! Redirecting to Regular plan..."
-      : allPaid
+      ? "✅ Welcome Bonus activated! Redirecting to next plan..."
+      : allThreePaid
         ? "🎉 Congratulations! Your account is now ACTIVE!\nYou can now withdraw your earnings!"
-        : `✅ You have successfully paid for ${normalizedPlanKey.replace(/_/g, ' ')}!\nRemaining survey plans: ${remainingSurveyText}`;
+        : `✅ You have successfully paid for ${normalizedPlanKey.replace(/_/g, ' ')}!\nRemaining survey plans: ${remainingPlansList.length > 0 ? remainingPlansList.join(', ') : 'none'}`;
+
+    console.log(`✅ Redirect: ${redirectTo}, Remaining: ${remainingPlansList.join(', ') || 'none'}, AllThreePaid: ${allThreePaid}`);
 
     // Clear pending payment info
     user.last_payment_reference = null;
@@ -325,16 +358,16 @@ exports.confirmPlanPayment = async (req, res) => {
 
     console.log(`✅ Plan payment confirmed - ${normalizedPlanKey} for user ${user.full_name}`);
     console.log(`💰 Added KES ${earnings} - Old: ${oldBalance}, New: ${user.total_earned}`);
-    console.log(`📋 All plans completed: ${allPaid}`);
-    console.log(`➡️ Redirect to: ${redirect.redirect_to}`);
+    console.log(`📋 All plans completed: ${allThreePaid}`);
+    console.log(`➡️ Redirect to: ${redirectTo}`);
 
     // Create notification
     try {
       const notification = new Notification({
         user_id: user._id,
         title: `✅ ${normalizedPlanKey.replace(/_/g, ' ')} Plan Paid!`,
-        message: `You have successfully paid for ${normalizedPlanKey.replace(/_/g, ' ')} plan! KES ${earnings} has been added to your balance.${allPaid ? ' All plans completed! You can now withdraw.' : ''}`,
-        action_route: redirect.redirect_to,
+        message: `You have successfully paid for ${normalizedPlanKey.replace(/_/g, ' ')} plan! KES ${earnings} has been added to your balance.${allThreePaid ? ' All plans completed! You can now withdraw.' : ''}`,
+        action_route: redirectTo,
         type: "payment"
       });
       await notification.save();
@@ -349,33 +382,39 @@ exports.confirmPlanPayment = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    const remainingLabels = redirect.remaining_plans;
+    const remainingLabels = remainingPlansList;
 
     return res.status(200).json({
       success: true,
       message: successMessage,
       success_message: successMessage,
       plan_paid: normalizedPlanKey,
-      redirect_to: redirect.redirect_to,
-      redirect_focus: redirectFocus,
-      all_plans_completed: allPaid,
+      redirect_to: redirectTo,
+      redirect_focus: {
+        plan: nextPlanKey,
+        label: nextPlanKey,
+        message: nextPlanKey
+          ? `Next step: complete ${nextPlanKey} activation.`
+          : "All plans complete! You can now withdraw."
+      },
+      all_plans_completed: allThreePaid,
       account_activated: user.account_activated === true,
       user_activated: user.is_activated || false,
-      next_plan: redirect.next_plan,
+      next_plan: nextPlanKey,
       remaining_plans: remainingLabels,
-      remaining_survey_plans: remainingSurveyPlans,
+      remaining_survey_plans: remainingPlansList,
       token,
       user: {
         id: user._id,
         full_name: user.full_name,
         phone: user.phone,
-        all_plans_completed: allPaid,
+        all_plans_completed: allThreePaid,
         account_activated: user.account_activated === true,
         user_activated: user.is_activated || false,
         plans_paid: user.plans_paid,
-        regular_paid: user.regular_paid === true,
-        vip_paid: user.vip_paid === true,
-        vvip_paid: user.vvip_paid === true,
+        regular_paid: regularPaid,
+        vip_paid: vipPaid,
+        vvip_paid: vvipPaid,
         welcome_bonus_paid: user.welcome_bonus_paid === true,
         has_seen_welcome_popup: user.has_seen_welcome_popup === true,
         plans: user.plans || {}
