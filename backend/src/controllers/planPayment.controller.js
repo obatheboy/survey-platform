@@ -256,6 +256,7 @@ exports.confirmPlanPayment = async (req, res) => {
     });
   }
 
+  try {
   if (!user.plans_paid) user.plans_paid = {};
   user.plans_paid[normalizedPlanKey] = true;
 
