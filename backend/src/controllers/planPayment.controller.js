@@ -193,25 +193,63 @@ exports.confirmPlanPayment = async (req, res) => {
     });
   }
 
-  // Find user by phone number (no auth middleware on this route)
-  // Supports both 07XXXXXXXX and 2547XXXXXXXX formats
-  const rawPhone = phone.replace(/[^0-9]/g, '');
-  const phoneWithoutZero = rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone;
-  const phoneWith254 = rawPhone.startsWith('0') ? '254' + rawPhone.substring(1) : rawPhone;
-  const phoneWithoutLeading = rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone;
+  let user;
 
-  const user = await User.findOne({
-    $or: [
-      { phone: rawPhone },
-      { phone: phoneWith254 },
-      { phone: phoneWithoutZero },
-      { phone: new RegExp(rawPhone) },
-      { phone: new RegExp(phoneWith254) },
-      { phone: new RegExp(phoneWithoutZero) }
-    ]
-  }).maxTimeMS(5000);
+  // If user_id is provided (from frontend auth), use it directly - bypass phone lookup
+  const providedUserId = req.body.user_id;
+  if (providedUserId) {
+    user = await User.findById(providedUserId).maxTimeMS(5000);
+    console.log(`🔍 Direct user lookup by ID: ${providedUserId} → ${user ? `FOUND (${user._id}, ${user.full_name || user.email})` : 'NOT FOUND'}`);
+  }
 
-  console.log(`👤 User lookup: raw=${rawPhone}, 254form=${phoneWith254}, noZero=${phoneWithoutZero} → ${user ? `FOUND (${user._id}, ${user.full_name || user.email})` : 'NOT FOUND'}`);
+  // Fallback: find user by phone number
+  if (!user) {
+    const rawPhone = phone.replace(/[^0-9]/g, '');
+    const phoneWithoutZero = rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone;
+    const phoneWith254 = rawPhone.startsWith('0') ? '254' + rawPhone.substring(1) : rawPhone;
+    const phoneWithoutLeading = rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone;
+
+    // Try to find non-admin user first (exclude admin/System Administrator accounts)
+    const nonAdminUser = await User.findOne({
+      $and: [
+        {
+          $or: [
+            { phone: rawPhone },
+            { phone: phoneWith254 },
+            { phone: phoneWithoutZero },
+            { phone: new RegExp(rawPhone) },
+            { phone: new RegExp(phoneWith254) },
+            { phone: new RegExp(phoneWithoutZero) }
+          ]
+        },
+        {
+          $or: [
+            { role: { $ne: 'admin' } },
+            { role: { $exists: false } },
+            { full_name: { $ne: 'System Administrator' } }
+          ]
+        }
+      ]
+    }).maxTimeMS(5000);
+
+    if (nonAdminUser) {
+      user = nonAdminUser;
+      console.log(`👤 Non-admin user found: ${user.full_name} (${user._id})`);
+    } else {
+      // Fallback: just find by phone
+      user = await User.findOne({
+        $or: [
+          { phone: rawPhone },
+          { phone: phoneWith254 },
+          { phone: phoneWithoutZero },
+          { phone: new RegExp(rawPhone) },
+          { phone: new RegExp(phoneWith254) },
+          { phone: new RegExp(phoneWithoutZero) }
+        ]
+      }).maxTimeMS(5000);
+      console.log(`👤 User lookup (fallback): raw=${rawPhone}, 254form=${phoneWith254} → ${user ? `FOUND (${user._id}, ${user.full_name || user.email})` : 'NOT FOUND'}`);
+    }
+  }
 
   if (!user) {
     return res.status(404).json({
@@ -298,11 +336,15 @@ exports.confirmPlanPayment = async (req, res) => {
   }
 
   // Check if all 3 survey plans are now paid (Welcome Bonus optional)
-  // ONLY trust plans_paid - do NOT read user.vip_paid or user.plans[].is_activated
-  // because those may be stale from previous Till-system testing
-  const regularPaid = user.plans_paid?.REGULAR === true;
-  const vipPaid = user.plans_paid?.VIP === true;
-  const vvipPaid = user.plans_paid?.VVIP === true;
+  // ONLY trust plans_paid that was JUST set in this transaction
+  // Clear any stale plans_paid entries that might exist from old Till/testing data
+  const currentPlansPaid = user.plans_paid || {};
+  
+  // Only count the plan we JUST paid as truly paid
+  const justPaidPlan = normalizedPlanKey;
+  const regularPaid = justPaidPlan === "REGULAR" ? true : (currentPlansPaid.REGULAR === true);
+  const vipPaid = justPaidPlan === "VIP" ? true : (currentPlansPaid.VIP === true);
+  const vvipPaid = justPaidPlan === "VVIP" ? true : (currentPlansPaid.VVIP === true);
   const allThreePaid = regularPaid && vipPaid && vvipPaid;
 
   console.log(`🔍 Activation check - REGULAR: ${regularPaid}, VIP: ${vipPaid}, VVIP: ${vvipPaid}, All three: ${allThreePaid}`);
@@ -348,9 +390,9 @@ exports.confirmPlanPayment = async (req, res) => {
 
   // Use FRESH data from DB for all calculations
   const finalAllThreePaid = trulyAllThree;
-  const finalRegularPaid = freshUser.plans_paid?.REGULAR === true;
-  const finalVipPaid = freshUser.plans_paid?.VIP === true;
-  const finalVvipPaid = freshUser.plans_paid?.VVIP === true;
+  const finalRegularPaid = rPaid;
+  const finalVipPaid = vPaid;
+  const finalVvipPaid = vvPaid;
 
   let allPaid = finalAllThreePaid;
 

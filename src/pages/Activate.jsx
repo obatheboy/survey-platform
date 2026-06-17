@@ -219,7 +219,7 @@ const [planKey, setPlanKey] = useState(null);
   const [paymentSuccessData, setPaymentSuccessData] = useState(null);
   const pollRef = useRef(null);
 
-  const startPaymentPolling = (transactionRequestId, phone, targetPlanKey) => {
+  const startPaymentPolling = (transactionRequestId, phone, targetPlanKey, userId) => {
     let attempts = 0;
     let pollTimer = null;
     let fallbackTimer = null;
@@ -235,11 +235,13 @@ const [planKey, setPlanKey] = useState(null);
     const doPoll = async () => {
       attempts++;
       try {
-        const confirmRes = await planPaymentApi.confirm({
+        const confirmBody = {
           transaction_request_id: transactionRequestId,
           phone: phone,
           plan: targetPlanKey
-        });
+        };
+        if (userId) confirmBody.user_id = userId;
+        const confirmRes = await planPaymentApi.confirm(confirmBody);
         console.log(`Poll attempt ${attempts}`, confirmRes.data);
 
         if (confirmRes.data.success && (confirmRes.data.plan_paid || confirmRes.data.paid === true)) {
@@ -552,7 +554,7 @@ setPaynectaSubmitting(true);
       if (response.data.success || apiMessage.toLowerCase().includes("pin") || apiMessage.toLowerCase().includes("stk") || apiMessage.toLowerCase().includes("check") || apiMessage.toLowerCase().includes("sent") || apiMessage.toLowerCase().includes("phone")) {
         setPaynectaWaiting(true);
         const transactionRequestId = response.data.transaction_request_id;
-        startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
+        startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey, user._id);
       } else {
         setPaynectaError(apiMessage || "Payment initiation failed. Please try again.");
       }
@@ -570,7 +572,7 @@ setPaynectaSubmitting(true);
         if (mpesaMsg.toLowerCase().includes('pin') || mpesaMsg.toLowerCase().includes('stk') || mpesaMsg.toLowerCase().includes('sent') || mpesaMsg.toLowerCase().includes('check') || mpesaMsg.toLowerCase().includes('phone')) {
           setPaynectaWaiting(true);
           const transactionRequestId = error.response.data.transaction_request_id;
-          startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
+          startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey, user._id);
         } else {
           setPaynectaError(mpesaMsg);
         }
