@@ -164,111 +164,100 @@ exports.initiatePlanPayment = async (req, res) => {
    CONFIRM PLAN PAYMENT - AUTO VERIFY
    ===================================== */
 exports.confirmPlanPayment = async (req, res) => {
-  try {
-    const { transaction_request_id, phone, plan } = req.body;
+  const { transaction_request_id, phone, plan: planKey } = req.body;
 
-    console.log("=== CONFIRM PLAN PAYMENT ===");
-    console.log("Transaction ID:", transaction_request_id);
-    console.log("Phone:", phone);
-    console.log("Plan:", plan);
+  console.log(`🔔 CONFIRM PLAN PAYMENT REQUEST - txId: ${transaction_request_id}, phone: ${phone}, plan: ${planKey}`);
 
-    if (!transaction_request_id) {
-      return res.status(400).json({ success: false, message: "Transaction ID is required" });
-    }
+  if (!transaction_request_id) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing transaction_request_id. Please contact support.",
+      paid: false
+    });
+  }
 
-    if (!phone) {
-      return res.status(400).json({ success: false, message: "Phone number is required" });
-    }
+  if (!phone || !planKey) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing phone or plan parameter",
+      paid: false
+    });
+  }
 
-    // Find user by phone (try multiple formats)
-    let user = await User.findOne({ phone: phone.trim() });
-    if (!user) {
-      let formattedPhone = phone.replace(/\s+/g, '').replace(/-/g, '');
-      if (formattedPhone.startsWith("+")) formattedPhone = formattedPhone.substring(1);
-      if (formattedPhone.startsWith("0")) formattedPhone = "254" + formattedPhone.substring(1);
-      if (formattedPhone.startsWith("7") && formattedPhone.length === 9) formattedPhone = "254" + formattedPhone;
-      if (!formattedPhone.startsWith("254")) formattedPhone = "254" + formattedPhone;
-      user = await User.findOne({ phone: formattedPhone });
-    }
+  const normalizedPlanKey = planKey.toUpperCase();
+  if (!PLAN_AMOUNTS[normalizedPlanKey]) {
+    return res.status(400).json({
+      success: false,
+      message: `Invalid plan: ${planKey}`,
+      paid: false
+    });
+  }
 
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found. Please register first." });
-    }
+  // Find user by phone number (no auth middleware on this route)
+  // Supports both 07XXXXXXXX and 2547XXXXXXXX formats
+  const rawPhone = phone.replace(/[^0-9]/g, '');
+  const phoneWithoutZero = rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone;
+  const phoneWith254 = rawPhone.startsWith('0') ? '254' + rawPhone.substring(1) : rawPhone;
+  const phoneWithoutLeading = rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone;
 
-    // Determine which plan to mark as paid
-    let planKey = plan?.toUpperCase();
-    if (planKey === "WELCOME") planKey = "WELCOME_BONUS";
+  const user = await User.findOne({
+    $or: [
+      { phone: rawPhone },
+      { phone: phoneWith254 },
+      { phone: phoneWithoutZero },
+      { phone: new RegExp(rawPhone) },
+      { phone: new RegExp(phoneWith254) },
+      { phone: new RegExp(phoneWithoutZero) }
+    ]
+  }).maxTimeMS(5000);
 
-    // If plan not specified, use last_payment_plan
-    if (!planKey || !PLAN_FEES[planKey]) {
-      planKey = user.last_payment_plan || "REGULAR";
-    }
+  console.log(`👤 User lookup: raw=${rawPhone}, 254form=${phoneWith254}, noZero=${phoneWithoutZero} → ${user ? `FOUND (${user._id}, ${user.full_name || user.email})` : 'NOT FOUND'}`);
 
-    if (!PLAN_FEES[planKey]) {
-      return res.status(400).json({ success: false, message: "Invalid plan" });
-    }
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found. Please login again.",
+      paid: false
+    });
+  }
 
-    // Check if already paid
-    const isAlreadyPaid = planKey === "WELCOME_BONUS"
-      ? isWelcomeBonusPaid(user)
-      : isPlanDone(user, planKey);
-    if (isAlreadyPaid) {
-      syncActivationStatus(user);
-      const redirect = buildRedirect(user);
-      await user.save();
+  if (user.plans_paid?.[normalizedPlanKey]) {
+    return res.status(200).json({
+      success: true,
+      message: `${normalizedPlanKey} plan already paid.`,
+      already_paid: true,
+      all_plans_completed: user.all_plans_completed || false,
+      plans_paid: user.plans_paid || {}
+    });
+  }
 
-      return res.status(200).json({
-        success: true,
-        message: `${planKey} plan already paid.`,
-        already_paid: true,
-        all_plans_completed: user.all_plans_completed || false,
-        plans_paid: user.plans_paid || {},
-        redirect_to: redirect.redirect_to,
-        next_plan: redirect.next_plan,
-        remaining_plans: redirect.remaining_plans,
-        user: {
-          id: user._id,
-          is_activated: user.is_activated,
-          all_plans_completed: user.all_plans_completed || false,
-          plans_paid: user.plans_paid || {},
-          plans: user.plans || {}
-        }
-      });
-    }
+  // Verify with MegaPay (including exact amount match)
+  const expectedAmount = PLAN_FEES[normalizedPlanKey];
+  console.log(`💰 Verifying payment: txId=${transaction_request_id}, phone=${phone}, plan=${normalizedPlanKey}, expected=${expectedAmount}`);
+  const statusResult = await megaPayService.checkTransactionStatus(transaction_request_id, expectedAmount);
 
-    if (planKey !== "WELCOME_BONUS") {
-      const surveyCheck = assertSurveyCompleted(user, planKey);
-      if (!surveyCheck.ok) {
-        return res.status(400).json({
-          success: false,
-          message: surveyCheck.message,
-          redirect_to: `/dashboard?focusPlan=${planKey}&highlightPlan=${planKey}`
-        });
-      }
-    }
+  console.log(`📬 Status result:`, JSON.stringify(statusResult));
 
-    // Verify with MegaPay (including exact amount match)
-    const expectedAmount = PLAN_FEES[planKey];
-    const statusResult = await megaPayService.checkTransactionStatus(transaction_request_id, expectedAmount);
+  if (!statusResult.success) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to check transaction status: " + (statusResult.error || "Unknown error")
+    });
+  }
 
-    if (!statusResult.success) {
-      return res.status(500).json({
-        success: false,
-        message: "Failed to check transaction status: " + (statusResult.error || "Unknown error")
-      });
-    }
+  if (!statusResult.completed) {
+    return res.status(200).json({
+      success: false,
+      message: statusResult.resultDesc || statusResult.status || "Payment not yet confirmed by MegaPay",
+      paid: false,
+      status: statusResult.status || "Pending",
+      resultCode: statusResult.resultCode,
+      amount_received: statusResult.amount
+    });
+  }
 
-    if (!statusResult.completed) {
-      return res.status(200).json({
-        success: false,
-        message: "Payment not yet confirmed by MegaPay",
-        paid: false,
-        status: statusResult.status || "Pending"
-      });
-    }
-
-    if (!user.plans_paid) user.plans_paid = {};
-    user.plans_paid[planKey] = true;
+  if (!user.plans_paid) user.plans_paid = {};
+  user.plans_paid[normalizedPlanKey] = true;
 
     if (planKey === "WELCOME_BONUS") {
       user.welcome_bonus_paid = true;
