@@ -90,14 +90,8 @@ exports.initiatePlanPayment = async (req, res) => {
     }
 
     if (planKey !== "WELCOME_BONUS") {
-      const surveyCheck = assertSurveyCompleted(user, planKey);
-      if (!surveyCheck.ok) {
-        return res.status(400).json({
-          success: false,
-          message: surveyCheck.message,
-          redirect_to: `/dashboard?focusPlan=${planKey}&highlightPlan=${planKey}`
-        });
-      }
+      // Surveys are completed AFTER payment/activation, not before
+      // The survey completion check happens when submitting surveys for earnings
     }
 
     // Generate order reference
