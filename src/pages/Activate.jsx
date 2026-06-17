@@ -43,7 +43,7 @@ const PLAN_CONFIG = {
 const ACTIVATION_PLANS = ["REGULAR", "VIP", "VVIP"];
 
 const isPlanDone = (user, planKey) => {
-   return user?.plans_paid?.[planKey] === true || user?.plans?.[planKey]?.is_activated === true;
+   return user?.plans_paid?.[planKey] === true || user?.plans?.[planKey]?.is_activated === true || user?.[`${planKey.toLowerCase()}_paid`] === true;
  };
 
  const getRemainingActivationPlans = (user) => {

@@ -428,7 +428,7 @@ export default function Dashboard() {
     return plans[plan]?.surveys_completed || 0;
   };
   const isCompleted = (plan) => surveysDone(plan) >= TOTAL_SURVEYS;
-  const isActivated = (plan) => plans[plan]?.is_activated === true;
+  const isActivated = (plan) => plans[plan]?.is_activated === true || user?.plans_paid?.[plan] === true || user?.[`${plan.toLowerCase()}_paid`] === true;
   const earnedSoFar = (plan) => {
     const count = surveysDone(plan);
     if (count >= TOTAL_SURVEYS) {

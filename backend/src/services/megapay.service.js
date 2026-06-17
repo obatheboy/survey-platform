@@ -173,32 +173,31 @@ const checkTransactionStatus = async (transactionRequestId, expectedAmount) => {
     const rawAmount = response.TransactionAmount || response.transaction_amount || response.amount || 0;
     const actualAmount = Number(rawAmount);
 
-    console.log(`🔍 Raw fields - ResultCode: "${rawResultCode}"(type:${typeof rawResultCode}), Status: "${rawStatus}", Amount: "${rawAmount}"(type:${typeof rawAmount})`);
-
     // Bank account mode: TransactionReference MAY equal transaction_request_id
     // Till/STK mode: TransactionReference is different from transaction_request_id
     const txRef = response.TransactionReference || response.transaction_reference || response.reference || response.TransactionId || response.transaction_id;
     const hasRealAmount = !isNaN(actualAmount) && actualAmount > 0;
     const amountMatches = !isNaN(expectedAmount) && !isNaN(actualAmount) && actualAmount === Number(expectedAmount);
-    const hasValidPhone = Boolean(response.Msisdn || response.msisdn || response.phone || response.PhoneNumber);
+
+    console.log(`🔍 Raw fields - ResultCode: "${rawResultCode}"(type:${typeof rawResultCode}), Status: "${rawStatus}", Amount: "${rawAmount}"(type:${typeof rawAmount})`);
 
     // For bank account mode, accept same-as-request-id reference; for STK, require different
     const refIsValid = Boolean(txRef && txRef !== "null" && txRef !== "undefined" && txRef !== "none" && txRef.toUpperCase() !== "NULL");
     const hasValidReference = refIsValid;
 
-    console.log(`🔍 Parsed - ResultCode: "${resultCode}", Status: "${txStatus}", Amount: ${actualAmount} (expected: ${expectedAmount}, match: ${amountMatches}), Phone: ${hasValidPhone}, Reference: ${txRef}, RefValid: ${refIsValid}`);
+    console.log(`🔍 Parsed - ResultCode: "${resultCode}", Status: "${txStatus}", Amount: ${actualAmount} (expected: ${expectedAmount}, match: ${amountMatches}), Reference: ${txRef}, RefValid: ${refIsValid}`);
 
-    // Check success
+    // Check success - for Bank Account mode, phone may not be present
     const isSuccess = resultCode === "200" || resultCode === 200 || rawResultCode === 200;
     const isCompleted = txStatus === "completed" || txStatus === "complete" || txStatus === "success" || txStatus === "paid";
 
-    if (isSuccess && hasValidReference && amountMatches && hasValidPhone && isCompleted) {
+    if (isSuccess && hasValidReference && amountMatches && isCompleted) {
       console.log(`✅ MegaPay payment VERIFIED - Reference: ${txRef}, Amount: KES ${actualAmount}`);
       return {
         success: true,
         completed: true,
         amount: actualAmount,
-        phone: response.Msisdn || response.msisdn || response.phone,
+        phone: response.Msisdn || response.msisdn || response.phone || null,
         reference: txRef,
         resultCode: rawResultCode,
         resultDesc: response.ResultDesc || response.result_desc || response.message || "Payment verified"
@@ -206,7 +205,7 @@ const checkTransactionStatus = async (transactionRequestId, expectedAmount) => {
     }
 
     // Amount mismatch
-    if (isSuccess && hasValidReference && hasRealAmount && !amountMatches && hasValidPhone && isCompleted) {
+    if (isSuccess && hasValidReference && hasRealAmount && !amountMatches && isCompleted) {
       console.log(`❌ Amount mismatch - expected KES ${expectedAmount} but got KES ${actualAmount}`);
       return {
         success: true,
@@ -222,7 +221,6 @@ const checkTransactionStatus = async (transactionRequestId, expectedAmount) => {
     const missing = [];
     if (!hasValidReference) missing.push("reference");
     if (!amountMatches && hasRealAmount) missing.push("amount_match");
-    if (!hasValidPhone) missing.push("phone");
     if (!isCompleted) missing.push("completed_status");
     if (!isSuccess) missing.push("result_code");
 
