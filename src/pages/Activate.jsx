@@ -224,12 +224,21 @@ const [planKey, setPlanKey] = useState(null);
     let pollTimer = null;
     let fallbackTimer = null;
     const maxAttempts = 30;
-    const POLL_INTERVAL_MS = 6000;
+    const POLL_INTERVAL_MS = 5000;
+    const INITIAL_DELAY_MS = 20000; // Wait 20s before first check (user needs time to enter PIN)
 
-    const stop = () => {
+    const stop = (errorMsg) => {
       if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
       if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
       setPaynectaWaiting(false);
+      if (errorMsg) setPaynectaError(errorMsg);
+    };
+
+    const schedulePoll = () => {
+      pollTimer = setInterval(doPoll, POLL_INTERVAL_MS);
+      fallbackTimer = setTimeout(() => {
+        stop("Payment not confirmed yet. Please check your M-Pesa and try again.");
+      }, 180000); // 3 minute total window
     };
 
     const doPoll = async () => {
@@ -258,21 +267,27 @@ const [planKey, setPlanKey] = useState(null);
           });
           setShowPaymentSuccess(true);
           if (confirmRes.data.user) setUser(prev => ({ ...prev, ...confirmRes.data.user }));
+          return;
+        }
+
+        // If payment not yet confirmed but no hard error, keep polling
+        if (!confirmRes.data.success && attempts < maxAttempts) {
+          console.log(`⏳ Poll ${attempts}: not confirmed yet, continuing...`);
+          return;
+        }
+
+        if (attempts >= maxAttempts) {
+          stop("Payment verification timeout. Please check your M-Pesa and try again.");
         }
       } catch (err) {
         console.error(`Poll attempt ${attempts} error:`, err);
         if (attempts >= maxAttempts) {
-          stop();
-          setPaynectaError("Payment verification timeout. Please try again or use manual payment.");
+          stop("Payment verification timeout. Please try again or use manual payment.");
         }
       }
     };
 
-    pollTimer = setInterval(doPoll, POLL_INTERVAL_MS);
-    fallbackTimer = setTimeout(() => {
-      stop();
-      setPaynectaError("Payment not confirmed yet. Please check your M-Pesa and try again.");
-    }, 120000);
+    setTimeout(schedulePoll, INITIAL_DELAY_MS);
   };
 
   useEffect(() => {
