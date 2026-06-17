@@ -224,8 +224,8 @@ const [planKey, setPlanKey] = useState(null);
     let pollTimer = null;
     let fallbackTimer = null;
     const maxAttempts = 30;
-    const POLL_INTERVAL_MS = 5000;
-    const INITIAL_DELAY_MS = 20000; // Wait 20s before first check (user needs time to enter PIN)
+    const POLL_INTERVAL_MS = 3000;
+    const INITIAL_DELAY_MS = 8000; // Wait 8s before first check
 
     const stop = (errorMsg) => {
       if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
@@ -238,7 +238,7 @@ const [planKey, setPlanKey] = useState(null);
       pollTimer = setInterval(doPoll, POLL_INTERVAL_MS);
       fallbackTimer = setTimeout(() => {
         stop("Payment not confirmed yet. Please check your M-Pesa and try again.");
-      }, 180000); // 3 minute total window
+      }, 90000); // 1.5 minute total window
     };
 
     const doPoll = async () => {
