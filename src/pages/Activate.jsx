@@ -537,7 +537,7 @@ const submitActivation = async () => {
       const timer = setTimeout(() => {
         const target = paymentSuccessData.redirect_to || "/dashboard";
         window.location.href = target;
-      }, 4000);
+      }, 6000);
       return () => clearTimeout(timer);
     }
   }, [showPaymentSuccess, paymentSuccessData]);
@@ -942,7 +942,7 @@ setPaynectaSubmitting(true);
               marginBottom: "20px",
               textAlign: "center"
             }}>
-              🚀 Auto-redirecting in 4 seconds... Tap below to continue now
+               🚀 Auto-redirecting in 6 seconds... Tap below to continue now
             </p>
 
             <button
