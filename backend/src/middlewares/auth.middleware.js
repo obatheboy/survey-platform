@@ -33,7 +33,7 @@ exports.protect = async (req, res, next) => {
 
     // 3️⃣ Fetch user from MongoDB (Changed from PostgreSQL)
     const user = await User.findById(decoded.id)
-      .select('full_name phone email is_activated role login_fee_paid plans_paid all_plans_completed');
+      .select('full_name phone email is_activated role login_fee_paid plans_paid regular_paid vip_paid vvip_paid all_plans_completed welcome_bonus_paid plans');
 
     if (!user) {
       return res.status(401).json({

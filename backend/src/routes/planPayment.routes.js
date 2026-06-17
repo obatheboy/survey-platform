@@ -17,7 +17,7 @@ router.post("/initiate", protect, planPaymentController.initiatePlanPayment);
  * No auth required (uses phone to find user)
  * Body: { transaction_request_id, phone, plan? }
  */
-router.post("/confirm", planPaymentController.confirmPlanPayment);
+router.post("/confirm", protect, planPaymentController.confirmPlanPayment);
 
 /**
  * GET /api/plans/status

@@ -7,21 +7,30 @@ const MEGAPAY_CONFIG = {
   statusEndpoint: "https://megapay.co.ke/backend/v1/transactionstatus"
 };
 
-// Format phone to 07XXXXXXXX format (removes 254 prefix if present)
+// ✅ FIXED: Format phone to 254XXXXXXXXX format (no leading 0)
 // Accepts: 07XXXXXXXX, 2547XXXXXXXX, 7XXXXXXXX
 const formatPhone = (phone) => {
   let cleaned = phone.replace(/[^0-9]/g, '');
 
-  // Remove country code 254 if present, keeping the 0
-  if (cleaned.startsWith('254') && cleaned.length === 12) {
-    cleaned = '0' + cleaned.substring(3);
+  // If it starts with 0 (e.g., 0712345678), replace with 254
+  if (cleaned.startsWith('0')) {
+    cleaned = '254' + cleaned.substring(1);
+  }
+  // If it starts with 7 (e.g., 712345678), add 254
+  else if (cleaned.startsWith('7')) {
+    cleaned = '254' + cleaned;
+  }
+  // If it starts with +254, remove the +
+  else if (cleaned.startsWith('254') && cleaned.length === 12) {
+    // Already correct format
   }
 
-  // Ensure it starts with 0
-  if (cleaned.startsWith('7') && cleaned.length === 9) {
-    cleaned = '0' + cleaned;
+  // Ensure we have exactly 12 digits (254 + 9 digits)
+  if (cleaned.length !== 12) {
+    console.warn(`⚠️ Phone number length is ${cleaned.length}, expected 12 digits for 254 format. Original: ${phone}`);
   }
 
+  console.log(`📱 Formatted phone: ${cleaned}`);
   return cleaned;
 };
 
@@ -37,7 +46,7 @@ const makeMegaPayRequest = (url, data) => {
         "Content-Type": "application/json",
         "Accept": "application/json"
       },
-      timeout: 30000
+      timeout: 60000 // Increased from 30000 to 60000
     };
 
     const postData = JSON.stringify(data);

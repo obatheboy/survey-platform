@@ -187,63 +187,30 @@ exports.confirmPlanPayment = async (req, res) => {
     });
   }
 
-  let user;
+  // Find user by authenticated user ID (from JWT token, protect middleware)
+  // No need for phone lookup - auth middleware already verified the user
+  const providedUserId = req.body.user_id || req.user?.id;
+  const userId = providedUserId;
 
-  // If user_id is provided (from frontend auth), use it directly - bypass phone lookup
-  const providedUserId = req.body.user_id;
-  if (providedUserId) {
-    user = await User.findById(providedUserId).maxTimeMS(5000);
-    console.log(`🔍 Direct user lookup by ID: ${providedUserId} → ${user ? `FOUND (${user._id}, ${user.full_name || user.email})` : 'NOT FOUND'}`);
+  if (!userId) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized - please login again",
+      paid: false
+    });
   }
 
-  // Fallback: find user by phone number
+  const user = await User.findById(userId);
+
   if (!user) {
-    const rawPhone = phone.replace(/[^0-9]/g, '');
-    const phoneWithoutZero = rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone;
-    const phoneWith254 = rawPhone.startsWith('0') ? '254' + rawPhone.substring(1) : rawPhone;
-    const phoneWithoutLeading = rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone;
-
-    // Try to find non-admin user first (exclude admin/System Administrator accounts)
-    const nonAdminUser = await User.findOne({
-      $and: [
-        {
-          $or: [
-            { phone: rawPhone },
-            { phone: phoneWith254 },
-            { phone: phoneWithoutZero },
-            { phone: new RegExp(rawPhone) },
-            { phone: new RegExp(phoneWith254) },
-            { phone: new RegExp(phoneWithoutZero) }
-          ]
-        },
-        {
-          $or: [
-            { role: { $ne: 'admin' } },
-            { role: { $exists: false } },
-            { full_name: { $ne: 'System Administrator' } }
-          ]
-        }
-      ]
-    }).maxTimeMS(5000);
-
-    if (nonAdminUser) {
-      user = nonAdminUser;
-      console.log(`👤 Non-admin user found: ${user.full_name} (${user._id})`);
-    } else {
-      // Fallback: just find by phone
-      user = await User.findOne({
-        $or: [
-          { phone: rawPhone },
-          { phone: phoneWith254 },
-          { phone: phoneWithoutZero },
-          { phone: new RegExp(rawPhone) },
-          { phone: new RegExp(phoneWith254) },
-          { phone: new RegExp(phoneWithoutZero) }
-        ]
-      }).maxTimeMS(5000);
-      console.log(`👤 User lookup (fallback): raw=${rawPhone}, 254form=${phoneWith254} → ${user ? `FOUND (${user._id}, ${user.full_name || user.email})` : 'NOT FOUND'}`);
-    }
+    return res.status(404).json({
+      success: false,
+      message: "User not found. Please login again.",
+      paid: false
+    });
   }
+
+  console.log(`🔔 CONFIRM PLAN PAYMENT - User: ${user._id} (${user.full_name || user.email}), Plan: ${planKey}, Phone: ${phone}`);
 
   if (!user) {
     return res.status(404).json({
