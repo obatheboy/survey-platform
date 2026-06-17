@@ -242,7 +242,7 @@ const [planKey, setPlanKey] = useState(null);
         });
         console.log(`Poll attempt ${attempts}`, confirmRes.data);
 
-        if (confirmRes.data.success && (confirmRes.data.plan_paid || confirmRes.data.paid === true || confirmRes.data.all_plans_completed === true)) {
+        if (confirmRes.data.success && (confirmRes.data.plan_paid || confirmRes.data.paid === true)) {
           stop();
           const remainingPlans = confirmRes.data.remaining_plans || [];
           setPaymentSuccessData({
@@ -856,7 +856,7 @@ setPaynectaSubmitting(true);
               </p>
             </div>
 
-            {paymentSuccessData.all_plans_completed ? (
+             {paymentSuccessData.all_plans_completed && (!paymentSuccessData.remaining_plans || paymentSuccessData.remaining_plans.length === 0) ? (
               <div style={{
                 background: "linear-gradient(135deg, #16a34a, #22c55e)",
                 borderRadius: "12px",

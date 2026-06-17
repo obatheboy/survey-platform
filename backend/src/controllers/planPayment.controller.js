@@ -282,9 +282,10 @@ exports.confirmPlanPayment = async (req, res) => {
   }
 
   // Check if all 3 survey plans are now paid (Welcome Bonus optional)
-  const regularPaid = user.regular_paid === true || user.plans_paid?.REGULAR === true || user.plans?.REGULAR?.is_activated === true;
-  const vipPaid = user.vip_paid === true || user.plans_paid?.VIP === true || user.plans?.VIP?.is_activated === true;
-  const vvipPaid = user.vvip_paid === true || user.plans_paid?.VVIP === true || user.plans?.VVIP?.is_activated === true;
+  // STRICT check - only consider a plan paid if explicitly set in this transaction
+  const regularPaid = user.regular_paid === true || user.plans_paid?.REGULAR === true;
+  const vipPaid = user.vip_paid === true || user.plans_paid?.VIP === true;
+  const vvipPaid = user.vvip_paid === true || user.plans_paid?.VVIP === true;
   const allThreePaid = regularPaid && vipPaid && vvipPaid;
 
   console.log(`🔍 Activation check - REGULAR: ${regularPaid}, VIP: ${vipPaid}, VVIP: ${vvipPaid}, All three: ${allThreePaid}`);
