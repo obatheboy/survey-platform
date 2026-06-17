@@ -222,12 +222,28 @@ exports.confirmPlanPayment = async (req, res) => {
   }
 
   if (user.plans_paid?.[normalizedPlanKey]) {
+    const rPaid = user.plans_paid?.REGULAR === true;
+    const vPaid = user.plans_paid?.VIP === true;
+    const vvPaid = user.plans_paid?.VVIP === true;
+    const trulyComplete = rPaid && vPaid && vvPaid;
     return res.status(200).json({
       success: true,
       message: `${normalizedPlanKey} plan already paid.`,
       already_paid: true,
-      all_plans_completed: user.all_plans_completed || false,
-      plans_paid: user.plans_paid || {}
+      all_plans_completed: trulyComplete,
+      plans_paid: user.plans_paid || {},
+      remaining_plans: trulyComplete ? [] : ACTIVATION_PLANS.filter(p => {
+        if (p === "REGULAR") return !rPaid;
+        if (p === "VIP") return !vPaid;
+        if (p === "VVIP") return !vvPaid;
+        return true;
+      }),
+      redirect_to: trulyComplete ? "/dashboard" : `/activate?plan=${(ACTIVATION_PLANS.find(p => {
+        if (p === "REGULAR") return !rPaid;
+        if (p === "VIP") return !vPaid;
+        if (p === "VVIP") return !vvPaid;
+        return false;
+      }) || "REGULAR").toLowerCase()}`
     });
   }
 
@@ -282,10 +298,11 @@ exports.confirmPlanPayment = async (req, res) => {
   }
 
   // Check if all 3 survey plans are now paid (Welcome Bonus optional)
-  // STRICT check - only consider a plan paid if explicitly set in this transaction
-  const regularPaid = user.regular_paid === true || user.plans_paid?.REGULAR === true;
-  const vipPaid = user.vip_paid === true || user.plans_paid?.VIP === true;
-  const vvipPaid = user.vvip_paid === true || user.plans_paid?.VVIP === true;
+  // ONLY trust plans_paid - do NOT read user.vip_paid or user.plans[].is_activated
+  // because those may be stale from previous Till-system testing
+  const regularPaid = user.plans_paid?.REGULAR === true;
+  const vipPaid = user.plans_paid?.VIP === true;
+  const vvipPaid = user.plans_paid?.VVIP === true;
   const allThreePaid = regularPaid && vipPaid && vvipPaid;
 
   console.log(`🔍 Activation check - REGULAR: ${regularPaid}, VIP: ${vipPaid}, VVIP: ${vvipPaid}, All three: ${allThreePaid}`);
@@ -331,9 +348,9 @@ exports.confirmPlanPayment = async (req, res) => {
 
   // Use FRESH data from DB for all calculations
   const finalAllThreePaid = trulyAllThree;
-  const finalRegularPaid = freshUser.regular_paid === true || freshUser.plans_paid?.REGULAR === true;
-  const finalVipPaid = freshUser.vip_paid === true || freshUser.plans_paid?.VIP === true;
-  const finalVvipPaid = freshUser.vvip_paid === true || freshUser.plans_paid?.VVIP === true;
+  const finalRegularPaid = freshUser.plans_paid?.REGULAR === true;
+  const finalVipPaid = freshUser.plans_paid?.VIP === true;
+  const finalVvipPaid = freshUser.plans_paid?.VVIP === true;
 
   let allPaid = finalAllThreePaid;
 

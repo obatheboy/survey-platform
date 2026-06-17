@@ -856,7 +856,7 @@ setPaynectaSubmitting(true);
               </p>
             </div>
 
-             {paymentSuccessData.all_plans_completed && (!paymentSuccessData.remaining_plans || paymentSuccessData.remaining_plans.length === 0) ? (
+             {(!paymentSuccessData.remaining_plans || paymentSuccessData.remaining_plans.length === 0) ? (
               <div style={{
                 background: "linear-gradient(135deg, #16a34a, #22c55e)",
                 borderRadius: "12px",

@@ -95,43 +95,45 @@ const buildPaymentRedirect = (user) => {
 
 const syncActivationStatus = (user) => {
   let changed = false;
-  let allPaid = true;
+  let paidCount = 0;
 
   ACTIVATION_PLANS.forEach((planKey) => {
-    changed = ensurePlanEntry(user, planKey) || changed;
+    ensurePlanEntry(user, planKey);
 
+    // Only trust explicit payment flags - NOT is_activated alone
+    // is_activated can be true without payment if it was set during testing
     const paid = isPlanDone(user, planKey);
-    const activated = user.plans[planKey].is_activated === true;
-    const isDone = paid || activated;
 
-    if (!isDone) allPaid = false;
-
-    if (isDone) {
+    if (paid) {
+      paidCount++;
       if (!user.plans_paid) user.plans_paid = {};
       if (user.plans_paid[planKey] !== true) {
         user.plans_paid[planKey] = true;
         changed = true;
       }
-
       const field = PLAN_FIELD_MAP[planKey];
       if (user[field] !== true) {
         user[field] = true;
         changed = true;
       }
-
-      if (!activated) {
+      if (!user.plans[planKey].is_activated) {
         user.plans[planKey].is_activated = true;
         changed = true;
       }
-
       if (!user.plans[planKey].activated_at) {
         user.plans[planKey].activated_at = new Date();
+        changed = true;
+      }
+    } else {
+      // NOT paid - ensure is_activated is also false
+      if (user.plans[planKey].is_activated === true) {
+        user.plans[planKey].is_activated = false;
         changed = true;
       }
     }
   });
 
-  const shouldActivate = allPaid;
+  const shouldActivate = paidCount === ACTIVATION_PLANS.length;
 
   if (user.account_activated !== shouldActivate) {
     user.account_activated = shouldActivate;
