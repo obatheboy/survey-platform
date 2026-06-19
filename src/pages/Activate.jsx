@@ -1163,7 +1163,7 @@ setPaynectaSubmitting(true);
               ) : (
                 <>
                   <span style={{ fontSize: "18px" }}>📱</span>
-                  <span>Tap here to Pay KES {plan.activationFee} Automatically and activate account!</span>
+                  <span>TAP here to Pay KES {plan.activationFee} and ACTIVATE Account </span>
                   <span style={{ fontSize: "16px" }}>⚡</span>
                 </>
               )}
