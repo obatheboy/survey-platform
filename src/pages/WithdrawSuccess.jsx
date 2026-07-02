@@ -91,10 +91,10 @@ export default function WithdrawSuccess() {
           <span className="success-icon">🎉</span>
           <div className="checkmark">✓</div>
         </div>
-        <h1>Withdrawal Submitted!</h1>
+        <h1>Congratulations!</h1>
         <p className="success-subtitle">
-          🎉 Your withdrawal is being processed! <br/>
-          👉 <strong>Invite 10+ friends</strong> to get paid faster!
+          🎉 Your withdrawal of KES {withdrawal.amount?.toLocaleString()} is being processed! <br/>
+          You will receive your money within 48-72 hours.
         </p>
       </div>
 
@@ -125,6 +125,10 @@ export default function WithdrawSuccess() {
             <span className="detail-value amount">KES {withdrawal.amount?.toLocaleString()}</span>
           </div>
           <div className="detail-item">
+            <span className="detail-label">Net Amount</span>
+            <span className="detail-value amount">KES {withdrawal.net_amount?.toLocaleString()}</span>
+          </div>
+          <div className="detail-item">
             <span className="detail-label">Phone</span>
             <span className="detail-value">{withdrawal.phone_number}</span>
           </div>
@@ -132,6 +136,22 @@ export default function WithdrawSuccess() {
             <span className="detail-label">Date</span>
             <span className="detail-value">
               {new Date(withdrawal.created_at).toLocaleString()}
+            </span>
+          </div>
+        </div>
+
+        {/* Processing Times */}
+        <div style={{
+          marginTop: '16px',
+          padding: '12px',
+          background: 'linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%)',
+          borderRadius: '8px',
+          border: '1px solid #2563eb'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+            <span style={{ fontSize: '18px' }}>⏱️</span>
+            <span style={{ fontWeight: '700', color: '#1e40af', fontSize: '14px' }}>
+              Payment processing time: 48-72 hours
             </span>
           </div>
         </div>

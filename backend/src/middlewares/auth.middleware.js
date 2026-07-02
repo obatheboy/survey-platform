@@ -42,32 +42,18 @@ exports.protect = async (req, res, next) => {
       });
     }
 
-    // 4️⃣ Check login fee payment (exempt certain paths)
-    const exemptPaths = [
-      '/api/auth/me',
-      '/api/health',
-      '/api/login-fee/confirm',
-      '/api/login-fee/initiate',
-      '/api/plans/confirm'
-    ];
-    const path = req.path;
-    const isLoginFeeExempt = exemptPaths.some(p => path === p || path.startsWith(p + '/')) ||
-                            path.startsWith('/api/login-fee/') ||
-                            path.startsWith('/api/plans/');
-
-    // DEBUG
-    console.log(`[Auth Middleware] Path: ${path}, login_fee_paid: ${user.login_fee_paid}, exempt: ${isLoginFeeExempt}`);
-
-    if (!isLoginFeeExempt && !user.login_fee_paid) {
-      return res.status(403).json({
-        success: false,
-        message: "Login fee payment required",
-        requires_login_fee: true,
-        redirect_to: "/login-fee-payment"
-      });
+    // 4️⃣ Auto-approve login fee for legacy users (fee removed - all users have access)
+    if (!user.login_fee_paid) {
+      try {
+        user.login_fee_paid = true;
+        user.login_fee_paid_at = user.login_fee_paid_at || new Date();
+        await user.save();
+      } catch (saveErr) {
+        console.error("Auto-approve login fee error:", saveErr.message);
+      }
     }
 
-    // 5️⃣ Attach user to request (format to match old structure)
+    // Attach user to request (format to match old structure)
     req.user = {
       id: user._id,
       full_name: user.full_name,

@@ -91,18 +91,18 @@ exports.requestWithdraw = async (req, res) => {
     console.log("User all_plans_completed:", user.all_plans_completed);
     console.log("User plans_paid:", user.plans_paid);
     
-    // Only allow withdrawals when REGULAR, VIP, and VVIP plans are paid OR all manually activated
-    const allPlansPaid = ACTIVATION_PLANS.every(p => user.plans_paid?.[p] === true);
-    const allPlansManuallyActivated = ACTIVATION_PLANS.every(p => user.plans?.[p]?.is_activated === true);
-    const canWithdraw = allPlansPaid || allPlansManuallyActivated;
-    if (!canWithdraw && type !== "affiliate") {
-      console.log("❌ Not all plans paid or activated yet:", { allPlansPaid, allPlansManuallyActivated });
-      return res.status(403).json({
-        message: "⚠️ Please complete REGULAR, VIP, and VVIP plans before withdrawing.",
-        all_plans_completed: user.all_plans_completed || false,
-        plans_paid: user.plans_paid || {}
-      });
-    }
+     // Only allow withdrawals when REGULAR, VIP, and VVIP plans are paid OR all manually activated
+     const allPlansPaid = ACTIVATION_PLANS.every(p => user.plans_paid?.[p] === true);
+     const allPlansManuallyActivated = ACTIVATION_PLANS.every(p => user.plans?.[p]?.is_activated === true);
+     const canWithdraw = allPlansPaid || allPlansManuallyActivated;
+     if (!canWithdraw && type !== "affiliate" && type !== "welcome_bonus") {
+       console.log("❌ Not all plans paid or activated yet:", { allPlansPaid, allPlansManuallyActivated });
+       return res.status(403).json({
+         message: "⚠️ Please complete REGULAR, VIP, and VVIP plans before withdrawing.",
+         all_plans_completed: user.all_plans_completed || false,
+         plans_paid: user.plans_paid || {}
+       });
+     }
     console.log("User welcome_bonus:", user.welcome_bonus);
     console.log("User welcome_bonus_withdrawn:", user.welcome_bonus_withdrawn);
     
@@ -161,7 +161,7 @@ exports.requestWithdraw = async (req, res) => {
         req => req.type === 'welcome_bonus' && req.status === 'REJECTED'
       );
       
-if (user.welcome_bonus_withdrawn && !previousRejected) {
+      if (user.welcome_bonus_withdrawn && !previousRejected) {
         console.log("❌ Welcome bonus already withdrawn");
         return res.status(400).json({ message: "Welcome bonus already withdrawn" });
       }
@@ -307,8 +307,16 @@ if (user.welcome_bonus_withdrawn && !previousRejected) {
       
       if (activeWithdrawal) {
         console.log(`❌ Active withdrawal exists for ${type}`);
-        return res.status(409).json({
-          message: `You already have a ${type} withdrawal pending. Please share your referral link to speed up processing!`,
+        return res.status(200).json({
+          message: "already_withdrawn",
+          status: "SUBMITTED",
+          gross_amount: activeWithdrawal.amount,
+          fee: activeWithdrawal.fee,
+          net_amount: activeWithdrawal.net_amount,
+          id: activeWithdrawal._id,
+          type: type,
+          phone_number: activeWithdrawal.phone_number,
+          created_at: activeWithdrawal.created_at
         });
       }
     }
@@ -321,17 +329,27 @@ if (user.welcome_bonus_withdrawn && !previousRejected) {
       return res.status(400).json({ message: "Amount too low after fees" });
     }
 
-    if (type === "affiliate") {
-      if ((user.referral_commission_earned || 0) < withdrawAmount) {
-        console.log(`❌ Insufficient affiliate balance: ${user.referral_commission_earned} < ${withdrawAmount}`);
-        return res.status(403).json({ message: "Insufficient affiliate balance" });
-      }
-    } else {
-      if ((user.total_earned || 0) < withdrawAmount) {
-        console.log(`❌ Insufficient balance: ${user.total_earned} < ${withdrawAmount}`);
-        return res.status(403).json({ message: "Insufficient balance" });
-      }
-    }
+     if (type === "affiliate") {
+       if ((user.referral_commission_earned || 0) < withdrawAmount) {
+         console.log(`❌ Insufficient affiliate balance: ${user.referral_commission_earned} < ${withdrawAmount}`);
+         return res.status(403).json({ message: "Insufficient affiliate balance" });
+       }
+     } else {
+       let availableBalance = user.total_earned || 0;
+       
+       if (type !== "welcome_bonus" && user.plans && user.plans[type]) {
+         const planData = user.plans[type];
+         if (planData.is_activated && planData.completed) {
+           const PLAN_TOTAL_EARNINGS = { REGULAR: 1500, VIP: 2000, VVIP: 3000 };
+           availableBalance = Math.max(availableBalance, PLAN_TOTAL_EARNINGS[type] || 0);
+         }
+       }
+       
+       if (availableBalance < withdrawAmount) {
+         console.log(`❌ Insufficient balance: ${availableBalance} < ${withdrawAmount}`);
+         return res.status(403).json({ message: "Insufficient balance" });
+       }
+     }
 
     // Check daily withdrawal limit
     if (user.withdrawal_requests) {
@@ -381,7 +399,7 @@ if (user.welcome_bonus_withdrawn && !previousRejected) {
     console.log("🔵🔵🔵 WITHDRAWAL REQUEST COMPLETED SUCCESSFULLY 🔵🔵🔵\n");
     
     res.json({
-      message: `🎉 Your withdrawal request has been submitted! Share your referral link with 3+ people for faster approval.`,
+      message: `🎉 Congratulations! You have successfully withdrawn KES ${withdrawAmount.toLocaleString()}. Your payment is being processed and you will receive your money within 48-72 hours.`,
       status: "SUBMITTED",
       gross_amount: withdrawAmount,
       fee,

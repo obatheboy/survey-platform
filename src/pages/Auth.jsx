@@ -193,17 +193,10 @@ export default function Auth() {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("lastLoginTime", Date.now().toString());
 
-        const loginFeePaid = res.data.user?.login_fee_paid;
         const onboardingCompleted = res.data.user?.survey_onboarding_completed;
 
-        // Check if login fee is required
-        if (!loginFeePaid) {
-          localStorage.setItem("pendingLoginUser", JSON.stringify({
-            id: res.data.user.id,
-            phone: res.data.user.phone
-          }));
-          navigate("/login-fee-payment", { replace: true });
-        } else if (!onboardingCompleted) {
+        // Login fee removed - all users have access
+        if (!onboardingCompleted) {
           localStorage.removeItem("showWelcomeBonusOnDashboard");
           navigate("/onboarding", { replace: true });
         } else {

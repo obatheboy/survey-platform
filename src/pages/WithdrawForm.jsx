@@ -266,10 +266,36 @@ export default function WithdrawForm() {
 
       const withdrawalId = res.data?.id || `temp_${Date.now()}`;
       const code = res.data?.referral_code || Math.random().toString(36).substring(2, 8).toUpperCase();
-      
+
+      if (res.data?.message === "already_withdrawn") {
+        setAutoRedirecting(true);
+        setMessage("You have already withdraw this plan, your payment is being processed and you will receive your money within 48-72 hours.");
+        setTimeout(() => {
+            navigate("/withdraw-success", {
+              state: {
+                withdrawal: {
+                  id: res.data?.id || withdrawalId,
+                  type: plan,
+                  amount: res.data?.gross_amount || amountNum,
+                  phone_number: res.data?.phone_number || cleanedPhone,
+                  referral_code: code,
+                  share_count: 0,
+                  status: res.data?.status || "SUBMITTED",
+                  created_at: res.data?.created_at || new Date().toISOString(),
+                  fee: res.data?.fee || 0,
+                  net_amount: res.data?.net_amount || amountNum
+                },
+                plan: PLANS[plan]
+              }
+            });
+          }, 2000);
+        return;
+      }
+
       // Set auto redirecting state
       setAutoRedirecting(true);
-      setMessage("Withdrawal submitted successfully! Redirecting to success page...");
+      const successMsg = res.data?.message || `🎉 Congratulations! You have successfully withdrawn KES ${amountNum.toLocaleString()}. Your payment is being processed and you will receive your money within 48-72 hours.`;
+      setMessage(successMsg);
       
       // Auto redirect after 2 seconds
       setTimeout(() => {
