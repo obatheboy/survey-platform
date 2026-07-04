@@ -449,6 +449,79 @@ export default function WithdrawForm() {
       </header>
 
       <div className="form-container">
+        {/* Clear Notification for users who haven't completed all plans */}
+        {!isAffiliateWithdraw && !allPlansCompleted && (
+          <div style={{
+            background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+            border: '2px solid #f59e0b',
+            borderRadius: '12px',
+            padding: '16px 20px',
+            marginBottom: '20px',
+            boxShadow: '0 4px 15px rgba(245, 158, 11, 0.25)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+              <span style={{ fontSize: '28px', flexShrink: 0 }}>🔒</span>
+              <div style={{ flex: 1 }}>
+                <h3 style={{
+                  margin: '0 0 6px 0',
+                  fontSize: '16px',
+                  fontWeight: '900',
+                  color: '#92400e',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}>
+                  Withdrawals Locked — Complete All Plans First
+                </h3>
+                <p style={{
+                  margin: '0 0 10px 0',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  color: '#a3620a',
+                  lineHeight: '1.5'
+                }}>
+                  You need to complete and activate <strong>REGULAR</strong>, <strong>VIP</strong>, and <strong>VVIP</strong> survey plans before you can withdraw any money.
+                </p>
+                <div style={{
+                  background: 'rgba(255,255,255,0.6)',
+                  borderRadius: '8px',
+                  padding: '10px 14px',
+                  border: '1px solid rgba(245, 158, 11, 0.4)'
+                }}>
+                  <p style={{ margin: '0 0 6px 0', fontSize: '13px', fontWeight: '700', color: '#78350f' }}>
+                    📋 What you need to do:
+                  </p>
+                  <ol style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', fontWeight: '600', color: '#92400e', lineHeight: '1.8' }}>
+                    <li>Complete <strong>10 surveys</strong> for the REGULAR plan</li>
+                    <li>Complete <strong>10 surveys</strong> for the VIP plan</li>
+                    <li>Complete <strong>10 surveys</strong> for the VVIP plan</li>
+                    <li>Activate each plan by paying the one-time activation fee</li>
+                  </ol>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => navigate("/dashboard", { replace: true })}
+                  style={{
+                    marginTop: '12px',
+                    padding: '10px 18px',
+                    background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: '#ffffff',
+                    fontWeight: '800',
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(245, 158, 11, 0.4)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
+                  }}
+                >
+                  📊 Go to Dashboard — Complete Surveys
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Plan Selection Section - Skip for affiliate withdraw */}
         {!plan && !isAffiliateWithdraw && (
           <div className="plan-selection-section">
@@ -571,6 +644,79 @@ export default function WithdrawForm() {
         {/* Withdrawal Form */}
         {plan && (
           <form className="withdrawal-form" onSubmit={handleSubmit}>
+            {/* Clear Notification for users who haven't completed all plans */}
+            {!isAffiliateWithdraw && !allPlansCompleted && (
+              <div style={{
+                background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+                border: '2px solid #f59e0b',
+                borderRadius: '12px',
+                padding: '16px 20px',
+                marginBottom: '20px',
+                boxShadow: '0 4px 15px rgba(245, 158, 11, 0.25)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                  <span style={{ fontSize: '28px', flexShrink: 0 }}>🔒</span>
+                  <div style={{ flex: 1 }}>
+                    <h3 style={{
+                      margin: '0 0 6px 0',
+                      fontSize: '16px',
+                      fontWeight: '900',
+                      color: '#92400e',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px'
+                    }}>
+                      Withdrawals Locked — Complete All Plans First
+                    </h3>
+                    <p style={{
+                      margin: '0 0 10px 0',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      color: '#a3620a',
+                      lineHeight: '1.5'
+                    }}>
+                      You need to complete and activate <strong>REGULAR</strong>, <strong>VIP</strong>, and <strong>VVIP</strong> survey plans before you can withdraw any money.
+                    </p>
+                    <div style={{
+                      background: 'rgba(255,255,255,0.6)',
+                      borderRadius: '8px',
+                      padding: '10px 14px',
+                      border: '1px solid rgba(245, 158, 11, 0.4)'
+                    }}>
+                      <p style={{ margin: '0 0 6px 0', fontSize: '13px', fontWeight: '700', color: '#78350f' }}>
+                        📋 What you need to do:
+                      </p>
+                      <ol style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', fontWeight: '600', color: '#92400e', lineHeight: '1.8' }}>
+                        <li>Complete <strong>10 surveys</strong> for the REGULAR plan</li>
+                        <li>Complete <strong>10 surveys</strong> for the VIP plan</li>
+                        <li>Complete <strong>10 surveys</strong> for the VVIP plan</li>
+                        <li>Activate each plan by paying the one-time activation fee</li>
+                      </ol>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => navigate("/dashboard", { replace: true })}
+                      style={{
+                        marginTop: '12px',
+                        padding: '10px 18px',
+                        background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                        border: 'none',
+                        borderRadius: '8px',
+                        color: '#ffffff',
+                        fontWeight: '800',
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 12px rgba(245, 158, 11, 0.4)',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px'
+                      }}
+                    >
+                      📊 Go to Dashboard — Complete Surveys
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="form-header">
               <h2>
                 <span className="plan-icon-small">{PLANS[plan].icon}</span>
