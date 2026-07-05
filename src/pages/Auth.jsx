@@ -413,7 +413,17 @@ export default function Auth() {
           </div>
         </div>
 
-<button
+        {/* Install App Button */}
+        <button
+          style={styles.installAppBtn}
+          onClick={handleInstall}
+          type="button"
+        >
+          <span style={styles.installAppIcon}>📲</span>
+          INSTALL APP
+        </button>
+
+       <button
             style={styles.whatsappGroupBtn}
             onClick={() => window.open("https://whatsapp.com/channel/0029VbCndTf2phHSk05nCd3h", "_blank")}
           >
@@ -722,6 +732,26 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     gap: "8px",
+  },
+  installAppBtn: {
+    width: "100%",
+    padding: "14px",
+    borderRadius: "12px",
+    border: "none",
+    background: "linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)",
+    color: "#ffffff",
+    fontSize: "15px",
+    fontWeight: "800",
+    cursor: "pointer",
+    marginBottom: "12px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+    boxShadow: "0 6px 20px rgba(124, 58, 237, 0.4)",
+  },
+  installAppIcon: {
+    fontSize: "16px",
   },
   footer: {
     textAlign: "center",
