@@ -5,7 +5,12 @@ import "./index.css";
 
 const APP_VERSION = "2026-07-06-v2";
 
+let versionCheckDone = false;
+
 function enforceLatestVersion() {
+  if (versionCheckDone || typeof window === "undefined") return;
+  versionCheckDone = true;
+
   try {
     const stored = localStorage.getItem("app_version");
     if (stored && stored !== APP_VERSION) {
@@ -22,7 +27,9 @@ function enforceLatestVersion() {
           names.forEach((name) => caches.delete(name));
         });
       }
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 0);
       return;
     }
     if (!stored) {
@@ -52,7 +59,7 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-enforceLatestVersion();
+setTimeout(enforceLatestVersion, 100);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
