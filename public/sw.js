@@ -14,8 +14,6 @@ self.addEventListener('install', (event) => {
         console.log('[SW] Cache installation failed:', error);
       })
   );
-  // Force the waiting service worker to become the active service worker
-  self.skipWaiting();
 });
 
 // Activate event - clean up old caches and claim all clients

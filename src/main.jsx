@@ -27,9 +27,7 @@ function enforceLatestVersion() {
           names.forEach((name) => caches.delete(name));
         });
       }
-      setTimeout(() => {
-        window.location.reload();
-      }, 0);
+      localStorage.setItem("app_version", APP_VERSION);
       return;
     }
     if (!stored) {
@@ -41,25 +39,12 @@ function enforceLatestVersion() {
 }
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js").then((swRegistration) => {
-    if (swRegistration) {
-      swRegistration.addEventListener("updatefound", () => {
-        const newWorker = swRegistration.installing;
-        if (newWorker) {
-          newWorker.addEventListener("statechange", () => {
-            if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-              window.location.reload();
-            }
-          });
-        }
-      });
-    }
-  }).catch(() => {
+  navigator.serviceWorker.register("/sw.js").catch(() => {
     // SW registration failed; continue without offline support
   });
 }
 
-setTimeout(enforceLatestVersion, 100);
+enforceLatestVersion();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
