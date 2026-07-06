@@ -9,7 +9,7 @@ export function CardSkeleton() {
       <div className="skeleton skeleton-button"></div>
     </div>
   );
-}
+}   
 
 export function DashboardSkeleton() {
   return (
