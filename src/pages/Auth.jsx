@@ -20,6 +20,7 @@ export default function Auth() {
     phone: "",
   });
   const [loginMessage, setLoginMessage] = useState("");
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const wakeBackend = async () => {
