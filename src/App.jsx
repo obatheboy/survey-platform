@@ -33,9 +33,6 @@ import AdminAffiliates from "./pages/admin/AdminAffiliates";
 import AdminAffiliateWithdrawals from "./pages/admin/AdminAffiliateWithdrawals";
 import AdminLoginFee from "./pages/admin/AdminLoginFee";
 
-/* ================= COMPONENTS ================= */
-import PWAInstallPrompt from "./components/PWAInstallPrompt";
-
 /* ================= USER AUTH GUARD ================= */
 function ProtectedRoute({ children }) {
   const [loading, setLoading] = useState(true);
@@ -131,7 +128,6 @@ export default function App() {
   return (
     <BrowserRouter>
       <Toaster position="top-center" reverseOrder={false} />
-      <PWAInstallPrompt />
       <Routes>
         {/* ENTRY - Landing Banner */}
         <Route path="/" element={<LandingBanner />} />

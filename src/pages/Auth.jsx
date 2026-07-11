@@ -9,19 +9,6 @@ export default function Auth() {
   const [mode, setMode] = useState(initialMode);
   const [loading, setLoading] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
-
-  const referralCodeFromUrl = searchParams.get("ref");
-
-  const [errors, setErrors] = useState({});
-
-  const [regData, setRegData] = useState({
-    full_name: "",
-    phone: "",
-    referralCode: referralCodeFromUrl || "",
-  });
-  const [regMessage, setRegMessage] = useState("");
-
   const [loginData, setLoginData] = useState({
     phone: "",
   });
@@ -39,23 +26,13 @@ export default function Auth() {
   }, []);
 
   useEffect(() => {
-    const hasSeenInstallPrompt = localStorage.getItem("hasSeenInstallPrompt");
-    
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-    
-    if (!hasSeenInstallPrompt) {
-      const alreadyHasPrompt = localStorage.getItem("hasInstallPromptShown");
-      if (!alreadyHasPrompt) {
-        setShowInstallPrompt(true);
-        localStorage.setItem("hasInstallPromptShown", "true");
-      }
-    }
-    
+
     return () => window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
   }, []);
 
@@ -67,26 +44,18 @@ export default function Auth() {
         localStorage.setItem("hasSeenInstallPrompt", "true");
       }
       setDeferredPrompt(null);
-      setShowInstallPrompt(false);
       return;
     }
-    
+
     if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
-      setShowInstallPrompt(false);
       return;
     }
-    
+
     localStorage.setItem("hasSeenInstallPrompt", "true");
-    setShowInstallPrompt(false);
-    
+
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js');
     }
-  };
-
-  const dismissInstall = () => {
-    localStorage.setItem("hasSeenInstallPrompt", "true");
-    setShowInstallPrompt(false);
   };
 
   useEffect(() => {
@@ -232,19 +201,6 @@ export default function Auth() {
 
   return (
     <div style={styles.page}>
-      {showInstallPrompt && (
-        <div style={styles.installPromptStyles.overlay}>
-          <div style={styles.installPromptStyles.popup}>
-            <div style={styles.installPromptStyles.icon}>📱</div>
-            <h3 style={styles.installPromptStyles.title}>Install SurveyEarn App</h3>
-            <p style={styles.installPromptStyles.text}>Install our app for the best experience with faster loading and offline access.</p>
-            <div style={styles.installPromptStyles.buttons}>
-              <button style={styles.installPromptStyles.installBtn} onClick={handleInstall}>Install Now</button>
-              <button style={styles.installPromptStyles.dismissBtn} onClick={dismissInstall}>Not Now</button>
-            </div>
-          </div>
-        </div>
-      )}
       <div style={styles.container}>
         {/* Government Verification Badge */}
         <div style={styles.govBadge}>
@@ -757,70 +713,5 @@ const styles = {
     textAlign: "center",
     fontSize: "11px",
     color: "#94a3b8",
-  },
-  installPromptStyles: {
-    overlay: {
-      position: "fixed",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: "rgba(0,0,0,0.7)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: 9999,
-      padding: "20px",
-    },
-    popup: {
-      background: "white",
-      borderRadius: "20px",
-      padding: "30px",
-      textAlign: "center",
-      maxWidth: "340px",
-      animation: "slideUp 0.3s ease",
-    },
-    icon: {
-      fontSize: "56px",
-      marginBottom: "12px",
-    },
-    title: {
-      fontSize: "20px",
-      fontWeight: "800",
-      color: "#1e293b",
-      margin: "0 0 12px 0",
-    },
-    text: {
-      fontSize: "14px",
-      color: "#64748b",
-      margin: "0 0 20px 0",
-      lineHeight: "1.5",
-    },
-    buttons: {
-      display: "flex",
-      gap: "12px",
-    },
-    installBtn: {
-      flex: 1,
-      padding: "14px",
-      background: "linear-gradient(135deg, #22c55e, #16a34a)",
-      color: "white",
-      border: "none",
-      borderRadius: "12px",
-      fontSize: "15px",
-      fontWeight: "700",
-      cursor: "pointer",
-    },
-    dismissBtn: {
-      flex: 1,
-      padding: "14px",
-      background: "#f1f5f9",
-      color: "#64748b",
-      border: "none",
-      borderRadius: "12px",
-      fontSize: "15px",
-      fontWeight: "600",
-      cursor: "pointer",
-    },
   },
 };

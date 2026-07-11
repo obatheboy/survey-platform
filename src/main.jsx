@@ -15,9 +15,6 @@ function enforceLatestVersion() {
     const stored = localStorage.getItem("app_version");
     if (stored && stored !== APP_VERSION) {
       localStorage.removeItem("app_version");
-      localStorage.removeItem("pwa-install-dismissed");
-      localStorage.removeItem("hasSeenInstallPrompt");
-      localStorage.removeItem("hasInstallPromptShown");
       localStorage.removeItem("login_fee_verified_temp");
       localStorage.removeItem("login_fee_verified_at");
       localStorage.removeItem("pendingLoginUser");
