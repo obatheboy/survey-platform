@@ -223,9 +223,10 @@ const [planKey, setPlanKey] = useState(null);
     let attempts = 0;
     let pollTimer = null;
     let fallbackTimer = null;
-    const maxAttempts = 30;
+    const maxAttempts = 40;
     const POLL_INTERVAL_MS = 3000;
-    const INITIAL_DELAY_MS = 8000; // Wait 8s before first check
+    const INITIAL_DELAY_MS = 8000;
+    const MAX_ATTEMPTS = 40;
 
     const stop = (errorMsg) => {
       if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
@@ -238,7 +239,7 @@ const [planKey, setPlanKey] = useState(null);
       pollTimer = setInterval(doPoll, POLL_INTERVAL_MS);
       fallbackTimer = setTimeout(() => {
         stop("Payment not confirmed yet. Please check your M-Pesa and try again.");
-      }, 90000); // 1.5 minute total window
+      }, 120000); // 2 minute total window
     };
 
     const doPoll = async () => {
@@ -536,7 +537,7 @@ const submitActivation = async () => {
     if (showPaymentSuccess && paymentSuccessData) {
       const timer = setTimeout(() => {
         const target = paymentSuccessData.redirect_to || "/dashboard";
-        window.location.href = target;
+        navigate(target);
       }, 6000);
       return () => clearTimeout(timer);
     }
@@ -947,9 +948,10 @@ setPaynectaSubmitting(true);
 
             <button
               onClick={() => {
+                setShowPaymentSuccess(false);
                 const target = paymentSuccessData.redirect_to || "/dashboard";
                 console.log("Continue button clicked, navigating to:", target);
-                window.location.href = target;
+                navigate(target);
               }}
               style={{ 
                 ...styles.button, 
