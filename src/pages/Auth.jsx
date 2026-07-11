@@ -7,8 +7,15 @@ export default function Auth() {
   const [searchParams] = useSearchParams();
   const initialMode = searchParams.get("mode") === "login" ? "login" : "register";
   const [mode, setMode] = useState(initialMode);
+  const referralCodeFromUrl = searchParams.get("ref");
   const [loading, setLoading] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [regData, setRegData] = useState({
+    full_name: "",
+    phone: "",
+    referralCode: referralCodeFromUrl || "",
+  });
+  const [regMessage, setRegMessage] = useState("");
   const [loginData, setLoginData] = useState({
     phone: "",
   });
