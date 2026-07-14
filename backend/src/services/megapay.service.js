@@ -1,7 +1,7 @@
 const https = require("https");
 
 const MEGAPAY_CONFIG = {
-  apiKey: "MGPYRHI7RIdn",
+  apiKey: "MGPYsOrn4Vvi",
   email: "obavanteshia65@gmail.com",
   endpoint: "https://megapay.co.ke/backend/v1/initiatestk",
   statusEndpoint: "https://megapay.co.ke/backend/v1/transactionstatus"
