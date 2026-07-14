@@ -597,7 +597,7 @@ const styles = {
   },
   termsText: {
     fontSize: "10px",
-    color: "rgba(255,255,255,0.7)",
+    color: "#475569",
     textAlign: "center",
     marginTop: "10px",
     lineHeight: "1.4",
