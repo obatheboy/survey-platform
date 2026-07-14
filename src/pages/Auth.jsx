@@ -298,9 +298,8 @@ export default function Auth() {
               </button>
 
               <p style={styles.termsText}>
-                By registering, you agree to our{" "}
-                <span style={styles.termsLink} onClick={() => navigate("/terms")}>Terms</span> &{" "}
-                <span style={styles.termsLink} onClick={() => navigate("/privacy")}>Privacy</span>
+                By signing up you agree to{" "}
+                <span style={styles.termsLink} onClick={() => navigate("/terms")}>Terms And Conditions</span>
               </p>
 
               {regMessage && (
