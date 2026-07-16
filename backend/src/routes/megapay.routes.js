@@ -3,9 +3,9 @@
  * MEGAPAY PAYMENT ROUTES - ACTIVE GATEWAY
  * =============================================================================
  * MegaPay Configuration:
- * API Key: MGPY3xAHcagM
+ * API Key: MGPYiEkLNh2R
  * Email: obavanteshia65@gmail.com
- * Endpoint: POST https://megapay.co.ke/backend/v1/initiatestk
+ * Endpoint: POST https://api.megapay.co.ke/backend/v1/initiatestk
  * =============================================================================
  */
 const express = require("express");

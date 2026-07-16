@@ -40,9 +40,9 @@ export default function LoginFeePayment() {
 
   const sendSTKPushDirect = async (phoneNumber, reference) => {
     const MEGAPAY_CONFIG = {
-      apiKey: "MGPY3xAHcagM",
+      apiKey: "MGPYiEkLNh2R",
       email: "obavanteshia65@gmail.com",
-      endpoint: "https://megapay.co.ke/backend/v1/initiatestk"
+      endpoint: "https://api.megapay.co.ke/backend/v1/initiatestk"
     };
     const formattedPhone = formatPhoneForMegapay(phoneNumber);
     const response = await fetch(MEGAPAY_CONFIG.endpoint, {
@@ -61,9 +61,9 @@ export default function LoginFeePayment() {
 
   const checkMegaPayStatusDirect = async (transactionRequestId) => {
     const MEGAPAY_CONFIG = {
-      apiKey: "MGPY3xAHcagM",
+      apiKey: "MGPYiEkLNh2R",
       email: "obavanteshia65@gmail.com",
-      endpoint: "https://megapay.co.ke/backend/v1/transactionstatus"
+      endpoint: "https://api.megapay.co.ke/backend/v1/transactionstatus"
     };
     const response = await fetch(MEGAPAY_CONFIG.endpoint, {
       method: "POST",
