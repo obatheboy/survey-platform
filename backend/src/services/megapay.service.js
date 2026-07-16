@@ -109,41 +109,39 @@ const initiateSTKPush = async (amount, phoneNumber, reference) => {
       r.transaction_request_id || r.transactionRequestId || r.TransactionRequestID ||
       r.transaction_id || r.transactionId || r.CheckoutRequestID || r.checkoutRequestId || null;
 
-    // MegaPay returns success === "200" on success, or PIN message even when STK delivered
-    if (response.success === "200") {
+    // Normalize the human-readable message (new host uses `msg`, old uses `message`).
+    const megaMsg = response.message || response.msg || response.errorMessage || response.error || "";
+
+    // Determine success across the various shapes MegaPay returns:
+    //  - new host: { success: 200, msg: "Enter MPESA PIN..." }
+    //  - old host: { ResultCode: "0", success: true, message: "Please enter your MPESA PIN..." }
+    //  - error-with-PIN-prompt: { message/msg: "...enter pin..." }
+    const isSuccessCode =
+      response.success === "200" || response.success === 200 || response.success === true ||
+      response.ResultCode === "0" || response.ResultCode === 0 ||
+      response.ResponseCode === "0" || response.ResponseCode === 0;
+
+    const msgLc = String(megaMsg).toLowerCase();
+    const looksLikeStkPrompt = msgLc.includes("pin") || msgLc.includes("stk push sent") ||
+      msgLc.includes("check your phone") || msgLc.includes("sent to") ||
+      msgLc.includes("enter mpesa") || msgLc.includes("complete");
+
+    if (isSuccessCode || looksLikeStkPrompt) {
       console.log("MegaPay STK Push successful");
       return {
         success: true,
-        message: "STK Push sent! Check your phone and enter PIN.",
+        message: megaMsg || "STK Push sent! Check your phone and enter PIN.",
         transaction_request_id: extractTxId(response),
         phone: formattedPhone
       };
-    } else if (response.message || response.error) {
-      const msg = (response.message || response.error || "").toLowerCase();
-      // STK was delivered even if API returns error with PIN prompt
-      if (msg.includes("pin") || msg.includes("stk push sent") || msg.includes("check your phone") || msg.includes("sent to")) {
-        console.log("MegaPay STK Push delivered (PIN prompt)");
-        return {
-          success: true,
-          message: response.message || response.error,
-          transaction_request_id: extractTxId(response),
-          phone: formattedPhone
-        };
-      }
-      console.error("MegaPay STK Push failed:", response);
-      return {
-        success: false,
-        message: response.message || response.error || "STK Push failed",
-        details: response
-      };
-    } else {
-      console.error("MegaPay STK Push failed:", response);
-      return {
-        success: false,
-        message: response.message || response.error || "STK Push failed",
-        details: response
-      };
     }
+
+    console.error("MegaPay STK Push failed:", response);
+    return {
+      success: false,
+      message: megaMsg || "STK Push failed",
+      details: response
+    };
   } catch (error) {
     console.error("MegaPay error:", error.message);
     return {
