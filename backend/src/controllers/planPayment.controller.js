@@ -94,8 +94,11 @@ exports.initiatePlanPayment = async (req, res) => {
       // The survey completion check happens when submitting surveys for earnings
     }
 
-    // Generate order reference
+    // Generate order reference (internal, can be long)
     const orderReference = `PLAN_${planKey}_${targetUserId}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+
+    // Short reference for MegaPay (their TransactionReference column is short)
+    const megaPayReference = megaPayService.generateShortReference("PL");
 
     // Store pending payment info
     user.last_payment_reference = orderReference;
@@ -104,10 +107,10 @@ exports.initiatePlanPayment = async (req, res) => {
     await user.save();
 
     // Send STK Push via MegaPay
-    const paymentResult = await megaPayService.initiateSTKPush(amount, phone_number, orderReference);
+    const paymentResult = await megaPayService.initiateSTKPush(amount, phone_number, megaPayReference);
 
     if (paymentResult.success) {
-      const transactionRequestId = paymentResult.transaction_request_id || orderReference;
+      const transactionRequestId = paymentResult.transaction_request_id || megaPayReference;
       user.last_payment_reference = transactionRequestId;
       await user.save();
 

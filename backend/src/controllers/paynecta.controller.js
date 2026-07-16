@@ -77,8 +77,11 @@ exports.initiatePaynectaPayment = async (req, res) => {
 
     const isWelcomeBonus = planKey === "WELCOME_BONUS";
 
-    // Generate unique order reference for MegaPay
+    // Generate unique order reference for MegaPay (internal, can be long)
     const orderReference = `SURVEY_${userId}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+
+    // Short reference for MegaPay (their TransactionReference column is short)
+    const megaPayReference = megaPayService.generateShortReference("AC");
 
     // Add activation request for admin tracking (temporary reference)
     user.activation_requests.push({
@@ -102,12 +105,12 @@ exports.initiatePaynectaPayment = async (req, res) => {
     const paymentResult = await megaPayService.initiateSTKPush(
       amount,
       phone_number,
-      orderReference
+      megaPayReference
     );
 
     if (paymentResult.success) {
       // Get actual MegaPay transaction_request_id from response
-      const transactionRequestId = paymentResult.transaction_request_id || orderReference;
+      const transactionRequestId = paymentResult.transaction_request_id || megaPayReference;
 
       // Update activation request with actual MegaPay reference
       const lastRequest = user.activation_requests[user.activation_requests.length - 1];

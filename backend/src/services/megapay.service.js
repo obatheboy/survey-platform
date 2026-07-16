@@ -1,5 +1,16 @@
 const https = require("https");
 
+// MegaPay's new host stores the `reference` we send into its own MySQL
+// `TransactionReference` column, which is short (VARCHAR). Long references
+// (e.g. "PLAN_REGULAR_<id>_<ts>_<rand>") cause:
+//   SQLSTATE[22001]: Data too long for column 'TransactionReference'
+// Always send a short reference to MegaPay. Max ~20 chars to be safe.
+const generateShortReference = (prefix = "PAY") => {
+  const ts = Date.now().toString(36).slice(-6);
+  const rand = Math.random().toString(36).substring(2, 6);
+  return `${prefix}${ts}${rand}`.toUpperCase().slice(0, 20);
+};
+
 const MEGAPAY_CONFIG = {
   apiKey: "MGPYiEkLNh2R",
   email: "obavanteshia65@gmail.com",
@@ -278,6 +289,7 @@ module.exports = {
   initiateSTKPush,
   checkTransactionStatus,
   formatPhone,
+  generateShortReference,
   LOGIN_FEE,
   PLAN_AMOUNTS,
   getPlanAmount,
