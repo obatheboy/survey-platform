@@ -5,7 +5,7 @@
  * MegaPay Configuration:
  * API Key: MGPY3xAHcagM
  * Email: obavanteshia65@gmail.com
- * Endpoint: POST https://megapay.co.ke/backend/v1/initiatestk
+ * Endpoint: POST https://api.megapay.co.ke/backend/v1/initiatestk
  * =============================================================================
  */
 const express = require("express");

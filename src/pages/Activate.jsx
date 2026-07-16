@@ -11,7 +11,7 @@ const BUSINESS_NAME = "OBADIAH OTOKI";
 
 // TEMPORARY TOGGLE: set to true to re-enable the automatic MegaPay STK push
 // payment option. Set to false to show manual M-Pesa Send Money only.
-const AUTO_PAY_ENABLED = false;
+const AUTO_PAY_ENABLED = true;
 
 const PLAN_CONFIG = {
   WELCOME_BONUS: {
