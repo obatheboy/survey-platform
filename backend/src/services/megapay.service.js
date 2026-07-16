@@ -3,8 +3,8 @@ const https = require("https");
 const MEGAPAY_CONFIG = {
   apiKey: "MGPY3xAHcagM",
   email: "obavanteshia65@gmail.com",
-  endpoint: "https://api.megapay.co.ke/backend/v1/initiatestk",
-  statusEndpoint: "https://api.megapay.co.ke/backend/v1/transactionstatus"
+  endpoint: "https://megapay.co.ke/backend/v1/initiatestk",
+  statusEndpoint: "https://megapay.co.ke/backend/v1/transactionstatus"
 };
 
 // ✅ FIXED: Format phone to 254XXXXXXXXX format (no leading 0)
@@ -155,7 +155,7 @@ const initiateSTKPush = async (amount, phoneNumber, reference) => {
 
 /**
  * Check MegaPay transaction status
- * Endpoint: POST https://api.megapay.co.ke/backend/v1/transactionstatus
+ * Endpoint: POST https://megapay.co.ke/backend/v1/transactionstatus
  * Supports both Till (M-Pesa STK) and Bank Account modes
  * Success condition: ResultCode === "200" AND TransactionStatus === "Completed" AND amount matches expected
  */
