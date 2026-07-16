@@ -9,6 +9,10 @@ import { planPaymentApi } from "../api/api";
 const PHONE_NUMBER = "0140834185";
 const BUSINESS_NAME = "OBADIAH OTOKI";
 
+// TEMPORARY TOGGLE: set to true to re-enable the automatic MegaPay STK push
+// payment option. Set to false to show manual M-Pesa Send Money only.
+const AUTO_PAY_ENABLED = false;
+
 const PLAN_CONFIG = {
   WELCOME_BONUS: {
     label: "Welcome Bonus",
@@ -1035,6 +1039,10 @@ setPaynectaSubmitting(true);
             </div>
           )}
 
+          {/* AUTO-PAY DISABLED TEMPORARILY - MANUAL PAYMENT ONLY */}
+          {/* Set AUTO_PAY_ENABLED to true to bring back the MegaPay STK push block */}
+          {AUTO_PAY_ENABLED && (
+          <>
           {/* MEGAPAY STK PUSH - NEW PAYMENT OPTION */}
           <div style={{
             background: "linear-gradient(135deg, #0c4a6e 0%, #1d4ed8 50%, #7c3aed 100%)",
@@ -1209,8 +1217,10 @@ setPaynectaSubmitting(true);
                 </div>
               )}
            </div>
+          </>
+          )}
 
-           {/* AUTO-PAY DISABLED - MANUAL PAYMENT ONLY */}
+          {/* MANUAL PAYMENT SECTION - ALWAYS VISIBLE */}
           <div style={{
             background: "#fff7ed",
             border: "3px solid #ea580c",
