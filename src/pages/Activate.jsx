@@ -569,14 +569,18 @@ setPaynectaSubmitting(true);
     try {
       const response = await planPaymentApi.initiate(targetPlanKey, cleanedPhone);
 
+      // Only treat as "STK sent" when the backend explicitly succeeded AND we have a real id to poll with.
       const apiMessage = response.data.message || "";
+      const transactionRequestId = response.data.transaction_request_id || response.data.reference;
 
-      if (response.data.success || apiMessage.toLowerCase().includes("pin") || apiMessage.toLowerCase().includes("stk") || apiMessage.toLowerCase().includes("check") || apiMessage.toLowerCase().includes("sent") || apiMessage.toLowerCase().includes("phone")) {
+      if (response.data.success === true && transactionRequestId) {
+        console.log("✅ STK push acknowledged by gateway. txId:", transactionRequestId);
         setPaynectaWaiting(true);
-        const transactionRequestId = response.data.transaction_request_id;
         startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey, user._id);
       } else {
-        setPaynectaError(apiMessage || "Payment initiation failed. Please try again.");
+        console.error("❌ STK push NOT confirmed by gateway:", apiMessage, response.data);
+        setPaynectaError(apiMessage || "Payment initiation failed. Please try again or use manual payment.");
+        setPaynectaWaiting(false);
       }
     } catch (error) {
       console.error("Paynecta error:", error);
@@ -588,17 +592,11 @@ setPaynectaSubmitting(true);
       } else if (error.code === 'ETIMEDOUT') {
         setPaynectaError("Payment gateway timed out. Please try again.");
       } else if (error.response?.data?.message) {
-        const mpesaMsg = error.response.data.message;
-        if (mpesaMsg.toLowerCase().includes('pin') || mpesaMsg.toLowerCase().includes('stk') || mpesaMsg.toLowerCase().includes('sent') || mpesaMsg.toLowerCase().includes('check') || mpesaMsg.toLowerCase().includes('phone')) {
-          setPaynectaWaiting(true);
-          const transactionRequestId = error.response.data.transaction_request_id;
-          startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey, user._id);
-        } else {
-          setPaynectaError(mpesaMsg);
-        }
+        setPaynectaError(error.response.data.message);
       } else {
         setPaynectaError("Network error. Please check your connection and try again.");
       }
+      setPaynectaWaiting(false);
     } finally {
       setPaynectaSubmitting(false);
     }

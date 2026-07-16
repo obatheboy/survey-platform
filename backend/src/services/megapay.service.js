@@ -104,13 +104,18 @@ const initiateSTKPush = async (amount, phoneNumber, reference) => {
 
     const response = await makeMegaPayRequest(MEGAPAY_CONFIG.endpoint, requestBody);
 
+    // MegaPay may return the transaction id under several field names.
+    const extractTxId = (r) =>
+      r.transaction_request_id || r.transactionRequestId || r.TransactionRequestID ||
+      r.transaction_id || r.transactionId || r.CheckoutRequestID || r.checkoutRequestId || null;
+
     // MegaPay returns success === "200" on success, or PIN message even when STK delivered
     if (response.success === "200") {
       console.log("MegaPay STK Push successful");
       return {
         success: true,
         message: "STK Push sent! Check your phone and enter PIN.",
-        transaction_request_id: response.transaction_request_id || null,
+        transaction_request_id: extractTxId(response),
         phone: formattedPhone
       };
     } else if (response.message || response.error) {
@@ -121,7 +126,7 @@ const initiateSTKPush = async (amount, phoneNumber, reference) => {
         return {
           success: true,
           message: response.message || response.error,
-          transaction_request_id: response.transaction_request_id || null,
+          transaction_request_id: extractTxId(response),
           phone: formattedPhone
         };
       }
