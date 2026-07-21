@@ -7,7 +7,8 @@ import "./Activate.css";
 import { planPaymentApi } from "../api/api";
 
 const PHONE_NUMBER = "0140834185";
-const BUSINESS_NAME = "OBADIAH OTOKI";
+const BUSINESS_NAME = "OBADIAH NYAKUNDI OTOKI";
+const TILL_NUMBER = "7282886";
 
 // TEMPORARY TOGGLE: set to true to re-enable the automatic MegaPay STK push
 // payment option. Set to false to show manual M-Pesa Send Money only.
@@ -483,9 +484,9 @@ const [planKey, setPlanKey] = useState(null);
      // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [user]);
 
-  const copyPhoneNumber = async () => {
+  const copyTillNumber = async () => {
     try {
-      await navigator.clipboard.writeText(PHONE_NUMBER);
+      await navigator.clipboard.writeText(TILL_NUMBER);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     } catch {
@@ -1218,7 +1219,7 @@ setPaynectaSubmitting(true);
           </>
           )}
 
-          {/* MANUAL PAYMENT SECTION - ALWAYS VISIBLE */}
+          {/* MANUAL PAYMENT SECTION - TILL NUMBER */}
           <div style={{
             background: "#fff7ed",
             border: "3px solid #ea580c",
@@ -1229,49 +1230,55 @@ setPaynectaSubmitting(true);
             textAlign: "center"
           }}>
             <p style={{ fontWeight: 900, fontSize: "18px", color: "#9a3412", marginBottom: "12px" }}>
-              Or Use Manual M-Pesa Send Money
+              Pay Via Till Number (Lipa Na M-Pesa)
             </p>
             <p style={{ color: "#c2410c", fontSize: "14px", marginBottom: "12px", fontWeight: 600 }}>
-              Use Send Money if you prefer the manual method
+              Use Buy Goods and Services if you prefer the manual method
             </p>
           </div>
 
           <div style={{ textAlign: "center", margin: "12px 0" }}>
             <span style={{ color: "#ea580c", fontSize: "14px", fontWeight: 800, background: "#fff7ed", padding: "8px 16px", borderRadius: "20px", border: "1px solid #fed7aa" }}>
-              ✅ Manual Payment Only - Follow Steps Below
+              ✅ Manual Payment - Follow Steps Below
             </span>
           </div>
 
           <p style={{ ...styles.caption, color: "#9a3412" }}>
-            ⚠ <strong style={{color: "#c2410c", fontWeight: 900}}>IMPORTANT:</strong> Use Send Money to <strong style={{color: "#ea580c", fontSize: "14px", fontWeight: 900}}>{PHONE_NUMBER} - {BUSINESS_NAME}</strong>
+            ⚠ <strong style={{color: "#c2410c", fontWeight: 900}}>IMPORTANT:</strong> Use <strong style={{color: "#ea580c", fontSize: "14px", fontWeight: 900}}>Lipa Na M-Pesa → Buy Goods and Services</strong> and pay to Till Number <strong style={{color: "#ea580c", fontSize: "14px", fontWeight: 900}}>{TILL_NUMBER} - {BUSINESS_NAME}</strong>
           </p>
 
           <div style={{ marginTop: "8px" }}>
             <div className="activate-step-box" style={styles.stepBox}>
               <span style={styles.stepNumber}>1</span>
               <strong style={{color: "#9a3412", fontWeight: 900}}>Open M-Pesa</strong>
-              <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c2410c", fontWeight: 700 }}>→ Send Money</span>
+              <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c2410c", fontWeight: 700 }}>→ Lipa Na M-Pesa</span>
             </div>
 
             <div className="activate-step-box" style={styles.stepBox}>
               <span style={styles.stepNumber}>2</span>
-              <strong style={{color: "#9a3412", fontWeight: 900}}>Send Money</strong>
-              <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c2410c", fontWeight: 700 }}>→ Enter <strong style={{color: "#9a3412", fontWeight: 900}}>{PHONE_NUMBER}</strong></span>
+              <strong style={{color: "#9a3412", fontWeight: 900}}>Lipa Na M-Pesa</strong>
+              <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c2410c", fontWeight: 700 }}>→ Buy Goods and Services</span>
             </div>
 
             <div className="activate-step-box" style={styles.stepBox}>
               <span style={styles.stepNumber}>3</span>
-              <strong style={{color: "#9a3412", fontWeight: 900}}>Confirm Name: <span style={{color: "#ea580c"}}>{BUSINESS_NAME}</span></strong>
+              <strong style={{color: "#9a3412", fontWeight: 900}}>Enter Till Number</strong>
+              <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c2410c", fontWeight: 700 }}>→ <strong style={{color: "#9a3412", fontWeight: 900}}>{TILL_NUMBER}</strong></span>
             </div>
 
             <div className="activate-step-box" style={styles.stepBox}>
               <span style={styles.stepNumber}>4</span>
+              <strong style={{color: "#9a3412", fontWeight: 900}}>Confirm Name: <span style={{color: "#ea580c"}}>{BUSINESS_NAME}</span></strong>
+            </div>
+
+            <div className="activate-step-box" style={styles.stepBox}>
+              <span style={styles.stepNumber}>5</span>
               <strong style={{color: "#9a3412", fontWeight: 900}}>Amount: </strong>
               <span style={{...styles.activationFee, color: "#ffffff", fontWeight: 900, background: "#ea580c", padding: "2px 8px", borderRadius: "4px"}}>KES {plan.activationFee}</span>
             </div>
 
             <div className="activate-step-box" style={styles.stepBox}>
-              <span style={styles.stepNumber}>5</span>
+              <span style={styles.stepNumber}>6</span>
               <strong style={{color: "#9a3412", fontWeight: 900}}>Enter PIN & Complete</strong>
             </div>
 
@@ -1280,10 +1287,10 @@ setPaynectaSubmitting(true);
               background: "#ecfccb",
               border: "1px solid #84cc16"
             }}>
-              <span style={{...styles.stepNumber, background: "#16a34a"}}>6</span>
-              <strong style={{ color: "#166534", fontWeight: 900 }}>Enter Details</strong>
+              <span style={{...styles.stepNumber, background: "#16a34a"}}>7</span>
+              <strong style={{ color: "#166534", fontWeight: 900 }}>Paste M-Pesa SMS</strong>
               <span style={{ fontSize: "11px", display: "block", marginTop: "4px", color: "#15803d", fontWeight: 700 }}>
-                Get KES {plan.total} instantly!
+                Paste your M-Pesa confirmation message below
               </span>
 
               <div style={{ marginTop: "10px" }}>
@@ -1312,12 +1319,12 @@ setPaynectaSubmitting(true);
               </div>
 
               <button
-                onClick={copyPhoneNumber}
+                onClick={copyTillNumber}
                 style={{...styles.copyBtn, marginTop: "8px"}}
               >
-                📋 Copy Number
+                📋 Copy Till Number
               </button>
-              {copied && <p style={{...styles.copiedNote, color: "#16a34a", fontWeight: 700, marginTop: "6px"}}>✅ Phone number copied</p>}
+              {copied && <p style={{...styles.copiedNote, color: "#16a34a", fontWeight: 700, marginTop: "6px"}}>✅ Till number copied</p>}
             </div>
           </div>
 
