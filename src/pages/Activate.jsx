@@ -1046,10 +1046,10 @@ setPaynectaSubmitting(true);
           <div style={{
             background: "linear-gradient(135deg, #0c4a6e 0%, #1d4ed8 50%, #7c3aed 100%)",
             border: "3px solid #60a5fa",
-            borderRadius: "16px",
-            padding: "16px",
-            marginBottom: "20px",
-            boxShadow: "0 0 30px rgba(59, 130, 246, 0.5), 0 0 60px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255,255,255,0.15)",
+            borderRadius: "20px",
+            padding: "20px 18px",
+            marginBottom: "32px",
+            boxShadow: "0 0 40px rgba(59, 130, 246, 0.6), 0 0 80px rgba(99, 102, 241, 0.4), inset 0 1px 0 rgba(255,255,255,0.15)",
             textAlign: "center",
             position: "relative",
             overflow: "hidden",
@@ -1064,18 +1064,18 @@ setPaynectaSubmitting(true);
               height: "100%",
               background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)",
               animation: "shimmer 3s ease-in-out infinite"
-            }}></div>
+            }}>            </div>
 
-            <div style={{ fontSize: "32px", marginBottom: "6px", animation: "bounce 2s infinite" }}>
+            <div style={{ fontSize: "38px", marginBottom: "8px", animation: "bounce 2s infinite" }}>
               ⚡📱
             </div>
 
-            <p style={{ fontWeight: 900, fontSize: "17px", color: "#ffffff", marginBottom: "6px", textShadow: "0 2px 8px rgba(0,0,0,0.3)", letterSpacing: "0.5px" }}>
-              FAST & EASY ACTIVATION
+            <p style={{ fontWeight: 900, fontSize: "22px", color: "#ffffff", marginBottom: "8px", textShadow: "0 2px 8px rgba(0,0,0,0.5)", letterSpacing: "1px" }}>
+              AUTOMATIC ACTIVATION
             </p>
 
-            <p style={{ color: "#e0f2fe", fontSize: "13px", marginBottom: "12px", fontWeight: 600, lineHeight: 1.4 }}>
-              📲 Pay from your <strong>M-Pesa</strong> phone — enter your number and tap the button below then wait for STK and Enter your mpesa PIN to complete payment✅
+            <p style={{ color: "#e0f2fe", fontSize: "14px", marginBottom: "16px", fontWeight: 600, lineHeight: 1.5 }}>
+              📲 Pay directly from your <strong>M-Pesa</strong> — enter your number and tap the button below, then enter your M-Pesa PIN to complete payment instantly
             </p>
 
             <div style={{
@@ -1217,9 +1217,23 @@ setPaynectaSubmitting(true);
               )}
            </div>
           </>
-          )}
+           )}
 
-          {/* MANUAL PAYMENT SECTION - TILL NUMBER */}
+           <div style={{
+             marginTop: "24px",
+             marginBottom: "8px",
+             padding: "14px 18px",
+             borderRadius: "12px",
+             background: "rgba(100, 116, 139, 0.08)",
+             border: "1px solid rgba(100, 116, 139, 0.2)",
+             textAlign: "center"
+           }}>
+             <p style={{ fontSize: "13px", color: "#64748b", fontWeight: 500, lineHeight: 1.5, margin: 0 }}>
+               If the above <strong>automatic payment</strong> has failed, you can pay <strong>manually</strong> by following the steps below
+             </p>
+           </div>
+
+           {/* MANUAL PAYMENT SECTION - TILL NUMBER */}
           <div style={{
             background: "#fff7ed",
             border: "3px solid #ea580c",
