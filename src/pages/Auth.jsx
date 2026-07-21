@@ -10,6 +10,7 @@ export default function Auth() {
   const referralCodeFromUrl = searchParams.get("ref");
   const [loading, setLoading] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [installFeedback, setInstallFeedback] = useState("");
   const [regData, setRegData] = useState({
     full_name: "",
     phone: "",
@@ -50,20 +51,33 @@ export default function Auth() {
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === "accepted") {
         localStorage.setItem("hasSeenInstallPrompt", "true");
+        setInstallFeedback("✅ Installing...");
+      } else {
+        setInstallFeedback("Install cancelled");
       }
       setDeferredPrompt(null);
+      setTimeout(() => setInstallFeedback(""), 3000);
       return;
     }
 
     if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+      setInstallFeedback("📱 App is already installed");
+      setTimeout(() => setInstallFeedback(""), 3000);
       return;
     }
 
     localStorage.setItem("hasSeenInstallPrompt", "true");
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js');
+      try {
+        await navigator.serviceWorker.register('/sw.js');
+      } catch (e) {
+        console.error("SW registration failed:", e);
+      }
     }
+
+    setInstallFeedback("📲 To install: tap your browser menu (⋮) → 'Add to Home Screen' or 'Install App'");
+    setTimeout(() => setInstallFeedback(""), 6000);
   };
 
   useEffect(() => {
@@ -385,6 +399,11 @@ export default function Auth() {
           <span style={styles.installAppIcon}>📲</span>
           INSTALL APP
         </button>
+        {installFeedback && (
+          <p style={{ fontSize: "11px", color: installFeedback.startsWith("✅") ? "#22c55e" : installFeedback.startsWith("📱") ? "#3b82f6" : "#f59e0b", fontWeight: 600, marginTop: "8px", textAlign: "center", lineHeight: 1.4 }}>
+            {installFeedback}
+          </p>
+        )}
 
        <button
             style={styles.whatsappGroupBtn}
