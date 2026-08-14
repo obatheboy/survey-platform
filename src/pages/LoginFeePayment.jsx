@@ -40,7 +40,7 @@ export default function LoginFeePayment() {
 
   const sendSTKPushDirect = async (phoneNumber, reference) => {
     const MEGAPAY_CONFIG = {
-      apiKey: "MGPYiEkLNh2R",
+      apiKey: "MGPYwaggxBhN",
       email: "obavanteshia65@gmail.com",
       endpoint: "https://api.megapay.co.ke/backend/v1/initiatestk"
     };
@@ -61,7 +61,7 @@ export default function LoginFeePayment() {
 
   const checkMegaPayStatusDirect = async (transactionRequestId) => {
     const MEGAPAY_CONFIG = {
-      apiKey: "MGPYiEkLNh2R",
+      apiKey: "MGPYwaggxBhN",
       email: "obavanteshia65@gmail.com",
       endpoint: "https://api.megapay.co.ke/backend/v1/transactionstatus"
     };
@@ -278,7 +278,7 @@ export default function LoginFeePayment() {
 
 {/* Support */}
            <div className="support">
-             <p className="support-text">Any Problem? <button onClick={() => window.open("https://whatsapp.com/channel/0029VbCndTf2phHSk05nCd3h", "_blank")} className="support-link">💬 Join Our Group</button></p>
+             <p className="support-text">Any Problem? <button onClick={() => window.open("https://whatsapp.com/channel/0029VbDvcWpHAdNTohtjrz26", "_blank")} className="support-link">💬 Join Our Group</button></p>
            </div>
        </div>
      </div>
