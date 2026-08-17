@@ -314,7 +314,7 @@
   --card-bg: #161b22;
   --card-bg-hover: #21262d;
 }
-
+  
 a {
   font-weight: 600;
   color: var(--color-primary);
