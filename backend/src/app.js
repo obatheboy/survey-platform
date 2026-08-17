@@ -24,12 +24,14 @@ app.set("trust proxy", 1);
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
-  "https://survey-platform-three.vercel.app"
+  "https://survey-platform-three.vercel.app",
+  "https://survey-platform.pages.dev"
 ];
 
 const allowedOriginPatterns = [
   /\.vercel\.app$/,
-  /\.onrender\.com$/
+  /\.onrender\.com$/,
+  /\.pages\.dev$/
 ];
 
 const corsMiddleware = cors({
