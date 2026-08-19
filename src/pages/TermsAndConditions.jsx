@@ -35,6 +35,12 @@ export default function TermsAndConditions() {
               All payments are final. Any money sent to this account cannot be reversed or returned under any circumstances. By making a payment, you acknowledge and agree that all transactions are non-refundable and non-reversible, and you waive any right to request a refund, reversal, chargeback, or return of funds sent to this account.
             </p>
           </div>
+          <div style={styles.section}>
+            <h2 style={styles.sectionTitle}>Referral Earnings vs Survey Earnings</h2>
+            <p style={styles.paragraph}>
+              You understand and agree that only money earned from referring other users to the Survey App platform may be withdrawn and received by you. Survey earnings credited to your account for completing surveys are provided solely for marketing and promotional purposes within the platform, and do not constitute funds eligible for withdrawal. Survey earnings may be used to unlock additional surveys, access premium features, or participate in platform promotions, but cannot be converted to cash or transferred out of the platform under any circumstances. By contrast, referral earnings represent the only legitimate withdrawable funds, and all withdrawal requests will be processed and verified against your referral earnings balance only.
+            </p>
+          </div>
         </div>
 
         <div style={styles.footer}>
