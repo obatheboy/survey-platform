@@ -224,13 +224,6 @@ export default function Auth() {
   return (
     <div style={styles.page}>
       <div style={styles.container}>
-        {/* Government Verification Badge */}
-        <div style={styles.govBadge}>
-          <span style={styles.govIcon}>🇰🇪</span>
-          <span style={styles.govText}>LEGIT - Approved by Kenya Govt</span>
-          <span style={styles.govCheck}>✓</span>
-        </div>
-
         {/* Logo */}
         <div style={styles.logoSection}>
           <div style={styles.logoIcon}>💰</div>
@@ -242,7 +235,6 @@ export default function Auth() {
         <div style={styles.statsRow}>
           <div style={styles.statBadge}>✓ 50K+ Users</div>
           <div style={styles.statBadge}>⭐ 4.9 Rating</div>
-          <div style={styles.statBadge}>🔒 Licensed</div>
         </div>
 
         {/* Tabs */}
@@ -384,10 +376,6 @@ export default function Auth() {
             <span style={styles.trustIcon}>✓</span>
             <span>Verified</span>
           </div>
-          <div style={styles.trustBadge}>
-            <span style={styles.trustIcon}>📋</span>
-            <span>Licensed</span>
-          </div>
         </div>
 
         {/* Install App Button */}
@@ -412,10 +400,10 @@ export default function Auth() {
             👥 Join Our Group
           </button>
 
-         {/* Footer */}
-        <p style={styles.footer}>
-          © 2026 SurveyEarn • Licensed by Kenya Govt
-        </p>
+          {/* Footer */}
+         <p style={styles.footer}>
+           © 2026 SurveyEarn
+         </p>
       </div>
 
       <style>{`
