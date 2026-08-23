@@ -84,8 +84,8 @@ export default function LandingBanner() {
         {/* Trust row */}
         <div style={styles.trust}>
           <div style={styles.trustItem}>
-            <span style={styles.trustIcon}>🛡️</span>
-            <span>Government Verified</span>
+            <span style={styles.trustIcon}>🏆</span>
+            <span>Best Survey App</span>
           </div>
           <div style={styles.trustItem}>
             <span style={styles.trustIcon}>✅</span>
