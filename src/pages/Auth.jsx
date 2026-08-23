@@ -421,7 +421,7 @@ export default function Auth() {
 const styles = {
   page: {
     minHeight: "100vh",
-    background: "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%)",
+    background: "linear-gradient(135deg, #ff006e 0%, #8338ec 50%, #3a86ff 100%)",
     fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     padding: "12px",
     display: "flex",
@@ -478,7 +478,7 @@ const styles = {
     margin: 0,
   },
   logoAccent: {
-    color: "#667eea",
+    color: "#ff006e",
   },
   tagline: {
     fontSize: "13px",
@@ -523,9 +523,9 @@ const styles = {
     textOverflow: "ellipsis",
   },
   tabActive: {
-    background: "#3b82f6",
+    background: "linear-gradient(135deg, #ff006e 0%, #8338ec 100%)",
     color: "#ffffff",
-    boxShadow: "0 4px 12px rgba(59,130,246,0.4)",
+    boxShadow: "0 4px 12px rgba(255, 0, 110, 0.5)",
   },
   formSection: {
     marginBottom: "12px",
@@ -572,13 +572,13 @@ const styles = {
     padding: "18px",
     borderRadius: "16px",
     border: "none",
-    background: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+    background: "linear-gradient(135deg, #ff006e 0%, #8338ec 100%)",
     color: "#ffffff",
     fontSize: "17px",
     fontWeight: "800",
     cursor: "pointer",
     marginTop: "12px",
-    boxShadow: "0 6px 20px rgba(59,130,246,0.4)",
+    boxShadow: "0 6px 20px rgba(255, 0, 110, 0.5)",
   },
   spinner: {
     display: "inline-block",
@@ -610,7 +610,7 @@ const styles = {
     lineHeight: "1.4",
   },
   termsLink: {
-    color: "#667eea",
+    color: "#ff006e",
     cursor: "pointer",
     fontWeight: "600",
     textDecoration: "underline",
@@ -660,9 +660,9 @@ const styles = {
     width: "100%",
     padding: "12px",
     borderRadius: "12px",
-    border: "2px dashed #667eea",
-    background: "rgba(102, 126, 234, 0.08)",
-    color: "#667eea",
+    border: "2px dashed #ff006e",
+    background: "rgba(255, 0, 110, 0.08)",
+    color: "#ff006e",
     fontSize: "13px",
     fontWeight: "700",
     cursor: "pointer",
@@ -708,7 +708,7 @@ const styles = {
     padding: "14px",
     borderRadius: "12px",
     border: "none",
-    background: "linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)",
+    background: "linear-gradient(135deg, #8338ec 0%, #3a86ff 100%)",
     color: "#ffffff",
     fontSize: "15px",
     fontWeight: "800",
@@ -718,7 +718,7 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     gap: "8px",
-    boxShadow: "0 6px 20px rgba(124, 58, 237, 0.4)",
+    boxShadow: "0 6px 20px rgba(131, 56, 236, 0.5)",
   },
   installAppIcon: {
     fontSize: "16px",
