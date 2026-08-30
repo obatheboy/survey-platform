@@ -85,7 +85,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    background: "#f8fafc",
+    background: "#f3f0ff",
   },
   card: {
     width: 360,
@@ -98,7 +98,7 @@ const styles = {
   title: {
     textAlign: "center",
     marginBottom: 24,
-    color: "#0f172a",
+    color: "#0f0a1a",
     fontWeight: 800,
   },
   input: {
@@ -112,7 +112,7 @@ const styles = {
   button: {
     width: "100%",
     padding: 14,
-    background: "#2563eb",
+    background: "#7c3aed",
     color: "#fff",
     border: "none",
     borderRadius: 16,
@@ -122,7 +122,7 @@ const styles = {
   },
   error: {
     marginTop: 16,
-    color: "#ef4444",
+    color: "#ff6b6b",
     textAlign: "center",
     fontSize: 14,
   },

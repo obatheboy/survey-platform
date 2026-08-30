@@ -6,13 +6,13 @@ const toastConfig = {
     duration: 3000,
     position: 'top-center',
     style: {
-      background: 'linear-gradient(135deg, #10b981, #059669)',
+      background: 'linear-gradient(135deg, #06b6d4, #0891b2)',
       color: '#fff',
       padding: '16px 20px',
       borderRadius: '16px',
       fontSize: '14px',
       fontWeight: '600',
-      boxShadow: '0 10px 25px -5px rgba(16, 185, 129, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+      boxShadow: '0 10px 25px -5px rgba(6, 182, 212, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
       border: '1px solid rgba(255, 255, 255, 0.1)',
       backdropFilter: 'blur(10px)',
       maxWidth: '90%',
@@ -20,7 +20,7 @@ const toastConfig = {
     },
     iconTheme: {
       primary: '#fff',
-      secondary: '#10b981',
+      secondary: '#06b6d4',
     },
   },
   error: {
@@ -48,13 +48,13 @@ const toastConfig = {
     duration: Infinity,
     position: 'top-center',
     style: {
-      background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
+      background: 'linear-gradient(135deg, #7c3aed, #5b21b6)',
       color: '#fff',
       padding: '16px 20px',
       borderRadius: '16px',
       fontSize: '14px',
       fontWeight: '600',
-      boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+      boxShadow: '0 10px 25px -5px rgba(124, 58, 237, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
       border: '1px solid rgba(255, 255, 255, 0.1)',
       backdropFilter: 'blur(10px)',
       maxWidth: '90%',
@@ -62,14 +62,14 @@ const toastConfig = {
     },
     iconTheme: {
       primary: '#fff',
-      secondary: '#3b82f6',
+      secondary: '#7c3aed',
     },
   },
   info: {
     duration: 3000,
     position: 'top-center',
     style: {
-      background: 'linear-gradient(135deg, #8b5cf6, #6d28d9)',
+      background: 'linear-gradient(135deg, #7c3aed, #5b21b6)',
       color: '#fff',
       padding: '16px 20px',
       borderRadius: '16px',
@@ -83,14 +83,14 @@ const toastConfig = {
     },
     iconTheme: {
       primary: '#fff',
-      secondary: '#8b5cf6',
+      secondary: '#7c3aed',
     },
   },
   warning: {
     duration: 3500,
     position: 'top-center',
     style: {
-      background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+      background: 'linear-gradient(135deg, #ff6b6b, #ef4444)',
       color: '#fff',
       padding: '16px 20px',
       borderRadius: '16px',
@@ -104,7 +104,7 @@ const toastConfig = {
     },
     iconTheme: {
       primary: '#fff',
-      secondary: '#f59e0b',
+      secondary: '#ff6b6b',
     },
   },
   // 🎨 Custom cool toast for special occasions
@@ -312,7 +312,7 @@ export const showToast = {
       duration: 5000,
       icon: '🎉',
       style: {
-        background: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
+        background: 'linear-gradient(135deg, #ff7a7a, #ff6b6b)',
         color: '#fff',
         padding: '18px 24px',
         borderRadius: '30px',

@@ -122,7 +122,7 @@ function NavItem({ to, label, end = false }) {
       end={end}
       style={({ isActive }) => ({
         ...styles.link,
-        background: isActive ? "#3b82f6" : "transparent",
+        background: isActive ? "#7c3aed" : "transparent",
         fontWeight: isActive ? "bold" : "normal",
       })}
     >
@@ -154,7 +154,7 @@ const styles = {
   content: { 
     flex: 1, 
     padding: 0, 
-    background: "#f9fafb" 
+    background: "#f3f0ff" 
   },
   logout: {
     marginTop: 20,

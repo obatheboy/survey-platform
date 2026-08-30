@@ -108,7 +108,7 @@ export default function AdminWithdrawals() {
                   </td>
                   <td>{Number(w.fee).toLocaleString()}</td>
                   <td>
-                    <strong style={{ color: "#0a7c4a", fontSize: "16px" }}>
+                    <strong style={{ color: "#06b6d4", fontSize: "16px" }}>
                       {Number(w.net_amount).toLocaleString()}
                     </strong>
                   </td>

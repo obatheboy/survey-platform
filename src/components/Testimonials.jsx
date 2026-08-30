@@ -98,7 +98,7 @@ export default function Testimonials({ variant = 'carousel' }) {
     return (
       <div className="stars">
         {[...Array(rating)].map((_, i) => (
-          <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" strokeWidth="2">
+          <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill="#ff7a7a" stroke="#ff7a7a" strokeWidth="2">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
           </svg>
         ))}
@@ -118,7 +118,7 @@ export default function Testimonials({ variant = 'carousel' }) {
                 <div className="user-info">
                   <h4>
                     {testimonial.name}
-                    {testimonial.verified && <span className="verified"><svg width="14" height="14" viewBox="0 0 24 24" fill="#10b981"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01" fill="none" stroke="white" strokeWidth="2"></polyline></svg></span>}
+                    {testimonial.verified && <span className="verified"><svg width="14" height="14" viewBox="0 0 24 24" fill="#06b6d4"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01" fill="none" stroke="white" strokeWidth="2"></polyline></svg></span>}
                   </h4>
                   <p className="location">{testimonial.location}</p>
                 </div>
@@ -155,7 +155,7 @@ export default function Testimonials({ variant = 'carousel' }) {
             <div className="user-details">
               <h3>
                 {currentTestimonial.name}
-                {currentTestimonial.verified && <span className="verified"><svg width="16" height="16" viewBox="0 0 24 24" fill="#10b981"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01" fill="none" stroke="white" strokeWidth="2"></polyline></svg></span>}
+                {currentTestimonial.verified && <span className="verified"><svg width="16" height="16" viewBox="0 0 24 24" fill="#06b6d4"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01" fill="none" stroke="white" strokeWidth="2"></polyline></svg></span>}
               </h3>
               <p className="location">{currentTestimonial.location}</p>
             </div>

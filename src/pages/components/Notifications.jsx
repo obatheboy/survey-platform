@@ -150,7 +150,7 @@ export default function Notifications() {
         }
 
         .withdraw-btn {
-          background: #f5a623;
+          background: #ff7a7a;
           color: white;
           border: none;
           padding: 8px 14px;
@@ -161,11 +161,11 @@ export default function Notifications() {
         }
 
         .withdraw-btn:hover {
-          background: #d48806;
+          background: #ef4444;
         }
 
         .dashboard-btn {
-          background: #60a5fa;
+          background: #a78bfa;
           color: white;
           border: none;
           padding: 8px 14px;
@@ -176,7 +176,7 @@ export default function Notifications() {
         }
 
         .dashboard-btn:hover {
-          background: #3b82f6;
+          background: #7c3aed;
         }
 
         .full-screen-notif {

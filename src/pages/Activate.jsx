@@ -19,29 +19,29 @@ const PLAN_CONFIG = {
     label: "Welcome Bonus",
     total: 1200,
     activationFee: 100,
-    color: "#10b981",
-    glow: "rgba(16, 185, 129, 0.2)"
+    color: "#06b6d4",
+    glow: "rgba(6, 182, 212, 0.2)"
   },
   REGULAR: {
     label: "REGULAR SURVEYS",
     total: 1500,
     activationFee: 100,
-    color: "#10b981",
-    glow: "rgba(16, 185, 129, 0.2)"
+    color: "#06b6d4",
+    glow: "rgba(6, 182, 212, 0.2)"
   },
   VIP: {
     label: "VIP SURVEY",
     total: 2000,
     activationFee: 200,
-    color: "#6366f1",
-    glow: "rgba(99, 102, 241, 0.2)"
+    color: "#7c3aed",
+    glow: "rgba(124, 58, 237, 0.2)"
   },
   VVIP: {
     label: "VVIP SURVEYS",
     total: 3000,
     activationFee: 300,
-    color: "#f59e0b",
-    glow: "rgba(245, 158, 11, 0.2)"
+    color: "#ff6b6b",
+    glow: "rgba(255, 107, 107, 0.2)"
   },
 };
 
@@ -71,7 +71,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    background: "rgba(15, 23, 42, 0.95)",
+    background: "rgba(15, 10, 26, 0.95)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -93,7 +93,7 @@ const styles = {
   },
   page: {
     minHeight: "100vh",
-    background: "#1e293b",
+    background: "#1a1128",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -105,11 +105,11 @@ const styles = {
   card: {
     maxWidth: "100%",
     width: "100%",
-    background: "#0f172a",
+    background: "#0f0a1a",
     padding: "16px 14px",
     borderRadius: "16px",
     color: "#ffffff",
-    border: "1px solid #334155",
+    border: "1px solid #251a3a",
     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
   },
   caption: {
@@ -123,14 +123,14 @@ const styles = {
     marginTop: "12px",
     padding: "12px",
     borderRadius: "10px",
-    background: "rgba(16, 185, 129, 0.1)",
+    background: "rgba(6, 182, 212, 0.1)",
     color: "var(--regular-color)",
     fontWeight: 700,
     border: "1px solid var(--regular-color)",
     fontSize: "12px",
   },
   activationFee: {
-    color: "#dc2626",
+    color: "#ef4444",
     fontWeight: 800,
     fontSize: "14px",
   },
@@ -156,7 +156,7 @@ const styles = {
     minHeight: "48px",
     background: "var(--primary)",
     color: "#ffffff",
-    boxShadow: "0 6px 12px -3px rgba(37, 99, 235, 0.3)",
+    boxShadow: "0 6px 12px -3px rgba(124, 58, 237, 0.3)",
   },
   copyBtn: {
     padding: "6px 12px",
@@ -167,7 +167,7 @@ const styles = {
     fontWeight: 700,
     fontSize: "11px",
     cursor: "pointer",
-    boxShadow: "0 3px 6px -1px rgba(37, 99, 235, 0.2)",
+    boxShadow: "0 3px 6px -1px rgba(124, 58, 237, 0.2)",
   },
   loadingContainer: {
     display: "flex",
@@ -193,7 +193,7 @@ const styles = {
     justifyContent: "center",
     width: "22px",
     height: "22px",
-    background: "#ea580c",
+    background: "#ef4444",
     color: "white",
     borderRadius: "50%",
     fontWeight: 900,
@@ -637,10 +637,10 @@ setPaynectaSubmitting(true);
           padding: '24px',
           boxShadow: '0 10px 40px rgba(0,0,0,0.1)'
         }}>
-<h2 style={{ textAlign: 'center', marginBottom: '8px', color: '#1e293b' }}>
+<h2 style={{ textAlign: 'center', marginBottom: '8px', color: '#1a1128' }}>
              🚀 Start Your Plan
            </h2>
-           <p style={{ textAlign: 'center', marginBottom: '24px', color: '#64748b' }}>
+           <p style={{ textAlign: 'center', marginBottom: '24px', color: '#7a7599' }}>
              Select a plan to start completing surveys and earn money!
            </p>
            
@@ -659,7 +659,7 @@ setPaynectaSubmitting(true);
                     padding: '16px 20px',
                     border: 'none',
                     borderRadius: '12px',
-                    background: 'linear-gradient(135deg, #10b981, #059669)',
+                    background: 'linear-gradient(135deg, #06b6d4, #0891b2)',
                     color: 'white',
                     cursor: 'pointer',
                     opacity: 1,
@@ -711,11 +711,11 @@ setPaynectaSubmitting(true);
                      border: 'none',
                      borderRadius: '12px',
                      background: isActivated || planPaid
-                       ? 'rgba(16, 185, 129, 0.1)' 
+                       ? 'rgba(6, 182, 212, 0.1)' 
                        : isCompleted 
                          ? `linear-gradient(135deg, ${config.color}, ${config.color}dd)`
-                         : 'rgba(100, 116, 139, 0.1)',
-                     color: isActivated || planPaid ? '#10b981' : isCompleted ? 'white' : '#64748b',
+                         : 'rgba(122, 117, 153, 0.1)',
+                     color: isActivated || planPaid ? '#06b6d4' : isCompleted ? 'white' : '#7a7599',
                      cursor: isCompleted ? 'pointer' : 'not-allowed',
                      opacity: isCompleted ? 1 : 0.6,
                      transition: 'all 0.2s',
@@ -744,7 +744,7 @@ setPaynectaSubmitting(true);
              })}
            </div>
           
-          <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.85rem', color: '#94a3b8' }}>
+          <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.85rem', color: '#a5a0c0' }}>
             Complete 10 surveys to unlock each plan, then start earning!
           </p>
         </div>
@@ -760,8 +760,8 @@ setPaynectaSubmitting(true);
           label: "Welcome Bonus", 
           total: user.welcome_bonus || 1200, 
           activationFee: 100, 
-          color: "#10b981", 
-          glow: "rgba(16, 185, 129, 0.2)" 
+          color: "#06b6d4", 
+          glow: "rgba(6, 182, 212, 0.2)" 
         }
       : PLAN_CONFIG[planKey] || PLAN_CONFIG.REGULAR;
 
@@ -776,11 +776,11 @@ setPaynectaSubmitting(true);
               ✅
             </div>
 
-            <h2 style={{ color: "#10b981", textAlign: "center", fontSize: "20px", fontWeight: 800, marginBottom: "12px" }}>
+            <h2 style={{ color: "#06b6d4", textAlign: "center", fontSize: "20px", fontWeight: 800, marginBottom: "12px" }}>
               PAYMENT SUBMITTED
             </h2>
 
-            <p style={{ marginTop: "12px", lineHeight: "1.6", fontWeight: 500, fontSize: "14px", color: "#475569" }}>
+            <p style={{ marginTop: "12px", lineHeight: "1.6", fontWeight: 500, fontSize: "14px", color: "#5c5775" }}>
               Your payment has been submitted for approval.
               <br /><br />
               Our team will verify your transaction and activate your account shortly.
@@ -806,7 +806,7 @@ setPaynectaSubmitting(true);
 
             <button
               onClick={() => navigate("/dashboard", { replace: true })}
-              style={{ ...styles.button, marginTop: "20px", background: "#2563eb" }}
+              style={{ ...styles.button, marginTop: "20px", background: "#7c3aed" }}
             >
               Go to Dashboard
             </button>
@@ -818,16 +818,16 @@ setPaynectaSubmitting(true);
       {showPaymentSuccess && paymentSuccessData && (
         <div style={{
           ...styles.overlay,
-          background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
+          background: "linear-gradient(135deg, #0f0a1a 0%, #1a1128 100%)",
           animation: "fadeIn 0.3s ease-out"
         }}>
           <div style={{
             ...styles.overlayCard,
             maxWidth: "450px",
             padding: "32px 24px",
-            background: "linear-gradient(145deg, #1e293b, #0f172a)",
-            border: "2px solid #10b981",
-            boxShadow: "0 0 40px rgba(16, 185, 129, 0.4), 0 0 80px rgba(16, 185, 129, 0.2)"
+            background: "linear-gradient(145deg, #1a1128, #0f0a1a)",
+            border: "2px solid #06b6d4",
+            boxShadow: "0 0 40px rgba(6, 182, 212, 0.4), 0 0 80px rgba(6, 182, 212, 0.2)"
           }}>
             <div style={{ 
               fontSize: "64px", 
@@ -838,22 +838,22 @@ setPaynectaSubmitting(true);
             </div>
 
             <h2 style={{ 
-              color: "#10b981", 
+              color: "#06b6d4", 
               textAlign: "center", 
               fontSize: "26px", 
               fontWeight: 900, 
               marginBottom: "16px",
-              textShadow: "0 0 10px rgba(16, 185, 129, 0.5)"
+              textShadow: "0 0 10px rgba(6, 182, 212, 0.5)"
             }}>
               PAYMENT SUBMITTED!
             </h2>
 
             <div style={{
-              background: "rgba(16, 185, 129, 0.15)",
+              background: "rgba(6, 182, 212, 0.15)",
               borderRadius: "16px",
               padding: "16px 20px",
               marginBottom: "20px",
-              border: "1px solid rgba(16, 185, 129, 0.3)"
+              border: "1px solid rgba(6, 182, 212, 0.3)"
             }}>
               <p style={{ 
                 fontWeight: 800, 
@@ -867,7 +867,7 @@ setPaynectaSubmitting(true);
               <p style={{ 
                 fontWeight: 900, 
                 fontSize: "22px", 
-                color: "#fbbf24", 
+                color: "#ff7a7a", 
                 marginBottom: "12px",
                 textAlign: "center",
                 textTransform: "uppercase",
@@ -905,11 +905,11 @@ setPaynectaSubmitting(true);
               </div>
             ) : (
               <div style={{
-                background: "linear-gradient(135deg, #334155, #1e293b)",
+                background: "linear-gradient(135deg, #251a3a, #1a1128)",
                 borderRadius: "12px",
                 padding: "16px",
                 marginBottom: "20px",
-                border: "1px solid #475569"
+                border: "1px solid #5c5775"
               }}>
                 <p style={{ 
                   fontSize: "15px", 
@@ -930,7 +930,7 @@ setPaynectaSubmitting(true);
                 </p>
                 <p style={{ 
                   fontSize: "16px", 
-                  color: "#fbbf24", 
+                  color: "#ff7a7a", 
                   fontWeight: 800,
                   textAlign: "center",
                   margin: 0
@@ -942,7 +942,7 @@ setPaynectaSubmitting(true);
 
             <p style={{ 
               fontSize: "13px", 
-              color: "#94a3b8", 
+              color: "#a5a0c0", 
               marginBottom: "20px",
               textAlign: "center"
             }}>
@@ -959,8 +959,8 @@ setPaynectaSubmitting(true);
               style={{ 
                 ...styles.button, 
                 marginTop: "8px", 
-                background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
-                boxShadow: "0 8px 25px rgba(37, 99, 235, 0.4)",
+                background: "linear-gradient(135deg, #7c3aed, #5b21b6)",
+                boxShadow: "0 8px 25px rgba(124, 58, 237, 0.4)",
                 fontSize: "16px",
                 fontWeight: 800,
                 padding: "16px"
@@ -983,8 +983,8 @@ setPaynectaSubmitting(true);
             marginBottom: "16px",
             padding: "16px 12px",
             borderRadius: "14px",
-            background: "#1e293b",
-            border: "1px solid #334155",
+            background: "#1a1128",
+            border: "1px solid #251a3a",
             textAlign: "center"
           }}>
             <div style={{ fontSize: "18px", fontWeight: 800, color: "#ffffff", marginBottom: "8px", textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
@@ -995,29 +995,29 @@ setPaynectaSubmitting(true);
               You have earned
             </div>
 
-            <div style={{ fontSize: "38px", fontWeight: 900, color: "#10b981", lineHeight: "1.2", marginBottom: "10px", textShadow: "0 4px 12px rgba(16, 185, 129, 0.5)" }}>
+            <div style={{ fontSize: "38px", fontWeight: 900, color: "#06b6d4", lineHeight: "1.2", marginBottom: "10px", textShadow: "0 4px 12px rgba(6, 182, 212, 0.5)" }}>
               KES {plan.total}
             </div>
 
             <div style={{
               fontSize: "15px !important",
               fontWeight: "700 !important",
-              color: "#1e293b !important",
+              color: "#1a1128 !important",
               background: "#fef3c7 !important",
               padding: "12px 24px !important",
               borderRadius: "40px !important",
-              border: "2px solid #f59e0b !important",
+              border: "2px solid #ff6b6b !important",
               display: "inline-block !important",
-              boxShadow: "0 4px 12px rgba(245, 158, 11, 0.3) !important"
+              boxShadow: "0 4px 12px rgba(255, 107, 107, 0.3) !important"
             }}>
               ⚡ <span style={{
-                color: "#b91c1c !important",
+                color: "#dc2626 !important",
                 fontWeight: "900 !important",
                 fontSize: "22px !important",
-                background: "#fee2e2 !important",
+                background: "#ffe0e0 !important",
                 padding: "4px 10px !important",
                 borderRadius: "8px !important",
-                border: "2px solid #dc2626 !important"
+                border: "2px solid #ef4444 !important"
               }}>Pay KES {plan.activationFee}</span> activation fee to activate your account and withdraw your earnings!
             </div>
           </div>
@@ -1027,9 +1027,9 @@ setPaynectaSubmitting(true);
               marginTop: "12px",
               padding: "10px",
               borderRadius: "8px",
-              background: "rgba(245, 158, 11, 0.15)",
-              border: "1px solid rgba(245, 158, 11, 0.4)",
-              color: "#fbbf24",
+              background: "rgba(255, 107, 107, 0.15)",
+              border: "1px solid rgba(255, 107, 107, 0.4)",
+              color: "#ff7a7a",
               fontSize: "12px",
               fontWeight: 700
             }}>
@@ -1044,12 +1044,12 @@ setPaynectaSubmitting(true);
           <>
           {/* MEGAPAY STK PUSH - NEW PAYMENT OPTION */}
           <div style={{
-            background: "linear-gradient(135deg, #0c4a6e 0%, #1d4ed8 50%, #7c3aed 100%)",
-            border: "3px solid #60a5fa",
+            background: "linear-gradient(135deg, #0c4a6e 0%, #5b21b6 50%, #7c3aed 100%)",
+            border: "3px solid #a78bfa",
             borderRadius: "20px",
             padding: "20px 18px",
             marginBottom: "32px",
-            boxShadow: "0 0 40px rgba(59, 130, 246, 0.6), 0 0 80px rgba(99, 102, 241, 0.4), inset 0 1px 0 rgba(255,255,255,0.15)",
+            boxShadow: "0 0 40px rgba(124, 58, 237, 0.6), 0 0 80px rgba(124, 58, 237, 0.4), inset 0 1px 0 rgba(255,255,255,0.15)",
             textAlign: "center",
             position: "relative",
             overflow: "hidden",
@@ -1088,7 +1088,7 @@ setPaynectaSubmitting(true);
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px" }}>
                 <span style={{ color: "#e0f2fe", fontWeight: 600 }}>💰Amount to Pay is:</span>
-                <span style={{ color: "#fbbf24", fontWeight: 900, fontSize: "18px", textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
+                <span style={{ color: "#ff7a7a", fontWeight: 900, fontSize: "18px", textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
                   KES {plan.activationFee}
                 </span>
               </div>
@@ -1101,7 +1101,7 @@ setPaynectaSubmitting(true);
             </div>
 
             <div style={{ marginBottom: "10px", textAlign: "left" }}>
-              <label style={{ ...styles.caption, color: "#93c5fd", fontWeight: "800", fontSize: "13px", marginBottom: "4px", display: "block" }}>
+              <label style={{ ...styles.caption, color: "#c4b5fd", fontWeight: "800", fontSize: "13px", marginBottom: "4px", display: "block" }}>
                 📱 M-Pesa Number
               </label>
               <input
@@ -1113,8 +1113,8 @@ setPaynectaSubmitting(true);
                   width: "100%",
                   padding: "12px",
                   borderRadius: "10px",
-                  border: "2px solid rgba(96, 165, 250, 0.4)",
-                  background: "rgba(15, 23, 42, 0.8)",
+                  border: "2px solid rgba(167, 139, 250, 0.4)",
+                  background: "rgba(15, 10, 26, 0.8)",
                   color: "#ffffff",
                   fontSize: "16px",
                   fontWeight: "700",
@@ -1146,11 +1146,11 @@ setPaynectaSubmitting(true);
                 minHeight: "48px",
                 background: paynectaSubmitting
                   ? "#4b5563"
-                  : "linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #ef4444 100%)",
+                  : "linear-gradient(135deg, #ff6b6b 0%, #ff6b6b 50%, #ff6b6b 100%)",
                 color: "#ffffff",
                 boxShadow: paynectaSubmitting
                   ? "none"
-                  : "0 8px 25px rgba(245, 158, 11, 0.5), 0 0 40px rgba(249, 115, 22, 0.3)",
+                  : "0 8px 25px rgba(255, 107, 107, 0.5), 0 0 40px rgba(255, 107, 107, 0.3)",
                 textShadow: "0 1px 2px rgba(0,0,0,0.3)",
                 letterSpacing: "0.5px",
                 animation: paynectaSubmitting ? "none" : "pulse-btn 1.5s ease-in-out infinite"
@@ -1184,9 +1184,9 @@ setPaynectaSubmitting(true);
                 marginTop: "10px",
                 padding: "10px",
                 borderRadius: "8px",
-                background: "rgba(239, 68, 68, 0.2)",
-                border: "2px solid rgba(239, 68, 68, 0.5)",
-                color: "#fca5a5",
+                background: "rgba(255, 107, 107, 0.2)",
+                border: "2px solid rgba(255, 107, 107, 0.5)",
+                color: "#ff9e9e",
                 fontWeight: 700,
                 fontSize: "12px"
               }}>
@@ -1224,11 +1224,11 @@ setPaynectaSubmitting(true);
              marginBottom: "8px",
              padding: "14px 18px",
              borderRadius: "12px",
-             background: "rgba(100, 116, 139, 0.08)",
-             border: "1px solid rgba(100, 116, 139, 0.2)",
+             background: "rgba(122, 117, 153, 0.08)",
+             border: "1px solid rgba(122, 117, 153, 0.2)",
              textAlign: "center"
            }}>
-             <p style={{ fontSize: "13px", color: "#64748b", fontWeight: 500, lineHeight: 1.5, margin: 0 }}>
+             <p style={{ fontSize: "13px", color: "#7a7599", fontWeight: 500, lineHeight: 1.5, margin: 0 }}>
                If the above <strong>automatic payment</strong> has failed, you can pay <strong>manually</strong> by following the steps below
              </p>
            </div>
@@ -1236,11 +1236,11 @@ setPaynectaSubmitting(true);
            {/* MANUAL PAYMENT SECTION - TILL NUMBER */}
           <div style={{
             background: "#fff7ed",
-            border: "3px solid #ea580c",
+            border: "3px solid #ef4444",
             borderRadius: "16px",
             padding: "20px",
             marginBottom: "20px",
-            boxShadow: "0 8px 25px rgba(249, 115, 22, 0.4)",
+            boxShadow: "0 8px 25px rgba(255, 107, 107, 0.4)",
             textAlign: "center"
           }}>
             <p style={{ fontWeight: 900, fontSize: "18px", color: "#9a3412", marginBottom: "12px" }}>
@@ -1252,13 +1252,13 @@ setPaynectaSubmitting(true);
           </div>
 
           <div style={{ textAlign: "center", margin: "12px 0" }}>
-            <span style={{ color: "#ea580c", fontSize: "14px", fontWeight: 800, background: "#fff7ed", padding: "8px 16px", borderRadius: "20px", border: "1px solid #fed7aa" }}>
+            <span style={{ color: "#ef4444", fontSize: "14px", fontWeight: 800, background: "#fff7ed", padding: "8px 16px", borderRadius: "20px", border: "1px solid #fed7aa" }}>
               ✅ Manual Payment - Follow Steps Below
             </span>
           </div>
 
           <p style={{ ...styles.caption, color: "#9a3412" }}>
-            ⚠ <strong style={{color: "#c2410c", fontWeight: 900}}>IMPORTANT:</strong> Use <strong style={{color: "#ea580c", fontSize: "14px", fontWeight: 900}}>Lipa Na M-Pesa → Buy Goods and Services</strong> and pay to Till Number <strong style={{color: "#ea580c", fontSize: "14px", fontWeight: 900}}>{TILL_NUMBER} - {BUSINESS_NAME}</strong>
+            ⚠ <strong style={{color: "#c2410c", fontWeight: 900}}>IMPORTANT:</strong> Use <strong style={{color: "#ef4444", fontSize: "14px", fontWeight: 900}}>Lipa Na M-Pesa → Buy Goods and Services</strong> and pay to Till Number <strong style={{color: "#ef4444", fontSize: "14px", fontWeight: 900}}>{TILL_NUMBER} - {BUSINESS_NAME}</strong>
           </p>
 
           <div style={{ marginTop: "8px" }}>
@@ -1282,13 +1282,13 @@ setPaynectaSubmitting(true);
 
             <div className="activate-step-box" style={styles.stepBox}>
               <span style={styles.stepNumber}>4</span>
-              <strong style={{color: "#9a3412", fontWeight: 900}}>Confirm Name: <span style={{color: "#ea580c"}}>{BUSINESS_NAME}</span></strong>
+              <strong style={{color: "#9a3412", fontWeight: 900}}>Confirm Name: <span style={{color: "#ef4444"}}>{BUSINESS_NAME}</span></strong>
             </div>
 
             <div className="activate-step-box" style={styles.stepBox}>
               <span style={styles.stepNumber}>5</span>
               <strong style={{color: "#9a3412", fontWeight: 900}}>Amount: </strong>
-              <span style={{...styles.activationFee, color: "#ffffff", fontWeight: 900, background: "#ea580c", padding: "2px 8px", borderRadius: "4px"}}>KES {plan.activationFee}</span>
+              <span style={{...styles.activationFee, color: "#ffffff", fontWeight: 900, background: "#ef4444", padding: "2px 8px", borderRadius: "4px"}}>KES {plan.activationFee}</span>
             </div>
 
             <div className="activate-step-box" style={styles.stepBox}>
@@ -1358,7 +1358,7 @@ setPaynectaSubmitting(true);
              style={{
                ...styles.button,
                background: user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated
-                 ? "#10b981"
+                 ? "#06b6d4"
                  : submitting
                  ? "#4b5563"
                  : `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)`,
@@ -1398,8 +1398,8 @@ setPaynectaSubmitting(true);
               style={{
                 ...styles.button,
                 background: "transparent",
-                border: "2px solid #3b82f6",
-                color: "#3b82f6",
+                border: "2px solid #7c3aed",
+                color: "#7c3aed",
                 marginTop: "8px",
                 fontWeight: 700
               }}
@@ -1411,13 +1411,13 @@ setPaynectaSubmitting(true);
             marginTop: "20px",
             padding: "14px",
             borderRadius: "12px",
-            background: "rgba(30, 41, 59, 0.95)",
-            border: "1px solid #334155",
+            background: "rgba(26, 17, 40, 0.95)",
+            border: "1px solid #251a3a",
             fontSize: "12px"
           }}>
             <div style={{
               fontWeight: 800,
-              color: "#60a5fa",
+              color: "#a78bfa",
               marginBottom: "10px",
               display: "flex",
               alignItems: "center",
@@ -1438,31 +1438,31 @@ setPaynectaSubmitting(true);
                     justifyContent: "space-between",
                     alignItems: "center",
                     padding: "8px 10px",
-                    background: isCurrent ? "rgba(59, 130, 246, 0.15)" : "transparent",
+                    background: isCurrent ? "rgba(124, 58, 237, 0.15)" : "transparent",
                     borderRadius: "6px",
-                    border: isCurrent ? "1px solid rgba(59, 130, 246, 0.3)" : "none"
+                    border: isCurrent ? "1px solid rgba(124, 58, 237, 0.3)" : "none"
                   }}>
                     <span style={{
                       fontWeight: 800,
                       fontSize: "13px",
-                      color: isCurrent ? "#60a5fa" : "#e2e8f0"
+                      color: isCurrent ? "#a78bfa" : "#e2e8f0"
                     }}>
                       {p}
                       {isCurrent && planKey === "WELCOME_BONUS" && p === "REGULAR" && " (Welcome)"}
                     </span>
                     <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                       <span style={{
-                        color: planData?.completed ? "#4ade80" : "#94a3b8",
+                        color: planData?.completed ? "#4ade80" : "#a5a0c0",
                         fontSize: "11px",
                         fontWeight: 600
                       }}>
                         {planData?.completed ? "✓" : "✗"}
                       </span>
                       <span style={{
-                        color: planData?.is_activated ? "#4ade80" : "#fbbf24",
+                        color: planData?.is_activated ? "#4ade80" : "#ff7a7a",
                         fontSize: "11px",
                         fontWeight: 700,
-                        background: isPaid ? "rgba(74, 222, 128, 0.15)" : "rgba(251, 191, 36, 0.15)",
+                        background: isPaid ? "rgba(74, 222, 128, 0.15)" : "rgba(255, 122, 122, 0.15)",
                         padding: "2px 8px",
                         borderRadius: "20px"
                       }}>

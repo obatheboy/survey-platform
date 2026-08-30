@@ -19,14 +19,14 @@
 }
 
 .daily-reward-popup {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  background: linear-gradient(135deg, #1a1128 0%, #0f0a1a 100%);
   border-radius: 24px;
   padding: 32px;
   max-width: 400px;
   width: 100%;
   position: relative;
   animation: slideUp 0.4s ease;
-  border: 2px solid #fbbf24;
+  border: 2px solid #ff7a7a;
   box-shadow: 0 0 40px rgba(251, 191, 36, 0.3);
 }
 
@@ -66,7 +66,7 @@
 .daily-reward-header h2 {
   margin: 0 0 8px 0;
   font-size: 1.75rem;
-  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  background: linear-gradient(90deg, #ff7a7a, #ff6b6b);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -90,12 +90,12 @@
 }
 
 .daily-reward-error p {
-  color: #ef4444;
+  color: #ff6b6b;
   margin-bottom: 12px;
 }
 
 .daily-reward-error button {
-  background: #fbbf24;
+  background: #ff7a7a;
   border: none;
   padding: 8px 16px;
   border-radius: 8px;
@@ -129,7 +129,7 @@
 .streak-count {
   font-size: 2.5rem;
   font-weight: bold;
-  color: #fbbf24;
+  color: #ff7a7a;
   line-height: 1;
 }
 
@@ -145,7 +145,7 @@
 
 .level-badge {
   display: inline-block;
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  background: linear-gradient(135deg, #7c3aed, #5b21b6);
   padding: 6px 16px;
   border-radius: 20px;
   font-weight: bold;
@@ -163,7 +163,7 @@
 
 .xp-fill {
   height: 100%;
-  background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+  background: linear-gradient(90deg, #7c3aed, #a78bfa);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -198,16 +198,16 @@
 .reward-value {
   font-size: 2rem;
   font-weight: bold;
-  color: #fbbf24;
+  color: #ff7a7a;
 }
 
 .reward-xp {
   font-size: 1rem;
-  color: #8b5cf6;
+  color: #7c3aed;
 }
 
 .claim-button {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  background: linear-gradient(135deg, #ff7a7a, #ff6b6b);
   border: none;
   padding: 16px 48px;
   border-radius: 50px;
@@ -250,12 +250,12 @@
 }
 
 .next-reward-preview strong {
-  color: #fbbf24;
+  color: #ff7a7a;
 }
 
 .timer {
   font-size: 1.25rem;
-  color: #ef4444;
+  color: #ff6b6b;
   font-weight: 600;
 }
 

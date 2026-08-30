@@ -1,6 +1,6 @@
 .faq-container {
   min-height: 100vh;
-  background: #f8fafc;
+  background: #f3f0ff;
   padding: 20px;
 }
 
@@ -18,7 +18,7 @@
   top: 20px;
   left: 20px;
   padding: 10px 20px;
-  background: #2563eb;
+  background: #7c3aed;
   color: white;
   border: none;
   border-radius: 16px;
@@ -29,13 +29,13 @@
 }
 
 .back-btn:hover {
-  background: #1d4ed8;
+  background: #5b21b6;
   transform: translateX(-5px);
 }
 
 .faq-header h1 {
   font-size: 36px;
-  color: #0f172a;
+  color: #0f0a1a;
   margin: 0 0 10px;
   font-weight: 800;
   letter-spacing: -1px;
@@ -43,7 +43,7 @@
 
 .faq-subtitle {
   font-size: 16px;
-  color: #64748b;
+  color: #7a7599;
   margin: 0;
 }
 
@@ -60,13 +60,13 @@
   border-radius: 16px;
   background: white;
   transition: all 0.3s ease;
-  color: #1e293b;
+  color: #1a1128;
 }
 
 .search-input:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(91, 33, 182, 0.1);
 }
 
 .faq-content {
@@ -80,10 +80,10 @@
 
 .category-title {
   font-size: 24px;
-  color: #1e293b;
+  color: #1a1128;
   margin-bottom: 20px;
   padding-left: 15px;
-  border-left: 4px solid #2563eb;
+  border-left: 4px solid #7c3aed;
   font-weight: 700;
 }
 
@@ -108,8 +108,8 @@
 }
 
 .faq-item.open {
-  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.1);
-  border-color: rgba(37, 99, 235, 0.2);
+  box-shadow: 0 10px 15px -3px rgba(91, 33, 182, 0.1);
+  border-color: rgba(91, 33, 182, 0.2);
 }
 
 .faq-question {
@@ -124,18 +124,18 @@
   align-items: center;
   font-size: 16px;
   font-weight: 600;
-  color: #1e293b;
+  color: #1a1128;
   transition: all 0.3s ease;
 }
 
 .faq-question:hover {
-  color: #2563eb;
+  color: #7c3aed;
 }
 
 .faq-icon {
   font-size: 24px;
   font-weight: 300;
-  color: #2563eb;
+  color: #7c3aed;
   transition: transform 0.3s ease;
 }
 
@@ -161,7 +161,7 @@
 
 .faq-answer p {
   margin: 0;
-  color: #64748b;
+  color: #7a7599;
   line-height: 1.6;
   font-size: 15px;
 }
@@ -176,13 +176,13 @@
 
 .no-results p {
   font-size: 18px;
-  color: #64748b;
+  color: #7a7599;
   margin-bottom: 20px;
 }
 
 .no-results button {
   padding: 12px 30px;
-  background: #2563eb;
+  background: #7c3aed;
   color: white;
   border: none;
   border-radius: 16px;
@@ -193,7 +193,7 @@
 }
 
 .no-results button:hover {
-  background: #1d4ed8;
+  background: #5b21b6;
   transform: translateY(-2px);
 }
 
@@ -208,20 +208,20 @@
 
 .faq-footer h3 {
   font-size: 28px;
-  color: #1e293b;
+  color: #1a1128;
   margin: 0 0 10px;
   font-weight: 700;
 }
 
 .faq-footer p {
   font-size: 16px;
-  color: #64748b;
+  color: #7a7599;
   margin: 0 0 30px;
 }
 
 .contact-btn {
   padding: 16px 40px;
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
   color: white;
   border: none;
   border-radius: 14px;
@@ -229,12 +229,12 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 10px 15px -3px rgba(91, 33, 182, 0.3);
 }
 
 .contact-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 15px 25px -5px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 15px 25px -5px rgba(91, 33, 182, 0.4);
 }
 
 /* Responsive */

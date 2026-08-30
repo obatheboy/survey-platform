@@ -33,14 +33,14 @@
 }
 
 .mode-btn:hover {
-  background: #f8fafc;
-  border-color: #3b82f6;
+  background: #f3f0ff;
+  border-color: #7c3aed;
 }
 
 .mode-btn.active {
-  background: #3b82f6;
+  background: #7c3aed;
   color: white;
-  border-color: #3b82f6;
+  border-color: #7c3aed;
 }
 
 /* Header */
@@ -51,12 +51,12 @@
 .admin-notifications-header h2 {
   margin: 0 0 8px 0;
   font-size: 24px;
-  color: #1e293b;
+  color: #1a1128;
 }
 
 .admin-notifications-header p {
   margin: 0;
-  color: #64748b;
+  color: #7a7599;
   font-size: 16px;
 }
 
@@ -80,9 +80,9 @@
 }
 
 .error-message {
-  background: #fee2e2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
+  background: #ffe0e0;
+  color: #b91c1c;
+  border: 1px solid #ffc2c2;
 }
 
 .form-group {
@@ -108,7 +108,7 @@
 
 .form-input:focus, .form-textarea:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: #7c3aed;
 }
 
 .form-textarea {
@@ -118,7 +118,7 @@
 
 .submit-button {
   padding: 14px 24px;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: linear-gradient(135deg, #7c3aed, #7c3aed);
   color: white;
   border: none;
   border-radius: 12px;
@@ -134,7 +134,7 @@
 
 .submit-button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
 }
 
 .submit-button:disabled {
@@ -146,7 +146,7 @@
 .loading {
   text-align: center;
   padding: 40px;
-  color: #64748b;
+  color: #7a7599;
   font-size: 16px;
 }
 
@@ -157,7 +157,7 @@
   gap: 16px;
   margin-bottom: 24px;
   padding: 20px;
-  background: #f8fafc;
+  background: #f3f0ff;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
 }
@@ -176,7 +176,7 @@
 
 .stat-label {
   font-size: 14px;
-  color: #64748b;
+  color: #7a7599;
   font-weight: 600;
   text-transform: capitalize;
 }
@@ -184,7 +184,7 @@
 .stat-value {
   font-size: 24px;
   font-weight: 700;
-  color: #1e293b;
+  color: #1a1128;
 }
 
 .delete-type-btn {
@@ -193,7 +193,7 @@
   right: 8px;
   background: none;
   border: none;
-  color: #ef4444;
+  color: #ff6b6b;
   cursor: pointer;
   font-size: 14px;
   padding: 4px;
@@ -202,7 +202,7 @@
 }
 
 .delete-type-btn:hover {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(255, 107, 107, 0.1);
 }
 
 /* Filter Section */
@@ -225,12 +225,12 @@
 
 .cleanup-btn {
   padding: 10px 16px;
-  background: #f8fafc;
+  background: #f3f0ff;
   border: 2px solid #e5e7eb;
   border-radius: 10px;
   font-size: 15px;
   font-weight: 600;
-  color: #64748b;
+  color: #7a7599;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -239,9 +239,9 @@
 }
 
 .cleanup-btn:hover {
-  background: #fee2e2;
-  border-color: #fecaca;
-  color: #ef4444;
+  background: #ffe0e0;
+  border-color: #ffc2c2;
+  color: #ff6b6b;
 }
 
 /* Notifications List */
@@ -267,7 +267,7 @@
 }
 
 .notification-item:hover {
-  background: #f8fafc;
+  background: #f3f0ff;
 }
 
 .notification-item:last-child {
@@ -284,7 +284,7 @@
 .notification-title {
   font-size: 18px;
   font-weight: 600;
-  color: #1e293b;
+  color: #1a1128;
   flex: 1;
 }
 
@@ -303,8 +303,8 @@
 }
 
 .type-badge.bulk {
-  background: #dbeafe;
-  color: #1e40af;
+  background: #ddd6fe;
+  color: #5b21b6;
 }
 
 .type-badge.admin_bulk {
@@ -320,7 +320,7 @@
 .delete-btn {
   background: none;
   border: none;
-  color: #ef4444;
+  color: #ff6b6b;
   cursor: pointer;
   font-size: 16px;
   padding: 6px;
@@ -329,7 +329,7 @@
 }
 
 .delete-btn:hover {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(255, 107, 107, 0.1);
 }
 
 .notification-message {
@@ -339,7 +339,7 @@
   padding: 12px;
   background: #f9fafb;
   border-radius: 8px;
-  border-left: 4px solid #3b82f6;
+  border-left: 4px solid #7c3aed;
 }
 
 .notification-footer {
@@ -372,8 +372,8 @@
 }
 
 .read-status.unread {
-  background: #dbeafe;
-  color: #1e40af;
+  background: #ddd6fe;
+  color: #5b21b6;
 }
 
 /* Footer */
@@ -400,8 +400,8 @@
   }
   
   .mode-btn.active {
-    background: #3b82f6;
-    border-color: #3b82f6;
+    background: #7c3aed;
+    border-color: #7c3aed;
   }
   
   .admin-notifications-header h2 {

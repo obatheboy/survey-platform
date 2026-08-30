@@ -225,7 +225,7 @@ export default function AdminActivations() {
                       </strong>
                     </td>
                     <td>
-                      <strong style={{ color: "#0a7c4a", fontSize: "16px" }}>
+                      <strong style={{ color: "#06b6d4", fontSize: "16px" }}>
                         {Number(p.amount || 0).toLocaleString()}
                       </strong>
                     </td>
@@ -233,8 +233,8 @@ export default function AdminActivations() {
                       <span style={{
                         padding: "4px 8px",
                         borderRadius: "4px",
-                        background: p.plan === "VIP" ? "#6366f1" : 
-                                   p.plan === "VVIP" ? "#f59e0b" : "#10b981",
+                        background: p.plan === "VIP" ? "#7c3aed" : 
+                                   p.plan === "VVIP" ? "#ff6b6b" : "#06b6d4",
                         color: "white",
                         fontSize: "12px",
                         fontWeight: "bold"

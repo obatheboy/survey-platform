@@ -326,7 +326,7 @@ export default function Withdraw() {
 const styles = {
   page: {
     minHeight: "100vh",
-    background: "#f8fafc",
+    background: "#f3f0ff",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -347,25 +347,25 @@ const styles = {
   title: {
     textAlign: "center",
     marginBottom: 24,
-    color: "#0f172a",
+    color: "#0f0a1a",
     fontSize: 24,
     fontWeight: 800,
     letterSpacing: "-0.5px",
   },
 
   balanceBox: {
-    background: "linear-gradient(135deg, #eff6ff, #dbeafe)",
+    background: "linear-gradient(135deg, #f5f3ff, #ede9fe)",
     borderRadius: 20,
     padding: 24,
     textAlign: "center",
     marginBottom: 28,
-    border: "1px solid #bfdbfe",
+    border: "1px solid #ddd6fe",
   },
 
   balanceLabel: {
     display: "block",
     fontSize: 14,
-    color: "#1e40af",
+    color: "#5b21b6",
     fontWeight: 700,
     marginBottom: 8,
     textTransform: "uppercase",
@@ -375,15 +375,15 @@ const styles = {
   balanceAmount: {
     fontSize: 36,
     fontWeight: 900,
-    color: "#2563eb",
+    color: "#7c3aed",
   },
 
   surveyStatus: {
     fontSize: 13,
-    color: "#64748b",
+    color: "#7a7599",
     marginTop: 12,
     paddingTop: 12,
-    borderTop: "1px solid rgba(37, 99, 235, 0.1)",
+    borderTop: "1px solid rgba(124, 58, 237, 0.1)",
     fontWeight: 600,
   },
 
@@ -396,7 +396,7 @@ const styles = {
     fontWeight: 700,
     marginBottom: 8,
     display: "block",
-    color: "#334155",
+    color: "#251a3a",
   },
 
   input: {
@@ -409,13 +409,13 @@ const styles = {
     fontWeight: 500,
     boxSizing: "border-box",
     transition: "all 0.2s ease",
-    background: "#f8fafc",
-    color: "#0f172a",
+    background: "#f3f0ff",
+    color: "#0f0a1a",
   },
 
   helperText: {
     fontSize: 12,
-    color: "#94a3b8",
+    color: "#a5a0c0",
     margin: "0",
     fontWeight: "500",
   },
@@ -425,13 +425,13 @@ const styles = {
     padding: 16,
     borderRadius: 16,
     border: "none",
-    background: "linear-gradient(135deg, #2563eb, #1e40af)",
+    background: "linear-gradient(135deg, #7c3aed, #5b21b6)",
     color: "#ffffff",
     fontSize: 16,
     fontWeight: 700,
     cursor: "pointer",
     transition: "all 0.2s ease",
-    boxShadow: "0 10px 15px -3px rgba(37, 99, 235, 0.2)",
+    boxShadow: "0 10px 15px -3px rgba(124, 58, 237, 0.2)",
     marginTop: 8,
   },
 
@@ -441,14 +441,14 @@ const styles = {
 
   successBox: {
     padding: 24,
-    background: "#f8fafc",
+    background: "#f3f0ff",
     borderRadius: 20,
     border: "1px solid #e2e8f0",
   },
 
   successTitle: {
     textAlign: "center",
-    color: "#0f172a",
+    color: "#0f0a1a",
     marginTop: 0,
     marginBottom: 12,
     fontSize: 20,
@@ -457,7 +457,7 @@ const styles = {
 
   successText: {
     fontSize: 15,
-    color: "#475569",
+    color: "#5c5775",
     textAlign: "center",
     lineHeight: 1.6,
     marginBottom: 20,
@@ -475,7 +475,7 @@ const styles = {
   codeLabel: {
     display: "block",
     fontSize: 13,
-    color: "#64748b",
+    color: "#7a7599",
     marginBottom: 6,
     fontWeight: 600,
   },
@@ -484,7 +484,7 @@ const styles = {
     display: "block",
     fontSize: 28,
     fontWeight: 900,
-    color: "#2563eb",
+    color: "#7c3aed",
     letterSpacing: "2px",
   },
 
@@ -504,14 +504,14 @@ const styles = {
 
   progressFill: {
     height: "100%",
-    background: "linear-gradient(90deg, #10b981, #059669)",
+    background: "linear-gradient(90deg, #06b6d4, #0891b2)",
     transition: "width 0.4s ease",
   },
 
   shareInstruction: {
     fontSize: 14,
     fontWeight: 700,
-    color: "#334155",
+    color: "#251a3a",
     textAlign: "center",
     marginBottom: 12,
     marginTop: 0,
@@ -552,7 +552,7 @@ const styles = {
     padding: 12,
     borderRadius: 12,
     border: "none",
-    background: "#3b82f6",
+    background: "#7c3aed",
     color: "#fff",
     fontWeight: 700,
     cursor: "pointer",
@@ -565,7 +565,7 @@ const styles = {
     borderRadius: 12,
     border: "1.5px solid #e2e8f0",
     background: "#fff",
-    color: "#475569",
+    color: "#5c5775",
     fontWeight: 700,
     cursor: "pointer",
     fontSize: 14,
@@ -577,7 +577,7 @@ const styles = {
     borderRadius: 12,
     padding: 12,
     marginBottom: 16,
-    border: "1px solid #10b981",
+    border: "1px solid #06b6d4",
   },
 
   completedText: {
@@ -593,7 +593,7 @@ const styles = {
     justifyContent: "space-between",
     alignItems: "center",
     padding: 16,
-    background: "#f8fafc",
+    background: "#f3f0ff",
     borderRadius: 14,
     border: "1px solid #f1f5f9",
     marginTop: 16,
@@ -602,7 +602,7 @@ const styles = {
   statusLabel: {
     fontSize: 14,
     fontWeight: 700,
-    color: "#475569",
+    color: "#5c5775",
   },
 
   statusBadge: {
@@ -618,8 +618,8 @@ const styles = {
   },
 
   statusProcessing: {
-    background: "#eff6ff",
-    color: "#1e40af",
+    background: "#f5f3ff",
+    color: "#5b21b6",
   },
 
   statusApproved: {
@@ -628,20 +628,20 @@ const styles = {
   },
 
   statusRejected: {
-    background: "#fee2e2",
-    color: "#991b1b",
+    background: "#ffe0e0",
+    color: "#b91c1c",
   },
 
   rejectedBox: {
-    background: "#fee2e2",
+    background: "#ffe0e0",
     borderRadius: 12,
     padding: 12,
     marginTop: 12,
-    border: "1px solid #fecaca",
+    border: "1px solid #ffc2c2",
   },
 
   rejectedText: {
-    color: "#991b1b",
+    color: "#b91c1c",
     fontSize: 14,
     fontWeight: 700,
     margin: 0,
@@ -672,7 +672,7 @@ const styles = {
     fontSize: 14,
     fontWeight: 600,
     textAlign: "center",
-    color: "#475569",
+    color: "#5c5775",
     border: "1px solid #e2e8f0",
   },
 
@@ -680,6 +680,6 @@ const styles = {
     textAlign: "center",
     marginTop: 80,
     fontSize: 16,
-    color: "#64748b",
+    color: "#7a7599",
   },
 };

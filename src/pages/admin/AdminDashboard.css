@@ -99,9 +99,9 @@
   padding: 40px !important;
   text-align: center !important;
   font-size: 18px !important;
-  color: #ef4444 !important;
-  background-color: #fef2f2 !important;
-  border: 1px solid #fecaca !important;
+  color: #ff6b6b !important;
+  background-color: #fff5f5 !important;
+  border: 1px solid #ffc2c2 !important;
   border-radius: 12px !important;
   margin: 24px !important;
 }
@@ -128,7 +128,7 @@
 }
 
 .quick-action-btn {
-  background-color: #3b82f6 !important;
+  background-color: #7c3aed !important;
   color: white !important;
   padding: 12px 24px !important;
   border-radius: 12px !important;
@@ -138,5 +138,5 @@
 }
 
 .quick-action-btn:hover {
-  background-color: #2563eb !important;
+  background-color: #7c3aed !important;
 }

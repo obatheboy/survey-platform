@@ -1,6 +1,6 @@
 .affiliate-dashboard {
   min-height: 100vh;
-  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+  background: linear-gradient(180deg, #f3f0ff 0%, #e2e8f0 100%);
   padding: 20px;
   padding-bottom: 100px;
 }
@@ -19,13 +19,13 @@
   top: 24px;
   left: 50%;
   transform: translateX(-50%);
-  background: #10b981;
+  background: #06b6d4;
   color: white;
   padding: 12px 24px;
   border-radius: 12px;
   font-weight: 700;
   z-index: 1000;
-  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 10px 25px rgba(6, 182, 212, 0.3);
 }
 
 /* Header */
@@ -53,11 +53,11 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #475569;
+  color: #5c5775;
 }
 
 .affiliate-header .withdraw-btn {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #06b6d4, #0891b2);
   border: none;
   padding: 10px 16px;
   border-radius: 8px;
@@ -68,17 +68,17 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
 }
 
 .affiliate-header h1 {
-  color: #1e293b;
+  color: #1a1128;
   font-size: 22px;
   margin-bottom: 6px;
 }
 
 .affiliate-header p {
-  color: #64748b;
+  color: #7a7599;
   font-size: 14px;
 }
 
@@ -101,22 +101,22 @@
 }
 
 .affiliate-stat-card.earnings {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #06b6d4, #0891b2);
   color: white;
 }
 
 .affiliate-stat-card.referrals {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: linear-gradient(135deg, #7c3aed, #7c3aed);
   color: white;
 }
 
 .affiliate-stat-card.active {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  background: linear-gradient(135deg, #7c3aed, #5b21b6);
   color: white;
 }
 
 .affiliate-stat-card.inactive {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+  background: linear-gradient(135deg, #ff6b6b, #d97706);
   color: white;
 }
 
@@ -146,7 +146,7 @@
 }
 
 .affiliate-referral-section h2 {
-  color: #1e293b;
+  color: #1a1128;
   font-size: 20px;
   margin-bottom: 16px;
 }
@@ -163,13 +163,13 @@
   border: 2px solid #e2e8f0;
   border-radius: 12px;
   font-size: 14px;
-  background: #f8fafc;
-  color: #64748b;
+  background: #f3f0ff;
+  color: #7a7599;
 }
 
 .copy-btn {
   padding: 14px 24px;
-  background: #3b82f6;
+  background: #7c3aed;
   color: white;
   border: none;
   border-radius: 12px;
@@ -179,17 +179,17 @@
 }
 
 .copy-btn.copied {
-  background: #10b981;
+  background: #06b6d4;
 }
 
 .referral-code-display {
   text-align: center;
-  color: #64748b;
+  color: #7a7599;
   margin-bottom: 16px;
 }
 
 .referral-code-display strong {
-  color: #3b82f6;
+  color: #7c3aed;
   font-size: 18px;
 }
 
@@ -223,7 +223,7 @@
 }
 
 .affiliate-how-it-works h2 {
-  color: #1e293b;
+  color: #1a1128;
   font-size: 20px;
   margin-bottom: 20px;
 }
@@ -243,7 +243,7 @@
 .step-number {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: linear-gradient(135deg, #7c3aed, #7c3aed);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -254,13 +254,13 @@
 }
 
 .step-content h4 {
-  color: #1e293b;
+  color: #1a1128;
   margin: 0 0 4px;
   font-size: 16px;
 }
 
 .step-content p {
-  color: #64748b;
+  color: #7a7599;
   margin: 0;
   font-size: 14px;
 }
@@ -274,7 +274,7 @@
 }
 
 .affiliate-referrals-list h2 {
-  color: #1e293b;
+  color: #1a1128;
   font-size: 20px;
   margin-bottom: 16px;
 }
@@ -289,10 +289,10 @@
   display: grid;
   grid-template-columns: 1.5fr 1.5fr 1fr 1fr;
   padding: 12px;
-  background: #f8fafc;
+  background: #f3f0ff;
   border-radius: 8px;
   font-weight: 700;
-  color: #64748b;
+  color: #7a7599;
   font-size: 13px;
 }
 
@@ -303,7 +303,7 @@
   border-bottom: 1px solid #e2e8f0;
   align-items: center;
   font-size: 14px;
-  color: #1e293b;
+  color: #1a1128;
 }
 
 .table-row .status {
@@ -311,11 +311,11 @@
 }
 
 .table-row .status.active {
-  color: #10b981;
+  color: #06b6d4;
 }
 
 .table-row .status.inactive {
-  color: #f59e0b;
+  color: #ff6b6b;
 }
 
 /* Empty State */
@@ -333,12 +333,12 @@
 }
 
 .no-referrals h3 {
-  color: #1e293b;
+  color: #1a1128;
   margin-bottom: 8px;
 }
 
 .no-referrals p {
-  color: #64748b;
+  color: #7a7599;
 }
 
 /* Responsive */

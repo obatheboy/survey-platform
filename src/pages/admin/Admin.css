@@ -1,6 +1,6 @@
 .admin-container {
   padding: 24px !important;
-  background-color: #f9fafb !important;
+  background-color: #f3f0ff !important;
   min-height: 100vh !important;
 }
 
@@ -68,9 +68,9 @@
 }
 
 .filter-btn-active {
-  background-color: #3b82f6 !important;
+  background-color: #7c3aed !important;
   color: #fff !important;
-  border-color: #3b82f6 !important;
+  border-color: #7c3aed !important;
 }
 
 .table-wrapper {
@@ -95,13 +95,13 @@
 }
 
 .admin-table th {
-  background-color: #f9fafb !important;
+  background-color: #f3f0ff !important;
   font-weight: 600 !important;
   color: #374151 !important;
 }
 
 .admin-table tr:hover {
-  background-color: #f9fafb !important;
+  background-color: #f3f0ff !important;
 }
 
 .action-buttons {
@@ -123,25 +123,25 @@
 }
 
 .approve-btn {
-  background-color: #10b981 !important;
+  background-color: #06b6d4 !important;
   color: white !important;
 }
 
 .approve-btn:hover {
-  background-color: #059669 !important;
+  background-color: #0891b2 !important;
 }
 
 .reject-btn {
-  background-color: #ef4444 !important;
+  background-color: #ff6b6b !important;
   color: white !important;
 }
 
 .reject-btn:hover {
-  background-color: #dc2626 !important;
+  background-color: #ff6b6b !important;
 }
 
 .role-btn {
-  background-color: #6366f1 !important;
+  background-color: #7c3aed !important;
   color: white !important;
 }
 
@@ -175,8 +175,8 @@
 }
 
 .rejected-badge {
-  background-color: #fee2e2 !important;
-  color: #991b1b !important;
+  background-color: #ffe0e0 !important;
+  color: #b91c1c !important;
 }
 
 .type-badge {
@@ -211,9 +211,9 @@
 }
 
 .error-message {
-  background-color: #fee2e2 !important;
-  color: #991b1b !important;
-  border: 1px solid #fecaca !important;
+  background-color: #ffe0e0 !important;
+  color: #b91c1c !important;
+  border: 1px solid #ffc2c2 !important;
 }
 
 /* Modal Styles from AdminActivations */
@@ -278,11 +278,11 @@
 }
 
 .role-option-btn.admin {
-  background-color: #3b82f6 !important;
+  background-color: #7c3aed !important;
   color: white !important;
-  border-color: #3b82f6 !important;
+  border-color: #7c3aed !important;
 }
 
 .role-option-btn.admin:hover {
-  background-color: #2563eb !important;
+  background-color: #7c3aed !important;
 }

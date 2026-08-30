@@ -138,18 +138,18 @@ export default function AdminUsers() {
         <div className="bulk-actions" style={{ 
             margin: '0 20px 1rem', 
             padding: '12px 20px', 
-            background: '#eff6ff', 
-            border: '1px solid #dbeafe', 
+            background: '#f5f3ff', 
+            border: '1px solid #ddd6fe', 
             borderRadius: '8px', 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'space-between' 
         }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <span style={{ fontWeight: '600', color: '#1e40af' }}>
+                <span style={{ fontWeight: '600', color: '#5b21b6' }}>
                     {selectedIds.size} selected
                 </span>
-                <button onClick={handleClearSelection} style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', textDecoration: 'underline', fontSize: '14px' }}>
+                <button onClick={handleClearSelection} style={{ background: 'none', border: 'none', color: '#7c3aed', cursor: 'pointer', textDecoration: 'underline', fontSize: '14px' }}>
                     Cancel
                 </button>
             </div>
@@ -186,7 +186,7 @@ export default function AdminUsers() {
 
             <tbody>
               {filteredUsers.map((user) => (
-                <tr key={user.id} style={selectedIds.has(user.id) ? { backgroundColor: '#eff6ff' } : {}}>
+                <tr key={user.id} style={selectedIds.has(user.id) ? { backgroundColor: '#f5f3ff' } : {}}>
                   <td>
                     <input
                       type="checkbox"

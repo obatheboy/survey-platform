@@ -4,9 +4,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "./WithdrawSuccess.css";
 
 const PLANS = {
-  REGULAR: { name: "REGULAR SURVEYS", color: "#10b981", icon: "⭐", gradient: "linear-gradient(135deg, #10b981, #059669)" },
-  VIP: { name: "VIP SURVEY", color: "#6366f1", icon: "💎", gradient: "linear-gradient(135deg, #6366f1, #4f46e5)" },
-  VVIP: { name: "VVIP SURVEYS", color: "#f59e0b", icon: "👑", gradient: "linear-gradient(135deg, #f59e0b, #d97706)" },
+  REGULAR: { name: "REGULAR SURVEYS", color: "#06b6d4", icon: "⭐", gradient: "linear-gradient(135deg, #06b6d4, #0891b2)" },
+  VIP: { name: "VIP SURVEY", color: "#7c3aed", icon: "💎", gradient: "linear-gradient(135deg, #7c3aed, #4f46e5)" },
+  VVIP: { name: "VVIP SURVEYS", color: "#ff6b6b", icon: "👑", gradient: "linear-gradient(135deg, #ff6b6b, #d97706)" },
 };
 
 export default function WithdrawSuccess() {
@@ -105,8 +105,8 @@ export default function WithdrawSuccess() {
           <span 
             className="status-badge" 
             style={{ 
-              background: withdrawal.status === "APPROVED" ? "#10b981" : 
-                         withdrawal.status === "REJECTED" ? "#ef4444" : "#f59e0b"
+              background: withdrawal.status === "APPROVED" ? "#06b6d4" : 
+                         withdrawal.status === "REJECTED" ? "#ff6b6b" : "#ff6b6b"
             }}
           >
             {withdrawal.status}
@@ -144,13 +144,13 @@ export default function WithdrawSuccess() {
         <div style={{
           marginTop: '16px',
           padding: '12px',
-          background: 'linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%)',
+          background: 'linear-gradient(135deg, #e0f2fe 0%, #ede9fe 100%)',
           borderRadius: '8px',
-          border: '1px solid #2563eb'
+          border: '1px solid #7c3aed'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
             <span style={{ fontSize: '18px' }}>⏱️</span>
-            <span style={{ fontWeight: '700', color: '#1e40af', fontSize: '14px' }}>
+            <span style={{ fontWeight: '700', color: '#5b21b6', fontSize: '14px' }}>
               Payment processing time: 48-72 hours
             </span>
           </div>

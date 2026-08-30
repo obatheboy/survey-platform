@@ -11,89 +11,93 @@ export default function LandingBanner() {
 
   return (
     <div style={styles.page} onClick={handleStart}>
+      {/* Animated background orbs */}
+      <div style={styles.orb1}></div>
+      <div style={styles.orb2}></div>
+      <div style={styles.orb3}></div>
+
       <div style={styles.content}>
-        {/* Top badge */}
-        <div style={styles.topBadge}>
-          <span style={styles.badgeIcon}>🇰🇪</span>
-          <span>Kenya's #1 Survey Platform</span>
+        {/* Trust badge */}
+        <div style={styles.trustBadge}>
+          <span style={styles.trustBadgeIcon}>⚡</span>
+          <span style={styles.trustBadgeText}>Trusted by 50,000+ Earners</span>
         </div>
 
-        {/* Hero headline with accent line */}
-        <div style={styles.headlineWrap}>
-          <div style={styles.accentLine}></div>
-          <h1 style={styles.headline}>
-            Earn KES 1,200<br />
-            <span style={styles.headlineAccent}>- KES 6,500</span><br />
-            Daily
-          </h1>
-        </div>
+        {/* Main headline */}
+        <h1 style={styles.headline}>
+          Turn Spare Moments
+          <br />
+          Into <span style={styles.headlineAccent}>Real Money</span>
+        </h1>
 
+        {/* Subheadline */}
         <p style={styles.subheadline}>
-          Complete simple surveys from your phone. Get paid instantly via M-Pesa. Join 50,000+ Kenyans earning extra income!
+          Complete quick surveys on your phone. Get paid instantly.
+          <br />
+          Your time has value — start earning today.
         </p>
 
-        {/* Stats bar */}
-        <div style={styles.statsBar}>
-          <div style={styles.statItem}>
+        {/* Stats row */}
+        <div style={styles.statsRow}>
+          <div style={styles.statCard}>
             <span style={styles.statNumber}>KES 12M+</span>
             <span style={styles.statLabel}>Paid Out</span>
           </div>
           <div style={styles.statDivider}></div>
-          <div style={styles.statItem}>
+          <div style={styles.statCard}>
             <span style={styles.statNumber}>50K+</span>
-            <span style={styles.statLabel}>Active Users</span>
+            <span style={styles.statLabel}>Active Earners</span>
           </div>
           <div style={styles.statDivider}></div>
-          <div style={styles.statItem}>
+          <div style={styles.statCard}>
             <span style={styles.statNumber}>4.9★</span>
-            <span style={styles.statLabel}>Rating</span>
+            <span style={styles.statLabel}>App Rating</span>
           </div>
         </div>
 
-        {/* Features grid */}
-        <div style={styles.features}>
-          <div style={styles.feature}>
-            <span style={styles.featureIcon}>⚡</span>
-            <span>Instant M-Pesa Payments</span>
+        {/* Benefits */}
+        <div style={styles.benefits}>
+          <div style={styles.benefit}>
+            <span style={styles.benefitIcon}>💰</span>
+            <span style={styles.benefitText}>KES 1,200 Welcome Bonus</span>
           </div>
-          <div style={styles.feature}>
-            <span style={styles.featureIcon}>🎁</span>
-            <span>KES 1,200 Welcome Bonus</span>
+          <div style={styles.benefit}>
+            <span style={styles.benefitIcon}>⚡</span>
+            <span style={styles.benefitText}>Instant Payouts</span>
           </div>
-          <div style={styles.feature}>
-            <span style={styles.featureIcon}>🔒</span>
-            <span>No Hidden Fees</span>
+          <div style={styles.benefit}>
+            <span style={styles.benefitIcon}>🔒</span>
+            <span style={styles.benefitText}>100% Secure</span>
           </div>
-          <div style={styles.feature}>
-            <span style={styles.featureIcon}>💬</span>
-            <span>24/7 Support Available</span>
+          <div style={styles.benefit}>
+            <span style={styles.benefitIcon}>📱</span>
+            <span style={styles.benefitText}>Work From Phone</span>
           </div>
         </div>
 
         {/* CTA */}
-        <div style={styles.ctaSection}>
-          <button style={styles.ctaButton} onClick={handleStart}>
-            START NOW
-            <span style={styles.ctaArrow}>→</span>
-          </button>
-          <p style={styles.ctaNote}>
-            Tap anywhere to continue
-          </p>
-        </div>
+        <button style={styles.ctaButton} onClick={handleStart}>
+          Start Earning Now
+          <span style={styles.ctaArrow}>→</span>
+        </button>
 
-        {/* Trust row */}
-        <div style={styles.trust}>
+        <p style={styles.ctaNote}>
+          Free to join • No experience needed
+        </p>
+
+        {/* Trust indicators */}
+        <div style={styles.trustRow}>
           <div style={styles.trustItem}>
-            <span style={styles.trustIcon}>🏆</span>
-            <span>Best Survey App</span>
-          </div>
-          <div style={styles.trustItem}>
-            <span style={styles.trustIcon}>✅</span>
-            <span>100% Secure</span>
+            <span style={styles.trustIcon}>🛡️</span>
+            <span>Verified Platform</span>
           </div>
           <div style={styles.trustItem}>
             <span style={styles.trustIcon}>💸</span>
-            <span>Fast Payouts</span>
+            <span>Fast Payments</span>
+          </div>
+          <div style={styles.trustItem}>
+            <span style={styles.trustIcon}>⭐</span>
+            <span>Top Rated</span>
           </div>
         </div>
       </div>
@@ -102,17 +106,27 @@ export default function LandingBanner() {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body, #root { height: 100%; width: 100%; margin: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+
+        @keyframes float-orb {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          25% { transform: translate(30px, -40px) scale(1.1); }
+          50% { transform: translate(-20px, -20px) scale(0.9); }
+          75% { transform: translate(-30px, 20px) scale(1.05); }
+        }
+
         @keyframes pulse-glow {
-          0%, 100% { box-shadow: 0 0 20px rgba(255,0,110,0.4); }
-          50% { box-shadow: 0 0 40px rgba(131,56,236,0.6); }
+          0%, 100% { box-shadow: 0 8px 32px rgba(124, 58, 237, 0.4); }
+          50% { box-shadow: 0 12px 48px rgba(6, 182, 212, 0.6); }
         }
-        @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-6px); }
-        }
+
         @keyframes shimmer {
           0% { background-position: -200% 0; }
           100% { background-position: 200% 0; }
+        }
+
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>
@@ -123,13 +137,48 @@ const styles = {
   page: {
     width: "100%",
     height: "100vh",
-    background: "linear-gradient(135deg, #ff006e 0%, #8338ec 40%, #3a86ff 100%)",
+    background: "linear-gradient(135deg, #0f0a1a 0%, #1a1128 50%, #0f0a1a 100%)",
     cursor: "pointer",
     position: "relative",
     overflow: "hidden",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  },
+  orb1: {
+    position: "absolute",
+    top: "10%",
+    right: "-10%",
+    width: "300px",
+    height: "300px",
+    borderRadius: "50%",
+    background: "radial-gradient(circle, rgba(124, 58, 237, 0.3) 0%, transparent 70%)",
+    animation: "float-orb 8s ease-in-out infinite",
+    pointerEvents: "none",
+  },
+  orb2: {
+    position: "absolute",
+    bottom: "20%",
+    left: "-10%",
+    width: "250px",
+    height: "250px",
+    borderRadius: "50%",
+    background: "radial-gradient(circle, rgba(6, 182, 212, 0.25) 0%, transparent 70%)",
+    animation: "float-orb 10s ease-in-out infinite reverse",
+    pointerEvents: "none",
+  },
+  orb3: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "400px",
+    height: "400px",
+    borderRadius: "50%",
+    background: "radial-gradient(circle, rgba(255, 107, 107, 0.15) 0%, transparent 70%)",
+    animation: "float-orb 12s ease-in-out infinite",
+    pointerEvents: "none",
   },
   content: {
     width: "100%",
@@ -138,73 +187,70 @@ const styles = {
     position: "relative",
     zIndex: 2,
     textAlign: "center",
-    animation: "slideInUp 0.6s ease-out",
+    animation: "fadeInUp 0.8s ease-out",
   },
-  topBadge: {
+  trustBadge: {
     display: "inline-flex",
     alignItems: "center",
     gap: "8px",
-    background: "rgba(255,255,255,0.15)",
-    backdropFilter: "blur(10px)",
-    padding: "10px 20px",
+    background: "rgba(124, 58, 237, 0.15)",
+    border: "1px solid rgba(124, 58, 237, 0.3)",
+    padding: "8px 18px",
     borderRadius: "30px",
-    fontSize: "13px",
+    fontSize: "12px",
     fontWeight: "700",
-    color: "#fff",
-    marginBottom: "20px",
-    border: "1px solid rgba(255,255,255,0.25)",
+    color: "#c4b5fd",
+    marginBottom: "24px",
+    backdropFilter: "blur(10px)",
+    letterSpacing: "0.3px",
   },
-  badgeIcon: {
-    fontSize: "16px",
+  trustBadgeIcon: {
+    fontSize: "14px",
   },
-  headlineWrap: {
-    marginBottom: "16px",
-    position: "relative",
-  },
-  accentLine: {
-    width: "60px",
-    height: "4px",
-    background: "linear-gradient(90deg, #ff006e, #8338ec)",
-    borderRadius: "2px",
-    margin: "0 auto 16px",
+  trustBadgeText: {
+    background: "linear-gradient(90deg, #c4b5fd, #67e8f9)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
   },
   headline: {
-    fontSize: "36px",
+    fontSize: "38px",
     fontWeight: "900",
     color: "#fff",
     lineHeight: "1.15",
-    textShadow: "0 4px 20px rgba(0,0,0,0.3)",
+    marginBottom: "16px",
+    textShadow: "0 4px 24px rgba(0,0,0,0.4)",
     letterSpacing: "-1px",
   },
   headlineAccent: {
-    background: "linear-gradient(90deg, #ff006e, #ffbe0b)",
+    background: "linear-gradient(90deg, #06b6d4, #7c3aed)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
   },
   subheadline: {
     fontSize: "15px",
-    color: "rgba(255,255,255,0.9)",
-    lineHeight: "1.5",
-    marginBottom: "24px",
+    color: "rgba(255,255,255,0.8)",
+    lineHeight: "1.6",
+    marginBottom: "28px",
     maxWidth: "340px",
     marginLeft: "auto",
     marginRight: "auto",
-    textShadow: "0 1px 4px rgba(0,0,0,0.2)",
+    textShadow: "0 1px 4px rgba(0,0,0,0.3)",
   },
-  statsBar: {
+  statsRow: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    gap: "12px",
+    gap: "8px",
     marginBottom: "24px",
-    padding: "18px 16px",
-    background: "rgba(255,255,255,0.12)",
+    padding: "16px 12px",
+    background: "rgba(255,255,255,0.08)",
     borderRadius: "20px",
     backdropFilter: "blur(12px)",
-    border: "1px solid rgba(255,255,255,0.2)",
+    border: "1px solid rgba(255,255,255,0.12)",
   },
-  statItem: {
+  statCard: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -212,14 +258,14 @@ const styles = {
     flex: 1,
   },
   statNumber: {
-    fontSize: "20px",
+    fontSize: "18px",
     fontWeight: "800",
     color: "#fff",
-    textShadow: "0 2px 8px rgba(0,0,0,0.2)",
+    textShadow: "0 2px 8px rgba(0,0,0,0.3)",
   },
   statLabel: {
     fontSize: "10px",
-    color: "rgba(255,255,255,0.8)",
+    color: "rgba(255,255,255,0.7)",
     fontWeight: "600",
     textTransform: "uppercase",
     letterSpacing: "0.5px",
@@ -227,9 +273,9 @@ const styles = {
   statDivider: {
     width: "1px",
     height: "32px",
-    background: "rgba(255,255,255,0.25)",
+    background: "rgba(255,255,255,0.15)",
   },
-  features: {
+  benefits: {
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
     gap: "10px",
@@ -238,37 +284,37 @@ const styles = {
     marginLeft: "auto",
     marginRight: "auto",
   },
-  feature: {
+  benefit: {
     display: "flex",
     alignItems: "center",
     gap: "8px",
     fontSize: "12px",
     color: "#fff",
     fontWeight: "600",
-    padding: "10px 12px",
-    background: "rgba(255,255,255,0.1)",
-    borderRadius: "12px",
-    border: "1px solid rgba(255,255,255,0.15)",
-    backdropFilter: "blur(4px)",
+    padding: "12px",
+    background: "rgba(255,255,255,0.08)",
+    borderRadius: "14px",
+    border: "1px solid rgba(255,255,255,0.12)",
+    backdropFilter: "blur(8px)",
+    transition: "all 0.3s ease",
   },
-  featureIcon: {
-    fontSize: "16px",
+  benefitIcon: {
+    fontSize: "18px",
     flexShrink: 0,
   },
-  ctaSection: {
-    textAlign: "center",
-    marginBottom: "24px",
+  benefitText: {
+    textShadow: "0 1px 3px rgba(0,0,0,0.2)",
   },
   ctaButton: {
-    background: "linear-gradient(135deg, #ffbe0b 0%, #ff006e 100%)",
+    background: "linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%)",
     color: "#fff",
     border: "none",
     borderRadius: "20px",
     padding: "20px 48px",
-    fontSize: "20px",
+    fontSize: "18px",
     fontWeight: "900",
     cursor: "pointer",
-    boxShadow: "0 8px 32px rgba(255, 0, 110, 0.5)",
+    boxShadow: "0 8px 32px rgba(124, 58, 237, 0.5)",
     letterSpacing: "0.5px",
     width: "100%",
     maxWidth: "320px",
@@ -276,36 +322,38 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     gap: "10px",
-    animation: "pulse-glow 2s ease-in-out infinite",
+    animation: "pulse-glow 3s ease-in-out infinite",
     transition: "transform 0.2s",
   },
   ctaArrow: {
-    fontSize: "22px",
+    fontSize: "20px",
     fontWeight: "400",
   },
   ctaNote: {
     marginTop: "12px",
     fontSize: "12px",
-    color: "rgba(255,255,255,0.7)",
+    color: "rgba(255,255,255,0.6)",
     fontWeight: "500",
+    letterSpacing: "0.3px",
   },
-  trust: {
+  trustRow: {
     display: "flex",
     justifyContent: "center",
-    gap: "16px",
+    gap: "12px",
     flexWrap: "wrap",
+    marginTop: "24px",
   },
   trustItem: {
     display: "flex",
     alignItems: "center",
     gap: "6px",
     fontSize: "11px",
-    color: "rgba(255,255,255,0.85)",
+    color: "rgba(255,255,255,0.75)",
     fontWeight: "600",
-    padding: "6px 12px",
-    background: "rgba(255,255,255,0.1)",
+    padding: "6px 14px",
+    background: "rgba(255,255,255,0.06)",
     borderRadius: "20px",
-    border: "1px solid rgba(255,255,255,0.15)",
+    border: "1px solid rgba(255,255,255,0.1)",
   },
   trustIcon: {
     fontSize: "14px",

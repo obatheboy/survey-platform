@@ -696,7 +696,7 @@ export default function Dashboard() {
                     navigate(fullScreenNotification.redirect);
                   }}
                   style={{
-                    background: 'linear-gradient(135deg, #dc2626, #991b1b)',
+                    background: 'linear-gradient(135deg, #ef4444, #b91c1c)',
                     color: 'white',
                     border: 'none',
                     borderRadius: '12px',
@@ -706,7 +706,7 @@ export default function Dashboard() {
                     cursor: 'pointer',
                     transition: 'all 0.3s ease',
                     width: '100%',
-                    boxShadow: '0 8px 25px rgba(220, 38, 38, 0.4)',
+                    boxShadow: '0 8px 25px rgba(255, 107, 107, 0.4)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -714,11 +714,11 @@ export default function Dashboard() {
                   }}
                   onMouseOver={(e) => {
                     e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 12px 30px rgba(220, 38, 38, 0.6)';
+                    e.currentTarget.style.boxShadow = '0 12px 30px rgba(255, 107, 107, 0.6)';
                   }}
                   onMouseOut={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(220, 38, 38, 0.4)';
+                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(255, 107, 107, 0.4)';
                   }}
                 >
                   <span style={{ fontSize: '20px' }}>🔓</span>
@@ -824,7 +824,7 @@ title="Contact Us on WhatsApp"
                     disabled
                     className="activate-btn-pulse"
                     style={{
-                      background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+                      background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 50%, #047857 100%)',
                       border: '2px solid rgba(255,255,255,0.4)',
                       borderRadius: '25px',
                       padding: '10px 20px',
@@ -832,7 +832,7 @@ title="Contact Us on WhatsApp"
                       fontWeight: '800',
                       fontSize: '13px',
                       cursor: 'default',
-                      boxShadow: '0 4px 20px rgba(16, 185, 129, 0.5), 0 0 40px rgba(5, 150, 105, 0.3)',
+                      boxShadow: '0 4px 20px rgba(6, 182, 212, 0.5), 0 0 40px rgba(5, 150, 105, 0.3)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -854,7 +854,7 @@ title="Contact Us on WhatsApp"
                     disabled
                     className="activate-btn-pulse"
                     style={{
-                      background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%)',
+                      background: 'linear-gradient(135deg, #ff7a7a 0%, #ff6b6b 50%, #d97706 100%)',
                       border: '2px solid rgba(255,255,255,0.4)',
                       borderRadius: '25px',
                       padding: '10px 20px',
@@ -862,7 +862,7 @@ title="Contact Us on WhatsApp"
                       fontWeight: '800',
                       fontSize: '13px',
                       cursor: 'not-allowed',
-                      boxShadow: '0 4px 20px rgba(251, 191, 36, 0.5), 0 0 40px rgba(245, 158, 11, 0.3)',
+                      boxShadow: '0 4px 20px rgba(255, 122, 122, 0.5), 0 0 40px rgba(255, 107, 107, 0.3)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -885,7 +885,7 @@ title="Contact Us on WhatsApp"
                     disabled
                     className="activate-btn-pulse"
                     style={{
-                      background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%)',
+                      background: 'linear-gradient(135deg, #ff7a7a 0%, #ff6b6b 50%, #d97706 100%)',
                       border: '2px solid rgba(255,255,255,0.4)',
                       borderRadius: '25px',
                       padding: '10px 20px',
@@ -893,7 +893,7 @@ title="Contact Us on WhatsApp"
                       fontWeight: '800',
                       fontSize: '13px',
                       cursor: 'not-allowed',
-                      boxShadow: '0 4px 20px rgba(251, 191, 36, 0.5), 0 0 40px rgba(245, 158, 11, 0.3)',
+                      boxShadow: '0 4px 20px rgba(255, 122, 122, 0.5), 0 0 40px rgba(255, 107, 107, 0.3)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -915,7 +915,7 @@ title="Contact Us on WhatsApp"
                   onClick={() => navigate('/activate?welcome_bonus=true')}
                   className="activate-btn-pulse"
                   style={{
-                    background: 'linear-gradient(135deg, #f97316 0%, #ea580c 50%, #c2410c 100%)',
+                    background: 'linear-gradient(135deg, #ff6b6b 0%, #ef4444 50%, #c2410c 100%)',
                     border: '2px solid rgba(255,255,255,0.4)',
                     borderRadius: '25px',
                     padding: '10px 20px',
@@ -923,7 +923,7 @@ title="Contact Us on WhatsApp"
                     fontWeight: '800',
                     fontSize: '13px',
                     cursor: 'pointer',
-                    boxShadow: '0 4px 20px rgba(249, 115, 22, 0.5), 0 0 40px rgba(234, 88, 12, 0.3)',
+                    boxShadow: '0 4px 20px rgba(255, 107, 107, 0.5), 0 0 40px rgba(255, 107, 107, 0.3)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -936,11 +936,11 @@ title="Contact Us on WhatsApp"
                   }}
                   onMouseOver={(e) => {
                     e.currentTarget.style.transform = 'scale(1.05)';
-                    e.currentTarget.style.boxShadow = '0 6px 30px rgba(249, 115, 22, 0.7), 0 0 60px rgba(234, 88, 12, 0.5)';
+                    e.currentTarget.style.boxShadow = '0 6px 30px rgba(255, 107, 107, 0.7), 0 0 60px rgba(255, 107, 107, 0.5)';
                   }}
                   onMouseOut={(e) => {
                     e.currentTarget.style.transform = 'scale(1)';
-                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(249, 115, 22, 0.5), 0 0 40px rgba(234, 88, 12, 0.3)';
+                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(255, 107, 107, 0.5), 0 0 40px rgba(255, 107, 107, 0.3)';
                   }}
                 >
                   <span className="btn-icon" style={{ fontSize: '16px' }}>🔓</span>
@@ -978,11 +978,11 @@ title="Contact Us on WhatsApp"
         <div
           id="welcome-bonus-card"
           style={{
-            background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-            border: highlightPlan === "WELCOME_BONUS" ? '2px solid #10b981' : '1px solid #1e40af',
+            background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
+            border: highlightPlan === "WELCOME_BONUS" ? '2px solid #06b6d4' : '1px solid #5b21b6',
             borderRadius: '12px',
             padding: '0',
-            boxShadow: highlightPlan === "WELCOME_BONUS" ? '0 0 0 4px rgba(16, 185, 129, 0.25), 0 12px 30px rgba(37, 99, 235, 0.18)' : '0 6px 25px rgba(37, 99, 235, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1)',
+            boxShadow: highlightPlan === "WELCOME_BONUS" ? '0 0 0 4px rgba(6, 182, 212, 0.25), 0 12px 30px rgba(124, 58, 237, 0.18)' : '0 6px 25px rgba(124, 58, 237, 0.3), 0 2px 8px rgba(0, 0, 0, 0.1)',
             width: '100%',
             transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease',
             boxSizing: 'border-box',
@@ -1026,7 +1026,7 @@ title="Contact Us on WhatsApp"
 <button
                onClick={() => navigate("/withdraw-form")}
                style={{
-                 background: 'linear-gradient(135deg, #f87171, #dc2626)',
+                 background: 'linear-gradient(135deg, #ff7a7a, #ef4444)',
                  border: 'none',
                  borderRadius: '6px',
                  padding: '8px 16px',
@@ -1037,16 +1037,16 @@ title="Contact Us on WhatsApp"
                  cursor: 'pointer',
                  flexShrink: 0,
                  whiteSpace: 'nowrap',
-                 boxShadow: '0 3px 10px rgba(220, 38, 38, 0.4)',
+                 boxShadow: '0 3px 10px rgba(255, 107, 107, 0.4)',
                  transition: 'all 0.2s ease'
                }}
                onMouseEnter={(e) => {
                  e.currentTarget.style.transform = 'translateY(-1px)';
-                 e.currentTarget.style.boxShadow = '0 4px 14px rgba(220, 38, 38, 0.5)';
+                 e.currentTarget.style.boxShadow = '0 4px 14px rgba(255, 107, 107, 0.5)';
                }}
                onMouseLeave={(e) => {
                  e.currentTarget.style.transform = 'translateY(0)';
-                 e.currentTarget.style.boxShadow = '0 3px 10px rgba(220, 38, 38, 0.4)';
+                 e.currentTarget.style.boxShadow = '0 3px 10px rgba(255, 107, 107, 0.4)';
                }}
              >
                💰 Withdraw
@@ -1090,7 +1090,7 @@ title="Contact Us on WhatsApp"
               className="start-survey-btn"
               onClick={handleWelcomeBonusWithdraw}
               style={{
-                background: 'linear-gradient(135deg, #f87171, #dc2626)',
+                background: 'linear-gradient(135deg, #ff7a7a, #ef4444)',
                 border: 'none',
                 borderRadius: '6px',
                 padding: '8px 16px',
@@ -1101,16 +1101,16 @@ title="Contact Us on WhatsApp"
                 cursor: 'pointer',
                 flexShrink: 0,
                 whiteSpace: 'nowrap',
-                boxShadow: '0 3px 10px rgba(220, 38, 38, 0.4)',
+                boxShadow: '0 3px 10px rgba(255, 107, 107, 0.4)',
                 transition: 'all 0.2s ease'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-1px)';
-                e.currentTarget.style.boxShadow = '0 4px 14px rgba(220, 38, 38, 0.5)';
+                e.currentTarget.style.boxShadow = '0 4px 14px rgba(255, 107, 107, 0.5)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 3px 10px rgba(220, 38, 38, 0.4)';
+                e.currentTarget.style.boxShadow = '0 3px 10px rgba(255, 107, 107, 0.4)';
               }}
             >
               CLAIM NOW
@@ -1140,53 +1140,53 @@ title="Contact Us on WhatsApp"
                  borderRadius: '8px',
                   padding: '10px',
                   marginBottom: '0',
-                  border: highlightPlan === key ? '2px solid #10b981' : '1px solid #2563eb',
-                  boxShadow: highlightPlan === key ? '0 0 0 4px rgba(16, 185, 129, 0.25), 0 12px 30px rgba(37, 99, 235, 0.18)' : '0 2px 8px rgba(37, 99, 235, 0.08)',
+                  border: highlightPlan === key ? '2px solid #06b6d4' : '1px solid #7c3aed',
+                  boxShadow: highlightPlan === key ? '0 0 0 4px rgba(6, 182, 212, 0.25), 0 12px 30px rgba(124, 58, 237, 0.18)' : '0 2px 8px rgba(124, 58, 237, 0.08)',
                   transform: highlightPlan === key ? 'translateY(-4px)' : undefined,
                   transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease'
                }}>
                 <div className="progress-card-header" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                   <span className="plan-icon" style={{ fontSize: '24px' }}>{plan.icon}</span>
-                   <h4 style={{ flex: 1, fontSize: '16px', fontWeight: '900', color: '#1e40af' }}>{plan.name}</h4>
+                   <h4 style={{ flex: 1, fontSize: '16px', fontWeight: '900', color: '#5b21b6' }}>{plan.name}</h4>
                       <span className={`status-badge ${status.status}`} style={{
                         padding: '2px 8px',
                         borderRadius: '12px',
                         fontSize: '10px',
                         fontWeight: '700',
-                        background: 'linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%)',
-                        border: '1px solid #2563eb',
-                        color: '#1e40af'
+                        background: 'linear-gradient(135deg, #e0f2fe 0%, #ede9fe 100%)',
+                        border: '1px solid #7c3aed',
+                        color: '#5b21b6'
                       }}>
                         {status.icon} {status.label}
                       </span>
                 </div>
                  <div className="progress-card-body">
-                   <div className="progress-info" style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', borderRadius: '6px', padding: '8px', marginBottom: '8px' }}>
-                     <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid rgba(37, 99, 235, 0.15)' }}>
-                        <span style={{ color: '#2563eb', fontSize: '12px' }}>Total to earn:</span>
-                       <strong style={{ color: '#1e40af', fontSize: '14px', fontWeight: '900' }}>KES {plan.total}</strong>
+                   <div className="progress-info" style={{ background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)', borderRadius: '6px', padding: '8px', marginBottom: '8px' }}>
+                     <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid rgba(124, 58, 237, 0.15)' }}>
+                        <span style={{ color: '#7c3aed', fontSize: '12px' }}>Total to earn:</span>
+                       <strong style={{ color: '#5b21b6', fontSize: '14px', fontWeight: '900' }}>KES {plan.total}</strong>
                     </div>
-                     <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid rgba(37, 99, 235, 0.15)' }}>
-                       <span style={{ color: '#2563eb', fontSize: '12px' }}>Per Survey:</span>
-                       <strong style={{ color: '#1e40af', fontSize: '12px', fontWeight: '700' }}>KES {plan.perSurvey}</strong>
+                     <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid rgba(124, 58, 237, 0.15)' }}>
+                       <span style={{ color: '#7c3aed', fontSize: '12px' }}>Per Survey:</span>
+                       <strong style={{ color: '#5b21b6', fontSize: '12px', fontWeight: '700' }}>KES {plan.perSurvey}</strong>
                      </div>
-                     <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid rgba(37, 99, 235, 0.15)' }}>
-                       <span style={{ color: '#2563eb', fontSize: '12px' }}>Progress:</span>
-                       <strong style={{ color: '#1e40af', fontSize: '12px', fontWeight: '700' }}>{surveysDone(key)}/{TOTAL_SURVEYS}</strong>
+                     <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid rgba(124, 58, 237, 0.15)' }}>
+                       <span style={{ color: '#7c3aed', fontSize: '12px' }}>Progress:</span>
+                       <strong style={{ color: '#5b21b6', fontSize: '12px', fontWeight: '700' }}>{surveysDone(key)}/{TOTAL_SURVEYS}</strong>
                     </div>
-                     <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid rgba(37, 99, 235, 0.15)' }}>
-                       <span style={{ color: '#2563eb', fontSize: '12px' }}>Earned so far:</span>
-                       <strong style={{ color: '#1e40af', fontSize: '14px', fontWeight: '900' }}>KES {earnedSoFar(key).toLocaleString()}</strong>
+                     <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid rgba(124, 58, 237, 0.15)' }}>
+                       <span style={{ color: '#7c3aed', fontSize: '12px' }}>Earned so far:</span>
+                       <strong style={{ color: '#5b21b6', fontSize: '14px', fontWeight: '900' }}>KES {earnedSoFar(key).toLocaleString()}</strong>
                     </div>
                   </div>
                   
-                   <div className="progress-bar" style={{ height: '6px', background: 'linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%)', borderRadius: '3px', overflow: 'hidden', marginBottom: '8px', border: '1px solid rgba(37, 99, 235, 0.1)' }}>
+                   <div className="progress-bar" style={{ height: '6px', background: 'linear-gradient(135deg, #e0f2fe 0%, #ede9fe 100%)', borderRadius: '3px', overflow: 'hidden', marginBottom: '8px', border: '1px solid rgba(124, 58, 237, 0.1)' }}>
                      <div
                        className="progress-bar-fill"
                        style={{
                          width: `${progressPercentage(key)}%`,
                          height: '100%',
-                         background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                         background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
                          borderRadius: '3px',
                          transition: 'width 0.5s ease'
                        }}
@@ -1197,11 +1197,11 @@ title="Contact Us on WhatsApp"
                       <div style={{
                         marginTop: '6px',
                         padding: '6px',
-                        background: 'linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%)',
-                        border: '1px solid #2563eb',
+                        background: 'linear-gradient(135deg, #e0f2fe 0%, #ede9fe 100%)',
+                        border: '1px solid #7c3aed',
                         borderRadius: '6px',
                         fontSize: '11px',
-                        color: '#1e40af',
+                        color: '#5b21b6',
                         fontWeight: '600',
                         textAlign: 'center',
                         marginBottom: '8px'
@@ -1222,7 +1222,7 @@ title="Contact Us on WhatsApp"
                         fontWeight: '800',
                         borderRadius: '6px',
                         border: 'none',
-                        background: isCompleted(key) ? '#999' : '#3b82f6',
+                        background: isCompleted(key) ? '#999' : '#7c3aed',
                         color: 'white',
                         cursor: (isCompleted(key) || isActivated(key)) ? 'not-allowed' : 'pointer',
                         opacity: (isCompleted(key) || isActivated(key)) ? 0.6 : 1
@@ -1244,7 +1244,7 @@ title="Contact Us on WhatsApp"
                           fontWeight: '800',
                           borderRadius: '6px',
                           border: 'none',
-                          background: '#dc2626',
+                          background: '#ef4444',
                           color: 'white',
                           cursor: 'pointer'
                         }}
@@ -1264,7 +1264,7 @@ title="Contact Us on WhatsApp"
                              fontWeight: '800',
                              borderRadius: '6px',
                              border: 'none',
-                             background: '#10b981',
+                             background: '#06b6d4',
                              color: 'white',
                              cursor: 'pointer'
                            }}
@@ -1287,7 +1287,7 @@ title="Contact Us on WhatsApp"
           <p>Track your progress and earnings across all plans</p>
         </div>
           <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px' }}>
-            <div className="stats-card" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: '8px', padding: '14px' }}>
+            <div className="stats-card" style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)', borderRadius: '8px', padding: '14px' }}>
              <div className="stats-card-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                <span className="stats-icon" style={{ fontSize: '20px' }}>💰</span>
                <h4 style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '12px' }}>Total Earnings</h4>
@@ -1298,7 +1298,7 @@ title="Contact Us on WhatsApp"
              </div>
            </div>
 
-           <div className="stats-card" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: '8px', padding: '14px' }}>
+           <div className="stats-card" style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)', borderRadius: '8px', padding: '14px' }}>
             <div className="stats-card-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
               <span className="stats-icon" style={{ fontSize: '20px' }}>💳</span>
               <h4 style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '12px' }}>Available</h4>
@@ -1309,7 +1309,7 @@ title="Contact Us on WhatsApp"
             </div>
            </div>
 
-           <div className="stats-card" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: '8px', padding: '14px' }}>
+           <div className="stats-card" style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)', borderRadius: '8px', padding: '14px' }}>
              <div className="stats-card-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                <span className="stats-icon" style={{ fontSize: '20px' }}>🎁</span>
                <h4 style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '12px' }}>Affiliate</h4>
@@ -1320,7 +1320,7 @@ title="Contact Us on WhatsApp"
              </div>
            </div>
 
-           <div className="stats-card" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: '8px', padding: '14px' }}>
+           <div className="stats-card" style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)', borderRadius: '8px', padding: '14px' }}>
             <div className="stats-card-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
               <span className="stats-icon" style={{ fontSize: '20px' }}>📊</span>
               <h4 style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '12px' }}>Surveys</h4>
@@ -1349,22 +1349,22 @@ title="Contact Us on WhatsApp"
           <p>Discover what makes us the best choice for earning online</p>
         </div>
         <div className="feature-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px' }}>
-          <div className="feature-card" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: '8px', padding: '14px', textAlign: 'center' }}>
+          <div className="feature-card" style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)', borderRadius: '8px', padding: '14px', textAlign: 'center' }}>
             <div className="feature-icon" style={{ fontSize: '28px', marginBottom: '6px' }}>⚡</div>
             <h4 style={{ fontSize: '13px', fontWeight: '800', color: 'white', marginBottom: '4px' }}>Instant Withdrawals</h4>
             <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.9)' }}>Request cash anytime.</p>
           </div>
-          <div className="feature-card" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: '8px', padding: '14px', textAlign: 'center' }}>
+          <div className="feature-card" style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)', borderRadius: '8px', padding: '14px', textAlign: 'center' }}>
             <div className="feature-icon" style={{ fontSize: '28px', marginBottom: '6px' }}>✅</div>
             <h4 style={{ fontSize: '13px', fontWeight: '800', color: 'white', marginBottom: '4px' }}>Verified Surveys</h4>
             <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.9)' }}>High-quality surveys.</p>
           </div>
-          <div className="feature-card" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: '8px', padding: '14px', textAlign: 'center' }}>
+          <div className="feature-card" style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)', borderRadius: '8px', padding: '14px', textAlign: 'center' }}>
             <div className="feature-icon" style={{ fontSize: '28px', marginBottom: '6px' }}>🔒</div>
             <h4 style={{ fontSize: '13px', fontWeight: '800', color: 'white', marginBottom: '4px' }}>Secure Payments</h4>
             <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.9)' }}>Encrypted transactions.</p>
           </div>
-          <div className="feature-card" style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', borderRadius: '8px', padding: '14px', textAlign: 'center' }}>
+          <div className="feature-card" style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)', borderRadius: '8px', padding: '14px', textAlign: 'center' }}>
             <div className="feature-icon" style={{ fontSize: '28px', marginBottom: '6px' }}>💬</div>
             <h4 style={{ fontSize: '13px', fontWeight: '800', color: 'white', marginBottom: '4px' }}>24/7 Support</h4>
             <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.9)' }}>Always here to help.</p>
@@ -1384,7 +1384,7 @@ title="Contact Us on WhatsApp"
                display: 'flex',
                alignItems: 'center',
                padding: '16px',
-               background: action.completed ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' : 'linear-gradient(135deg, #3b82f6, #2563eb)',
+               background: action.completed ? 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)' : 'linear-gradient(135deg, #7c3aed, #7c3aed)',
                borderRadius: '16px',
                color: 'white',
                border: action.completed ? '1px solid rgba(255,255,255,0.2)' : 'none'
@@ -1400,7 +1400,7 @@ title="Contact Us on WhatsApp"
                onClick={() => completeQuickAction(action.id)}
                disabled={action.completed}
                style={{
-                 background: action.completed ? 'rgba(255,255,255,0.15)' : 'linear-gradient(135deg, #f87171, #dc2626)',
+                 background: action.completed ? 'rgba(255,255,255,0.15)' : 'linear-gradient(135deg, #ff7a7a, #ef4444)',
                  border: action.completed ? '1px solid rgba(255,255,255,0.3)' : 'none',
                  borderRadius: '12px',
                  padding: '8px 16px',
@@ -1410,7 +1410,7 @@ title="Contact Us on WhatsApp"
                  cursor: action.completed ? 'default' : 'pointer',
                  transition: 'all 0.2s ease',
                  flexShrink: 0,
-                 boxShadow: action.completed ? 'none' : '0 3px 10px rgba(220, 38, 38, 0.4)'
+                 boxShadow: action.completed ? 'none' : '0 3px 10px rgba(255, 107, 107, 0.4)'
                }}
              >
                {action.completed ? '✓' : '→'}
@@ -1438,9 +1438,9 @@ title="Contact Us on WhatsApp"
         display: 'flex',
         justifyContent: 'space-around',
         alignItems: 'center',
-        background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+        background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
         padding: '8px 12px',
-        boxShadow: '0 -2px 10px rgba(37, 99, 235, 0.2)',
+        boxShadow: '0 -2px 10px rgba(124, 58, 237, 0.2)',
         zIndex: 1000,
         borderTop: '1px solid rgba(255,255,255,0.2)'
       }}>
@@ -1455,7 +1455,7 @@ title="Contact Us on WhatsApp"
             justifyContent: 'center',
             gap: '2px',
             padding: '6px',
-            background: '#3b82f6',
+            background: '#7c3aed',
             color: 'white',
             border: 'none',
             borderRadius: '8px',
@@ -1477,7 +1477,7 @@ title="Contact Us on WhatsApp"
             justifyContent: 'center',
             gap: '2px',
             padding: '6px',
-            background: '#10b981',
+            background: '#06b6d4',
             color: 'white',
             border: 'none',
             borderRadius: '8px',
@@ -1499,7 +1499,7 @@ title="Contact Us on WhatsApp"
              justifyContent: 'center',
              gap: '2px',
              padding: '6px',
-             background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+             background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
              color: 'white',
              border: 'none',
              borderRadius: '8px',
@@ -1522,7 +1522,7 @@ title="Contact Us on WhatsApp"
                justifyContent: 'center',
                gap: '2px',
                padding: '6px',
-               background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+               background: 'linear-gradient(135deg, #ef4444, #dc2626)',
                color: 'white',
                border: 'none',
                borderRadius: '8px',
@@ -1543,14 +1543,14 @@ title="Contact Us on WhatsApp"
           gap: '16px'
         }}>
            <div className="level-streak-card" style={{
-             background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+             background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
              borderRadius: '16px',
              padding: '20px',
              color: 'white'
            }}>
              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
                <div style={{
-                 background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                 background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
                  borderRadius: '12px',
                  padding: '12px',
                  fontSize: '1.5rem',
@@ -1566,7 +1566,7 @@ title="Contact Us on WhatsApp"
                  <div style={{
                    height: '100%',
                    width: `${(gamificationStats.xp / gamificationStats.xpToNextLevel) * 100}%`,
-                   background: 'linear-gradient(90deg, #60a5fa, #93c5fd)',
+                   background: 'linear-gradient(90deg, #a78bfa, #c4b5fd)',
                    borderRadius: '4px'
                  }}></div>
                </div>

@@ -9,8 +9,8 @@ const PLANS = {
     name: "REGULAR SURVEYS", 
     icon: "⭐", 
     total: 1500, 
-    color: "#10b981",
-    gradient: "linear-gradient(135deg, #10b981, #059669)",
+    color: "#06b6d4",
+    gradient: "linear-gradient(135deg, #06b6d4, #0891b2)",
     activationFee: 100,
     earningsLabel: "Total Earnings: KES 1,500"
   },
@@ -18,8 +18,8 @@ const PLANS = {
     name: "VIP SURVEY", 
     icon: "💎", 
     total: 2000, 
-    color: "#6366f1",
-    gradient: "linear-gradient(135deg, #6366f1, #4f46e5)",
+    color: "#7c3aed",
+    gradient: "linear-gradient(135deg, #7c3aed, #4f46e5)",
     activationFee: 200,
     earningsLabel: "Total Earnings: KES 2,000"
   },
@@ -27,8 +27,8 @@ const PLANS = {
     name: "VVIP SURVEYS", 
     icon: "👑", 
     total: 3000, 
-    color: "#f59e0b",
-    gradient: "linear-gradient(135deg, #f59e0b, #d97706)",
+    color: "#ff6b6b",
+    gradient: "linear-gradient(135deg, #ff6b6b, #d97706)",
     activationFee: 300,
     earningsLabel: "Total Earnings: KES 3,000"
   },
@@ -36,8 +36,8 @@ const PLANS = {
     name: "Affiliate Earnings",
     icon: "🎁",
     total: 0,
-    color: "#8b5cf6",
-    gradient: "linear-gradient(135deg, #8b5cf6, #6d28d9)",
+    color: "#7c3aed",
+    gradient: "linear-gradient(135deg, #7c3aed, #5b21b6)",
     activationFee: 0,
     earningsLabel: "Commission Earnings"
   }
@@ -412,7 +412,7 @@ export default function WithdrawForm() {
                 style={{
                   background: selectedPlanForActivation 
                     ? PLANS[selectedPlanForActivation].gradient 
-                    : "linear-gradient(135deg, #6366f1, #4f46e5)"
+                    : "linear-gradient(135deg, #7c3aed, #4f46e5)"
                 }}
               >
                 <span className="btn-icon">🔓</span>
@@ -453,11 +453,11 @@ export default function WithdrawForm() {
         {!isAffiliateWithdraw && !allPlansCompleted && (
           <div style={{
             background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-            border: '2px solid #f59e0b',
+            border: '2px solid #ff6b6b',
             borderRadius: '12px',
             padding: '16px 20px',
             marginBottom: '20px',
-            boxShadow: '0 4px 15px rgba(245, 158, 11, 0.25)'
+            boxShadow: '0 4px 15px rgba(255, 107, 107, 0.25)'
           }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
               <span style={{ fontSize: '28px', flexShrink: 0 }}>🔒</span>
@@ -485,7 +485,7 @@ export default function WithdrawForm() {
                   background: 'rgba(255,255,255,0.6)',
                   borderRadius: '8px',
                   padding: '10px 14px',
-                  border: '1px solid rgba(245, 158, 11, 0.4)'
+                  border: '1px solid rgba(255, 107, 107, 0.4)'
                 }}>
                   <p style={{ margin: '0 0 6px 0', fontSize: '13px', fontWeight: '700', color: '#78350f' }}>
                     📋 What you need to do:
@@ -503,14 +503,14 @@ export default function WithdrawForm() {
                   style={{
                     marginTop: '12px',
                     padding: '10px 18px',
-                    background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                    background: 'linear-gradient(135deg, #ff6b6b, #d97706)',
                     border: 'none',
                     borderRadius: '8px',
                     color: '#ffffff',
                     fontWeight: '800',
                     fontSize: '13px',
                     cursor: 'pointer',
-                    boxShadow: '0 4px 12px rgba(245, 158, 11, 0.4)',
+                    boxShadow: '0 4px 12px rgba(255, 107, 107, 0.4)',
                     textTransform: 'uppercase',
                     letterSpacing: '0.5px'
                   }}
@@ -616,7 +616,7 @@ export default function WithdrawForm() {
                       style={{
                         background: isActivated 
                           ? planData.gradient 
-                          : 'linear-gradient(135deg, #ef4444, #dc2626)',
+                          : 'linear-gradient(135deg, #ff6b6b, #ef4444)',
                         cursor: 'pointer'
                       }}
                     >
@@ -648,11 +648,11 @@ export default function WithdrawForm() {
             {!isAffiliateWithdraw && !allPlansCompleted && (
               <div style={{
                 background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-                border: '2px solid #f59e0b',
+                border: '2px solid #ff6b6b',
                 borderRadius: '12px',
                 padding: '16px 20px',
                 marginBottom: '20px',
-                boxShadow: '0 4px 15px rgba(245, 158, 11, 0.25)'
+                boxShadow: '0 4px 15px rgba(255, 107, 107, 0.25)'
               }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                   <span style={{ fontSize: '28px', flexShrink: 0 }}>🔒</span>
@@ -680,7 +680,7 @@ export default function WithdrawForm() {
                       background: 'rgba(255,255,255,0.6)',
                       borderRadius: '8px',
                       padding: '10px 14px',
-                      border: '1px solid rgba(245, 158, 11, 0.4)'
+                      border: '1px solid rgba(255, 107, 107, 0.4)'
                     }}>
                       <p style={{ margin: '0 0 6px 0', fontSize: '13px', fontWeight: '700', color: '#78350f' }}>
                         📋 What you need to do:
@@ -698,14 +698,14 @@ export default function WithdrawForm() {
                       style={{
                         marginTop: '12px',
                         padding: '10px 18px',
-                        background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                        background: 'linear-gradient(135deg, #ff6b6b, #d97706)',
                         border: 'none',
                         borderRadius: '8px',
                         color: '#ffffff',
                         fontWeight: '800',
                         fontSize: '13px',
                         cursor: 'pointer',
-                        boxShadow: '0 4px 12px rgba(245, 158, 11, 0.4)',
+                        boxShadow: '0 4px 12px rgba(255, 107, 107, 0.4)',
                         textTransform: 'uppercase',
                         letterSpacing: '0.5px'
                       }}
@@ -780,7 +780,7 @@ export default function WithdrawForm() {
                      });
                    }}
                    style={{ 
-                     background: 'linear-gradient(135deg, #ef4444, #dc2626)'
+                     background: 'linear-gradient(135deg, #ff6b6b, #ef4444)'
                    }}
                  >
                    <span className="btn-icon">🔓</span>
@@ -860,7 +860,7 @@ export default function WithdrawForm() {
                 className="submit-btn"
                 disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && (!isPlanActivated(plan) || !allPlansCompleted))}
                 style={{ 
-                  background: isAffiliateWithdraw ? 'linear-gradient(135deg, #8b5cf6, #6d28d9)' : PLANS[plan]?.gradient,
+                   background: isAffiliateWithdraw ? 'linear-gradient(135deg, #7c3aed, #5b21b6)' : PLANS[plan]?.gradient,
                   opacity: (!isAffiliateWithdraw && (!isPlanActivated(plan) || !allPlansCompleted)) ? 0.6 : 1,
                   cursor: (!isAffiliateWithdraw && (!isPlanActivated(plan) || !allPlansCompleted)) ? 'not-allowed' : 'pointer'
                 }}

@@ -216,7 +216,7 @@ export default function AdminLoginFee() {
         .admin-header h1 {
           font-size: 24px;
           font-weight: 700;
-          color: #1e293b;
+          color: #1a1128;
           margin: 0;
           flex: 1;
         }
@@ -228,7 +228,7 @@ export default function AdminLoginFee() {
           border-radius: 8px;
           font-size: 14px;
           font-weight: 600;
-          color: #475569;
+          color: #5c5775;
           cursor: pointer;
         }
         
@@ -251,19 +251,19 @@ export default function AdminLoginFee() {
         }
         
         .stat-total {
-          background: linear-gradient(135deg, #6366f1, #4f46e5);
+          background: linear-gradient(135deg, #7c3aed, #4f46e5);
         }
         
         .stat-pending {
-          background: linear-gradient(135deg, #f59e0b, #d97706);
+          background: linear-gradient(135deg, #ff6b6b, #d97706);
         }
         
         .stat-approved {
-          background: linear-gradient(135deg, #22c55e, #16a34a);
+          background: linear-gradient(135deg, #06b6d4, #0891b2);
         }
         
         .stat-rejected {
-          background: linear-gradient(135deg, #ef4444, #dc2626);
+          background: linear-gradient(135deg, #ff6b6b, #ef4444);
         }
         
         .search-filter-bar {
@@ -282,7 +282,7 @@ export default function AdminLoginFee() {
         }
         
         .search-filter-bar input:focus {
-          border-color: #6366f1;
+          border-color: #7c3aed;
           outline: none;
         }
         
@@ -297,7 +297,7 @@ export default function AdminLoginFee() {
         }
         
         .status-filter:focus {
-          border-color: #6366f1;
+          border-color: #7c3aed;
           outline: none;
         }
         
@@ -312,25 +312,25 @@ export default function AdminLoginFee() {
         .alert.success {
           background: #f0fdf4;
           color: #166534;
-          border: 1px solid #22c55e;
+          border: 1px solid #06b6d4;
         }
         
         .alert.error {
-          background: #fef2f2;
-          color: #dc2626;
-          border: 1px solid #ef4444;
+          background: #fff5f5;
+          color: #ef4444;
+          border: 1px solid #ff6b6b;
         }
         
         .loading-state, .empty-state {
           text-align: center;
           padding: 60px 20px;
-          color: #64748b;
+          color: #7a7599;
         }
         
         .empty-state .empty-icon {
           width: 64px;
           height: 64px;
-          background: #22c55e;
+          background: #06b6d4;
           border-radius: 50%;
           display: flex;
           align-items: center;
@@ -342,13 +342,13 @@ export default function AdminLoginFee() {
         
         .empty-state h3 {
           font-size: 18px;
-          color: #1e293b;
+          color: #1a1128;
           margin: 0 0 8px 0;
         }
         
         .empty-state p {
           font-size: 14px;
-          color: #64748b;
+          color: #7a7599;
           margin: 0;
         }
         
@@ -379,14 +379,14 @@ export default function AdminLoginFee() {
         }
         
         .payments-table th {
-          background: #f8fafc;
+          background: #f3f0ff;
           font-weight: 700;
           font-size: 13px;
-          color: #475569;
+          color: #5c5775;
         }
         
         .payments-table tr:hover {
-          background: #f8fafc;
+          background: #f3f0ff;
         }
         
         .payments-table .mpesa-cell {
@@ -413,13 +413,13 @@ export default function AdminLoginFee() {
         }
         
         .payments-table .approve-btn {
-          background: #22c55e;
+          background: #06b6d4;
           color: white;
         }
         
         .payments-table .reject-btn {
-          background: #fee2e2;
-          color: #dc2626;
+          background: #ffe0e0;
+          color: #ef4444;
         }
         
         .payment-card {
@@ -441,7 +441,7 @@ export default function AdminLoginFee() {
         
         .payment-type {
           padding: 6px 12px;
-          background: linear-gradient(135deg, #6366f1, #4f46e5);
+          background: linear-gradient(135deg, #7c3aed, #4f46e5);
           border-radius: 20px;
           font-size: 12px;
           font-weight: 600;
@@ -451,7 +451,7 @@ export default function AdminLoginFee() {
         .payment-amount {
           font-size: 20px;
           font-weight: 800;
-          color: #22c55e;
+          color: #06b6d4;
         }
         
         .payment-details {
@@ -466,13 +466,13 @@ export default function AdminLoginFee() {
         
         .detail-row .label {
           font-size: 13px;
-          color: #64748b;
+          color: #7a7599;
           font-weight: 500;
         }
         
         .detail-row .value {
           font-size: 13px;
-          color: #1e293b;
+          color: #1a1128;
           font-weight: 600;
         }
         
@@ -484,7 +484,7 @@ export default function AdminLoginFee() {
         }
         
         .mpesa-message-box {
-          background: #f8fafc;
+          background: #f3f0ff;
           border-radius: 12px;
           padding: 14px;
           margin-bottom: 16px;
@@ -494,13 +494,13 @@ export default function AdminLoginFee() {
         .mpesa-label {
           font-size: 12px;
           font-weight: 600;
-          color: #475569;
+          color: #5c5775;
           margin: 0 0 8px 0;
         }
         
         .mpesa-text {
           font-size: 12px;
-          color: #64748b;
+          color: #7a7599;
           margin: 0;
           font-family: monospace;
           white-space: pre-wrap;
@@ -526,21 +526,21 @@ export default function AdminLoginFee() {
         }
         
         .approve-btn {
-          background: linear-gradient(135deg, #22c55e, #16a34a);
+          background: linear-gradient(135deg, #06b6d4, #0891b2);
           color: white;
         }
         
         .approve-btn:hover:not(:disabled) {
-          background: linear-gradient(135deg, #16a34a, #15803d);
+          background: linear-gradient(135deg, #0891b2, #15803d);
         }
         
         .reject-btn {
-          background: #fee2e2;
-          color: #dc2626;
+          background: #ffe0e0;
+          color: #ef4444;
         }
         
         .reject-btn:hover:not(:disabled) {
-          background: #fecaca;
+          background: #ffc2c2;
         }
         
         .payment-actions button:disabled {

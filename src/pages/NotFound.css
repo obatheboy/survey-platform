@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f8fafc;
+  background: #f3f0ff;
   padding: 20px;
 }
 
@@ -38,7 +38,7 @@
 .not-found-404 {
   font-size: 100px;
   font-weight: 900;
-  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -63,14 +63,14 @@
 
 .not-found-title {
   font-size: 28px;
-  color: #0f172a;
+  color: #0f0a1a;
   margin: 20px 0 10px;
   font-weight: 800;
 }
 
 .not-found-message {
   font-size: 16px;
-  color: #64748b;
+  color: #7a7599;
   margin-bottom: 32px;
   line-height: 1.6;
 }
@@ -97,27 +97,27 @@
 }
 
 .btn-primary {
-  background: #2563eb;
+  background: #7c3aed;
   color: white;
-  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 10px 15px -3px rgba(91, 33, 182, 0.2);
   flex: 1.2;
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  background: #1d4ed8;
-  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4);
+  background: #5b21b6;
+  box-shadow: 0 10px 15px -3px rgba(91, 33, 182, 0.4);
 }
 
 .btn-secondary {
   background: #f1f5f9;
-  color: #475569;
+  color: #5c5775;
   flex: 1;
 }
 
 .btn-secondary:hover {
   background: #e2e8f0;
-  color: #0f172a;
+  color: #0f0a1a;
   transform: translateY(-2px);
 }
 
@@ -128,7 +128,7 @@
 
 .not-found-links p {
   font-size: 13px;
-  color: #94a3b8;
+  color: #a5a0c0;
   margin-bottom: 16px;
   font-weight: 600;
   text-transform: uppercase;
@@ -144,10 +144,10 @@
 
 .quick-links button {
   padding: 8px 16px;
-  background: #eff6ff;
+  background: #f5f3ff;
   border: none;
   border-radius: 12px;
-  color: #2563eb;
+  color: #7c3aed;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -155,7 +155,7 @@
 }
 
 .quick-links button:hover {
-  background: #2563eb;
+  background: #7c3aed;
   color: white;
   transform: translateY(-1px);
 }

@@ -71,56 +71,56 @@ export default function AdminDashboard() {
           title="Total Users"
           value={stats.totalUsers.toLocaleString()}
           icon="👥"
-          color="#3b82f6"
+          color="#7c3aed"
           loading={loading}
         />
         <StatCard
           title="Total Revenue"
           value={`KES ${stats.totalRevenue.toLocaleString()}`}
           icon="💰"
-          color="#10b981"
+          color="#06b6d4"
           loading={loading}
         />
         <StatCard
           title="Total Withdrawals"
           value={`KES ${stats.totalWithdrawals.toLocaleString()}`}
           icon="💸"
-          color="#8b5cf6"
+           color="#7c3aed"
           loading={loading}
         />
         <StatCard
           title="Surveys Completed"
           value={stats.surveysCompleted.toLocaleString()}
           icon="📝"
-          color="#ef4444"
+          color="#ff6b6b"
           loading={loading}
         />
         <StatCard
           title="Pending Activations"
           value={stats.pendingActivations.toLocaleString()}
           icon="⏳"
-          color="#f59e0b"
+          color="#ff6b6b"
           loading={loading}
         />
         <StatCard
           title="Pending Withdrawals"
           value={stats.pendingWithdrawals.toLocaleString()}
           icon="📤"
-          color="#f43f5e"
+          color="#ff6b6b"
           loading={loading}
         />
         <StatCard
           title="Login Fee Approved"
           value={stats.loginFeeApproved.toLocaleString()}
           icon="✅"
-          color="#22c55e"
+          color="#06b6d4"
           loading={loading}
         />
         <StatCard
           title="Login Fee Pending"
           value={stats.loginFeePending.toLocaleString()}
           icon="⏸"
-          color="#6366f1"
+          color="#7c3aed"
           loading={loading}
         />
       </div>

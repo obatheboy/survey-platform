@@ -109,7 +109,7 @@ export default function OnboardingSurvey() {
             marginBottom: "10px"
           }}>📝</div>
           <h2 style={{
-            color: "#1e293b",
+            color: "#1a1128",
             fontSize: "20px",
             fontWeight: "800",
             margin: "0 0 8px 0"
@@ -117,7 +117,7 @@ export default function OnboardingSurvey() {
             Quick Survey
           </h2>
           <p style={{
-            color: "#64748b",
+            color: "#7a7599",
             fontSize: "14px",
             margin: 0
           }}>
@@ -142,14 +142,14 @@ export default function OnboardingSurvey() {
         </div>
 
         <div style={{
-          background: "#f8fafc",
+          background: "#f3f0ff",
           borderRadius: "12px",
           padding: "20px",
           marginBottom: "20px",
           border: "2px solid #e2e8f0"
         }}>
           <p style={{
-            color: "#1e293b",
+            color: "#1a1128",
             fontSize: "16px",
             fontWeight: "700",
             margin: "0 0 20px 0",
@@ -171,7 +171,7 @@ export default function OnboardingSurvey() {
                   borderRadius: "10px",
                   fontSize: "14px",
                   fontWeight: "600",
-                  color: "#334155",
+                  color: "#251a3a",
                   cursor: loading ? "not-allowed" : "pointer",
                   textAlign: "left",
                   transition: "all 0.2s ease",
@@ -198,7 +198,7 @@ export default function OnboardingSurvey() {
 
         <p style={{
           textAlign: "center",
-          color: "#94a3b8",
+          color: "#a5a0c0",
           fontSize: "12px",
           margin: 0
         }}>

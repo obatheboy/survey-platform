@@ -1,5 +1,5 @@
 .achievements-container {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  background: linear-gradient(135deg, #1a1128 0%, #0f0a1a 100%);
   border-radius: 16px;
   padding: 20px;
   color: white;
@@ -15,7 +15,7 @@
 .achievements-header h3 {
   margin: 0;
   font-size: 1.25rem;
-  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  background: linear-gradient(90deg, #ff7a7a, #ff6b6b);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -29,7 +29,7 @@
 
 .achievements-progress span {
   font-size: 0.875rem;
-  color: #fbbf24;
+  color: #ff7a7a;
   font-weight: bold;
 }
 
@@ -43,7 +43,7 @@
 
 .achievements-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  background: linear-gradient(90deg, #ff7a7a, #ff6b6b);
   border-radius: 3px;
   transition: width 0.3s ease;
 }
@@ -72,7 +72,7 @@
 }
 
 .achievement-category-btn.active {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  background: linear-gradient(135deg, #ff7a7a, #ff6b6b);
   box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
 }
 
@@ -109,7 +109,7 @@
 
 .achievement-card.completed {
   background: rgba(251, 191, 36, 0.1);
-  border-color: var(--tier-color, #fbbf24);
+  border-color: var(--tier-color, #ff7a7a);
 }
 
 .achievement-icon {
@@ -124,7 +124,7 @@
 }
 
 .achievement-card.completed .achievement-icon {
-  background: linear-gradient(135deg, var(--tier-color, #fbbf24), transparent);
+  background: linear-gradient(135deg, var(--tier-color, #ff7a7a), transparent);
 }
 
 .achievement-info {
@@ -160,7 +160,7 @@
 
 .achievement-progress-fill {
   height: 100%;
-  background: var(--tier-color, #fbbf24);
+  background: var(--tier-color, #ff7a7a);
   border-radius: 2px;
   transition: width 0.3s ease;
 }
@@ -177,7 +177,7 @@
   right: 8px;
   width: 20px;
   height: 20px;
-  background: #10b981;
+  background: #06b6d4;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -191,7 +191,7 @@
   bottom: 8px;
   right: 8px;
   font-size: 0.7rem;
-  color: #fbbf24;
+  color: #ff7a7a;
   font-weight: 600;
 }
 

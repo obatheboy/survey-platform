@@ -25,7 +25,7 @@
   height: 100%;
   width: 85vw;
   max-width: 320px;
-  background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+  background: linear-gradient(180deg, #5b21b6 0%, #4c1d95 100%);
   z-index: 99999;
   padding: var(--space-5) var(--space-4);
   box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
@@ -175,7 +175,7 @@
 .drawer-menu-item.danger:hover {
   background: rgba(239, 68, 68, 0.2);
   border-color: rgba(239, 68, 68, 0.5);
-  color: #fecaca;
+  color: #ffc2c2;
 }
 
 .drawer-menu-icon {
@@ -197,7 +197,7 @@
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(124, 58, 237, 0.1);
   line-height: var(--leading-relaxed);
 }
 
@@ -299,13 +299,13 @@
   }
 
   .drawer-menu-item.danger {
-    border: 2px solid #dc2626;
+    border: 2px solid #ff6b6b;
   }
 }
 
 /* Dark Mode Enhancements */
 [data-theme="dark"] .drawer-content {
-  background: linear-gradient(180deg, #0f172a 0%, #0d1117 100%);
+  background: linear-gradient(180deg, #0f0a1a 0%, #0f0a1a 100%);
   border-right-color: rgba(51, 65, 85, 0.5);
 }
 

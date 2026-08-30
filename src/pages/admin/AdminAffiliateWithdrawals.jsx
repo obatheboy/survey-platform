@@ -242,7 +242,7 @@ export default function AdminAffiliateWithdrawals() {
                     <td>{w.user_phone || "—"}</td>
                     <td>{w.user_email || "—"}</td>
                     <td>
-                      <strong style={{ color: "#0a7c4a", fontSize: "16px" }}>
+                      <strong style={{ color: "#06b6d4", fontSize: "16px" }}>
                         KES {Number(w.amount || 0).toLocaleString()}
                       </strong>
                     </td>

@@ -11,21 +11,21 @@ const PLAN_CONFIG = {
   REGULAR: {
     label: "REGULAR SURVEYS",
     activationFee: 100,
-    color: "#10b981",
+    color: "#06b6d4",
     icon: "⭐",
     total: 1500,
   },
   VIP: {
     label: "VIP SURVEY",
     activationFee: 200,
-    color: "#6366f1",
+    color: "#7c3aed",
     icon: "💎",
     total: 2000,
   },
   VVIP: {
     label: "VVIP SURVEYS",
     activationFee: 300,
-    color: "#f59e0b",
+    color: "#ff6b6b",
     icon: "👑",
     total: 3000,
   },
@@ -274,9 +274,9 @@ const handleActivate = () => {
            </p>
            <p>
              Now activate your account by paying activation fee of{" "}
-             <strong style={{ color: "#dc2626" }}>KES {plan.activationFee}</strong> and immediately withdraw your earnings.
+             <strong style={{ color: "#ef4444" }}>KES {plan.activationFee}</strong> and immediately withdraw your earnings.
            </p>
-           <p style={{ fontWeight: 600, fontSize: "14px", color: "#6366f1", marginTop: "8px" }}>
+           <p style={{ fontWeight: 600, fontSize: "14px", color: "#7c3aed", marginTop: "8px" }}>
              💡 Remember: Account will be activated automatically after paying activation fee!
            </p>
          </div>

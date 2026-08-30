@@ -8,9 +8,9 @@ import "./MainMenuDrawer.css";
    PLAN CONFIG (MATCH DASHBOARD)
 ========================= */
 const PLANS = {
-  REGULAR: { name: "Regular", color: "#10b981", total: 1500 },
-  VIP: { name: "VIP", color: "#6366f1", total: 2000 },
-  VVIP: { name: "VVIP", color: "#f59e0b", total: 3000 },
+  REGULAR: { name: "Regular", color: "#06b6d4", total: 1500 },
+  VIP: { name: "VIP", color: "#7c3aed", total: 2000 },
+  VVIP: { name: "VVIP", color: "#ff6b6b", total: 3000 },
 };
 
 export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSurveys }) {

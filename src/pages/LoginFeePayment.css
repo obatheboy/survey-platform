@@ -8,7 +8,7 @@
 
 .payment-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+  background: linear-gradient(135deg, #0f0a1a 0%, #1e1b4b 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -83,7 +83,7 @@
   display: block;
   font-size: 14px;
   font-weight: 600;
-  color: #1e293b;
+  color: #1a1128;
   margin-bottom: 8px;
 }
 
@@ -105,7 +105,7 @@
   padding: 0 12px;
   font-size: 16px;
   font-weight: 600;
-  color: #475569;
+  color: #5c5775;
   border-right: 1px solid #cbd5e1;
 }
 
@@ -120,18 +120,18 @@
 }
 
 .phone-input.error {
-  color: #dc2626;
+  color: #ef4444;
 }
 
 .input-hint {
   font-size: 11px;
-  color: #94a3b8;
+  color: #a5a0c0;
   margin-top: 6px;
   margin-left: 4px;
 }
 
 .error-message {
-  color: #dc2626;
+  color: #ef4444;
   font-size: 12px;
   margin-top: 8px;
 }
@@ -199,8 +199,8 @@
 }
 
 .status-box.timeout {
-  background: #fee2e2;
-  color: #991b1b;
+  background: #ffe0e0;
+  color: #b91c1c;
 }
 
 .status-small {
@@ -212,7 +212,7 @@
 .retry-link {
   background: none;
   border: none;
-  color: #991b1b;
+  color: #b91c1c;
   font-weight: 700;
   text-decoration: underline;
   margin-top: 8px;
@@ -229,7 +229,7 @@
 .benefits-title {
   font-size: 13px;
   font-weight: 700;
-  color: #1e293b;
+  color: #1a1128;
   margin-bottom: 12px;
 }
 
@@ -240,7 +240,7 @@
 
 .benefits li {
   font-size: 13px;
-  color: #475569;
+  color: #5c5775;
   padding: 6px 0;
   display: flex;
   align-items: center;
@@ -255,7 +255,7 @@
 
 .support-text {
   font-size: 12px;
-  color: #64748b;
+  color: #7a7599;
 }
 
 .support-link {

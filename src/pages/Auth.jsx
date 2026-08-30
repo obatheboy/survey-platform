@@ -275,7 +275,7 @@ export default function Auth() {
                   style={{
                     ...styles.input,
                     paddingLeft: "42px",
-                    borderColor: errors.full_name ? '#ef4444' : '#e2e8f0',
+                    borderColor: errors.full_name ? '#ff6b6b' : '#e2e8f0',
                   }}
                   required
                 />
@@ -292,7 +292,7 @@ export default function Auth() {
                   style={{
                     ...styles.input,
                     paddingLeft: "42px",
-                    borderColor: errors.phone ? '#ef4444' : '#e2e8f0',
+                    borderColor: errors.phone ? '#ff6b6b' : '#e2e8f0',
                   }}
                   required
                 />
@@ -388,7 +388,7 @@ export default function Auth() {
           INSTALL APP
         </button>
         {installFeedback && (
-          <p style={{ fontSize: "11px", color: installFeedback.startsWith("✅") ? "#22c55e" : installFeedback.startsWith("📱") ? "#3b82f6" : "#f59e0b", fontWeight: 600, marginTop: "8px", textAlign: "center", lineHeight: 1.4 }}>
+          <p style={{ fontSize: "11px", color: installFeedback.startsWith("✅") ? "#22c55e" : installFeedback.startsWith("📱") ? "#7c3aed" : "#ff6b6b", fontWeight: 600, marginTop: "8px", textAlign: "center", lineHeight: 1.4 }}>
             {installFeedback}
           </p>
         )}
@@ -421,7 +421,7 @@ export default function Auth() {
 const styles = {
   page: {
     minHeight: "100vh",
-    background: "linear-gradient(135deg, #ff006e 0%, #8338ec 50%, #3a86ff 100%)",
+    background: "linear-gradient(135deg, #7c3aed 0%, #06b6d4 50%, #ff6b6b 100%)",
     fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     padding: "12px",
     display: "flex",
@@ -474,15 +474,15 @@ const styles = {
   logo: {
     fontSize: "28px",
     fontWeight: "900",
-    color: "#1e293b",
+    color: "#1a1128",
     margin: 0,
   },
   logoAccent: {
-    color: "#ff006e",
+    color: "#7c3aed",
   },
   tagline: {
     fontSize: "13px",
-    color: "#64748b",
+    color: "#7a7599",
     marginTop: "2px",
   },
   statsRow: {
@@ -498,7 +498,7 @@ const styles = {
     borderRadius: "20px",
     fontSize: "10px",
     fontWeight: "600",
-    color: "#475569",
+    color: "#5c5775",
     whiteSpace: "nowrap",
   },
   tabs: {
@@ -516,14 +516,14 @@ const styles = {
     borderRadius: "14px",
     fontSize: "14px",
     fontWeight: "700",
-    color: "#64748b",
+    color: "#7a7599",
     cursor: "pointer",
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
   },
   tabActive: {
-    background: "linear-gradient(135deg, #ff006e 0%, #8338ec 100%)",
+    background: "linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%)",
     color: "#ffffff",
     boxShadow: "0 4px 12px rgba(255, 0, 110, 0.5)",
   },
@@ -550,8 +550,8 @@ const styles = {
     padding: "16px 16px",
     borderRadius: "14px",
     border: "2px solid #e2e8f0",
-    background: "#f8fafc",
-    color: "#1e293b",
+    background: "#f3f0ff",
+    color: "#1a1128",
     fontSize: "16px",
     outline: "none",
     transition: "all 0.2s",
@@ -572,7 +572,7 @@ const styles = {
     padding: "18px",
     borderRadius: "16px",
     border: "none",
-    background: "linear-gradient(135deg, #ff006e 0%, #8338ec 100%)",
+    background: "linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%)",
     color: "#ffffff",
     fontSize: "17px",
     fontWeight: "800",
@@ -604,13 +604,13 @@ const styles = {
   },
   termsText: {
     fontSize: "10px",
-    color: "#475569",
+    color: "#5c5775",
     textAlign: "center",
     marginTop: "10px",
     lineHeight: "1.4",
   },
   termsLink: {
-    color: "#ff006e",
+    color: "#7c3aed",
     cursor: "pointer",
     fontWeight: "600",
     textDecoration: "underline",
@@ -624,7 +624,7 @@ const styles = {
   },
   benefitItem: {
     fontSize: "10px",
-    color: "#64748b",
+    color: "#7a7599",
     display: "flex",
     alignItems: "center",
     gap: "3px",
@@ -660,9 +660,9 @@ const styles = {
     width: "100%",
     padding: "12px",
     borderRadius: "12px",
-    border: "2px dashed #ff006e",
+    border: "2px dashed #7c3aed",
     background: "rgba(255, 0, 110, 0.08)",
-    color: "#ff006e",
+    color: "#7c3aed",
     fontSize: "13px",
     fontWeight: "700",
     cursor: "pointer",
@@ -708,7 +708,7 @@ const styles = {
     padding: "14px",
     borderRadius: "12px",
     border: "none",
-    background: "linear-gradient(135deg, #8338ec 0%, #3a86ff 100%)",
+    background: "linear-gradient(135deg, #06b6d4 0%, #ff6b6b 100%)",
     color: "#ffffff",
     fontSize: "15px",
     fontWeight: "800",
@@ -726,6 +726,6 @@ const styles = {
   footer: {
     textAlign: "center",
     fontSize: "11px",
-    color: "#94a3b8",
+    color: "#a5a0c0",
   },
 };

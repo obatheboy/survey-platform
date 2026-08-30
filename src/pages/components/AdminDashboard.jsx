@@ -68,21 +68,21 @@ export default function AdminDashboard() {
           title="Total Users"
           value={stats.totalUsers.toLocaleString()}
           icon="👥"\
-          color="#3b82f6"
+           color="#7c3aed"
           loading={loading}
         />
         <StatCard
           title="Total Revenue"
           value={`KES ${stats.totalRevenue.toLocaleString()}`}
           icon="💰"
-          color="#10b981"
+           color="#06b6d4"
           loading={loading}
         />
         <StatCard
           title="Total Withdrawals"
           value={`KES ${stats.totalWithdrawals.toLocaleString()}`}
           icon="💸"
-          color="#8b5cf6"
+           color="#7c3aed"
           loading={loading}
         />
         <StatCard
@@ -96,14 +96,14 @@ export default function AdminDashboard() {
           title="Pending Activations"
           value={stats.pendingActivations.toLocaleString()}
           icon="⏳"
-          color="#f59e0b"
+           color="#ff6b6b"
           loading={loading}
         />
         <StatCard
           title="Pending Withdrawals"
           value={stats.pendingWithdrawals.toLocaleString()}
           icon="📤"
-          color="#f43f5e"
+           color="#ff6b6b"
           loading={loading}
         />
       </div>
