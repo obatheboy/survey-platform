@@ -173,6 +173,7 @@ export default function BottomNavigation({ user }) {
             <button
               key={item.id}
               className={`bottom-nav-item ${active ? 'active' : ''}`}
+              data-nav={item.id}
               onClick={() => handleNav(item)}
               aria-label={item.label}
               aria-current={active ? 'page' : undefined}

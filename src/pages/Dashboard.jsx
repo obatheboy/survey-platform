@@ -830,38 +830,25 @@ export default function Dashboard() {
       {/* MAIN MENU HEADER */}
       <header className="dashboard-main-header">
         <div className="header-title-container">
-          <button className="menu-btn" onClick={() => setMenuOpen(true)}>
+          <button className="menu-btn" onClick={() => setMenuOpen(true)} style={{ position: 'absolute', left: '14px' }}>
             <span className="menu-icon">☰</span>
           </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button
-              onClick={handleInstallApp}
-              className="install-app-btn"
-              title="Install App"
-            >
-              📲 Install App
-            </button>
-            <button
-              onClick={openWhatsAppSupport}
-              style={{
-                background: '#25D366',
-                color: 'white',
-                border: 'none',
-                borderRadius: '20px',
-                padding: '8px 14px',
-                fontSize: '14px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-              }}
-              title="Contact Us on WhatsApp"
-            >
-              <span style={{ fontSize: '16px' }}>💬</span>
-              <span>Contact Us</span>
-            </button>
-          </div>
+          <button
+            onClick={handleInstallApp}
+            className="install-app-btn"
+            title="Install App"
+            style={{ margin: '0 auto' }}
+          >
+            📲 Install App
+          </button>
+          <button
+            onClick={openWhatsAppSupport}
+            className="whatsapp-header-btn"
+            style={{ position: 'absolute', right: '14px' }}
+            title="Contact Us on WhatsApp"
+          >
+            <span style={{ fontSize: '14px' }}>💬</span>
+          </button>
         </div>
 
         <div className="header-activation-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -968,35 +955,35 @@ export default function Dashboard() {
                   style={{
                     background: 'linear-gradient(135deg, #ff6b6b 0%, #ef4444 50%, #c2410c 100%)',
                     border: '2px solid rgba(255,255,255,0.4)',
-                    borderRadius: '25px',
-                    padding: '10px 20px',
+                    borderRadius: '18px',
+                    padding: '6px 14px',
                     color: 'white',
-                    fontWeight: '800',
-                    fontSize: '13px',
+                    fontWeight: '700',
+                    fontSize: '11px',
                     cursor: 'pointer',
-                    boxShadow: '0 4px 20px rgba(255, 107, 107, 0.5), 0 0 40px rgba(255, 107, 107, 0.3)',
+                    boxShadow: '0 4px 16px rgba(255, 107, 107, 0.4), 0 0 24px rgba(255, 107, 107, 0.25)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: '8px',
+                    gap: '6px',
                     whiteSpace: 'nowrap',
                     animation: 'pulse-glow 2s infinite',
                     transition: 'all 0.3s ease',
                     textTransform: 'uppercase',
-                    letterSpacing: '0.5px'
+                    letterSpacing: '0.3px'
                   }}
                   onMouseOver={(e) => {
                     e.currentTarget.style.transform = 'scale(1.05)';
-                    e.currentTarget.style.boxShadow = '0 6px 30px rgba(255, 107, 107, 0.7), 0 0 60px rgba(255, 107, 107, 0.5)';
+                    e.currentTarget.style.boxShadow = '0 6px 24px rgba(255, 107, 107, 0.6), 0 0 40px rgba(255, 107, 107, 0.4)';
                   }}
                   onMouseOut={(e) => {
                     e.currentTarget.style.transform = 'scale(1)';
-                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(255, 107, 107, 0.5), 0 0 40px rgba(255, 107, 107, 0.3)';
+                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(255, 107, 107, 0.4), 0 0 24px rgba(255, 107, 107, 0.25)';
                   }}
                 >
-                  <span className="btn-icon" style={{ fontSize: '16px' }}>🔓</span>
+                  <span className="btn-icon" style={{ fontSize: '12px' }}>🔓</span>
                   TAP HERE TO ACTIVATE ACCOUNT 
-                  <span style={{ fontSize: '14px', marginLeft: '2px' }}>✨</span>
+                  <span style={{ fontSize: '11px', marginLeft: '2px' }}>✨</span>
                 </button>
               );
             })()
