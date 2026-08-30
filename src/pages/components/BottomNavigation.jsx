@@ -150,6 +150,46 @@ export default function BottomNavigation({ user }) {
     }
   };
 
+  const getNavColors = (itemId, isActive) => {
+    const colors = {
+      home:      { color: '#0891b2', bg: 'rgba(6, 182, 212, 0.12)', activeBg: 'rgba(6, 182, 212, 0.18)' },
+      surveys:   { color: '#7c3aed', bg: 'rgba(124, 58, 237, 0.12)', activeBg: 'rgba(124, 58, 237, 0.18)' },
+      withdraw:  { color: '#ff6b6b', bg: 'rgba(255, 107, 107, 0.12)', activeBg: 'rgba(255, 107, 107, 0.18)' },
+      activate:  { color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.12)', activeBg: 'rgba(245, 158, 11, 0.18)' },
+      affiliate: { color: '#10b981', bg: 'rgba(16, 185, 129, 0.12)', activeBg: 'rgba(16, 185, 129, 0.18)' },
+      menu:      { color: '#5c5775', bg: 'transparent', activeBg: 'rgba(92, 87, 117, 0.1)' },
+    };
+    const c = colors[itemId] || colors.menu;
+    return {
+      color: isActive ? c.color : c.color,
+      background: isActive ? c.activeBg : 'transparent',
+    };
+  };
+
+  const getTopBarColor = (itemId) => {
+    const bars = {
+      home:      'linear-gradient(90deg, #06b6d4, #0891b2)',
+      surveys:   'linear-gradient(90deg, #7c3aed, #5b21b6)',
+      withdraw:  'linear-gradient(90deg, #ff6b6b, #ef4444)',
+      activate:  'linear-gradient(90deg, #fbbf24, #f59e0b)',
+      affiliate: 'linear-gradient(90deg, #10b981, #059669)',
+      menu:      'linear-gradient(90deg, #5c5775, #3d3958)',
+    };
+    return bars[itemId] || bars.menu;
+  };
+
+  const getIndicatorColor = (itemId) => {
+    const dots = {
+      home: '#06b6d4',
+      surveys: '#7c3aed',
+      withdraw: '#ff6b6b',
+      activate: '#f59e0b',
+      affiliate: '#10b981',
+      menu: '#5c5775',
+    };
+    return dots[itemId] || '#5c5775';
+  };
+
   const isActive = (item) => {
     if (item.isMenu) return false;
     if (item.path === '/dashboard') {
@@ -169,6 +209,9 @@ export default function BottomNavigation({ user }) {
       <div className="bottom-nav-container">
         {navItems.filter(item => item.show).map((item, index) => {
           const active = isActive(item);
+          const navColors = getNavColors(item.id, active);
+          const topBar = getTopBarColor(item.id);
+          const indicatorColor = getIndicatorColor(item.id);
           return (
             <button
               key={item.id}
@@ -177,7 +220,13 @@ export default function BottomNavigation({ user }) {
               onClick={() => handleNav(item)}
               aria-label={item.label}
               aria-current={active ? 'page' : undefined}
-              style={{ '--delay': `${index * 50}ms` }}
+              style={{
+                '--delay': `${index * 50}ms`,
+                color: navColors.color,
+                background: navColors.background,
+                '--top-bar': topBar,
+                '--indicator-dot': indicatorColor,
+              }}
             >
               <span className="bottom-nav-icon" aria-hidden="true">
                 {active ? item.activeIcon : item.icon}

@@ -143,13 +143,32 @@
 }
 
 /* WhatsApp Support Button */
-.whatsapp-btn {
+.whatsapp-header-btn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: #25D366;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(37, 211, 102, 0.4);
+  transition: all 0.2s ease;
   flex-shrink: 0;
-  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+  white-space: nowrap;
+  line-height: 1.2;
 }
 
-.whatsapp-btn:hover {
-  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+.whatsapp-header-btn:hover {
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.5);
 }
 
 /* Activation Button */

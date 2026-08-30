@@ -841,14 +841,15 @@ export default function Dashboard() {
           >
             📲 Install App
           </button>
-          <button
-            onClick={openWhatsAppSupport}
-            className="whatsapp-header-btn"
-            style={{ position: 'absolute', right: '14px' }}
-            title="Contact Us on WhatsApp"
-          >
-            <span style={{ fontSize: '14px' }}>💬</span>
-          </button>
+            <button
+              onClick={openWhatsAppSupport}
+              className="whatsapp-header-btn"
+              style={{ position: 'absolute', right: '14px' }}
+              title="Contact Us on WhatsApp"
+            >
+              <span style={{ fontSize: '13px' }}>💬</span>
+              <span>Contact Us</span>
+            </button>
         </div>
 
         <div className="header-activation-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
