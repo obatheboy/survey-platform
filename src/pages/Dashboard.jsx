@@ -11,6 +11,7 @@ import Achievements from "./components/Achievements.jsx";
 import DailyRewardPopup from "./components/DailyRewardPopup.jsx";
 import WelcomeBonusPopup from "./components/WelcomeBonusPopup.jsx";
 import { gamificationApi } from "../api/api";
+import { getDeferredPrompt, clearDeferredPrompt } from "../utils/pwaInstall";
 import "./Dashboard.css";
 
 const PLANS = {
@@ -589,35 +590,20 @@ export default function Dashboard() {
   };
 
   const handleInstallApp = async () => {
-    if (!deferredPromptRef.current) {
-      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
-        setToast('App is already installed');
-        setTimeout(() => setToast(''), 3000);
-        return;
-      }
-      setToast('To install: tap browser menu (⋮) → "Add to Home Screen" or "Install App"');
-      setTimeout(() => setToast(''), 5000);
+    const promptEvent = getDeferredPrompt();
+    if (!promptEvent) {
+      setToast('To install: open in Chrome/Edge → tap menu (⋮) → "Add to Home Screen" or "Install App"');
+      setTimeout(() => setToast(''), 4000);
       return;
     }
-    deferredPromptRef.current.prompt();
-    const { outcome } = await deferredPromptRef.current.userChoice;
+    promptEvent.prompt();
+    const { outcome } = await promptEvent.userChoice;
     if (outcome === 'accepted') {
       setToast('Installing app...');
     }
-    deferredPromptRef.current = null;
+    clearDeferredPrompt();
     setTimeout(() => setToast(''), 3000);
   };
-
-  // PWA install prompt listener
-  const deferredPromptRef = useRef(null);
-  useEffect(() => {
-    const handler = (e) => {
-      e.preventDefault();
-      deferredPromptRef.current = e;
-    };
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
-  }, []);
 
   // Reminder notification for unactivated plans
   useEffect(() => {
@@ -841,20 +827,19 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* MAIN MENU HEADER WITH DASHBOARD TITLE */}
+      {/* MAIN MENU HEADER */}
       <header className="dashboard-main-header">
         <div className="header-title-container">
           <button className="menu-btn" onClick={() => setMenuOpen(true)}>
             <span className="menu-icon">☰</span>
           </button>
-          <h1 className="dashboard-main-title">SURVEY</h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <button
               onClick={handleInstallApp}
               className="install-app-btn"
               title="Install App"
             >
-              📲 Install
+              📲 Install App
             </button>
             <button
               onClick={openWhatsAppSupport}
@@ -876,7 +861,6 @@ export default function Dashboard() {
               <span style={{ fontSize: '16px' }}>💬</span>
               <span>Contact Us</span>
             </button>
-
           </div>
         </div>
 
@@ -890,28 +874,28 @@ export default function Dashboard() {
                   <button
                     disabled
                     className="activate-btn-pulse"
-                    style={{
-                      background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 50%, #047857 100%)',
-                      border: '2px solid rgba(255,255,255,0.4)',
-                      borderRadius: '25px',
-                      padding: '10px 20px',
-                      color: 'white',
-                      fontWeight: '800',
-                      fontSize: '13px',
-                      cursor: 'default',
-                      boxShadow: '0 4px 20px rgba(6, 182, 212, 0.5), 0 0 40px rgba(5, 150, 105, 0.3)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px',
-                      whiteSpace: 'nowrap',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px'
-                    }}
-                  >
-                    <span className="btn-icon" style={{ fontSize: '16px' }}>✅</span>
-                    ALL PLANS COMPLETE - WITHDRAW READY
-                    <span style={{ fontSize: '14px', marginLeft: '2px' }}>🎉</span>
+                  style={{
+                    background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 50%, #047857 100%)',
+                    border: '2px solid rgba(255,255,255,0.4)',
+                    borderRadius: '20px',
+                    padding: '6px 14px',
+                    color: 'white',
+                    fontWeight: '700',
+                    fontSize: '11px',
+                    cursor: 'default',
+                    boxShadow: '0 4px 16px rgba(6, 182, 212, 0.4), 0 0 24px rgba(5, 150, 105, 0.25)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    whiteSpace: 'nowrap',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.3px'
+                  }}
+                >
+                  <span className="btn-icon" style={{ fontSize: '14px' }}>✅</span>
+                  ALL PLANS COMPLETE - WITHDRAW READY
+                  <span style={{ fontSize: '12px', marginLeft: '2px' }}>🎉</span>
                   </button>
                 );
               }
@@ -920,29 +904,29 @@ export default function Dashboard() {
                   <button
                     disabled
                     className="activate-btn-pulse"
-                    style={{
-                      background: 'linear-gradient(135deg, #ff7a7a 0%, #ff6b6b 50%, #d97706 100%)',
-                      border: '2px solid rgba(255,255,255,0.4)',
-                      borderRadius: '25px',
-                      padding: '10px 20px',
-                      color: 'white',
-                      fontWeight: '800',
-                      fontSize: '13px',
-                      cursor: 'not-allowed',
-                      boxShadow: '0 4px 20px rgba(255, 122, 122, 0.5), 0 0 40px rgba(255, 107, 107, 0.3)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px',
-                      whiteSpace: 'nowrap',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px',
-                      opacity: 0.9
-                    }}
-                  >
-                    <span className="btn-icon" style={{ fontSize: '16px' }}>⏳</span>
-                    COMPLETE REMAINING PLANS
-                    <span style={{ fontSize: '14px', marginLeft: '2px' }}>🔓</span>
+                  style={{
+                    background: 'linear-gradient(135deg, #ff7a7a 0%, #ff6b6b 50%, #d97706 100%)',
+                    border: '2px solid rgba(255,255,255,0.4)',
+                    borderRadius: '20px',
+                    padding: '6px 14px',
+                    color: 'white',
+                    fontWeight: '700',
+                    fontSize: '11px',
+                    cursor: 'not-allowed',
+                    boxShadow: '0 4px 16px rgba(255, 122, 122, 0.4), 0 0 24px rgba(255, 107, 107, 0.25)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    whiteSpace: 'nowrap',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.3px',
+                    opacity: 0.9
+                  }}
+                >
+                  <span className="btn-icon" style={{ fontSize: '14px' }}>⏳</span>
+                  COMPLETE REMAINING PLANS
+                  <span style={{ fontSize: '12px', marginLeft: '2px' }}>🔓</span>
                   </button>
                 );
               }
@@ -951,29 +935,29 @@ export default function Dashboard() {
                   <button
                     disabled
                     className="activate-btn-pulse"
-                    style={{
-                      background: 'linear-gradient(135deg, #ff7a7a 0%, #ff6b6b 50%, #d97706 100%)',
-                      border: '2px solid rgba(255,255,255,0.4)',
-                      borderRadius: '25px',
-                      padding: '10px 20px',
-                      color: 'white',
-                      fontWeight: '800',
-                      fontSize: '13px',
-                      cursor: 'not-allowed',
-                      boxShadow: '0 4px 20px rgba(255, 122, 122, 0.5), 0 0 40px rgba(255, 107, 107, 0.3)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px',
-                      whiteSpace: 'nowrap',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px',
-                      opacity: 0.9
-                    }}
-                  >
-                    <span className="btn-icon" style={{ fontSize: '16px' }}>⏳</span>
-                    PENDING APPROVAL
-                    <span style={{ fontSize: '14px', marginLeft: '2px' }}>⏰</span>
+                  style={{
+                    background: 'linear-gradient(135deg, #ff7a7a 0%, #ff6b6b 50%, #d97706 100%)',
+                    border: '2px solid rgba(255,255,255,0.4)',
+                    borderRadius: '20px',
+                    padding: '6px 14px',
+                    color: 'white',
+                    fontWeight: '700',
+                    fontSize: '11px',
+                    cursor: 'not-allowed',
+                    boxShadow: '0 4px 16px rgba(255, 122, 122, 0.4), 0 0 24px rgba(255, 107, 107, 0.25)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    whiteSpace: 'nowrap',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.3px',
+                    opacity: 0.9
+                  }}
+                >
+                  <span className="btn-icon" style={{ fontSize: '14px' }}>⏳</span>
+                  PENDING APPROVAL
+                  <span style={{ fontSize: '12px', marginLeft: '2px' }}>⏰</span>
                   </button>
                 );
               }
