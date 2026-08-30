@@ -587,6 +587,66 @@ export default function Dashboard() {
   const openWhatsAppSupport = () => {
     window.open("https://whatsapp.com/channel/0029VbDvcWpHAdNTohtjrz26", "_blank");
   };
+
+  const handleInstallApp = async () => {
+    if (!deferredPromptRef.current) {
+      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+        setToast('App is already installed');
+        setTimeout(() => setToast(''), 3000);
+        return;
+      }
+      setToast('To install: tap browser menu (⋮) → "Add to Home Screen" or "Install App"');
+      setTimeout(() => setToast(''), 5000);
+      return;
+    }
+    deferredPromptRef.current.prompt();
+    const { outcome } = await deferredPromptRef.current.userChoice;
+    if (outcome === 'accepted') {
+      setToast('Installing app...');
+    }
+    deferredPromptRef.current = null;
+    setTimeout(() => setToast(''), 3000);
+  };
+
+  // PWA install prompt listener
+  const deferredPromptRef = useRef(null);
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      deferredPromptRef.current = e;
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  // Reminder notification for unactivated plans
+  useEffect(() => {
+    if (!user || reminderShown) return;
+    const allCompleted = user.all_plans_completed === true;
+    if (allCompleted) return;
+    const hasAnyActivated = Object.values(plans).some(p => p.is_activated);
+    if (!hasAnyActivated) return;
+    const timer = setTimeout(() => {
+      setFullScreenNotification({
+        message: `You have ${getRemainingPlansCount()} plan(s) remaining to activate. Complete them to unlock withdrawals and start earning your full potential!`,
+        redirect: "/activate",
+        goDashboard: false,
+      });
+      setReminderShown(true);
+    }, 8000);
+    return () => clearTimeout(timer);
+  }, [user, plans, reminderShown]);
+
+  const getRemainingPlansCount = () => {
+    if (!user) return 0;
+    const remaining = [];
+    ['REGULAR', 'VIP', 'VVIP'].forEach(plan => {
+      const isPaid = user.plans_paid?.[plan] || user[`${plan.toLowerCase()}_paid`];
+      const isActivated = plans[plan]?.is_activated;
+      if (!isPaid && !isActivated) remaining.push(plan);
+    });
+    return remaining.length;
+  };
   
   // Theme toggle removed - light mode only
 
@@ -789,26 +849,33 @@ export default function Dashboard() {
           </button>
           <h1 className="dashboard-main-title">SURVEY</h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-<button
- onClick={openWhatsAppSupport}
-                style={{
-                  background: '#25D366',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '20px',
-                  padding: '8px 14px',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                }}
-title="Contact Us on WhatsApp"
-                >
-                  <span style={{ fontSize: '16px' }}>💬</span>
-                  <span>Contact Us</span>
-              </button>
+            <button
+              onClick={handleInstallApp}
+              className="install-app-btn"
+              title="Install App"
+            >
+              📲 Install
+            </button>
+            <button
+              onClick={openWhatsAppSupport}
+              style={{
+                background: '#25D366',
+                color: 'white',
+                border: 'none',
+                borderRadius: '20px',
+                padding: '8px 14px',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+              title="Contact Us on WhatsApp"
+            >
+              <span style={{ fontSize: '16px' }}>💬</span>
+              <span>Contact Us</span>
+            </button>
 
           </div>
         </div>

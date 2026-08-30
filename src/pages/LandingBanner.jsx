@@ -23,18 +23,24 @@ export default function LandingBanner() {
           <span style={styles.trustBadgeText}>Trusted by 50,000+ Earners</span>
         </div>
 
+        {/* Earnings badge */}
+        <div style={styles.earningsBadge}>
+          <span style={styles.earningsIcon}>💸</span>
+          <span style={styles.earningsText}>Earn KES 1,200 – KES 6,500 Daily</span>
+        </div>
+
         {/* Main headline */}
         <h1 style={styles.headline}>
-          Turn Spare Moments
+          From Simple Tasks
           <br />
-          Into <span style={styles.headlineAccent}>Real Money</span>
+          To <span style={styles.headlineAccent}>Real Income</span>
         </h1>
 
         {/* Subheadline */}
         <p style={styles.subheadline}>
-          Complete quick surveys on your phone. Get paid instantly.
+          Complete quick surveys right from your phone.
           <br />
-          Your time has value — start earning today.
+          No experience needed — your time pays you instantly.
         </p>
 
         {/* Stats row */}
@@ -73,6 +79,22 @@ export default function LandingBanner() {
             <span style={styles.benefitIcon}>📱</span>
             <span style={styles.benefitText}>Work From Phone</span>
           </div>
+          <div style={styles.benefit}>
+            <span style={styles.benefitIcon}>🎯</span>
+            <span style={styles.benefitText}>Easy Surveys</span>
+          </div>
+          <div style={styles.benefit}>
+            <span style={styles.benefitIcon}>🏆</span>
+            <span style={styles.benefitText}>Daily Rewards</span>
+          </div>
+          <div style={styles.benefit}>
+            <span style={styles.benefitIcon}>👥</span>
+            <span style={styles.benefitText}>Refer & Earn</span>
+          </div>
+          <div style={styles.benefit}>
+            <span style={styles.benefitIcon}>💬</span>
+            <span style={styles.benefitText}>24/7 Support</span>
+          </div>
         </div>
 
         {/* CTA */}
@@ -83,6 +105,11 @@ export default function LandingBanner() {
 
         <p style={styles.ctaNote}>
           Free to join • No experience needed
+        </p>
+
+        {/* Tap hint */}
+        <p style={styles.tapHint}>
+          👆 Tap anywhere to continue
         </p>
 
         {/* Trust indicators */}
@@ -200,7 +227,7 @@ const styles = {
     fontSize: "12px",
     fontWeight: "700",
     color: "#c4b5fd",
-    marginBottom: "24px",
+    marginBottom: "12px",
     backdropFilter: "blur(10px)",
     letterSpacing: "0.3px",
   },
@@ -212,6 +239,32 @@ const styles = {
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
+  },
+  earningsBadge: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "8px",
+    background: "linear-gradient(135deg, rgba(124, 58, 237, 0.25) 0%, rgba(6, 182, 212, 0.25) 100%)",
+    border: "1px solid rgba(124, 58, 237, 0.4)",
+    padding: "10px 22px",
+    borderRadius: "30px",
+    fontSize: "14px",
+    fontWeight: "800",
+    color: "#fff",
+    marginBottom: "20px",
+    backdropFilter: "blur(10px)",
+    boxShadow: "0 0 24px rgba(124, 58, 237, 0.3)",
+    letterSpacing: "0.3px",
+  },
+  earningsIcon: {
+    fontSize: "18px",
+  },
+  earningsText: {
+    background: "linear-gradient(90deg, #ff7a7a, #ffd700)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
+    fontWeight: "900",
   },
   headline: {
     fontSize: "38px",
@@ -278,9 +331,9 @@ const styles = {
   benefits: {
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
-    gap: "10px",
+    gap: "8px",
     marginBottom: "28px",
-    maxWidth: "340px",
+    maxWidth: "360px",
     marginLeft: "auto",
     marginRight: "auto",
   },
@@ -335,6 +388,14 @@ const styles = {
     color: "rgba(255,255,255,0.6)",
     fontWeight: "500",
     letterSpacing: "0.3px",
+  },
+  tapHint: {
+    marginTop: "16px",
+    fontSize: "11px",
+    color: "rgba(255,255,255,0.5)",
+    fontWeight: "600",
+    letterSpacing: "0.5px",
+    animation: "fadeInUp 1s ease-out 0.5s both",
   },
   trustRow: {
     display: "flex",
