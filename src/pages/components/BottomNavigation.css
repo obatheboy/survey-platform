@@ -49,7 +49,7 @@
   cursor: pointer;
   padding: var(--space-2) var(--space-1);
   position: relative;
-  color: #5c5775;
+  color: #f59e0b !important;
   transition: all var(--duration-fast) var(--ease-default);
   min-height: 64px;
   -webkit-tap-highlight-color: transparent;
