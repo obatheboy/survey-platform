@@ -23,18 +23,18 @@ export default function LandingBanner() {
           <span style={styles.trustBadgeText}>Trusted by 50,000+ Earners</span>
         </div>
 
-        {/* Earnings badge */}
-        <div style={styles.earningsBadge}>
-          <span style={styles.earningsIcon}>💸</span>
-          <span style={styles.earningsText}>Earn KES 1,200 – KES 6,500 Daily</span>
-        </div>
-
         {/* Main headline */}
         <h1 style={styles.headline}>
           From Simple Tasks
           <br />
           To <span style={styles.headlineAccent}>Real Income</span>
         </h1>
+
+        {/* Earnings caption - center */}
+        <div style={styles.earningsCaption}>
+          <span style={styles.earningsCaptionIcon}>💸</span>
+          <span style={styles.earningsCaptionText}>Earn KES 1,200 – KES 6,500 Daily</span>
+        </div>
 
         {/* Subheadline */}
         <p style={styles.subheadline}>
@@ -260,6 +260,33 @@ const styles = {
     fontSize: "18px",
   },
   earningsText: {
+    background: "linear-gradient(90deg, #ff7a7a, #ffd700)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
+    fontWeight: "900",
+  },
+  earningsCaption: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "10px",
+    background: "linear-gradient(135deg, rgba(124, 58, 237, 0.3) 0%, rgba(6, 182, 212, 0.3) 100%)",
+    border: "1px solid rgba(124, 58, 237, 0.5)",
+    padding: "14px 28px",
+    borderRadius: "30px",
+    fontSize: "16px",
+    fontWeight: "800",
+    color: "#fff",
+    marginBottom: "24px",
+    backdropFilter: "blur(10px)",
+    boxShadow: "0 0 32px rgba(124, 58, 237, 0.4)",
+    letterSpacing: "0.3px",
+    animation: "pulse-glow 3s ease-in-out infinite",
+  },
+  earningsCaptionIcon: {
+    fontSize: "22px",
+  },
+  earningsCaptionText: {
     background: "linear-gradient(90deg, #ff7a7a, #ffd700)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
