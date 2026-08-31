@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v8';
+const CACHE_VERSION = 'v9';
 const STATIC_CACHE = `survey-platform-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `survey-platform-runtime-${CACHE_VERSION}`;
 const urlsToCache = ['/', '/index.html', '/vite.svg'];
