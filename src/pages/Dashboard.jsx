@@ -847,8 +847,8 @@ export default function Dashboard() {
               style={{ position: 'absolute', right: '14px' }}
               title="Contact Us on WhatsApp"
             >
-              <span style={{ fontSize: '13px' }}>💬</span>
-              <span>Contact Us</span>
+              <span style={{ fontSize: '12px' }}>💬</span>
+              <span style={{ fontSize: '11px', fontWeight: '600' }}>Contact Us</span>
             </button>
         </div>
 

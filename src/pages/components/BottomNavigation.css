@@ -78,9 +78,6 @@
 }
 
 /* Home - Cyan */
-.bottom-nav-item[data-nav="home"] {
-  color: #0891b2;
-}
 .bottom-nav-item[data-nav="home"]::before {
   background: linear-gradient(90deg, #06b6d4, #0891b2);
 }
@@ -89,9 +86,6 @@
 }
 
 /* Surveys - Violet */
-.bottom-nav-item[data-nav="surveys"] {
-  color: #7c3aed;
-}
 .bottom-nav-item[data-nav="surveys"]::before {
   background: linear-gradient(90deg, #7c3aed, #5b21b6);
 }
@@ -100,9 +94,6 @@
 }
 
 /* Withdraw - Coral */
-.bottom-nav-item[data-nav="withdraw"] {
-  color: #ff6b6b;
-}
 .bottom-nav-item[data-nav="withdraw"]::before {
   background: linear-gradient(90deg, #ff6b6b, #ef4444);
 }
@@ -111,9 +102,6 @@
 }
 
 /* Activate - Amber */
-.bottom-nav-item[data-nav="activate"] {
-  color: #f59e0b;
-}
 .bottom-nav-item[data-nav="activate"]::before {
   background: linear-gradient(90deg, #fbbf24, #f59e0b);
 }
@@ -122,9 +110,6 @@
 }
 
 /* Earn More (Affiliate) - Emerald */
-.bottom-nav-item[data-nav="affiliate"] {
-  color: #10b981;
-}
 .bottom-nav-item[data-nav="affiliate"]::before {
   background: linear-gradient(90deg, #10b981, #059669);
 }
@@ -133,9 +118,6 @@
 }
 
 /* Menu - Slate */
-.bottom-nav-item[data-nav="menu"] {
-  color: #5c5775;
-}
 .bottom-nav-item[data-nav="menu"]::before {
   background: linear-gradient(90deg, #5c5775, #3d3958);
 }
