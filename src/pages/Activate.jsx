@@ -1219,128 +1219,133 @@ setPaynectaSubmitting(true);
           </>
            )}
 
+           {/* MANUAL PAYMENT - only shown when automatic STK payment fails */}
+           {paynectaError && (
+           <>
+            <div style={{
+              marginTop: "24px",
+              marginBottom: "8px",
+              padding: "14px 18px",
+              borderRadius: "12px",
+              background: "rgba(239, 68, 68, 0.1)",
+              border: "1px solid rgba(239, 68, 68, 0.3)",
+              textAlign: "center"
+            }}>
+              <p style={{ fontSize: "13px", color: "#ef4444", fontWeight: 600, lineHeight: 1.5, margin: 0 }}>
+                ❌ Automatic payment failed. Pay <strong>manually</strong> using the steps below
+              </p>
+            </div>
+
+            {/* MANUAL PAYMENT SECTION - TILL NUMBER */}
            <div style={{
-             marginTop: "24px",
-             marginBottom: "8px",
-             padding: "14px 18px",
-             borderRadius: "12px",
-             background: "rgba(122, 117, 153, 0.08)",
-             border: "1px solid rgba(122, 117, 153, 0.2)",
+             background: "#fff7ed",
+             border: "3px solid #ef4444",
+             borderRadius: "16px",
+             padding: "20px",
+             marginBottom: "20px",
+             boxShadow: "0 8px 25px rgba(255, 107, 107, 0.4)",
              textAlign: "center"
            }}>
-             <p style={{ fontSize: "13px", color: "#7a7599", fontWeight: 500, lineHeight: 1.5, margin: 0 }}>
-               If the above <strong>automatic payment</strong> has failed, you can pay <strong>manually</strong> by following the steps below
+             <p style={{ fontWeight: 900, fontSize: "18px", color: "#9a3412", marginBottom: "12px" }}>
+               Pay Via Till Number (Lipa Na M-Pesa)
+             </p>
+             <p style={{ color: "#c2410c", fontSize: "14px", marginBottom: "12px", fontWeight: 600 }}>
+               Use Buy Goods and Services if you prefer the manual method
              </p>
            </div>
 
-           {/* MANUAL PAYMENT SECTION - TILL NUMBER */}
-          <div style={{
-            background: "#fff7ed",
-            border: "3px solid #ef4444",
-            borderRadius: "16px",
-            padding: "20px",
-            marginBottom: "20px",
-            boxShadow: "0 8px 25px rgba(255, 107, 107, 0.4)",
-            textAlign: "center"
-          }}>
-            <p style={{ fontWeight: 900, fontSize: "18px", color: "#9a3412", marginBottom: "12px" }}>
-              Pay Via Till Number (Lipa Na M-Pesa)
-            </p>
-            <p style={{ color: "#c2410c", fontSize: "14px", marginBottom: "12px", fontWeight: 600 }}>
-              Use Buy Goods and Services if you prefer the manual method
-            </p>
-          </div>
+           <div style={{ textAlign: "center", margin: "12px 0" }}>
+             <span style={{ color: "#ef4444", fontSize: "14px", fontWeight: 800, background: "#fff7ed", padding: "8px 16px", borderRadius: "20px", border: "1px solid #fed7aa" }}>
+               ✅ Manual Payment - Follow Steps Below
+             </span>
+           </div>
 
-          <div style={{ textAlign: "center", margin: "12px 0" }}>
-            <span style={{ color: "#ef4444", fontSize: "14px", fontWeight: 800, background: "#fff7ed", padding: "8px 16px", borderRadius: "20px", border: "1px solid #fed7aa" }}>
-              ✅ Manual Payment - Follow Steps Below
-            </span>
-          </div>
+           <p style={{ ...styles.caption, color: "#9a3412" }}>
+             ⚠ <strong style={{color: "#c2410c", fontWeight: 900}}>IMPORTANT:</strong> Use <strong style={{color: "#ef4444", fontSize: "14px", fontWeight: 900}}>Lipa Na M-Pesa → Buy Goods and Services</strong> and pay to Till Number <strong style={{color: "#ef4444", fontSize: "14px", fontWeight: 900}}>{TILL_NUMBER} - {BUSINESS_NAME}</strong>
+           </p>
 
-          <p style={{ ...styles.caption, color: "#9a3412" }}>
-            ⚠ <strong style={{color: "#c2410c", fontWeight: 900}}>IMPORTANT:</strong> Use <strong style={{color: "#ef4444", fontSize: "14px", fontWeight: 900}}>Lipa Na M-Pesa → Buy Goods and Services</strong> and pay to Till Number <strong style={{color: "#ef4444", fontSize: "14px", fontWeight: 900}}>{TILL_NUMBER} - {BUSINESS_NAME}</strong>
-          </p>
+           <div style={{ marginTop: "8px" }}>
+             <div className="activate-step-box" style={styles.stepBox}>
+               <span style={styles.stepNumber}>1</span>
+               <strong style={{color: "#9a3412", fontWeight: 900}}>Open M-Pesa</strong>
+               <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c2410c", fontWeight: 700 }}>→ Lipa Na M-Pesa</span>
+             </div>
 
-          <div style={{ marginTop: "8px" }}>
-            <div className="activate-step-box" style={styles.stepBox}>
-              <span style={styles.stepNumber}>1</span>
-              <strong style={{color: "#9a3412", fontWeight: 900}}>Open M-Pesa</strong>
-              <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c2410c", fontWeight: 700 }}>→ Lipa Na M-Pesa</span>
-            </div>
+             <div className="activate-step-box" style={styles.stepBox}>
+               <span style={styles.stepNumber}>2</span>
+               <strong style={{color: "#9a3412", fontWeight: 900}}>Lipa Na M-Pesa</strong>
+               <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c2410c", fontWeight: 700 }}>→ Buy Goods and Services</span>
+             </div>
 
-            <div className="activate-step-box" style={styles.stepBox}>
-              <span style={styles.stepNumber}>2</span>
-              <strong style={{color: "#9a3412", fontWeight: 900}}>Lipa Na M-Pesa</strong>
-              <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c2410c", fontWeight: 700 }}>→ Buy Goods and Services</span>
-            </div>
+             <div className="activate-step-box" style={styles.stepBox}>
+               <span style={styles.stepNumber}>3</span>
+               <strong style={{color: "#9a3412", fontWeight: 900}}>Enter Till Number</strong>
+               <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c2410c", fontWeight: 700 }}>→ <strong style={{color: "#9a3412", fontWeight: 900}}>{TILL_NUMBER}</strong></span>
+             </div>
 
-            <div className="activate-step-box" style={styles.stepBox}>
-              <span style={styles.stepNumber}>3</span>
-              <strong style={{color: "#9a3412", fontWeight: 900}}>Enter Till Number</strong>
-              <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c2410c", fontWeight: 700 }}>→ <strong style={{color: "#9a3412", fontWeight: 900}}>{TILL_NUMBER}</strong></span>
-            </div>
+             <div className="activate-step-box" style={styles.stepBox}>
+               <span style={styles.stepNumber}>4</span>
+               <strong style={{color: "#9a3412", fontWeight: 900}}>Confirm Name: <span style={{color: "#ef4444"}}>{BUSINESS_NAME}</span></strong>
+             </div>
 
-            <div className="activate-step-box" style={styles.stepBox}>
-              <span style={styles.stepNumber}>4</span>
-              <strong style={{color: "#9a3412", fontWeight: 900}}>Confirm Name: <span style={{color: "#ef4444"}}>{BUSINESS_NAME}</span></strong>
-            </div>
+             <div className="activate-step-box" style={styles.stepBox}>
+               <span style={styles.stepNumber}>5</span>
+               <strong style={{color: "#9a3412", fontWeight: 900}}>Amount: </strong>
+               <span style={{...styles.activationFee, color: "#ffffff", fontWeight: 900, background: "#ef4444", padding: "2px 8px", borderRadius: "4px"}}>KES {plan.activationFee}</span>
+             </div>
 
-            <div className="activate-step-box" style={styles.stepBox}>
-              <span style={styles.stepNumber}>5</span>
-              <strong style={{color: "#9a3412", fontWeight: 900}}>Amount: </strong>
-              <span style={{...styles.activationFee, color: "#ffffff", fontWeight: 900, background: "#ef4444", padding: "2px 8px", borderRadius: "4px"}}>KES {plan.activationFee}</span>
-            </div>
+             <div className="activate-step-box" style={styles.stepBox}>
+               <span style={styles.stepNumber}>6</span>
+               <strong style={{color: "#9a3412", fontWeight: 900}}>Enter PIN & Complete</strong>
+             </div>
 
-            <div className="activate-step-box" style={styles.stepBox}>
-              <span style={styles.stepNumber}>6</span>
-              <strong style={{color: "#9a3412", fontWeight: 900}}>Enter PIN & Complete</strong>
-            </div>
+             <div className="activate-step-box activate-step-box-success" style={{
+               ...styles.stepBox,
+               background: "#ecfccb",
+               border: "1px solid #84cc16"
+             }}>
+               <span style={{...styles.stepNumber, background: "#16a34a"}}>7</span>
+               <strong style={{ color: "#166534", fontWeight: 900 }}>Paste M-Pesa SMS</strong>
+               <span style={{ fontSize: "11px", display: "block", marginTop: "4px", color: "#15803d", fontWeight: 700 }}>
+                 Paste your M-Pesa confirmation message below
+               </span>
 
-            <div className="activate-step-box activate-step-box-success" style={{
-              ...styles.stepBox,
-              background: "#ecfccb",
-              border: "1px solid #84cc16"
-            }}>
-              <span style={{...styles.stepNumber, background: "#16a34a"}}>7</span>
-              <strong style={{ color: "#166534", fontWeight: 900 }}>Paste M-Pesa SMS</strong>
-              <span style={{ fontSize: "11px", display: "block", marginTop: "4px", color: "#15803d", fontWeight: 700 }}>
-                Paste your M-Pesa confirmation message below
-              </span>
+               <div style={{ marginTop: "10px" }}>
+                 <div style={{ fontSize: "12px", color: "#166534", fontWeight: 800, marginBottom: "6px" }}>
+                   📌 Paste M-Pesa SMS (Include Transaction ID, Amount & Time)
+                 </div>
+                 <textarea
+                   placeholder="Paste M-Pesa confirmation here..."
+                   value={paymentText}
+                   onChange={(e) => setPaymentText(e.target.value)}
+                   rows={2}
+                   style={{
+                     width: "100%",
+                     padding: "10px",
+                     borderRadius: "8px",
+                     border: "2px solid #fed7aa",
+                     background: "#ffffff",
+                     color: "#333333",
+                     fontSize: "12px",
+                     fontFamily: "inherit",
+                     resize: "vertical",
+                     minHeight: "60px",
+                     boxSizing: "border-box",
+                   }}
+                 />
+               </div>
 
-              <div style={{ marginTop: "10px" }}>
-                <div style={{ fontSize: "12px", color: "#166534", fontWeight: 800, marginBottom: "6px" }}>
-                  📌 Paste M-Pesa SMS (Include Transaction ID, Amount & Time)
-                </div>
-                <textarea
-                  placeholder="Paste M-Pesa confirmation here..."
-                  value={paymentText}
-                  onChange={(e) => setPaymentText(e.target.value)}
-                  rows={2}
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                    borderRadius: "8px",
-                    border: "2px solid #fed7aa",
-                    background: "#ffffff",
-                    color: "#333333",
-                    fontSize: "12px",
-                    fontFamily: "inherit",
-                    resize: "vertical",
-                    minHeight: "60px",
-                    boxSizing: "border-box",
-                  }}
-                />
-              </div>
-
-              <button
-                onClick={copyTillNumber}
-                style={{...styles.copyBtn, marginTop: "8px"}}
-              >
-                📋 Copy Till Number
-              </button>
-              {copied && <p style={{...styles.copiedNote, color: "#16a34a", fontWeight: 700, marginTop: "6px"}}>✅ Till number copied</p>}
-            </div>
-          </div>
+               <button
+                 onClick={copyTillNumber}
+                 style={{...styles.copyBtn, marginTop: "8px"}}
+               >
+                 📋 Copy Till Number
+               </button>
+               {copied && <p style={{...styles.copiedNote, color: "#16a34a", fontWeight: 700, marginTop: "6px"}}>✅ Till number copied</p>}
+             </div>
+           </div>
+           </>
+           )}
 
 <button
              onClick={() => {
