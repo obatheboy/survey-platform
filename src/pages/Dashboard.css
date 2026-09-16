@@ -1031,13 +1031,13 @@
 .nav-label {
   font-size: 0.625rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: white !important;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .nav-item.active .nav-label {
-  color: #7c3aed;
+  color: white !important;
 }
 
 /* ============================================

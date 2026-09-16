@@ -1477,11 +1477,11 @@ export default function Dashboard() {
         display: 'flex',
         justifyContent: 'space-around',
         alignItems: 'center',
-        background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
+        background: 'rgba(255, 255, 255, 0.97)',
+        borderBottom: '1px solid #e2e8f0',
         padding: '8px 12px',
-        boxShadow: '0 -2px 10px rgba(124, 58, 237, 0.2)',
-        zIndex: 1000,
-        borderTop: '1px solid rgba(255,255,255,0.2)'
+        boxShadow: '0 -2px 12px rgba(0, 0, 0, 0.08)',
+        zIndex: 1000
       }}>
         <button
           className="nav-btn"
@@ -1494,17 +1494,18 @@ export default function Dashboard() {
             justifyContent: 'center',
             gap: '2px',
             padding: '6px',
-            background: '#7c3aed',
+            background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
             color: 'white',
             border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer'
+            borderRadius: '10px',
+                         cursor: 'pointer',
+             minHeight: '50px'
           }}
         >
-          <span className="nav-icon" style={{ fontSize: '20px' }}>📊</span>
-          <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Home</span>
+          <span className="nav-icon" style={{ fontSize: '20px', color: 'white' }}>📊</span>
+          <span className="nav-label" style={{ fontSize: '10px', fontWeight: '600', color: 'white' }}>Home</span>
         </button>
-        
+
         <button
           className="nav-btn"
           onClick={goToSurveys}
@@ -1516,63 +1517,66 @@ export default function Dashboard() {
             justifyContent: 'center',
             gap: '2px',
             padding: '6px',
-            background: '#06b6d4',
+            background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
             color: 'white',
             border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer'
+            borderRadius: '10px',
+            cursor: 'pointer',
+            minHeight: '50px'
           }}
         >
-          <span className="nav-icon" style={{ fontSize: '20px' }}>📝</span>
-          <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Surveys</span>
+          <span className="nav-icon" style={{ fontSize: '20px', color: 'white' }}>📝</span>
+          <span className="nav-label" style={{ fontSize: '10px', fontWeight: '600', color: 'white' }}>Surveys</span>
         </button>
 
          <button
-           className="nav-btn"
-           onClick={() => navigate('/affiliate')}
-           style={{
-             flex: 1,
-             display: 'flex',
-             flexDirection: 'column',
-             alignItems: 'center',
-             justifyContent: 'center',
-             gap: '2px',
-             padding: '6px',
-             background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
-             color: 'white',
-             border: 'none',
-             borderRadius: '8px',
-             cursor: 'pointer'
-           }}
-         >
-           <span className="nav-icon" style={{ fontSize: '20px' }}>👥</span>
-           <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Affiliate</span>
-         </button>
-
-         {user?.all_plans_completed && (
-           <button
-             className="nav-btn"
-             onClick={() => navigate('/withdraw-form')}
-             style={{
-               flex: 1,
-               display: 'flex',
-               flexDirection: 'column',
-               alignItems: 'center',
-               justifyContent: 'center',
-               gap: '2px',
-               padding: '6px',
-               background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-               color: 'white',
-               border: 'none',
-               borderRadius: '8px',
-               cursor: 'pointer'
-             }}
-           >
-            <span className="nav-icon" style={{ fontSize: '20px' }}>💸</span>
-            <span className="nav-label" style={{ fontSize: '9px', fontWeight: '600' }}>Withdraw</span>
+            className="nav-btn"
+            onClick={() => navigate('/affiliate')}
+            style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '2px',
+              padding: '6px',
+              background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '10px',
+              cursor: 'pointer',
+              minHeight: '50px'
+            }}
+          >
+            <span className="nav-icon" style={{ fontSize: '20px', color: 'white' }}>👥</span>
+            <span className="nav-label" style={{ fontSize: '10px', fontWeight: '600', color: 'white' }}>Affiliate</span>
           </button>
-         )}
-      </div>
+
+          {user?.all_plans_completed && (
+            <button
+              className="nav-btn"
+              onClick={() => navigate('/withdraw-form')}
+              style={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '2px',
+                padding: '6px',
+                background: 'linear-gradient(135deg, #ff6b6b 0%, #ef4444 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '10px',
+                cursor: 'pointer',
+                minHeight: '50px'
+              }}
+            >
+             <span className="nav-icon" style={{ fontSize: '20px', color: 'white' }}>💸</span>
+             <span className="nav-label" style={{ fontSize: '10px', fontWeight: '600', color: 'white' }}>Withdraw</span>
+          </button>
+          )}
+       </div>
 
       {/* GAMIFICATION SECTION */}
       <div className="gamification-section" style={{ marginTop: '30px', marginBottom: '30px' }}>
