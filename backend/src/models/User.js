@@ -292,6 +292,18 @@ const userSchema = new mongoose.Schema({
   all_plans_completed: {
     type: Boolean,
     default: false
+  },
+  // ============================================
+  // POST-WITHDRAWAL TRACKING
+  // ============================================
+  withdrawal_submitted_at: {
+    type: Date,
+    default: null
+  },
+  withdrawal_status: {
+    type: String,
+    enum: ['none', 'pending', 'processing', 'completed', 'failed'],
+    default: 'none'
   }
 });
 

@@ -21,6 +21,111 @@ exports.getAdminMe = async (req, res) => {
 };
 
 /* ======================================================
+   👤 AFFILIATE WITHDRAWALS (ADMIN)
+   - Get all pending affiliate withdrawals
+====================================================== */
+exports.getPendingAffiliateWithdrawals = async (req, res) => {
+  try {
+    const users = await User.find({
+      'withdrawal_requests.type': 'affiliate',
+      'withdrawal_requests.status': { $in: ['SUBMITTED', 'PROCESSING', 'PENDING'] }
+    }).select('full_name phone email referral_commission_earned withdrawal_requests referral_code created_at');
+
+    const pendingWithdrawals = [];
+    users.forEach(user => {
+      const affiliateWithdrawals = user.withdrawal_requests.filter(
+        w => w.type === 'affiliate' && ['SUBMITTED', 'PROCESSING', 'PENDING'].includes(w.status)
+      );
+      affiliateWithdrawals.forEach(w => {
+        pendingWithdrawals.push({
+          id: w._id,
+          user_id: user._id,
+          user_name: user.full_name,
+          phone: user.phone,
+          email: user.email,
+          referral_code: user.referral_code,
+          amount: w.amount,
+          fee: w.fee,
+          net_amount: w.net_amount,
+          status: w.status,
+          type: w.type,
+          phone_number: w.phone_number,
+          created_at: w.created_at,
+          days_pending: Math.floor((Date.now() - new Date(w.created_at)) / (1000 * 60 * 60 * 24))
+        });
+      });
+    });
+
+    res.json({
+      success: true,
+      total_pending: pendingWithdrawals.length,
+      total_amount: pendingWithdrawals.reduce((sum, w) => sum + w.amount, 0),
+      withdrawals: pendingWithdrawals.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    });
+  } catch (error) {
+    console.error("Get pending affiliate withdrawals error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+/* ======================================================
+   👤 AFFILIATE REFERRALS WITH COMMISSIONS (ADMIN)
+   - See users who referred others and downline activation status
+====================================================== */
+exports.getAffiliateReferrals = async (req, res) => {
+  try {
+    const users = await User.find({
+      $or: [
+        { referral_code: { $exists: true, $ne: null } },
+        { referred_by: { $exists: true, $ne: null } }
+      ]
+    })
+    .select('full_name email phone referral_code referred_by referral_commission_earned referral_commissions referrals plans_paid plans is_activated created_at')
+    .populate('referrals', 'full_name phone is_activated plans_paid referral_commission_earned created_at')
+    .populate('referred_by', 'full_name phone referral_code referral_commission_earned created_at');
+
+    const affiliates = users
+      .filter(u => u.referred_by || (u.referrals && u.referrals.length > 0))
+      .map(u => ({
+        id: u._id,
+        full_name: u.full_name,
+        phone: u.phone,
+        email: u.email,
+        referral_code: u.referral_code,
+        referral_commission_earned: u.referral_commission_earned || 0,
+        referred_by: u.referred_by ? {
+          name: u.referred_by.full_name,
+          phone: u.referred_by.phone,
+          referral_code: u.referred_by.referral_code
+        } : null,
+        downlines: (u.referrals || []).map(r => ({
+          id: r._id,
+          name: r.full_name,
+          phone: r.phone,
+          is_activated: r.is_activated,
+          plans_paid: r.plans_paid,
+          commission_earned: r.referral_commission_earned || 0,
+          joined_at: r.created_at
+        })),
+        total_downlines: u.referrals?.length || 0,
+        active_downlines: (u.referrals || []).filter(r => r.is_activated === true).length,
+        joined_at: u.created_at
+      }))
+      .sort((a, b) => b.referral_commission_earned - a.referral_commission_earned);
+
+    res.json({
+      success: true,
+      total_affiliates: affiliates.length,
+      total_commission_paid: affiliates.reduce((sum, a) => sum + a.referral_commission_earned, 0),
+      affiliates
+    });
+  } catch (error) {
+    console.error("Get affiliate referrals error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+/* ======================================================
    👤 USERS MANAGEMENT (ADMIN)
 ====================================================== */
 

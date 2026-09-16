@@ -380,6 +380,10 @@ exports.requestWithdraw = async (req, res) => {
 
     user.withdrawal_requests.push(withdrawalRequest);
 
+    // Track withdrawal submission time and status for 72-hour affiliate redirect logic
+    user.withdrawal_submitted_at = new Date();
+    user.withdrawal_status = 'SUBMITTED';
+
     // Deduct from balance
     if (type === "affiliate") {
       // Deduct from affiliate commission balance

@@ -86,6 +86,14 @@ router.get("/stats", adminController.getAdminStats);
 
 /**
  * =========================================
+ * 💰 AFFILIATE WITHDRAWALS & REFERRALS
+ * =========================================
+ */
+router.get("/affiliate/withdrawals", adminController.getPendingAffiliateWithdrawals);
+router.get("/affiliate/referrals", adminController.getAffiliateReferrals);
+
+/**
+ * =========================================
  * 🧹 CLEANUP OLD DATA
  * =========================================
  */

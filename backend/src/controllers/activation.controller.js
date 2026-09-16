@@ -264,10 +264,22 @@ exports.approveActivation = async (req, res) => {
       user.total_earned = oldBalance + creditAmount;
     }
     
-    console.log(`💰 Added KES ${creditAmount} to user balance for ${plan} plan activation${isWelcomeBonus ? ' (welcome bonus)' : ''}`);
+     console.log(`💰 Added KES ${creditAmount} to user balance for ${plan} plan activation${isWelcomeBonus ? ' (welcome bonus)' : ''}`);
     console.log(`💰 Old balance: KES ${oldBalance}, New balance: KES ${user.total_earned}`);
 
     await user.save();
+
+    // ✅ AWARD REFERRAL COMMISSION - referrer earns KES 50 when referred user pays any activation fee
+    try {
+      const commissionResult = await awardReferralCommission(user._id);
+      if (commissionResult.success) {
+        console.log(`🎯 Referral commission of KES ${commissionResult.amount} awarded to referrer for ${plan} activation`);
+      } else {
+        console.log(`ℹ️ Referral commission not awarded: ${commissionResult.message}`);
+      }
+    } catch (refErr) {
+      console.error("❌ Error awarding referral commission:", refErr);
+    }
 
     // Calculate remaining unpaid plans for redirect
     const redirectTo = redirect.redirect_to;

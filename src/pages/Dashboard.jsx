@@ -106,12 +106,13 @@ export default function Dashboard() {
     { id: 4, label: "Activate & Pay", icon: "🔓", completed: false, action: "activate" },
   ]);
 
-  /* =========================
-     WITHDRAW STATE - SIMPLIFIED
-  ========================= */
-  const [pendingWithdrawals, setPendingWithdrawals] = useState({});
-  const [highlightPlan, setHighlightPlan] = useState(null);
-  const [fullScreenNotification, setFullScreenNotification] = useState(null);
+   /* =========================
+      WITHDRAW STATE - SIMPLIFIED
+   ========================= */
+   const [pendingWithdrawals, setPendingWithdrawals] = useState({});
+   const [highlightPlan, setHighlightPlan] = useState(null);
+   const [fullScreenNotification, setFullScreenNotification] = useState(null);
+   const [show72HourAffiliatePrompt, setShow72HourAffiliatePrompt] = useState(false);
 
   /* =========================
      GAMIFICATION STATE
@@ -182,7 +183,20 @@ export default function Dashboard() {
 
         loadPendingWithdrawals();
 
-        localStorage.setItem("cachedUser", JSON.stringify(resUser.data));
+         localStorage.setItem("cachedUser", JSON.stringify(resUser.data));
+
+        // 72-hour affiliate prompt
+        const withdrawalSubmittedAt = resUser.data.withdrawal_submitted_at;
+        const withdrawalStatus = resUser.data.withdrawal_status;
+        if (withdrawalSubmittedAt && withdrawalStatus === 'SUBMITTED') {
+          const submittedTime = new Date(withdrawalSubmittedAt).getTime();
+          const hoursPassed = (Date.now() - submittedTime) / (1000 * 60 * 60);
+          if (hoursPassed >= 72) {
+            setShow72HourAffiliatePrompt(true);
+          }
+        } else {
+          setShow72HourAffiliatePrompt(false);
+        }
       } catch (err) {
         console.error("Dashboard load failed:", err);
         if (!navigator.onLine) {
@@ -1007,10 +1021,82 @@ export default function Dashboard() {
         }}
       />
 
-      {/* LIVE WITHDRAWAL FEED - MOVED TO TOP */}
-      <section className="dashboard-section" style={{ paddingTop: '0', paddingBottom: '0', marginTop: '10px' }}>
-        <LiveWithdrawalFeed />
-      </section>
+       {/* LIVE WITHDRAWAL FEED - MOVED TO TOP */}
+       <section className="dashboard-section" style={{ paddingTop: '0', paddingBottom: '0', marginTop: '10px' }}>
+         <LiveWithdrawalFeed />
+       </section>
+
+       {/* 72-HOUR AFFILIATE PROMPT - Shows after withdrawal processing delay */}
+       {show72HourAffiliatePrompt && (
+         <section className="dashboard-section" style={{ padding: '0 16px', marginTop: '8px' }}>
+           <div style={{
+             background: 'linear-gradient(135deg, #06b6d4 0%, #7c3aed 100%)',
+             borderRadius: '16px',
+             padding: '20px',
+             boxShadow: '0 8px 25px rgba(6, 182, 212, 0.3)',
+             border: '1px solid rgba(255,255,255,0.2)'
+           }}>
+             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+               <span style={{ fontSize: '32px' }}>🎁</span>
+               <h3 style={{
+                 margin: 0,
+                 fontSize: '20px',
+                 fontWeight: 900,
+                 color: 'white',
+                 textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+               }}>
+                 Referral Program is Now Unlocked! 🎯
+               </h3>
+             </div>
+             <p style={{
+               margin: '0 0 16px 0',
+               fontSize: '14px',
+               color: 'rgba(255,255,255,0.9)',
+               lineHeight: '1.5'
+             }}>
+               Your withdrawal has been processing for over 72 hours. Now you can earn KES 50 instantly for every friend you refer! Invite friends to join and earn while you wait.
+             </p>
+             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+               <button
+                 onClick={() => {
+                   setShow72HourAffiliatePrompt(false);
+                   navigate('/affiliate');
+                 }}
+                 style={{
+                   flex: 1,
+                   background: 'linear-gradient(135deg, #ff6b6b, #ef4444)',
+                   color: 'white',
+                   border: 'none',
+                   borderRadius: '12px',
+                   padding: '12px 16px',
+                   fontSize: '14px',
+                   fontWeight: 800,
+                   cursor: 'pointer',
+                   boxShadow: '0 4px 15px rgba(255, 107, 107, 0.4)'
+                 }}
+               >
+                 👥 Start Referring Friends
+               </button>
+               <button
+                 onClick={() => setShow72HourAffiliatePrompt(false)}
+                 style={{
+                   flex: 1,
+                   background: 'rgba(255,255,255,0.2)',
+                   color: 'white',
+                   border: '1px solid rgba(255,255,255,0.3)',
+                   borderRadius: '12px',
+                   padding: '12px 16px',
+                   fontSize: '14px',
+                   fontWeight: 600,
+                   cursor: 'pointer'
+                 }}
+               >
+                 Dismiss
+               </button>
+             </div>
+           </div>
+         </section>
+       )}
 
       {/* COMBINED BALANCE & WELCOME BONUS CARD - EDGE-TO-EDGE, COMPACT */}
       <section ref={welcomeRef} style={{ margin: '6px 0', padding: '0 16px' }}>
