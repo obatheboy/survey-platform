@@ -98,9 +98,17 @@ export default function Auth() {
     setTimeout(() => setInstallFeedback(""), 6000);
   };
 
-  useEffect(() => {
-    navigate(`/auth?mode=${mode}`, { replace: true });
-  }, [mode, navigate]);
+   // ✅ PRESERVE: Keep ref parameter when redirecting to maintain referral context
+   useEffect(() => {
+     const url = new URLSearchParams(window.location.search);
+     const ref = url.get("ref");
+     const modeParam = url.get("mode") === "login" ? "login" : "register";
+     if (ref) {
+       navigate(`/auth?mode=${modeParam}&ref=${ref}`, { replace: true });
+     } else {
+       navigate(`/auth?mode=${modeParam}`, { replace: true });
+     }
+   }, [mode, navigate]);
 
   const validateRegistration = () => {
     const newErrors = {};
