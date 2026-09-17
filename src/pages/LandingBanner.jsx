@@ -20,7 +20,7 @@ export default function LandingBanner() {
          {/* Trust badge */}
         <div style={styles.trustBadge}>
           <span style={styles.trustBadgeIcon}>⚡</span>
-          <span style={styles.trustBadgeText}>ChatWazungu — Multi-Earning Platform</span>
+           <span style={styles.trustBadgeText}>Three Ways to Earn — Surveys, Chat & Affiliate</span>
         </div>
 
         {/* Logo */}
@@ -29,8 +29,8 @@ export default function LandingBanner() {
         </div>
 
         {/* Main headline */}
-        <h1 style={styles.headline}>
-          Multiple Ways to Earn
+         <h1 style={styles.headline}>
+          Three Ways to Earn
           <br />
           <span style={styles.headlineAccent}>Up to KES 6,500 Daily</span>
         </h1>
@@ -38,14 +38,14 @@ export default function LandingBanner() {
         {/* Earnings caption - center */}
         <div style={styles.earningsCaption}>
           <span style={styles.earningsCaptionIcon}>💸</span>
-          <span style={styles.earningsCaptionText}>Surveys • Chat • Affiliate — Earn Daily</span>
+          <span style={styles.earningsCaptionText}>Surveys • Chat Wazungu • Affiliate</span>
         </div>
 
         {/* Subheadline */}
         <p style={styles.subheadline}>
-          Join thousands of users earning with ChatWazungu — surveys, premium chats, and affiliate.
+          One app, three earning paths. Join 500K+ earners making real money every day.
           <br />
-          Register with phone + name and start making money today.
+          Register with phone + name and start now.
         </p>
 
         {/* Earning options grid */}
@@ -108,8 +108,8 @@ export default function LandingBanner() {
 
         {/* CTA */}
         <button style={styles.ctaButton} onClick={handleStart}>
-          START EARNING NOW
-          <span style={styles.ctaArrow}>→</span>
+          START NOW
+          <span style={styles.ctaArrow}>🚀</span>
         </button>
 
         <p style={styles.ctaNote}>

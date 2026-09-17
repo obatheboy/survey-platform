@@ -43,11 +43,17 @@ export default function MultiFunctionDashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [stats, setStats] = useState({ total_unlocks: 0, wallet_balance: 0 });
+  const [selectedDefaultOption, setSelectedDefaultOption] = useState("survey");
 
   useEffect(() => {
     loadUser();
     loadStats();
   }, []);
+
+  const handleStartNow = () => {
+    const option = EARNING_OPTIONS.find(o => o.id === selectedDefaultOption);
+    if (option) handleOptionClick(option);
+  };
 
   const loadUser = async () => {
     try {
@@ -78,8 +84,11 @@ export default function MultiFunctionDashboard() {
     <div className="multifunc-dashboard">
       <div className="multifunc-header">
         <div className="welcome-section">
-          <h1>ChatWazungu Hub</h1>
-          <p>Choose an earning activity below</p>
+          <h1 style={{ color: "#FFE66D", fontSize: "28px", fontWeight: "900", marginBottom: "8px" }}>
+            💰
+          </h1>
+          <h2>Your Earnings Hub</h2>
+          <p style={{ color: "#aaa", fontSize: "14px" }}>Select a task below to start earning</p>
         </div>
         <div className="quick-balance">
           <div className="balance-item">
@@ -91,6 +100,14 @@ export default function MultiFunctionDashboard() {
             <span className="balance-value">{stats.total_unlocks}/6</span>
           </div>
         </div>
+      </div>
+
+      {/* Start Now Button */}
+      <div className="start-now-container">
+        <button className="start-now-btn" onClick={handleStartNow}>
+          START NOW
+        </button>
+        <p className="start-now-note">Starting with surveys — KES 1,200 welcome bonus</p>
       </div>
 
       <div className="options-grid">
@@ -150,7 +167,7 @@ export default function MultiFunctionDashboard() {
           align-items: center;
           flex-wrap: wrap;
           gap: 16px;
-          margin-bottom: 32px;
+          margin-bottom: 16px;
           padding: 24px;
           background: linear-gradient(135deg, ${CHATWAZUNGU_GREEN} 0%, #0A8550 100%);
           border-radius: 20px;
@@ -158,17 +175,59 @@ export default function MultiFunctionDashboard() {
         }
 
         .welcome-section h1 {
-          font-size: 24px;
+          font-size: 28px;
           font-weight: 800;
           margin: 0 0 4px;
+          color: ${CHATWAZUNGU_ACCENT};
+        }
+
+        .welcome-section h2 {
+          font-size: 20px;
+          font-weight: 700;
+          margin: 0;
           color: white;
         }
 
         .welcome-section p {
-          font-size: 13px;
+          font-size: 14px;
           opacity: 0.9;
           margin: 0;
           color: rgba(255, 255, 255, 0.8);
+        }
+
+        .start-now-container {
+          text-align: center;
+          margin-bottom: 32px;
+        }
+
+        .start-now-btn {
+          background: linear-gradient(135deg, ${CHATWAZUNGU_ACCENT} 0%, #f59e0b 100%);
+          color: ${CHATWAZUNGU_DARK};
+          border: none;
+          border-radius: 28px;
+          padding: 18px 56px;
+          font-size: 20px;
+          font-weight: 900;
+          cursor: pointer;
+          box-shadow: 0 8px 32px rgba(255, 230, 109, 0.4);
+          letter-spacing: 2px;
+          transition: all 0.2s;
+          animation: pulse-glow 2s ease-in-out infinite;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .start-now-btn:hover {
+          transform: scale(1.05);
+          box-shadow: 0 12px 40px rgba(255, 230, 109, 0.6);
+        }
+
+        .start-now-note {
+          margin-top: 12px;
+          font-size: 13px;
+          color: #aaa;
+          font-weight: 600;
         }
 
         .quick-balance {
