@@ -32,6 +32,11 @@ exports.requestWithdraw = async (req, res) => {
     const userId = req.user.id;
     let { phone_number, amount, type, mpesa_code } = req.body;
 
+    // Normalize type to uppercase for REGULAR/VIP/VVIP plans
+    if (type && typeof type === 'string' && ['regular', 'vip', 'vvip'].includes(type.toLowerCase())) {
+      type = type.toUpperCase();
+    }
+
     // 🟢🟢🟢 DEBUG: Log the request
     console.log("\n🔵🔵🔵 WITHDRAWAL REQUEST DEBUG 🔵🔵🔵");
     console.log("Timestamp:", new Date().toISOString());
