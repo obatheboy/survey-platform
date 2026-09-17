@@ -17,10 +17,9 @@ export default function LandingBanner() {
       <div style={styles.orb3}></div>
 
       <div style={styles.content}>
-         {/* Trust badge */}
+        {/* Trust badge */}
         <div style={styles.trustBadge}>
-          <span style={styles.trustBadgeIcon}>⚡</span>
-           <span style={styles.trustBadgeText}>3 Ways to Earn • KES 6,500/day</span>
+          <span style={styles.trustBadgeText}>3 Ways to Earn • KES 6,500/day</span>
         </div>
 
         {/* Logo */}
@@ -29,22 +28,11 @@ export default function LandingBanner() {
         </div>
 
         {/* Main headline */}
-         <h1 style={styles.headline}>
+        <h1 style={styles.headline}>
           ChatWazungu
           <br />
           <span style={styles.headlineAccent}>Multiple Ways to Earn</span>
         </h1>
-
-        {/* Earnings caption - center */}
-        <div style={styles.earningsCaption}>
-          <span style={styles.earningsCaptionIcon}>💸</span>
-          <span style={styles.earningsCaptionText}>Surveys • Chat • Affiliate</span>
-        </div>
-
-        {/* Subheadline */}
-        <p style={styles.subheadline}>
-          One app. Three earning paths. Register with phone + name now.
-        </p>
 
         {/* Earning options grid */}
         <div style={styles.earnOptions}>
@@ -62,6 +50,13 @@ export default function LandingBanner() {
           </div>
         </div>
 
+        {/* Small enticing caption */}
+        <p style={styles.subheadline}>
+          Make up to KES 6,500 today by completing simple tasks:
+          <br />
+          📊 Complete surveys · 💬 Chat with wazungu · 👥 Refer friends
+        </p>
+
         {/* Stats row */}
         <div style={styles.statsRow}>
           <div style={styles.statCard}>
@@ -75,8 +70,8 @@ export default function LandingBanner() {
           </div>
           <div style={styles.statDivider}></div>
           <div style={styles.statCard}>
-            <span style={styles.statNumber}>🔓</span>
-            <span style={styles.statLabel}>KES 99 Unlock</span>
+            <span style={styles.statNumber}>⚡</span>
+            <span style={styles.statLabel}>Instant Withdraw</span>
           </div>
         </div>
 
@@ -96,7 +91,7 @@ export default function LandingBanner() {
           </div>
         </div>
 
-        {/* CTA - centered and prominent */}
+        {/* CTA - centered and bold */}
         <div style={styles.ctaContainer}>
           <button style={styles.ctaButton} onClick={handleStart}>
             START NOW 🚀
@@ -110,51 +105,8 @@ export default function LandingBanner() {
         <p style={styles.tapHint}>
           👆 Tap anywhere to continue
         </p>
-
-        {/* Trust indicators */}
-        <div style={styles.trustRow}>
-          <div style={styles.trustItem}>
-            <span style={styles.trustIcon}>🛡️</span>
-            <span>Verified Platform</span>
-          </div>
-          <div style={styles.trustItem}>
-            <span style={styles.trustIcon}>💸</span>
-            <span>Fast Payments</span>
-          </div>
-          <div style={styles.trustItem}>
-            <span style={styles.trustIcon}>⭐</span>
-            <span>Top Rated</span>
-          </div>
-        </div>
       </div>
 
-      <style>{`
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body, #root { height: 100%; width: 100%; margin: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-
-        @keyframes float-orb {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          25% { transform: translate(30px, -40px) scale(1.1); }
-          50% { transform: translate(-20px, -20px) scale(0.9); }
-          75% { transform: translate(-30px, 20px) scale(1.05); }
-        }
-
-        @keyframes pulse-glow {
-          0%, 100% { box-shadow: 0 8px 32px rgba(124, 58, 237, 0.4); }
-          50% { box-shadow: 0 12px 48px rgba(6, 182, 212, 0.6); }
-        }
-
-        @keyframes shimmer {
-          0% { background-position: -200% 0; }
-          100% { background-position: 200% 0; }
-        }
-
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </div>
   );
 }
@@ -209,7 +161,7 @@ const styles = {
   content: {
     width: "100%",
     maxWidth: "400px",
-    padding: "20px 16px 32px",
+    padding: "16px 14px 24px",
     position: "relative",
     zIndex: 2,
     textAlign: "center",
@@ -219,15 +171,15 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    width: "64px",
-    height: "64px",
-    margin: "0 auto 20px",
+    width: "56px",
+    height: "56px",
+    margin: "0 auto 16px",
     background: "linear-gradient(135deg, #0DAA65 0%, #0A0A0A 100%)",
-    borderRadius: "18px",
+    borderRadius: "16px",
     boxShadow: "0 8px 32px rgba(13, 170, 101, 0.4)",
   },
   logoText: {
-    fontSize: "28px",
+    fontSize: "24px",
     fontWeight: "900",
     color: "white",
     letterSpacing: "1px",
@@ -235,20 +187,17 @@ const styles = {
   trustBadge: {
     display: "inline-flex",
     alignItems: "center",
-    gap: "8px",
+    gap: "6px",
     background: "rgba(13, 170, 101, 0.15)",
     border: "1px solid rgba(13, 170, 101, 0.3)",
-    padding: "8px 18px",
-    borderRadius: "30px",
-    fontSize: "12px",
+    padding: "6px 16px",
+    borderRadius: "24px",
+    fontSize: "11px",
     fontWeight: "700",
     color: "#c4b5fd",
-    marginBottom: "12px",
+    marginBottom: "10px",
     backdropFilter: "blur(10px)",
     letterSpacing: "0.3px",
-  },
-  trustBadgeIcon: {
-    fontSize: "14px",
   },
   trustBadgeText: {
     background: "linear-gradient(90deg, #c4b5fd, #67e8f9)",
@@ -256,67 +205,13 @@ const styles = {
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
   },
-  earningsBadge: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "8px",
-    background: "linear-gradient(135deg, rgba(124, 58, 237, 0.25) 0%, rgba(6, 182, 212, 0.25) 100%)",
-    border: "1px solid rgba(124, 58, 237, 0.4)",
-    padding: "10px 22px",
-    borderRadius: "30px",
-    fontSize: "14px",
-    fontWeight: "800",
-    color: "#fff",
-    marginBottom: "20px",
-    backdropFilter: "blur(10px)",
-    boxShadow: "0 0 24px rgba(124, 58, 237, 0.3)",
-    letterSpacing: "0.3px",
-  },
-  earningsIcon: {
-    fontSize: "18px",
-  },
-  earningsText: {
-    background: "linear-gradient(90deg, #ff7a7a, #ffd700)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-    backgroundClip: "text",
-    fontWeight: "900",
-  },
-  earningsCaption: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "10px",
-    background: "linear-gradient(135deg, rgba(124, 58, 237, 0.3) 0%, rgba(6, 182, 212, 0.3) 100%)",
-    border: "1px solid rgba(124, 58, 237, 0.5)",
-    padding: "14px 28px",
-    borderRadius: "30px",
-    fontSize: "16px",
-    fontWeight: "800",
-    color: "#fff",
-    marginBottom: "24px",
-    backdropFilter: "blur(10px)",
-    boxShadow: "0 0 32px rgba(124, 58, 237, 0.4)",
-    letterSpacing: "0.3px",
-    animation: "pulse-glow 3s ease-in-out infinite",
-  },
-  earningsCaptionIcon: {
-    fontSize: "22px",
-  },
-  earningsCaptionText: {
-    background: "linear-gradient(90deg, #ff7a7a, #ffd700)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-    backgroundClip: "text",
-    fontWeight: "900",
-  },
   headline: {
-    fontSize: "38px",
+    fontSize: "26px",
     fontWeight: "900",
     color: "#fff",
-    lineHeight: "1.15",
-    marginBottom: "16px",
-    textShadow: "0 4px 24px rgba(0,0,0,0.4)",
-    letterSpacing: "-1px",
+    lineHeight: "1.1",
+    marginBottom: "10px",
+    textShadow: "0 2px 12px rgba(0,0,0,0.4)",
   },
   headlineAccent: {
     background: "linear-gradient(90deg, #06b6d4, #7c3aed)",
@@ -324,12 +219,39 @@ const styles = {
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
   },
+  earnOptions: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    marginBottom: "16px",
+    maxWidth: "360px",
+    marginLeft: "auto",
+    marginRight: "auto",
+  },
+  earnOption: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    background: "rgba(255,255,255,0.06)",
+    border: "1px solid rgba(13, 170, 101, 0.25)",
+    borderRadius: "12px",
+    padding: "10px 14px",
+    backdropFilter: "blur(6px)",
+  },
+  earnOptionIcon: {
+    fontSize: "20px",
+  },
+  earnOptionText: {
+    fontSize: "13px",
+    fontWeight: "700",
+    color: "#fff",
+  },
   subheadline: {
-    fontSize: "15px",
-    color: "rgba(255,255,255,0.8)",
-    lineHeight: "1.6",
-    marginBottom: "28px",
-    maxWidth: "340px",
+    fontSize: "13px",
+    color: "rgba(255,255,255,0.85)",
+    lineHeight: "1.5",
+    marginBottom: "18px",
+    maxWidth: "360px",
     marginLeft: "auto",
     marginRight: "auto",
     textShadow: "0 1px 4px rgba(0,0,0,0.3)",
@@ -338,155 +260,96 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    gap: "8px",
-    marginBottom: "24px",
-    padding: "16px 12px",
-    background: "rgba(255,255,255,0.08)",
-    borderRadius: "20px",
-    backdropFilter: "blur(12px)",
-    border: "1px solid rgba(255,255,255,0.12)",
+    gap: "6px",
+    marginBottom: "18px",
+    padding: "10px 8px",
+    background: "rgba(255,255,255,0.06)",
+    borderRadius: "16px",
+    backdropFilter: "blur(8px)",
+    border: "1px solid rgba(255,255,255,0.1)",
   },
   statCard: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: "4px",
+    gap: "2px",
     flex: 1,
   },
   statNumber: {
-    fontSize: "18px",
+    fontSize: "16px",
     fontWeight: "800",
     color: "#fff",
     textShadow: "0 2px 8px rgba(0,0,0,0.3)",
   },
   statLabel: {
-    fontSize: "10px",
+    fontSize: "9px",
     color: "rgba(255,255,255,0.7)",
     fontWeight: "600",
     textTransform: "uppercase",
-    letterSpacing: "0.5px",
+    letterSpacing: "0.3px",
   },
   statDivider: {
     width: "1px",
-    height: "32px",
-    background: "rgba(255,255,255,0.15)",
-  },
-  earnOptions: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px",
-    marginBottom: "24px",
-    maxWidth: "360px",
-    marginLeft: "auto",
-    marginRight: "auto",
-  },
-  earnOption: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    background: "rgba(255,255,255,0.08)",
-    border: "1px solid rgba(13, 170, 101, 0.3)",
-    borderRadius: "16px",
-    padding: "14px 18px",
-    backdropFilter: "blur(8px)",
-  },
-  earnOptionIcon: {
-    fontSize: "22px",
-  },
-  earnOptionText: {
-    fontSize: "14px",
-    fontWeight: "700",
-    color: "#fff",
+    height: "24px",
+    background: "rgba(255,255,255,0.12)",
   },
   benefits: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
+    display: "flex",
+    justifyContent: "center",
     gap: "8px",
-    marginBottom: "28px",
-    maxWidth: "360px",
-    marginLeft: "auto",
-    marginRight: "auto",
+    marginBottom: "20px",
+    flexWrap: "wrap",
   },
   benefit: {
     display: "flex",
     alignItems: "center",
-    gap: "8px",
-    fontSize: "12px",
+    gap: "6px",
+    fontSize: "11px",
     color: "#fff",
     fontWeight: "600",
-    padding: "12px",
-    background: "rgba(255,255,255,0.08)",
-    borderRadius: "14px",
-    border: "1px solid rgba(255,255,255,0.12)",
-    backdropFilter: "blur(8px)",
-    transition: "all 0.3s ease",
+    padding: "6px 12px",
+    background: "rgba(255,255,255,0.06)",
+    borderRadius: "12px",
+    border: "1px solid rgba(255,255,255,0.1)",
+    backdropFilter: "blur(4px)",
   },
   benefitIcon: {
-    fontSize: "18px",
+    fontSize: "14px",
     flexShrink: 0,
   },
   benefitText: {
     textShadow: "0 1px 3px rgba(0,0,0,0.2)",
   },
+  ctaContainer: {
+    textAlign: "center",
+    margin: "16px 0",
+  },
   ctaButton: {
-    background: "linear-gradient(135deg, #0DAA65 0%, #1a8d55 100%)",
-    color: "#fff",
+    background: "linear-gradient(135deg, #FFE66D 0%, #f59e0b 100%)",
+    color: "#0A0A0A",
     border: "none",
-    borderRadius: "20px",
-    padding: "20px 48px",
+    borderRadius: "28px",
+    padding: "16px 48px",
     fontSize: "18px",
     fontWeight: "900",
     cursor: "pointer",
-    boxShadow: "0 8px 32px rgba(13, 170, 101, 0.5)",
-    letterSpacing: "0.5px",
-    width: "100%",
-    maxWidth: "340px",
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "10px",
+    boxShadow: "0 8px 32px rgba(255, 230, 109, 0.4)",
+    letterSpacing: "1px",
     animation: "pulse-glow 3s ease-in-out infinite",
     transition: "transform 0.2s",
   },
-  ctaArrow: {
-    fontSize: "20px",
-    fontWeight: "400",
-  },
   ctaNote: {
-    marginTop: "12px",
-    fontSize: "12px",
+    marginTop: "10px",
+    fontSize: "11px",
     color: "rgba(255,255,255,0.6)",
     fontWeight: "500",
-    letterSpacing: "0.3px",
   },
   tapHint: {
-    marginTop: "16px",
+    marginTop: "12px",
     fontSize: "11px",
     color: "rgba(255,255,255,0.5)",
     fontWeight: "600",
     letterSpacing: "0.5px",
     animation: "fadeInUp 1s ease-out 0.5s both",
-  },
-  trustRow: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "12px",
-    flexWrap: "wrap",
-    marginTop: "24px",
-  },
-  trustItem: {
-    display: "flex",
-    alignItems: "center",
-    gap: "6px",
-    fontSize: "11px",
-    color: "rgba(255,255,255,0.75)",
-    fontWeight: "600",
-    padding: "6px 14px",
-    background: "rgba(255,255,255,0.06)",
-    borderRadius: "20px",
-    border: "1px solid rgba(255,255,255,0.1)",
-  },
-  trustIcon: {
-    fontSize: "14px",
   },
 };

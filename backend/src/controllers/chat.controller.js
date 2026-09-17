@@ -91,19 +91,28 @@ const unlockProfile = async (req, res) => {
     }
 
     const megapayService = require('../services/megapay.service');
+    const { generateShortReference } = megapayService;
 
-    const result = await megapayService.initiateSTKPush({
-      phone_number: phone_number || req.user.phone,
-      amount: 99,
-      account_reference: `UNLOCK_${profileId}_${userId}`,
-      transaction_description: `Unlock profile ${profile.name}`
-    });
+    const phone = phone_number || req.user.phone;
+    const reference = generateShortReference("UNLOCK");
+
+    const result = await megapayService.initiateSTKPush(99, phone, reference);
+
+    if (!result.success) {
+      console.error('STK push failed:', result);
+      return res.status(400).json({
+        error: 'Failed to initiate STK push',
+        message: result.message || 'Payment gateway error'
+      });
+    }
 
     res.json({
       message: 'STK push initiated for profile unlock',
       checkout_url: result.checkout_url,
-      payment_reference: result.payment_reference,
+      payment_reference: reference,
+      transaction_request_id: result.transaction_request_id,
       amount: 99,
+      phone: result.phone,
       profile: {
         id: profile._id,
         name: profile.name,
@@ -119,11 +128,11 @@ const unlockProfile = async (req, res) => {
 
 const confirmUnlock = async (req, res) => {
   try {
-    const { profileId, payment_reference, result_code } = req.body;
+    const { profileId, transaction_request_id, result_code } = req.body;
     const userId = req.user.id;
 
-    if (result_code !== '200' && result_code !== 'Success' && result_code !== 'success') {
-      return res.status(400).json({ error: 'Payment not successful' });
+    if (!transaction_request_id) {
+      return res.status(400).json({ error: 'Missing transaction_request_id' });
     }
 
     const profile = await Profile.findById(profileId);
@@ -137,6 +146,17 @@ const confirmUnlock = async (req, res) => {
       return res.json({
         message: 'Profile already unlocked',
         is_unlocked: true
+      });
+    }
+
+    const megapayService = require('../services/megapay.service');
+    const statusResult = await megapayService.checkTransactionStatus(transaction_request_id, 99);
+
+    if (!statusResult.success || !statusResult.completed) {
+      return res.status(400).json({
+        error: 'Payment not confirmed',
+        message: statusResult.resultDesc || statusResult.status || 'Payment not yet confirmed',
+        paid: false
       });
     }
 

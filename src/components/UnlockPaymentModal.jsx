@@ -20,7 +20,7 @@ export default function UnlockPaymentModal({ profile, onSuccess, onClose }) {
     setLoading(true);
     try {
       const res = await chatWazunguApi.unlockProfile(profile.id, normalizedPhone);
-      setPaymentRef(res.data.payment_reference);
+      setPaymentRef(res.data.transaction_request_id);
       setStep("instructions");
       toast.success("STK push sent! Enter your M-Pesa PIN");
     } catch (err) {
@@ -35,8 +35,7 @@ export default function UnlockPaymentModal({ profile, onSuccess, onClose }) {
     setLoading(true);
     try {
       await chatWazunguApi.confirmUnlock(profile.id, {
-        payment_reference: paymentRef,
-        result_code: "200"
+        transaction_request_id: paymentRef
       });
       toast.success("Profile unlocked! You earned KES 500");
       onSuccess();
