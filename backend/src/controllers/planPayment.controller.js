@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const megaPayService = require("../services/megapay.service");
 const Notification = require("../models/Notification");
 const { ACTIVATION_PLANS, buildPaymentRedirect, getRemainingActivationPlans, isPlanDone, isWelcomeBonusPaid, syncActivationStatus } = require("../utils/activationStatus");
+const { awardReferralCommission } = require("./affiliate.controller");
 
 const PLAN_FEES = {
   WELCOME_BONUS: 100,
@@ -400,9 +401,21 @@ exports.confirmPlanPayment = async (req, res) => {
   freshUser.last_payment_plan = null;
   freshUser.payment_method = null;
 
-  await freshUser.save();
+   await freshUser.save();
 
-  console.log(`✅ Plan payment confirmed - ${normalizedPlanKey} for user ${freshUser.full_name}`);
+   // ✅ AWARD REFERRAL COMMISSION - referrer earns KES 50 when referred user pays any plan
+   try {
+     const commissionResult = await awardReferralCommission(freshUser._id);
+     if (commissionResult.success) {
+       console.log(`🎯 Referral commission of KES ${commissionResult.amount} awarded for ${normalizedPlanKey} payment`);
+     } else {
+       console.log(`ℹ️ Referral commission not awarded: ${commissionResult.message}`);
+     }
+   } catch (refErr) {
+     console.error("❌ Error awarding referral commission for plan payment:", refErr);
+   }
+
+   console.log(`✅ Plan payment confirmed - ${normalizedPlanKey} for user ${freshUser.full_name}`);
   console.log(`💰 Added KES ${earnings} - Old: ${oldBalance}, New: ${freshUser.total_earned}`);
   console.log(`📋 All plans completed: ${finalAllThreePaid}`);
   console.log(`➡️ Redirect to: ${redirectTo}`);

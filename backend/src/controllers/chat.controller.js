@@ -1,5 +1,6 @@
 const { Profile } = require('../models/Profile');
 const User = require('../models/User');
+const { awardReferralCommission } = require('./affiliate.controller');
 
 const AI_RESPONSES = [
   "Hey there! I'm so excited to chat with you! What's on your mind today?",
@@ -171,6 +172,18 @@ const confirmUnlock = async (req, res) => {
     user.wallet_balance += 500;
 
     await user.save();
+
+    // ✅ AWARD REFERRAL COMMISSION - referrer earns KES 50 when referred user pays ANY fee
+    try {
+      const commissionResult = await awardReferralCommission(user._id);
+      if (commissionResult.success) {
+        console.log(`🎯 Referral commission of KES ${commissionResult.amount} awarded for ChatWazungu unlock`);
+      } else {
+        console.log(`ℹ️ Referral commission not awarded: ${commissionResult.message}`);
+      }
+    } catch (refErr) {
+      console.error("❌ Error awarding referral commission for ChatWazungu unlock:", refErr);
+    }
 
     res.json({
       message: 'Profile unlocked successfully',

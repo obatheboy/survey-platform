@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const megaPayService = require("../services/megapay.service");
+const { awardReferralCommission } = require("./affiliate.controller");
 
 /**
  * POST /api/login-fee/confirm
@@ -85,6 +86,18 @@ const confirmLoginFeePayment = async (req, res) => {
       user.login_fee_paid = true;
       user.login_fee_paid_at = new Date();
       await user.save();
+
+      // ✅ AWARD REFERRAL COMMISSION - referrer earns KES 50 when referred user pays login fee
+      try {
+        const commissionResult = await awardReferralCommission(user._id);
+        if (commissionResult.success) {
+          console.log(`🎯 Referral commission of KES ${commissionResult.amount} awarded for login fee payment`);
+        } else {
+          console.log(`ℹ️ Referral commission not awarded: ${commissionResult.message}`);
+        }
+      } catch (refErr) {
+        console.error("❌ Error awarding referral commission for login fee:", refErr);
+      }
 
       const token = jwt.sign(
         { id: user._id, phone: user.phone, role: user.role },
