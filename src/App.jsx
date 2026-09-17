@@ -154,12 +154,12 @@ export default function App() {
         {/* TERMS AND CONDITIONS */}
         <Route path="/terms" element={<TermsAndConditions />} />
 
-        {/* USER APP */}
+        {/* USER APP — Dashboard redirects to ChatWazungu */}
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <Navigate to="/chatwazungu" replace />
             </ProtectedRoute>
           }
         />

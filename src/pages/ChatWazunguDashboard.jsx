@@ -202,14 +202,22 @@ export default function ChatWazunguDashboard() {
         />
       )}
 
-      <div className="dashboard-footer">
-        <button
-          className="withdraw-btn"
-          onClick={() => navigate("/withdrawal")}
-          disabled={stats.total_unlocks < 6 || stats.wallet_balance < 500}
-        >
-          Withdraw Earnings (Min: KSH 500, 6+ unlocks)
-        </button>
+        <div className="dashboard-footer">
+        <div className="dashboard-actions">
+          <button
+            className="withdraw-btn"
+            onClick={() => navigate("/withdrawal")}
+            disabled={stats.total_unlocks < 6 || stats.wallet_balance < 500}
+          >
+            Withdraw Earnings (Min: KSH 500, 6+ unlocks)
+          </button>
+          <button
+            className="affiliate-btn"
+            onClick={() => navigate("/affiliate")}
+          >
+            Affiliate Dashboard
+          </button>
+        </div>
       </div>
 
       <style jsx>{`
@@ -462,8 +470,13 @@ export default function ChatWazunguDashboard() {
           margin-top: 20px;
         }
 
+        .dashboard-actions {
+          display: flex;
+          gap: 12px;
+        }
+
         .withdraw-btn {
-          width: 100%;
+          flex: 1;
           padding: 16px;
           background-color: ${CHATWAZUNGU_ACCENT};
           color: ${CHATWAZUNGU_DARK};
@@ -473,6 +486,23 @@ export default function ChatWazunguDashboard() {
           font-weight: 700;
           cursor: pointer;
           transition: all 0.2s;
+        }
+
+        .affiliate-btn {
+          flex: 1;
+          padding: 16px;
+          background-color: transparent;
+          color: white;
+          border: 2px solid ${CHATWAZUNGU_GREEN};
+          border-radius: 24px;
+          font-size: 16px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .affiliate-btn:hover {
+          background-color: ${CHATWAZUNGU_GREEN};
         }
 
         .withdraw-btn:hover:not(:disabled) {

@@ -23,24 +23,24 @@ export default function LandingBanner() {
           <span style={styles.trustBadgeText}>Trusted by 50,000+ Earners</span>
         </div>
 
-        {/* Main headline */}
+         {/* Main headline */}
         <h1 style={styles.headline}>
-          From Simple Tasks
+          ChatWazungu
           <br />
-          To <span style={styles.headlineAccent}>Real Income</span>
+          <span style={styles.headlineAccent}>Premium Chat Platform</span>
         </h1>
 
         {/* Earnings caption - center */}
         <div style={styles.earningsCaption}>
           <span style={styles.earningsCaptionIcon}>💸</span>
-          <span style={styles.earningsCaptionText}>Earn KES 1,200 – KES 6,500 Daily</span>
+          <span style={styles.earningsCaptionText}>Unlock 200+ Profiles & Earn KES 500 Each</span>
         </div>
 
         {/* Subheadline */}
         <p style={styles.subheadline}>
-          Complete quick surveys right from your phone.
+          Register with phone + name, pay KES 99 to unlock profiles, chat with AI, and earn.
           <br />
-          No experience needed — your time pays you instantly.
+          Withdraw only after 6+ unlocks. KES 1,200 welcome bonus included.
         </p>
 
         {/* Stats row */}
