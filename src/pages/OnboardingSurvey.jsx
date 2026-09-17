@@ -74,10 +74,10 @@ export default function OnboardingSurvey() {
       });
       localStorage.setItem("survey_onboarding_completed", "true");
       localStorage.setItem("showWelcomeBonusOnDashboard", "true");
-      navigate("/dashboard");
+      navigate("/hub");
     } catch (error) {
       console.error("Failed to submit survey answers:", error);
-      navigate("/dashboard");
+      navigate("/hub");
     } finally {
       setLoading(false);
     }
