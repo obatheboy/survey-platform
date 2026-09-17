@@ -192,7 +192,7 @@ export default function Auth() {
           navigate("/onboarding", { replace: true });
         } else {
           localStorage.setItem("showWelcomeBonusOnDashboard", "true");
-          navigate("/dashboard", { replace: true });
+          navigate("/hub", { replace: true });
         }
       }
       return;
@@ -206,7 +206,7 @@ export default function Auth() {
         const token = localStorage.getItem("token");
         if (cachedUser && token) {
           setLoginMessage("✓ Offline mode: using saved session.");
-          setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
+          setTimeout(() => navigate("/hub", { replace: true }), 1500);
           return;
         }
         setLoginMessage("Offline. Connect to the internet to log in.");

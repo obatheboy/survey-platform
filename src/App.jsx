@@ -155,12 +155,22 @@ export default function App() {
         {/* TERMS AND CONDITIONS */}
         <Route path="/terms" element={<TermsAndConditions />} />
 
-        {/* USER APP — Dashboard shows multifunction landing */}
+        {/* USER APP — Hub for multiple earning options */}
+        <Route
+          path="/hub"
+          element={
+            <ProtectedRoute>
+              <MultiFunctionDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* USER APP — Survey Dashboard (original, unchanged) */}
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <MultiFunctionDashboard />
+              <Dashboard />
             </ProtectedRoute>
           }
         />

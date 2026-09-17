@@ -2,14 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 import { chatWazunguApi } from "../api/api";
-import ChatWindow from "../components/ChatWindow";
-import UnlockPaymentModal from "../components/UnlockPaymentModal";
 
 const CHATWAZUNGU_GREEN = "#0DAA65";
 const CHATWAZUNGU_DARK = "#0A0A0A";
 const CHATWAZUNGU_CARD_BG = "#1A1A1A";
 const CHATWAZUNGU_ACCENT = "#FFE66D";
-const CHATWAZUNGU_PURPLE = "#7c3aed";
 const CHATWAZUNGU_BLUE = "#06b6d4";
 
 const EARNING_OPTIONS = [
@@ -18,9 +15,8 @@ const EARNING_OPTIONS = [
     title: "Do Surveys",
     subtitle: "Earn KES 1,200 - 6,500 daily",
     icon: "📊",
-    color: CHATWAZUNGU_BLUE,
     gradient: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
-    route: "/surveys",
+    route: "/dashboard",
     description: "Complete surveys and earn between KES 1,200 and 6,500 daily.",
   },
   {
@@ -28,7 +24,6 @@ const EARNING_OPTIONS = [
     title: "Chat Wazungu",
     subtitle: "Earn KES 500 - 5,500 daily",
     icon: "💬",
-    color: CHATWAZUNGU_GREEN,
     gradient: "linear-gradient(135deg, #0DAA65 0%, #1a8d55 100%)",
     route: "/chatwazungu",
     description: "Unlock premium profiles for KES 99, chat with AI, earn KES 500 per unlock.",
@@ -38,20 +33,9 @@ const EARNING_OPTIONS = [
     title: "Affiliate Program",
     subtitle: "Earn endless commissions",
     icon: "👥",
-    color: "#FF6600",
     gradient: "linear-gradient(135deg, #ea580c 0%, #FF6600 100%)",
     route: "/affiliate",
     description: "Refer friends and earn endless commissions on every unlock and survey.",
-  },
-  {
-    id: "bonus",
-    title: "Welcome Bonus",
-    subtitle: "Get KES 1,200 instantly",
-    icon: "🎁",
-    color: "#FFD700",
-    gradient: "linear-gradient(135deg, #FFD700 0%, #f59e0b 100%)",
-    route: "/withdrawal",
-    description: "Your KES 1,200 welcome bonus is waiting. Complete your profile and withdraw.",
   },
 ];
 
@@ -59,9 +43,6 @@ export default function MultiFunctionDashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [stats, setStats] = useState({ total_unlocks: 0, wallet_balance: 0 });
-  const [selectedProfile, setSelectedProfile] = useState(null);
-  const [showChat, setShowChat] = useState(false);
-  const [showUnlockModal, setShowUnlockModal] = useState(false);
 
   useEffect(() => {
     loadUser();
@@ -90,10 +71,6 @@ export default function MultiFunctionDashboard() {
   };
 
   const handleOptionClick = (option) => {
-    if (option.id === "bonus") {
-      navigate("/withdraw-form");
-      return;
-    }
     navigate(option.route);
   };
 
@@ -101,12 +78,12 @@ export default function MultiFunctionDashboard() {
     <div className="multifunc-dashboard">
       <div className="multifunc-header">
         <div className="welcome-section">
-          <h1>Welcome to ChatWazungu</h1>
-          <p>Your multi-earning platform — surveys, chats, and affiliate</p>
+          <h1>ChatWazungu Hub</h1>
+          <p>Choose an earning activity below</p>
         </div>
         <div className="quick-balance">
           <div className="balance-item">
-            <span className="balance-label">Wallet</span>
+            <span className="balance-label">ChatWazungu Wallet</span>
             <span className="balance-value">KSH {(stats.wallet_balance || 0).toLocaleString()}</span>
           </div>
           <div className="balance-item">
@@ -137,7 +114,7 @@ export default function MultiFunctionDashboard() {
       </div>
 
       <div className="daily-potential">
-        <h3>Your Daily Earning Potential</h3>
+        <h3>Combined Daily Earning Potential</h3>
         <div className="potential-breakdown">
           <div className="potential-item">
             <span>Surveys</span>
@@ -323,10 +300,6 @@ export default function MultiFunctionDashboard() {
           justify-content: space-between;
           padding: 8px 0;
           border-bottom: 1px solid #333;
-        }
-
-        .potential-item:last-child {
-          border-bottom: none;
         }
 
         .potential-total {
