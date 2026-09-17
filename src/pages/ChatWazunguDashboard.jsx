@@ -60,9 +60,14 @@ export default function ChatWazunguDashboard() {
 
   const handlePaymentSuccess = async () => {
     setShowUnlockModal(false);
-    setSelectedProfile(null);
     await loadProfiles();
     await loadStats();
+    
+    if (selectedProfile) {
+      const updatedProfile = (await chatWazunguApi.getProfile(selectedProfile.id)).data;
+      setActiveChat(updatedProfile);
+    }
+    setSelectedProfile(null);
     toast.success("Profile unlocked! You earned KES 500");
   };
 

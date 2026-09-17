@@ -29,7 +29,7 @@ export default function LandingBanner() {
 
         {/* Main headline */}
         <h1 style={styles.headline}>
-          ChatWazungu
+          LEGIT APP
           <br />
           <span style={styles.headlineAccent}>Multiple Ways to Earn</span>
         </h1>
