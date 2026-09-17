@@ -370,13 +370,14 @@ exports.requestWithdraw = async (req, res) => {
      } else {
        let availableBalance = user.total_earned || 0;
        
-       if (type !== "welcome_bonus" && user.plans && user.plans[type]) {
-         const planData = user.plans[type];
-         if (planData.is_activated && planData.completed) {
-           const PLAN_TOTAL_EARNINGS = { REGULAR: 1500, VIP: 2000, VVIP: 3000 };
-           availableBalance = Math.max(availableBalance, PLAN_TOTAL_EARNINGS[type] || 0);
-         }
-       }
+        if (type !== "welcome_bonus" && user.plans && user.plans[type]) {
+          const planData = user.plans[type];
+          // ✅ CHANGED: Allow withdrawal of plan earnings when activated (not just when completed)
+          if (planData.is_activated) {
+            const PLAN_TOTAL_EARNINGS = { REGULAR: 1500, VIP: 2000, VVIP: 3000 };
+            availableBalance = Math.max(availableBalance, PLAN_TOTAL_EARNINGS[type] || 0);
+          }
+        }
        
        if (availableBalance < withdrawAmount) {
          console.log(`❌ Insufficient balance: ${availableBalance} < ${withdrawAmount}`);
