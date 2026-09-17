@@ -109,12 +109,14 @@ const generateProfiles = () => {
   return profiles;
 };
 
+const ProfileModel = mongoose.model('Profile', profileSchema);
+
 const seedProfiles = async () => {
   try {
-    const count = await mongoose.model('Profile').estimatedDocumentCount();
+    const count = await ProfileModel.estimatedDocumentCount();
     if (count === 0) {
       const profiles = generateProfiles();
-      await mongoose.model('Profile').insertMany(profiles);
+      await ProfileModel.insertMany(profiles);
       console.log(`✅ Seeded ${profiles.length} profiles`);
     } else {
       console.log(`ℹ️  Profiles already exist: ${count}`);
@@ -125,7 +127,7 @@ const seedProfiles = async () => {
 };
 
 module.exports = {
-  Profile: mongoose.model('Profile', profileSchema),
+  Profile: ProfileModel,
   generateProfiles,
   seedProfiles
 };

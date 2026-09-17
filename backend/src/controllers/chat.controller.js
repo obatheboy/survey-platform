@@ -1,4 +1,4 @@
-const Profile = require('../models/Profile');
+const { Profile } = require('../models/Profile');
 const User = require('../models/User');
 
 const AI_RESPONSES = [

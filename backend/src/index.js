@@ -6,8 +6,8 @@ require("dotenv").config({
 });
 
 const app = require("./app");
-const mongoose = require("./config/db");
-const { seedProfiles } = require("./models/Profile");
+require("./config/db");
+const mongoose = require("mongoose");
 
 app.get("/ping", (req, res) => {
   res.status(200).send("ok");
@@ -17,8 +17,10 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  setTimeout(async () => {
-    const Profile = require("./models/Profile").Profile;
+  
+  mongoose.connection.once("connected", async () => {
+    console.log("MongoDB connected — seeding profiles...");
+    const { seedProfiles } = require("./models/Profile");
     await seedProfiles();
-  }, 2000);
+  });
 });
