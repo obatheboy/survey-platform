@@ -153,9 +153,9 @@ const confirmUnlock = async (req, res) => {
     const statusResult = await megapayService.checkTransactionStatus(transaction_request_id, 99);
 
     if (!statusResult.success || !statusResult.completed) {
-      return res.status(400).json({
-        error: 'Payment not confirmed',
-        message: statusResult.resultDesc || statusResult.status || 'Payment not yet confirmed',
+      return res.status(200).json({
+        message: 'Payment not confirmed yet',
+        is_unlocked: false,
         paid: false
       });
     }

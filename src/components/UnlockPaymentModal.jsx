@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { chatWazunguApi } from "../api/api";
 import { toast } from "react-hot-toast";
 
@@ -8,8 +8,66 @@ const CHATWAZUNGU_DARK = "#0A0A0A";
 export default function UnlockPaymentModal({ profile, onSuccess, onClose }) {
   const [step, setStep] = useState("phone");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [paymentRef, setPaymentRef] = useState("");
+  const [transactionId, setTransactionId] = useState("");
   const [loading, setLoading] = useState(false);
+  const [polling, setPolling] = useState(false);
+  const pollRef = useRef(null);
+  const fallbackRef = useRef(null);
+
+  const startPaymentPolling = (txId) => {
+    let attempts = 0;
+    const maxAttempts = 40;
+    const POLL_INTERVAL_MS = 3000;
+    const INITIAL_DELAY_MS = 8000;
+
+    const stop = (errorMsg) => {
+      if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+      if (fallbackRef.current) { clearTimeout(fallbackRef.current); fallbackRef.current = null; }
+      setPolling(false);
+      if (errorMsg) {
+        toast.error(errorMsg);
+      }
+    };
+
+    const doPoll = async () => {
+      attempts++;
+      try {
+        const res = await chatWazunguApi.confirmUnlock(profile.id, {
+          transaction_request_id: txId
+        });
+
+        if (res.data.is_unlocked) {
+          stop();
+          toast.success("Profile unlocked! You earned KES 500");
+          onSuccess();
+          return;
+        }
+
+        if (!res.data.is_unlocked && attempts < maxAttempts) {
+          console.log(`⏳ Poll ${attempts}: not confirmed yet, continuing...`);
+          return;
+        }
+
+        if (attempts >= maxAttempts) {
+          stop("Payment verification timeout. Please check your M-Pesa and try again.");
+        }
+      } catch (err) {
+        console.error(`Poll attempt ${attempts} error:`, err);
+        if (attempts >= maxAttempts) {
+          stop("Payment verification timeout. Please try again or contact support.");
+        }
+      }
+    };
+
+    const schedulePoll = () => {
+      pollRef.current = setInterval(doPoll, POLL_INTERVAL_MS);
+      fallbackRef.current = setTimeout(() => {
+        stop("Payment not confirmed. Please check your M-Pesa and try again.");
+      }, 120000); // 2 minute total window
+    };
+
+    setTimeout(schedulePoll, INITIAL_DELAY_MS);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,9 +78,11 @@ export default function UnlockPaymentModal({ profile, onSuccess, onClose }) {
     setLoading(true);
     try {
       const res = await chatWazunguApi.unlockProfile(profile.id, normalizedPhone);
-      setPaymentRef(res.data.transaction_request_id);
-      setStep("instructions");
+      setTransactionId(res.data.transaction_request_id);
+      setStep("polling");
+      setPolling(true);
       toast.success("STK push sent! Enter your M-Pesa PIN");
+      startPaymentPolling(res.data.transaction_request_id);
     } catch (err) {
       console.error("Unlock payment failed:", err);
       toast.error("Failed to initiate payment");
@@ -32,19 +92,36 @@ export default function UnlockPaymentModal({ profile, onSuccess, onClose }) {
   };
 
   const handleConfirmPayment = async () => {
+    if (!transactionId) return;
     setLoading(true);
     try {
-      await chatWazunguApi.confirmUnlock(profile.id, {
-        transaction_request_id: paymentRef
+      const res = await chatWazunguApi.confirmUnlock(profile.id, {
+        transaction_request_id: transactionId
       });
-      toast.success("Profile unlocked! You earned KES 500");
-      onSuccess();
+      if (res.data.is_unlocked) {
+        toast.success("Profile unlocked! You earned KES 500");
+        stopPolling();
+        onSuccess();
+      } else {
+        toast("Payment not yet confirmed. Still polling...");
+      }
     } catch (err) {
       console.error("Payment confirmation failed:", err);
-      toast.error("Could not confirm unlock. Please try again or contact support.");
+      toast.error("Payment not yet confirmed. Still polling...");
     } finally {
       setLoading(false);
     }
+  };
+
+  const stopPolling = () => {
+    if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+    if (fallbackRef.current) { clearTimeout(fallbackRef.current); fallbackRef.current = null; }
+    setPolling(false);
+  };
+
+  const handleClose = () => {
+    stopPolling();
+    onClose();
   };
 
   const handlePhoneNumberChange = (e) => {
@@ -65,7 +142,7 @@ export default function UnlockPaymentModal({ profile, onSuccess, onClose }) {
       <div className="unlock-modal">
         <div className="unlock-header">
           <h2>Unlock {profile.name}</h2>
-          <button className="unlock-close" onClick={onClose}>✕</button>
+          <button className="unlock-close" onClick={handleClose}>✕</button>
         </div>
 
         <div className="unlock-body">
@@ -98,21 +175,24 @@ export default function UnlockPaymentModal({ profile, onSuccess, onClose }) {
             </>
           )}
 
-          {step === "instructions" && (
+          {step === "polling" && (
             <>
               <div className="unlock-amount">KSH 99</div>
               <div className="payment-instructions">
                 <p>✅ STK push sent to {formatPhoneNumber(phoneNumber)}</p>
                 <p>💳 Enter your M-Pesa PIN to complete payment</p>
-                <p>💰 Reference: {paymentRef}</p>
+                <p>💰 Reference: {transactionId}</p>
                 <p>🎁 You'll earn KSH 500 after successful payment</p>
+              </div>
+              <div style={{ margin: "16px 0", color: "#888", fontSize: "13px" }}>
+                {polling ? "⏳ Verifying payment..." : "✅ Payment confirmed!"}
               </div>
               <button
                 className="confirm-btn"
                 onClick={handleConfirmPayment}
-                disabled={loading}
+                disabled={loading || !polling}
               >
-                {loading ? "Confirming…" : "I've Paid - Confirm Unlock"}
+                {loading ? "Checking…" : polling ? "I've Paid - Confirm" : "Payment Confirmed"}
               </button>
               <p className="retry-note">
                 Didn't receive the STK push? Close and try again.
