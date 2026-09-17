@@ -106,11 +106,13 @@ const unlockProfile = async (req, res) => {
       });
     }
 
+    const transactionRequestId = result.transaction_request_id || reference;
+
     res.json({
       message: 'STK push initiated for profile unlock',
       checkout_url: result.checkout_url,
       payment_reference: reference,
-      transaction_request_id: result.transaction_request_id,
+      transaction_request_id: transactionRequestId,
       amount: 99,
       phone: result.phone,
       profile: {
@@ -128,7 +130,8 @@ const unlockProfile = async (req, res) => {
 
 const confirmUnlock = async (req, res) => {
   try {
-    const { profileId, transaction_request_id, result_code } = req.body;
+    const { profileId } = req.params;
+    const { transaction_request_id } = req.body;
     const userId = req.user.id;
 
     if (!transaction_request_id) {
@@ -152,7 +155,10 @@ const confirmUnlock = async (req, res) => {
     const megapayService = require('../services/megapay.service');
     const statusResult = await megapayService.checkTransactionStatus(transaction_request_id, 99);
 
+    console.log('📊 Unlock verify result:', JSON.stringify(statusResult));
+
     if (!statusResult.success || !statusResult.completed) {
+      console.log('⏳ Payment not yet confirmed - will keep polling');
       return res.status(200).json({
         message: 'Payment not confirmed yet',
         is_unlocked: false,
