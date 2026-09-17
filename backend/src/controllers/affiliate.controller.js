@@ -34,9 +34,12 @@ exports.getAffiliateStats = async (req, res) => {
     }
 
     // Get all referrals with their activation status
+    console.log(`[DEBUG] getAffiliateStats: Looking for referrals with referred_by = ${userId}`);
     const referrals = await User.find({ referred_by: userId })
       .select('full_name phone is_activated created_at plans')
       .lean();
+
+    console.log(`[DEBUG] getAffiliateStats: Found ${referrals.length} referrals for user ${userId}`);
 
     // Calculate metrics
     const totalReferrals = referrals.length;
@@ -169,11 +172,15 @@ exports.verifyReferralCode = async (req, res) => {
 exports.registerWithReferral = async (userId, referralCode) => {
   try {
     if (!referralCode) {
+      console.log(`[DEBUG] registerWithReferral: No referral code provided for userId ${userId}`);
       return { success: true, message: "No referral code provided" };
     }
 
+    console.log(`[DEBUG] registerWithReferral: Searching for referrer with code "${referralCode}" (uppercased: "${referralCode.toUpperCase()}")`);
     const referrer = await User.findOne({ referral_code: referralCode.toUpperCase() });
+    console.log(`[DEBUG] registerWithReferral: referrer found = ${referrer ? `${referrer.full_name} (${referrer._id})` : 'NOT FOUND'}`);
     if (!referrer) {
+      console.log(`[DEBUG] registerWithReferral: No referrer found with referral_code "${referralCode.toUpperCase()}" — user created without referral`);
       return { success: true, message: "Invalid referral code, continuing without referral" };
     }
 

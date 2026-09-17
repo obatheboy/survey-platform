@@ -26,9 +26,9 @@ export default function Auth() {
      const verifyReferral = async () => {
        if (!referralCodeFromUrl) return;
        try {
-         const res = await api.post("/affiliate/verify-referral", {
-           referral_code: referralCodeFromUrl,
-         });
+         const res = await api.post("/affiliate/verify-code", {
+          referral_code: referralCodeFromUrl,
+        });
          if (res.data.valid) {
            setInviterInfo({ name: res.data.referrer_name, code: referralCodeFromUrl });
          }
@@ -297,6 +297,20 @@ export default function Auth() {
                   </span>
                 </div>
               )}
+              {!inviterInfo && !referralCodeFromUrl && (
+                <div style={{
+                  ...styles.inviterBanner,
+                  backgroundColor: "rgba(255, 193, 7, 0.1)",
+                  border: "1px solid rgba(255, 193, 7, 0.3)",
+                  borderRadius: "8px",
+                  padding: "12px 16px",
+                  marginBottom: "16px",
+                }}>
+                  <span style={{ fontSize: "14px", color: "#FFC107" }}>
+                    👋 You were invited by <strong>Admin</strong>
+                  </span>
+                </div>
+              )}
 
               <div style={styles.inputWrapper}>
                 <span style={styles.inputIcon}>👤</span>
@@ -452,6 +466,18 @@ export default function Auth() {
 }
 
 const styles = {
+  inviterBanner: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    fontSize: "14px",
+    fontWeight: "500",
+    borderRadius: "8px",
+    padding: "12px 16px",
+    marginBottom: "16px",
+    width: "100%",
+    boxSizing: "border-box",
+  },
   page: {
     minHeight: "100vh",
     background: "linear-gradient(135deg, #7c3aed 0%, #06b6d4 50%, #ff6b6b 100%)",

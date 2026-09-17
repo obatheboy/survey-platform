@@ -103,7 +103,9 @@ exports.register = async (req, res) => {
     // ✅ Handle referral - associate new user with referrer
     if (referral_code) {
       try {
-        await registerWithReferral(user._id, referral_code);
+        console.log(`[DEBUG] auth.register: referral_code received = "${referral_code}"`);
+        const refResult = await registerWithReferral(user._id, referral_code);
+        console.log(`[DEBUG] auth.register: registerWithReferral result = ${JSON.stringify(refResult)}`);
       } catch (refError) {
         console.error("Referral registration error:", refError);
         // Don't fail registration if referral fails
