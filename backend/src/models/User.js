@@ -302,7 +302,7 @@ const userSchema = new mongoose.Schema({
   },
   withdrawal_status: {
     type: String,
-    enum: ['none', 'pending', 'processing', 'completed', 'failed'],
+    enum: ['none', 'pending', 'processing', 'completed', 'failed', 'SUBMITTED'],
     default: 'none'
   },
   // ============================================
