@@ -5,9 +5,9 @@ import { toast } from "react-hot-toast";
 const CHATWAZUNGU_GREEN = "#0DAA65";
 const CHATWAZUNGU_DARK = "#0A0A0A";
 
-export default function UnlockPaymentModal({ profile, onSuccess, onClose }) {
+export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onClose }) {
   const [step, setStep] = useState("phone");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState(userPhone || "");
   const [transactionId, setTransactionId] = useState("");
   const [loading, setLoading] = useState(false);
   const [polling, setPolling] = useState(false);

@@ -19,11 +19,22 @@ export default function ChatWazunguDashboard() {
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [stats, setStats] = useState({ total_unlocks: 0, wallet_balance: 0 });
   const [searchTerm, setSearchTerm] = useState("");
+  const [userPhone, setUserPhone] = useState("");
 
   useEffect(() => {
     loadProfiles();
     loadStats();
+    loadUser();
   }, []);
+
+  const loadUser = async () => {
+    try {
+      const res = await api.get("/auth/me");
+      setUserPhone(res.data.phone || "");
+    } catch (err) {
+      console.error("Failed to load user:", err);
+    }
+  };
 
   const loadProfiles = async () => {
     try {
@@ -202,6 +213,7 @@ export default function ChatWazunguDashboard() {
       {showUnlockModal && selectedProfile && (
         <UnlockPaymentModal
           profile={selectedProfile}
+          userPhone={userPhone}
           onSuccess={handlePaymentSuccess}
           onClose={handleCloseUnlock}
         />
@@ -311,9 +323,9 @@ export default function ChatWazunguDashboard() {
 
         .profiles-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-          gap: 16px;
-          margin-bottom: 20px;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
+          margin-bottom: 16px;
         }
 
         .profile-card {

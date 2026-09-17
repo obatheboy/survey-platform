@@ -91,12 +91,11 @@ export default function ChatWindow({ profile, onClose }) {
           <div className="chat-profile-info">
             <img
               src={profile.avatar || `https://i.pravatar.cc/48?img=${Math.floor(Math.random() * 70) + 1}`}
-              alt={profile.name}
+              alt="profile"
               className="chat-profile-avatar"
             />
             <div>
-              <span className="chat-profile-name">{profile.name}</span>
-              <span className="chat-profile-details">{profile.age} · {profile.location}</span>
+              <span className="chat-profile-details">{profile.location}</span>
             </div>
           </div>
           <button className="chat-close-btn" onClick={onClose}>
@@ -206,14 +205,11 @@ export default function ChatWindow({ profile, onClose }) {
         }
 
         .chat-profile-name {
-          font-weight: 700;
-          font-size: 16px;
-          display: block;
-          color: white;
+          display: none;
         }
 
         .chat-profile-details {
-          font-size: 12px;
+          font-size: 13px;
           color: #aaa;
           display: block;
         }
