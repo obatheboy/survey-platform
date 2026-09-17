@@ -3,7 +3,7 @@
  * Handles version checking, storage clearing, and cache busting
  */
 
-const APP_VERSION = '2.0.0';
+const APP_VERSION = '2.0.1';
 const STORAGE_KEYS = {
   TOKEN: 'token',
   ADMIN_TOKEN: 'adminToken',
