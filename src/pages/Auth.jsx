@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import api from "../api/api";
 
 export default function Auth() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const initialMode = searchParams.get("mode") === "login" ? "login" : "register";
   const [mode, setMode] = useState(initialMode);
@@ -22,24 +23,40 @@ export default function Auth() {
      phone: "",
    });
 
+   // ✅ PRESERVE: Keep ref parameter when redirecting to maintain referral context
    useEffect(() => {
+     const url = new URLSearchParams(window.location.search);
+     const ref = url.get("ref");
+     const modeParam = url.get("mode") === "login" ? "login" : "register";
+     if (ref) {
+       navigate(`/auth?mode=${modeParam}&ref=${ref}`, { replace: true });
+     } else {
+       navigate(`/auth?mode=${modeParam}`, { replace: true });
+     }
+   }, [mode, navigate]);
+
+   // ✅ VERIFY: Read ref from window.location.search (source of truth) to avoid race condition
+   useEffect(() => {
+     const url = new URLSearchParams(window.location.search);
+     const ref = url.get("ref");
+     if (!ref) return;
+     
      const verifyReferral = async () => {
-       if (!referralCodeFromUrl) return;
        try {
          const res = await api.post("/affiliate/verify-code", {
-          referral_code: referralCodeFromUrl,
-        });
+           referral_code: ref,
+         });
          if (res.data.valid) {
-           setInviterInfo({ name: res.data.referrer_name, code: referralCodeFromUrl });
+           setInviterInfo({ name: res.data.referrer_name, code: ref });
          }
        } catch (err) {
          console.warn("Referral verification failed:", err.message);
        }
      };
      verifyReferral();
-   }, [referralCodeFromUrl]);
-  const [loginMessage, setLoginMessage] = useState("");
-  const [errors, setErrors] = useState({});
+     }, [location.search]);
+     const [loginMessage, setLoginMessage] = useState("");
+     const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const wakeBackend = async () => {
