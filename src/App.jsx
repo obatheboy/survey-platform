@@ -88,8 +88,10 @@ function AdminRoute({ children }) {
 function AuthRedirect() {
   const [searchParams] = useSearchParams();
   const mode = searchParams.get("mode");
+  const ref = searchParams.get("ref");
 
-  if (mode === "login" || mode === "register") {
+  // ✅ FIX: Allow rendering Auth when ref is present (referral link), even without mode
+  if (mode === "login" || mode === "register" || ref) {
     return <Auth />;
   }
 
