@@ -17,47 +17,68 @@ export default function LandingBanner() {
       <div style={styles.orb3}></div>
 
       <div style={styles.content}>
-        {/* Trust badge */}
+         {/* Trust badge */}
         <div style={styles.trustBadge}>
           <span style={styles.trustBadgeIcon}>⚡</span>
-          <span style={styles.trustBadgeText}>Trusted by 50,000+ Earners</span>
+          <span style={styles.trustBadgeText}>ChatWazungu — Multi-Earning Platform</span>
         </div>
 
-         {/* Main headline */}
+        {/* Logo */}
+        <div style={styles.logoContainer}>
+          <span style={styles.logoText}>CW</span>
+        </div>
+
+        {/* Main headline */}
         <h1 style={styles.headline}>
-          ChatWazungu
+          Multiple Ways to Earn
           <br />
-          <span style={styles.headlineAccent}>Premium Chat Platform</span>
+          <span style={styles.headlineAccent}>Up to KES 6,500 Daily</span>
         </h1>
 
         {/* Earnings caption - center */}
         <div style={styles.earningsCaption}>
           <span style={styles.earningsCaptionIcon}>💸</span>
-          <span style={styles.earningsCaptionText}>Unlock 200+ Profiles & Earn KES 500 Each</span>
+          <span style={styles.earningsCaptionText}>Surveys • Chat • Affiliate — Earn Daily</span>
         </div>
 
         {/* Subheadline */}
         <p style={styles.subheadline}>
-          Register with phone + name, pay KES 99 to unlock profiles, chat with AI, and earn.
+          Join thousands of users earning with ChatWazungu — surveys, premium chats, and affiliate.
           <br />
-          Withdraw only after 6+ unlocks. KES 1,200 welcome bonus included.
+          Register with phone + name and start making money today.
         </p>
+
+        {/* Earning options grid */}
+        <div style={styles.earnOptions}>
+          <div style={styles.earnOption}>
+            <span style={styles.earnOptionIcon}>📊</span>
+            <span style={styles.earnOptionText}>Surveys — KES 1,200–6,500/day</span>
+          </div>
+          <div style={styles.earnOption}>
+            <span style={styles.earnOptionIcon}>💬</span>
+            <span style={styles.earnOptionText}>Chat Wazungu — KES 500–5,500/day</span>
+          </div>
+          <div style={styles.earnOption}>
+            <span style={styles.earnOptionIcon}>👥</span>
+            <span style={styles.earnOptionText}>Affiliate — Earn Endless Commissions</span>
+          </div>
+        </div>
 
         {/* Stats row */}
         <div style={styles.statsRow}>
           <div style={styles.statCard}>
-            <span style={styles.statNumber}>KES 12M+</span>
-            <span style={styles.statLabel}>Paid Out</span>
+            <span style={styles.statNumber}>🌍</span>
+            <span style={styles.statLabel}>500K+ Users Globally</span>
           </div>
           <div style={styles.statDivider}></div>
           <div style={styles.statCard}>
-            <span style={styles.statNumber}>50K+</span>
-            <span style={styles.statLabel}>Active Earners</span>
+            <span style={styles.statNumber}>💰</span>
+            <span style={styles.statLabel}>KES 6,500+ Daily Potential</span>
           </div>
           <div style={styles.statDivider}></div>
           <div style={styles.statCard}>
-            <span style={styles.statNumber}>4.9★</span>
-            <span style={styles.statLabel}>App Rating</span>
+            <span style={styles.statNumber}>🔓</span>
+            <span style={styles.statLabel}>KES 99 Unlock Fee</span>
           </div>
         </div>
 
@@ -68,38 +89,26 @@ export default function LandingBanner() {
             <span style={styles.benefitText}>KES 1,200 Welcome Bonus</span>
           </div>
           <div style={styles.benefit}>
-            <span style={styles.benefitIcon}>⚡</span>
-            <span style={styles.benefitText}>Instant Payouts</span>
+            <span style={styles.benefitIcon}>💬</span>
+            <span style={styles.benefitText}>Chat with Premium Wazungu</span>
+          </div>
+          <div style={styles.benefit}>
+            <span style={styles.benefitIcon}>💸</span>
+            <span style={styles.benefitText}>Instant Withdrawals</span>
+          </div>
+          <div style={styles.benefit}>
+            <span style={styles.benefitIcon}>👥</span>
+            <span style={styles.benefitText}>Refer & Earn Endless</span>
           </div>
           <div style={styles.benefit}>
             <span style={styles.benefitIcon}>🔒</span>
             <span style={styles.benefitText}>100% Secure</span>
           </div>
-          <div style={styles.benefit}>
-            <span style={styles.benefitIcon}>📱</span>
-            <span style={styles.benefitText}>Work From Phone</span>
-          </div>
-          <div style={styles.benefit}>
-            <span style={styles.benefitIcon}>🎯</span>
-            <span style={styles.benefitText}>Easy Surveys</span>
-          </div>
-          <div style={styles.benefit}>
-            <span style={styles.benefitIcon}>🏆</span>
-            <span style={styles.benefitText}>Daily Rewards</span>
-          </div>
-          <div style={styles.benefit}>
-            <span style={styles.benefitIcon}>👥</span>
-            <span style={styles.benefitText}>Refer & Earn</span>
-          </div>
-          <div style={styles.benefit}>
-            <span style={styles.benefitIcon}>💬</span>
-            <span style={styles.benefitText}>24/7 Support</span>
-          </div>
         </div>
 
         {/* CTA */}
         <button style={styles.ctaButton} onClick={handleStart}>
-          Start Earning Now
+          START EARNING NOW
           <span style={styles.ctaArrow}>→</span>
         </button>
 
@@ -216,12 +225,29 @@ const styles = {
     textAlign: "center",
     animation: "fadeInUp 0.8s ease-out",
   },
+  logoContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "64px",
+    height: "64px",
+    margin: "0 auto 20px",
+    background: "linear-gradient(135deg, #0DAA65 0%, #0A0A0A 100%)",
+    borderRadius: "18px",
+    boxShadow: "0 8px 32px rgba(13, 170, 101, 0.4)",
+  },
+  logoText: {
+    fontSize: "28px",
+    fontWeight: "900",
+    color: "white",
+    letterSpacing: "1px",
+  },
   trustBadge: {
     display: "inline-flex",
     alignItems: "center",
     gap: "8px",
-    background: "rgba(124, 58, 237, 0.15)",
-    border: "1px solid rgba(124, 58, 237, 0.3)",
+    background: "rgba(13, 170, 101, 0.15)",
+    border: "1px solid rgba(13, 170, 101, 0.3)",
     padding: "8px 18px",
     borderRadius: "30px",
     fontSize: "12px",
@@ -355,6 +381,33 @@ const styles = {
     height: "32px",
     background: "rgba(255,255,255,0.15)",
   },
+  earnOptions: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+    marginBottom: "24px",
+    maxWidth: "360px",
+    marginLeft: "auto",
+    marginRight: "auto",
+  },
+  earnOption: {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    background: "rgba(255,255,255,0.08)",
+    border: "1px solid rgba(13, 170, 101, 0.3)",
+    borderRadius: "16px",
+    padding: "14px 18px",
+    backdropFilter: "blur(8px)",
+  },
+  earnOptionIcon: {
+    fontSize: "22px",
+  },
+  earnOptionText: {
+    fontSize: "14px",
+    fontWeight: "700",
+    color: "#fff",
+  },
   benefits: {
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
@@ -386,7 +439,7 @@ const styles = {
     textShadow: "0 1px 3px rgba(0,0,0,0.2)",
   },
   ctaButton: {
-    background: "linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%)",
+    background: "linear-gradient(135deg, #0DAA65 0%, #1a8d55 100%)",
     color: "#fff",
     border: "none",
     borderRadius: "20px",
@@ -394,10 +447,10 @@ const styles = {
     fontSize: "18px",
     fontWeight: "900",
     cursor: "pointer",
-    boxShadow: "0 8px 32px rgba(124, 58, 237, 0.5)",
+    boxShadow: "0 8px 32px rgba(13, 170, 101, 0.5)",
     letterSpacing: "0.5px",
     width: "100%",
-    maxWidth: "320px",
+    maxWidth: "340px",
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",

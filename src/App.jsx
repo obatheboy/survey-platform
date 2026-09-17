@@ -21,6 +21,7 @@ import AffiliateDashboard from "./pages/AffiliateDashboard";
 import LoginFeePayment from "./pages/LoginFeePayment";
 import OnboardingSurvey from "./pages/OnboardingSurvey";
 import ChatWazunguDashboard from "./pages/ChatWazunguDashboard";
+import MultiFunctionDashboard from "./pages/MultiFunctionDashboard";
 
 /* ================= ADMIN ================= */
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -154,12 +155,12 @@ export default function App() {
         {/* TERMS AND CONDITIONS */}
         <Route path="/terms" element={<TermsAndConditions />} />
 
-        {/* USER APP — Dashboard redirects to ChatWazungu */}
+        {/* USER APP — Dashboard shows multifunction landing */}
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <Navigate to="/chatwazungu" replace />
+              <MultiFunctionDashboard />
             </ProtectedRoute>
           }
         />
