@@ -324,7 +324,10 @@ export default function WithdrawForm() {
       } else if (err.response?.status === 409) {
         setError("You already have a withdrawal pending for this plan. Please manage it from the success page.");
       } else if (err.response?.status === 403) {
-        if (err.response?.data?.message?.includes("activated") || !isUserActivated) {
+        if (isAffiliateWithdraw) {
+          // Affiliate withdrawals don't require plan activation - show actual error
+          setError(err.response?.data?.message || "Withdrawal failed. Please check your balance.");
+        } else if (err.response?.data?.message?.includes("activated") || !isUserActivated) {
           // Show activation modal if backend also confirms not activated
           setError("Account not activated. Please activate your account to withdraw.");
           setShowActivationModal(true);

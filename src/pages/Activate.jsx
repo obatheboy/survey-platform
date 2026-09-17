@@ -1343,63 +1343,83 @@ setPaynectaSubmitting(true);
                </button>
                {copied && <p style={{...styles.copiedNote, color: "#16a34a", fontWeight: 700, marginTop: "6px"}}>✅ Till number copied</p>}
              </div>
-           </div>
-           </>
-           )}
-
-<button
-             onClick={() => {
-               // Check if plan is already activated (paid)
-               if (user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated) {
-                 // Already activated - go back to withdraw form
-                 if (location.state?.from === "withdraw") {
-                   navigate("/withdraw-form");
-                 }
-                 return;
-               }
-               submitActivation();
-             }}
-             disabled={submitting}
-             style={{
-               ...styles.button,
-               background: user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated
-                 ? "#06b6d4"
-                 : submitting
-                 ? "#4b5563"
-                 : `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)`,
-               fontWeight: 800,
-               fontSize: "15px"
-             }}
-           >
-             {user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated ? (
-               "✅ Activated"
-             ) : submitting ? (
-               <>
-                 <span style={{
-                   display: "inline-block",
-                   width: "14px",
-                   height: "14px",
-                   border: "2px solid rgba(255,255,255,0.3)",
-                   borderTopColor: "white",
-                   borderRadius: "50%",
-                   marginRight: "6px",
-                   animation: "spin 1s linear infinite"
-                 }}></span>
-                 Submitting...
-               </>
-             ) : (
-               "SUBMIT MESSAGE FOR APPROVAL"
-             )}
-           </button>
-
-          {notification && (
-            <div style={styles.notificationBox}>
-              {notification}
             </div>
-          )}
+            </>
+            )}
+
+            {/* MANUAL PAYMENT SUBMIT BUTTON - only shown in manual payment section */}
+            {paynectaError && (
+            <>
+            <button
+              onClick={() => {
+                // Check if plan is already activated (paid)
+                if (user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated) {
+                  // Already activated - go back to withdraw form
+                  if (location.state?.from === "withdraw") {
+                    navigate("/withdraw-form");
+                  }
+                  return;
+                }
+                submitActivation();
+              }}
+              disabled={submitting}
+              style={{
+                ...styles.button,
+                background: user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated
+                  ? "#06b6d4"
+                  : submitting
+                  ? "#4b5563"
+                  : `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)`,
+                fontWeight: 800,
+                fontSize: "15px"
+              }}
+            >
+              {user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated ? (
+                "✅ Activated"
+              ) : submitting ? (
+                <>
+                  <span style={{
+                    display: "inline-block",
+                    width: "14px",
+                    height: "14px",
+                    border: "2px solid rgba(255,255,255,0.3)",
+                    borderTopColor: "white",
+                    borderRadius: "50%",
+                    marginRight: "6px",
+                    animation: "spin 1s linear infinite"
+                  }}></span>
+                  Submitting...
+                </>
+              ) : (
+                "SUBMIT MESSAGE FOR APPROVAL"
+              )}
+            </button>
+
+            {notification && (
+              <div style={styles.notificationBox}>
+                {notification}
+              </div>
+            )}
+
+            {error && (
+              <div style={{
+                padding: "10px",
+                borderRadius: "8px",
+                background: "rgba(239, 68, 68, 0.15)",
+                border: "1px solid rgba(239, 68, 68, 0.4)",
+                color: "#fca5a5",
+                fontWeight: 600,
+                fontSize: "13px",
+                textAlign: "center"
+              }}>
+                {error}
+              </div>
+            )}
+            </>
+            )}
 
 <button
-              onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/dashboard")}
               style={{
                 ...styles.button,
                 background: "transparent",

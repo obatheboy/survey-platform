@@ -91,28 +91,6 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
     }
   };
 
-  const handleConfirmPayment = async () => {
-    if (!transactionId) return;
-    setLoading(true);
-    try {
-      const res = await chatWazunguApi.confirmUnlock(profile.id, {
-        transaction_request_id: transactionId
-      });
-      if (res.data.is_unlocked) {
-        toast.success("Profile unlocked! You earned KES 500");
-        stopPolling();
-        onSuccess();
-      } else {
-        toast("Payment not yet confirmed. Still polling...");
-      }
-    } catch (err) {
-      console.error("Payment confirmation failed:", err);
-      toast.error("Payment not yet confirmed. Still polling...");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const stopPolling = () => {
     if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
     if (fallbackRef.current) { clearTimeout(fallbackRef.current); fallbackRef.current = null; }
@@ -187,13 +165,6 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
               <div style={{ margin: "16px 0", color: "#888", fontSize: "13px" }}>
                 {polling ? "⏳ Verifying payment..." : "✅ Payment confirmed!"}
               </div>
-              <button
-                className="confirm-btn"
-                onClick={handleConfirmPayment}
-                disabled={loading || !polling}
-              >
-                {loading ? "Checking…" : polling ? "I've Paid - Confirm" : "Payment Confirmed"}
-              </button>
               <p className="retry-note">
                 Didn't receive the STK push? Close and try again.
               </p>
@@ -300,7 +271,7 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
             padding: 8px 0;
           }
 
-          .pay-btn, .confirm-btn {
+          .pay-btn {
             width: 100%;
             padding: 14px;
             background-color: ${CHATWAZUNGU_GREEN};
@@ -314,13 +285,11 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
             transition: all 0.2s;
           }
 
-          .pay-btn:hover:not(:disabled),
-          .confirm-btn:hover:not(:disabled) {
+          .pay-btn:hover:not(:disabled) {
             background-color: #1a8d55;
           }
 
-          .pay-btn:disabled,
-          .confirm-btn:disabled {
+          .pay-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
           }
