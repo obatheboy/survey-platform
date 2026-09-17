@@ -26,7 +26,7 @@ const AI_RESPONSES = [
 
 const getProfiles = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user.id;
     const user = await User.findById(userId);
 
     const profiles = await Profile.find({}).lean();
@@ -56,7 +56,7 @@ const getProfiles = async (req, res) => {
 const getProfile = async (req, res) => {
   try {
     const { profileId } = req.params;
-    const userId = req.user._id;
+    const userId = req.user.id;
     const user = await User.findById(userId);
 
     const profile = await Profile.findById(profileId).lean();
@@ -83,7 +83,7 @@ const unlockProfile = async (req, res) => {
   try {
     const { profileId } = req.params;
     const { phone_number, plan } = req.body;
-    const userId = req.user._id;
+    const userId = req.user.id;
 
     const profile = await Profile.findById(profileId);
     if (!profile) {
@@ -120,7 +120,7 @@ const unlockProfile = async (req, res) => {
 const confirmUnlock = async (req, res) => {
   try {
     const { profileId, payment_reference, result_code } = req.body;
-    const userId = req.user._id;
+    const userId = req.user.id;
 
     if (result_code !== '200' && result_code !== 'Success' && result_code !== 'success') {
       return res.status(400).json({ error: 'Payment not successful' });
@@ -162,7 +162,7 @@ const confirmUnlock = async (req, res) => {
 const getChatMessages = async (req, res) => {
   try {
     const { profileId } = req.params;
-    const userId = req.user._id;
+    const userId = req.user.id;
 
     const user = await User.findById(userId);
     if (!user.unlocked_profiles.includes(profileId)) {
@@ -192,7 +192,7 @@ const sendChatMessage = async (req, res) => {
   try {
     const { profileId } = req.params;
     const { message } = req.body;
-    const userId = req.user._id;
+    const userId = req.user.id;
 
     const user = await User.findById(userId);
     if (!user.unlocked_profiles.includes(profileId)) {
@@ -226,7 +226,7 @@ const sendChatMessage = async (req, res) => {
 
 const getUserStats = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user.id;
     const user = await User.findById(userId);
 
     res.json({

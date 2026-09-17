@@ -20,7 +20,7 @@ export default function LandingBanner() {
          {/* Trust badge */}
         <div style={styles.trustBadge}>
           <span style={styles.trustBadgeIcon}>⚡</span>
-           <span style={styles.trustBadgeText}>Three Ways to Earn — Surveys, Chat & Affiliate</span>
+           <span style={styles.trustBadgeText}>3 Ways to Earn • KES 6,500/day</span>
         </div>
 
         {/* Logo */}
@@ -30,37 +30,35 @@ export default function LandingBanner() {
 
         {/* Main headline */}
          <h1 style={styles.headline}>
-          Three Ways to Earn
+          ChatWazungu
           <br />
-          <span style={styles.headlineAccent}>Up to KES 6,500 Daily</span>
+          <span style={styles.headlineAccent}>Multiple Ways to Earn</span>
         </h1>
 
         {/* Earnings caption - center */}
         <div style={styles.earningsCaption}>
           <span style={styles.earningsCaptionIcon}>💸</span>
-          <span style={styles.earningsCaptionText}>Surveys • Chat Wazungu • Affiliate</span>
+          <span style={styles.earningsCaptionText}>Surveys • Chat • Affiliate</span>
         </div>
 
         {/* Subheadline */}
         <p style={styles.subheadline}>
-          One app, three earning paths. Join 500K+ earners making real money every day.
-          <br />
-          Register with phone + name and start now.
+          One app. Three earning paths. Register with phone + name now.
         </p>
 
         {/* Earning options grid */}
         <div style={styles.earnOptions}>
           <div style={styles.earnOption}>
             <span style={styles.earnOptionIcon}>📊</span>
-            <span style={styles.earnOptionText}>Surveys — KES 1,200–6,500/day</span>
+            <span style={styles.earnOptionText}>Surveys — up to KES 6,500/day</span>
           </div>
           <div style={styles.earnOption}>
             <span style={styles.earnOptionIcon}>💬</span>
-            <span style={styles.earnOptionText}>Chat Wazungu — KES 500–5,500/day</span>
+            <span style={styles.earnOptionText}>Chat Wazungu — up to KES 5,500/day</span>
           </div>
           <div style={styles.earnOption}>
             <span style={styles.earnOptionIcon}>👥</span>
-            <span style={styles.earnOptionText}>Affiliate — Earn Endless Commissions</span>
+            <span style={styles.earnOptionText}>Affiliate — endless commissions</span>
           </div>
         </div>
 
@@ -68,53 +66,45 @@ export default function LandingBanner() {
         <div style={styles.statsRow}>
           <div style={styles.statCard}>
             <span style={styles.statNumber}>🌍</span>
-            <span style={styles.statLabel}>500K+ Users Globally</span>
+            <span style={styles.statLabel}>500K+ Users</span>
           </div>
           <div style={styles.statDivider}></div>
           <div style={styles.statCard}>
-            <span style={styles.statNumber}>💰</span>
-            <span style={styles.statLabel}>KES 6,500+ Daily Potential</span>
+            <span style={styles.statNumber}>🎁</span>
+            <span style={styles.statLabel}>KES 1,200 Bonus</span>
           </div>
           <div style={styles.statDivider}></div>
           <div style={styles.statCard}>
             <span style={styles.statNumber}>🔓</span>
-            <span style={styles.statLabel}>KES 99 Unlock Fee</span>
+            <span style={styles.statLabel}>KES 99 Unlock</span>
           </div>
         </div>
 
-        {/* Benefits */}
+        {/* Benefits - compact */}
         <div style={styles.benefits}>
           <div style={styles.benefit}>
             <span style={styles.benefitIcon}>💰</span>
-            <span style={styles.benefitText}>KES 1,200 Welcome Bonus</span>
-          </div>
-          <div style={styles.benefit}>
-            <span style={styles.benefitIcon}>💬</span>
-            <span style={styles.benefitText}>Chat with Premium Wazungu</span>
-          </div>
-          <div style={styles.benefit}>
-            <span style={styles.benefitIcon}>💸</span>
             <span style={styles.benefitText}>Instant Withdrawals</span>
           </div>
           <div style={styles.benefit}>
-            <span style={styles.benefitIcon}>👥</span>
-            <span style={styles.benefitText}>Refer & Earn Endless</span>
+            <span style={styles.benefitIcon}>🔒</span>
+            <span style={styles.benefitText}>Secure</span>
           </div>
           <div style={styles.benefit}>
-            <span style={styles.benefitIcon}>🔒</span>
-            <span style={styles.benefitText}>100% Secure</span>
+            <span style={styles.benefitIcon}>📱</span>
+            <span style={styles.benefitText}>Mobile App</span>
           </div>
         </div>
 
-        {/* CTA */}
-        <button style={styles.ctaButton} onClick={handleStart}>
-          START NOW
-          <span style={styles.ctaArrow}>🚀</span>
-        </button>
-
-        <p style={styles.ctaNote}>
-          Free to join • No experience needed
-        </p>
+        {/* CTA - centered and prominent */}
+        <div style={styles.ctaContainer}>
+          <button style={styles.ctaButton} onClick={handleStart}>
+            START NOW 🚀
+          </button>
+          <p style={styles.ctaNote}>
+            Free to join • KES 1,200 welcome bonus
+          </p>
+        </div>
 
         {/* Tap hint */}
         <p style={styles.tapHint}>
@@ -218,12 +208,12 @@ const styles = {
   },
   content: {
     width: "100%",
-    maxWidth: "420px",
-    padding: "24px 20px 40px",
+    maxWidth: "400px",
+    padding: "20px 16px 32px",
     position: "relative",
     zIndex: 2,
     textAlign: "center",
-    animation: "fadeInUp 0.8s ease-out",
+    animation: "fadeInUp 0.6s ease-out",
   },
   logoContainer: {
     display: "flex",

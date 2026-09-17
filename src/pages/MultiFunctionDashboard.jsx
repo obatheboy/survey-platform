@@ -1,13 +1,9 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/api";
-import { chatWazunguApi } from "../api/api";
 
 const CHATWAZUNGU_GREEN = "#0DAA65";
 const CHATWAZUNGU_DARK = "#0A0A0A";
 const CHATWAZUNGU_CARD_BG = "#1A1A1A";
 const CHATWAZUNGU_ACCENT = "#FFE66D";
-const CHATWAZUNGU_BLUE = "#06b6d4";
 
 const EARNING_OPTIONS = [
   {
@@ -41,40 +37,6 @@ const EARNING_OPTIONS = [
 
 export default function MultiFunctionDashboard() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [stats, setStats] = useState({ total_unlocks: 0, wallet_balance: 0 });
-  const [selectedDefaultOption, setSelectedDefaultOption] = useState("survey");
-
-  useEffect(() => {
-    loadUser();
-    loadStats();
-  }, []);
-
-  const handleStartNow = () => {
-    const option = EARNING_OPTIONS.find(o => o.id === selectedDefaultOption);
-    if (option) handleOptionClick(option);
-  };
-
-  const loadUser = async () => {
-    try {
-      const res = await api.get("/auth/me");
-      setUser(res.data);
-    } catch (err) {
-      console.error("Failed to load user:", err);
-    }
-  };
-
-  const loadStats = async () => {
-    try {
-      const res = await chatWazunguApi.getUserStats();
-      setStats({
-        total_unlocks: res.data.total_unlocks || 0,
-        wallet_balance: res.data.wallet_balance || 0
-      });
-    } catch (err) {
-      console.error("Failed to load stats:", err);
-    }
-  };
 
   const handleOptionClick = (option) => {
     navigate(option.route);
@@ -84,32 +46,12 @@ export default function MultiFunctionDashboard() {
     <div className="multifunc-dashboard">
       <div className="multifunc-header">
         <div className="welcome-section">
-          <h1 style={{ color: "#FFE66D", fontSize: "28px", fontWeight: "900", marginBottom: "8px" }}>
-            💰
-          </h1>
           <h2>Your Earnings Hub</h2>
-          <p style={{ color: "#aaa", fontSize: "14px" }}>Select a task below to start earning</p>
-        </div>
-        <div className="quick-balance">
-          <div className="balance-item">
-            <span className="balance-label">ChatWazungu Wallet</span>
-            <span className="balance-value">KSH {(stats.wallet_balance || 0).toLocaleString()}</span>
-          </div>
-          <div className="balance-item">
-            <span className="balance-label">Unlocks</span>
-            <span className="balance-value">{stats.total_unlocks}/6</span>
-          </div>
+          <p>Select a task below to start earning</p>
         </div>
       </div>
 
-      {/* Start Now Button */}
-      <div className="start-now-container">
-        <button className="start-now-btn" onClick={handleStartNow}>
-          START NOW
-        </button>
-        <p className="start-now-note">Starting with surveys — KES 1,200 welcome bonus</p>
-      </div>
-
+      {/* Earning Options */}
       <div className="options-grid">
         {EARNING_OPTIONS.map((option) => (
           <div
@@ -123,7 +65,6 @@ export default function MultiFunctionDashboard() {
             <div className="option-content">
               <h3>{option.title}</h3>
               <p className="option-subtitle">{option.subtitle}</p>
-              <p className="option-description">{option.description}</p>
             </div>
             <div className="option-arrow">→</div>
           </div>
@@ -162,101 +103,22 @@ export default function MultiFunctionDashboard() {
         }
 
         .multifunc-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 16px;
-          margin-bottom: 16px;
-          padding: 24px;
-          background: linear-gradient(135deg, ${CHATWAZUNGU_GREEN} 0%, #0A8550 100%);
-          border-radius: 20px;
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .welcome-section h1 {
-          font-size: 28px;
-          font-weight: 800;
-          margin: 0 0 4px;
-          color: ${CHATWAZUNGU_ACCENT};
+          text-align: center;
+          padding: 20px 16px 12px;
+          margin-bottom: 20px;
         }
 
         .welcome-section h2 {
-          font-size: 20px;
-          font-weight: 700;
-          margin: 0;
+          font-size: 22px;
+          font-weight: 800;
+          margin: 0 0 4px;
           color: white;
         }
 
         .welcome-section p {
           font-size: 14px;
-          opacity: 0.9;
-          margin: 0;
-          color: rgba(255, 255, 255, 0.8);
-        }
-
-        .start-now-container {
-          text-align: center;
-          margin-bottom: 32px;
-        }
-
-        .start-now-btn {
-          background: linear-gradient(135deg, ${CHATWAZUNGU_ACCENT} 0%, #f59e0b 100%);
-          color: ${CHATWAZUNGU_DARK};
-          border: none;
-          border-radius: 28px;
-          padding: 18px 56px;
-          font-size: 20px;
-          font-weight: 900;
-          cursor: pointer;
-          box-shadow: 0 8px 32px rgba(255, 230, 109, 0.4);
-          letter-spacing: 2px;
-          transition: all 0.2s;
-          animation: pulse-glow 2s ease-in-out infinite;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .start-now-btn:hover {
-          transform: scale(1.05);
-          box-shadow: 0 12px 40px rgba(255, 230, 109, 0.6);
-        }
-
-        .start-now-note {
-          margin-top: 12px;
-          font-size: 13px;
           color: #aaa;
-          font-weight: 600;
-        }
-
-        .quick-balance {
-          display: flex;
-          gap: 16px;
-          flex-wrap: wrap;
-        }
-
-        .balance-item {
-          background-color: rgba(255, 255, 255, 0.15);
-          border-radius: 16px;
-          padding: 12px 20px;
-          text-align: center;
-          min-width: 80px;
-          backdrop-filter: blur(8px);
-        }
-
-        .balance-label {
-          display: block;
-          font-size: 11px;
-          opacity: 0.8;
-          margin-bottom: 4px;
-        }
-
-        .balance-value {
-          display: block;
-          font-size: 18px;
-          font-weight: 800;
-          color: white;
+          margin: 0;
         }
 
         .options-grid {
