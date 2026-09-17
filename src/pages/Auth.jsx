@@ -297,6 +297,20 @@ export default function Auth() {
                   </span>
                 </div>
               )}
+              {!inviterInfo && referralCodeFromUrl && (
+                <div style={{
+                  ...styles.inviterBanner,
+                  backgroundColor: "rgba(255, 193, 7, 0.1)",
+                  border: "1px solid rgba(255, 193, 7, 0.3)",
+                  borderRadius: "8px",
+                  padding: "12px 16px",
+                  marginBottom: "16px",
+                }}>
+                  <span style={{ fontSize: "14px", color: "#FFC107" }}>
+                    👋 You were invited by <strong>Admin</strong>
+                  </span>
+                </div>
+              )}
               {!inviterInfo && !referralCodeFromUrl && (
                 <div style={{
                   ...styles.inviterBanner,
