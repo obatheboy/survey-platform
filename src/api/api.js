@@ -276,6 +276,25 @@ export const adminMegapayApi = {
 export const adminPaynectaApi = adminMegapayApi;
 
 /* =====================================================
+   💬 CHATWAZUNGU — Premium Chat Platform API
+   ==================================================== */
+export const chatWazunguApi = {
+  getProfiles: () => api.get("/chat/profiles"),
+  getProfile: (profileId) => api.get(`/chat/profiles/${profileId}`),
+  unlockProfile: (profileId, phoneNumber) => api.post(`/chat/profiles/${profileId}/unlock`, { phone_number: phoneNumber }),
+  confirmUnlock: (profileId, data) => api.post(`/chat/profiles/${profileId}/unlock/confirm`, data),
+  getChatMessages: (profileId) => api.get(`/chat/profiles/${profileId}/chat`),
+  sendChatMessage: (profileId, message) => api.post(`/chat/profiles/${profileId}/chat`, { message }),
+  getUserStats: () => api.get("/chat/stats"),
+  requestUnlockWithdrawal: (amount, phoneNumber, mpesaCode) => api.post("/withdraw", {
+    amount,
+    phone_number: phoneNumber,
+    mpesa_code: mpesaCode,
+    type: "unlock"
+  })
+};
+
+/* =====================================================
    📦 DEFAULT EXPORT
-==================================================== */
+   ==================================================== */
 export default api;

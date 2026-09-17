@@ -20,6 +20,7 @@ import NotFound from "./pages/NotFound";
 import AffiliateDashboard from "./pages/AffiliateDashboard";
 import LoginFeePayment from "./pages/LoginFeePayment";
 import OnboardingSurvey from "./pages/OnboardingSurvey";
+import ChatWazunguDashboard from "./pages/ChatWazunguDashboard";
 
 /* ================= ADMIN ================= */
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -228,6 +229,16 @@ export default function App() {
           element={
             <ProtectedRoute>
               <AffiliateDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ChatWazungu Dashboard */}
+        <Route
+          path="/chatwazungu"
+          element={
+            <ProtectedRoute>
+              <ChatWazunguDashboard />
             </ProtectedRoute>
           }
         />

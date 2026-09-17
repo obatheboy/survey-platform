@@ -7,6 +7,8 @@ const { ACTIVATION_PLANS, syncActivationStatus } = require("../utils/activationS
 ================================ */
 const MIN_WITHDRAW = 200;
 const MIN_AFFILIATE_WITHDRAW = 50;
+const MIN_UNLOCK_WITHDRAW = 500;
+const MIN_UNLOCKS_REQUIRED = 6;
 const MAX_WITHDRAW = 500000;
 const DAILY_WITHDRAW_LIMIT = 93;
 const TOTAL_SURVEYS = 10;
@@ -61,7 +63,7 @@ exports.requestWithdraw = async (req, res) => {
     }
 
     // Determine minimum based on withdrawal type
-    const minAmount = type === "affiliate" ? MIN_AFFILIATE_WITHDRAW : MIN_WITHDRAW;
+    const minAmount = type === "affiliate" ? MIN_AFFILIATE_WITHDRAW : type === "unlock" ? MIN_UNLOCK_WITHDRAW : MIN_WITHDRAW;
 
     if (withdrawAmount < minAmount || withdrawAmount > MAX_WITHDRAW) {
       console.log(`❌ Amount outside range: ${withdrawAmount}`);
@@ -105,7 +107,32 @@ exports.requestWithdraw = async (req, res) => {
      }
     console.log("User welcome_bonus:", user.welcome_bonus);
     console.log("User welcome_bonus_withdrawn:", user.welcome_bonus_withdrawn);
-    
+   
+    // -------------------------------
+    // 🌟 CHATWAZUNGU UNLOCK WITHDRAWAL
+    // -------------------------------
+    if (type === "unlock") {
+      console.log(`💰 Unlock withdrawal requested by ${user.full_name || user.email}`);
+
+      if (user.total_unlocks < MIN_UNLOCKS_REQUIRED) {
+        console.log(`❌ Not enough unlocks: ${user.total_unlocks}/${MIN_UNLOCKS_REQUIRED}`);
+        return res.status(403).json({
+          message: `⚠️ You need at least ${MIN_UNLOCKS_REQUIRED} profile unlocks to withdraw. You have ${user.total_unlocks} unlocks.`,
+          required_unlocks: MIN_UNLOCKS_REQUIRED,
+          current_unlocks: user.total_unlocks
+        });
+      }
+
+      const unlockBalance = user.wallet_balance || 0;
+      console.log("Unlock wallet balance:", unlockBalance);
+
+      if (withdrawAmount > unlockBalance) {
+        console.log(`❌ Amount exceeds wallet: ${withdrawAmount} > ${unlockBalance}`);
+        return res.status(400).json({
+          message: `Withdrawal amount exceeds your ChatWazungu wallet of KES ${unlockBalance}`,
+        });
+      }
+    } 
     console.log("\n📊 PLANS DATA:");
     if (user.plans) {
       Object.keys(user.plans).forEach(planKey => {

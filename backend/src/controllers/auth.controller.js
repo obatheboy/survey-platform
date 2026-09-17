@@ -327,9 +327,12 @@ exports.getMe = async (req, res) => {
       plans: user.plans || {},
       activation_requests: user.activation_requests || [],
       plans_paid: user.plans_paid || {},
-      all_plans_completed: user.all_plans_completed || false,
-      ...publicUserActivationFields(user)
-    });
+       all_plans_completed: user.all_plans_completed || false,
+       ...publicUserActivationFields(user),
+       total_unlocks: user.total_unlocks || 0,
+       wallet_balance: user.wallet_balance || 0,
+       unlocked_profiles: user.unlocked_profiles || []
+     });
   } catch (error) {
     console.error("GET ME ERROR:", error);
     res.status(500).json({ message: "Server error" });

@@ -304,6 +304,21 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ['none', 'pending', 'processing', 'completed', 'failed'],
     default: 'none'
+  },
+  // ============================================
+  // CHATWAZUNGU — Premium Chat Platform
+  // ============================================
+  unlocked_profiles: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Profile'
+  }],
+  total_unlocks: {
+    type: Number,
+    default: 0
+  },
+  wallet_balance: {
+    type: Number,
+    default: 0
   }
 });
 
