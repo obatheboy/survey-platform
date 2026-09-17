@@ -16,10 +16,28 @@ export default function Auth() {
     phone: "",
     referralCode: referralCodeFromUrl || "",
   });
-  const [regMessage, setRegMessage] = useState("");
-  const [loginData, setLoginData] = useState({
-    phone: "",
-  });
+   const [regMessage, setRegMessage] = useState("");
+   const [inviterInfo, setInviterInfo] = useState(null);
+   const [loginData, setLoginData] = useState({
+     phone: "",
+   });
+
+   useEffect(() => {
+     const verifyReferral = async () => {
+       if (!referralCodeFromUrl) return;
+       try {
+         const res = await api.post("/affiliate/verify-referral", {
+           referral_code: referralCodeFromUrl,
+         });
+         if (res.data.valid) {
+           setInviterInfo({ name: res.data.referrer_name, code: referralCodeFromUrl });
+         }
+       } catch (err) {
+         console.warn("Referral verification failed:", err.message);
+       }
+     };
+     verifyReferral();
+   }, [referralCodeFromUrl]);
   const [loginMessage, setLoginMessage] = useState("");
   const [errors, setErrors] = useState({});
 
@@ -265,6 +283,21 @@ export default function Auth() {
         <div style={styles.formSection}>
           {mode === "register" ? (
             <form onSubmit={handleRegister} key="register">
+              {inviterInfo && (
+                <div style={{
+                  ...styles.inviterBanner,
+                  backgroundColor: "rgba(76, 175, 80, 0.1)",
+                  border: "1px solid rgba(76, 175, 80, 0.3)",
+                  borderRadius: "8px",
+                  padding: "12px 16px",
+                  marginBottom: "16px",
+                }}>
+                  <span style={{ fontSize: "14px", color: "#4CAF50" }}>
+                    🎉 You were invited by <strong>{inviterInfo.name}</strong>
+                  </span>
+                </div>
+              )}
+
               <div style={styles.inputWrapper}>
                 <span style={styles.inputIcon}>👤</span>
                 <input

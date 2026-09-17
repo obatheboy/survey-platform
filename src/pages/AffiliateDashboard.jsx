@@ -90,7 +90,7 @@ export default function AffiliateDashboard() {
             </button>
         </div>
         <h1>🎯 Affiliate Program</h1>
-        <p>Earn KES 50 for every friend you refer!</p>
+        <p>Earn KES 50 for every friend you refer who completes a payment!</p>
       </div>
 
       {/* Stats Cards */}
@@ -99,7 +99,7 @@ export default function AffiliateDashboard() {
           <div className="stat-icon">💰</div>
           <div className="stat-content">
             <h3>KES {stats?.amount_earned || 0}</h3>
-            <p>Total Earned</p>
+            <p>Commission Earned (KES 50 per referral)</p>
           </div>
         </div>
 
@@ -107,7 +107,7 @@ export default function AffiliateDashboard() {
           <div className="stat-icon">👥</div>
           <div className="stat-content">
             <h3>{stats?.total_referrals || 0}</h3>
-            <p>Total Referrals</p>
+            <p>People You Have Referred</p>
           </div>
         </div>
 
@@ -115,7 +115,7 @@ export default function AffiliateDashboard() {
           <div className="stat-icon">✅</div>
           <div className="stat-content">
             <h3>{stats?.active_referrals || 0}</h3>
-            <p>Active Referrals</p>
+            <p>Referrals Who Paid</p>
           </div>
         </div>
 
@@ -123,7 +123,7 @@ export default function AffiliateDashboard() {
           <div className="stat-icon">⏳</div>
           <div className="stat-content">
             <h3>{stats?.inactive_referrals || 0}</h3>
-            <p>Inactive Referrals</p>
+            <p>Referred (Not Paid Yet)</p>
           </div>
         </div>
       </div>
