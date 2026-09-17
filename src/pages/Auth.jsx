@@ -23,22 +23,11 @@ export default function Auth() {
      phone: "",
    });
 
-   // ✅ PRESERVE: Keep ref parameter when redirecting to maintain referral context
+   // ✅ VERIFY: Read ref from window.location.search and verify via API
    useEffect(() => {
      const url = new URLSearchParams(window.location.search);
      const ref = url.get("ref");
-     const modeParam = url.get("mode") === "login" ? "login" : "register";
-     if (ref) {
-       navigate(`/auth?mode=${modeParam}&ref=${ref}`, { replace: true });
-     } else {
-       navigate(`/auth?mode=${modeParam}`, { replace: true });
-     }
-   }, [mode, navigate]);
-
-   // ✅ VERIFY: Read ref from window.location.search (source of truth) to avoid race condition
-   useEffect(() => {
-     const url = new URLSearchParams(window.location.search);
-     const ref = url.get("ref");
+     console.log('[Auth] Verifying referral code:', ref);
      if (!ref) return;
      
      const verifyReferral = async () => {
@@ -46,16 +35,18 @@ export default function Auth() {
          const res = await api.post("/affiliate/verify-code", {
            referral_code: ref,
          });
+         console.log('[Auth] Verify response:', res.data);
          if (res.data.valid) {
            setInviterInfo({ name: res.data.referrer_name, code: ref });
          }
        } catch (err) {
-         console.warn("Referral verification failed:", err.message);
+         console.warn("[Auth] Referral verification failed:", err.message);
        }
      };
      verifyReferral();
-     }, [location.search]);
-     const [loginMessage, setLoginMessage] = useState("");
+    }, [location.search]);
+  
+  const [loginMessage, setLoginMessage] = useState("");
      const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -114,20 +105,8 @@ export default function Auth() {
     setInstallFeedback("📲 To install: tap your browser menu (⋮) → 'Add to Home Screen' or 'Install App'");
     setTimeout(() => setInstallFeedback(""), 6000);
   };
-
-   // ✅ PRESERVE: Keep ref parameter when redirecting to maintain referral context
-   useEffect(() => {
-     const url = new URLSearchParams(window.location.search);
-     const ref = url.get("ref");
-     const modeParam = url.get("mode") === "login" ? "login" : "register";
-     if (ref) {
-       navigate(`/auth?mode=${modeParam}&ref=${ref}`, { replace: true });
-     } else {
-       navigate(`/auth?mode=${modeParam}`, { replace: true });
-     }
-   }, [mode, navigate]);
-
-  const validateRegistration = () => {
+ 
+   const validateRegistration = () => {
     const newErrors = {};
     
     if (!regData.full_name.trim()) {
