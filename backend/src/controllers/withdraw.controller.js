@@ -319,7 +319,8 @@ exports.requestWithdraw = async (req, res) => {
     }
 
     // Check if user has completed the required surveys for this specific plan
-    if (type !== "affiliate" && type !== "welcome_bonus" && planSurveysCompleted < TOTAL_SURVEYS) {
+    // ✅ CHANGED: If plan is activated, user can withdraw regardless of survey count
+    if (type !== "affiliate" && type !== "welcome_bonus" && !isPlanActivated && planSurveysCompleted < TOTAL_SURVEYS) {
       console.log(`❌ Insufficient surveys: ${planSurveysCompleted}/${TOTAL_SURVEYS}`);
       return res.status(403).json({
         message: `Please complete all ${TOTAL_SURVEYS} surveys for your ${type} plan before withdrawal. You have completed ${planSurveysCompleted || 0} surveys.`,
