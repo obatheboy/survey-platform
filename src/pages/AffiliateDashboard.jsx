@@ -98,32 +98,32 @@ export default function AffiliateDashboard() {
         <div className="affiliate-stat-card earnings">
           <div className="stat-icon">💰</div>
           <div className="stat-content">
-            <h3>KES {stats?.amount_earned || 0}</h3>
-            <p>Commission Earned (KES 50 per referral)</p>
+             <h3>KES {stats?.amount_earned || 0}</h3>
+             <p style={{ fontWeight: 'bold' }}>Commission Earned (KES 50 per referral)</p>
           </div>
         </div>
 
         <div className="affiliate-stat-card referrals">
           <div className="stat-icon">👥</div>
           <div className="stat-content">
-            <h3>{stats?.total_referrals || 0}</h3>
-            <p>People You Have Referred</p>
+             <h3>{stats?.total_referrals || 0}</h3>
+             <p style={{ fontWeight: 'bold' }}>People You Have Referred</p>
           </div>
         </div>
 
         <div className="affiliate-stat-card active">
           <div className="stat-icon">✅</div>
           <div className="stat-content">
-            <h3>{stats?.active_referrals || 0}</h3>
-            <p>Referrals Who Paid</p>
+             <h3>{stats?.active_referrals || 0}</h3>
+             <p style={{ fontWeight: 'bold' }}>Referrals Who Paid</p>
           </div>
         </div>
 
         <div className="affiliate-stat-card inactive">
           <div className="stat-icon">⏳</div>
           <div className="stat-content">
-            <h3>{stats?.inactive_referrals || 0}</h3>
-            <p>Referred (Not Paid Yet)</p>
+             <h3>{stats?.inactive_referrals || 0}</h3>
+             <p style={{ fontWeight: 'bold' }}>Referred (Not Paid Yet)</p>
           </div>
         </div>
       </div>
