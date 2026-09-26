@@ -13,6 +13,7 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
   const [transactionId, setTransactionId] = useState("");
   const [loading, setLoading] = useState(false);
   const [polling, setPolling] = useState(false);
+  const [smsText, setSmsText] = useState("");
   const pollRef = useRef(null);
   const fallbackRef = useRef(null);
 
@@ -101,6 +102,13 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
     e.preventDefault();
     if (!phoneNumber) return;
 
+    // Uganda: manual payment - just move to SMS submission step
+    if (isUganda) {
+      setStep("polling");
+      setPolling(false);
+      return;
+    }
+
     const normalizedPhone = phoneNumber.replace(/^0/, "254").replace("+", "");
 
     setLoading(true);
@@ -141,6 +149,33 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
     if (phone.length <= 6) return `${phone.slice(0, 3)}-${phone.slice(3)}`;
     if (phone.length <= 9) return `${phone.slice(0, 3)}-${phone.slice(3, 6)}-${phone.slice(6)}`;
     return `${phone.slice(0, 3)}-${phone.slice(3, 6)}-${phone.slice(6, 10)}`;
+  };
+
+  const handleSmsSubmit = async (e) => {
+    e.preventDefault();
+    if (!smsText.trim()) {
+      toast.error("Please paste your SMS confirmation");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await chatWazunguApi.confirmUnlock(profile.id, {
+        sms_confirmation: smsText,
+        phone: phoneNumber,
+      });
+      if (res.data?.is_unlocked) {
+        toast.success("Profile unlocked! You earned " + format(500));
+        onSuccess();
+        onClose();
+      } else {
+        toast.error("Payment not confirmed. Check your SMS and try again.");
+      }
+    } catch (err) {
+      console.error("SMS confirmation failed:", err);
+      toast.error("Failed to verify payment. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -237,9 +272,42 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
                   </>
                 )}
               </div>
-              <div style={{ margin: "16px 0", color: "#888", fontSize: "13px" }}>
-                {polling ? "⏳ Verifying payment..." : "✅ Payment confirmed!"}
-              </div>
+
+              {isUganda ? (
+                <form onSubmit={handleSmsSubmit}>
+                  <textarea
+                    value={smsText}
+                    onChange={(e) => setSmsText(e.target.value)}
+                    placeholder="Paste your MTN/Airtel SMS confirmation here..."
+                    rows={4}
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      borderRadius: "10px",
+                      border: "2px solid #444",
+                      background: "#2A2A2A",
+                      color: "#fff",
+                      fontSize: "13px",
+                      fontFamily: "inherit",
+                      resize: "vertical",
+                      marginBottom: "14px",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                  <button
+                    type="submit"
+                    className="pay-btn"
+                    disabled={loading || !smsText.trim()}
+                  >
+                    {loading ? "Verifying..." : "Submit SMS Confirmation"}
+                  </button>
+                </form>
+              ) : (
+                <div style={{ margin: "16px 0", color: "#888", fontSize: "13px" }}>
+                  {polling ? "⏳ Verifying payment..." : "✅ Payment confirmed!"}
+                </div>
+              )}
+
               <p className="retry-note">
                 {isUganda ? "Paste your SMS confirmation above" : "Didn't receive the STK push? Close and try again."}
               </p>
