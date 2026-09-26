@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import api from "../api/api";
+import { COUNTRIES, setCountry, getCountry, getSymbol, getAmount } from "../utils/currency";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ export default function Auth() {
     full_name: "",
     phone: "",
     referralCode: referralCodeFromUrl || "",
+    country: getCountry(),
   });
    const [regMessage, setRegMessage] = useState("");
    const [inviterInfo, setInviterInfo] = useState(null);
@@ -143,6 +145,7 @@ export default function Auth() {
             full_name: regData.full_name,
             phone: regData.phone,
             referral_code: regData.referralCode || referralCodeFromUrl || null,
+            country: regData.country,
           });
           break;
         } catch (attemptError) {
@@ -363,6 +366,34 @@ export default function Auth() {
                 />
               </div>
               {errors.phone && <span style={styles.error}>{errors.phone}</span>}
+
+              <div style={{ marginTop: "16px", marginBottom: "8px" }}>
+                <label style={{ color: "#94a3b8", fontSize: "12px", fontWeight: 600, marginBottom: "6px", display: "block" }}>
+                  🌍 Select Your Country
+                </label>
+                <select
+                  value={regData.country}
+                  onChange={(e) => {
+                    setCountry(e.target.value);
+                    setRegData(prev => ({ ...prev, country: e.target.value }));
+                  }}
+                  style={{
+                    width: "100%",
+                    padding: "12px 14px",
+                    background: "rgba(255, 255, 255, 0.06)",
+                    border: "1px solid #334155",
+                    borderRadius: "8px",
+                    color: "#fff",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    outline: "none",
+                  }}
+                >
+                  <option value={COUNTRIES.KENYA} style={{ background: "#1a1a2e", color: "#fff" }}>🇰🇪 Kenya (KES)</option>
+                  <option value={COUNTRIES.UGANDA} style={{ background: "#1a1a2e", color: "#fff" }}>🇺🇬 Uganda (UGX)</option>
+                </select>
+              </div>
 
               <button style={styles.submitBtn} type="submit" disabled={loading}>
                 {loading ? <span style={styles.spinner}></span> : "Create Free Account"}
