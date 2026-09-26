@@ -1,0 +1,200 @@
+/* ============================================
+   BOTTOM NAVIGATION - Mobile First
+   ============================================ */
+
+.bottom-navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-top: 1px solid rgba(245, 158, 11, 0.2);
+  box-shadow: 0 -4px 24px rgba(245, 158, 11, 0.15);
+  z-index: 1000;
+  animation: slideUpIn 0.4s ease-out;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+@keyframes slideUpIn {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.bottom-nav-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  max-width: 600px;
+  margin: 0 auto;
+  height: 64px;
+}
+
+.bottom-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 4px;
+  position: relative;
+  color: #f59e0b !important;
+  transition: all 0.2s ease;
+  min-height: 64px;
+  -webkit-tap-highlight-color: transparent;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.bottom-nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  border-radius: 0 0 9999px 9999px;
+  transition: width 0.3s ease;
+}
+
+.bottom-nav-item:hover {
+  transform: translateY(-2px);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.bottom-nav-item:active {
+  transform: scale(0.92);
+}
+
+.bottom-nav-item.active::before {
+  width: 100%;
+}
+
+.bottom-nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+  width: 24px;
+  height: 24px;
+  color: #f59e0b !important;
+}
+
+.bottom-nav-item.active .bottom-nav-icon {
+  transform: scale(1.15);
+}
+
+.bottom-nav-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+  color: #f59e0b !important;
+}
+
+.bottom-nav-item.active .bottom-nav-label {
+  opacity: 1;
+}
+
+.bottom-nav-indicator {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background: #f59e0b;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.bottom-nav-item.active .bottom-nav-indicator {
+  opacity: 1;
+}
+
+/* Safe area for notched devices */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .bottom-navigation {
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  }
+
+  .bottom-nav-container {
+    height: calc(64px + env(safe-area-inset-bottom));
+  }
+
+  .bottom-nav-item {
+    min-height: calc(64px + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Hide on tablets and up */
+@media (min-width: 769px) {
+  .bottom-navigation {
+    display: none;
+  }
+}
+
+/* Ensure main content has space for bottom nav on mobile */
+@media (max-width: 768px) {
+  .dashboard {
+    padding-bottom: 80px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .bottom-navigation {
+    animation: none;
+  }
+
+  .bottom-nav-item {
+    opacity: 1;
+    animation: none;
+  }
+
+  .bottom-nav-item.active .bottom-nav-indicator {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/* Dark mode support */
+[data-theme="dark"] .bottom-navigation {
+  background: rgba(26, 17, 40, 0.98);
+  border-top-color: rgba(245, 158, 11, 0.25);
+  box-shadow: 0 -4px 24px rgba(245, 158, 11, 0.2);
+}
+
+[data-theme="dark"] .bottom-nav-item {
+  color: #fbbf24 !important;
+}
+
+[data-theme="dark"] .bottom-nav-icon {
+  color: #fbbf24 !important;
+}
+
+[data-theme="dark"] .bottom-nav-label {
+  color: #fbbf24 !important;
+}
+
+[data-theme="dark"] .bottom-nav-indicator {
+  background: #fbbf24;
+}

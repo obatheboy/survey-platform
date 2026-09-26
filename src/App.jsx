@@ -1,0 +1,285 @@
+import { BrowserRouter, Routes, Route, Navigate, useSearchParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Toaster } from "react-hot-toast";
+import api from "./api/api";
+import { initCacheBusting } from "./utils/cache";
+
+/* ================= USER PAGES ================= */
+import Auth from "./pages/Auth";
+import LandingBanner from "./pages/LandingBanner";
+import Dashboard from "./pages/Dashboard";
+import Surveys from "./pages/Surveys";
+import Activate from "./pages/Activate";
+import ActivationNotice from "./pages/ActivationNotice";
+import Withdraw from "./pages/Withdraw";
+import WithdrawForm from "./pages/WithdrawForm";
+import WithdrawSuccess from "./pages/WithdrawSuccess";
+import FAQ from "./pages/FAQ";
+import TermsAndConditions from "./pages/TermsAndConditions";
+import NotFound from "./pages/NotFound";
+import AffiliateDashboard from "./pages/AffiliateDashboard";
+import LoginFeePayment from "./pages/LoginFeePayment";
+import OnboardingSurvey from "./pages/OnboardingSurvey";
+import ChatWazunguDashboard from "./pages/ChatWazunguDashboard";
+import MultiFunctionDashboard from "./pages/MultiFunctionDashboard";
+
+/* ================= ADMIN ================= */
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminActivations from "./pages/admin/AdminActivations";
+import AdminWithdrawals from "./pages/admin/AdminWithdrawals";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminNotifications from "./pages/admin/AdminNotifications";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminAffiliates from "./pages/admin/AdminAffiliates";
+import AdminAffiliateWithdrawals from "./pages/admin/AdminAffiliateWithdrawals";
+import AdminLoginFee from "./pages/admin/AdminLoginFee";
+
+/* ================= USER AUTH GUARD ================= */
+function ProtectedRoute({ children }) {
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    let isMounted = true;
+    api
+      .get("/auth/me")
+      .then((res) => {
+        if (!isMounted) return;
+        const userData = res.data;
+        setUser(userData);
+
+        // Login fee removed - all users have access
+      })
+      .catch((err) => {
+        console.error("Auth check failed:", err);
+        setUser(null);
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+    return () => { isMounted = false; };
+  }, [navigate]);
+
+  if (loading) {
+    return <p style={{ textAlign: "center", marginTop: 80 }}>Loading…</p>;
+  }
+
+  if (!user) {
+    return <Navigate to="/auth?mode=register" replace />;
+  }
+
+  return children;
+}
+
+/* ================= ADMIN AUTH GUARD ================= */
+function AdminRoute({ children }) {
+  const token = localStorage.getItem("adminToken");
+
+  if (!token) {
+    return <Navigate to="/admin/login" replace />;
+  }
+
+  return children;
+}
+
+/* ================= AUTH REDIRECT ================= */
+function AuthRedirect() {
+  const [searchParams] = useSearchParams();
+  const mode = searchParams.get("mode");
+  const ref = searchParams.get("ref");
+
+  // ✅ FIX: Allow rendering Auth when ref is present (referral link), even without mode
+  if (mode === "login" || mode === "register" || ref) {
+    return <Auth />;
+  }
+
+  return <Navigate to="/" replace />;
+}
+
+/* ================= ROUTER ================= */
+export default function App() {
+  /* ===============================
+     🔥 GLOBAL BACKEND WAKE (ONCE)
+  ================================ */
+  useEffect(() => {
+    const wakeBackend = async () => {
+      const controller = new AbortController();
+      setTimeout(() => controller.abort(), 8000);
+
+      try {
+        await api.get("/health", {
+          signal: controller.signal,
+        });
+      } catch {
+        // Silent: Render is waking up
+      }
+    };
+
+    wakeBackend();
+  }, []);
+
+  /* ===============================
+     🔄 CACHE BUSTING ON APP START
+  ================================ */
+  useEffect(() => {
+    initCacheBusting(() => {
+      console.log('[App] Version mismatch - app data cleared');
+    });
+  }, []);
+
+  return (
+    <BrowserRouter>
+      <Toaster position="top-center" reverseOrder={false} />
+      <Routes>
+        {/* ENTRY - Landing Banner */}
+        <Route path="/" element={<LandingBanner />} />
+
+        {/* USER AUTH - redirect to landing banner first unless mode is specified */}
+        <Route path="/auth" element={<AuthRedirect />} />
+
+        {/* ONBOARDING SURVEY */}
+        <Route
+          path="/onboarding"
+          element={
+            <ProtectedRoute>
+              <OnboardingSurvey />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Login Fee Payment - after registration/login */}
+        <Route path="/login-fee-payment" element={<LoginFeePayment />} />
+        <Route path="/registration-fee-payment" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/login-fee-callback" element={<Navigate to="/dashboard" replace />} />
+
+        {/* TERMS AND CONDITIONS */}
+        <Route path="/terms" element={<TermsAndConditions />} />
+
+        {/* USER APP — Hub for multiple earning options */}
+        <Route
+          path="/hub"
+          element={
+            <ProtectedRoute>
+              <MultiFunctionDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* USER APP — Survey Dashboard (original, unchanged) */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/surveys"
+          element={
+            <ProtectedRoute>
+              <Surveys />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/activation-notice"
+          element={
+            <ProtectedRoute>
+              <ActivationNotice />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/activate"
+          element={
+            <ProtectedRoute>
+              <Activate />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* OLD WITHDRAW PAGE */}
+        <Route
+          path="/withdraw"
+          element={
+            <ProtectedRoute>
+              <Withdraw />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* NEW WITHDRAW PAGES */}
+        <Route
+          path="/withdraw-form"
+          element={
+            <ProtectedRoute>
+              <WithdrawForm />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/withdraw-success"
+          element={
+            <ProtectedRoute>
+              <WithdrawSuccess />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* FAQ */}
+        <Route path="/faq" element={<FAQ />} />
+
+        {/* Affiliate Dashboard */}
+        <Route
+          path="/affiliate"
+          element={
+            <ProtectedRoute>
+              <AffiliateDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ChatWazungu Dashboard */}
+        <Route
+          path="/chatwazungu"
+          element={
+            <ProtectedRoute>
+              <ChatWazunguDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ADMIN */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminLayout />
+            </AdminRoute>
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="activations" element={<AdminActivations />} />
+          <Route path="login-fee" element={<AdminLoginFee />} />
+          <Route path="withdrawals" element={<AdminWithdrawals />} />
+          <Route path="affiliates" element={<AdminAffiliates />} />
+          <Route path="affiliate-withdrawals" element={<AdminAffiliateWithdrawals />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="notifications" element={<AdminNotifications />} />
+        </Route>
+
+        {/* FALLBACK - 404 */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}

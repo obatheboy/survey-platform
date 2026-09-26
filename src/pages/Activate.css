@@ -1,0 +1,178 @@
+/* ================= ACTIVATE PAGE ================= */
+.activate-page {
+  min-height: 100vh;
+  background: #f3f0ff;
+  padding: 20px;
+  padding-top: 60px;
+  padding-bottom: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.activate-main-card {
+  max-width: 520px;
+  width: 100%;
+  background: #ffffff;
+  padding: 32px;
+  border-radius: 24px;
+  color: #1a1128;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+.activate-trust-section,
+.activate-testimonials-section {
+  max-width: 800px;
+  width: 100%;
+}
+
+/* Top Caption Section - Dark for visibility */
+.activate-top-caption {
+  background: #1a1128 !important;
+  border: 1px solid #251a3a !important;
+}
+
+.activate-top-caption span,
+.activate-top-caption div {
+  color: #f1f5f9 !important;
+}
+
+/* Dark section for features - always dark background for visibility */
+.activate-section-dark {
+  background: #1a1128 !important;
+  border: 1px solid #251a3a !important;
+}
+
+.activate-section-dark p,
+.activate-section-dark span,
+.activate-section-dark strong {
+  color: #f1f5f9 !important;
+}
+
+.activate-step-box {
+  background: #251a3a;
+  border: 1px solid #5c5775;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 6px 0;
+}
+
+.activate-step-box strong {
+  font-weight: 800;
+}
+
+.activate-step-box-success {
+  background: rgba(6, 182, 212, 0.25) !important;
+  border: 1px solid rgba(6, 182, 212, 0.5) !important;
+}
+
+.activate-note-box {
+  background: #1a1128;
+  border: 1px solid #251a3a;
+}
+
+.activate-note-box strong {
+  font-weight: 800;
+  color: #ffffff;
+}
+
+/* Plan Status Dark Theme */
+.activate-plan-status {
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid #251a3a;
+}
+
+.activate-plan-status span {
+  color: #e2e8f0;
+}
+
+/* Dark Mode Support for Activate Page */
+@media (prefers-color-scheme: dark) {
+  .activate-page {
+    background: #0f0a1a;
+  }
+  
+  .activate-main-card {
+    background: #1a1128;
+    color: #f1f5f9;
+    border-color: #251a3a;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  }
+  
+  .activate-top-caption {
+    background: #1a1128 !important;
+    border: 1px solid #251a3a !important;
+  }
+  
+  .activate-section-dark {
+    background: #1a1128 !important;
+    border: 1px solid #251a3a !important;
+  }
+  
+  .activate-note-box {
+    background: #1a1128;
+    border: 1px solid #251a3a;
+  }
+  
+  .activate-plan-status {
+    background: rgba(30, 41, 59, 0.95);
+    border: 1px solid #251a3a;
+  }
+  
+  .activate-step-box {
+    background: #251a3a;
+    border: 1px solid #5c5775;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-border {
+  0%, 100% { border-color: #a78bfa; box-shadow: 0 0 30px rgba(124, 58, 237, 0.5), 0 0 60px rgba(124, 58, 237, 0.3); }
+  50% { border-color: #c4b5fd; box-shadow: 0 0 40px rgba(124, 58, 237, 0.7), 0 0 80px rgba(124, 58, 237, 0.5); }
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+@keyframes pulse-btn {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .activate-page {
+    padding: 16px;
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+  .activate-main-card {
+    padding: 24px;
+  }
+}
+
+
+

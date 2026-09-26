@@ -1,19 +1,13 @@
 {
-  "name": "survey-platform-backend",
-  "version": "1.0.0",
-  "description": "Survey Platform - Full Stack",
+  "name": "frontend",
+  "private": true,
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "node backend/src/index.js",
-    "dev": "nodemon backend/src/index.js",
-    "dev:frontend": "vite",
+    "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
-  },
-  "main": "backend/src/index.js",
-  "engines": {
-    "node": ">=18.0.0"
   },
   "dependencies": {
     "axios": "^1.13.2",

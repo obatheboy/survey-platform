@@ -1,19 +1,10 @@
-<<<<<<< Updated upstream
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../models/User"); // ✅ CHANGED: Use User model instead of pool
-=======
-const pool = require("../config/db");
-const jwt = require("jsonwebtoken");
->>>>>>> Stashed changes
 
 /* ======================================================
    🔐 ADMIN LOGIN CONTROLLER
 ====================================================== */
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 exports.adminLogin = async (req, res) => {
   try {
     const { phone, password } = req.body;
@@ -24,7 +15,6 @@ exports.adminLogin = async (req, res) => {
       });
     }
 
-<<<<<<< Updated upstream
     // ✅ CHANGED: MongoDB find instead of pool.query
     const user = await User.findOne({
       phone: phone.trim(),
@@ -32,25 +22,11 @@ exports.adminLogin = async (req, res) => {
     });
 
     if (!user) {
-=======
-    const result = await pool.query(
-      `
-      SELECT id, username
-      FROM admins
-      WHERE phone = $1
-      AND password_hash = crypt($2, password_hash)
-      `,
-      [phone, password]
-    );
-
-    if (!result.rows.length) {
->>>>>>> Stashed changes
       return res.status(401).json({
         message: "Invalid admin credentials",
       });
     }
 
-<<<<<<< Updated upstream
     // Verify password using bcrypt (same as regular user login)
     const match = await bcrypt.compare(password, user.password_hash);
 
@@ -63,20 +39,12 @@ exports.adminLogin = async (req, res) => {
     const token = jwt.sign(
       {
         id: user._id, // ✅ CHANGED: user._id instead of user.id
-=======
-    const admin = result.rows[0];
-
-    const token = jwt.sign(
-      {
-        id: admin.id,
->>>>>>> Stashed changes
         role: "admin",
       },
       process.env.JWT_SECRET,
       { expiresIn: "12h" }
     );
 
-<<<<<<< Updated upstream
     return res.status(200).json({
       message: "Admin login successful",
       token,
@@ -89,19 +57,10 @@ exports.adminLogin = async (req, res) => {
         status: user.status || "ACTIVE",
         active_plan: user.active_plan || null,
         surveys_completed: user.surveys_completed || 0,
-=======
-    res.json({
-      message: "Admin login successful",
-      token,
-      admin: {
-        id: admin.id,
-        username: admin.username,
->>>>>>> Stashed changes
       },
     });
   } catch (error) {
     console.error("Admin login error:", error);
-<<<<<<< Updated upstream
     return res.status(500).json({ message: "Server error" });
   }
 };
@@ -219,8 +178,5 @@ exports.getAdminProfile = async (req, res) => {
   } catch (error) {
     console.error("Get admin profile error:", error);
     return res.status(500).json({ message: "Server error" });
-=======
-    res.status(500).json({ message: "Server error" });
->>>>>>> Stashed changes
   }
 };

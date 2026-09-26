@@ -39,7 +39,7 @@ exports.submitActivationPayment = async (req, res) => {
     console.log("Plan uppercase:", req.body.plan?.toUpperCase());
     
     const userId = req.user.id;
-    const { mpesa_code, plan, is_welcome_bonus, country, payment_method } = req.body;
+    const { mpesa_code, plan, is_welcome_bonus } = req.body;
     const paymentReference = String(mpesa_code || "").trim();
     // Determine plan key - welcome bonus uses REGULAR plan
     const planKey = is_welcome_bonus ? "WELCOME_BONUS" : (plan?.toUpperCase());
@@ -102,8 +102,7 @@ user.activation_requests.push({
        status: 'SUBMITTED',
        created_at: new Date(),
        is_welcome_bonus: !!is_welcome_bonus,
-        payment_method: payment_method || "megapay",
-        country: country || user.country || "kenya"
+       payment_method: "megapay"
      });
     
     await user.save();

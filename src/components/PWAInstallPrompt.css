@@ -1,0 +1,75 @@
+.pwa-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  padding: 20px;
+}
+
+.pwa-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+  position: relative;
+}
+   
+.pwa-close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #f0f0f0;
+  border: none;
+  font-size: 20px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.pwa-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.pwa-card h3 {
+  margin: 0 0 4px;
+  font-size: 18px;
+  color: #1a1a1a;
+}
+
+.pwa-card p {
+  margin: 0 0 20px;
+  font-size: 13px;
+  color: #666;
+}
+
+.pwa-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pwa-install-btn {
+  background: #06b6d4;
+  color: #fff;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pwa-skip-btn {
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: #999;
+  cursor: pointer;
+}

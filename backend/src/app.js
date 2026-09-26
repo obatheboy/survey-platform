@@ -1,8 +1,4 @@
-<<<<<<< Updated upstream
 ﻿const express = require("express");
-=======
-const express = require("express");
->>>>>>> Stashed changes
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
@@ -10,20 +6,16 @@ const authRoutes = require("./routes/auth.routes");
 const surveyRoutes = require("./routes/survey.routes");
 const activationRoutes = require("./routes/activation.routes");
 const withdrawRoutes = require("./routes/withdraw.routes");
-<<<<<<< Updated upstream
 const affiliateRoutes = require("./routes/affiliate.routes");
 const gamificationRoutes = require("./routes/gamification.routes");
 const loginFeeRoutes = require("./routes/loginFee.routes");
 const megapayRoutes = require("./routes/megapay.routes");
 const planPaymentRoutes = require("./routes/planPayment.routes");
 const chatRoutes = require("./routes/chat.routes");
-=======
->>>>>>> Stashed changes
 
 const adminRoutes = require("./routes/admin.routes");
 const adminActivationRoutes = require("./routes/admin.activation.routes");
 const adminAuthRoutes = require("./routes/admin.auth.routes");
-<<<<<<< Updated upstream
 const notificationRoutes = require("./routes/notification.routes");
 
 const app = express();
@@ -90,71 +82,10 @@ app.get("/", (req, res) => {
   });
 });
 
-=======
-
-const app = express();
-
-/* ===============================
-   🔥 TRUST PROXY (CRITICAL FIX)
-================================ */
-app.set("trust proxy", 1);
-
-/* ===============================
-   🌍 CORS (VERCEL + RENDER SAFE)
-================================ */
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://survey-platform-three.vercel.app",
-];
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      return callback(new Error("Not allowed by CORS"));
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-  })
-);
-
-/* ===============================
-   🧩 MIDDLEWARE
-================================ */
-app.use(express.json());
-app.use(cookieParser());
-
-/* ===============================
-   🩺 HEALTH CHECK (RENDER WAKE-UP)
-================================ */
-app.get("/health", (req, res) => {
-  res.status(200).send("OK");
-});
-
-/* ===============================
-   🏠 ROOT (OPTIONAL INFO)
-================================ */
-app.get("/", (req, res) => {
-  res.status(200).json({
-    status: "OK",
-    service: "Survey Platform API",
-  });
-});
-
-/* ===============================
-   👤 USER ROUTES
-================================ */
->>>>>>> Stashed changes
 app.use("/api/auth", authRoutes);
 app.use("/api/surveys", surveyRoutes);
 app.use("/api/activation", activationRoutes);
 app.use("/api/withdraw", withdrawRoutes);
-<<<<<<< Updated upstream
 app.use("/api/affiliate", affiliateRoutes);
 app.use("/api/gamification", gamificationRoutes);
 app.use("/api/login-fee", loginFeeRoutes);
@@ -163,22 +94,13 @@ app.use("/api/megapay", megapayRoutes);
 app.use("/api/plans", planPaymentRoutes);
 app.use("/api/chat", chatRoutes);
 
-=======
-
-/* ===============================
-   🛡 ADMIN ROUTES
-================================ */
->>>>>>> Stashed changes
 app.use("/api/admin/auth", adminAuthRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin", adminActivationRoutes);
 
-<<<<<<< Updated upstream
 app.use((err, req, res, next) => {
   console.error("Global error:", err.message || err);
   res.status(500).json({ message: err.message || "Server error" });
 });
 
-=======
->>>>>>> Stashed changes
 module.exports = app;

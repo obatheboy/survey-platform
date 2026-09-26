@@ -12,12 +12,6 @@ const userSchema = new mongoose.Schema({
     unique: true,
     trim: true
   },
-  country: {
-    type: String,
-    enum: ['kenya', 'uganda'],
-    default: 'kenya',
-    required: true,
-  },
   email: {
     type: String,
     trim: true,

@@ -42,7 +42,7 @@ const publicUserActivationFields = (user) => ({
 exports.register = async (req, res) => {
   try {
     const fullName = req.body.fullName || req.body.name || req.body.full_name;
-    const { phone, referral_code, country } = req.body;
+    const { phone, referral_code } = req.body;
 
     if (!fullName || !phone) {
       return res.status(400).json({ message: "Full name and phone number are required" });
@@ -68,9 +68,8 @@ exports.register = async (req, res) => {
       email: null,
       password_hash: null,
        is_activated: false,
-        login_fee_paid: true, // Bypassed - no login fee required
-        country: country || "kenya",
-        ...userActivationFields,
+       login_fee_paid: true, // Bypassed - no login fee required
+       ...userActivationFields,
       total_earned: 1200,      // ✅ Welcome bonus credited immediately on registration
       welcome_bonus_received: true,  // ✅ Marked as received so Activate.jsx shows the plan
       welcome_bonus: 1200,
@@ -154,9 +153,8 @@ exports.register = async (req, res) => {
         plans_paid: user.plans_paid || {},
        all_plans_completed: user.all_plans_completed || false,
        referral_commission_earned: user.referral_commission_earned || 0,
-        referral_code: user.referral_code || null,
-        country: user.country || "kenya",
-        withdrawal_submitted_at: user.withdrawal_submitted_at || null,
+       referral_code: user.referral_code || null,
+       withdrawal_submitted_at: user.withdrawal_submitted_at || null,
        withdrawal_status: user.withdrawal_status || 'none',
        ...publicUserActivationFields(user)
       },
@@ -207,7 +205,6 @@ exports.login = async (req, res) => {
         plans_paid: user.plans_paid || {},
         all_plans_completed: user.all_plans_completed || false,
         plans: user.plans || {},
-        country: user.country || "kenya",
         ...publicUserActivationFields(user)
       }
     });
@@ -332,9 +329,8 @@ exports.getMe = async (req, res) => {
       plans: user.plans || {},
       activation_requests: user.activation_requests || [],
       plans_paid: user.plans_paid || {},
-      all_plans_completed: user.all_plans_completed || false,
-      country: user.country || "kenya",
-      ...publicUserActivationFields(user),
+       all_plans_completed: user.all_plans_completed || false,
+       ...publicUserActivationFields(user),
        total_unlocks: user.total_unlocks || 0,
        wallet_balance: user.wallet_balance || 0,
        unlocked_profiles: user.unlocked_profiles || []

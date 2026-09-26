@@ -1,0 +1,327 @@
+// ========================= ActivationNotice.jsx =========================
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import api from "../api/api";
+import "./ActivationNotice.css";
+
+/* =========================
+   PLAN CONFIG
+========================= */
+const PLAN_CONFIG = {
+  REGULAR: {
+    label: "REGULAR SURVEYS",
+    activationFee: 100,
+    color: "#06b6d4",
+    icon: "⭐",
+    total: 1500,
+  },
+  VIP: {
+    label: "VIP SURVEY",
+    activationFee: 200,
+    color: "#7c3aed",
+    icon: "💎",
+    total: 2000,
+  },
+  VVIP: {
+    label: "VVIP SURVEYS",
+    activationFee: 300,
+    color: "#ff6b6b",
+    icon: "👑",
+    total: 3000,
+  },
+};
+
+export default function ActivationNotice() {
+   const navigate = useNavigate();
+   const location = useLocation();
+
+   const [planKey, setPlanKey] = useState(null);
+   const [totalEarned, setTotalEarned] = useState(0);
+   const [loading, setLoading] = useState(true);
+   const [error, setError] = useState("");
+   const [userName, setUserName] = useState("");
+
+  /* =========================
+     SCROLL TO TOP ON MOUNT
+  ========================= */
+  useEffect(() => {
+    // Scroll to top immediately when component mounts
+    window.scrollTo(0, 0);
+    
+    // Also scroll smoothly after a tiny delay for better UX
+    const timer = setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, []); // Empty dependency array = runs only on mount
+
+  /* =========================
+     LOAD USER AND PLAN DATA - FIXED VERSION
+  ========================= */
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        // Load user data
+        const res = await api.get(`/auth/me?_t=${Date.now()}`);
+        setUserName(res.data.full_name || "User");
+
+        // COMPREHENSIVE DEBUG
+        console.log("🔍 ===== ACTIVATION NOTICE LOAD DEBUG =====");
+        console.log("🔍 Full location.state:", location.state);
+        console.log("🔍 location.state?.planKey:", location.state?.planKey);
+        console.log("🔍 location.state?.planType:", location.state?.planType);
+        console.log("🔍 location.state?.plan:", location.state?.plan);
+        console.log("🔍 location.state?.plan?.planKey:", location.state?.plan?.planKey);
+        console.log("🔍 location.state?.plan?.type:", location.state?.plan?.type);
+        
+        // FIXED LOGIC: Handle both plan object and planKey
+        let statePlanKey = null;
+        let stateAmount = null;
+        
+        // Check if planKey was passed directly
+        if (location.state?.planKey) {
+          statePlanKey = location.state.planKey;
+          stateAmount = location.state.amount;
+          console.log("✅ Using planKey from state:", statePlanKey);
+        }
+        // Check if a plan object was passed
+        else if (location.state?.plan) {
+          // The plan object might have planKey or type property
+          statePlanKey = location.state.plan.planKey || location.state.plan.type;
+          stateAmount = location.state.plan.amount || location.state.plan.total;
+          console.log("✅ Using planKey from plan object:", statePlanKey);
+        }
+        // Legacy support for planType
+        else if (location.state?.planType) {
+          statePlanKey = location.state.planType;
+          stateAmount = location.state.amount;
+          console.log("✅ Using planType from state:", statePlanKey);
+        }
+        
+        console.log("🔍 Determined statePlanKey:", statePlanKey);
+        
+        if (statePlanKey) {
+          // Ensure planKey is uppercase
+          statePlanKey = statePlanKey.toUpperCase();
+          setPlanKey(statePlanKey);
+          setTotalEarned(stateAmount || PLAN_CONFIG[statePlanKey]?.total || 0);
+          setLoading(false);
+          return;
+        }
+
+        console.log("⚠️ No plan found in location.state, checking user data...");
+        
+        // If no state, check backend for active plan
+        const activePlan = res.data.active_plan;
+        const userPlans = res.data.plans || {};
+        
+        console.log("🔍 User active_plan:", activePlan);
+        console.log("🔍 User plans:", userPlans);
+
+        // Find which plan is completed but not activated
+        let planToActivate = null;
+        
+        // Check in order: REGULAR -> VIP -> VVIP
+        if (res.data.plans_paid?.REGULAR !== true) {
+          planToActivate = "REGULAR";
+        } else if (res.data.plans_paid?.VIP !== true) {
+          planToActivate = "VIP";
+        } else if (res.data.plans_paid?.VVIP !== true) {
+          planToActivate = "VVIP";
+        } else {
+          planToActivate = activePlan;
+        }
+        
+        console.log("🔍 Plan to activate determined:", planToActivate);
+        
+        if (!planToActivate) {
+          console.log("❌ No plan to activate, redirecting to dashboard");
+          navigate("/dashboard");
+          return;
+        }
+
+        const plan = userPlans[planToActivate];
+
+        if (!plan) {
+          console.log("❌ Plan data not found, redirecting to dashboard");
+          navigate("/dashboard");
+          return;
+        }
+
+        // Check if plan needs activation
+        if (plan.is_activated) {
+          console.log("⚠️ Plan already activated, redirecting to dashboard");
+          navigate("/dashboard?activated=true");
+          return;
+        }
+
+        // Check if surveys are completed
+        if (!plan.completed) {
+          console.log("⚠️ Surveys not completed, redirecting to dashboard");
+          navigate("/dashboard");
+          return;
+        }
+
+        setPlanKey(planToActivate);
+        setTotalEarned(PLAN_CONFIG[planToActivate]?.total || 0);
+        console.log("✅ Plan loaded successfully:", planToActivate);
+        console.log("🔍 ===== END LOAD DEBUG =====");
+      } catch (err) {
+        console.error("Error loading activation details:", err);
+        setError("Unable to load activation details. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [navigate, location.state]);
+
+const handleActivate = () => {
+     navigate("/withdraw-form");
+   };
+
+  /* =========================
+     LOADING STATE
+  ========================= */
+  if (loading) {
+    return (
+      <div className="activation-notice-page loading">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading your activation details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  /* =========================
+     ERROR STATE
+  ========================= */
+  if (error) {
+    return (
+      <div className="activation-notice-page">
+        <div className="notice-card error">
+          <div className="error-icon">⚠️</div>
+          <h2>Something Went Wrong</h2>
+          <p className="error-message">{error}</p>
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="primary-button"
+          >
+            Return to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  /* =========================
+     NO PLAN STATE
+  ========================= */
+  if (!planKey) {
+    return (
+      <div className="activation-notice-page">
+        <div className="notice-card">
+          <div className="no-plan-icon">📋</div>
+          <h2>Select a Plan First</h2>
+          <p>Please complete surveys for a plan before activation.</p>
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="primary-button"
+          >
+            Go to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const plan = PLAN_CONFIG[planKey];
+  if (!plan) return null;
+
+/* =========================
+      MAIN CONTENT - SIMPLIFIED
+   ========================= */
+   return (
+     <div className="activation-notice-page simple">
+       {/* SIMPLE NOTICE CARD */}
+       <div className="simple-notice-card">
+         {/* SUCCESS ICON */}
+         <div className="simple-success-icon">
+           <div className="success-check">✓</div>
+           <div className="success-glow"></div>
+         </div>
+
+         {/* HEADING */}
+         <h1 className="simple-title">
+          🎉🎉 CONGRATULATIONS🎉🎉
+         </h1>
+
+         {/* USER GREETING */}
+         <p className="simple-greeting">
+           Great work, <strong>{userName.split(' ')[0]}</strong>! 👏
+         </p>
+         
+         {/* SUCCESS MESSAGE */}
+         <div className="simple-message">
+           <h2>Surveys Completed! ✅</h2>
+           <p>
+             You have successfully completed all surveys for the{" "}
+             <strong style={{ color: plan.color }}>{plan.label}</strong> and earned{" "}
+             <strong style={{ color: plan.color }}>KES {plan.total}</strong>.
+           </p>
+           <p>
+             Now activate your account by paying activation fee of{" "}
+             <strong style={{ color: "#ef4444" }}>KES {plan.activationFee}</strong> and immediately withdraw your earnings.
+           </p>
+           <p style={{ fontWeight: 600, fontSize: "14px", color: "#7c3aed", marginTop: "8px" }}>
+             💡 Remember: Account will be activated automatically after paying activation fee!
+           </p>
+         </div>
+
+         {/* EARNINGS SUMMARY */}
+         <div className="simple-earnings">
+           <div className="earnings-badge" style={{ background: plan.color }}>
+             <span className="earnings-icon">💰</span>
+             <span className="earnings-text">
+               KES {totalEarned.toLocaleString()}
+             </span>
+           </div>
+           <p className="earnings-note">Now Activate your Account and Withdraw Immediately</p>
+         </div>
+
+{/* CALL TO ACTION */}
+          <div className="simple-action">
+            <h3>Tap the button below,Follow all steps and withdraw your money. 🚀</h3>
+            <p className="action-description"></p>
+          </div>
+
+          {/* ACTIVATE BUTTON - Primary action */}
+<button
+           onClick={handleActivate}
+           className="simple-activate-button"
+           style={{ background: plan.color }}
+         >
+           <span className="button-icon">🔓</span>
+           Activate & Withdraw Now
+           <span className="button-arrow">→</span>
+         </button>
+         
+         <div className="info-item">
+           <span className="info-icon">👑</span>
+           <span className="info-text">One-time activation fee</span>
+         </div>
+
+         {/* BACK BUTTON */}
+         <button
+           onClick={() => navigate("/dashboard")}
+           className="simple-back-button"
+         >
+           ← Back to Dashboard
+         </button>
+       </div>
+     </div>
+   );
+}

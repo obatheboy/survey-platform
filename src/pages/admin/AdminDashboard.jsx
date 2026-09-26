@@ -1,0 +1,139 @@
+import { useEffect, useState } from "react";
+import { adminApi } from "../../api/adminApi";
+import { Link } from "react-router-dom";
+import "./AdminDashboard.css";
+
+const StatCard = ({ title, value, icon, color, loading }) => (
+  <div className="stat-card" style={{ '--card-color': color }}>
+    <div className="stat-icon" style={{ background: `${color}33` }}>{icon}</div>
+    <div className="stat-info">
+      <h3 className="stat-title">{title}</h3>
+      {loading ? (
+        <div className="skeleton-loader" style={{ height: '28px', width: '80px' }}></div>
+      ) : (
+        <p className="stat-value">{value}</p>
+      )}
+    </div>
+  </div>
+);
+
+export default function AdminDashboard() {
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalWithdrawals: 0,
+    totalRevenue: 0,
+    pendingActivations: 0,
+    pendingWithdrawals: 0,
+    surveysCompleted: 0,
+    loginFeeApproved: 0,
+    loginFeePending: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchStats = async (isInitialLoad = false) => {
+      try {
+        if (isInitialLoad) {
+          setLoading(true);
+        }
+        const res = await adminApi.get("/admin/stats");
+        setStats(res.data);
+      } catch (err) {
+        console.error("Failed to fetch admin stats:", err);
+        setError("Could not load dashboard statistics. Please try again later.");
+      } finally {
+        if (isInitialLoad) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchStats(true); // Initial load
+    const interval = setInterval(() => fetchStats(false), 30000); // Subsequent polls
+
+    return () => clearInterval(interval);
+  }, []);
+
+  if (error) {
+    return <div className="admin-error-container">{error}</div>;
+  }
+
+  return (
+    <div className="admin-dashboard">
+      <header className="admin-dashboard-header">
+        <h1>Admin Dashboard</h1>
+        <p>Real-time overview of the Survey Platform.</p>
+      </header>
+
+      <div className="stats-grid-container">
+        <StatCard
+          title="Total Users"
+          value={stats.totalUsers.toLocaleString()}
+          icon="👥"
+          color="#7c3aed"
+          loading={loading}
+        />
+        <StatCard
+          title="Total Revenue"
+          value={`KES ${stats.totalRevenue.toLocaleString()}`}
+          icon="💰"
+          color="#06b6d4"
+          loading={loading}
+        />
+        <StatCard
+          title="Total Withdrawals"
+          value={`KES ${stats.totalWithdrawals.toLocaleString()}`}
+          icon="💸"
+           color="#7c3aed"
+          loading={loading}
+        />
+        <StatCard
+          title="Surveys Completed"
+          value={stats.surveysCompleted.toLocaleString()}
+          icon="📝"
+          color="#ff6b6b"
+          loading={loading}
+        />
+        <StatCard
+          title="Pending Activations"
+          value={stats.pendingActivations.toLocaleString()}
+          icon="⏳"
+          color="#ff6b6b"
+          loading={loading}
+        />
+        <StatCard
+          title="Pending Withdrawals"
+          value={stats.pendingWithdrawals.toLocaleString()}
+          icon="📤"
+          color="#ff6b6b"
+          loading={loading}
+        />
+        <StatCard
+          title="Login Fee Approved"
+          value={stats.loginFeeApproved.toLocaleString()}
+          icon="✅"
+          color="#06b6d4"
+          loading={loading}
+        />
+        <StatCard
+          title="Login Fee Pending"
+          value={stats.loginFeePending.toLocaleString()}
+          icon="⏸"
+          color="#7c3aed"
+          loading={loading}
+        />
+      </div>
+
+      <div className="admin-dashboard-actions">
+        <h2>Quick Actions</h2>
+<div className="quick-actions-grid">
+           <Link to="/admin/activations" className="quick-action-btn">Manage Activations</Link>
+           <Link to="/admin/login-fee" className="quick-action-btn">Manage Login Fee</Link>
+           <Link to="/admin/withdrawals" className="quick-action-btn">Manage Withdrawals</Link>
+           <Link to="/admin/users" className="quick-action-btn">View Users</Link>
+         </div>
+      </div>
+    </div>
+  );
+}
