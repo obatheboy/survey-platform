@@ -16,6 +16,32 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
   const pollRef = useRef(null);
   const fallbackRef = useRef(null);
 
+  const styles = {
+    stepBox: {
+      display: "flex",
+      alignItems: "flex-start",
+      gap: "10px",
+      padding: "10px 12px",
+      background: "rgba(255,255,255,0.04)",
+      borderRadius: "8px",
+      marginBottom: "8px",
+      border: "1px solid rgba(255,255,255,0.08)",
+    },
+    stepNumber: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      width: "22px",
+      height: "22px",
+      borderRadius: "50%",
+      background: "#16a34a",
+      color: "white",
+      fontSize: "11px",
+      fontWeight: "800",
+      flexShrink: 0,
+    },
+  };
+
   const startPaymentPolling = (txId) => {
     let attempts = 0;
     const maxAttempts = 40;
@@ -130,15 +156,38 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
             <>
               <div className="unlock-amount">{format(99)}</div>
               {isUganda ? (
-                <div className="payment-instructions" style={{ textAlign: "left", background: "#2A2A2A", borderRadius: "12px", padding: "16px", marginBottom: "20px" }}>
-                  <p style={{ color: "#0DAA65", fontWeight: 600, margin: "0 0 8px 0" }}>📱 Pay via MTN / Airtel Send Money</p>
-                  <p style={{ margin: "4px 0", fontSize: "13px", color: "#ccc" }}><strong>Dial:</strong> MTN *165# or Airtel *185#</p>
-                  <p style={{ margin: "4px 0", fontSize: "13px", color: "#ccc" }}><strong>Select:</strong> Send Money</p>
-                  <p style={{ margin: "4px 0", fontSize: "13px", color: "#ccc" }}><strong>To:</strong> 254794101450</p>
-                  <p style={{ margin: "4px 0", fontSize: "13px", color: "#ccc" }}><strong>Name:</strong> OBADIAH NYAKUNDI OTOKI</p>
-                  <p style={{ margin: "4px 0", fontSize: "13px", color: "#ccc" }}><strong>Amount:</strong> {format(99)}</p>
-                  <p style={{ margin: "4px 0", fontSize: "13px", color: "#ccc" }}><strong>Reason:</strong> ChatWazungu Unlock</p>
-                  <p style={{ margin: "8px 0 0 0", fontSize: "12px", color: "#888" }}>After paying, enter your phone number below and paste your SMS confirmation.</p>
+                <div style={{ marginTop: "8px" }}>
+                  <p style={{ ...styles.caption, color: "#16a34a", marginBottom: "8px" }}>
+                    ⚠ Use MTN or Airtel International Transfer to send money to Kenya (Safaricom/M-Pesa)
+                  </p>
+                  <div className="activate-step-box" style={{...styles.stepBox, borderLeft: "4px solid #16a34a", marginBottom: "8px"}} >
+                    <span style={{...styles.stepNumber, background: "#16a34a"}}>1</span>
+                    <strong style={{color: "#166534", fontWeight: 900, display: "block", marginBottom: "4px" }}>📱 UGANDA MTN PAYMENT</strong>
+                    <div style={{ fontSize: "12px", color: "#15803d", lineHeight: "1.6" }}>
+                      <strong>Dial:</strong> *165#<br/>
+                      <strong>Select:</strong> Send Money<br/>
+                      <strong>Choose:</strong> International Transfer<br/>
+                      <strong>Select:</strong> Kenya (Safaricom/M-Pesa)<br/>
+                      <strong>Recipient:</strong> 254794101450<br/>
+                      <strong>Name:</strong> OBADIAH NYAKUNDI OTOKI<br/>
+                      <strong>Amount:</strong> {format(99)}<br/>
+                      <strong>Reason:</strong> ChatWazungu Unlock
+                    </div>
+                  </div>
+                  <div className="activate-step-box" style={{...styles.stepBox, borderLeft: "4px solid #ea580c", marginBottom: "16px"}} >
+                    <span style={{...styles.stepNumber, background: "#ea580c"}}>2</span>
+                    <strong style={{color: "#9a3412", fontWeight: 900, display: "block", marginBottom: "4px" }}>📱 UGANDA AIRTEL PAYMENT</strong>
+                    <div style={{ fontSize: "12px", color: "#9a3412", lineHeight: "1.6" }}>
+                      <strong>Dial:</strong> *185#<br/>
+                      <strong>Select:</strong> Send Money<br/>
+                      <strong>Choose:</strong> International Transfer<br/>
+                      <strong>Select:</strong> Kenya (Safaricom/M-Pesa)<br/>
+                      <strong>Recipient:</strong> 254794101450<br/>
+                      <strong>Name:</strong> OBADIAH NYAKUNDI OTOKI<br/>
+                      <strong>Amount:</strong> {format(99)}<br/>
+                      <strong>Reason:</strong> ChatWazungu Unlock
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <p className="unlock-instructions">
@@ -343,6 +392,31 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
             font-size: 12px;
             color: #888;
             margin-top: 12px;
+          }
+
+          .activate-step-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255,255,255,0.08);
+          }
+
+          .stepNumber {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #16a34a;
+            color: white;
+            font-size: 11px;
+            font-weight: 800;
+            flex-shrink: 0;
           }
         `}</style>
       </div>
