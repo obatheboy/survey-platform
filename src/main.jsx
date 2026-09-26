@@ -4,7 +4,7 @@ import App from "./App.jsx";
 import { CurrencyProvider } from "./contexts/CurrencyContext.jsx";
 import "./index.css";
 
-const APP_VERSION = "2026-07-06-v2";
+const APP_VERSION = "2026-09-26-v3-uganda";
 
 let versionCheckDone = false;
 
