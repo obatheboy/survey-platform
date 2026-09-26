@@ -1221,22 +1221,24 @@ setPaynectaSubmitting(true);
           </>
            )}
 
-           {/* MANUAL PAYMENT - only shown when automatic STK payment fails */}
-           {paynectaError && (
-           <>
-            <div style={{
-              marginTop: "24px",
-              marginBottom: "8px",
-              padding: "14px 18px",
-              borderRadius: "12px",
-              background: "rgba(239, 68, 68, 0.1)",
-              border: "1px solid rgba(239, 68, 68, 0.3)",
-              textAlign: "center"
-            }}>
-              <p style={{ fontSize: "13px", color: "#ef4444", fontWeight: 600, lineHeight: 1.5, margin: 0 }}>
-                ❌ Automatic payment failed. Pay <strong>manually</strong> using the steps below
-              </p>
-            </div>
+{/* MANUAL PAYMENT - shown when automatic STK payment fails OR for Uganda users */}
+            {(paynectaError || isUganda) && (
+            <>
+{paynectaError && (
+              <div style={{
+                marginTop: "24px",
+                marginBottom: "8px",
+                padding: "14px 18px",
+                borderRadius: "12px",
+                background: "rgba(239, 68, 68, 0.1)",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+                textAlign: "center"
+              }}>
+                <p style={{ fontSize: "13px", color: "#ef4444", fontWeight: 600, lineHeight: 1.5, margin: 0 }}>
+                  ❌ Automatic payment failed. Pay <strong>manually</strong> using the steps below
+                </p>
+              </div>
+            )}
 
             {/* MANUAL PAYMENT SECTION - TILL NUMBER (Kenya) / SEND MONEY (Uganda) */}
            <div style={{
@@ -1424,8 +1426,8 @@ setPaynectaSubmitting(true);
             </>
             )}
 
-            {/* MANUAL PAYMENT SUBMIT BUTTON - only shown in manual payment section */}
-            {paynectaError && (
+            {/* MANUAL PAYMENT SUBMIT BUTTON - shown in manual payment section */}
+            {(paynectaError || isUganda) && (
             <>
             <button
               onClick={() => {
