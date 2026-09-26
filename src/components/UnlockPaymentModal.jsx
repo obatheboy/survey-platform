@@ -262,11 +262,11 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
             padding: 20px;
           }
 
-          .unlock-modal {
+.unlock-modal {
             background-color: ${CHATWAZUNGU_DARK};
-            border-radius: 16px;
+            border-radius: 20px;
             width: 100%;
-            max-width: 400px;
+            max-width: 440px;
             border: 1px solid #333;
             overflow: hidden;
           }
@@ -275,23 +275,23 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px;
+            padding: 24px;
             background-color: #1A1A1A;
             color: white;
           }
 
           .unlock-header h2 {
             margin: 0;
-            font-size: 18px;
+            font-size: 20px;
           }
 
           .unlock-close {
             background: none;
             border: none;
             color: #aaa;
-            font-size: 20px;
+            font-size: 24px;
             cursor: pointer;
-            padding: 6px 10px;
+            padding: 8px 12px;
             border-radius: 6px;
             transition: all 0.2s;
           }
@@ -302,38 +302,40 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
           }
 
           .unlock-body {
-            padding: 24px;
+            padding: 28px;
             text-align: center;
             color: white;
           }
 
           .unlock-amount {
-            font-size: 36px;
+            font-size: 42px;
             font-weight: 800;
             color: ${CHATWAZUNGU_GREEN};
-            margin-bottom: 16px;
+            margin-bottom: 20px;
+            letterSpacing: "-1px";
           }
 
           .unlock-instructions {
             color: #aaa;
-            font-size: 14px;
-            margin-bottom: 20px;
+            font-size: 15px;
+            margin-bottom: 24px;
+            lineHeight: 1.5;
           }
 
           .phone-input-wrapper {
             display: flex;
             background-color: #2A2A2A;
-            border-radius: 12px;
-            padding: 4px 12px;
-            margin-bottom: 20px;
+            border-radius: 14px;
+            padding: 6px 16px;
+            margin-bottom: 24px;
             border: 1px solid #444;
           }
 
           .phone-prefix {
             color: #888;
-            font-size: 16px;
-            margin-right: 8px;
-            padding-top: 8px;
+            font-size: 18px;
+            margin-right: 12px;
+            padding-top: 4px;
           }
 
           .phone-input {
@@ -341,27 +343,28 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
             background: none;
             border: none;
             color: white;
-            font-size: 16px;
+            font-size: 18px;
             outline: none;
-            padding: 8px 0;
+            padding: 10px 0;
           }
 
           .pay-btn {
             width: 100%;
-            padding: 14px;
+            padding: 18px;
             background-color: ${CHATWAZUNGU_GREEN};
             color: white;
             border: none;
-            border-radius: 24px;
-            font-size: 16px;
+            border-radius: 28px;
+            font-size: 17px;
             font-weight: 700;
             cursor: pointer;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             transition: all 0.2s;
           }
 
           .pay-btn:hover:not(:disabled) {
             background-color: #1a8d55;
+            transform: translateY(-1px);
           }
 
           .pay-btn:disabled {
@@ -372,51 +375,55 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
           .payment-instructions {
             text-align: left;
             background-color: #2A2A2A;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 20px;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 24px;
           }
 
           .payment-instructions p {
-            margin: 8px 0;
-            font-size: 13px;
+            margin: 10px 0;
+            font-size: 14px;
             color: #ccc;
+            lineHeight: 1.5;
           }
 
           .payment-instructions p:first-child {
             color: ${CHATWAZUNGU_GREEN};
-            font-weight: 600;
+            font-weight: 700;
+            fontSize: 15px;
+            marginBottom: 12px;
           }
 
           .retry-note {
-            font-size: 12px;
+            font-size: 13px;
             color: #888;
-            margin-top: 12px;
+            margin-top: 16px;
+            lineHeight: 1.4;
           }
 
           .activate-step-box {
             display: flex;
             align-items: flex-start;
-            gap: 10px;
-            padding: 10px 12px;
+            gap: 12px;
+            padding: 14px 16px;
             background: rgba(255,255,255,0.04);
-            border-radius: 8px;
-            margin-bottom: 8px;
+            border-radius: 10px;
+            margin-bottom: 10px;
             border: 1px solid rgba(255,255,255,0.08);
           }
 
           .stepNumber {
             display: flex;
             align-items: center;
-            justify-content: center;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
+            justifyContent: center;
+            width: 26px;
+            height: 26px;
+            borderRadius: 50%;
             background: #16a34a;
             color: white;
-            font-size: 11px;
-            font-weight: 800;
-            flex-shrink: 0;
+            fontSize: 13px,
+            fontWeight: 800,
+            flexShrink: 0,
           }
         `}</style>
       </div>
