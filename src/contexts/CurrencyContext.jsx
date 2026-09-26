@@ -70,7 +70,12 @@ export function CurrencyProvider({ children }) {
   };
 
   return (
-    <CurrencyContext.Provider value={{ country, setCountry, config, convert, format, formatShort }}>
+    <CurrencyContext.Provider value={{
+      country, setCountry, config, convert, format, formatShort,
+      symbol: config.symbol,
+      isUganda: country === COUNTRIES.UGANDA,
+      isKenya: country === COUNTRIES.KENYA,
+    }}>
       {children}
     </CurrencyContext.Provider>
   );
