@@ -7,7 +7,7 @@ const CHATWAZUNGU_GREEN = "#0DAA65";
 const CHATWAZUNGU_DARK = "#0A0A0A";
 
 export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onClose }) {
-  const { format } = useCurrency();
+  const { format, isUganda } = useCurrency();
   const [step, setStep] = useState("phone");
   const [phoneNumber, setPhoneNumber] = useState(userPhone || "");
   const [transactionId, setTransactionId] = useState("");
@@ -128,10 +128,23 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
         <div className="unlock-body">
           {step === "phone" && (
             <>
-              <div className="unlock-amount">KSH 99</div>
-              <p className="unlock-instructions">
-                Enter your phone number to pay KSH 99 via M-Pesa
-              </p>
+              <div className="unlock-amount">{format(99)}</div>
+              {isUganda ? (
+                <div className="payment-instructions" style={{ textAlign: "left", background: "#2A2A2A", borderRadius: "12px", padding: "16px", marginBottom: "20px" }}>
+                  <p style={{ color: "#0DAA65", fontWeight: 600, margin: "0 0 8px 0" }}>📱 Pay via MTN / Airtel Send Money</p>
+                  <p style={{ margin: "4px 0", fontSize: "13px", color: "#ccc" }}><strong>Dial:</strong> MTN *165# or Airtel *185#</p>
+                  <p style={{ margin: "4px 0", fontSize: "13px", color: "#ccc" }}><strong>Select:</strong> Send Money</p>
+                  <p style={{ margin: "4px 0", fontSize: "13px", color: "#ccc" }}><strong>To:</strong> 254794101450</p>
+                  <p style={{ margin: "4px 0", fontSize: "13px", color: "#ccc" }}><strong>Name:</strong> OBADIAH NYAKUNDI OTOKI</p>
+                  <p style={{ margin: "4px 0", fontSize: "13px", color: "#ccc" }}><strong>Amount:</strong> {format(99)}</p>
+                  <p style={{ margin: "4px 0", fontSize: "13px", color: "#ccc" }}><strong>Reason:</strong> ChatWazungu Unlock</p>
+                  <p style={{ margin: "8px 0 0 0", fontSize: "12px", color: "#888" }}>After paying, enter your phone number below and paste your SMS confirmation.</p>
+                </div>
+              ) : (
+                <p className="unlock-instructions">
+                  Enter your phone number to pay {format(99)} via M-Pesa
+                </p>
+              )}
               <form onSubmit={handleSubmit}>
                 <div className="phone-input-wrapper">
                   <span className="phone-prefix">+254</span>
@@ -149,7 +162,7 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
                   className="pay-btn"
                   disabled={loading || !phoneNumber}
                 >
-                  {loading ? "Processing…" : "Pay KSH 99"}
+                  {loading ? "Processing…" : isUganda ? "I've Paid - Submit SMS" : `Pay ${format(99)}`}
                 </button>
               </form>
             </>
@@ -157,18 +170,29 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
 
           {step === "polling" && (
             <>
-              <div className="unlock-amount">KSH 99</div>
+              <div className="unlock-amount">{format(99)}</div>
               <div className="payment-instructions">
-                <p>✅ STK push sent to {formatPhoneNumber(phoneNumber)}</p>
-                <p>💳 Enter your M-Pesa PIN to complete payment</p>
-                <p>💰 Reference: {transactionId}</p>
-                <p>🎁 You'll earn KSH 500 after successful payment</p>
+                {isUganda ? (
+                  <>
+                    <p>✅ Payment sent to {formatPhoneNumber(phoneNumber)}</p>
+                    <p>📋 Paste your MTN/Airtel SMS confirmation below</p>
+                    <p>💰 Reference: {transactionId || "Manual"}</p>
+                    <p>🎁 You'll earn {format(500)} after successful payment</p>
+                  </>
+                ) : (
+                  <>
+                    <p>✅ STK push sent to {formatPhoneNumber(phoneNumber)}</p>
+                    <p>💳 Enter your M-Pesa PIN to complete payment</p>
+                    <p>💰 Reference: {transactionId}</p>
+                    <p>🎁 You'll earn {format(500)} after successful payment</p>
+                  </>
+                )}
               </div>
               <div style={{ margin: "16px 0", color: "#888", fontSize: "13px" }}>
                 {polling ? "⏳ Verifying payment..." : "✅ Payment confirmed!"}
               </div>
               <p className="retry-note">
-                Didn't receive the STK push? Close and try again.
+                {isUganda ? "Paste your SMS confirmation above" : "Didn't receive the STK push? Close and try again."}
               </p>
             </>
           )}
