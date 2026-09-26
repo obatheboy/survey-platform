@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getCountry, getSymbol, getAmount } from '../utils/currency';
 import './FAQ.css';
 
 const faqData = [
@@ -12,11 +13,11 @@ const faqData = [
       },
       {
         q: 'What are the different survey plans?',
-        a: 'We offer three plans: Regular (KES 150 per survey, KES 1,500 total), VIP (KES 200 per survey, KES 2,000 total), and VVIP (KES 300 per survey, KES 3,000 total). Each plan requires completing 10 surveys.'
+        a: ({country}) => `We offer three plans: Regular (${getSymbol(country)} ${getAmount(150, country)} per survey, ${getSymbol(country)} ${getAmount(1500, country)} total), VIP (${getSymbol(country)} ${getAmount(200, country)} per survey, ${getSymbol(country)} ${getAmount(2000, country)} total), and VVIP (${getSymbol(country)} ${getAmount(300, country)} per survey, ${getSymbol(country)} ${getAmount(3000, country)} total). Each plan requires completing 10 surveys.`
       },
       {
         q: 'Do I get a welcome bonus?',
-        a: 'Yes! New users receive a KES 1,200 welcome bonus upon registration. You can withdraw this after activating your account.'
+        a: ({country}) => `Yes! New users receive a ${getSymbol(country)} ${getAmount(1200, country)} welcome bonus upon registration. You can withdraw this after activating your account.`
       }
     ]
   },
@@ -25,7 +26,7 @@ const faqData = [
     questions: [
       {
         q: 'Why do I need to activate my account?',
-        a: 'Account activation (KES 100) verifies your identity and prevents fraud. It\'s a one-time payment that unlocks your ability to withdraw earnings.'
+        a: ({country}) => `Account activation (${getSymbol(country)} ${getAmount(100, country)}) verifies your identity and prevents fraud. It's a one-time payment that unlocks your ability to withdraw earnings.`
       },
       {
         q: 'How long does activation take?',
@@ -84,7 +85,7 @@ const faqData = [
       },
       {
         q: 'How much do I earn per referral?',
-        a: 'You earn KES 200 for each friend who registers and activates their account using your referral link.'
+        a: ({country}) => `You earn ${getSymbol(country)} ${getAmount(200, country)} for each friend who registers and activates their account using your referral link.`
       }
     ]
   },
@@ -109,6 +110,8 @@ const faqData = [
 
 function FAQItem({ question, answer }) {
   const [isOpen, setIsOpen] = useState(false);
+  const country = getCountry();
+  const resolvedAnswer = typeof answer === 'function' ? answer({country}) : answer;
 
   return (
     <div className={`faq-item ${isOpen ? 'open' : ''}`}>
@@ -122,7 +125,7 @@ function FAQItem({ question, answer }) {
       </button>
       {isOpen && (
         <div className="faq-answer">
-          <p>{answer}</p>
+          <p>{resolvedAnswer}</p>
         </div>
       )}
     </div>

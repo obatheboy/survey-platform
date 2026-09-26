@@ -1,15 +1,9 @@
-<<<<<<< Updated upstream
 /* eslint-disable no-undef */
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const { syncActivationStatus } = require("../utils/activationStatus");
 const Notification = require("../models/Notification"); // ✅ ADDED: Import Notification model
 const { registerWithReferral, awardReferralCommission } = require("./affiliate.controller");
-=======
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const pool = require("../config/db");
->>>>>>> Stashed changes
 
 const TOTAL_SURVEYS = 10;
 
@@ -18,7 +12,6 @@ const TOTAL_SURVEYS = 10;
 ================================ */
 const COOKIE_OPTIONS = {
   httpOnly: true,
-<<<<<<< Updated upstream
   secure: true,
   sameSite: "none",
   path: "/",
@@ -43,20 +36,11 @@ const publicUserActivationFields = (user) => ({
   has_seen_welcome_popup: user.has_seen_welcome_popup === true
 });
 
-=======
-  secure: true,          // ✅ ALWAYS TRUE ON HTTPS
-  sameSite: "none",      // ✅ REQUIRED FOR CROSS-SITE COOKIE
-  path: "/",
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-};
-
->>>>>>> Stashed changes
 /* ===============================
    REGISTER
 ================================ */
 exports.register = async (req, res) => {
   try {
-<<<<<<< Updated upstream
     const fullName = req.body.fullName || req.body.name || req.body.full_name;
     const { phone, referral_code, country } = req.body;
 
@@ -83,10 +67,10 @@ exports.register = async (req, res) => {
       phone,
       email: null,
       password_hash: null,
-      country: country || 'kenya',
-      is_activated: false,
-       login_fee_paid: true, // Bypassed - no login fee required
-       ...userActivationFields,
+       is_activated: false,
+        login_fee_paid: true, // Bypassed - no login fee required
+        country: country || "kenya",
+        ...userActivationFields,
       total_earned: 1200,      // ✅ Welcome bonus credited immediately on registration
       welcome_bonus_received: true,  // ✅ Marked as received so Activate.jsx shows the plan
       welcome_bonus: 1200,
@@ -163,16 +147,16 @@ exports.register = async (req, res) => {
         full_name: user.full_name,
         phone: user.phone,
         email: user.email,
-         is_activated: user.is_activated,
-         welcome_bonus_received: user.welcome_bonus_received,
-          welcome_bonus: user.welcome_bonus || 1200,
+        is_activated: user.is_activated,
+        welcome_bonus_received: user.welcome_bonus_received,
+         welcome_bonus: user.welcome_bonus || 1200,
           login_fee_paid: true, // Bypassed - login fee waived on registration
-         country: user.country || 'kenya',
-         plans_paid: user.plans_paid || {},
+        plans_paid: user.plans_paid || {},
        all_plans_completed: user.all_plans_completed || false,
        referral_commission_earned: user.referral_commission_earned || 0,
-       referral_code: user.referral_code || null,
-       withdrawal_submitted_at: user.withdrawal_submitted_at || null,
+        referral_code: user.referral_code || null,
+        country: user.country || "kenya",
+        withdrawal_submitted_at: user.withdrawal_submitted_at || null,
        withdrawal_status: user.withdrawal_status || 'none',
        ...publicUserActivationFields(user)
       },
@@ -183,57 +167,12 @@ exports.register = async (req, res) => {
     if (error.code === 11000) {
       return res.status(409).json({ message: "Phone already registered" });
     }
-=======
-    const fullName =
-      req.body.fullName || req.body.name || req.body.full_name;
-
-    const { phone, email, password } = req.body;
-
-    if (!fullName || !phone || !password) {
-      return res.status(400).json({ message: "Required fields missing" });
-    }
-
-    const exists = await pool.query(
-      "SELECT id FROM users WHERE phone = $1",
-      [phone]
-    );
-
-    if (exists.rows.length) {
-      return res.status(409).json({ message: "Phone already registered" });
-    }
-
-    const passwordHash = await bcrypt.hash(password, 10);
-
-    const result = await pool.query(
-      `
-      INSERT INTO users (
-        full_name,
-        phone,
-        email,
-        password_hash,
-        is_activated,
-        total_earned
-      )
-      VALUES ($1, $2, $3, $4, false, 0)
-      RETURNING id, full_name, phone, email, is_activated
-      `,
-      [fullName, phone, email || null, passwordHash]
-    );
-
-    res.status(201).json({
-      message: "Registration successful",
-      user: result.rows[0],
-    });
-  } catch (error) {
-    console.error("REGISTER ERROR:", error);
->>>>>>> Stashed changes
     res.status(500).json({ message: "Server error" });
   }
 };
 
 /* ===============================
    LOGIN
-<<<<<<< Updated upstream
 =============================== */
 exports.login = async (req, res) => {
   try {
@@ -263,12 +202,12 @@ exports.login = async (req, res) => {
       user: {
         id: user._id,
         phone: user.phone,
-        country: user.country || 'kenya',
         login_fee_paid: user.login_fee_paid || false,
         survey_onboarding_completed: user.survey_onboarding_completed || false,
         plans_paid: user.plans_paid || {},
         all_plans_completed: user.all_plans_completed || false,
         plans: user.plans || {},
+        country: user.country || "kenya",
         ...publicUserActivationFields(user)
       }
     });
@@ -376,7 +315,6 @@ exports.getMe = async (req, res) => {
       id: user._id,
       full_name: user.full_name,
       phone: user.phone,
-      country: user.country || 'kenya',
       email: user.email,
       is_activated: user.is_activated,
       total_earned: user.total_earned,
@@ -394,149 +332,18 @@ exports.getMe = async (req, res) => {
       plans: user.plans || {},
       activation_requests: user.activation_requests || [],
       plans_paid: user.plans_paid || {},
-       all_plans_completed: user.all_plans_completed || false,
-       ...publicUserActivationFields(user),
+      all_plans_completed: user.all_plans_completed || false,
+      country: user.country || "kenya",
+      ...publicUserActivationFields(user),
        total_unlocks: user.total_unlocks || 0,
        wallet_balance: user.wallet_balance || 0,
        unlocked_profiles: user.unlocked_profiles || []
      });
-=======
-================================ */
-exports.login = async (req, res) => {
-  try {
-    const { phone, password } = req.body;
-
-    const result = await pool.query(
-      `
-      SELECT id, phone, password_hash, is_activated
-      FROM users
-      WHERE phone = $1
-      `,
-      [phone]
-    );
-
-    if (!result.rows.length) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    const user = result.rows[0];
-    const match = await bcrypt.compare(password, user.password_hash);
-
-    if (!match) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    const token = jwt.sign(
-      { id: user.id },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    // ✅ SET COOKIE (RENDER SAFE)
-    res.cookie("token", token, COOKIE_OPTIONS);
-
-    res.json({
-      message: "Login successful",
-      user: {
-        id: user.id,
-        phone: user.phone,
-        is_activated: user.is_activated,
-      },
-    });
-  } catch (error) {
-    console.error("LOGIN ERROR:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
-/* ===============================
-   LOGOUT
-================================ */
-exports.logout = (req, res) => {
-  // ✅ MUST MATCH COOKIE OPTIONS
-  res.clearCookie("token", {
-    ...COOKIE_OPTIONS,
-    maxAge: 0,
-  });
-
-  res.json({ message: "Logged out" });
-};
-
-/* ===============================
-   GET ME
-================================ */
-exports.getMe = async (req, res) => {
-  try {
-    if (!req.user?.id) {
-      return res.status(401).json({ message: "Invalid session" });
-    }
-
-    const userRes = await pool.query(
-      `
-      SELECT
-        id,
-        full_name,
-        phone,
-        email,
-        is_activated,
-        total_earned
-      FROM users
-      WHERE id = $1
-      `,
-      [req.user.id]
-    );
-
-    if (!userRes.rows.length) {
-      return res.status(401).json({ message: "Invalid session" });
-    }
-
-    const plansRes = await pool.query(
-      `
-      SELECT
-        plan,
-        surveys_completed,
-        completed,
-        is_activated,
-        created_at
-      FROM user_surveys
-      WHERE user_id = $1
-      ORDER BY created_at DESC
-      `,
-      [req.user.id]
-    );
-
-    const plans = {};
-    let activePlan = null;
-
-    for (const row of plansRes.rows) {
-      plans[row.plan] = {
-        surveys_completed: row.surveys_completed,
-        completed: row.completed,
-        is_activated: row.is_activated,
-        total_surveys: TOTAL_SURVEYS,
-      };
-
-      if (!row.is_activated && !activePlan) {
-        activePlan = row.plan;
-      }
-    }
-
-    const activePlanData = activePlan ? plans[activePlan] : null;
-
-    res.json({
-      ...userRes.rows[0],
-      active_plan: activePlan,
-      surveys_completed: activePlanData?.surveys_completed || 0,
-      surveys_locked: activePlanData?.completed === true,
-      plans,
-    });
->>>>>>> Stashed changes
   } catch (error) {
     console.error("GET ME ERROR:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
-<<<<<<< Updated upstream
 
 exports.markWelcomePopupSeen = async (req, res) => {
   try {
@@ -584,5 +391,3 @@ exports.saveSurveyOnboarding = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-=======
->>>>>>> Stashed changes
