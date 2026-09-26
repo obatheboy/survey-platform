@@ -1480,7 +1480,7 @@ setPaynectaSubmitting(true);
               </div>
             )}
 
-            {error && (
+            {paynectaError && (
               <div style={{
                 padding: "10px",
                 borderRadius: "8px",
@@ -1491,7 +1491,7 @@ setPaynectaSubmitting(true);
                 fontSize: "13px",
                 textAlign: "center"
               }}>
-                {error}
+                {paynectaError}
               </div>
             )}
             </>
