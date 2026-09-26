@@ -1056,7 +1056,7 @@ export default function Dashboard() {
                color: 'rgba(255,255,255,0.9)',
                lineHeight: '1.5'
              }}>
-               Your withdrawal has been processing for over 72 hours. Now you can earn KES 50 instantly for every friend you refer! Invite friends to join and earn while you wait.
+               Your withdrawal has been processing for over 72 hours. Now you can earn {format(50)} instantly for every friend you refer! Invite friends to join and earn while you wait.
              </p>
              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                <button
@@ -1146,7 +1146,7 @@ export default function Dashboard() {
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap'
                 }}>
-                  KES {stats.availableBalance.toLocaleString()}
+                  {format(stats.availableBalance)}
                 </span>
               </div>
             </div>

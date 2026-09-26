@@ -998,7 +998,7 @@ setPaynectaSubmitting(true);
             </div>
 
             <div style={{ fontSize: "38px", fontWeight: 900, color: "#06b6d4", lineHeight: "1.2", marginBottom: "10px", textShadow: "0 4px 12px rgba(6, 182, 212, 0.5)" }}>
-              KES {plan.total}
+              {format(plan.total)}
             </div>
 
             <div style={{

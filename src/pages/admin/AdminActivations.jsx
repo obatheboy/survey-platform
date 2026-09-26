@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { adminApi } from "../../api/adminApi";
+import { useCurrency } from "../../contexts/CurrencyContext.jsx";
 import "./Admin.css";
 import { useAdminTable } from "./useAdminTable";
 import AdminTableLayout from "./AdminTableLayout";
@@ -20,6 +21,7 @@ const statusMap = {
 };
 
 export default function AdminActivations() {
+  const { symbol } = useCurrency();
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [roleMessage, setRoleMessage] = useState("");
@@ -206,7 +208,7 @@ export default function AdminActivations() {
                   <th>Phone</th>
                   <th>Email</th>
                   <th>M-Pesa Code</th>
-                  <th>Amount (KES)</th>
+                  <th>Amount ({symbol})</th>
                   <th>Plan</th>
                   <th>Status</th>
                   <th>Submitted</th>

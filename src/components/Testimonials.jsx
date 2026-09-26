@@ -1,13 +1,19 @@
 import { useState, useEffect } from 'react';
+import { useCurrency } from '../contexts/CurrencyContext.jsx';
 import './Testimonials.css';
 
-const testimonialsData = [
+export default function Testimonials({ variant = 'carousel' }) {
+  const { format } = useCurrency();
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+
+  const testimonialsData = [
   {
     id: 1,
     name: 'John Mwangi',
     location: 'Nairobi',
     initials: 'JM',
-    earned: 'KES 45,000',
+    earned: format(45000),
     duration: '3 months',
     rating: 5,
     quote: "I've been earning consistently every month. The platform is legit and withdrawals are instant. Highly recommended!",
@@ -18,7 +24,7 @@ const testimonialsData = [
     name: 'Mary Akinyi',
     location: 'Kisumu',
     initials: 'MA',
-    earned: 'KES 32,500',
+    earned: format(32500),
     duration: '2 months',
     rating: 5,
     quote: "At first I was skeptical, but after my first withdrawal I was convinced. This is the real deal!",
@@ -29,7 +35,7 @@ const testimonialsData = [
     name: 'Peter Kamau',
     location: 'Mombasa',
     initials: 'PK',
-    earned: 'KES 58,200',
+    earned: format(58200),
     duration: '4 months',
     rating: 5,
     quote: "Best decision I made this year. I earn while doing other things. The surveys are easy and payment is guaranteed.",
@@ -40,7 +46,7 @@ const testimonialsData = [
     name: 'Grace Wanjiru',
     location: 'Nakuru',
     initials: 'GW',
-    earned: 'KES 28,900',
+    earned: format(28900),
     duration: '1 month',
     rating: 5,
     quote: "I was able to pay my rent with earnings from this platform. Thank you for this opportunity!",
@@ -51,7 +57,7 @@ const testimonialsData = [
     name: 'David Omondi',
     location: 'Eldoret',
     initials: 'DO',
-    earned: 'KES 41,300',
+    earned: format(41300),
     duration: '3 months',
     rating: 5,
     quote: "As a student, this has been a lifesaver. I can earn money for upkeep without leaving my studies.",
@@ -62,17 +68,13 @@ const testimonialsData = [
     name: 'Faith Njeri',
     location: 'Thika',
     initials: 'FN',
-    earned: 'KES 36,700',
+    earned: format(36700),
     duration: '2 months',
     rating: 5,
     quote: "The welcome bonus alone was worth it! I've been earning steadily since then. Very reliable platform.",
     verified: true
   }
 ];
-
-export default function Testimonials({ variant = 'carousel' }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
   useEffect(() => {
     if (!isAutoPlaying || variant !== 'carousel') return;

@@ -1,6 +1,8 @@
 import './TrustBadges.css';
+import { useCurrency } from '../contexts/CurrencyContext.jsx';
 
 export default function TrustBadges({ variant = 'default' }) {
+  const { symbol } = useCurrency();
   const badges = [
     {
       icon: (
@@ -41,7 +43,7 @@ export default function TrustBadges({ variant = 'default' }) {
           <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
         </svg>
       ),
-      title: 'KES 12M+ Paid',
+      title: symbol + ' 12M+ Paid',
       description: 'Total Withdrawals'
     },
     {

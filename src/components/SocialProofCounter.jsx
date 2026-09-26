@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useCurrency } from '../contexts/CurrencyContext.jsx';
 import './SocialProofCounter.css';
 
 function AnimatedCounter({ target, duration = 2000, prefix = '', suffix = '' }) {
@@ -40,6 +41,7 @@ function AnimatedCounter({ target, duration = 2000, prefix = '', suffix = '' }) 
 }
 
 export default function SocialProofCounter() {
+  const { symbol } = useCurrency();
   const [stats, setStats] = useState({
     totalUsers: 15847,
     totalPaid: 12450000,
@@ -86,7 +88,7 @@ export default function SocialProofCounter() {
             <div className="stat-value">
               <AnimatedCounter 
                 target={stats.totalPaid} 
-                prefix="KES " 
+                prefix={symbol + " "} 
               />
             </div>
             <div className="stat-label">Total Paid Out</div>

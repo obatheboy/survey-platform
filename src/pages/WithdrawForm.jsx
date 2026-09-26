@@ -6,7 +6,7 @@ import { useCurrency } from "../contexts/CurrencyContext.jsx";
 import "./WithdrawForm.css";
 
 export default function WithdrawForm() {
-  const { format } = useCurrency();
+  const { format, symbol } = useCurrency();
   const PLANS = {
   REGULAR: { 
     name: "REGULAR SURVEYS", 
@@ -795,9 +795,9 @@ export default function WithdrawForm() {
 
             {/* Amount Input */}
             <div className="form-group">
-              <label>Amount to Withdraw (KES)</label>
+              <label>Amount to Withdraw ({symbol})</label>
               <div className="amount-input-group">
-                <span className="amount-prefix">KES</span>
+                <span className="amount-prefix">{symbol}</span>
                 <input
                   type="number"
                   placeholder="Enter amount"

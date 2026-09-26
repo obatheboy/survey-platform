@@ -6,6 +6,8 @@ import { useCurrency } from "../../contexts/CurrencyContext.jsx";
 ========================= */
 const KENYA_FLAG =
   "https://upload.wikimedia.org/wikipedia/commons/4/49/Flag_of_Kenya.svg";
+const UGANDA_FLAG =
+  "https://upload.wikimedia.org/wikipedia/commons/4/49/Flag_of_Uganda.svg";
 
 /* =========================
    REALISTIC DATA - Memoized
@@ -164,7 +166,7 @@ const generateInitialItem = (data, helpers) => {
    COMPONENT - Mobile Optimized
 ========================= */
 export default function LiveWithdrawalFeed() {
-  const { format } = useCurrency();
+  const { format, isUganda } = useCurrency();
   const data = useData();
   const helpers = useHelpers();
   
@@ -511,8 +513,8 @@ export default function LiveWithdrawalFeed() {
         <span style={styles.liveBadge}>NOW</span>
 
         <img 
-          src={KENYA_FLAG} 
-          alt="Kenya" 
+          src={isUganda ? UGANDA_FLAG : KENYA_FLAG} 
+          alt={isUganda ? "Uganda" : "Kenya"} 
           style={styles.flag}
           loading="lazy"
         />

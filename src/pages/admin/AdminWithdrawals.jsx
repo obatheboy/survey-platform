@@ -1,4 +1,5 @@
 import { adminApi } from "../../api/adminApi";
+import { useCurrency } from "../../contexts/CurrencyContext.jsx";
 import "./Admin.css";
 import { useAdminTable } from "./useAdminTable";
 import AdminTableLayout from "./AdminTableLayout";
@@ -20,6 +21,7 @@ const statusMap = {
 };
 
 export default function AdminWithdrawals() {
+  const { symbol } = useCurrency();
   const {
     items: withdrawals,
     loading,
@@ -88,9 +90,9 @@ export default function AdminWithdrawals() {
                 <th>User Name</th>
                 <th>Phone</th>
                 <th>Email</th>
-                <th>Gross (KES)</th>
-                <th>Fee (KES)</th>
-                <th>Net (KES)</th>
+                <th>Gross ({symbol})</th>
+                <th>Fee ({symbol})</th>
+                <th>Net ({symbol})</th>
                 <th>Type</th>
                 <th>Status</th>
                 <th>Requested</th>

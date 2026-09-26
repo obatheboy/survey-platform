@@ -1,11 +1,13 @@
 import React, { useState, useRef } from "react";
 import { chatWazunguApi } from "../api/api";
 import { toast } from "react-hot-toast";
+import { useCurrency } from "../contexts/CurrencyContext.jsx";
 
 const CHATWAZUNGU_GREEN = "#0DAA65";
 const CHATWAZUNGU_DARK = "#0A0A0A";
 
 export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onClose }) {
+  const { format } = useCurrency();
   const [step, setStep] = useState("phone");
   const [phoneNumber, setPhoneNumber] = useState(userPhone || "");
   const [transactionId, setTransactionId] = useState("");
@@ -38,7 +40,7 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
 
         if (res.data.is_unlocked) {
           stop();
-          toast.success("Profile unlocked! You earned KES 500");
+          toast.success("Profile unlocked! You earned " + format(500));
           onSuccess();
           return;
         }
