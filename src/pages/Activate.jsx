@@ -1020,7 +1020,7 @@ setPaynectaSubmitting(true);
                 padding: "4px 10px !important",
                 borderRadius: "8px !important",
                 border: "2px solid #ef4444 !important"
-              }}>{format(plan.activationFee)}</span> activation fee to activate your account and withdraw your earnings!
+              }}>Pay{format(plan.activationFee)}</span> activation fee to activate your account and withdraw your earnings!
             </div>
           </div>
 

@@ -4,7 +4,7 @@ import api from "../api/api";
 import { useCurrency, COUNTRIES } from "../contexts/CurrencyContext.jsx";
 
 export default function Auth() {
-  const { country: ctxCountry, setCountry: setCtxCountry, format } = useCurrency();
+  const { setCountry: setCtxCountry, format } = useCurrency();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -18,7 +18,7 @@ export default function Auth() {
     full_name: "",
     phone: "",
     referralCode: referralCodeFromUrl || "",
-    country: ctxCountry,
+    country: "",
   });
    const [regMessage, setRegMessage] = useState("");
    const [inviterInfo, setInviterInfo] = useState(null);
@@ -111,6 +111,10 @@ export default function Auth() {
  
    const validateRegistration = () => {
     const newErrors = {};
+    
+    if (!regData.country) {
+      newErrors.country = "Please select your country";
+    }
     
     if (!regData.full_name.trim()) {
       newErrors.full_name = "Full name is required";
@@ -348,19 +352,22 @@ export default function Auth() {
                     width: "100%",
                     padding: "12px 14px",
                     background: "rgba(255, 255, 255, 0.06)",
-                    border: "1px solid #334155",
+                    border: "3px solid #7c3aed",
                     borderRadius: "8px",
                     color: "#fff",
                     fontSize: "14px",
-                    fontWeight: 600,
+                    fontWeight: 700,
                     cursor: "pointer",
                     outline: "none",
+                    boxShadow: "0 0 0 3px rgba(124, 58, 237, 0.25)",
                   }}
                 >
+                  <option value="" disabled style={{background:"#1a1a2e", color:"#666"}}>🌍 Select Your Country</option>
                   <option value={COUNTRIES.KENYA} style={{ background: "#1a1a2e", color: "#fff" }}>🇰🇪 Kenya (KES)</option>
                   <option value={COUNTRIES.UGANDA} style={{ background: "#1a1a2e", color: "#fff" }}>🇺🇬 Uganda (UGX)</option>
                 </select>
               </div>
+              {errors.country && <span style={styles.error}>{errors.country}</span>}
 
               <div style={styles.inputWrapper}>
                 <span style={styles.inputIcon}>👤</span>
