@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import api from "../../api/api.js";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useCurrency } from "../../contexts/CurrencyContext.jsx";
 
 export default function Notifications() {
+  const { format } = useCurrency();
   const [notifications, setNotifications] = useState([]);
   const [activeNotif, setActiveNotif] = useState(null); // full-screen modal
   const navigate = useNavigate();
@@ -48,7 +50,7 @@ export default function Notifications() {
     // ✅ FIXED: welcome bonus redirect includes query param
     if (notif.type === "welcome_bonus") {
       setActiveNotif({
-        message: "❌ Your account is not activated. Activate your account with KES 100 to withdraw to M-Pesa",
+        message: `❌ Your account is not activated. Activate your account with ${format(100)} to withdraw to M-Pesa`,
         goDashboard: false,
         redirect: "/activate?welcome_bonus=1", // <-- fix applied here
       });

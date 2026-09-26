@@ -1,28 +1,32 @@
 import { useNavigate } from "react-router-dom";
+import { useCurrency } from "../contexts/CurrencyContext.jsx";
 
 const CHATWAZUNGU_GREEN = "#0DAA65";
 const CHATWAZUNGU_DARK = "#0A0A0A";
 const CHATWAZUNGU_CARD_BG = "#1A1A1A";
 const CHATWAZUNGU_ACCENT = "#FFE66D";
 
-const EARNING_OPTIONS = [
+export default function MultiFunctionDashboard() {
+  const { format } = useCurrency();
+  const navigate = useNavigate();
+  const EARNING_OPTIONS = [
   {
     id: "survey",
     title: "Do Surveys",
-    subtitle: "Earn KES 1,200 - 6,500 daily",
+    subtitle: `${format(1200)} - ${format(6500)} daily`,
     icon: "📊",
     gradient: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
     route: "/dashboard",
-    description: "Complete surveys and earn between KES 1,200 and 6,500 daily.",
+    description: `Complete surveys and earn between ${format(1200)} and ${format(6500)} daily.`,
   },
   {
     id: "chat",
     title: "Chat Wazungu",
-    subtitle: "Earn KES 500 - 5,500 daily",
+    subtitle: `${format(500)} - ${format(5500)} daily`,
     icon: "💬",
     gradient: "linear-gradient(135deg, #0DAA65 0%, #1a8d55 100%)",
     route: "/chatwazungu",
-    description: "Unlock premium profiles for KES 99, chat with AI, earn KES 500 per unlock.",
+    description: `Unlock premium profiles for ${format(99)}, chat with AI, earn ${format(500)} per unlock.`,
   },
   {
     id: "affiliate",
@@ -34,9 +38,6 @@ const EARNING_OPTIONS = [
     description: "Refer friends and earn endless commissions on every unlock and survey.",
   },
 ];
-
-export default function MultiFunctionDashboard() {
-  const navigate = useNavigate();
 
   const handleOptionClick = (option) => {
     navigate(option.route);
@@ -76,11 +77,11 @@ export default function MultiFunctionDashboard() {
         <div className="potential-breakdown">
           <div className="potential-item">
             <span>Surveys</span>
-            <span>KES 1,200 - 6,500</span>
+            <span>{format(1200)} - {format(6500)}</span>
           </div>
           <div className="potential-item">
             <span>Chat Wazungu (6 unlocks)</span>
-            <span>KES 3,000</span>
+            <span>{format(3000)}</span>
           </div>
           <div className="potential-item">
             <span>Affiliate</span>
@@ -88,7 +89,7 @@ export default function MultiFunctionDashboard() {
           </div>
           <div className="potential-total">
             <span>Max Potential</span>
-            <span>KES 6,500+</span>
+            <span>{format(6500)}+</span>
           </div>
         </div>
       </div>

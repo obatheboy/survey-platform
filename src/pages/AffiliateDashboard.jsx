@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { affiliateApi } from "../api/api";
 import "./AffiliateDashboard.css";
+import { useCurrency } from "../contexts/CurrencyContext.jsx";
 
 export default function AffiliateDashboard() {
+  const { format } = useCurrency();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
@@ -30,7 +32,7 @@ export default function AffiliateDashboard() {
   const handleWithdrawClick = () => {
     const earnings = stats?.amount_earned || 0;
     if (earnings < 50) {
-      setToast(`⚠️ Minimum withdrawal is KES 50. You have KES ${earnings} in referral earnings.`);
+      setToast(`⚠️ Minimum withdrawal is ${format(50)}. You have ${format(earnings)} in referral earnings.`);
       setTimeout(() => setToast(""), 4000);
       return;
     }
@@ -51,7 +53,7 @@ export default function AffiliateDashboard() {
 
   const shareToWhatsApp = () => {
     const message = encodeURIComponent(
-      `Hey! I'm earning real money by completing simple surveys on SurveyEarn. 💰\n\nJoin using my link and get a KES 1,200 welcome bonus! 🎁\n\n${stats?.referral_link}`
+      `Hey! I'm earning real money by completing simple surveys on SurveyEarn. 💰\n\nJoin using my link and get a ${format(1200)} welcome bonus! 🎁\n\n${stats?.referral_link}`
     );
     const whatsappUrl = `https://wa.me/?text=${message}`;
     window.open(whatsappUrl, "_blank", "noopener,noreferrer");
@@ -90,7 +92,7 @@ export default function AffiliateDashboard() {
             </button>
         </div>
         <h1>🎯 Affiliate Program</h1>
-        <p>Earn KES 50 for every friend you refer who completes a payment!</p>
+        <p>Earn {format(50)} for every friend you refer who completes a payment!</p>
       </div>
 
       {/* Stats Cards */}
@@ -98,8 +100,8 @@ export default function AffiliateDashboard() {
         <div className="affiliate-stat-card earnings">
           <div className="stat-icon">💰</div>
           <div className="stat-content">
-             <h3>KES {stats?.amount_earned || 0}</h3>
-             <p style={{ fontWeight: 'bold' }}>Commission Earned (KES 50 per referral)</p>
+             <h3>{format(stats?.amount_earned || 0)}</h3>
+             <p style={{ fontWeight: 'bold' }}>Commission Earned ({format(50)} per referral)</p>
           </div>
         </div>
 
@@ -187,7 +189,7 @@ export default function AffiliateDashboard() {
             <div className="step-number">4</div>
             <div className="step-content">
               <h4>You Earn!</h4>
-              <p>Get KES 50 credited instantly to your account</p>
+              <p>Get {format(50)} credited instantly to your account</p>
             </div>
           </div>
         </div>

@@ -1,34 +1,36 @@
 import React from 'react';
+import { useCurrency } from '../../contexts/CurrencyContext.jsx';
 import './WelcomeBonusPopup.css';
 
 export default function WelcomeBonusPopup({ isOpen, onClose, onActivate }) {
+  const { format } = useCurrency();
   if (!isOpen) return null;
 
   return (
     <div className="welcome-bonus-overlay" onClick={onClose}>
       <div className="welcome-bonus-popup" onClick={(e) => e.stopPropagation()}>
-        <button className="welcome-bonus-close" onClick={onClose}>×</button>
-        
+        <button className="welcome-bonus-close" onClick={onClose}>&times;</button>
+
         <div className="welcome-bonus-content">
           <div className="welcome-bonus-header">
             <div className="bonus-icon-wrapper">
               <div className="welcome-bonus-icon">🎉</div>
             </div>
             <h2>Congratulations!</h2>
-            <p>You have received KES 1,200 welcome bonus for joining our platform</p>
+            <p>You have received {format(1200)} welcome bonus for joining our platform</p>
           </div>
 
           <div className="welcome-bonus-amount">
             <div className="bonus-amount-inner">
               <div className="welcome-bonus-label">Welcome Bonus Earned</div>
               <div className="welcome-bonus-value">
-                KES 1,200
+                {format(1200)}
               </div>
             </div>
           </div>
 
           <div className="welcome-bonus-message">
-            <span className="highlight-text">Pay only KES 100 to unlock and withdraw!</span>
+            <span className="highlight-text">Pay only {format(100)} to unlock and withdraw!</span>
             <br />
             <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>
               Instant activation - Your bonus is ready!
@@ -36,7 +38,7 @@ export default function WelcomeBonusPopup({ isOpen, onClose, onActivate }) {
           </div>
 
           <div style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
-            <button 
+            <button
               className="welcome-bonus-button activate-btn"
               onClick={() => {
                 if (onActivate) {
@@ -51,7 +53,7 @@ export default function WelcomeBonusPopup({ isOpen, onClose, onActivate }) {
               </span>
             </button>
 
-            <button 
+            <button
               onClick={onClose}
               className="welcome-bonus-button later-btn"
             >

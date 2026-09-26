@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { useCurrency } from "../../contexts/CurrencyContext.jsx";
 
 /* =========================
    CONSTANTS
@@ -163,6 +164,7 @@ const generateInitialItem = (data, helpers) => {
    COMPONENT - Mobile Optimized
 ========================= */
 export default function LiveWithdrawalFeed() {
+  const { format } = useCurrency();
   const data = useData();
   const helpers = useHelpers();
   
@@ -531,7 +533,7 @@ export default function LiveWithdrawalFeed() {
               {item.status.icon} {item.status.text}
             </span>
             <span style={styles.amountText}>
-              KES {item.amount.toLocaleString()}
+              {format(item.amount)}
             </span>
           </div>
 

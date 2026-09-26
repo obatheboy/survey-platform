@@ -3,6 +3,7 @@ import { adminApi } from "../../api/adminApi";
 import "./Admin.css";
 import StatusBadge from "./StatusBadge";
 import ActionButtons from "./ActionButtons";
+import { useCurrency } from "../../contexts/CurrencyContext.jsx";
 
 const statusMap = {
   SUBMITTED: { label: '⏳ SUBMITTED', className: 'processing-badge' },
@@ -13,6 +14,7 @@ const statusMap = {
 };
 
 export default function AdminAffiliateWithdrawals() {
+  const { format } = useCurrency();
   const [withdrawals, setWithdrawals] = useState([]);
   const [referredUsers, setReferredUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -170,14 +172,14 @@ export default function AdminAffiliateWithdrawals() {
         <div className="stat-card">
           <div className="stat-icon">💵</div>
           <div className="stat-info">
-            <h3>KES {pendingWithdrawal.toLocaleString()}</h3>
+            <h3>{format(pendingWithdrawal)}</h3>
             <p>Pending Withdrawals</p>
           </div>
         </div>
         <div className="stat-card">
           <div className="stat-icon">💰</div>
           <div className="stat-info">
-            <h3>KES {totalWithdrawn.toLocaleString()}</h3>
+            <h3>{format(totalWithdrawn)}</h3>
             <p>Total Withdrawn</p>
           </div>
         </div>
@@ -227,7 +229,7 @@ export default function AdminAffiliateWithdrawals() {
                   <th>User</th>
                   <th>Phone</th>
                   <th>Email</th>
-                  <th>Amount (KES)</th>
+                  <th>Amount</th>
                   <th>Status</th>
                   <th>Requested</th>
                   <th>Actions</th>
@@ -243,7 +245,7 @@ export default function AdminAffiliateWithdrawals() {
                     <td>{w.user_email || "—"}</td>
                     <td>
                       <strong style={{ color: "#06b6d4", fontSize: "16px" }}>
-                        KES {Number(w.amount || 0).toLocaleString()}
+                        {format(Number(w.amount || 0))}
                       </strong>
                     </td>
                     <td>

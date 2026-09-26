@@ -4,6 +4,7 @@ import { chatWazunguApi } from "../api/api";
 import { toast } from "react-hot-toast";
 import ChatWindow from "../components/ChatWindow";
 import UnlockPaymentModal from "../components/UnlockPaymentModal";
+import { useCurrency } from "../contexts/CurrencyContext.jsx";
 
 const CHATWAZUNGU_GREEN = "#0DAA65";
 const CHATWAZUNGU_DARK = "#0A0A0A";
@@ -11,6 +12,7 @@ const CHATWAZUNGU_CARD_BG = "#1A1A1A";
 const CHATWAZUNGU_ACCENT = "#FFE66D";
 
 export default function ChatWazunguDashboard() {
+  const { format } = useCurrency();
   const navigate = useNavigate();
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -79,7 +81,7 @@ export default function ChatWazunguDashboard() {
       setActiveChat(updatedProfile);
     }
     setSelectedProfile(null);
-    toast.success("Profile unlocked! You earned KES 500");
+    toast.success(`Profile unlocked! You earned ${format(500)}`);
   };
 
   const handleChat = (profile) => {
@@ -119,7 +121,7 @@ export default function ChatWazunguDashboard() {
         {!profile.is_unlocked && (
           <div className="profile-lock-overlay">
             <div className="profile-lock-icon">🔒</div>
-            <span className="profile-lock-text">KSH 99</span>
+            <span className="profile-lock-text">{format(99)}</span>
           </div>
         )}
       </div>
@@ -140,7 +142,7 @@ export default function ChatWazunguDashboard() {
               handleUnlock(profile);
             }}
           >
-            Unlock for KSH 99
+            Unlock for {format(99)}
           </button>
         )}
         {profile.is_unlocked && (
@@ -165,7 +167,7 @@ export default function ChatWazunguDashboard() {
           <h1 className="dashboard-title">ChatWazungu</h1>
           <div className="dashboard-wallet">
             <span className="wallet-label">Wallet</span>
-            <span className="wallet-amount">KSH {stats.wallet_balance.toLocaleString()}</span>
+            <span className="wallet-amount">{format(stats.wallet_balance)}</span>
           </div>
           <div className="dashboard-unlocks">
             <span className="unlocks-label">Unlocks</span>
@@ -226,7 +228,7 @@ export default function ChatWazunguDashboard() {
             onClick={() => navigate("/withdrawal")}
             disabled={stats.total_unlocks < 6 || stats.wallet_balance < 500}
           >
-            Withdraw Earnings (Min: KSH 500, 6+ unlocks)
+            Withdraw Earnings (Min: {format(500)}, 6+ unlocks)
           </button>
           <button
             className="affiliate-btn"

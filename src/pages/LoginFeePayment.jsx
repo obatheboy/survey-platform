@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./LoginFeePayment.css";
+import { useCurrency } from "../contexts/CurrencyContext.jsx";
 
 export default function LoginFeePayment() {
+  const { format } = useCurrency();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -187,7 +189,7 @@ export default function LoginFeePayment() {
         <div className="header">
           <h1 className="header-title">🔓 Activate Account</h1>
           <p className="header-subtitle">
-            Pay KES {LOGIN_FEE_AMOUNT} once and start earning up to <strong>KES 5,000 daily</strong>
+            Pay {format(LOGIN_FEE_AMOUNT)} once and start earning up to <strong>{format(5000)} daily</strong>
           </p>
         </div>
 
@@ -195,7 +197,7 @@ export default function LoginFeePayment() {
         <div className="main-card">
           {/* Amount */}
           <div className="amount-box">
-            <div className="amount-value">KES {LOGIN_FEE_AMOUNT}</div>
+            <div className="amount-value">{format(LOGIN_FEE_AMOUNT)}</div>
             <div className="amount-label">One-time fee • Lifetime access</div>
           </div>
 
@@ -235,7 +237,7 @@ export default function LoginFeePayment() {
                 Sending...
               </>
             ) : (
-              "💰 Tap to Pay KES 95"
+              `💰 Tap to Pay {format(95)}`
             )}
           </button>
 
@@ -268,8 +270,8 @@ export default function LoginFeePayment() {
             <p className="benefits-title">✅ After payment, you get:</p>
             <ul>
               <li>🗳️ Access to all paid surveys</li>
-              <li>💰 Get 1200 welcome bonus</li>
-              <li>💰 Earn KES 150 - 500 per each survey</li>
+              <li>💰 Get {format(1200)} welcome bonus</li>
+              <li>💰 Earn {format(150)} - {format(500)} per each survey</li>
               <li>⚡ Instant M-PESA withdrawals</li>
               <li>🏆 Unlock VIP & VVIP surveys</li>
             </ul>

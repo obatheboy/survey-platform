@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
+import { useCurrency } from "../contexts/CurrencyContext.jsx";
 
 export default function Withdraw() {
+  const { format } = useCurrency();
   const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
@@ -155,7 +157,7 @@ export default function Withdraw() {
         <div style={styles.balanceBox}>
           <span style={styles.balanceLabel}>Available Balance</span>
           <span style={styles.balanceAmount}>
-            KES {Number(user.total_earned).toLocaleString()}
+{format(Number(user.total_earned))}
           </span>
           <div style={styles.surveyStatus}>
             <span>Surveys Completed: {user.surveys_completed || 0}/10</span>
@@ -175,7 +177,7 @@ export default function Withdraw() {
                 style={styles.input}
               />
               <p style={styles.helperText}>
-                Max: KES {Number(user.total_earned).toLocaleString()}
+                Max: {format(Number(user.total_earned))}
               </p>
             </div>
 

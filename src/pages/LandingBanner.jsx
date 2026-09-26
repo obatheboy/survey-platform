@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
+import { useCurrency } from "../contexts/CurrencyContext.jsx";
 
 export default function LandingBanner() {
+  const { format } = useCurrency();
   const navigate = useNavigate();
 
   const handleStart = (e) => {
@@ -19,7 +21,7 @@ export default function LandingBanner() {
       <div style={styles.content}>
         {/* Trust badge */}
         <div style={styles.trustBadge}>
-          <span style={styles.trustBadgeText}>3 Ways to Earn • KES 6,500/day</span>
+          <span style={styles.trustBadgeText}>3 Ways to Earn • {format(6500)}/day</span>
         </div>
 
         {/* Logo */}
@@ -38,11 +40,11 @@ export default function LandingBanner() {
         <div style={styles.earnOptions}>
           <div style={styles.earnOption}>
             <span style={styles.earnOptionIcon}>📊</span>
-            <span style={styles.earnOptionText}>Surveys — up to KES 6,500/day</span>
+            <span style={styles.earnOptionText}>Surveys — up to {format(6500)}/day</span>
           </div>
           <div style={styles.earnOption}>
             <span style={styles.earnOptionIcon}>💬</span>
-            <span style={styles.earnOptionText}>Chat Wazungu — up to KES 5,500/day</span>
+            <span style={styles.earnOptionText}>Chat Wazungu — up to {format(5500)}/day</span>
           </div>
           <div style={styles.earnOption}>
             <span style={styles.earnOptionIcon}>👥</span>
@@ -52,7 +54,7 @@ export default function LandingBanner() {
 
         {/* Small enticing caption */}
         <p style={styles.subheadline}>
-          Make up to KES 6,500 today by completing simple tasks:
+          Make up to {format(6500)} today by completing simple tasks:
           <br />
           📊 Complete surveys · 💬 Chat with wazungu · 👥 Refer friends
         </p>
@@ -66,7 +68,7 @@ export default function LandingBanner() {
           <div style={styles.statDivider}></div>
           <div style={styles.statCard}>
             <span style={styles.statNumber}>🎁</span>
-            <span style={styles.statLabel}>KES 1,200 Bonus</span>
+            <span style={styles.statLabel}>{format(1200)} Bonus</span>
           </div>
           <div style={styles.statDivider}></div>
           <div style={styles.statCard}>
@@ -97,7 +99,7 @@ export default function LandingBanner() {
             START NOW 🚀
           </button>
           <p style={styles.ctaNote}>
-            Free to join • KES 1,200 welcome bonus
+            Free to join • {format(1200)} welcome bonus
           </p>
         </div>
 

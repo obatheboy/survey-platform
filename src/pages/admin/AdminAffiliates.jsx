@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { adminAffiliateApi } from "../../api/api";
 import "./Admin.css";
+import { useCurrency } from "../../contexts/CurrencyContext.jsx";
 
 export default function AdminAffiliates() {
+  const { format } = useCurrency();
   const [affiliates, setAffiliates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -86,7 +88,7 @@ export default function AdminAffiliates() {
         <div className="stat-card">
           <div className="stat-icon">💰</div>
           <div className="stat-info">
-            <h3>KES {totalCommission.toLocaleString()}</h3>
+            <h3>{format(totalCommission)}</h3>
             <p>Total Commission</p>
           </div>
         </div>
@@ -148,7 +150,7 @@ export default function AdminAffiliates() {
                     </td>
                     <td>
                       <strong className="commission-amount">
-                        KES {affiliate.commission_earned.toLocaleString()}
+                        {format(affiliate.commission_earned)}
                       </strong>
                     </td>
                     <td>

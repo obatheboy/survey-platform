@@ -1,56 +1,58 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useCurrency } from "../contexts/CurrencyContext.jsx";
 import api from "../api/api";
 
-const ONBOARDING_QUESTIONS = [
-  {
-    id: 1,
-    question: "How did you hear about us?",
-options: [
+export default function OnboardingSurvey() {
+  const { format } = useCurrency();
+  const navigate = useNavigate();
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  const ONBOARDING_QUESTIONS = [
+    {
+      id: 1,
+      question: "How did you hear about us?",
+      options: [
         "Facebook",
         "WhatsApp",
         "Friend/Relative",
         "Google Search",
         "Other"
       ]
-  },
-  {
-    id: 2,
-    question: "What device do you use?",
-    options: [
-      "Smartphone (Android)",
-      "Smartphone (iPhone)",
-      "Tablet",
-      "Computer/Laptop"
-    ]
-  },
-  {
-    id: 3,
-    question: "How often do you use the internet?",
-    options: [
-      "Every day",
-      "Several times a week",
-      "Once a week",
-      "Rarely"
-    ]
-  },
-  {
-    id: 4,
-    question: "What do you hope to earn per month?",
-    options: [
-      "KES 1,000 - 5,000",
-      "KES 5,000 - 10,000",
-      "KES 10,000 - 20,000",
-      "KES 20,000+"
-    ]
-  }
-];
-
-export default function OnboardingSurvey() {
-  const navigate = useNavigate();
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState({});
-  const [loading, setLoading] = useState(false);
+    },
+    {
+      id: 2,
+      question: "What device do you use?",
+      options: [
+        "Smartphone (Android)",
+        "Smartphone (iPhone)",
+        "Tablet",
+        "Computer/Laptop"
+      ]
+    },
+    {
+      id: 3,
+      question: "How often do you use the internet?",
+      options: [
+        "Every day",
+        "Several times a week",
+        "Once a week",
+        "Rarely"
+      ]
+    },
+    {
+      id: 4,
+      question: "What do you hope to earn per month?",
+      options: [
+        `${format(1000)} - ${format(5000)}`,
+        `${format(5000)} - ${format(10000)}`,
+        `${format(10000)} - ${format(20000)}`,
+        `${format(20000)}+`
+      ]
+    }
+  ];
 
   const handleAnswer = async (answer) => {
     const newAnswers = {

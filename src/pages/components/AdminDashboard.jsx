@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { adminApi } from "../../api/adminApi";
 import "/src/pages/admin/Admin.css";
+import { useCurrency } from "../../contexts/CurrencyContext.jsx";
 
 const StatCard = ({ title, value, icon, color, loading }) => (
   <div className="stat-card" style={{ '--card-color': color }}>
@@ -17,6 +18,7 @@ const StatCard = ({ title, value, icon, color, loading }) => (
 );
 
 export default function AdminDashboard() {
+  const { format } = useCurrency();
   const [stats, setStats] = useState({
     totalUsers: 0,    
     totalWithdrawals: 0,
@@ -73,14 +75,14 @@ export default function AdminDashboard() {
         />
         <StatCard
           title="Total Revenue"
-          value={`KES ${stats.totalRevenue.toLocaleString()}`}
+          value={format(stats.totalRevenue)}
           icon="💰"
            color="#06b6d4"
           loading={loading}
         />
         <StatCard
           title="Total Withdrawals"
-          value={`KES ${stats.totalWithdrawals.toLocaleString()}`}
+          value={format(stats.totalWithdrawals)}
           icon="💸"
            color="#7c3aed"
           loading={loading}

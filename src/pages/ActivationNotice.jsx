@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/api";
+import { useCurrency } from "../contexts/CurrencyContext.jsx";
 import "./ActivationNotice.css";
 
 /* =========================
@@ -32,8 +33,9 @@ const PLAN_CONFIG = {
 };
 
 export default function ActivationNotice() {
-   const navigate = useNavigate();
-   const location = useLocation();
+  const { format } = useCurrency();
+  const navigate = useNavigate();
+  const location = useLocation();
 
    const [planKey, setPlanKey] = useState(null);
    const [totalEarned, setTotalEarned] = useState(0);
@@ -270,11 +272,11 @@ const handleActivate = () => {
            <p>
              You have successfully completed all surveys for the{" "}
              <strong style={{ color: plan.color }}>{plan.label}</strong> and earned{" "}
-             <strong style={{ color: plan.color }}>KES {plan.total}</strong>.
+             <strong style={{ color: plan.color }}>{format(plan.total)}</strong>.
            </p>
            <p>
              Now activate your account by paying activation fee of{" "}
-             <strong style={{ color: "#ef4444" }}>KES {plan.activationFee}</strong> and immediately withdraw your earnings.
+             <strong style={{ color: "#ef4444" }}>{format(plan.activationFee)}</strong> and immediately withdraw your earnings.
            </p>
            <p style={{ fontWeight: 600, fontSize: "14px", color: "#7c3aed", marginTop: "8px" }}>
              💡 Remember: Account will be activated automatically after paying activation fee!
@@ -285,9 +287,9 @@ const handleActivate = () => {
          <div className="simple-earnings">
            <div className="earnings-badge" style={{ background: plan.color }}>
              <span className="earnings-icon">💰</span>
-             <span className="earnings-text">
-               KES {totalEarned.toLocaleString()}
-             </span>
+<span className="earnings-text">
+                {format(totalEarned)}
+              </span>
            </div>
            <p className="earnings-note">Now Activate your Account and Withdraw Immediately</p>
          </div>

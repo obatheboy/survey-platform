@@ -2,9 +2,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import api, { queueWithdrawRequest, canMakeRequest } from "../api/api";
+import { useCurrency } from "../contexts/CurrencyContext.jsx";
 import "./WithdrawForm.css";
 
-const PLANS = {
+export default function WithdrawForm() {
+  const { format } = useCurrency();
+  const PLANS = {
   REGULAR: { 
     name: "REGULAR SURVEYS", 
     icon: "⭐", 
@@ -12,7 +15,7 @@ const PLANS = {
     color: "#06b6d4",
     gradient: "linear-gradient(135deg, #06b6d4, #0891b2)",
     activationFee: 100,
-    earningsLabel: "Total Earnings: KES 1,500"
+    earningsLabel: `Total Earnings: ${format(1500)}`
   },
   VIP: { 
     name: "VIP SURVEY", 
@@ -21,7 +24,7 @@ const PLANS = {
     color: "#7c3aed",
     gradient: "linear-gradient(135deg, #7c3aed, #4f46e5)",
     activationFee: 200,
-    earningsLabel: "Total Earnings: KES 2,000"
+    earningsLabel: `Total Earnings: ${format(2000)}`
   },
   VVIP: { 
     name: "VVIP SURVEYS", 
@@ -30,7 +33,7 @@ const PLANS = {
     color: "#ff6b6b",
     gradient: "linear-gradient(135deg, #ff6b6b, #d97706)",
     activationFee: 300,
-    earningsLabel: "Total Earnings: KES 3,000"
+    earningsLabel: `Total Earnings: ${format(3000)}`
   },
   affiliate: {
     name: "Affiliate Earnings",
@@ -43,7 +46,6 @@ const PLANS = {
   }
 };
 
-export default function WithdrawForm() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -231,15 +233,15 @@ export default function WithdrawForm() {
     const amountNum = Number(amount);
     const minAmount = isAffiliateWithdraw ? 50 : 100;
     if (amountNum < minAmount) {
-      setError(`Minimum withdrawal amount is KES ${minAmount}`);
+      setError(`Minimum withdrawal amount is ${format(minAmount)}`);
       return;
     }
 
     const maxAmount = isAffiliateWithdraw ? affiliateBalance : PLANS[plan]?.total;
     if (amountNum > maxAmount) {
-      setError(isAffiliateWithdraw 
-        ? `Maximum amount is KES ${affiliateBalance}`
-        : `Maximum amount for ${PLANS[plan]?.name} plan is KES ${PLANS[plan]?.total}`);
+      setError(isAffiliateWithdraw
+        ? `Maximum amount is ${format(affiliateBalance)}`
+        : `Maximum amount for ${PLANS[plan]?.name} plan is ${format(PLANS[plan]?.total)}`);
       return;
     }
 
@@ -294,7 +296,7 @@ export default function WithdrawForm() {
 
       // Set auto redirecting state
       setAutoRedirecting(true);
-      const successMsg = res.data?.message || `🎉 Congratulations! You have successfully withdrawn KES ${amountNum.toLocaleString()}. Your payment is being processed and you will receive your money within 48-72 hours.`;
+      const successMsg = res.data?.message || `🎉 Congratulations! You have successfully withdrawn ${format(amountNum)}. Your payment is being processed and you will receive your money within 48-72 hours.`;
       setMessage(successMsg);
       
       // Auto redirect after 2 seconds
@@ -388,7 +390,7 @@ export default function WithdrawForm() {
                 <div className="activation-fee-display">
                   <div className="fee-label">Activation Fee:</div>
                   <div className="fee-amount">
-                    KES {PLANS[selectedPlanForActivation].activationFee}
+                    {format(PLANS[selectedPlanForActivation].activationFee)}
                   </div>
                   <div className="plan-badge">
                     {PLANS[selectedPlanForActivation].icon}{" "}
@@ -535,8 +537,8 @@ export default function WithdrawForm() {
             {isAffiliateWithdraw && (
               <div className="affiliate-balance-card">
                 <div className="affiliate-balance-label">Your Affiliate Earnings</div>
-                <div className="affiliate-balance-amount">KES {affiliateBalance.toLocaleString()}</div>
-                <div className="affiliate-earnings-note">💰 You can withdraw any amount above KES 50</div>
+                <div className="affiliate-balance-amount">{format(affiliateBalance)}</div>
+                <div className="affiliate-earnings-note">💰 You can withdraw any amount above {format(50)}</div>
               </div>
             )}
             
@@ -586,14 +588,13 @@ export default function WithdrawForm() {
                     </div>
                     
                     <div className="plan-amount">
-                      <span className="currency">KES</span>
-                      <span className="amount">{planData.total.toLocaleString()}</span>
+                      <span className="amount">{format(planData.total)}</span>
                     </div>
                     
                     {/* Earnings Info Badge */}
                     <div className="earnings-info-badge">
                       <span className="earnings-icon">💰</span>
-                      <span className="earnings-text">You earned KES {planData.total.toLocaleString()}</span>
+                      <span className="earnings-text">You earned {format(planData.total)}</span>
                     </div>
                     
                     <p className="plan-description">
@@ -608,7 +609,7 @@ export default function WithdrawForm() {
                         </div>
                         <div className="activation-fee-centered">
                           <span className="activation-fee-badge">
-                            Fee: KES {planData.activationFee}
+                            Fee: {format(planData.activationFee)}
                           </span>
                         </div>
                       </>
@@ -635,7 +636,7 @@ export default function WithdrawForm() {
                     
                     {/* Withdrawal Info */}
                     <div className="withdrawal-info">
-                      <span>💸 Withdraw up to KES {planData.total.toLocaleString()}</span>
+                      <span>💸 Withdraw up to {format(planData.total)}</span>
                     </div>
                   </div>
                 );
@@ -734,7 +735,7 @@ export default function WithdrawForm() {
                 <div className="summary-icon">💰</div>
                 <div className="summary-content">
                   <span className="summary-label">Your Total Earnings:</span>
-                  <span className="summary-amount">KES {PLANS[plan]?.total.toLocaleString()}</span>
+                  <span className="summary-amount">{format(PLANS[plan]?.total)}</span>
                 </div>
               </div>
             )}
@@ -768,7 +769,7 @@ export default function WithdrawForm() {
                 </div>
                 <p className="alert-message">
                   You need to activate your <strong>{PLANS[plan].name} Plan</strong> before withdrawing. 
-                  Activation fee: <strong>KES {PLANS[plan].activationFee}</strong>
+                  Activation fee: <strong>{format(PLANS[plan].activationFee)}</strong>
                 </p>
 <button 
                    type="button"
@@ -787,7 +788,7 @@ export default function WithdrawForm() {
                    }}
                  >
                    <span className="btn-icon">🔓</span>
-                   ACTIVATE NOW - KES {PLANS[plan].activationFee}
+                   ACTIVATE NOW - {format(PLANS[plan].activationFee)}
                 </button>
               </div>
             )}
@@ -809,7 +810,7 @@ export default function WithdrawForm() {
                 />
               </div>
               <div className="amount-helper">
-                <span>Available: KES {isAffiliateWithdraw ? affiliateBalance.toLocaleString() : PLANS[plan]?.total.toLocaleString()}</span>
+                <span>Available: {format(isAffiliateWithdraw ? affiliateBalance : PLANS[plan]?.total)}</span>
                 <button 
                   type="button" 
                   className="use-max-btn"
@@ -821,7 +822,7 @@ export default function WithdrawForm() {
               </div>
               {!isAffiliateWithdraw && (
                 <div className="earnings-note">
-                  💰 You can withdraw up to KES {PLANS[plan]?.total.toLocaleString()} from this plan
+                  💰 You can withdraw up to {format(PLANS[plan]?.total)} from this plan
                 </div>
               )}
             </div>
@@ -848,7 +849,7 @@ export default function WithdrawForm() {
               </div>
               <div className="info-item">
                 <span className="info-icon">💳</span>
-                <span>Minimum: KES {isAffiliateWithdraw ? 50 : 100}</span>
+                <span>Minimum: {format(isAffiliateWithdraw ? 50 : 100)}</span>
               </div>
               <div className="info-item">
                 <span className="info-icon">🔒</span>
@@ -914,7 +915,7 @@ export default function WithdrawForm() {
                 Ensure your phone number is correct.
                 {!isAffiliateWithdraw && !isPlanActivated(plan) && (
                   <span className="activation-required-text">
-                    ⚠️ One-time activation required for this plan. Fee: KES {PLANS[plan]?.activationFee}
+                    ⚠️ One-time activation required for this plan. Fee: {format(PLANS[plan]?.activationFee)}
                   </span>
                 )}
                 {!isAffiliateWithdraw && !allPlansCompleted && (
