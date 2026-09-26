@@ -1,6 +1,7 @@
 // ========================= WithdrawSuccess.jsx =========================
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { getCountry, getAmount, getSymbol } from "../utils/currency";
 import "./WithdrawSuccess.css";
 
 const PLANS = {
@@ -13,6 +14,7 @@ export default function WithdrawSuccess() {
   const navigate = useNavigate();
   const location = useLocation();
   const { withdrawal, plan } = location.state || {};
+  const [country] = useState(getCountry());
 
   const [shareCount, setShareCount] = useState(withdrawal?.share_count || 0);
   const [copied, setCopied] = useState(false);
@@ -47,13 +49,13 @@ export default function WithdrawSuccess() {
   const referralLink = `${window.location.origin}/auth?ref=${withdrawal.referral_code}`;
   
   const shareToWhatsApp = () => {
-    const text = `Hey! I'm earning money doing simple surveys on Survey App Kenya! 🎉\n\nJoin me using this link and get KES 1,200 welcome bonus:\n\n${referralLink}\n\nUse code: ${withdrawal.referral_code}`;
+    const text = `Hey! I'm earning money doing simple surveys on Survey App! 🎉\n\nJoin me using this link and get ${getSymbol(country)} ${getAmount(1200, country)} welcome bonus:\n\n${referralLink}\n\nUse code: ${withdrawal.referral_code}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
     incrementShareCount();
   };
 
   const shareToSMS = () => {
-    const text = `Hi! Join me on Survey App Kenya and earn money. Get KES 1,200 welcome bonus: ${referralLink} - Code: ${withdrawal.referral_code}`;
+    const text = `Hi! Join me on Survey App and earn money. Get ${getSymbol(country)} ${getAmount(1200, country)} welcome bonus: ${referralLink} - Code: ${withdrawal.referral_code}`;
     const smsUrl = `sms:?body=${encodeURIComponent(text)}`;
     
     // Use window.open instead of modifying window.location.href
@@ -93,7 +95,7 @@ export default function WithdrawSuccess() {
         </div>
         <h1>Congratulations!</h1>
         <p className="success-subtitle">
-          🎉 Your withdrawal of KES {withdrawal.amount?.toLocaleString()} is being processed! <br/>
+          🎉 Your withdrawal of {getSymbol(country)} {getAmount(withdrawal.amount, country)?.toLocaleString()} is being processed! <br/>
           You will receive your money within 48-72 hours.
         </p>
       </div>
@@ -122,11 +124,11 @@ export default function WithdrawSuccess() {
           </div>
           <div className="detail-item">
             <span className="detail-label">Amount</span>
-            <span className="detail-value amount">KES {withdrawal.amount?.toLocaleString()}</span>
+            <span className="detail-value amount">{getSymbol(country)} {getAmount(withdrawal.amount, country)?.toLocaleString()}</span>
           </div>
           <div className="detail-item">
             <span className="detail-label">Net Amount</span>
-            <span className="detail-value amount">KES {withdrawal.net_amount?.toLocaleString()}</span>
+            <span className="detail-value amount">{getSymbol(country)} {getAmount(withdrawal.net_amount, country)?.toLocaleString()}</span>
           </div>
           <div className="detail-item">
             <span className="detail-label">Phone</span>

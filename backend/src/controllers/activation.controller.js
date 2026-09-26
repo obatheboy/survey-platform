@@ -39,7 +39,7 @@ exports.submitActivationPayment = async (req, res) => {
     console.log("Plan uppercase:", req.body.plan?.toUpperCase());
     
     const userId = req.user.id;
-    const { mpesa_code, plan, is_welcome_bonus } = req.body;
+    const { mpesa_code, plan, is_welcome_bonus, country, payment_method } = req.body;
     const paymentReference = String(mpesa_code || "").trim();
     // Determine plan key - welcome bonus uses REGULAR plan
     const planKey = is_welcome_bonus ? "WELCOME_BONUS" : (plan?.toUpperCase());
@@ -95,15 +95,16 @@ exports.submitActivationPayment = async (req, res) => {
     
     // Add new activation request (include is_welcome_bonus flag)
     // Users can submit multiple payment attempts - admin will see all
-user.activation_requests.push({
-       plan: planKey,
-       mpesa_code: paymentReference,
-       amount: PLAN_FEES[planKey],
-       status: 'SUBMITTED',
-       created_at: new Date(),
-       is_welcome_bonus: !!is_welcome_bonus,
-       payment_method: "megapay"
-     });
+    user.activation_requests.push({
+        plan: planKey,
+        mpesa_code: paymentReference,
+        amount: PLAN_FEES[planKey],
+        status: 'SUBMITTED',
+        created_at: new Date(),
+        is_welcome_bonus: !!is_welcome_bonus,
+        payment_method: payment_method || "megapay",
+        country: country || user.country || "kenya"
+      });
     
     await user.save();
 

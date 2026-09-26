@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import api from "../api/api";
+import { COUNTRIES, setCountry, getCountry, getSymbol, getAmount } from "../utils/currency";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ export default function Auth() {
     full_name: "",
     phone: "",
     referralCode: referralCodeFromUrl || "",
+    country: getCountry(),
   });
    const [regMessage, setRegMessage] = useState("");
    const [inviterInfo, setInviterInfo] = useState(null);
@@ -143,6 +145,7 @@ export default function Auth() {
             full_name: regData.full_name,
             phone: regData.phone,
             referral_code: regData.referralCode || referralCodeFromUrl || null,
+            country: regData.country,
           });
           break;
         } catch (attemptError) {
@@ -163,7 +166,8 @@ export default function Auth() {
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("lastLoginTime", Date.now().toString());
-        localStorage.setItem("pendingWelcomeBonus", "true");
+         localStorage.setItem("pendingWelcomeBonus", "true");
+         setCountry(regData.country || "kenya");
       }
 
       // Skip login fee - redirect to onboarding survey
@@ -362,9 +366,30 @@ export default function Auth() {
                   required
                 />
               </div>
-              {errors.phone && <span style={styles.error}>{errors.phone}</span>}
+               {errors.phone && <span style={styles.error}>{errors.phone}</span>}
 
-              <button style={styles.submitBtn} type="submit" disabled={loading}>
+               <div style={styles.inputWrapper}>
+                 <span style={styles.inputIcon}>🌍</span>
+                 <select
+                   value={regData.country}
+                   onChange={(e) => setRegData(prev => ({ ...prev, country: e.target.value }))}
+                   style={{
+                     ...styles.countrySelect,
+                     borderColor: errors.country ? '#ff6b6b' : '#e2e8f0',
+                     background: "rgba(255, 255, 255, 0.08)",
+                     backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23fff' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E\")",
+                     backgroundRepeat: "no-repeat",
+                     backgroundPosition: "right 12px center",
+                     paddingRight: "36px",
+                   }}
+                   required
+                 >
+                   <option value={COUNTRIES.KENYA}>🇰🇪 Kenya</option>
+                   <option value={COUNTRIES.UGANDA}>🇺🇬 Uganda</option>
+                 </select>
+               </div>
+
+               <button style={styles.submitBtn} type="submit" disabled={loading}>
                 {loading ? <span style={styles.spinner}></span> : "Create Free Account"}
               </button>
 
@@ -423,7 +448,7 @@ export default function Auth() {
           </div>
           <div style={styles.benefitItem}>
             <span style={styles.benefitIcon}>🎁</span>
-            <span>KES 1,200 Bonus</span>
+            <span>{getSymbol(getCountry())} {getAmount(1200, getCountry()).toLocaleString()} Bonus</span>
           </div>
           <div style={styles.benefitItem}>
             <span style={styles.benefitIcon}>🏆</span>
@@ -638,8 +663,22 @@ const styles = {
     transition: "all 0.2s",
     boxSizing: "border-box",
   },
-  inputPlaceholder: {
+            inputPlaceholder: {
     color: "rgba(255,255,255,0.4)",
+  },
+  countrySelect: {
+    width: "100%",
+    padding: "16px 42px 16px 16px",
+    borderRadius: "14px",
+    border: "2px solid rgba(124, 58, 237, 0.3)",
+    background: "rgba(255, 255, 255, 0.08)",
+    color: "#ffffff",
+    fontSize: "16px",
+    outline: "none",
+    transition: "all 0.2s",
+    boxSizing: "border-box",
+    appearance: "none",
+    cursor: "pointer",
   },
   error: {
     color: "#ff6b6b",

@@ -1,4 +1,5 @@
 import toast from 'react-hot-toast';
+import { getSymbol, getAmount } from "./currency";
 
 // Custom toast configurations - COOL & MODERN
 const toastConfig = {
@@ -336,9 +337,9 @@ export const toastMessages = {
   registerError: '❌ Registration failed. Please try again.',
   logout: '👋 See you soon! Logged out successfully.',
   
-  // Survey messages
+   // Survey messages
   surveyStart: '📝 Starting your survey...',
-  surveyComplete: '🎯 Survey completed! KES 150 added to your balance.',
+  surveyComplete: (country = 'kenya') => `🎯 Survey completed! ${getSymbol(country)} ${getAmount(150, country)} added to your balance.`,
   surveyError: '❌ Failed to submit survey. Please try again.',
   
   // Withdrawal messages

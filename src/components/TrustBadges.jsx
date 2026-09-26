@@ -1,6 +1,11 @@
+import { getCountry, getAmount, getSymbol, formatCurrencyShort } from "../utils/currency";
 import './TrustBadges.css';
 
 export default function TrustBadges({ variant = 'default' }) {
+  const country = getCountry();
+  const totalPaid = getAmount(12000000, country);
+  const paidLabel = `${getSymbol(country)} ${formatCurrencyShort(totalPaid, country)} Paid`;
+
   const badges = [
     {
       icon: (
@@ -41,7 +46,7 @@ export default function TrustBadges({ variant = 'default' }) {
           <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
         </svg>
       ),
-      title: 'KES 12M+ Paid',
+      title: paidLabel,
       description: 'Total Withdrawals'
     },
     {

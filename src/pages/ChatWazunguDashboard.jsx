@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { chatWazunguApi } from "../api/api";
 import { toast } from "react-hot-toast";
+import { getCountry, getAmount, getSymbol } from "../utils/currency";
+import api from "../api/api";
 import ChatWindow from "../components/ChatWindow";
 import UnlockPaymentModal from "../components/UnlockPaymentModal";
 
@@ -20,6 +22,7 @@ export default function ChatWazunguDashboard() {
   const [stats, setStats] = useState({ total_unlocks: 0, wallet_balance: 0 });
   const [searchTerm, setSearchTerm] = useState("");
   const [userPhone, setUserPhone] = useState("");
+  const [country, setCountryState] = useState(getCountry());
 
   useEffect(() => {
     loadProfiles();
@@ -31,6 +34,9 @@ export default function ChatWazunguDashboard() {
     try {
       const res = await api.get("/auth/me");
       setUserPhone(res.data.phone || "");
+      if (res.data?.country) {
+        setCountryState(res.data.country);
+      }
     } catch (err) {
       console.error("Failed to load user:", err);
     }
@@ -79,7 +85,7 @@ export default function ChatWazunguDashboard() {
       setActiveChat(updatedProfile);
     }
     setSelectedProfile(null);
-    toast.success("Profile unlocked! You earned KES 500");
+    toast.success(`Profile unlocked! You earned ${getSymbol(country)} ${getAmount(500, country)}`);
   };
 
   const handleChat = (profile) => {
@@ -119,7 +125,7 @@ export default function ChatWazunguDashboard() {
         {!profile.is_unlocked && (
           <div className="profile-lock-overlay">
             <div className="profile-lock-icon">🔒</div>
-            <span className="profile-lock-text">KSH 99</span>
+            <span className="profile-lock-text">{getSymbol(country)} {getAmount(99, country)}</span>
           </div>
         )}
       </div>
@@ -140,7 +146,7 @@ export default function ChatWazunguDashboard() {
               handleUnlock(profile);
             }}
           >
-            Unlock for KSH 99
+            Unlock for {getSymbol(country)} {getAmount(99, country)}
           </button>
         )}
         {profile.is_unlocked && (
@@ -165,7 +171,7 @@ export default function ChatWazunguDashboard() {
           <h1 className="dashboard-title">ChatWazungu</h1>
           <div className="dashboard-wallet">
             <span className="wallet-label">Wallet</span>
-            <span className="wallet-amount">KSH {stats.wallet_balance.toLocaleString()}</span>
+            <span className="wallet-amount">{getSymbol(country)} {getAmount(stats.wallet_balance, country).toLocaleString()}</span>
           </div>
           <div className="dashboard-unlocks">
             <span className="unlocks-label">Unlocks</span>
@@ -224,9 +230,9 @@ export default function ChatWazunguDashboard() {
           <button
             className="withdraw-btn"
             onClick={() => navigate("/withdrawal")}
-            disabled={stats.total_unlocks < 6 || stats.wallet_balance < 500}
+            disabled={stats.total_unlocks < 6 || stats.wallet_balance < getAmount(500, country)}
           >
-            Withdraw Earnings (Min: KSH 500, 6+ unlocks)
+            Withdraw Earnings (Min: {getSymbol(country)} {getAmount(500, country)}, 6+ unlocks)
           </button>
           <button
             className="affiliate-btn"

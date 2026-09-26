@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
+import { getCountry, getSymbol, getAmount } from "../utils/currency";
 
-const ONBOARDING_QUESTIONS = [
+const getOnboardingQuestions = (country) => [
   {
     id: 1,
     question: "How did you hear about us?",
-options: [
-        "Facebook",
+    options: [
+      "Facebook",
         "WhatsApp",
         "Friend/Relative",
         "Google Search",
@@ -38,16 +39,18 @@ options: [
     id: 4,
     question: "What do you hope to earn per month?",
     options: [
-      "KES 1,000 - 5,000",
-      "KES 5,000 - 10,000",
-      "KES 10,000 - 20,000",
-      "KES 20,000+"
+      `${getSymbol(country)} ${getAmount(1000, country)} - ${getAmount(5000, country)}`,
+      `${getSymbol(country)} ${getAmount(5000, country)} - ${getAmount(10000, country)}`,
+      `${getSymbol(country)} ${getAmount(10000, country)} - ${getAmount(20000, country)}`,
+      `${getSymbol(country)} ${getAmount(20000, country)}+`
     ]
   }
 ];
 
 export default function OnboardingSurvey() {
   const navigate = useNavigate();
+  const country = getCountry();
+  const ONBOARDING_QUESTIONS = getOnboardingQuestions(country);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
   const [loading, setLoading] = useState(false);

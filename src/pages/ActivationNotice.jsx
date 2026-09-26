@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/api";
+import { getCountry, getAmount, getSymbol } from "../utils/currency";
 import "./ActivationNotice.css";
 
 /* =========================
@@ -40,6 +41,7 @@ export default function ActivationNotice() {
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState("");
    const [userName, setUserName] = useState("");
+   const [country, setCountryState] = useState(getCountry());
 
   /* =========================
      SCROLL TO TOP ON MOUNT
@@ -65,6 +67,9 @@ export default function ActivationNotice() {
         // Load user data
         const res = await api.get(`/auth/me?_t=${Date.now()}`);
         setUserName(res.data.full_name || "User");
+        if (res.data?.country) {
+          setCountryState(res.data.country);
+        }
 
         // COMPREHENSIVE DEBUG
         console.log("🔍 ===== ACTIVATION NOTICE LOAD DEBUG =====");
@@ -270,11 +275,11 @@ const handleActivate = () => {
            <p>
              You have successfully completed all surveys for the{" "}
              <strong style={{ color: plan.color }}>{plan.label}</strong> and earned{" "}
-             <strong style={{ color: plan.color }}>KES {plan.total}</strong>.
+              <strong style={{ color: plan.color }}>{getSymbol(country)} {getAmount(plan.total, country)}</strong>.
            </p>
            <p>
              Now activate your account by paying activation fee of{" "}
-             <strong style={{ color: "#ef4444" }}>KES {plan.activationFee}</strong> and immediately withdraw your earnings.
+                           <strong style={{ color: "#ef4444" }}>{getSymbol(country)} {plan.activationFee}</strong> and immediately withdraw your earnings.
            </p>
            <p style={{ fontWeight: 600, fontSize: "14px", color: "#7c3aed", marginTop: "8px" }}>
              💡 Remember: Account will be activated automatically after paying activation fee!
@@ -286,7 +291,7 @@ const handleActivate = () => {
            <div className="earnings-badge" style={{ background: plan.color }}>
              <span className="earnings-icon">💰</span>
              <span className="earnings-text">
-               KES {totalEarned.toLocaleString()}
+                {getSymbol(country)} {getAmount(totalEarned, country).toLocaleString()}
              </span>
            </div>
            <p className="earnings-note">Now Activate your Account and Withdraw Immediately</p>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getCountry, getSymbol } from "../utils/currency";
 import './SocialProofCounter.css';
 
 function AnimatedCounter({ target, duration = 2000, prefix = '', suffix = '' }) {
@@ -46,6 +47,7 @@ export default function SocialProofCounter() {
     activeSurveys: 3421,
     successRate: 98.5
   });
+  const country = getCountry();
 
   // Simulate real-time updates (optional)
   useEffect(() => {
@@ -86,7 +88,7 @@ export default function SocialProofCounter() {
             <div className="stat-value">
               <AnimatedCounter 
                 target={stats.totalPaid} 
-                prefix="KES " 
+                 prefix={`${getSymbol(country)} `} 
               />
             </div>
             <div className="stat-label">Total Paid Out</div>

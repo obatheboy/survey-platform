@@ -12,6 +12,7 @@ import DailyRewardPopup from "./components/DailyRewardPopup.jsx";
 import WelcomeBonusPopup from "./components/WelcomeBonusPopup.jsx";
 import { gamificationApi } from "../api/api";
 import { getDeferredPrompt, clearDeferredPrompt } from "../utils/pwaInstall";
+import { getCountry, setCountry, getAmount, getSymbol } from "../utils/currency";
 import "./Dashboard.css";
 
 const PLANS = {
@@ -96,7 +97,8 @@ export default function Dashboard() {
   /* =========================
      DATA STATE
   ========================= */
-  const [user, setUser] = useState(null);
+   const [user, setUser] = useState(null);
+   const [country, setCountryState] = useState(getCountry());
   const [plans, setPlans] = useState({});
   const [activationRequests, setActivationRequests] = useState([]);
   const [quickActions, setQuickActions] = useState([
@@ -145,6 +147,10 @@ export default function Dashboard() {
         if (!alive) return;
 
         setUser(resUser.data);
+        if (resUser.data?.country) {
+          setCountryState(resUser.data.country);
+          setCountry(resUser.data.country);
+        }
         setPlans(resUser.data.plans || {});
         setActivationRequests(resUser.data.activation_requests || []);
         
@@ -1054,7 +1060,7 @@ export default function Dashboard() {
                color: 'rgba(255,255,255,0.9)',
                lineHeight: '1.5'
              }}>
-               Your withdrawal has been processing for over 72 hours. Now you can earn KES 50 instantly for every friend you refer! Invite friends to join and earn while you wait.
+                Your withdrawal has been processing for over 72 hours. Now you can earn {getSymbol(country)} {getAmount(50, country)} instantly for every friend you refer! Invite friends to join and earn while you wait.
              </p>
              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                <button
@@ -1144,7 +1150,7 @@ export default function Dashboard() {
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap'
                 }}>
-                  KES {stats.availableBalance.toLocaleString()}
+                  {getSymbol(country)} {getAmount(stats.availableBalance, country).toLocaleString()}
                 </span>
               </div>
             </div>
@@ -1207,7 +1213,7 @@ export default function Dashboard() {
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap'
                 }}>
-                  KES 1,200
+                  {getSymbol(country)} {getAmount(1200, country).toLocaleString()}
                 </span>
               </div>
             </div>
@@ -1289,11 +1295,11 @@ export default function Dashboard() {
                    <div className="progress-info" style={{ background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)', borderRadius: '6px', padding: '8px', marginBottom: '8px' }}>
                      <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid rgba(124, 58, 237, 0.15)' }}>
                         <span style={{ color: '#7c3aed', fontSize: '12px' }}>Total to earn:</span>
-                       <strong style={{ color: '#5b21b6', fontSize: '14px', fontWeight: '900' }}>KES {plan.total}</strong>
+                       <strong style={{ color: '#5b21b6', fontSize: '14px', fontWeight: '900' }}>{getSymbol(country)} {getAmount(plan.total, country)}</strong>
                     </div>
                      <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid rgba(124, 58, 237, 0.15)' }}>
                        <span style={{ color: '#7c3aed', fontSize: '12px' }}>Per Survey:</span>
-                       <strong style={{ color: '#5b21b6', fontSize: '12px', fontWeight: '700' }}>KES {plan.perSurvey}</strong>
+                        <strong style={{ color: '#5b21b6', fontSize: '12px', fontWeight: '700' }}>{getSymbol(country)} {getAmount(plan.perSurvey, country)}</strong>
                      </div>
                      <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid rgba(124, 58, 237, 0.15)' }}>
                        <span style={{ color: '#7c3aed', fontSize: '12px' }}>Progress:</span>
@@ -1301,7 +1307,7 @@ export default function Dashboard() {
                     </div>
                      <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid rgba(124, 58, 237, 0.15)' }}>
                        <span style={{ color: '#7c3aed', fontSize: '12px' }}>Earned so far:</span>
-                       <strong style={{ color: '#5b21b6', fontSize: '14px', fontWeight: '900' }}>KES {earnedSoFar(key).toLocaleString()}</strong>
+                        <strong style={{ color: '#5b21b6', fontSize: '14px', fontWeight: '900' }}>{getSymbol(country)} {getAmount(earnedSoFar(key), country).toLocaleString()}</strong>
                     </div>
                   </div>
                   
@@ -1418,7 +1424,7 @@ export default function Dashboard() {
                <h4 style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '12px' }}>Total Earnings</h4>
              </div>
              <div className="stats-card-body">
-               <span className="stats-value" style={{ color: '#ffffff', fontSize: '20px', fontWeight: '900', display: 'block' }}>KES {stats.totalEarned.toLocaleString()}</span>
+               <span className="stats-value" style={{ color: '#ffffff', fontSize: '20px', fontWeight: '900', display: 'block' }}>{getSymbol(country)} {getAmount(stats.totalEarned, country).toLocaleString()}</span>
                <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '10px' }}>Lifetime earnings</span>
              </div>
            </div>
@@ -1429,7 +1435,7 @@ export default function Dashboard() {
               <h4 style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '12px' }}>Available</h4>
             </div>
             <div className="stats-card-body">
-              <span className="stats-value" style={{ color: '#ffffff', fontSize: '20px', fontWeight: '900', display: 'block' }}>KES {stats.availableBalance.toLocaleString()}</span>
+               <span className="stats-value" style={{ color: '#ffffff', fontSize: '20px', fontWeight: '900', display: 'block' }}>{getSymbol(country)} {getAmount(stats.availableBalance, country).toLocaleString()}</span>
               <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '10px' }}>Ready to withdraw</span>
             </div>
            </div>
@@ -1440,7 +1446,7 @@ export default function Dashboard() {
                <h4 style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '12px' }}>Affiliate</h4>
              </div>
              <div className="stats-card-body">
-               <span className="stats-value" style={{ color: '#ffffff', fontSize: '20px', fontWeight: '900', display: 'block' }}>KES {(stats.affiliateEarnings || 0).toLocaleString()}</span>
+               <span className="stats-value" style={{ color: '#ffffff', fontSize: '20px', fontWeight: '900', display: 'block' }}>{getSymbol(country)} {getAmount(stats.affiliateEarnings || 0, country).toLocaleString()}</span>
                <span className="stats-label" style={{ color: 'rgba(255,255,255,0.9)', fontSize: '10px' }}>From referrals</span>
              </div>
            </div>

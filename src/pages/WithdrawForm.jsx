@@ -2,45 +2,54 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import api, { queueWithdrawRequest, canMakeRequest } from "../api/api";
+import { getCountry, getCountryConfig, getAmount, getSymbol, getCurrencyCode, isKenya, isUganda, COUNTRIES } from "../utils/currency";
 import "./WithdrawForm.css";
 
-const PLANS = {
-  REGULAR: { 
-    name: "REGULAR SURVEYS", 
-    icon: "⭐", 
-    total: 1500, 
-    color: "#06b6d4",
-    gradient: "linear-gradient(135deg, #06b6d4, #0891b2)",
-    activationFee: 100,
-    earningsLabel: "Total Earnings: KES 1,500"
-  },
-  VIP: { 
-    name: "VIP SURVEY", 
-    icon: "💎", 
-    total: 2000, 
-    color: "#7c3aed",
-    gradient: "linear-gradient(135deg, #7c3aed, #4f46e5)",
-    activationFee: 200,
-    earningsLabel: "Total Earnings: KES 2,000"
-  },
-  VVIP: { 
-    name: "VVIP SURVEYS", 
-    icon: "👑", 
-    total: 3000, 
-    color: "#ff6b6b",
-    gradient: "linear-gradient(135deg, #ff6b6b, #d97706)",
-    activationFee: 300,
-    earningsLabel: "Total Earnings: KES 3,000"
-  },
-  affiliate: {
-    name: "Affiliate Earnings",
-    icon: "🎁",
-    total: 0,
-    color: "#7c3aed",
-    gradient: "linear-gradient(135deg, #7c3aed, #5b21b6)",
-    activationFee: 0,
-    earningsLabel: "Commission Earnings"
-  }
+const BASE_PLANS = {
+   REGULAR: { 
+     name: "REGULAR SURVEYS", 
+     icon: "⭐", 
+     total: 1500, 
+     color: "#06b6d4",
+     gradient: "linear-gradient(135deg, #06b6d4, #0891b2)",
+     activationFee: 100,
+   },
+   VIP: { 
+     name: "VIP SURVEY", 
+     icon: "💎", 
+     total: 2000, 
+     color: "#7c3aed",
+     gradient: "linear-gradient(135deg, #7c3aed, #4f46e5)",
+     activationFee: 200,
+   },
+   VVIP: { 
+     name: "VVIP SURVEYS", 
+     icon: "👑", 
+     total: 3000, 
+     color: "#ff6b6b",
+     gradient: "linear-gradient(135deg, #ff6b6b, #d97706)",
+     activationFee: 300,
+   },
+   affiliate: {
+     name: "Affiliate Earnings",
+     icon: "🎁",
+     total: 0,
+     color: "#7c3aed",
+     gradient: "linear-gradient(135deg, #7c3aed, #5b21b6)",
+     activationFee: 0,
+     earningsLabel: "Commission Earnings"
+   }
+};
+
+const getPlans = (country) => {
+   const config = getCountryConfig(country);
+   const plans = { ...BASE_PLANS };
+   for (const key of ['REGULAR', 'VIP', 'VVIP']) {
+     if (plans[key]) {
+       plans[key].earningsLabel = `Total Earnings: ${config.symbol} ${getAmount(plans[key].total, country).toLocaleString()}`;
+     }
+   }
+   return plans;
 };
 
 export default function WithdrawForm() {
@@ -65,6 +74,8 @@ export default function WithdrawForm() {
   const [allPlansCompleted, setAllPlansCompleted] = useState(false);
   const [userPlans, setUserPlans] = useState({});
   const [affiliateBalance, setAffiliateBalance] = useState(0);
+  const [country, setCountryState] = useState(getCountry());
+  const PLANS = getPlans(country);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -95,6 +106,9 @@ export default function WithdrawForm() {
         
         // Store affiliate balance for affiliate withdrawals
         setAffiliateBalance(userData.referral_commission_earned || 0);
+        if (userData?.country) {
+          setCountryState(userData.country);
+        }
         
         // Update cache
         localStorage.setItem("cachedUser", JSON.stringify(userData));
@@ -229,25 +243,29 @@ export default function WithdrawForm() {
     }
 
     const amountNum = Number(amount);
-    const minAmount = isAffiliateWithdraw ? 50 : 100;
+    const config = getCountryConfig(country);
+    const minAmount = isAffiliateWithdraw ? config.minAffiliateWithdrawal : config.minWithdrawal;
     if (amountNum < minAmount) {
-      setError(`Minimum withdrawal amount is KES ${minAmount}`);
+      setError(`Minimum withdrawal amount is ${config.symbol} ${minAmount}`);
       return;
     }
 
-    const maxAmount = isAffiliateWithdraw ? affiliateBalance : PLANS[plan]?.total;
+    const maxAmount = isAffiliateWithdraw ? affiliateBalance : getAmount(PLANS[plan]?.total, country);
     if (amountNum > maxAmount) {
       setError(isAffiliateWithdraw 
-        ? `Maximum amount is KES ${affiliateBalance}`
-        : `Maximum amount for ${PLANS[plan]?.name} plan is KES ${PLANS[plan]?.total}`);
+        ? `Maximum amount is ${config.symbol} ${affiliateBalance.toLocaleString()}`
+        : `Maximum amount for ${PLANS[plan]?.name} plan is ${config.symbol} ${getAmount(PLANS[plan]?.total, country).toLocaleString()}`);
       return;
     }
 
-    // Validate phone number format (Kenyan - accepts 07 or 01)
-    const phoneRegex = /^0[17][0-9]{8}$/;
+    // Validate phone number format based on country
+    const phoneRegex = isUganda(country) ? COUNTRIES.UGANDA : isKenya(country) ? COUNTRIES.KENYA : COUNTRIES.KENYA;
     const cleanedPhone = phone.replace(/\s+/g, '');
-    if (!phoneRegex.test(cleanedPhone)) {
-      setError("Please enter a valid Kenyan phone number (07XXXXXXXX or 01XXXXXXXX)");
+    const validPhone = phoneRegex.test(cleanedPhone);
+    if (!validPhone) {
+      setError(isUganda(country)
+        ? "Please enter a valid Ugandan phone number (07XXXXXXXX)"
+        : "Please enter a valid Kenyan phone number (07XXXXXXXX or 01XXXXXXXX)");
       return;
     }
 
@@ -261,6 +279,7 @@ export default function WithdrawForm() {
           phone_number: cleanedPhone,
           amount: amountNum,
           type: plan,
+          country: country,
         })
       );
 
@@ -294,7 +313,7 @@ export default function WithdrawForm() {
 
       // Set auto redirecting state
       setAutoRedirecting(true);
-      const successMsg = res.data?.message || `🎉 Congratulations! You have successfully withdrawn KES ${amountNum.toLocaleString()}. Your payment is being processed and you will receive your money within 48-72 hours.`;
+      const successMsg = res.data?.message || `🎉 Congratulations! You have successfully withdrawn ${config.symbol} ${amountNum.toLocaleString()}. Your payment is being processed and you will receive your money within 48-72 hours.`;
       setMessage(successMsg);
       
       // Auto redirect after 2 seconds
@@ -387,8 +406,8 @@ export default function WithdrawForm() {
               {selectedPlanForActivation && (
                 <div className="activation-fee-display">
                   <div className="fee-label">Activation Fee:</div>
-                  <div className="fee-amount">
-                    KES {PLANS[selectedPlanForActivation].activationFee}
+                   <div className="fee-amount">
+                     {getSymbol(country)} {PLANS[selectedPlanForActivation].activationFee}
                   </div>
                   <div className="plan-badge">
                     {PLANS[selectedPlanForActivation].icon}{" "}
@@ -535,8 +554,8 @@ export default function WithdrawForm() {
             {isAffiliateWithdraw && (
               <div className="affiliate-balance-card">
                 <div className="affiliate-balance-label">Your Affiliate Earnings</div>
-                <div className="affiliate-balance-amount">KES {affiliateBalance.toLocaleString()}</div>
-                <div className="affiliate-earnings-note">💰 You can withdraw any amount above KES 50</div>
+                <div className="affiliate-balance-amount">{getSymbol(country)} {affiliateBalance.toLocaleString()}</div>
+                <div className="affiliate-earnings-note">💰 You can withdraw any amount above {getSymbol(country)} {getCountryConfig(country).minAffiliateWithdrawal}</div>
               </div>
             )}
             
@@ -586,14 +605,14 @@ export default function WithdrawForm() {
                     </div>
                     
                     <div className="plan-amount">
-                      <span className="currency">KES</span>
-                      <span className="amount">{planData.total.toLocaleString()}</span>
+                       <span className="currency">{getSymbol(country)}</span>
+                       <span className="amount">{getAmount(planData.total, country).toLocaleString()}</span>
                     </div>
                     
                     {/* Earnings Info Badge */}
                     <div className="earnings-info-badge">
                       <span className="earnings-icon">💰</span>
-                      <span className="earnings-text">You earned KES {planData.total.toLocaleString()}</span>
+                      <span className="earnings-text">You earned {getSymbol(country)} {getAmount(planData.total, country).toLocaleString()}</span>
                     </div>
                     
                     <p className="plan-description">
@@ -608,7 +627,7 @@ export default function WithdrawForm() {
                         </div>
                         <div className="activation-fee-centered">
                           <span className="activation-fee-badge">
-                            Fee: KES {planData.activationFee}
+                             Fee: {getSymbol(country)} {planData.activationFee}
                           </span>
                         </div>
                       </>
@@ -635,7 +654,7 @@ export default function WithdrawForm() {
                     
                     {/* Withdrawal Info */}
                     <div className="withdrawal-info">
-                      <span>💸 Withdraw up to KES {planData.total.toLocaleString()}</span>
+                       <span>💸 Withdraw up to {getSymbol(country)} {getAmount(planData.total, country).toLocaleString()}</span>
                     </div>
                   </div>
                 );
@@ -734,7 +753,7 @@ export default function WithdrawForm() {
                 <div className="summary-icon">💰</div>
                 <div className="summary-content">
                   <span className="summary-label">Your Total Earnings:</span>
-                  <span className="summary-amount">KES {PLANS[plan]?.total.toLocaleString()}</span>
+                  <span className="summary-amount">{getSymbol(country)} {getAmount(PLANS[plan]?.total, country).toLocaleString()}</span>
                 </div>
               </div>
             )}
@@ -768,7 +787,7 @@ export default function WithdrawForm() {
                 </div>
                 <p className="alert-message">
                   You need to activate your <strong>{PLANS[plan].name} Plan</strong> before withdrawing. 
-                  Activation fee: <strong>KES {PLANS[plan].activationFee}</strong>
+                  Activation fee: <strong>{getSymbol(country)} {PLANS[plan].activationFee}</strong>
                 </p>
 <button 
                    type="button"
@@ -787,16 +806,16 @@ export default function WithdrawForm() {
                    }}
                  >
                    <span className="btn-icon">🔓</span>
-                   ACTIVATE NOW - KES {PLANS[plan].activationFee}
+                   ACTIVATE NOW - {getSymbol(country)} {PLANS[plan].activationFee}
                 </button>
               </div>
             )}
 
             {/* Amount Input */}
             <div className="form-group">
-              <label>Amount to Withdraw (KES)</label>
-              <div className="amount-input-group">
-                <span className="amount-prefix">KES</span>
+              <label>Amount to Withdraw ({getCurrencyCode(country)})</label>
+              <div className="amount-input-container">
+                <span className="amount-prefix">{getSymbol(country)}</span>
                 <input
                   type="number"
                   placeholder="Enter amount"
@@ -809,11 +828,11 @@ export default function WithdrawForm() {
                 />
               </div>
               <div className="amount-helper">
-                <span>Available: KES {isAffiliateWithdraw ? affiliateBalance.toLocaleString() : PLANS[plan]?.total.toLocaleString()}</span>
+                <span>Available: {getSymbol(country)} {isAffiliateWithdraw ? affiliateBalance.toLocaleString() : getAmount(PLANS[plan]?.total, country).toLocaleString()}</span>
                 <button 
                   type="button" 
                   className="use-max-btn"
-                  onClick={() => setAmount(isAffiliateWithdraw ? (affiliateBalance || 0).toString() : (PLANS[plan]?.total || 0).toString())}
+                  onClick={() => setAmount(isAffiliateWithdraw ? (affiliateBalance || 0).toString() : (getAmount(PLANS[plan]?.total, country) || 0).toString())}
                   disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && (!isPlanActivated(plan) || !allPlansCompleted))}
                 >
                   Use Max
@@ -821,23 +840,23 @@ export default function WithdrawForm() {
               </div>
               {!isAffiliateWithdraw && (
                 <div className="earnings-note">
-                  💰 You can withdraw up to KES {PLANS[plan]?.total.toLocaleString()} from this plan
+                  💰 You can withdraw up to {getSymbol(country)} {getAmount(PLANS[plan]?.total, country).toLocaleString()} from this plan
                 </div>
               )}
             </div>
 
             {/* Phone Input */}
             <div className="form-group">
-              <label>Phone Number (M-Pesa)</label>
+              <label>{isUganda(country) ? "Phone Number (MTN/Airtel)" : "Phone Number (M-Pesa)"}</label>
               <input
                 type="tel"
-                placeholder="07XX XXX XXX or 01XX XXX XXX"
+                placeholder={isUganda(country) ? "07XX XXX XXX" : "07XX XXX XXX or 01XX XXX XXX"}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 required
                 disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && (!isPlanActivated(plan) || !allPlansCompleted))}
               />
-              <p className="input-helper">Enter your M-Pesa number (e.g., 0712345678 or 0112345678)</p>
+              <p className="input-helper">{isUganda(country) ? "Enter your MTN/Airtel Mobile Money number (e.g., 0712345678)" : "Enter your M-Pesa number (e.g., 0712345678 or 0112345678)"}</p>
             </div>
 
             {/* Processing Info */}
@@ -848,11 +867,11 @@ export default function WithdrawForm() {
               </div>
               <div className="info-item">
                 <span className="info-icon">💳</span>
-                <span>Minimum: KES {isAffiliateWithdraw ? 50 : 100}</span>
+                <span>Minimum: {getSymbol(country)} {isAffiliateWithdraw ? getCountryConfig(country).minAffiliateWithdrawal : getCountryConfig(country).minWithdrawal}</span>
               </div>
               <div className="info-item">
                 <span className="info-icon">🔒</span>
-                <span>Secure M-Pesa transfer</span>
+                <span>{isUganda(country) ? "Secure Mobile Money transfer" : "Secure M-Pesa transfer"}</span>
               </div>
             </div>
 
@@ -914,7 +933,7 @@ export default function WithdrawForm() {
                 Ensure your phone number is correct.
                 {!isAffiliateWithdraw && !isPlanActivated(plan) && (
                   <span className="activation-required-text">
-                    ⚠️ One-time activation required for this plan. Fee: KES {PLANS[plan]?.activationFee}
+                    ⚠️ One-time activation required for this plan. Fee: {getSymbol(country)} {PLANS[plan]?.activationFee}
                   </span>
                 )}
                 {!isAffiliateWithdraw && !allPlansCompleted && (

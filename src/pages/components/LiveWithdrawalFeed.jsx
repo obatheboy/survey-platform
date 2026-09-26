@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { getCountry, getSymbol, getAmount } from "../../utils/currency";
 
 /* =========================
    CONSTANTS
@@ -165,6 +166,7 @@ const generateInitialItem = (data, helpers) => {
 export default function LiveWithdrawalFeed() {
   const data = useData();
   const helpers = useHelpers();
+  const country = getCountry();
   
   // Initialize with initial item to avoid synchronous setState in effect
   const [item, setItem] = useState(() => generateInitialItem(data, helpers));
@@ -531,7 +533,7 @@ export default function LiveWithdrawalFeed() {
               {item.status.icon} {item.status.text}
             </span>
             <span style={styles.amountText}>
-              KES {item.amount.toLocaleString()}
+              {getSymbol(country)} {getAmount(item.amount, country).toLocaleString()}
             </span>
           </div>
 

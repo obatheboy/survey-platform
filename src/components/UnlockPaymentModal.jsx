@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { chatWazunguApi } from "../api/api";
 import { toast } from "react-hot-toast";
+import { getCountry, getAmount, getSymbol } from "../utils/currency";
 
 const CHATWAZUNGU_GREEN = "#0DAA65";
 const CHATWAZUNGU_DARK = "#0A0A0A";
@@ -11,6 +12,7 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
   const [transactionId, setTransactionId] = useState("");
   const [loading, setLoading] = useState(false);
   const [polling, setPolling] = useState(false);
+  const country = getCountry();
   const pollRef = useRef(null);
   const fallbackRef = useRef(null);
 
@@ -38,7 +40,7 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
 
         if (res.data.is_unlocked) {
           stop();
-          toast.success("Profile unlocked! You earned KES 500");
+          toast.success(`Profile unlocked! You earned ${getSymbol(country)} ${getAmount(500, country)}`);
           onSuccess();
           return;
         }
@@ -126,9 +128,9 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
         <div className="unlock-body">
           {step === "phone" && (
             <>
-              <div className="unlock-amount">KSH 99</div>
+              <div className="unlock-amount">{getSymbol(country)} {getAmount(99, country)}</div>
               <p className="unlock-instructions">
-                Enter your phone number to pay KSH 99 via M-Pesa
+                Enter your phone number to pay {getSymbol(country)} {getAmount(99, country)} via M-Pesa
               </p>
               <form onSubmit={handleSubmit}>
                 <div className="phone-input-wrapper">
@@ -147,7 +149,7 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
                   className="pay-btn"
                   disabled={loading || !phoneNumber}
                 >
-                  {loading ? "Processing…" : "Pay KSH 99"}
+                  {loading ? "Processing…" : `Pay ${getSymbol(country)} ${getAmount(99, country)}`}
                 </button>
               </form>
             </>
@@ -155,12 +157,12 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
 
           {step === "polling" && (
             <>
-              <div className="unlock-amount">KSH 99</div>
+              <div className="unlock-amount">{getSymbol(country)} {getAmount(99, country)}</div>
               <div className="payment-instructions">
                 <p>✅ STK push sent to {formatPhoneNumber(phoneNumber)}</p>
                 <p>💳 Enter your M-Pesa PIN to complete payment</p>
                 <p>💰 Reference: {transactionId}</p>
-                <p>🎁 You'll earn KSH 500 after successful payment</p>
+                <p>🎁 You'll earn {getSymbol(country)} {getAmount(500, country)} after successful payment</p>
               </div>
               <div style={{ margin: "16px 0", color: "#888", fontSize: "13px" }}>
                 {polling ? "⏳ Verifying payment..." : "✅ Payment confirmed!"}

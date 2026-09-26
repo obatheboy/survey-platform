@@ -1,8 +1,14 @@
 import React from 'react';
+import { getCountry, getAmount, getSymbol } from "../../utils/currency";
 import './WelcomeBonusPopup.css';
 
 export default function WelcomeBonusPopup({ isOpen, onClose, onActivate }) {
   if (!isOpen) return null;
+
+  const country = getCountry();
+  const symbol = getSymbol(country);
+  const amount = getAmount(1200, country);
+  const fee = getAmount(100, country);
 
   return (
     <div className="welcome-bonus-overlay" onClick={onClose}>
@@ -15,20 +21,20 @@ export default function WelcomeBonusPopup({ isOpen, onClose, onActivate }) {
               <div className="welcome-bonus-icon">🎉</div>
             </div>
             <h2>Congratulations!</h2>
-            <p>You have received KES 1,200 welcome bonus for joining our platform</p>
+            <p>You have received {symbol} {amount.toLocaleString()} welcome bonus for joining our platform</p>
           </div>
 
           <div className="welcome-bonus-amount">
             <div className="bonus-amount-inner">
               <div className="welcome-bonus-label">Welcome Bonus Earned</div>
               <div className="welcome-bonus-value">
-                KES 1,200
+                {symbol} {amount.toLocaleString()}
               </div>
             </div>
           </div>
 
           <div className="welcome-bonus-message">
-            <span className="highlight-text">Pay only KES 100 to unlock and withdraw!</span>
+            <span className="highlight-text">Pay only {symbol} {fee} to unlock and withdraw!</span>
             <br />
             <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>
               Instant activation - Your bonus is ready!

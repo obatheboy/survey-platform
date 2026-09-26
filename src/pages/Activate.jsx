@@ -5,6 +5,7 @@ import TrustBadges from "../components/TrustBadges";
 import Testimonials from "../components/Testimonials";
 import "./Activate.css";
 import { planPaymentApi } from "../api/api";
+import { getCountry, getAmount, getSymbol, isUganda, isKenya, COUNTRIES, UGANDA_RECIPIENT } from "../utils/currency";
 
 const PHONE_NUMBER = "0140834185";
 const BUSINESS_NAME = "OBADIAH NYAKUNDI OTOKI";
@@ -14,7 +15,7 @@ const TILL_NUMBER = "7282886";
 // payment option. Set to false to show manual M-Pesa Send Money only.
 const AUTO_PAY_ENABLED = true;
 
-const PLAN_CONFIG = {
+const PLAN_CONFIG_BASE = {
   WELCOME_BONUS: {
     label: "Welcome Bonus",
     total: 1200,
@@ -43,6 +44,18 @@ const PLAN_CONFIG = {
     color: "#ff6b6b",
     glow: "rgba(255, 107, 107, 0.2)"
   },
+};
+
+const getPlanConfig = (country) => {
+  const config = {};
+  Object.entries(PLAN_CONFIG_BASE).forEach(([key, value]) => {
+    config[key] = {
+      ...value,
+      total: getAmount(value.total, country),
+      activationFee: getAmount(value.activationFee, country),
+    };
+  });
+  return config;
 };
 
 const ACTIVATION_PLANS = ["REGULAR", "VIP", "VVIP"];
@@ -211,10 +224,12 @@ const [planKey, setPlanKey] = useState(null);
   const [planState, setPlanState] = useState(null);
   const [paymentText, setPaymentText] = useState("");
   const [notification, setNotification] = useState(null);
+  const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [country, setCountryState] = useState(getCountry());
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [paynectaPhone, setPaynectaPhone] = useState("");
   const [paynectaSubmitting, setPaynectaSubmitting] = useState(false);
@@ -301,9 +316,12 @@ const [planKey, setPlanKey] = useState(null);
 
      const load = async () => {
        try {
-         const res = await api.get(`/auth/me?_t=${Date.now()}`);
-         if (!isMounted) return;
-         setUser(res.data);
+          const res = await api.get(`/auth/me?_t=${Date.now()}`);
+          if (!isMounted) return;
+          setUser(res.data);
+          if (res.data?.country) {
+            setCountryState(res.data.country);
+          }
 
          const statePlanKey = location.state?.planKey;
          const isWelcome = searchParams.get("welcome_bonus");
@@ -494,9 +512,21 @@ const [planKey, setPlanKey] = useState(null);
     }
   };
 
+  const copyUgandaRecipient = async () => {
+    try {
+      await navigator.clipboard.writeText(UGANDA_RECIPIENT.phoneNumber);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      setNotification("⚠️ Failed to copy. Please copy manually.");
+    }
+  };
+
 const submitActivation = async () => {
     if (!paymentText.trim()) {
-      setNotification("❌ Paste the FULL M-Pesa confirmation message.");
+      setNotification(isUganda(country)
+        ? "❌ Paste the FULL MTN/Airtel Send Money confirmation message."
+        : "❌ Paste the FULL M-Pesa confirmation message.");
       return;
     }
 
@@ -507,6 +537,8 @@ const submitActivation = async () => {
       const requestData = {
         mpesa_code: paymentText.trim(),
         plan: planKey === "WELCOME_BONUS" ? "WELCOME_BONUS" : planKey,
+        country: country,
+        payment_method: isUganda(country) ? "send_money" : "megapay",
       };
       
       const submitRes = await api.post("/activation/submit", requestData);
@@ -646,7 +678,8 @@ setPaynectaSubmitting(true);
            
 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {/* Welcome Bonus Button - for users who haven't received it yet */}
-              {user?.welcome_bonus_received === false && (
+                       const PLAN_CONFIG = getPlanConfig(country);
+               {user?.welcome_bonus_received === false && (
                 <button
                   key="WELCOME_BONUS"
                   onClick={() => {
@@ -672,7 +705,7 @@ setPaynectaSubmitting(true);
                       {PLAN_CONFIG.WELCOME_BONUS?.label}
                     </div>
                     <div style={{ fontSize: '0.85rem', opacity: 0.9 }}>
-                      Earn up to KES {PLAN_CONFIG.WELCOME_BONUS?.total}
+                      Earn up to {getSymbol(country)} {getPlanConfig(country).WELCOME_BONUS?.total.toLocaleString()}
                     </div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
@@ -727,7 +760,7 @@ setPaynectaSubmitting(true);
                        {config?.label || p}
                      </div>
                      <div style={{ fontSize: '0.85rem', opacity: 0.9 }}>
-                       Earn up to KES {config?.total || 0}
+                        Earn up to {getSymbol(country)} {config?.total?.toLocaleString() || 0}
                      </div>
                    </div>
                    <div style={{ textAlign: 'right' }}>
@@ -752,18 +785,21 @@ setPaynectaSubmitting(true);
     );
   }
 
-  if (!planKey || !planState || !user) return null;
+   if (!planKey || !planState || !user) return null;
 
-  const plan =
-    planKey === "WELCOME_BONUS"
-      ? { 
-          label: "Welcome Bonus", 
-          total: user.welcome_bonus || 1200, 
-          activationFee: 100, 
-          color: "#06b6d4", 
-          glow: "rgba(6, 182, 212, 0.2)" 
-        }
-      : PLAN_CONFIG[planKey] || PLAN_CONFIG.REGULAR;
+   const PLAN_CONFIG = getPlanConfig(country);
+   const CUR_SYMBOL = getSymbol(country);
+
+   const plan =
+     planKey === "WELCOME_BONUS"
+       ? { 
+           label: "Welcome Bonus", 
+           total: getAmount(user.welcome_bonus || 1200, country),
+           activationFee: getAmount(100, country), 
+           color: "#06b6d4", 
+           glow: "rgba(6, 182, 212, 0.2)" 
+         }
+       : PLAN_CONFIG[planKey] || PLAN_CONFIG.REGULAR;
 
    const showPlanWarning = planKey === "VIP" && user?.plans?.VVIP?.completed && !user?.plans?.VVIP?.is_activated;
 
@@ -996,7 +1032,7 @@ setPaynectaSubmitting(true);
             </div>
 
             <div style={{ fontSize: "38px", fontWeight: 900, color: "#06b6d4", lineHeight: "1.2", marginBottom: "10px", textShadow: "0 4px 12px rgba(6, 182, 212, 0.5)" }}>
-              KES {plan.total}
+              {CUR_SYMBOL} {getAmount(plan.total, country)}
             </div>
 
             <div style={{
@@ -1018,7 +1054,7 @@ setPaynectaSubmitting(true);
                 padding: "4px 10px !important",
                 borderRadius: "8px !important",
                 border: "2px solid #ef4444 !important"
-              }}>Pay KES {plan.activationFee}</span> activation fee to activate your account and withdraw your earnings!
+               }}>Pay {CUR_SYMBOL} {plan.activationFee.toLocaleString()}</span> activation fee to activate your account and withdraw your earnings!
             </div>
           </div>
 
@@ -1040,7 +1076,7 @@ setPaynectaSubmitting(true);
 
           {/* AUTO-PAY DISABLED TEMPORARILY - MANUAL PAYMENT ONLY */}
           {/* Set AUTO_PAY_ENABLED to true to bring back the MegaPay STK push block */}
-          {AUTO_PAY_ENABLED && (
+           {isKenya(country) && AUTO_PAY_ENABLED && (
           <>
           {/* MEGAPAY STK PUSH - NEW PAYMENT OPTION */}
           <div style={{
@@ -1088,15 +1124,15 @@ setPaynectaSubmitting(true);
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px" }}>
                 <span style={{ color: "#e0f2fe", fontWeight: 600 }}>💰Amount to Pay is:</span>
-                <span style={{ color: "#ff7a7a", fontWeight: 900, fontSize: "18px", textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
-                  KES {plan.activationFee}
-                </span>
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px", marginTop: "4px" }}>
-                <span style={{ color: "#e0f2fe", fontWeight: 600 }}>💵After paying you will Receive:</span>
-                <span style={{ color: "#4ade80", fontWeight: 900, fontSize: "17px" }}>
-                  KES {plan.total}
-                </span>
+               <span style={{ color: "#ff7a7a", fontWeight: 900, fontSize: "18px", textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
+                   {CUR_SYMBOL} {plan.activationFee.toLocaleString()}
+                 </span>
+               </div>
+               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px", marginTop: "4px" }}>
+                 <span style={{ color: "#e0f2fe", fontWeight: 600 }}>💵After paying you will Receive:</span>
+                 <span style={{ color: "#4ade80", fontWeight: 900, fontSize: "17px" }}>
+                   {CUR_SYMBOL} {plan.total.toLocaleString()}
+                 </span>
               </div>
             </div>
 
@@ -1172,7 +1208,7 @@ setPaynectaSubmitting(true);
               ) : (
                 <>
                   <span style={{ fontSize: "18px" }}>📱</span>
-                  <span>TAP here to Pay KES {plan.activationFee} and ACTIVATE Account </span>
+                  <span>TAP here to Pay {CUR_SYMBOL} {plan.activationFee.toLocaleString()} and ACTIVATE Account </span>
                   <span style={{ fontSize: "16px" }}>⚡</span>
                 </>
               )}
@@ -1219,8 +1255,8 @@ setPaynectaSubmitting(true);
           </>
            )}
 
-           {/* MANUAL PAYMENT - only shown when automatic STK payment fails */}
-           {paynectaError && (
+            {/* MANUAL PAYMENT - only shown when automatic STK payment fails (Kenya) */}
+            {isKenya(country) && paynectaError && (
            <>
             <div style={{
               marginTop: "24px",
@@ -1291,7 +1327,7 @@ setPaynectaSubmitting(true);
              <div className="activate-step-box" style={styles.stepBox}>
                <span style={styles.stepNumber}>5</span>
                <strong style={{color: "#9a3412", fontWeight: 900}}>Amount: </strong>
-               <span style={{...styles.activationFee, color: "#ffffff", fontWeight: 900, background: "#ef4444", padding: "2px 8px", borderRadius: "4px"}}>KES {plan.activationFee}</span>
+                <span style={{...styles.activationFee, color: "#ffffff", fontWeight: 900, background: "#ef4444", padding: "2px 8px", borderRadius: "4px"}}>{CUR_SYMBOL} {plan.activationFee.toLocaleString()}</span>
              </div>
 
              <div className="activate-step-box" style={styles.stepBox}>
@@ -1347,9 +1383,177 @@ setPaynectaSubmitting(true);
             </>
             )}
 
-            {/* MANUAL PAYMENT SUBMIT BUTTON - only shown in manual payment section */}
-            {paynectaError && (
+            {/* MANUAL PAYMENT SUBMIT BUTTON - shown for Kenya (after STK fails) or Uganda */}
+            {(paynectaError || isUganda(country)) && (
             <>
+            {isUganda(country) && (
+            <>
+             <div style={{
+               marginTop: "24px",
+               marginBottom: "8px",
+               padding: "14px 18px",
+               borderRadius: "12px",
+               background: "rgba(6, 182, 212, 0.1)",
+               border: "1px solid rgba(6, 182, 212, 0.3)",
+               textAlign: "center"
+             }}>
+               <p style={{ fontSize: "13px", color: "#06b6d4", fontWeight: 600, lineHeight: 1.5, margin: 0 }}>
+                 🇺🇬 <strong>Uganda Payment Method:</strong> Use MTN Mobile Money or Airtel Money "Send Money"
+               </p>
+             </div>
+
+             {/* MTN Send Money Section */}
+            <div style={{
+              background: "linear-gradient(135deg, #0c4a6e 0%, #5b21b6 50%, #7c3aed 100%)",
+              border: "3px solid #a78bfa",
+              borderRadius: "16px",
+              padding: "20px",
+              marginBottom: "16px",
+              boxShadow: "0 0 30px rgba(124, 58, 237, 0.4)",
+              textAlign: "center"
+            }}>
+              <p style={{ fontWeight: 900, fontSize: "18px", color: "#ffffff", marginBottom: "12px" }}>
+                MTN Mobile Money - Send Money
+              </p>
+              <div style={{
+                background: "rgba(255, 255, 255, 0.1)",
+                borderRadius: "10px",
+                padding: "12px",
+                marginBottom: "12px",
+                border: "1px solid rgba(255, 255, 255, 0.2)"
+              }}>
+                <div style={{ fontSize: "14px", color: "#e0f2fe", marginBottom: "8px" }}>
+                  <strong style={{ color: "#ffffff" }}>Recipient:</strong> {UGANDA_RECIPIENT.name}
+                </div>
+                <div style={{ fontSize: "14px", color: "#e0f2fe", fontWeight: 700, fontFamily: "monospace", letterSpacing: "1px" }}>
+                  {UGANDA_RECIPIENT.phoneNumber}
+                </div>
+                <div style={{ fontSize: "14px", color: "#4ade80", marginTop: "6px", fontWeight: 900 }}>
+                  Amount: {CUR_SYMBOL} {plan.activationFee.toLocaleString()}
+                </div>
+              </div>
+            </div>
+
+            {/* Airtel Send Money Section */}
+            <div style={{
+              background: "linear-gradient(135deg, #0c4a6e 0%, #5b21b6 50%, #7c3aed 100%)",
+              border: "3px solid #a78bfa",
+              borderRadius: "16px",
+              padding: "20px",
+              marginBottom: "16px",
+              boxShadow: "0 0 30px rgba(124, 58, 237, 0.4)",
+              textAlign: "center"
+            }}>
+              <p style={{ fontWeight: 900, fontSize: "18px", color: "#ffffff", marginBottom: "12px" }}>
+                Airtel Money - Send Money
+              </p>
+              <div style={{
+                background: "rgba(255, 255, 255, 0.1)",
+                borderRadius: "10px",
+                padding: "12px",
+                marginBottom: "12px",
+                border: "1px solid rgba(255, 255, 255, 0.2)"
+              }}>
+                <div style={{ fontSize: "14px", color: "#e0f2fe", marginBottom: "8px" }}>
+                  <strong style={{ color: "#ffffff" }}>Recipient:</strong> {UGANDA_RECIPIENT.name}
+                </div>
+                <div style={{ fontSize: "14px", color: "#e0f2fe", fontWeight: 700, fontFamily: "monospace", letterSpacing: "1px" }}>
+                  {UGANDA_RECIPIENT.phoneNumber}
+                </div>
+                <div style={{ fontSize: "14px", color: "#4ade80", marginTop: "6px", fontWeight: 900 }}>
+                  Amount: {CUR_SYMBOL} {plan.activationFee.toLocaleString()}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ textAlign: "center", margin: "12px 0" }}>
+              <span style={{ color: "#06b6d4", fontSize: "14px", fontWeight: 800, background: "#0f0a1a", padding: "8px 16px", borderRadius: "20px", border: "1px solid rgba(6, 182, 212, 0.4)" }}>
+                ✅ Manual Payment - Send Money then paste confirmation
+              </span>
+            </div>
+
+            <p style={{ ...styles.caption, color: "#93c5fd" }}>
+              ⚠ <strong style={{color: "#ffffff", fontWeight: 900}}>IMPORTANT:</strong> Use <strong style={{color: "#06b6d4", fontSize: "14px", fontWeight: 900}}>MTN Send Money</strong> or <strong style={{color: "#06b6d4", fontSize: "14px", fontWeight: 900}}>Airtel Send Money</strong> to send {CUR_SYMBOL} {plan.activationFee.toLocaleString()} to <strong style={{color: "#ffffff"}}>{UGANDA_RECIPIENT.phoneNumber} ({UGANDA_RECIPIENT.name})</strong>
+            </p>
+
+            <div style={{ marginTop: "8px" }}>
+              <div className="activate-step-box" style={{...styles.stepBox, background: "#0f0a1a", borderColor: "#5b21b6"}}>
+                <span style={styles.stepNumber}>1</span>
+                <strong style={{color: "#ffffff", fontWeight: 900}}>Open MTN Mobile Money or Airtel Money</strong>
+                <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c4b5fd", fontWeight: 700 }}>→ Select "Send Money"</span>
+              </div>
+
+              <div className="activate-step-box" style={{...styles.stepBox, background: "#0f0a1a", borderColor: "#5b21b6"}}>
+                <span style={styles.stepNumber}>2</span>
+                <strong style={{color: "#ffffff", fontWeight: 900}}>Enter Recipient Number</strong>
+                <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c4b5fd", fontWeight: 700 }}>→ <strong style={{color: "#06b6d4"}}>{UGANDA_RECIPIENT.phoneNumber}</strong></span>
+              </div>
+
+              <div className="activate-step-box" style={{...styles.stepBox, background: "#0f0a1a", borderColor: "#5b21b6"}}>
+                <span style={styles.stepNumber}>3</span>
+                <strong style={{color: "#ffffff", fontWeight: 900}}>Enter Amount</strong>
+                <span style={{ fontSize: "12px", marginLeft: "4px", color: "#4ade80", fontWeight: 700 }}>→ <strong>{CUR_SYMBOL} {plan.activationFee.toLocaleString()}</strong></span>
+              </div>
+
+              <div className="activate-step-box" style={{...styles.stepBox, background: "#0f0a1a", borderColor: "#5b21b6"}}>
+                <span style={styles.stepNumber}>4</span>
+                <strong style={{color: "#ffffff", fontWeight: 900}}>Confirm Name: <span style={{color: "#06b6d4"}}>{UGANDA_RECIPIENT.name}</span></strong>
+              </div>
+
+              <div className="activate-step-box" style={{...styles.stepBox, background: "#0f0a1a", borderColor: "#5b21b6"}}>
+                <span style={styles.stepNumber}>5</span>
+                <strong style={{color: "#ffffff", fontWeight: 900}}>Enter PIN & Complete</strong>
+                <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c4b5fd", fontWeight: 700 }}>→ Save the transaction SMS</span>
+              </div>
+
+              <div className="activate-step-box activate-step-box-success" style={{
+                ...styles.stepBox,
+                background: "#0f0a1a",
+                border: "1px solid #06b6d4"
+              }}>
+                <span style={{...styles.stepNumber, background: "#06b6d4"}}>6</span>
+                <strong style={{ color: "#06b6d4", fontWeight: 900 }}>Paste Transaction SMS</strong>
+                <span style={{ fontSize: "11px", display: "block", marginTop: "4px", color: "#93c5fd", fontWeight: 700 }}>
+                  Paste your MTN/Airtel confirmation message below
+                </span>
+
+                <div style={{ marginTop: "10px" }}>
+                  <div style={{ fontSize: "12px", color: "#06b6d4", fontWeight: 800, marginBottom: "6px" }}>
+                    📌 Paste MTN/Airtel Transaction SMS (Include Transaction ID, Amount & Time)
+                  </div>
+                  <textarea
+                    placeholder="Paste your MTN/Airtel Send Money confirmation here..."
+                    value={paymentText}
+                    onChange={(e) => setPaymentText(e.target.value)}
+                    rows={2}
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      borderRadius: "8px",
+                      border: "2px solid #5b21b6",
+                      background: "rgba(15, 10, 26, 0.8)",
+                      color: "#ffffff",
+                      fontSize: "12px",
+                      fontFamily: "inherit",
+                      resize: "vertical",
+                      minHeight: "60px",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
+
+                <button
+                  onClick={copyUgandaRecipient}
+                  style={{...styles.copyBtn, marginTop: "8px"}}
+                >
+                  📋 Copy Recipient Number
+                </button>
+                {copied && <p style={{...styles.copiedNote, color: "#06b6d4", fontWeight: 700, marginTop: "6px"}}>✅ Recipient number copied</p>}
+              </div>
+            </div>
+            </>
+            )}
+
             <button
               onClick={() => {
                 // Check if plan is already activated (paid)

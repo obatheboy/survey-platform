@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { getCountry, getSymbol, getAmount } from "../utils/currency";
 import "./LoginFeePayment.css";
 
 export default function LoginFeePayment() {
   const navigate = useNavigate();
   const location = useLocation();
+  const country = getCountry();
 
   const pendingUser = JSON.parse(localStorage.getItem("pendingLoginUser") || "{}");
   const phoneFromState = location.state?.phone || pendingUser.phone;
@@ -187,7 +189,7 @@ export default function LoginFeePayment() {
         <div className="header">
           <h1 className="header-title">🔓 Activate Account</h1>
           <p className="header-subtitle">
-            Pay KES {LOGIN_FEE_AMOUNT} once and start earning up to <strong>KES 5,000 daily</strong>
+            Pay {getSymbol(country)} {getAmount(LOGIN_FEE_AMOUNT, country)} once and start earning up to <strong>{getSymbol(country)} {getAmount(5000, country)} daily</strong>
           </p>
         </div>
 
@@ -195,7 +197,7 @@ export default function LoginFeePayment() {
         <div className="main-card">
           {/* Amount */}
           <div className="amount-box">
-            <div className="amount-value">KES {LOGIN_FEE_AMOUNT}</div>
+            <div className="amount-value">{getSymbol(country)} {getAmount(LOGIN_FEE_AMOUNT, country)}</div>
             <div className="amount-label">One-time fee • Lifetime access</div>
           </div>
 
@@ -235,7 +237,7 @@ export default function LoginFeePayment() {
                 Sending...
               </>
             ) : (
-              "💰 Tap to Pay KES 95"
+              `💰 Tap to Pay ${getSymbol(country)} ${getAmount(95, country)}`
             )}
           </button>
 
@@ -269,7 +271,7 @@ export default function LoginFeePayment() {
             <ul>
               <li>🗳️ Access to all paid surveys</li>
               <li>💰 Get 1200 welcome bonus</li>
-              <li>💰 Earn KES 150 - 500 per each survey</li>
+              <li>💰 Earn {getSymbol(country)} {getAmount(150, country)} - {getAmount(500, country)} per each survey</li>
               <li>⚡ Instant M-PESA withdrawals</li>
               <li>🏆 Unlock VIP & VVIP surveys</li>
             </ul>

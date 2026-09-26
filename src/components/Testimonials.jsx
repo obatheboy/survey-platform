@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getCountry, getAmount, getSymbol } from "../utils/currency";
 import './Testimonials.css';
 
 const testimonialsData = [
@@ -7,7 +8,7 @@ const testimonialsData = [
     name: 'John Mwangi',
     location: 'Nairobi',
     initials: 'JM',
-    earned: 'KES 45,000',
+    earned: 45000,
     duration: '3 months',
     rating: 5,
     quote: "I've been earning consistently every month. The platform is legit and withdrawals are instant. Highly recommended!",
@@ -18,7 +19,7 @@ const testimonialsData = [
     name: 'Mary Akinyi',
     location: 'Kisumu',
     initials: 'MA',
-    earned: 'KES 32,500',
+    earned: 32500,
     duration: '2 months',
     rating: 5,
     quote: "At first I was skeptical, but after my first withdrawal I was convinced. This is the real deal!",
@@ -29,7 +30,7 @@ const testimonialsData = [
     name: 'Peter Kamau',
     location: 'Mombasa',
     initials: 'PK',
-    earned: 'KES 58,200',
+    earned: 58200,
     duration: '4 months',
     rating: 5,
     quote: "Best decision I made this year. I earn while doing other things. The surveys are easy and payment is guaranteed.",
@@ -40,7 +41,7 @@ const testimonialsData = [
     name: 'Grace Wanjiru',
     location: 'Nakuru',
     initials: 'GW',
-    earned: 'KES 28,900',
+    earned: 28900,
     duration: '1 month',
     rating: 5,
     quote: "I was able to pay my rent with earnings from this platform. Thank you for this opportunity!",
@@ -51,7 +52,7 @@ const testimonialsData = [
     name: 'David Omondi',
     location: 'Eldoret',
     initials: 'DO',
-    earned: 'KES 41,300',
+    earned: 41300,
     duration: '3 months',
     rating: 5,
     quote: "As a student, this has been a lifesaver. I can earn money for upkeep without leaving my studies.",
@@ -62,7 +63,7 @@ const testimonialsData = [
     name: 'Faith Njeri',
     location: 'Thika',
     initials: 'FN',
-    earned: 'KES 36,700',
+    earned: 36700,
     duration: '2 months',
     rating: 5,
     quote: "The welcome bonus alone was worth it! I've been earning steadily since then. Very reliable platform.",
@@ -70,9 +71,16 @@ const testimonialsData = [
   }
 ];
 
+const formatEarned = (amount, country) => {
+  const converted = getAmount(amount, country);
+  const symbol = getSymbol(country);
+  return `${symbol} ${converted.toLocaleString()}`;
+};
+
 export default function Testimonials({ variant = 'carousel' }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const country = getCountry();
 
   useEffect(() => {
     if (!isAutoPlaying || variant !== 'carousel') return;
@@ -126,7 +134,7 @@ export default function Testimonials({ variant = 'carousel' }) {
               <div className="rating">{renderStars(testimonial.rating)}</div>
               <p className="quote">"{testimonial.quote}"</p>
               <div className="stats">
-                <span className="earned">{testimonial.earned} earned</span>
+                <span className="earned">{formatEarned(testimonial.earned, country)} earned</span>
                 <span className="duration">{testimonial.duration}</span>
               </div>
             </div>
@@ -162,7 +170,7 @@ export default function Testimonials({ variant = 'carousel' }) {
             <div className="stats-large">
               <div className="stat">
                 <span className="label">Total Earned</span>
-                <span className="value">{currentTestimonial.earned}</span>
+                <span className="value">{formatEarned(currentTestimonial.earned, country)}</span>
               </div>
               <div className="stat">
                 <span className="label">Member Since</span>

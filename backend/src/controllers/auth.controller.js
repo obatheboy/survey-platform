@@ -42,7 +42,7 @@ const publicUserActivationFields = (user) => ({
 exports.register = async (req, res) => {
   try {
     const fullName = req.body.fullName || req.body.name || req.body.full_name;
-    const { phone, referral_code } = req.body;
+    const { phone, referral_code, country } = req.body;
 
     if (!fullName || !phone) {
       return res.status(400).json({ message: "Full name and phone number are required" });
@@ -67,7 +67,8 @@ exports.register = async (req, res) => {
       phone,
       email: null,
       password_hash: null,
-       is_activated: false,
+      country: country || 'kenya',
+      is_activated: false,
        login_fee_paid: true, // Bypassed - no login fee required
        ...userActivationFields,
       total_earned: 1200,      // ✅ Welcome bonus credited immediately on registration
@@ -146,11 +147,12 @@ exports.register = async (req, res) => {
         full_name: user.full_name,
         phone: user.phone,
         email: user.email,
-        is_activated: user.is_activated,
-        welcome_bonus_received: user.welcome_bonus_received,
-         welcome_bonus: user.welcome_bonus || 1200,
+         is_activated: user.is_activated,
+         welcome_bonus_received: user.welcome_bonus_received,
+          welcome_bonus: user.welcome_bonus || 1200,
           login_fee_paid: true, // Bypassed - login fee waived on registration
-        plans_paid: user.plans_paid || {},
+         country: user.country || 'kenya',
+         plans_paid: user.plans_paid || {},
        all_plans_completed: user.all_plans_completed || false,
        referral_commission_earned: user.referral_commission_earned || 0,
        referral_code: user.referral_code || null,
@@ -200,6 +202,7 @@ exports.login = async (req, res) => {
       user: {
         id: user._id,
         phone: user.phone,
+        country: user.country || 'kenya',
         login_fee_paid: user.login_fee_paid || false,
         survey_onboarding_completed: user.survey_onboarding_completed || false,
         plans_paid: user.plans_paid || {},
@@ -312,6 +315,7 @@ exports.getMe = async (req, res) => {
       id: user._id,
       full_name: user.full_name,
       phone: user.phone,
+      country: user.country || 'kenya',
       email: user.email,
       is_activated: user.is_activated,
       total_earned: user.total_earned,

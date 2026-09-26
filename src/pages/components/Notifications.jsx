@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import api from "../../api/api.js";
 import { useNavigate, useLocation } from "react-router-dom";
+import { getCountry, getSymbol, getAmount } from "../../utils/currency";
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
   const [activeNotif, setActiveNotif] = useState(null); // full-screen modal
   const navigate = useNavigate();
   const location = useLocation();
+  const country = getCountry();
 
   /* =========================
      🔐 SAFETY GUARD
@@ -48,7 +50,7 @@ export default function Notifications() {
     // ✅ FIXED: welcome bonus redirect includes query param
     if (notif.type === "welcome_bonus") {
       setActiveNotif({
-        message: "❌ Your account is not activated. Activate your account with KES 100 to withdraw to M-Pesa",
+        message: `❌ Your account is not activated. Activate your account with ${getSymbol(country)} ${getAmount(100, country)} to withdraw to M-Pesa`,
         goDashboard: false,
         redirect: "/activate?welcome_bonus=1", // <-- fix applied here
       });

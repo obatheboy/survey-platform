@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/api";
+import { getCountry, getAmount, getSymbol, isUganda } from "../utils/currency";
 
 export default function Withdraw() {
   const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
+  const [country, setCountryState] = useState(getCountry());
   const [amount, setAmount] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
@@ -39,6 +41,9 @@ export default function Withdraw() {
         }
 
         setUser(u);
+        if (u?.country) {
+          setCountryState(u.country);
+        }
       } catch {
         navigate("/auth", { replace: true });
       } finally {
@@ -155,7 +160,7 @@ export default function Withdraw() {
         <div style={styles.balanceBox}>
           <span style={styles.balanceLabel}>Available Balance</span>
           <span style={styles.balanceAmount}>
-            KES {Number(user.total_earned).toLocaleString()}
+            {getSymbol(country)} {getAmount(Number(user.total_earned), country).toLocaleString()}
           </span>
           <div style={styles.surveyStatus}>
             <span>Surveys Completed: {user.surveys_completed || 0}/10</span>
@@ -171,16 +176,16 @@ export default function Withdraw() {
                 placeholder="Enter amount"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                max={user.total_earned}
+                 max={getAmount(user.total_earned, country)}
                 style={styles.input}
               />
               <p style={styles.helperText}>
-                Max: KES {Number(user.total_earned).toLocaleString()}
+                Max: {getSymbol(country)} {getAmount(Number(user.total_earned), country).toLocaleString()}
               </p>
             </div>
 
             <div style={styles.formGroup}>
-              <label style={styles.label}>Phone Number (M-Pesa)</label>
+              <label style={styles.label}>{isUganda(country) ? "Phone Number (MTN/Airtel)" : "Phone Number (M-Pesa)"}</label>
               <input
                 type="tel"
                 placeholder="07XXXXXXXX"
