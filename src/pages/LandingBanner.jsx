@@ -15,7 +15,7 @@ export default function LandingBanner() {
       <div style={styles.content}>
         {/* Trust badge */}
         <div style={styles.trustBadge}>
-          <span style={styles.trustBadgeText}>3 Ways to Earn • Fast Payouts</span>
+          <span style={styles.trustBadgeText}>🔒 Secure & Safe to Use</span>
         </div>
 
         {/* Logo */}
@@ -48,9 +48,7 @@ export default function LandingBanner() {
 
         {/* Small enticing caption */}
         <p style={styles.subheadline}>
-          Earn by completing simple tasks:
-          <br />
-          📊 Complete surveys · 💬 Chat with wazungu · 👥 Refer friends
+          A safe, secure platform where you earn by completing simple tasks. Fast payouts, trusted by 500K+ users.
         </p>
 
         {/* Stats row */}
@@ -156,12 +154,17 @@ const styles = {
   },
   content: {
     width: "100%",
-    maxWidth: "400px",
-    padding: "16px 14px 24px",
+    maxWidth: "420px",
+    padding: "20px 18px 28px",
     position: "relative",
     zIndex: 2,
     textAlign: "center",
     animation: "fadeInUp 0.6s ease-out",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: "100vh",
   },
   logoContainer: {
     display: "flex",
@@ -317,22 +320,29 @@ const styles = {
     textShadow: "0 1px 3px rgba(0,0,0,0.2)",
   },
   ctaContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
     textAlign: "center",
-    margin: "16px 0",
+    margin: "24px 0",
+    width: "100%",
   },
   ctaButton: {
     background: "linear-gradient(135deg, #FFE66D 0%, #f59e0b 100%)",
     color: "#0A0A0A",
     border: "none",
-    borderRadius: "28px",
-    padding: "16px 48px",
-    fontSize: "18px",
+    borderRadius: "32px",
+    padding: "20px 64px",
+    fontSize: "20px",
     fontWeight: "900",
     cursor: "pointer",
-    boxShadow: "0 8px 32px rgba(255, 230, 109, 0.4)",
-    letterSpacing: "1px",
+    boxShadow: "0 12px 40px rgba(255, 230, 109, 0.5)",
+    letterSpacing: "1.5px",
     animation: "pulse-glow 3s ease-in-out infinite",
     transition: "transform 0.2s",
+    display: "block",
+    margin: "0 auto",
   },
   ctaNote: {
     marginTop: "10px",
