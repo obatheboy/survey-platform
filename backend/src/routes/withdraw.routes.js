@@ -5,13 +5,17 @@ const { protect, adminProtect } = require("../middlewares/auth.middleware");
 
 const {
   requestWithdraw,
+<<<<<<< Updated upstream
   getUserWithdrawalHistory,
+=======
+>>>>>>> Stashed changes
   getPendingWithdrawals,
   getAllWithdrawals,
   approveWithdraw,
   rejectWithdraw,
 } = require("../controllers/withdraw.controller");
 
+<<<<<<< Updated upstream
 /* =====================================
    USER — REQUEST WITHDRAWAL
    POST /api/withdraw/request
@@ -39,6 +43,26 @@ router.get("/admin/all", adminProtect, getAllWithdrawals);
 router.patch("/admin/:id/approve", adminProtect, approveWithdraw);
 
 // Reject a withdrawal
+=======
+/**
+ * =====================================
+ * USER — REQUEST WITHDRAWAL
+ * =====================================
+ */
+router.post("/request", protect, requestWithdraw);
+
+/**
+ * =====================================
+ * ADMIN — WITHDRAWALS
+ * =====================================
+ */
+router.get("/admin/pending", adminProtect, getPendingWithdrawals);
+
+router.get("/admin/all", adminProtect, getAllWithdrawals);
+
+router.patch("/admin/:id/approve", adminProtect, approveWithdraw);
+
+>>>>>>> Stashed changes
 router.patch("/admin/:id/reject", adminProtect, rejectWithdraw);
 
 module.exports = router;

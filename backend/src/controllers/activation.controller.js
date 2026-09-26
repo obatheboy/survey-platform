@@ -1,13 +1,18 @@
+<<<<<<< Updated upstream
 const mongoose = require("mongoose");
 const User = require("../models/User");
 const Notification = require("../models/Notification");
 const { awardReferralCommission } = require("./affiliate.controller");
 const megaPayService = require("../services/megapay.service");
 const { ACTIVATION_PLANS, syncActivationStatus, buildActivationRedirect } = require("../utils/activationStatus");
+=======
+const pool = require("../config/db");
+>>>>>>> Stashed changes
 
 const TOTAL_SURVEYS = 10;
 
 /* ===============================
+<<<<<<< Updated upstream
    PLAN ACTIVATION FEES (AMOUNT USER PAYS)
 ================================ */
 const PLAN_FEES = {
@@ -25,10 +30,19 @@ const PLAN_EARNINGS = {
   VIP: 2000,
   VVIP: 3000,
   WELCOME_BONUS: 1200,
+=======
+   PLAN ACTIVATION FEES (SOURCE OF TRUTH)
+================================ */
+const PLAN_FEES = {
+  REGULAR: 100,
+  VIP: 150,
+  VVIP: 200,
+>>>>>>> Stashed changes
 };
 
 /* =====================================
    USER — SUBMIT ACTIVATION PAYMENT
+<<<<<<< Updated upstream
    ===================================== */
 exports.submitActivationPayment = async (req, res) => {
   try {
@@ -46,18 +60,34 @@ exports.submitActivationPayment = async (req, res) => {
 
     console.log("PLAN_FEES for this plan:", PLAN_FEES[planKey]);
     
+=======
+===================================== */
+exports.submitActivationPayment = async (req, res) => {
+  const client = await pool.connect();
+
+  try {
+    const userId = req.user.id;
+    const { mpesa_code, plan } = req.body;
+    const paymentReference = String(mpesa_code || "").trim();
+
+>>>>>>> Stashed changes
     if (!paymentReference) {
       return res.status(400).json({
         message: "Please enter the M-Pesa payment reference",
       });
     }
 
+<<<<<<< Updated upstream
     if (!PLAN_FEES[planKey]) {
+=======
+    if (!PLAN_FEES[plan]) {
+>>>>>>> Stashed changes
       return res.status(400).json({
         message: "Invalid plan",
       });
     }
 
+<<<<<<< Updated upstream
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -83,11 +113,42 @@ exports.submitActivationPayment = async (req, res) => {
 
     // Check if already activated
     if (planKey !== "WELCOME_BONUS" && userPlan?.is_activated) {
+=======
+    await client.query("BEGIN");
+
+    const { rows } = await client.query(
+      `
+      SELECT surveys_completed, completed, is_activated
+      FROM user_surveys
+      WHERE user_id = $1 AND plan = $2
+      FOR UPDATE
+      `,
+      [userId, plan]
+    );
+
+    if (!rows.length) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({ message: "Survey plan not found" });
+    }
+
+    const planRow = rows[0];
+
+    if (!planRow.completed || planRow.surveys_completed !== TOTAL_SURVEYS) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        message: "Complete all surveys before activation",
+      });
+    }
+
+    if (planRow.is_activated) {
+      await client.query("ROLLBACK");
+>>>>>>> Stashed changes
       return res.status(400).json({
         message: "Plan already activated",
       });
     }
 
+<<<<<<< Updated upstream
     // Initialize activation_requests array if it doesn't exist
     if (!user.activation_requests) {
       user.activation_requests = [];
@@ -131,10 +192,41 @@ exports.submitActivationPayment = async (req, res) => {
     }
 
     const redirect = buildActivationRedirect(user);
+=======
+    const existing = await client.query(
+      `
+      SELECT id
+      FROM activation_payments
+      WHERE user_id = $1
+        AND plan = $2
+        AND status = 'SUBMITTED'
+      `,
+      [userId, plan]
+    );
+
+    if (existing.rows.length) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        message: "Activation already submitted and pending approval",
+      });
+    }
+
+    await client.query(
+      `
+      INSERT INTO activation_payments
+        (user_id, plan, mpesa_code, amount, status)
+      VALUES ($1, $2, $3, $4, 'SUBMITTED')
+      `,
+      [userId, plan, paymentReference, PLAN_FEES[plan]]
+    );
+
+    await client.query("COMMIT");
+>>>>>>> Stashed changes
 
     return res.json({
       activation_status: "SUBMITTED",
       activation_required: true,
+<<<<<<< Updated upstream
       withdraw_unlocked: user.is_activated === true,
       user_activated: user.is_activated === true,
       all_plans_completed: user.all_plans_completed === true,
@@ -150,18 +242,37 @@ exports.submitActivationPayment = async (req, res) => {
   } catch (error) {
     console.error("❌ Activation submit error:", error);
     return res.status(500).json({ message: "Server error" });
+=======
+      withdraw_unlocked: false,
+      message: "Payment submitted successfully. Awaiting admin approval.",
+    });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("❌ Activation submit error:", error);
+    return res.status(500).json({ message: "Server error" });
+  } finally {
+    client.release();
+>>>>>>> Stashed changes
   }
 };
 
 /* =====================================
    ADMIN — APPROVE ACTIVATION
+<<<<<<< Updated upstream
    ===================================== */
 exports.approveActivation = async (req, res) => {
+=======
+===================================== */
+exports.approveActivation = async (req, res) => {
+  const client = await pool.connect();
+
+>>>>>>> Stashed changes
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Admin access only" });
     }
 
+<<<<<<< Updated upstream
     const { userId, activationId } = req.body;
 
     if (!userId || !activationId) {
@@ -182,11 +293,37 @@ exports.approveActivation = async (req, res) => {
     }
 
     if (activationRequest.status !== 'SUBMITTED') {
+=======
+    const { id } = req.params;
+
+    await client.query("BEGIN");
+
+    const activationRes = await client.query(
+      `
+      SELECT id, user_id, plan, status
+      FROM activation_payments
+      WHERE id = $1
+      FOR UPDATE
+      `,
+      [id]
+    );
+
+    if (!activationRes.rows.length) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ message: "Activation request not found" });
+    }
+
+    const activation = activationRes.rows[0];
+
+    if (activation.status !== "SUBMITTED") {
+      await client.query("ROLLBACK");
+>>>>>>> Stashed changes
       return res.status(400).json({
         message: "Activation already processed",
       });
     }
 
+<<<<<<< Updated upstream
     const plan = activationRequest.plan;
     const isWelcomeBonus = activationRequest.is_welcome_bonus === true;
 
@@ -211,11 +348,37 @@ exports.approveActivation = async (req, res) => {
 
     // Check if already activated
     if (plan !== "WELCOME_BONUS" && user.plans[plan]?.is_activated) {
+=======
+    const planCheck = await client.query(
+      `
+      SELECT surveys_completed, completed, is_activated
+      FROM user_surveys
+      WHERE user_id = $1 AND plan = $2
+      FOR UPDATE
+      `,
+      [activation.user_id, activation.plan]
+    );
+
+    if (
+      !planCheck.rows.length ||
+      !planCheck.rows[0].completed ||
+      planCheck.rows[0].surveys_completed !== TOTAL_SURVEYS
+    ) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        message: "User has not completed required surveys",
+      });
+    }
+
+    if (planCheck.rows[0].is_activated) {
+      await client.query("ROLLBACK");
+>>>>>>> Stashed changes
       return res.status(400).json({
         message: "Plan already activated",
       });
     }
 
+<<<<<<< Updated upstream
     // Update activation request status
     activationRequest.status = 'APPROVED';
     activationRequest.processed_at = new Date();
@@ -326,6 +489,45 @@ exports.approveActivation = async (req, res) => {
       message: "Server error",
       error: error.message 
     });
+=======
+    await client.query(
+      `UPDATE activation_payments SET status = 'APPROVED' WHERE id = $1`,
+      [id]
+    );
+
+    await client.query(
+      `
+      UPDATE user_surveys
+      SET is_activated = true
+      WHERE user_id = $1 AND plan = $2
+      `,
+      [activation.user_id, activation.plan]
+    );
+
+    /* 🔑 CRITICAL FIX — GLOBAL UNLOCK */
+    await client.query(
+      `
+      UPDATE users
+      SET is_activated = true
+      WHERE id = $1
+      `,
+      [activation.user_id]
+    );
+
+    await client.query("COMMIT");
+
+    return res.json({
+      message: "Activation approved",
+      plan: activation.plan,
+      withdraw_unlocked: true,
+    });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("❌ Approve activation error:", error);
+    return res.status(500).json({ message: "Server error" });
+  } finally {
+    client.release();
+>>>>>>> Stashed changes
   }
 };
 
@@ -333,11 +535,17 @@ exports.approveActivation = async (req, res) => {
    ADMIN — REJECT ACTIVATION
 ===================================== */
 exports.rejectActivation = async (req, res) => {
+<<<<<<< Updated upstream
+=======
+  const client = await pool.connect();
+
+>>>>>>> Stashed changes
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Admin access only" });
     }
 
+<<<<<<< Updated upstream
     const { userId, activationId } = req.body;
 
     if (!userId || !activationId) {
@@ -757,3 +965,38 @@ exports.testActivationFormat = async (req, res) => {
     });
   }
 };
+=======
+    const { id } = req.params;
+
+    await client.query("BEGIN");
+
+    const result = await client.query(
+      `
+      UPDATE activation_payments
+      SET status = 'REJECTED'
+      WHERE id = $1
+        AND status = 'SUBMITTED'
+      RETURNING id
+      `,
+      [id]
+    );
+
+    if (!result.rows.length) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({
+        message: "Activation request not found or already processed",
+      });
+    }
+
+    await client.query("COMMIT");
+
+    return res.json({ message: "Activation rejected" });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("❌ Reject activation error:", error);
+    return res.status(500).json({ message: "Server error" });
+  } finally {
+    client.release();
+  }
+};
+>>>>>>> Stashed changes

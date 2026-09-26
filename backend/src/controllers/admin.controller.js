@@ -1,7 +1,11 @@
+<<<<<<< Updated upstream
 /* eslint-disable no-undef */
 const mongoose = require("mongoose");
 const User = require("../models/User");
 const Notification = require("../models/Notification");
+=======
+const pool = require("../config/db");
+>>>>>>> Stashed changes
 
 /* ======================================================
    👑 ADMIN SESSION
@@ -11,7 +15,11 @@ exports.getAdminMe = async (req, res) => {
   try {
     res.json({
       id: req.admin.id,
+<<<<<<< Updated upstream
       full_name: req.admin.full_name,
+=======
+      username: req.admin.username,
+>>>>>>> Stashed changes
       role: "admin",
     });
   } catch (error) {
@@ -21,6 +29,7 @@ exports.getAdminMe = async (req, res) => {
 };
 
 /* ======================================================
+<<<<<<< Updated upstream
    👤 AFFILIATE WITHDRAWALS (ADMIN)
    - Get all pending affiliate withdrawals
 ====================================================== */
@@ -190,6 +199,35 @@ exports.getAllUsers = async (req, res) => {
       total: totalUsers,
       totalPages: Math.ceil(totalUsers / limit)
     });
+=======
+   👤 USERS MANAGEMENT (ADMIN — FIXED)
+====================================================== */
+
+/**
+ * GET ALL USERS
+ */
+exports.getAllUsers = async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        id,
+        full_name,
+        username,
+        email,
+        phone,
+        role,
+        status,
+        is_activated,
+        plan,
+        surveys_completed,
+        balance,
+        created_at
+      FROM users
+      ORDER BY created_at DESC
+    `);
+
+    res.json(result.rows);
+>>>>>>> Stashed changes
   } catch (error) {
     console.error("Admin get users error:", error);
     res.status(500).json({ message: "Server error" });
@@ -197,12 +235,17 @@ exports.getAllUsers = async (req, res) => {
 };
 
 /**
+<<<<<<< Updated upstream
  * GET SINGLE USER - FIXED: active_plan undefined error
+=======
+ * GET SINGLE USER
+>>>>>>> Stashed changes
  */
 exports.getUserById = async (req, res) => {
   try {
     const { id } = req.params;
 
+<<<<<<< Updated upstream
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
@@ -256,6 +299,34 @@ exports.getUserById = async (req, res) => {
       plans: user.plans || {},
       created_at: user.created_at
     });
+=======
+    const result = await pool.query(
+      `
+      SELECT
+        id,
+        full_name,
+        username,
+        email,
+        phone,
+        role,
+        status,
+        is_activated,
+        plan,
+        surveys_completed,
+        balance,
+        created_at
+      FROM users
+      WHERE id = $1
+      `,
+      [id]
+    );
+
+    if (!result.rows.length) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(result.rows[0]);
+>>>>>>> Stashed changes
   } catch (error) {
     console.error("Admin get user error:", error);
     res.status(500).json({ message: "Server error" });
@@ -270,16 +341,21 @@ exports.updateUserStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
+<<<<<<< Updated upstream
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
 
     if (!status || !["ACTIVE", "SUSPENDED"].includes(status.toUpperCase())) {
+=======
+    if (!["ACTIVE", "SUSPENDED"].includes(status)) {
+>>>>>>> Stashed changes
       return res.status(400).json({
         message: "Only ACTIVE or SUSPENDED allowed",
       });
     }
 
+<<<<<<< Updated upstream
     const user = await User.findByIdAndUpdate(
       id,
       { $set: { status: status.toUpperCase() } },
@@ -287,16 +363,33 @@ exports.updateUserStatus = async (req, res) => {
     ).select('full_name email status');
 
     if (!user) {
+=======
+    const result = await pool.query(
+      `
+      UPDATE users
+      SET status = $1
+      WHERE id = $2
+      RETURNING id, username, status
+      `,
+      [status, id]
+    );
+
+    if (!result.rows.length) {
+>>>>>>> Stashed changes
       return res.status(404).json({ message: "User not found" });
     }
 
     res.json({
       message: "User status updated",
+<<<<<<< Updated upstream
       user: {
         id: user._id,
         full_name: user.full_name,
         status: user.status
       },
+=======
+      user: result.rows[0],
+>>>>>>> Stashed changes
     });
   } catch (error) {
     console.error("Admin update status error:", error);
@@ -312,6 +405,7 @@ exports.updateUserRole = async (req, res) => {
     const { id } = req.params;
     const { role } = req.body;
 
+<<<<<<< Updated upstream
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
@@ -329,16 +423,37 @@ exports.updateUserRole = async (req, res) => {
     ).select('full_name email role');
 
     if (!user) {
+=======
+    if (!["user", "admin"].includes(role)) {
+      return res.status(400).json({ message: "Invalid role" });
+    }
+
+    const result = await pool.query(
+      `
+      UPDATE users
+      SET role = $1
+      WHERE id = $2
+      RETURNING id, username, role
+      `,
+      [role, id]
+    );
+
+    if (!result.rows.length) {
+>>>>>>> Stashed changes
       return res.status(404).json({ message: "User not found" });
     }
 
     res.json({
       message: "User role updated",
+<<<<<<< Updated upstream
       user: {
         id: user._id,
         full_name: user.full_name,
         role: user.role
       },
+=======
+      user: result.rows[0],
+>>>>>>> Stashed changes
     });
   } catch (error) {
     console.error("Admin update role error:", error);
@@ -347,6 +462,7 @@ exports.updateUserRole = async (req, res) => {
 };
 
 /**
+<<<<<<< Updated upstream
  * 🔓 ACTIVATE USER ACCOUNT
  */
 exports.activateUser = async (req, res) => {
@@ -387,20 +503,31 @@ exports.activateUser = async (req, res) => {
  * 💰 MANUAL BALANCE ADJUSTMENT
  */
 exports.adjustUserBalance = async (req, res) => {
+=======
+ * 💰 MANUAL BALANCE ADJUSTMENT
+ */
+exports.adjustUserBalance = async (req, res) => {
+  const client = await pool.connect();
+
+>>>>>>> Stashed changes
   try {
     const { id } = req.params;
     let { amount, type } = req.body;
 
+<<<<<<< Updated upstream
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
 
+=======
+>>>>>>> Stashed changes
     amount = Number(amount);
 
     if (!Number.isFinite(amount) || amount <= 0) {
       return res.status(400).json({ message: "Invalid amount" });
     }
 
+<<<<<<< Updated upstream
     if (!type || !["CREDIT", "DEBIT"].includes(type.toUpperCase())) {
       return res.status(400).json({ message: "Invalid action. Use CREDIT or DEBIT" });
     }
@@ -439,6 +566,61 @@ exports.adjustUserBalance = async (req, res) => {
   } catch (error) {
     console.error("Admin adjust balance error:", error);
     res.status(500).json({ message: "Server error" });
+=======
+    if (!["CREDIT", "DEBIT"].includes(type)) {
+      return res.status(400).json({ message: "Invalid action" });
+    }
+
+    await client.query("BEGIN");
+
+    const userRes = await client.query(
+      `
+      SELECT balance
+      FROM users
+      WHERE id = $1
+      FOR UPDATE
+      `,
+      [id]
+    );
+
+    if (!userRes.rows.length) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    let balance = Number(userRes.rows[0].balance);
+
+    if (type === "DEBIT" && balance < amount) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({ message: "Insufficient balance" });
+    }
+
+    balance =
+      type === "CREDIT" ? balance + amount : balance - amount;
+
+    const update = await client.query(
+      `
+      UPDATE users
+      SET balance = $1
+      WHERE id = $2
+      RETURNING id, username, balance
+      `,
+      [balance, id]
+    );
+
+    await client.query("COMMIT");
+
+    res.json({
+      message: "Balance updated",
+      user: update.rows[0],
+    });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Admin adjust balance error:", error);
+    res.status(500).json({ message: "Server error" });
+  } finally {
+    client.release();
+>>>>>>> Stashed changes
   }
 };
 
@@ -449,6 +631,7 @@ exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
 
+<<<<<<< Updated upstream
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user ID" });
     }
@@ -465,12 +648,29 @@ exports.deleteUser = async (req, res) => {
       message: "User deleted successfully",
       deletedId: user._id
     });
+=======
+    const result = await pool.query(
+      `
+      DELETE FROM users
+      WHERE id = $1
+      RETURNING id
+      `,
+      [id]
+    );
+
+    if (!result.rows.length) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "User deleted successfully" });
+>>>>>>> Stashed changes
   } catch (error) {
     console.error("Admin delete user error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
+<<<<<<< Updated upstream
 /**
  * ❌ BULK DELETE USERS
  */
@@ -815,12 +1015,32 @@ exports.getAdminStats = async (req, res) => {
       netProfit: (totalRevenue[0]?.sum || 0) - (totalWithdrawals[0]?.sum || 0),
       loginFeeApproved,
       loginFeePending,
+=======
+/* ======================================================
+   📊 ADMIN DASHBOARD STATS
+====================================================== */
+exports.getAdminStats = async (req, res) => {
+  try {
+    const users = await pool.query(`SELECT COUNT(*) FROM users`);
+    const activeUsers = await pool.query(
+      `SELECT COUNT(*) FROM users WHERE status = 'ACTIVE'`
+    );
+    const pendingActivations = await pool.query(
+      `SELECT COUNT(*) FROM activation_payments WHERE status = 'SUBMITTED'`
+    );
+
+    res.json({
+      totalUsers: Number(users.rows[0].count),
+      activeUsers: Number(activeUsers.rows[0].count),
+      pendingActivations: Number(pendingActivations.rows[0].count),
+>>>>>>> Stashed changes
     });
   } catch (error) {
     console.error("Admin stats error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
+<<<<<<< Updated upstream
 
 /**
  * ❌ DELETE OLD USERS (OLDER THAN 30 DAYS)
@@ -859,3 +1079,5 @@ exports.deleteOldUsers = async (req, res) => {
     });
   }
 };
+=======
+>>>>>>> Stashed changes

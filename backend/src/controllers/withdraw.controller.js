@@ -1,16 +1,25 @@
+<<<<<<< Updated upstream
 const mongoose = require("mongoose");
 const User = require("../models/User");
 const { ACTIVATION_PLANS, syncActivationStatus } = require("../utils/activationStatus");
+=======
+const pool = require("../config/db");
+>>>>>>> Stashed changes
 
 /* ===============================
    CONFIG
 ================================ */
 const MIN_WITHDRAW = 200;
+<<<<<<< Updated upstream
 const MIN_AFFILIATE_WITHDRAW = 50;
 const MIN_UNLOCK_WITHDRAW = 500;
 const MIN_UNLOCKS_REQUIRED = 6;
 const MAX_WITHDRAW = 500000;
 const DAILY_WITHDRAW_LIMIT = 93;
+=======
+const MAX_WITHDRAW = 500000;
+const DAILY_WITHDRAW_LIMIT = 1;
+>>>>>>> Stashed changes
 const TOTAL_SURVEYS = 10;
 
 /* ===============================
@@ -20,11 +29,15 @@ const WITHDRAW_FEES = {
   REGULAR: 10,
   VIP: 5,
   VVIP: 0,
+<<<<<<< Updated upstream
   affiliate: 0,
+=======
+>>>>>>> Stashed changes
 };
 
 /* =====================================
    USER — REQUEST WITHDRAWAL
+<<<<<<< Updated upstream
    ✅ ADDED: Detailed debug logging
 ===================================== */
 exports.requestWithdraw = async (req, res) => {
@@ -45,11 +58,23 @@ exports.requestWithdraw = async (req, res) => {
 
     if (!phone_number || !amount) {
       console.log("❌ Missing phone_number or amount");
+=======
+===================================== */
+exports.requestWithdraw = async (req, res) => {
+  const client = await pool.connect();
+
+  try {
+    const userId = req.user.id;
+    let { phone_number, amount } = req.body;
+
+    if (!phone_number || !amount) {
+>>>>>>> Stashed changes
       return res.status(400).json({
         message: "Phone number and amount are required",
       });
     }
 
+<<<<<<< Updated upstream
     // ✅ M-Pesa code is required for welcome bonus
     if (type === "welcome_bonus" && !mpesa_code) {
       console.log("❌ Welcome bonus missing M-Pesa code");
@@ -493,6 +518,136 @@ exports.getUserWithdrawalHistory = async (req, res) => {
   } catch (error) {
     console.error("❌ Get withdrawal history error:", error);
     res.status(500).json({ message: "Server error" });
+=======
+    const withdrawAmount = Number(amount);
+    phone_number = String(phone_number).trim();
+
+    if (!Number.isFinite(withdrawAmount)) {
+      return res.status(400).json({ message: "Invalid amount" });
+    }
+
+    if (withdrawAmount < MIN_WITHDRAW || withdrawAmount > MAX_WITHDRAW) {
+      return res.status(400).json({
+        message: `Withdrawal must be between KES ${MIN_WITHDRAW} and ${MAX_WITHDRAW}`,
+      });
+    }
+
+    await client.query("BEGIN");
+
+    const userRes = await client.query(
+      `
+      SELECT is_activated, surveys_completed, plan, balance
+      FROM users
+      WHERE id = $1
+      FOR UPDATE
+      `,
+      [userId]
+    );
+
+    if (!userRes.rows.length) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const user = userRes.rows[0];
+
+    if (!user.is_activated) {
+      await client.query("ROLLBACK");
+      return res.status(403).json({ message: "Account not activated" });
+    }
+
+    if (user.surveys_completed !== TOTAL_SURVEYS) {
+      await client.query("ROLLBACK");
+      return res.status(403).json({
+        message: "Complete all surveys before withdrawal",
+      });
+    }
+
+    const fee = WITHDRAW_FEES[user.plan] ?? WITHDRAW_FEES.REGULAR;
+
+    if (withdrawAmount <= fee) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        message: "Amount too low after fees",
+      });
+    }
+
+    if (Number(user.balance) < withdrawAmount) {
+      await client.query("ROLLBACK");
+      return res.status(403).json({
+        message: "Insufficient balance",
+      });
+    }
+
+    const active = await client.query(
+      `
+      SELECT id
+      FROM withdraw_requests
+      WHERE user_id = $1 AND status = 'PROCESSING'
+      `,
+      [userId]
+    );
+
+    if (active.rows.length) {
+      await client.query("ROLLBACK");
+      return res.status(409).json({
+        message: "Withdrawal already in progress",
+      });
+    }
+
+    const daily = await client.query(
+      `
+      SELECT COUNT(*)::int AS count
+      FROM withdraw_requests
+      WHERE user_id = $1
+        AND created_at::date = CURRENT_DATE
+      `,
+      [userId]
+    );
+
+    if (daily.rows[0].count >= DAILY_WITHDRAW_LIMIT) {
+      await client.query("ROLLBACK");
+      return res.status(429).json({
+        message: "Daily withdrawal limit reached",
+      });
+    }
+
+    const netAmount = withdrawAmount - fee;
+
+    await client.query(
+      `
+      INSERT INTO withdraw_requests
+        (user_id, phone_number, amount, fee, net_amount, status)
+      VALUES ($1, $2, $3, $4, $5, 'PROCESSING')
+      `,
+      [userId, phone_number, withdrawAmount, fee, netAmount]
+    );
+
+    await client.query(
+      `
+      UPDATE users
+      SET balance = balance - $1
+      WHERE id = $2
+      `,
+      [withdrawAmount, userId]
+    );
+
+    await client.query("COMMIT");
+
+    res.json({
+      message: "Withdrawal request submitted",
+      status: "PROCESSING",
+      gross_amount: withdrawAmount,
+      fee,
+      net_amount: netAmount,
+    });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("❌ Withdraw request error:", error);
+    res.status(500).json({ message: "Server error" });
+  } finally {
+    client.release();
+>>>>>>> Stashed changes
   }
 };
 
@@ -500,6 +655,7 @@ exports.getUserWithdrawalHistory = async (req, res) => {
    ADMIN — GET PENDING WITHDRAWALS
 ===================================== */
 exports.getPendingWithdrawals = async (req, res) => {
+<<<<<<< Updated upstream
   try {
     // Find all users with pending withdrawal requests
     const users = await User.find({
@@ -539,12 +695,25 @@ exports.getPendingWithdrawals = async (req, res) => {
     console.error("❌ Get pending withdrawals error:", error);
     res.status(500).json({ message: "Server error" });
   }
+=======
+  const { rows } = await pool.query(
+    `
+    SELECT wr.*, u.email
+    FROM withdraw_requests wr
+    JOIN users u ON u.id = wr.user_id
+    WHERE wr.status = 'PROCESSING'
+    ORDER BY wr.created_at DESC
+    `
+  );
+  res.json(rows);
+>>>>>>> Stashed changes
 };
 
 /* =====================================
    ADMIN — GET ALL WITHDRAWALS
 ===================================== */
 exports.getAllWithdrawals = async (req, res) => {
+<<<<<<< Updated upstream
   try {
     // Find all users with withdrawal requests
     const users = await User.find({
@@ -583,12 +752,24 @@ exports.getAllWithdrawals = async (req, res) => {
     console.error("❌ Get all withdrawals error:", error);
     res.status(500).json({ message: "Server error" });
   }
+=======
+  const { rows } = await pool.query(
+    `
+    SELECT wr.*, u.email
+    FROM withdraw_requests wr
+    JOIN users u ON u.id = wr.user_id
+    ORDER BY wr.created_at DESC
+    `
+  );
+  res.json(rows);
+>>>>>>> Stashed changes
 };
 
 /* =====================================
    ADMIN — APPROVE WITHDRAWAL
 ===================================== */
 exports.approveWithdraw = async (req, res) => {
+<<<<<<< Updated upstream
   try {
     const withdrawalId = req.params.id;
 
@@ -643,10 +824,23 @@ exports.approveWithdraw = async (req, res) => {
     console.error("Approve withdrawal error:", error);
     res.status(500).json({ message: "Server error" });
   }
+=======
+  await pool.query(
+    `
+    UPDATE withdraw_requests
+    SET status = 'APPROVED'
+    WHERE id = $1 AND status = 'PROCESSING'
+    `,
+    [req.params.id]
+  );
+
+  res.json({ message: "Withdrawal approved" });
+>>>>>>> Stashed changes
 };
 
 /* =====================================
    ADMIN — REJECT WITHDRAWAL
+<<<<<<< Updated upstream
    ✅ FIXED: Allows resubmission by not permanently blocking
 ===================================== */
 exports.rejectWithdraw = async (req, res) => {
@@ -714,3 +908,18 @@ exports.rejectWithdraw = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+=======
+===================================== */
+exports.rejectWithdraw = async (req, res) => {
+  await pool.query(
+    `
+    UPDATE withdraw_requests
+    SET status = 'REJECTED'
+    WHERE id = $1 AND status = 'PROCESSING'
+    `,
+    [req.params.id]
+  );
+
+  res.json({ message: "Withdrawal rejected" });
+};
+>>>>>>> Stashed changes
