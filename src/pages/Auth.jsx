@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import api from "../api/api";
-import { COUNTRIES, setCountry, getCountry, getSymbol, getAmount } from "../utils/currency";
+import { useCurrency, COUNTRIES } from "../contexts/CurrencyContext.jsx";
 
 export default function Auth() {
+  const { country: ctxCountry, setCountry: setCtxCountry, format } = useCurrency();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -17,7 +18,7 @@ export default function Auth() {
     full_name: "",
     phone: "",
     referralCode: referralCodeFromUrl || "",
-    country: getCountry(),
+    country: ctxCountry,
   });
    const [regMessage, setRegMessage] = useState("");
    const [inviterInfo, setInviterInfo] = useState(null);
@@ -253,7 +254,7 @@ export default function Auth() {
         <div style={styles.logoSection}>
           <div style={styles.logoIcon}>💰</div>
           <h1 style={styles.logo}>Survey<span style={styles.logoAccent}>Earn</span></h1>
-          <p style={styles.tagline}>Kenya's Most Trusted Survey Platform</p>
+          <p style={styles.tagline}>East Africa's Most Trusted Survey Platform</p>
         </div>
 
         {/* Stats */}
@@ -374,7 +375,7 @@ export default function Auth() {
                 <select
                   value={regData.country}
                   onChange={(e) => {
-                    setCountry(e.target.value);
+                    setCtxCountry(e.target.value);
                     setRegData(prev => ({ ...prev, country: e.target.value }));
                   }}
                   style={{
@@ -454,7 +455,7 @@ export default function Auth() {
           </div>
           <div style={styles.benefitItem}>
             <span style={styles.benefitIcon}>🎁</span>
-            <span>KES 1,200 Bonus</span>
+            <span>{format(1200)} Bonus</span>
           </div>
           <div style={styles.benefitItem}>
             <span style={styles.benefitIcon}>🏆</span>

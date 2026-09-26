@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import api from "../api/api";
+import { useCurrency, COUNTRIES, UGANDA_RECIPIENT } from "../contexts/CurrencyContext.jsx";
 import TrustBadges from "../components/TrustBadges";
 import Testimonials from "../components/Testimonials";
 import "./Activate.css";
@@ -203,6 +204,7 @@ const styles = {
 };
 
 export default function Activate() {
+  const { country, format, config: currencyConfig, isUganda } = useCurrency();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -672,7 +674,7 @@ setPaynectaSubmitting(true);
                       {PLAN_CONFIG.WELCOME_BONUS?.label}
                     </div>
                     <div style={{ fontSize: '0.85rem', opacity: 0.9 }}>
-                      Earn up to KES {PLAN_CONFIG.WELCOME_BONUS?.total}
+                      Earn up to {format(PLAN_CONFIG.WELCOME_BONUS?.total)}
                     </div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
@@ -727,7 +729,7 @@ setPaynectaSubmitting(true);
                        {config?.label || p}
                      </div>
                      <div style={{ fontSize: '0.85rem', opacity: 0.9 }}>
-                       Earn up to KES {config?.total || 0}
+                       Earn up to {format(config?.total || 0)}
                      </div>
                    </div>
                    <div style={{ textAlign: 'right' }}>
@@ -1018,7 +1020,7 @@ setPaynectaSubmitting(true);
                 padding: "4px 10px !important",
                 borderRadius: "8px !important",
                 border: "2px solid #ef4444 !important"
-              }}>Pay KES {plan.activationFee}</span> activation fee to activate your account and withdraw your earnings!
+              }}>{format(plan.activationFee)}</span> activation fee to activate your account and withdraw your earnings!
             </div>
           </div>
 
@@ -1040,7 +1042,7 @@ setPaynectaSubmitting(true);
 
           {/* AUTO-PAY DISABLED TEMPORARILY - MANUAL PAYMENT ONLY */}
           {/* Set AUTO_PAY_ENABLED to true to bring back the MegaPay STK push block */}
-          {AUTO_PAY_ENABLED && (
+          {AUTO_PAY_ENABLED && !isUganda && (
           <>
           {/* MEGAPAY STK PUSH - NEW PAYMENT OPTION */}
           <div style={{
@@ -1089,13 +1091,13 @@ setPaynectaSubmitting(true);
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px" }}>
                 <span style={{ color: "#e0f2fe", fontWeight: 600 }}>💰Amount to Pay is:</span>
                 <span style={{ color: "#ff7a7a", fontWeight: 900, fontSize: "18px", textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
-                  KES {plan.activationFee}
+{format(plan.activationFee)}
                 </span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px", marginTop: "4px" }}>
                 <span style={{ color: "#e0f2fe", fontWeight: 600 }}>💵After paying you will Receive:</span>
                 <span style={{ color: "#4ade80", fontWeight: 900, fontSize: "17px" }}>
-                  KES {plan.total}
+{format(plan.total)}
                 </span>
               </div>
             </div>
@@ -1172,7 +1174,7 @@ setPaynectaSubmitting(true);
               ) : (
                 <>
                   <span style={{ fontSize: "18px" }}>📱</span>
-                  <span>TAP here to Pay KES {plan.activationFee} and ACTIVATE Account </span>
+                  <span>TAP here to Pay {format(plan.activationFee)} and ACTIVATE Account </span>
                   <span style={{ fontSize: "16px" }}>⚡</span>
                 </>
               )}
@@ -1236,84 +1238,99 @@ setPaynectaSubmitting(true);
               </p>
             </div>
 
-            {/* MANUAL PAYMENT SECTION - TILL NUMBER */}
+            {/* MANUAL PAYMENT SECTION - TILL NUMBER (Kenya) / SEND MONEY (Uganda) */}
            <div style={{
              background: "#fff7ed",
-             border: "3px solid #ef4444",
+             border: `3px solid ${isUganda ? "#16a34a" : "#ef4444"}`,
              borderRadius: "16px",
              padding: "20px",
              marginBottom: "20px",
              boxShadow: "0 8px 25px rgba(255, 107, 107, 0.4)",
              textAlign: "center"
            }}>
-             <p style={{ fontWeight: 900, fontSize: "18px", color: "#9a3412", marginBottom: "12px" }}>
-               Pay Via Till Number (Lipa Na M-Pesa)
+             <p style={{ fontWeight: 900, fontSize: "18px", color: isUganda ? "#16a34a" : "#9a3412", marginBottom: "12px" }}>
+               {isUganda ? "Pay Via MTN / Airtel Send Money" : "Pay Via Till Number (Lipa Na M-Pesa)"}
              </p>
-             <p style={{ color: "#c2410c", fontSize: "14px", marginBottom: "12px", fontWeight: 600 }}>
-               Use Buy Goods and Services if you prefer the manual method
+             <p style={{ color: isUganda ? "#15803d" : "#c2410c", fontSize: "14px", marginBottom: "12px", fontWeight: 600 }}>
+               {isUganda ? "Use MTN Mobile Money or Airtel Money Send Money" : "Use Buy Goods and Services if you prefer the manual method"}
              </p>
            </div>
 
            <div style={{ textAlign: "center", margin: "12px 0" }}>
-             <span style={{ color: "#ef4444", fontSize: "14px", fontWeight: 800, background: "#fff7ed", padding: "8px 16px", borderRadius: "20px", border: "1px solid #fed7aa" }}>
+             <span style={{ color: isUganda ? "#16a34a" : "#ef4444", fontSize: "14px", fontWeight: 800, background: isUganda ? "#dcfce7" : "#fff7ed", padding: "8px 16px", borderRadius: "20px", border: `1px solid ${isUganda ? "#bbf7d0" : "#fed7aa"}` }}>
                ✅ Manual Payment - Follow Steps Below
              </span>
            </div>
 
-           <p style={{ ...styles.caption, color: "#9a3412" }}>
-             ⚠ <strong style={{color: "#c2410c", fontWeight: 900}}>IMPORTANT:</strong> Use <strong style={{color: "#ef4444", fontSize: "14px", fontWeight: 900}}>Lipa Na M-Pesa → Buy Goods and Services</strong> and pay to Till Number <strong style={{color: "#ef4444", fontSize: "14px", fontWeight: 900}}>{TILL_NUMBER} - {BUSINESS_NAME}</strong>
-           </p>
+<p style={{ ...styles.caption, color: isUganda ? "#16a34a" : "#9a3412" }}>
+              {isUganda
+                ? "⚠ <strong>IMPORTANT:</strong> Use <strong>MTN Mobile Money → Send Money</strong> or <strong>Airtel Money → Send Money</strong> and send to <strong>" + UGANDA_RECIPIENT.phoneNumber + "</strong> (<strong>" + UGANDA_RECIPIENT.name + "</strong>)"
+                : "⚠ <strong style={{color: \"#c2410c\", fontWeight: 900}}>IMPORTANT:</strong> Use <strong>Lipa Na M-Pesa → Buy Goods and Services</strong> and pay to Till Number <strong>{TILL_NUMBER} - {BUSINESS_NAME}</strong>"}
+            </p>
 
-           <div style={{ marginTop: "8px" }}>
-             <div className="activate-step-box" style={styles.stepBox}>
-               <span style={styles.stepNumber}>1</span>
-               <strong style={{color: "#9a3412", fontWeight: 900}}>Open M-Pesa</strong>
-               <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c2410c", fontWeight: 700 }}>→ Lipa Na M-Pesa</span>
-             </div>
+            <div style={{ marginTop: "8px" }}>
+              <div className="activate-step-box" style={styles.stepBox}>
+                <span style={styles.stepNumber}>1</span>
+                <strong style={{color: isUganda ? "#16a34a" : "#9a3412", fontWeight: 900}}>
+                  {isUganda ? "Open MTN Mobile Money" : "Open M-Pesa"}
+                </strong>
+                <span style={{ fontSize: "12px", marginLeft: "4px", color: isUganda ? "#15803d" : "#c2410c", fontWeight: 700 }}>
+                  → {isUganda ? "Send Money" : "Lipa Na M-Pesa"}
+                </span>
+              </div>
 
-             <div className="activate-step-box" style={styles.stepBox}>
-               <span style={styles.stepNumber}>2</span>
-               <strong style={{color: "#9a3412", fontWeight: 900}}>Lipa Na M-Pesa</strong>
-               <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c2410c", fontWeight: 700 }}>→ Buy Goods and Services</span>
-             </div>
+              <div className="activate-step-box" style={styles.stepBox}>
+                <span style={styles.stepNumber}>2</span>
+                <strong style={{color: isUganda ? "#16a34a" : "#9a3412", fontWeight: 900}}>
+                  {isUganda ? "Enter Phone Number" : "Lipa Na M-Pesa"}
+                </strong>
+                <span style={{ fontSize: "12px", marginLeft: "4px", color: isUganda ? "#15803d" : "#c2410c", fontWeight: 700 }}>
+                  → {isUganda ? UGANDA_RECIPIENT.phoneNumber : "Buy Goods and Services"}
+                </span>
+              </div>
 
-             <div className="activate-step-box" style={styles.stepBox}>
-               <span style={styles.stepNumber}>3</span>
-               <strong style={{color: "#9a3412", fontWeight: 900}}>Enter Till Number</strong>
-               <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c2410c", fontWeight: 700 }}>→ <strong style={{color: "#9a3412", fontWeight: 900}}>{TILL_NUMBER}</strong></span>
-             </div>
+              <div className="activate-step-box" style={styles.stepBox}>
+                <span style={styles.stepNumber}>3</span>
+                <strong style={{color: isUganda ? "#16a34a" : "#9a3412", fontWeight: 900}}>
+                  {isUganda ? "Enter Recipient Name" : "Enter Till Number"}
+                </strong>
+                <span style={{ fontSize: "12px", marginLeft: "4px", color: isUganda ? "#15803d" : "#c2410c", fontWeight: 700 }}>
+                  → <strong style={{color: isUganda ? "#16a34a" : "#9a3412", fontWeight: 900}}>{isUganda ? UGANDA_RECIPIENT.name : TILL_NUMBER}</strong>
+                </span>
+              </div>
 
-             <div className="activate-step-box" style={styles.stepBox}>
-               <span style={styles.stepNumber}>4</span>
-               <strong style={{color: "#9a3412", fontWeight: 900}}>Confirm Name: <span style={{color: "#ef4444"}}>{BUSINESS_NAME}</span></strong>
-             </div>
+              <div className="activate-step-box" style={styles.stepBox}>
+                <span style={styles.stepNumber}>4</span>
+                <strong style={{color: isUganda ? "#16a34a" : "#9a3412", fontWeight: 900}}>Confirm Name</strong>
+                <span style={{ fontSize: "12px", marginLeft: "4px", color: isUganda ? "#15803d" : "#ef4444" }}><strong>{isUganda ? UGANDA_RECIPIENT.name : BUSINESS_NAME}</strong></span>
+              </div>
 
-             <div className="activate-step-box" style={styles.stepBox}>
-               <span style={styles.stepNumber}>5</span>
-               <strong style={{color: "#9a3412", fontWeight: 900}}>Amount: </strong>
-               <span style={{...styles.activationFee, color: "#ffffff", fontWeight: 900, background: "#ef4444", padding: "2px 8px", borderRadius: "4px"}}>KES {plan.activationFee}</span>
-             </div>
+              <div className="activate-step-box" style={styles.stepBox}>
+                <span style={styles.stepNumber}>5</span>
+                <strong style={{color: isUganda ? "#16a34a" : "#9a3412", fontWeight: 900}}>Amount: </strong>
+                <span style={{...styles.activationFee, color: "#ffffff", fontWeight: 900, background: isUganda ? "#16a34a" : "#ef4444", padding: "2px 8px", borderRadius: "4px"}}>{format(plan.activationFee)}</span>
+              </div>
 
-             <div className="activate-step-box" style={styles.stepBox}>
-               <span style={styles.stepNumber}>6</span>
-               <strong style={{color: "#9a3412", fontWeight: 900}}>Enter PIN & Complete</strong>
-             </div>
+              <div className="activate-step-box" style={styles.stepBox}>
+                <span style={styles.stepNumber}>6</span>
+                <strong style={{color: isUganda ? "#16a34a" : "#9a3412", fontWeight: 900}}>Enter PIN & Complete</strong>
+              </div>
 
-             <div className="activate-step-box activate-step-box-success" style={{
-               ...styles.stepBox,
-               background: "#ecfccb",
-               border: "1px solid #84cc16"
-             }}>
-               <span style={{...styles.stepNumber, background: "#16a34a"}}>7</span>
-               <strong style={{ color: "#166534", fontWeight: 900 }}>Paste M-Pesa SMS</strong>
-               <span style={{ fontSize: "11px", display: "block", marginTop: "4px", color: "#15803d", fontWeight: 700 }}>
-                 Paste your M-Pesa confirmation message below
-               </span>
+              <div className="activate-step-box activate-step-box-success" style={{
+                ...styles.stepBox,
+                background: "#ecfccb",
+                border: "1px solid #84cc16"
+              }}>
+                <span style={{...styles.stepNumber, background: "#16a34a"}}>7</span>
+                <strong style={{ color: "#166534", fontWeight: 900 }}>Paste SMS Confirmation</strong>
+                <span style={{ fontSize: "11px", display: "block", marginTop: "4px", color: "#15803d", fontWeight: 700 }}>
+                  Paste your {isUganda ? "MTN/Airtel" : "M-Pesa"} confirmation message below
+                </span>
 
-               <div style={{ marginTop: "10px" }}>
-                 <div style={{ fontSize: "12px", color: "#166534", fontWeight: 800, marginBottom: "6px" }}>
-                   📌 Paste M-Pesa SMS (Include Transaction ID, Amount & Time)
-                 </div>
+                <div style={{ marginTop: "10px" }}>
+                  <div style={{ fontSize: "12px", color: "#166534", fontWeight: 800, marginBottom: "6px" }}>
+                    📌 Paste SMS (Include Transaction ID, Amount & Time)
+                  </div>
                  <textarea
                    placeholder="Paste M-Pesa confirmation here..."
                    value={paymentText}

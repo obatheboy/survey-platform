@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
+import { CurrencyProvider } from "./contexts/CurrencyContext.jsx";
 import "./index.css";
 
 const APP_VERSION = "2026-07-06-v2";
@@ -45,6 +46,8 @@ enforceLatestVersion();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <App />
+    <CurrencyProvider>
+      <App />
+    </CurrencyProvider>
   </React.StrictMode>
 );
