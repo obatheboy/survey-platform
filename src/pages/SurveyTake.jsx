@@ -1,37 +1,44 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-hot-toast";
-import api, { surveyApi } from "../api/api";
-import { useCurrency } from "../contexts/CurrencyContext.jsx";
-import "./SurveyTake.css";
+  import { useNavigate, useParams } from "react-router-dom";
+  import { toast } from "react-hot-toast";
+  import api from "../api/api";
+  import { getHardcodedSurveys } from "../data/surveys";
+  import { useCurrency } from "../contexts/CurrencyContext.jsx";
+  import "./SurveyTake.css";
 
-export default function SurveyTake() {
-  const { surveyId } = useParams();
-  const { format } = useCurrency();
-  const navigate = useNavigate();
+  export default function SurveyTake() {
+    const { surveyId } = useParams();
+    const { format } = useCurrency();
+    const navigate = useNavigate();
 
-  const [survey, setSurvey] = useState(null);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [answers, setAnswers] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
+    const [survey, setSurvey] = useState(null);
+    const [currentQuestion, setCurrentQuestion] = useState(0);
+    const [selectedAnswer, setSelectedAnswer] = useState(null);
+    const [answers, setAnswers] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState("");
 
-  useEffect(() => {
-    loadSurvey();
-  }, [surveyId]);
+    useEffect(() => {
+      loadSurvey();
+    }, [surveyId]);
 
-  const loadSurvey = async () => {
-    try {
-      const res = await api.get(`/surveys/${surveyId}`);
-      setSurvey(res.data.survey || res.data);
-    } catch (err) {
-      setError("Failed to load survey");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const loadSurvey = () => {
+      try {
+        // Use hardcoded surveys — always available, no API dependency
+        const allSurveys = getHardcodedSurveys();
+        const found = allSurveys.find(s => s._id === surveyId);
+        if (found) {
+          setSurvey(found);
+        } else {
+          setError("Survey not found");
+        }
+      } catch (err) {
+        setError("Failed to load survey");
+      } finally {
+        setLoading(false);
+      }
+    };
 
   const handleAnswerSelect = (optionIndex) => {
     setSelectedAnswer(optionIndex);
