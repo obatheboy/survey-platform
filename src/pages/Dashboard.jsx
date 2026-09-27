@@ -1505,8 +1505,7 @@ export default function Dashboard() {
                     ) : (
                       <button
                         className="start-survey-btn"
-                        onClick={() => handleCompleteSurvey(survey._id)}
-                        disabled={isStarting}
+                        onClick={() => navigate(`/surveys/${survey._id}`)}
                         style={{
                           width: '100%',
                           padding: '10px',
@@ -1514,9 +1513,9 @@ export default function Dashboard() {
                           fontWeight: '800',
                           borderRadius: '6px',
                           border: 'none',
-                          background: isStarting ? '#999' : 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
+                          background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
                           color: 'white',
-                          cursor: isStarting ? 'not-allowed' : 'pointer',
+                          cursor: 'pointer',
                           opacity: isStarting ? 0.7 : 1,
                           transition: 'all 0.2s ease'
                         }}

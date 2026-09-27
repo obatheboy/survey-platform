@@ -18,6 +18,7 @@ import FAQ from "./pages/FAQ";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import NotFound from "./pages/NotFound";
 import AffiliateDashboard from "./pages/AffiliateDashboard";
+import SurveyTake from "./pages/SurveyTake";
 import LoginFeePayment from "./pages/LoginFeePayment";
 import OnboardingSurvey from "./pages/OnboardingSurvey";
 import ChatWazunguDashboard from "./pages/ChatWazunguDashboard";
@@ -182,6 +183,15 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Surveys />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/surveys/:surveyId"
+          element={
+            <ProtectedRoute>
+              <SurveyTake />
             </ProtectedRoute>
           }
         />
