@@ -25,30 +25,30 @@ export default function LandingBanner() {
 
         {/* Main headline */}
         <h1 style={styles.headline}>
-          LEGIT APP
+          EASY APP
           <br />
-          <span style={styles.headlineAccent}>Multiple Ways to Earn</span>
+          <span style={styles.headlineAccent}>Multiple Ways to Earn Using Your Smartphone</span>
         </h1>
 
         {/* Earning options grid */}
         <div style={styles.earnOptions}>
           <div style={styles.earnOption}>
             <span style={styles.earnOptionIcon}>📝</span>
-            <span style={styles.earnOptionText}>60 Survey Categories — Daily Lifestyle, Food, Football, Safaricom, Equity Bank, Communication & More</span>
+            <span style={styles.earnOptionText}>60 Survey Categories — Daily Lifestyle, Food, Football, Safaricom, Equity Bank, Communication & More. Complete easy survey and Earn</span>
           </div>
           <div style={styles.earnOption}>
             <span style={styles.earnOptionIcon}>💬</span>
-            <span style={styles.earnOptionText}>Chat Wazungu — Real Conversations with AI Profiles</span>
+            <span style={styles.earnOptionText}>Chat Wazungu — Chat with Foreigners and unlock various bonuses</span>
           </div>
           <div style={styles.earnOption}>
             <span style={styles.earnOptionIcon}>👥</span>
-            <span style={styles.earnOptionText}>Affiliate Program — Earn KES 50 Per Refer</span>
+            <span style={styles.earnOptionText}>Affiliate Program — Earn endlessly by doing easy affiliate</span>
           </div>
         </div>
 
         {/* Small enticing caption */}
         <p style={styles.subheadline}>
-          Complete surveys in 60+ categories, chat with interesting AI profiles, and refer friends to earn. Fast payouts, secure platform, trusted by thousands.
+          Join thousands of earners today. Complete surveys, chat with interesting profiles, and refer friends to earn. Fast payouts, secure platform.
         </p>
 
         {/* Stats row */}
@@ -205,12 +205,13 @@ const styles = {
     backgroundClip: "text",
   },
   headline: {
-    fontSize: "26px",
+    fontSize: "30px",
     fontWeight: "900",
     color: "#fff",
     lineHeight: "1.1",
     marginBottom: "10px",
     textShadow: "0 2px 12px rgba(0,0,0,0.4)",
+    letterSpacing: "-0.5px",
   },
   headlineAccent: {
     background: "linear-gradient(90deg, #06b6d4, #7c3aed)",
@@ -221,39 +222,45 @@ const styles = {
   earnOptions: {
     display: "flex",
     flexDirection: "column",
-    gap: "8px",
+    gap: "10px",
     marginBottom: "16px",
-    maxWidth: "360px",
+    maxWidth: "380px",
     marginLeft: "auto",
     marginRight: "auto",
   },
   earnOption: {
     display: "flex",
-    alignItems: "center",
-    gap: "8px",
+    alignItems: "flex-start",
+    gap: "10px",
     background: "rgba(255,255,255,0.06)",
     border: "1px solid rgba(13, 170, 101, 0.25)",
     borderRadius: "12px",
-    padding: "10px 14px",
+    padding: "12px 14px",
     backdropFilter: "blur(6px)",
+    transition: "transform 0.2s, border-color 0.2s",
   },
   earnOptionIcon: {
-    fontSize: "20px",
+    fontSize: "22px",
+    flexShrink: 0,
+    filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))",
   },
   earnOptionText: {
     fontSize: "13px",
     fontWeight: "700",
     color: "#fff",
+    lineHeight: "1.45",
+    textShadow: "0 1px 3px rgba(0,0,0,0.3)",
   },
   subheadline: {
     fontSize: "13px",
     color: "rgba(255,255,255,0.85)",
     lineHeight: "1.5",
     marginBottom: "18px",
-    maxWidth: "360px",
+    maxWidth: "380px",
     marginLeft: "auto",
     marginRight: "auto",
     textShadow: "0 1px 4px rgba(0,0,0,0.3)",
+    fontWeight: "500",
   },
   statsRow: {
     display: "flex",
@@ -346,9 +353,10 @@ const styles = {
   },
   ctaNote: {
     marginTop: "10px",
-    fontSize: "11px",
-    color: "rgba(255,255,255,0.6)",
-    fontWeight: "500",
+    fontSize: "12px",
+    color: "rgba(255,255,255,0.75)",
+    fontWeight: "600",
+    letterSpacing: "0.3px",
   },
   tapHint: {
     marginTop: "12px",
