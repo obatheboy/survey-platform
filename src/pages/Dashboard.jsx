@@ -580,57 +580,27 @@ export default function Dashboard() {
   /* =========================
      WITHDRAW LOGIC - SIMPLIFIED
    ========================= */
-  const handleWithdrawClick = async (plan) => {
+  const handleWithdrawClick = async () => {
     const now = Date.now();
-    const lastClickTime = localStorage.getItem(`lastWithdrawClick_${plan}`);
+    const lastClickTime = localStorage.getItem("lastWithdrawClick");
     if (lastClickTime && (now - parseInt(lastClickTime)) < 2000) {
       setToast("Please wait before clicking again");
       setTimeout(() => setToast(""), 3000);
       return;
     }
-    localStorage.setItem(`lastWithdrawClick_${plan}`, now.toString());
+    localStorage.setItem("lastWithdrawClick", now.toString());
 
-    if (!user?.all_plans_completed) {
-      setToast("Complete REGULAR, VIP, and VVIP plans to unlock withdrawals");
-      return;
-    }
+    const totalCompleted = stats?.totalSurveysCompleted || 0;
+    const remaining = 60 - totalCompleted;
 
-    if (!isCompleted(plan)) {
-      setToast(`Complete ${TOTAL_SURVEYS - surveysDone(plan)} more surveys to withdraw`);
+    if (totalCompleted < 60) {
+      setToast(`Complete ${remaining} more surveys to withdraw`);
       goToSurveys();
       setTimeout(() => setToast(""), 4000);
       return;
     }
 
-    if (!isActivated(plan)) {
-      try {
-        await api.post("/surveys/select-plan", { plan });
-      } catch (error) {
-        console.error("Failed to set active plan:", error);
-      }
-      
-      const planLower = plan.toLowerCase();
-      navigate(`/activate?plan=${planLower}`, { 
-        state: { 
-          planKey: plan,
-          amount: PLANS[plan].total
-        }
-      });
-      return;
-    }
-
-    if (pendingWithdrawals[plan]) {
-      window.scrollTo(0, 0);
-      navigate("/withdraw-success", {
-        state: {
-          withdrawal: pendingWithdrawals[plan],
-          plan: PLANS[plan]
-        }
-      });
-      return;
-    }
-
-    navigate("/withdraw-form", { state: { plan } });
+    navigate("/withdraw-form");
   };
 
 /* =========================
@@ -1764,10 +1734,10 @@ export default function Dashboard() {
             <span className="nav-label" style={{ fontSize: '10px', fontWeight: '600', color: 'white' }}>Affiliate</span>
           </button>
 
-          {user?.all_plans_completed && (
+{user && (
             <button
               className="nav-btn"
-              onClick={() => navigate('/withdraw-form')}
+              onClick={handleWithdrawClick}
               style={{
                 flex: 1,
                 display: 'flex',
@@ -1784,9 +1754,9 @@ export default function Dashboard() {
                 minHeight: '50px'
               }}
             >
-             <span className="nav-icon" style={{ fontSize: '20px', color: 'white' }}>💸</span>
-             <span className="nav-label" style={{ fontSize: '10px', fontWeight: '600', color: 'white' }}>Withdraw</span>
-          </button>
+              <span className="nav-icon" style={{ fontSize: '20px', color: 'white' }}>💰</span>
+              <span className="nav-label" style={{ fontSize: '10px', fontWeight: '600', color: 'white' }}>Withdraw</span>
+            </button>
           )}
        </div>
 
