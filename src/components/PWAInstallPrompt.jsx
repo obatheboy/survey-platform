@@ -5,21 +5,24 @@ export default function PWAInstallPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const [deferredAvailable, setDeferredAvailable] = useState(false);
-  const [isFacebookMessenger, setIsFacebookMessenger] = useState(false);
+  const [isInAppBrowser, setIsInAppBrowser] = useState(false);
   const deferredPrompt = useRef(null);
 
   useEffect(() => {
-    // Already installed as standalone
     if (window.matchMedia('(display-mode: standalone)').matches) {
       setIsStandalone(true);
       return;
     }
 
-    // Detect Facebook Messenger WebView
     const ua = navigator.userAgent || '';
-    const isFB = /FB4A|FB_IAB|FBAV|Messenger/i.test(ua) ||
-                 /Android.*Chrome\/(?!.*Edge)/i.test(ua) && /FB/i.test(ua);
-    setIsFacebookMessenger(isFB);
+    const isFB = /FB4A|FB_IAB|FBAV|Messenger|Instagram|Twitter|Snapchat|LinkedIn|Pinterest|Tiktok|Microsoft-Edge/i.test(ua);
+    const isAndroid = /Android/i.test(ua);
+    const isIOS = /iPhone|iPad|iPod/i.test(ua);
+    const isChrome = /Chrome/i.test(ua) && !/Edg/i.test(ua);
+    const isSafari = /Safari/i.test(ua) && !/Chrome/i.test(ua) && !/FBIAB/i.test(ua);
+
+    const inApp = isFB || (isAndroid && !isChrome) || (isIOS && !isSafari);
+    setIsInAppBrowser(inApp);
 
     const handleBeforeInstall = (e) => {
       e.preventDefault();
@@ -29,23 +32,19 @@ export default function PWAInstallPrompt() {
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
 
-    // If no beforeinstallprompt event after 4 seconds, assume not supported
-    // (common in Facebook Messenger WebView)
     const fallbackTimer = setTimeout(() => {
       if (!deferredPrompt.current) {
         setDeferredAvailable(false);
       }
-    }, 4000);
+    }, 5000);
 
-    // Show prompt after a delay if not standalone and not dismissed
     const dismissed = localStorage.getItem('pwa-install-dismissed');
     if (!dismissed) {
-      // Delay showing to let page load
       setTimeout(() => {
         if (!window.matchMedia('(display-mode: standalone)').matches) {
           setShowPrompt(true);
         }
-      }, 4000);
+      }, 5000);
     }
 
     return () => {
@@ -64,15 +63,6 @@ export default function PWAInstallPrompt() {
       if (outcome === 'accepted') {
         console.log('App installed successfully');
       }
-    } else if (isFacebookMessenger) {
-      // Fallback: show manual instructions
-      alert(
-        'To install this app in Facebook Messenger:\n\n' +
-        '1. Tap the menu (⋮) at the top right\n' +
-        '2. Select "Open in Browser" or "Open in Chrome/Safari"\n' +
-        '3. Then use your browser\'s "Add to Home Screen" feature\n\n' +
-        'Or simply open this link in Chrome/Safari directly.'
-      );
     }
   };
 
@@ -81,13 +71,26 @@ export default function PWAInstallPrompt() {
     localStorage.setItem('pwa-install-dismissed', 'true');
   };
 
-  const handleOpenInBrowser = () => {
-    // Try to open in external browser
+  const handleCopyLink = async () => {
     const url = window.location.href;
-    window.open(url, '_blank');
-    setShowPrompt(false);
-    localStorage.setItem('pwa-install-dismissed', 'true');
+    try {
+      await navigator.clipboard.writeText(url);
+      setToastCopied(true);
+      setTimeout(() => setToastCopied(false), 2000);
+    } catch {
+      // Fallback
+      const ta = document.createElement('textarea');
+      ta.value = url;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      setToastCopied(true);
+      setTimeout(() => setToastCopied(false), 2000);
+    }
   };
+
+  const [toastCopied, setToastCopied] = useState(false);
 
   if (isStandalone || !showPrompt) return null;
 
@@ -97,34 +100,76 @@ export default function PWAInstallPrompt() {
         <button className="pwa-close-btn" onClick={handleSkip}>×</button>
         <div className="pwa-icon">📱</div>
         <h3>Add to Home Screen</h3>
-        <p>For quick access and offline use</p>
+        <p>Get quick access and offline use</p>
 
-        {isFacebookMessenger && !deferredAvailable && (
-          <div className="pwa-messenger-note" style={{
-            background: 'rgba(25, 118, 210, 0.15)',
-            border: '1px solid rgba(25, 118, 210, 0.4)',
-            borderRadius: '8px',
-            padding: '10px 12px',
-            margin: '8px 0',
-            fontSize: '12px',
+        {isInAppBrowser && !deferredAvailable && (
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(25, 118, 210, 0.2), rgba(25, 118, 210, 0.05))',
+            border: '2px solid rgba(25, 118, 210, 0.5)',
+            borderRadius: '12px',
+            padding: '16px',
+            margin: '10px 0',
+            fontSize: '13px',
             color: '#1565c0',
-            fontWeight: 600,
+            fontWeight: 700,
             textAlign: 'center',
-            lineHeight: 1.5
+            lineHeight: 1.6
           }}>
-            ⚠️ Facebook Messenger doesn't support direct installation.<br/>
-            Tap "Open in Browser" below to install via Chrome/Safari.
+            <div style={{ fontSize: '28px', marginBottom: '8px' }}>⚠️</div>
+            <strong>This app can't be installed from inside Facebook/Messenger.</strong><br/>
+            <span style={{ fontWeight: 400, fontSize: '12px', color: '#0d47a1' }}>
+              Please open this link in Chrome or Safari to install.
+            </span>
           </div>
         )}
 
         <div className="pwa-btns">
-          {isFacebookMessenger && !deferredAvailable ? (
+          {isInAppBrowser && !deferredAvailable ? (
             <>
-              <button className="pwa-install-btn" onClick={handleOpenInBrowser}>
-                🌐 Open in Browser
+              <button
+                className="pwa-install-btn"
+                onClick={handleCopyLink}
+                style={{
+                  background: toastCopied
+                    ? 'linear-gradient(135deg, #16a34a, #15803d)'
+                    : 'linear-gradient(135deg, #1565c0, #0d47a1)',
+                  border: 'none',
+                  borderRadius: '10px',
+                  padding: '14px 24px',
+                  fontSize: '15px',
+                  fontWeight: '800',
+                  color: 'white',
+                  cursor: 'pointer',
+                  boxShadow: '0 6px 20px rgba(25, 118, 210, 0.5)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  width: '100%',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                {toastCopied ? '✅ Link Copied!' : '📋 Copy Link'}
               </button>
-              <button className="pwa-skip-btn" onClick={handleSkip}>
-                Skip
+              <button
+                className="pwa-skip-btn"
+                onClick={handleSkip}
+                style={{
+                  background: 'transparent',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  borderRadius: '10px',
+                  padding: '12px 20px',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  color: 'rgba(255,255,255,0.7)',
+                  cursor: 'pointer',
+                  width: '100%',
+                  marginTop: '8px'
+                }}
+              >
+                Maybe Later
               </button>
             </>
           ) : (
