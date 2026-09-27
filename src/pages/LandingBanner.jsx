@@ -33,22 +33,22 @@ export default function LandingBanner() {
         {/* Earning options grid */}
         <div style={styles.earnOptions}>
           <div style={styles.earnOption}>
-            <span style={styles.earnOptionIcon}>📊</span>
-            <span style={styles.earnOptionText}>Surveys — quick & easy</span>
+            <span style={styles.earnOptionIcon}>📝</span>
+            <span style={styles.earnOptionText}>60 Survey Categories — Daily Lifestyle, Food, Football, Safaricom, Equity Bank, Communication & More</span>
           </div>
           <div style={styles.earnOption}>
             <span style={styles.earnOptionIcon}>💬</span>
-            <span style={styles.earnOptionText}>Chat Wazungu — real conversations</span>
+            <span style={styles.earnOptionText}>Chat Wazungu — Real Conversations with AI Profiles</span>
           </div>
           <div style={styles.earnOption}>
             <span style={styles.earnOptionIcon}>👥</span>
-            <span style={styles.earnOptionText}>Affiliate — endless commissions</span>
+            <span style={styles.earnOptionText}>Affiliate Program — Earn KES 50 Per Refer</span>
           </div>
         </div>
 
         {/* Small enticing caption */}
         <p style={styles.subheadline}>
-          A safe, secure platform where you earn by completing simple tasks. Fast payouts, trusted by 500K+ users.
+          Complete surveys in 60+ categories, chat with interesting AI profiles, and refer friends to earn. Fast payouts, secure platform, trusted by thousands.
         </p>
 
         {/* Stats row */}
