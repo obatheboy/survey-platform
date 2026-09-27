@@ -130,12 +130,6 @@ export default function WithdrawForm() {
 
 // Handle plan selection with activation check
    const handlePlanSelection = (planKey) => {
-     // Check if specific plan is activated - allow withdraw if so
-     if (isPlanActivated(planKey)) {
-       setPlan(planKey);
-       return;
-     }
-     
      // Check if user is activated globally
      if (!isUserActivated) {
        // Navigate to activation page for this plan
@@ -149,20 +143,8 @@ export default function WithdrawForm() {
        return;
      }
      
-     // Check if all plans are completed
-     if (!allPlansCompleted && !isAffiliateWithdraw) {
-       alert("Complete REGULAR, VIP, and VVIP plans to unlock withdrawals");
-       return;
-     }
-     
-     // Not activated - go to activate page
-     navigate(`/activate?plan=${planKey.toLowerCase()}`, { 
-       state: { 
-         planKey: planKey,
-         from: "withdraw"
-       },
-       replace: true
-     });
+     // User is activated - allow plan selection
+     setPlan(planKey);
    };
 
 // Handle activation redirect
@@ -199,11 +181,6 @@ export default function WithdrawForm() {
     if (!isAffiliateWithdraw && !isUserActivated) {
       setError("Please activate your account before making a withdrawal.");
       setShowActivationModal(true);
-      return;
-    }
-    
-    if (!isAffiliateWithdraw && !allPlansCompleted) {
-      setError("Complete REGULAR, VIP, and VVIP plans to unlock withdrawals.");
       return;
     }
     
@@ -454,8 +431,8 @@ export default function WithdrawForm() {
       </header>
 
       <div className="form-container">
-        {/* Clear Notification for users who haven't completed all plans */}
-        {!isAffiliateWithdraw && !allPlansCompleted && (
+        {/* Clear Notification for users who haven't completed enough surveys */}
+        {!isAffiliateWithdraw && (
           <div style={{
             background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
             border: '2px solid #ff6b6b',
@@ -475,7 +452,7 @@ export default function WithdrawForm() {
                   textTransform: 'uppercase',
                   letterSpacing: '0.5px'
                 }}>
-                  Withdrawals Locked — Complete All Plans First
+                  Complete 60 Surveys to Unlock Withdrawals
                 </h3>
                 <p style={{
                   margin: '0 0 10px 0',
@@ -484,24 +461,8 @@ export default function WithdrawForm() {
                   color: '#a3620a',
                   lineHeight: '1.5'
                 }}>
-                  You need to complete and activate <strong>REGULAR</strong>, <strong>VIP</strong>, and <strong>VVIP</strong> survey plans before you can withdraw any money.
+                  Complete 60 surveys to unlock withdrawals.
                 </p>
-                <div style={{
-                  background: 'rgba(255,255,255,0.6)',
-                  borderRadius: '8px',
-                  padding: '10px 14px',
-                  border: '1px solid rgba(255, 107, 107, 0.4)'
-                }}>
-                  <p style={{ margin: '0 0 6px 0', fontSize: '13px', fontWeight: '700', color: '#78350f' }}>
-                    📋 What you need to do:
-                  </p>
-                  <ol style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', fontWeight: '600', color: '#92400e', lineHeight: '1.8' }}>
-                    <li>Complete <strong>10 surveys</strong> for the REGULAR plan</li>
-                    <li>Complete <strong>10 surveys</strong> for the VIP plan</li>
-                    <li>Complete <strong>10 surveys</strong> for the VVIP plan</li>
-                    <li>Activate each plan by paying the one-time activation fee</li>
-                  </ol>
-                </div>
                 <button
                   type="button"
                   onClick={() => navigate("/dashboard", { replace: true })}
@@ -553,16 +514,6 @@ export default function WithdrawForm() {
               </div>
             )}
             
-            {!isAffiliateWithdraw && isUserActivated && !allPlansCompleted && (
-              <div className="activation-notice">
-                <div className="notice-icon">⏳</div>
-                <div className="notice-content">
-                  <strong>COMPLETE ALL PLANS</strong>
-                  <p>Please complete REGULAR, VIP, and VVIP plans to unlock withdrawals.</p>
-                </div>
-              </div>
-            )}
-            
             <div className="plan-selection-cards">
               {Object.entries(PLANS).map(([key, planData]) => {
                 // Skip affiliate in plan selection - it's handled separately
@@ -598,7 +549,7 @@ export default function WithdrawForm() {
                     </div>
                     
                     <p className="plan-description">
-                      {!allPlansCompleted && !isAffiliateWithdraw ? "Complete REGULAR, VIP, and VVIP plans to unlock withdrawals" : isActivated ? "Available for withdrawal" : "One-time activation required"}
+                      {!isAffiliateWithdraw && !isUserActivated ? "Activate Account" : isActivated ? "Available for withdrawal" : "One-time activation required"}
                     </p>
                     
                     {/* ===== FIXED: BOLD ONE-TIME ACTIVATION CAPTION WITH !important ===== */}
@@ -648,79 +599,6 @@ export default function WithdrawForm() {
         {/* Withdrawal Form */}
         {plan && (
           <form className="withdrawal-form" onSubmit={handleSubmit}>
-            {/* Clear Notification for users who haven't completed all plans */}
-            {!isAffiliateWithdraw && !allPlansCompleted && (
-              <div style={{
-                background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-                border: '2px solid #ff6b6b',
-                borderRadius: '12px',
-                padding: '16px 20px',
-                marginBottom: '20px',
-                boxShadow: '0 4px 15px rgba(255, 107, 107, 0.25)'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                  <span style={{ fontSize: '28px', flexShrink: 0 }}>🔒</span>
-                  <div style={{ flex: 1 }}>
-                    <h3 style={{
-                      margin: '0 0 6px 0',
-                      fontSize: '16px',
-                      fontWeight: '900',
-                      color: '#92400e',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px'
-                    }}>
-                      Withdrawals Locked — Complete All Plans First
-                    </h3>
-                    <p style={{
-                      margin: '0 0 10px 0',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: '#a3620a',
-                      lineHeight: '1.5'
-                    }}>
-                      You need to complete and activate <strong>REGULAR</strong>, <strong>VIP</strong>, and <strong>VVIP</strong> survey plans before you can withdraw any money.
-                    </p>
-                    <div style={{
-                      background: 'rgba(255,255,255,0.6)',
-                      borderRadius: '8px',
-                      padding: '10px 14px',
-                      border: '1px solid rgba(255, 107, 107, 0.4)'
-                    }}>
-                      <p style={{ margin: '0 0 6px 0', fontSize: '13px', fontWeight: '700', color: '#78350f' }}>
-                        📋 What you need to do:
-                      </p>
-                      <ol style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', fontWeight: '600', color: '#92400e', lineHeight: '1.8' }}>
-                        <li>Complete <strong>10 surveys</strong> for the REGULAR plan</li>
-                        <li>Complete <strong>10 surveys</strong> for the VIP plan</li>
-                        <li>Complete <strong>10 surveys</strong> for the VVIP plan</li>
-                        <li>Activate each plan by paying the one-time activation fee</li>
-                      </ol>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => navigate("/dashboard", { replace: true })}
-                      style={{
-                        marginTop: '12px',
-                        padding: '10px 18px',
-                        background: 'linear-gradient(135deg, #ff6b6b, #d97706)',
-                        border: 'none',
-                        borderRadius: '8px',
-                        color: '#ffffff',
-                        fontWeight: '800',
-                        fontSize: '13px',
-                        cursor: 'pointer',
-                        boxShadow: '0 4px 12px rgba(255, 107, 107, 0.4)',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px'
-                      }}
-                    >
-                      📊 Go to Dashboard — Complete Surveys
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
             <div className="form-header">
               <h2>
                 <span className="plan-icon-small">{PLANS[plan].icon}</span>
@@ -806,7 +684,7 @@ export default function WithdrawForm() {
                   min={isAffiliateWithdraw ? 50 : 100}
                   max={isAffiliateWithdraw ? affiliateBalance : PLANS[plan]?.total}
                   required
-                  disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && (!isPlanActivated(plan) || !allPlansCompleted))}
+                  disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && !isPlanActivated(plan))}
                 />
               </div>
               <div className="amount-helper">
@@ -815,7 +693,7 @@ export default function WithdrawForm() {
                   type="button" 
                   className="use-max-btn"
                   onClick={() => setAmount(isAffiliateWithdraw ? (affiliateBalance || 0).toString() : (PLANS[plan]?.total || 0).toString())}
-                  disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && (!isPlanActivated(plan) || !allPlansCompleted))}
+                  disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && !isPlanActivated(plan))}
                 >
                   Use Max
                 </button>
@@ -836,7 +714,7 @@ export default function WithdrawForm() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 required
-                disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && (!isPlanActivated(plan) || !allPlansCompleted))}
+                disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && !isPlanActivated(plan))}
               />
               <p className="input-helper">Enter your M-Pesa number (e.g., 0712345678 or 0112345678)</p>
             </div>
@@ -862,7 +740,7 @@ export default function WithdrawForm() {
               <button 
                 type="submit" 
                 className="submit-btn"
-                disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && (!isPlanActivated(plan) || !allPlansCompleted))}
+                disabled={submitting || autoRedirecting || (!isAffiliateWithdraw && !isPlanActivated(plan))}
                 style={{ 
                    background: isAffiliateWithdraw ? 'linear-gradient(135deg, #7c3aed, #5b21b6)' : PLANS[plan]?.gradient,
                   opacity: (!isAffiliateWithdraw && (!isPlanActivated(plan) || !allPlansCompleted)) ? 0.6 : 1,
@@ -873,11 +751,6 @@ export default function WithdrawForm() {
                   <>
                     <span className="btn-icon">🔒</span>
                     ACTIVATION REQUIRED
-                  </>
-                ) : (!isAffiliateWithdraw && !allPlansCompleted) ? (
-                  <>
-                    <span className="btn-icon">⏳</span>
-                    COMPLETE ALL PLANS FIRST
                   </>
                 ) : submitting ? (
                   <>
@@ -907,7 +780,7 @@ export default function WithdrawForm() {
               </button>
             </div>
 
-            {/* Terms - FIXED: BOLD RED ACTIVATION MESSAGE */}
+            {/* Terms */}
             <div className="terms-notice">
               <p>
                 <strong>Important:</strong> By withdrawing, you agree to our terms. 
@@ -916,11 +789,6 @@ export default function WithdrawForm() {
                 {!isAffiliateWithdraw && !isPlanActivated(plan) && (
                   <span className="activation-required-text">
                     ⚠️ One-time activation required for this plan. Fee: {format(PLANS[plan]?.activationFee)}
-                  </span>
-                )}
-                {!isAffiliateWithdraw && !allPlansCompleted && (
-                  <span className="activation-required-text">
-                    ⚠️ Complete REGULAR, VIP, and VVIP plans to unlock withdrawals.
                   </span>
                 )}
               </p>

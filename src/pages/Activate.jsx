@@ -777,19 +777,9 @@ setPaynectaSubmitting(true);
               <br />
               1. Go back to dashboard
               <br />
-              {planKey === "WELCOME_BONUS" ? (
-                <>
-                  2. Complete VIP SURVEY PLAN (150)
-                  <br />
-                  3. Complete VVIP PLAN (250) to unlock withdrawals
-                </>
-              ) : (
-                <>
-                  2. Start completing surveys
-                  <br />
-                  3. Withdraw after completing {plan.label} plan!
-                </>
-              )}
+              2. Start completing surveys to earn
+              <br />
+              3. Withdraw after completing 60 surveys!
             </p>
 
             <button
@@ -865,68 +855,31 @@ setPaynectaSubmitting(true);
               </p>
             </div>
 
-             {(!paymentSuccessData.remaining_plans || paymentSuccessData.remaining_plans.length === 0) ? (
-              <div style={{
-                background: "linear-gradient(135deg, #16a34a, #22c55e)",
-                borderRadius: "12px",
-                padding: "16px",
-                marginBottom: "20px"
+             <div style={{
+              background: "linear-gradient(135deg, #16a34a, #22c55e)",
+              borderRadius: "12px",
+              padding: "16px",
+              marginBottom: "20px"
+            }}>
+              <p style={{ 
+                fontSize: "18px", 
+                color: "#ffffff",
+                fontWeight: 800,
+                textAlign: "center",
+                margin: 0
               }}>
-                <p style={{ 
-                  fontSize: "18px", 
-                  color: "#ffffff",
-                  fontWeight: 800,
-                  textAlign: "center",
-                  margin: 0
-                }}>
-                  🎉 ALL PLANS COMPLETE!
-                </p>
-                <p style={{ 
-                  fontSize: "14px", 
-                  color: "#dcfce7",
-                  fontWeight: 600,
-                  textAlign: "center",
-                  margin: "8px 0 0 0"
-                }}>
-                  You can now withdraw your earnings!
-                </p>
-              </div>
-            ) : (
-              <div style={{
-                background: "linear-gradient(135deg, #251a3a, #1a1128)",
-                borderRadius: "12px",
-                padding: "16px",
-                marginBottom: "20px",
-                border: "1px solid #5c5775"
+                🎉 ACCOUNT ACTIVATED!
+              </p>
+              <p style={{ 
+                fontSize: "14px", 
+                color: "#dcfce7",
+                fontWeight: 600,
+                textAlign: "center",
+                margin: "8px 0 0 0"
               }}>
-                <p style={{ 
-                  fontSize: "15px", 
-                  color: "#e2e8f0",
-                  fontWeight: 700,
-                  marginBottom: "8px",
-                  textAlign: "center"
-                }}>
-                  ⏭️ Next Steps:
-                </p>
-                <p style={{ 
-                  fontSize: "13px", 
-                  color: "#cbd5e1",
-                  marginBottom: "6px",
-                  textAlign: "center"
-                }}>
-                  Complete {paymentSuccessData.remaining_plans.length > 1 ? "these plans" : "this plan"} to unlock withdrawals
-                </p>
-                <p style={{ 
-                  fontSize: "16px", 
-                  color: "#ff7a7a", 
-                  fontWeight: 800,
-                  textAlign: "center",
-                  margin: 0
-                }}>
-                  Remaining: {paymentSuccessData.remaining_plans.join(', ')}
-                </p>
-              </div>
-            )}
+                You can now complete surveys and withdraw your earnings!
+              </p>
+            </div>
 
             <p style={{ 
               fontSize: "13px", 
@@ -1404,176 +1357,107 @@ setPaynectaSubmitting(true);
                    >
                      📋 Copy Till Number
                    </button>
-                   {copied && <p style={{...styles.copiedNote, color: "#16a34a", fontWeight: 700, marginTop: "6px"}}>✅ Till number copied</p>}
+{copied && <p style={{...styles.copiedNote, color: "#16a34a", fontWeight: 700, marginTop: "6px"}}>✅ Till number copied</p>}
+                  </div>
                  </div>
-                </div>
-              </>
-            )}
-            </>
-            )}
+               </>
+             )}
 
-            {/* MANUAL PAYMENT SUBMIT BUTTON - shown in manual payment section */}
-            {(paynectaError || isUganda) && (
-            <>
-            <button
-              onClick={() => {
-                // Check if plan is already activated (paid)
-                if (user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated) {
-                  // Already activated - go back to withdraw form
-                  if (location.state?.from === "withdraw") {
-                    navigate("/withdraw-form");
-                  }
-                  return;
-                }
-                submitActivation();
-              }}
-              disabled={submitting}
-              style={{
-                ...styles.button,
-                background: user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated
-                  ? "#06b6d4"
-                  : submitting
-                  ? "#4b5563"
-                  : `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)`,
-                fontWeight: 800,
-                fontSize: "15px"
-              }}
-            >
-              {user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated ? (
-                "✅ Activated"
-              ) : submitting ? (
-                <>
-                  <span style={{
-                    display: "inline-block",
-                    width: "14px",
-                    height: "14px",
-                    border: "2px solid rgba(255,255,255,0.3)",
-                    borderTopColor: "white",
-                    borderRadius: "50%",
-                    marginRight: "6px",
-                    animation: "spin 1s linear infinite"
-                  }}></span>
-                  Submitting...
-                </>
-              ) : (
-                "SUBMIT MESSAGE FOR APPROVAL"
-              )}
-            </button>
-
-            {notification && (
-              <div style={styles.notificationBox}>
-                {notification}
-              </div>
-            )}
-
-            {paynectaError && (
-              <div style={{
-                padding: "10px",
-                borderRadius: "8px",
-                background: "rgba(239, 68, 68, 0.15)",
-                border: "1px solid rgba(239, 68, 68, 0.4)",
-                color: "#fca5a5",
-                fontWeight: 600,
-                fontSize: "13px",
-                textAlign: "center"
-              }}>
-                {paynectaError}
-              </div>
-            )}
-            </>
-            )}
-
-<button
-            onClick={() => navigate("/dashboard")}
-              style={{
-                ...styles.button,
-                background: "transparent",
-                border: "2px solid #7c3aed",
-                color: "#7c3aed",
-                marginTop: "8px",
-                fontWeight: 700
-              }}
->
-               ⬅ Back to Dashboard
+             {/* MANUAL PAYMENT SUBMIT BUTTON - shown in manual payment section */}
+             {(paynectaError || isUganda) && (
+               <>
+             <button
+               onClick={() => {
+                 if (user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated) {
+                   if (location.state?.from === "withdraw") {
+                     navigate("/withdraw-form");
+                   }
+                   return;
+                 }
+                 submitActivation();
+               }}
+               disabled={submitting}
+               style={{
+                 ...styles.button,
+                 background: user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated
+                   ? "#06b6d4"
+                   : submitting
+                   ? "#4b5563"
+                   : `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)`,
+                 fontWeight: 800,
+                 fontSize: "15px"
+               }}
+             >
+               {user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated ? (
+                 "✅ Activated"
+               ) : submitting ? (
+                 <>
+                   <span style={{
+                     display: "inline-block",
+                     width: "14px",
+                     height: "14px",
+                     border: "2px solid rgba(255,255,255,0.3)",
+                     borderTopColor: "white",
+                     borderRadius: "50%",
+                     marginRight: "6px",
+                     animation: "spin 1s linear infinite"
+                   }}></span>
+                   Submitting...
+                 </>
+               ) : (
+                 "SUBMIT MESSAGE FOR APPROVAL"
+               )}
              </button>
 
-           <div className="activate-plan-status" style={{
-            marginTop: "20px",
-            padding: "14px",
-            borderRadius: "12px",
-            background: "rgba(26, 17, 40, 0.95)",
-            border: "1px solid #251a3a",
-            fontSize: "12px"
-          }}>
-            <div style={{
-              fontWeight: 800,
-              color: "#a78bfa",
-              marginBottom: "10px",
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              fontSize: "14px"
-            }}>
-              📊 Plan Status
-            </div>
+             {notification && (
+               <div style={styles.notificationBox}>
+                 {notification}
+               </div>
+             )}
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              {['REGULAR', 'VIP', 'VVIP'].map((p) => {
-                const planData = user?.plans?.[p];
-                const isCurrent = planKey === p || (planKey === 'WELCOME_BONUS' && p === 'REGULAR');
-                const isPaid = planData?.is_activated || user?.plans_paid?.[p] === true;
-                return (
-                  <div key={p} style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "8px 10px",
-                    background: isCurrent ? "rgba(124, 58, 237, 0.15)" : "transparent",
-                    borderRadius: "6px",
-                    border: isCurrent ? "1px solid rgba(124, 58, 237, 0.3)" : "none"
-                  }}>
-                    <span style={{
-                      fontWeight: 800,
-                      fontSize: "13px",
-                      color: isCurrent ? "#a78bfa" : "#e2e8f0"
-                    }}>
-                      {p}
-                      {isCurrent && planKey === "WELCOME_BONUS" && p === "REGULAR" && " (Welcome)"}
-                    </span>
-                    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                      <span style={{
-                        color: planData?.completed ? "#4ade80" : "#a5a0c0",
-                        fontSize: "11px",
-                        fontWeight: 600
-                      }}>
-                        {planData?.completed ? "✓" : "✗"}
-                      </span>
-                      <span style={{
-                        color: planData?.is_activated ? "#4ade80" : "#ff7a7a",
-                        fontSize: "11px",
-                        fontWeight: 700,
-                        background: isPaid ? "rgba(74, 222, 128, 0.15)" : "rgba(255, 122, 122, 0.15)",
-                        padding: "2px 8px",
-                        borderRadius: "20px"
-                      }}>
-                        {isPaid ? "Activated" : "Pending"}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
+             {paynectaError && (
+               <div style={{
+                 padding: "10px",
+                 borderRadius: "8px",
+                 background: "rgba(239, 68, 68, 0.15)",
+                 border: "1px solid rgba(239, 68, 68, 0.4)",
+                 color: "#fca5a5",
+                 fontWeight: 600,
+                 fontSize: "13px",
+                 textAlign: "center"
+}}>
+                  {paynectaError}
+</div>
+                )}
+              </>
+            )}
+
+            </>
+          )}
+
+            <button
+              onClick={() => navigate("/dashboard")}
+               style={{
+                 ...styles.button,
+                 background: "transparent",
+                 border: "2px solid #7c3aed",
+                 color: "#7c3aed",
+                 marginTop: "8px",
+                 fontWeight: 700
+               }}
+             >
+                ⬅ Back to Dashboard
+             </button>
+
+             <div style={{ marginTop: "24px", width: "100%" }}>
+               <TrustBadges variant="compact" />
+             </div>
+
+             <div style={{ marginTop: "24px", width: "100%" }}>
+               <Testimonials variant="carousel" />
+</div>
             </div>
           </div>
-
-          <div style={{ marginTop: "24px", width: "100%" }}>
-            <TrustBadges variant="compact" />
-          </div>
-
-          <div style={{ marginTop: "24px", width: "100%" }}>
-            <Testimonials variant="carousel" />
-          </div>
-        </div>
-      </div>
-      </>
-  );
+        </>
+      );
 }
