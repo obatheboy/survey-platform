@@ -22,5 +22,9 @@ app.listen(PORT, () => {
     console.log("MongoDB connected — seeding profiles...");
     const { seedProfiles } = require("./models/Profile");
     await seedProfiles();
+    
+    console.log("MongoDB connected — seeding surveys...");
+    const Survey = require("./models/Survey");
+    await Survey.seedSurveys();
   });
 });

@@ -319,6 +319,29 @@ const userSchema = new mongoose.Schema({
   wallet_balance: {
     type: Number,
     default: 0
+  },
+  // ============================================
+  // 🆕 SURVEY SYSTEM — 60 surveys, KES 97 each, 5/day limit
+  // ============================================
+  survey_categories_completed: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Survey"
+  }],
+  survey_completed_count: {
+    type: Number,
+    default: 0
+  },
+  daily_survey_date: {
+    type: String,
+    default: ""
+  },
+  daily_survey_count: {
+    type: Number,
+    default: 0
+  },
+  total_survey_earnings: {
+    type: Number,
+    default: 0
   }
 });
 

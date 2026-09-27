@@ -1,7 +1,7 @@
 // ========================= Dashboard.jsx =========================
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import api from "../api/api";
+import api, { surveyApi } from "../api/api";
 import { useCurrency } from "../contexts/CurrencyContext.jsx";
 import MainMenuDrawer from "./components/MainMenuDrawer.jsx";
 import LiveWithdrawalFeed from "./components/LiveWithdrawalFeed.jsx";
@@ -61,6 +61,28 @@ const PLANS = {
 };
 const TOTAL_SURVEYS = 10;
 
+/* =====================================================
+   📋 60 INDIVIDUAL SURVEYS
+   - KES 97 per survey, 5 surveys per day
+   ==================================================== */
+const SURVEY_TOTAL = 60;
+const SURVEY_DAILY_LIMIT = 5;
+const SURVEY_EARNINGS = 97;
+
+const CATEGORY_ICONS = {
+  "daily lifestyle": "🏠",
+  "food": "🍽️",
+  "football": "⚽",
+  "safaricom": "📶",
+  "equity bank": "🏦",
+  "communication": "💬",
+};
+
+const getCategoryIcon = (category) => {
+  if (!category) return "📋";
+  return CATEGORY_ICONS[String(category).trim().toLowerCase()] || "📋";
+};
+
 // Theme removed - light mode only
 
 export default function Dashboard() {
@@ -68,6 +90,8 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const surveyRef = useRef(null);
+  const surveysLoadedRef = useRef(false);
+  const lastSurveyFetchRef = useRef(0);
   const welcomeRef = useRef(null);
   const dashboardRef = useRef(null);
 
@@ -100,6 +124,10 @@ export default function Dashboard() {
   ========================= */
   const [user, setUser] = useState(null);
   const [plans, setPlans] = useState({});
+  const [surveys, setSurveys] = useState([]);
+  const [surveyLoading, setSurveyLoading] = useState(true);
+  const [dailySurveyCount, setDailySurveyCount] = useState(0);
+  const [startingSurveyId, setStartingSurveyId] = useState(null);
   const [activationRequests, setActivationRequests] = useState([]);
   const [quickActions, setQuickActions] = useState([
     { id: 1, label: "Complete Profile", icon: "👤", completed: false },
@@ -149,6 +177,15 @@ export default function Dashboard() {
         setUser(resUser.data);
         setPlans(resUser.data.plans || {});
         setActivationRequests(resUser.data.activation_requests || []);
+
+        // Today's survey count (5/day limit)
+        const today = new Date().toISOString().split("T")[0];
+        setDailySurveyCount(
+          resUser.data.daily_survey_date === today ? (resUser.data.daily_survey_count || 0) : 0
+        );
+
+        // 60 individual surveys
+        loadSurveys();
         
         let surveyEarnings = 0;
         let calculatedTotalSurveys = 0;
@@ -285,8 +322,58 @@ export default function Dashboard() {
    // Theme removed - light mode only
 
   /* =========================
+     LOAD SURVEYS (60 individual)
+   ========================= */
+  const loadSurveys = async (force = false) => {
+    const now = Date.now();
+    if (!force && surveysLoadedRef.current && now - lastSurveyFetchRef.current < 8000) return;
+
+    lastSurveyFetchRef.current = now;
+    try {
+      const res = await surveyApi.getSurveys();
+      const list = Array.isArray(res.data?.surveys)
+        ? res.data.surveys
+        : (Array.isArray(res.data) ? res.data : []);
+      setSurveys(list);
+      surveysLoadedRef.current = true;
+    } catch (err) {
+      console.error("Failed to load surveys:", err);
+    } finally {
+      setSurveyLoading(false);
+    }
+  };
+
+  /* =========================
+     COMPLETE A SURVEY
+   ========================= */
+  const handleCompleteSurvey = async (surveyId) => {
+    if (dailySurveyCount >= SURVEY_DAILY_LIMIT) {
+      setToast("Daily limit reached - come back tomorrow");
+      setTimeout(() => setToast(""), 4000);
+      return;
+    }
+
+    setStartingSurveyId(surveyId);
+    try {
+      const res = await surveyApi.completeSurvey(surveyId);
+      setDailySurveyCount(res.data?.daily_count ?? dailySurveyCount + 1);
+      setToast(res.data?.message || `Survey completed! Earned KES ${SURVEY_EARNINGS}`);
+      await loadSurveys(true);
+      api.get(`/auth/me?_t=${Date.now()}`)
+        .then(r => setUser(r.data))
+        .catch(() => {});
+    } catch (err) {
+      const message = err?.response?.data?.message || "Failed to complete survey. Please try again.";
+      setToast(message);
+    } finally {
+      setStartingSurveyId(null);
+      setTimeout(() => setToast(""), 4000);
+    }
+  };
+
+  /* =========================
      LOAD PENDING WITHDRAWALS
-  ========================= */
+   ========================= */
   const loadPendingWithdrawals = async () => {
     try {
       const res = await api.get("/withdraw/history");
@@ -446,14 +533,6 @@ export default function Dashboard() {
   };
   const isCompleted = (plan) => surveysDone(plan) >= TOTAL_SURVEYS;
   const isActivated = (plan) => plans[plan]?.is_activated === true || user?.plans_paid?.[plan] === true || user?.[`${plan.toLowerCase()}_paid`] === true;
-  const earnedSoFar = (plan) => {
-    const count = surveysDone(plan);
-    if (count >= TOTAL_SURVEYS) {
-      return PLANS[plan].total;
-    }
-    return count * PLANS[plan].perSurvey;
-  };
-  const progressPercentage = (plan) => (surveysDone(plan) / TOTAL_SURVEYS) * 100;
 
   const hasPendingActivation = (plan) => {
     return activationRequests.some(
@@ -461,14 +540,11 @@ export default function Dashboard() {
     );
   };
 
-  const getPlanStatus = (plan) => {
-    if (user?.all_plans_completed && isActivated(plan)) return { status: "completed", label: "Ready to Withdraw", icon: "✅" };
-    if (hasPendingActivation(plan)) return { status: "pending-approval", label: "Pending Approval", icon: "⏳" };
-    if (isActivated(plan)) return { status: "completed", label: "Plan Paid", icon: "✅" };
-    if (isCompleted(plan)) return { status: "completed", label: "Ready to Activate", icon: "✅" };
-    if (surveysDone(plan) > 0) return { status: "in-progress", label: "In Progress", icon: "⏳" };
-    return { status: "not-started", label: "Start Earning", icon: "🚀" };
-  };
+  /* =========================
+     SURVEY LIST DERIVED STATE
+   ========================= */
+  const completedSurveyCount = surveys.filter(s => s.isCompleted === true).length;
+  const surveyProgressPercent = Math.min(100, (completedSurveyCount / SURVEY_TOTAL) * 100);
 
 /* =========================
      TAB + SCROLL
@@ -502,22 +578,8 @@ export default function Dashboard() {
   };
 
   /* =========================
-     SURVEY ACTION
-  ========================= */
-  const startSurvey = async (plan) => {
-    try {
-      localStorage.setItem("active_plan", plan);
-      await api.post("/surveys/select-plan", { plan });
-      navigate("/surveys?justStarted=true");
-    } catch {
-      setToast("Failed to start survey. Please try again.");
-      setTimeout(() => setToast(""), 3000);
-    }
-  };
-
-  /* =========================
      WITHDRAW LOGIC - SIMPLIFIED
-  ========================= */
+   ========================= */
   const handleWithdrawClick = async (plan) => {
     const now = Date.now();
     const lastClickTime = localStorage.getItem(`lastWithdrawClick_${plan}`);
@@ -1245,166 +1307,229 @@ export default function Dashboard() {
           </div>
         </div>
       </section>
-      {/* SURVEY PLANS - Shown after Welcome Bonus (ONLY ONE INSTANCE) */}
+      {/* AVAILABLE SURVEYS - 60 individual surveys (single column) */}
       <section className="dashboard-section" id="surveys-section" ref={surveysSectionRef}>
         <div className="section-heading">
-          <h3>Survey Plan Available Today</h3>
-          <p>Track your earnings across different plans</p>
+          <h3>Available Surveys</h3>
+          <p>Complete surveys to earn KES 97 each</p>
         </div>
-        <div className="progress-cards">
-          {Object.entries(PLANS).map(([key, plan]) => {
-            const status = getPlanStatus(key);
-            const activated = isActivated(key);
-            const hasPending = !!pendingWithdrawals[key];
-            
-             return (
-               <div
-                 id={`plan-card-${key}`}
-                 key={key}
-                 className="progress-card"
-                 style={{
-                 background: '#ffffff',
-                 borderRadius: '8px',
-                  padding: '10px',
-                  marginBottom: '0',
-                  border: highlightPlan === key ? '2px solid #06b6d4' : '1px solid #7c3aed',
-                  boxShadow: highlightPlan === key ? '0 0 0 4px rgba(6, 182, 212, 0.25), 0 12px 30px rgba(124, 58, 237, 0.18)' : '0 2px 8px rgba(124, 58, 237, 0.08)',
-                  transform: highlightPlan === key ? 'translateY(-4px)' : undefined,
-                  transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease'
-               }}>
-                <div className="progress-card-header" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                  <span className="plan-icon" style={{ fontSize: '24px' }}>{plan.icon}</span>
-                   <h4 style={{ flex: 1, fontSize: '16px', fontWeight: '900', color: '#5b21b6' }}>{plan.name}</h4>
-                      <span className={`status-badge ${status.status}`} style={{
-                        padding: '2px 8px',
-                        borderRadius: '12px',
-                        fontSize: '10px',
-                        fontWeight: '700',
-                        background: 'linear-gradient(135deg, #e0f2fe 0%, #ede9fe 100%)',
-                        border: '1px solid #7c3aed',
-                        color: '#5b21b6'
-                      }}>
-                        {status.icon} {status.label}
-                      </span>
-                </div>
-                 <div className="progress-card-body">
-                   <div className="progress-info" style={{ background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)', borderRadius: '6px', padding: '8px', marginBottom: '8px' }}>
-                     <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid rgba(124, 58, 237, 0.15)' }}>
-                        <span style={{ color: '#7c3aed', fontSize: '12px' }}>Total to earn:</span>
-                       <strong style={{ color: '#5b21b6', fontSize: '14px', fontWeight: '900' }}>{format(plan.total)}</strong>
-                    </div>
-                     <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid rgba(124, 58, 237, 0.15)' }}>
-                       <span style={{ color: '#7c3aed', fontSize: '12px' }}>Per Survey:</span>
-                       <strong style={{ color: '#5b21b6', fontSize: '12px', fontWeight: '700' }}>{format(plan.perSurvey)}</strong>
-                     </div>
-                     <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid rgba(124, 58, 237, 0.15)' }}>
-                       <span style={{ color: '#7c3aed', fontSize: '12px' }}>Progress:</span>
-                       <strong style={{ color: '#5b21b6', fontSize: '12px', fontWeight: '700' }}>{surveysDone(key)}/{TOTAL_SURVEYS}</strong>
-                    </div>
-                     <div className="progress-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', borderBottom: '1px solid rgba(124, 58, 237, 0.15)' }}>
-                       <span style={{ color: '#7c3aed', fontSize: '12px' }}>Earned so far:</span>
-                       <strong style={{ color: '#5b21b6', fontSize: '14px', fontWeight: '900' }}>{format(earnedSoFar(key))}</strong>
-                    </div>
-                  </div>
-                  
-                   <div className="progress-bar" style={{ height: '6px', background: 'linear-gradient(135deg, #e0f2fe 0%, #ede9fe 100%)', borderRadius: '3px', overflow: 'hidden', marginBottom: '8px', border: '1px solid rgba(124, 58, 237, 0.1)' }}>
-                     <div
-                       className="progress-bar-fill"
-                       style={{
-                         width: `${progressPercentage(key)}%`,
-                         height: '100%',
-                         background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
-                         borderRadius: '3px',
-                         transition: 'width 0.5s ease'
-                       }}
-                     ></div>
-                   </div>
-                  
-                    {hasPending && (
-                      <div style={{
-                        marginTop: '6px',
-                        padding: '6px',
-                        background: 'linear-gradient(135deg, #e0f2fe 0%, #ede9fe 100%)',
-                        border: '1px solid #7c3aed',
-                        borderRadius: '6px',
-                        fontSize: '11px',
-                        color: '#5b21b6',
-                        fontWeight: '600',
-                        textAlign: 'center',
-                        marginBottom: '8px'
-                      }}>
-                        ⏳ Withdrawal Pending - Click to Manage
-                      </div>
-                    )}
-                  
-                  <div className="progress-card-actions" style={{ display: 'flex', gap: '6px' }}>
-                    <button 
-                      className="action-btn primary"
-                      onClick={() => startSurvey(key)}
-                      disabled={isCompleted(key) || isActivated(key)}
+
+        {/* DAILY PROGRESS */}
+        <div style={{
+          background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)',
+          border: '1px solid #7c3aed',
+          borderRadius: '8px',
+          padding: '10px 12px',
+          marginBottom: '12px'
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: '8px'
+          }}>
+            <span style={{ fontSize: '12px', fontWeight: '800', color: '#5b21b6' }}>
+              {completedSurveyCount}/{SURVEY_TOTAL} surveys completed • {dailySurveyCount}/{SURVEY_DAILY_LIMIT} today
+            </span>
+            <span style={{ fontSize: '11px', fontWeight: '700', color: '#7c3aed' }}>
+              {format(completedSurveyCount * SURVEY_EARNINGS)} earned
+            </span>
+          </div>
+          <div className="progress-bar" style={{
+            height: '8px',
+            background: '#ffffff',
+            borderRadius: '4px',
+            overflow: 'hidden',
+            border: '1px solid rgba(124, 58, 237, 0.2)'
+          }}>
+            <div
+              className="progress-bar-fill"
+              style={{
+                width: `${surveyProgressPercent}%`,
+                height: '100%',
+                background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
+                borderRadius: '4px',
+                transition: 'width 0.5s ease'
+              }}
+            ></div>
+          </div>
+        </div>
+
+        {/* 60 SURVEYS - SINGLE VERTICAL COLUMN */}
+        {surveyLoading ? (
+          <div style={{
+            padding: '24px',
+            textAlign: 'center',
+            color: '#7c3aed',
+            fontWeight: '700',
+            fontSize: '13px'
+          }}>
+            Loading surveys...
+          </div>
+        ) : surveys.length === 0 ? (
+          <div style={{
+            padding: '24px',
+            textAlign: 'center',
+            color: '#7c3aed',
+            fontWeight: '700',
+            fontSize: '13px'
+          }}>
+            No surveys available right now. Please check back later.
+          </div>
+        ) : (
+          <div className="survey-list" style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+            width: '100%'
+          }}>
+            {surveys.map((survey, index) => {
+              const isDone = survey.isCompleted === true;
+              const limitReached = dailySurveyCount >= SURVEY_DAILY_LIMIT;
+              const isStarting = startingSurveyId === survey._id;
+
+              return (
+                <div
+                  key={survey._id || index}
+                  className="survey-card"
+                  style={{
+                    background: '#ffffff',
+                    border: isDone ? '1px solid #16a34a' : '1px solid #7c3aed',
+                    borderRadius: '8px',
+                    padding: '10px 12px',
+                    boxShadow: isDone
+                      ? '0 2px 8px rgba(22, 163, 74, 0.12)'
+                      : '0 2px 8px rgba(124, 58, 237, 0.08)',
+                    opacity: isDone ? 0.9 : 1,
+                    transition: 'box-shadow 0.2s ease, border-color 0.2s ease'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                    <span
+                      className="survey-icon"
                       style={{
-                        flex: 1,
-                        padding: '10px',
-                        fontSize: '12px',
-                        fontWeight: '800',
-                        borderRadius: '6px',
-                        border: 'none',
-                        background: isCompleted(key) ? '#999' : '#7c3aed',
-                        color: 'white',
-                        cursor: (isCompleted(key) || isActivated(key)) ? 'not-allowed' : 'pointer',
-                        opacity: (isCompleted(key) || isActivated(key)) ? 0.6 : 1
+                        fontSize: '26px',
+                        lineHeight: 1,
+                        flexShrink: 0,
+                        width: '42px',
+                        height: '42px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)',
+                        borderRadius: '8px'
                       }}
                     >
-                      {isActivated(key) ? '✓ Completed' : isCompleted(key) ? '✓ Completed' : '🚀 Start Survey'}
-                    </button>
-                    
-                    {isCompleted(key) && !isActivated(key) && (
-                      <button 
-                        className="action-btn secondary"
-                        onClick={() => {
-                          navigate(`/activate?plan=${key.toLowerCase()}`);
-                        }}
+                      {getCategoryIcon(survey.category)}
+                    </span>
+
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      {survey.category && (
+                        <span style={{
+                          display: 'block',
+                          fontSize: '10px',
+                          fontWeight: '700',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px',
+                          color: '#7c3aed',
+                          marginBottom: '2px'
+                        }}>
+                          {survey.category}
+                        </span>
+                      )}
+                      <h4 style={{
+                        margin: 0,
+                        fontSize: '14px',
+                        fontWeight: '800',
+                        color: '#5b21b6',
+                        lineHeight: 1.3
+                      }}>
+                        {survey.title}
+                      </h4>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        marginTop: '6px',
+                        flexWrap: 'wrap'
+                      }}>
+                        <span className="survey-earnings-badge" style={{
+                          background: 'linear-gradient(135deg, #1f7405 0%, #2d9a07 100%)',
+                          color: '#ffffff',
+                          fontSize: '11px',
+                          fontWeight: '900',
+                          padding: '3px 10px',
+                          borderRadius: '12px'
+                        }}>
+                          KES 97
+                        </span>
+                        <span style={{
+                          fontSize: '11px',
+                          fontWeight: '600',
+                          color: '#6b7280'
+                        }}>
+                          ⏱️ 5-10 min
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ marginTop: '10px' }}>
+                    {isDone ? (
+                      <span className="survey-completed-badge" style={{
+                        display: 'block',
+                        textAlign: 'center',
+                        background: 'linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)',
+                        border: '1px solid #16a34a',
+                        color: '#15803d',
+                        fontSize: '12px',
+                        fontWeight: '800',
+                        padding: '9px',
+                        borderRadius: '6px'
+                      }}>
+                        ✓ Completed
+                      </span>
+                    ) : limitReached ? (
+                      <div className="survey-limit-message" style={{
+                        textAlign: 'center',
+                        background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+                        border: '1px solid #d97706',
+                        color: '#b45309',
+                        fontSize: '12px',
+                        fontWeight: '800',
+                        padding: '9px',
+                        borderRadius: '6px'
+                      }}>
+                        Limit Reached - Come Back Tomorrow
+                      </div>
+                    ) : (
+                      <button
+                        className="start-survey-btn"
+                        onClick={() => handleCompleteSurvey(survey._id)}
+                        disabled={isStarting}
                         style={{
-                          flex: 1,
+                          width: '100%',
                           padding: '10px',
                           fontSize: '12px',
                           fontWeight: '800',
                           borderRadius: '6px',
                           border: 'none',
-                          background: '#ef4444',
+                          background: isStarting ? '#999' : 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
                           color: 'white',
-                          cursor: 'pointer'
+                          cursor: isStarting ? 'not-allowed' : 'pointer',
+                          opacity: isStarting ? 0.7 : 1,
+                          transition: 'all 0.2s ease'
                         }}
                       >
-                        🔓 Activate
+                        {isStarting ? '⏳ Submitting...' : '🚀 Start Survey'}
                       </button>
                     )}
-                    
-{isActivated(key) && (
-                         <button 
-                           className="action-btn secondary"
-                           onClick={() => navigate("/withdraw-form")}
-                           style={{
-                             flex: 1,
-                             padding: '10px',
-                             fontSize: '12px',
-                             fontWeight: '800',
-                             borderRadius: '6px',
-                             border: 'none',
-                             background: '#06b6d4',
-                             color: 'white',
-                             cursor: 'pointer'
-                           }}
-                         >
-                           💰 Withdraw
-                         </button>
-                       )}
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       {/* EARNINGS DASHBOARD */}

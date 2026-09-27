@@ -1,416 +1,146 @@
-const mongoose = require("mongoose");
 const User = require("../models/User");
-const Notification = require("../models/Notification");
+const Survey = require("../models/Survey");
 
-const TOTAL_SURVEYS = 10;
-
-/* ===============================
-   PLAN TOTAL EARNINGS (SOURCE OF TRUTH)
-================================ */
-const PLAN_TOTAL_EARNINGS = {
-  REGULAR: 1500,
-  VIP: 2000,
-  VVIP: 3000,
-};
+const TOTAL_SURVEYS = 60;
+const DAILY_SURVEY_LIMIT = 5;
+const SURVEY_EARNINGS = 97;
 
 /* ===============================
-   SELECT PLAN (FIXED - WITH PROPER INITIALIZATION)
-================================ */
-exports.selectPlan = async (req, res) => {
-  const userId = req.user.id;
-  const { plan } = req.body;
-
-  if (!PLAN_TOTAL_EARNINGS[plan]) {
-    return res.status(400).json({ message: "Invalid plan" });
-  }
-
+   GET ALL SURVEYS
+=============================== */
+exports.getSurveys = async (req, res) => {
   try {
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const user = await User.findById(req.user.id).select(
+      "survey_categories_completed survey_completed_count daily_survey_date daily_survey_count"
+    );
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Initialize plans object if it doesn't exist
-    if (!user.plans) {
-      user.plans = {};
-    }
+    const surveys = await Survey.find({ isActive: true }).sort({ category: 1, title: 1 });
+    const completed = new Set(user.survey_categories_completed || []);
 
-    // Initialize ALL plans with proper structure if they don't exist
-    const allPlans = ['REGULAR', 'VIP', 'VVIP'];
-    allPlans.forEach(planKey => {
-      if (!user.plans[planKey]) {
-        user.plans[planKey] = {
-          surveys_completed: 0,
-          completed: false,
-          is_activated: false,
-          total_surveys: TOTAL_SURVEYS,
-          activated_at: null
-        };
-      }
-    });
-
-    // Set the active plan
-    user.active_plan = plan;
-
-    await user.save();
-
-    console.log(`✅ Plan selected - User: ${user.full_name || user.email}, Plan: ${plan}`);
-    console.log(`📊 Plans after selection:`, {
-      REGULAR: user.plans.REGULAR,
-      VIP: user.plans.VIP,
-      VVIP: user.plans.VVIP
-    });
+    const result = surveys.map(s => ({
+      _id: s._id,
+      title: s.title,
+      category: s.category,
+      earnings: s.earnings,
+      estimatedTime: s.estimatedTime,
+      totalQuestions: s.totalQuestions,
+      questions: s.questions,
+      isCompleted: completed.has(s._id.toString())
+    }));
 
     return res.json({
-      success: true,
-      plan,
-      plans: user.plans
+      surveys: result,
+      total_surveys: surveys.length,
+      total_completed: completed.size,
+      survey_earnings: SURVEY_EARNINGS
     });
   } catch (err) {
-    console.error("❌ Select plan error:", err);
+    console.error("getSurveys error:", err);
     return res.status(500).json({ message: "Server error" });
   }
 };
 
 /* ===============================
-   SUBMIT SURVEY (FIXED - NO EARNINGS ADDED HERE)
-================================ */
-exports.submitSurvey = async (req, res) => {
+   COMPLETE A SURVEY
+   Awards KES 97, enforces 5/day limit
+=============================== */
+exports.completeSurvey = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const { plan } = req.body;
+    const { surveyId } = req.params;
 
-    if (!PLAN_TOTAL_EARNINGS[plan]) {
-      return res.status(400).json({ message: "Invalid plan" });
-    }
+    const survey = await Survey.findById(surveyId);
+    if (!survey) return res.status(404).json({ message: "Survey not found" });
+    if (!survey.isActive) return res.status(400).json({ message: "Survey is not active" });
 
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // Check if plan exists
-    if (!user.plans || !user.plans[plan]) {
-      return res.status(400).json({ message: "Plan not selected" });
-    }
-
-    const userPlan = user.plans[plan];
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
     // Check if already completed
-    if (userPlan.completed) {
-      return res.json({
-        plan,
-        completed: true,
-        surveys_completed: TOTAL_SURVEYS,
-        activation_required: !userPlan.is_activated,
-        message: "You've already completed this plan. Please activate to withdraw."
+    const completed = user.survey_categories_completed || [];
+    if (completed.includes(survey._id.toString())) {
+      return res.status(400).json({ message: "Survey already completed" });
+    }
+
+    // Daily limit check
+    const today = new Date().toISOString().split("T")[0];
+    if (user.daily_survey_date !== today) {
+      user.daily_survey_date = today;
+      user.daily_survey_count = 0;
+    }
+
+    if ((user.daily_survey_count || 0) >= DAILY_SURVEY_LIMIT) {
+      return res.status(403).json({
+        message: `Daily limit reached. You can complete ${DAILY_SURVEY_LIMIT} surveys per day. Come back tomorrow!`,
+        remaining_today: 0,
+        limit: DAILY_SURVEY_LIMIT,
+        next_available: "tomorrow"
       });
     }
 
-    // Increment survey count
-    const currentCompleted = userPlan.surveys_completed || 0;
-    const newCompleted = currentCompleted + 1;
-
-    // Update the plan
-    user.plans[plan].surveys_completed = newCompleted;
-
-    // 🎯 COMPLETION POINT
-    if (newCompleted === TOTAL_SURVEYS) {
-      user.plans[plan].completed = true;
-      
-      console.log(`🎉 Plan completed - User: ${user.full_name || user.email}, Plan: ${plan}`);
-      
-      // ✅ Credit survey earnings to total_earned immediately on 10th survey
-      const completionEarnings = PLAN_TOTAL_EARNINGS[plan] || 0;
-      user.total_earned = (user.total_earned || 0) + completionEarnings;
-      console.log(`💰 Credited KES ${completionEarnings} to total_earned for ${plan} completion`);
-
-      // Create notification for survey completion
-      try {
-        const notification = new Notification({
-          user_id: user._id,
-          title: `🎉 ${plan} Plan Completed!`,
-          message: `Congratulations! You've completed all ${TOTAL_SURVEYS} surveys for your ${plan} plan. Submit payment of KES ${plan === 'REGULAR' ? 100 : plan === 'VIP' ? 150 : 200} to activate and withdraw KES ${PLAN_TOTAL_EARNINGS[plan]}.`,
-          action_route: "/activation",
-          type: "survey_completed"
-        });
-        await notification.save();
-      } catch (notifError) {
-        console.error("❌ Survey completion notification error:", notifError);
-      }
-    } else {
-      // Optional: Create notification for milestone (every 3 surveys)
-      if (newCompleted % 3 === 0 || newCompleted === 1) {
-        try {
-          const notification = new Notification({
-            user_id: user._id,
-            title: `📊 ${plan} Progress: ${newCompleted}/${TOTAL_SURVEYS}`,
-            message: `Great work! You've completed ${newCompleted} out of ${TOTAL_SURVEYS} surveys. ${TOTAL_SURVEYS - newCompleted} more to go!`,
-            action_route: "/surveys",
-            type: "system"
-          });
-          await notification.save();
-        } catch (notifError) {
-          console.error("❌ Milestone notification error:", notifError);
-        }
-      }
-    }
+    // Complete the survey
+    user.survey_categories_completed = completed;
+    user.survey_categories_completed.push(survey._id.toString());
+    user.survey_completed_count = (user.survey_completed_count || 0) + 1;
+    user.daily_survey_count = (user.daily_survey_count || 0) + 1;
+    user.total_survey_earnings = (user.total_survey_earnings || 0) + survey.earnings;
+    user.wallet_balance = (user.wallet_balance || 0) + survey.earnings;
 
     await user.save();
 
     return res.json({
       success: true,
-      plan,
-      completed: newCompleted === TOTAL_SURVEYS,
-      surveys_completed: newCompleted,
-      activation_required: newCompleted === TOTAL_SURVEYS && !userPlan.is_activated,
-      message: newCompleted === TOTAL_SURVEYS 
-        ? "🎉 Plan completed! Please activate to withdraw." 
-        : `✅ Survey ${newCompleted}/${TOTAL_SURVEYS} completed`
+      message: `Survey completed! Earned KES ${survey.earnings}`,
+      earnings: survey.earnings,
+      new_balance: user.wallet_balance,
+      total_completed: user.survey_completed_count,
+      daily_count: user.daily_survey_count,
+      remaining_today: DAILY_SURVEY_LIMIT - user.daily_survey_count,
+      all_surveys_done: user.survey_completed_count >= TOTAL_SURVEYS
     });
-  } catch (error) {
-    console.error("❌ Survey submit error:", error);
+  } catch (err) {
+    console.error("completeSurvey error:", err);
     return res.status(500).json({ message: "Server error" });
   }
 };
 
 /* ===============================
-   BATCH SUBMIT SURVEYS (FIXED - NO EARNINGS ADDED HERE)
-================================ */
-exports.batchSubmitSurveys = async (req, res) => {
+   GET SURVEY STATS
+=============================== */
+exports.getSurveyStats = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const { plan, count } = req.body;
+    const user = await User.findById(req.user.id).select(
+      "survey_categories_completed survey_completed_count daily_survey_date daily_survey_count total_survey_earnings wallet_balance"
+    );
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (!PLAN_TOTAL_EARNINGS[plan]) {
-      return res.status(400).json({ message: "Invalid plan" });
-    }
-
-    if (!count || count < 1 || count > 10) {
-      return res.status(400).json({ 
-        message: "Invalid count. Must be between 1 and 10" 
-      });
-    }
-
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // Check if plan exists
-    if (!user.plans || !user.plans[plan]) {
-      return res.status(400).json({ message: "Plan not selected" });
-    }
-
-    const userPlan = user.plans[plan];
-
-    // Check if already completed
-    if (userPlan.completed) {
-      return res.json({
-        success: true,
-        plan,
-        completed: true,
-        surveys_completed: TOTAL_SURVEYS,
-        activation_required: !userPlan.is_activated,
-        added: 0,
-        message: "Plan already completed. Please activate to withdraw."
-      });
-    }
-
-    const currentCompleted = userPlan.surveys_completed || 0;
-    const newCompleted = Math.min(currentCompleted + count, TOTAL_SURVEYS);
-    const actualAdded = newCompleted - currentCompleted;
-
-    if (actualAdded <= 0) {
-      return res.json({
-        success: true,
-        plan,
-        completed: userPlan.completed,
-        surveys_completed: currentCompleted,
-        added: 0
-      });
-    }
-
-    // Update the plan
-    user.plans[plan].surveys_completed = newCompleted;
-
-    const isNowCompleted = newCompleted >= TOTAL_SURVEYS && !userPlan.completed;
-
-    if (isNowCompleted) {
-      user.plans[plan].completed = true;
-      
-      console.log(`🎉 Plan completed via batch - User: ${user.full_name || user.email}, Plan: ${plan}`);
-      
-      // ✅ Credit survey earnings to total_earned immediately on 10th survey
-      const completionEarnings = PLAN_TOTAL_EARNINGS[plan] || 0;
-      user.total_earned = (user.total_earned || 0) + completionEarnings;
-      console.log(`💰 Credited KES ${completionEarnings} to total_earned for ${plan} completion`);
-
-      try {
-        const notification = new Notification({
-          user_id: user._id,
-          title: `🎉 ${plan} Plan Completed! (Batch)`,
-          message: `Congratulations! You've completed all ${TOTAL_SURVEYS} surveys for your ${plan} plan. Submit payment of KES ${plan === 'REGULAR' ? 100 : plan === 'VIP' ? 150 : 200} to activate and withdraw KES ${PLAN_TOTAL_EARNINGS[plan]}.`,
-          action_route: "/activation",
-          type: "survey_completed"
-        });
-        await notification.save();
-      } catch (notifError) {
-        console.error("❌ Batch completion notification error:", notifError);
-      }
-    } else {
-      // Create notification for batch progress
-      try {
-        const notification = new Notification({
-          user_id: user._id,
-          title: `🚀 ${plan} Plan Progress`,
-          message: `You've completed ${newCompleted} out of ${TOTAL_SURVEYS} surveys for your ${plan} plan. ${TOTAL_SURVEYS - newCompleted} more to go!`,
-          action_route: "/surveys",
-          type: "system"
-        });
-        await notification.save();
-      } catch (notifError) {
-        console.error("❌ Batch progress notification error:", notifError);
-      }
-    }
-
-    await user.save();
+    const today = new Date().toISOString().split("T")[0];
+    const dailyCount = user.daily_survey_date === today ? (user.daily_survey_count || 0) : 0;
 
     return res.json({
-      success: true,
-      plan,
-      completed: isNowCompleted || userPlan.completed,
-      surveys_completed: newCompleted,
-      added: actualAdded,
-      activation_required: newCompleted >= TOTAL_SURVEYS && !userPlan.is_activated,
-      message: isNowCompleted 
-        ? "🎉 Plan completed! Please activate to withdraw." 
-        : `✅ Added ${actualAdded} surveys. Total: ${newCompleted}/${TOTAL_SURVEYS}`
+      total_surveys: TOTAL_SURVEYS,
+      total_completed: user.survey_completed_count || 0,
+      total_earnings: user.total_survey_earnings || 0,
+      wallet_balance: user.wallet_balance || 0,
+      daily_count: dailyCount,
+      remaining_today: Math.max(0, DAILY_SURVEY_LIMIT - dailyCount),
+      all_surveys_done: (user.survey_completed_count || 0) >= TOTAL_SURVEYS
     });
-
-  } catch (error) {
-    console.error("❌ Batch submit surveys error:", error);
+  } catch (err) {
+    console.error("getSurveyStats error:", err);
     return res.status(500).json({ message: "Server error" });
   }
 };
 
 /* ===============================
-   GET SURVEY PROGRESS (FIXED)
-================================ */
-exports.getSurveyProgress = async (req, res) => {
+   GET SURVEY CATEGORIES
+=============================== */
+exports.getCategories = async (req, res) => {
   try {
-    const userId = req.user.id;
-
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const progress = {};
-    let totalCompleted = 0;
-    let activePlan = null;
-    let totalEarned = user.total_earned || 0;
-
-    // Ensure all plans exist
-    if (!user.plans) {
-      user.plans = {};
-    }
-
-    const allPlans = ['REGULAR', 'VIP', 'VVIP'];
-    allPlans.forEach(planKey => {
-      if (!user.plans[planKey]) {
-        user.plans[planKey] = {
-          surveys_completed: 0,
-          completed: false,
-          is_activated: false,
-          total_surveys: TOTAL_SURVEYS
-        };
-      }
-    });
-
-    // Calculate progress for each plan
-    for (const [planKey, planData] of Object.entries(user.plans)) {
-      if (planData && typeof planData === 'object') {
-        const surveysCompleted = planData.surveys_completed || 0;
-        const isPlanActivated = planData.is_activated || false;
-        const isPlanCompleted = planData.completed || false;
-        
-        progress[planKey] = {
-          surveys_completed: surveysCompleted,
-          completed: isPlanCompleted,
-          is_activated: isPlanActivated,
-          total_surveys: TOTAL_SURVEYS,
-          total_earnings: PLAN_TOTAL_EARNINGS[planKey] || 0,
-          progress_percentage: Math.min((surveysCompleted / TOTAL_SURVEYS) * 100, 100),
-          can_activate: surveysCompleted >= TOTAL_SURVEYS && !isPlanActivated,
-          can_withdraw: isPlanActivated && isPlanCompleted
-        };
-
-        totalCompleted += surveysCompleted;
-
-        // Find active plan (first non-completed plan)
-        if (!activePlan && surveysCompleted < TOTAL_SURVEYS) {
-          activePlan = planKey;
-        }
-      }
-    }
-
-    // If all plans are completed, set active plan to null
-    if (!activePlan && totalCompleted >= TOTAL_SURVEYS * 3) {
-      activePlan = null;
-    }
-
-    res.json({
-      success: true,
-      total_surveys_completed: totalCompleted,
-      active_plan: activePlan,
-      total_earned: totalEarned,
-      plans: progress,
-      welcome_bonus: {
-        received: user.welcome_bonus_received || false,
-        amount: user.welcome_bonus || 1200,
-        withdrawn: user.welcome_bonus_withdrawn || false
-      }
-    });
-  } catch (error) {
-    console.error("❌ Get survey progress error:", error);
+    const categories = await Survey.distinct("category");
+    return res.json({ categories });
+  } catch (err) {
+    console.error("getCategories error:", err);
     return res.status(500).json({ message: "Server error" });
-  }
-};
-
-/* ===============================
-   RESET PLAN (DEBUG ONLY - REMOVE IN PRODUCTION)
-================================ */
-exports.resetPlan = async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const { plan } = req.body;
-
-    if (!PLAN_TOTAL_EARNINGS[plan]) {
-      return res.status(400).json({ message: "Invalid plan" });
-    }
-
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // Reset the specified plan
-    if (user.plans && user.plans[plan]) {
-      user.plans[plan].surveys_completed = 0;
-      user.plans[plan].completed = false;
-      // Don't reset is_activated if you want to keep activation status
-    }
-
-    await user.save();
-
-    res.json({
-      success: true,
-      message: `Plan ${plan} reset successfully`,
-      plan: user.plans[plan]
-    });
-  } catch (error) {
-    console.error("❌ Reset plan error:", error);
-    res.status(500).json({ message: "Server error" });
   }
 };

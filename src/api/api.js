@@ -170,8 +170,20 @@ export const affiliateApi = {
 };
 
 /* =====================================================
+   📋 SURVEYS API
+   - 60 individual surveys, KES 97 each
+   - 5 surveys per day limit
+   ==================================================== */
+export const surveyApi = {
+  getSurveys: () => api.get("/surveys"),
+  getStats: () => api.get("/surveys/stats"),
+  getCategories: () => api.get("/surveys/categories"),
+  completeSurvey: (surveyId) => api.post(`/surveys/${surveyId}/complete`)
+};
+
+/* =====================================================
    👑 ADMIN AFFILIATE API
-==================================================== */
+   ==================================================== */
 export const adminAffiliateApi = {
   getAllAffiliates: () => adminApi.get("/affiliate/admin/all")
 };
