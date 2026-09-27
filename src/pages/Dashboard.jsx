@@ -253,8 +253,8 @@ const SURVEY_TOTAL = 60;
   const [toast, setToast] = useState("");
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
-    totalEarned: 0,
-    availableBalance: 0,
+    totalEarned: 1200,
+    availableBalance: 1200,
     affiliateEarnings: 0,
     totalSurveysCompleted: 0,
     totalWithdrawals: 0
@@ -335,18 +335,16 @@ const load = async () => {
           isCompleted: !!completed[s._id]
         })));
 
-        // Calculate survey earnings from localStorage completions
+        // Calculate balance: 1200 welcome bonus base + survey earnings - withdrawals
         const completedCount = Object.keys(completed).length;
         const surveyEarnings = completedCount * SURVEY_EARNINGS;
-
-        let availableBalance = Number(resUser.data.total_earned || 0);
+        const backendTotalEarned = Number(resUser.data.total_earned || 0);
         const totalWithdrawals = Number(resUser.data.total_withdrawals || 0);
 
-        // Use localStorage earnings if higher than backend
-        const expectedBalance = surveyEarnings - totalWithdrawals;
-        if (expectedBalance > availableBalance) {
-            availableBalance = expectedBalance;
-        }
+        // Base balance starts at 1200 (welcome bonus) plus any backend earnings
+        const baseBalance = Math.max(1200, backendTotalEarned);
+        let availableBalance = baseBalance + surveyEarnings - totalWithdrawals;
+        if (availableBalance < 0) availableBalance = 0;
 
         setStats({
           totalEarned: availableBalance + totalWithdrawals,
@@ -408,12 +406,15 @@ const load = async () => {
       })));
       setDailySurveyCount(getDailySurveyCount());
       const completedCount = Object.keys(completed).length;
-      const earnings = completedCount * SURVEY_EARNINGS;
+      const surveyEarnings = completedCount * SURVEY_EARNINGS;
+      const backendBase = Math.max(1200, Number(user?.total_earned || 0));
+      const totalWithdrawals = Number(user?.total_withdrawals || 0);
+      const newBalance = backendBase + surveyEarnings - totalWithdrawals;
       setStats(prev => ({
         ...prev,
         totalSurveysCompleted: completedCount,
-        availableBalance: Math.max(prev.availableBalance || 0, earnings),
-        totalEarned: Math.max(prev.totalEarned || 0, earnings)
+        availableBalance: Math.max(0, newBalance),
+        totalEarned: backendBase + surveyEarnings
       }));
     };
     window.addEventListener("storage", handleSurveyUpdate);
@@ -515,14 +516,20 @@ const load = async () => {
     const newDailyCount = dailySurveyCount + 1;
     setDailySurveyCount(newDailyCount);
 
-    // Add KES 97 to balance
-    const newBalance = (stats.availableBalance || 0) + SURVEY_EARNINGS;
-    const newTotalEarned = (stats.totalEarned || 0) + SURVEY_EARNINGS;
+    // Recalculate balance from localStorage completions
+    const completed = getCompletedSurveys();
+    const completedCount = Object.keys(completed).length;
+    const surveyEarnings = completedCount * SURVEY_EARNINGS;
+    const backendBase = Math.max(1200, Number(user?.total_earned || 0));
+    const totalWithdrawals = Number(user?.total_withdrawals || 0);
+    const newBalance = backendBase + surveyEarnings - totalWithdrawals;
+    const newTotalEarned = backendBase + surveyEarnings;
+
     setStats(prev => ({
       ...prev,
-      availableBalance: newBalance,
+      availableBalance: Math.max(0, newBalance),
       totalEarned: newTotalEarned,
-      totalSurveysCompleted: (prev.totalSurveysCompleted || 0) + 1
+      totalSurveysCompleted: completedCount
     }));
 
     setToast(`Survey completed! Earned ${format(SURVEY_EARNINGS)}`);
@@ -755,7 +762,6 @@ const load = async () => {
 
     if (!accountActivated) {
       // Show notification card with bold ACTIVATE NOW button inside it
-      // Redirect to activate page with REGULAR plan so user can pay
       setFullScreenNotification({
         message: "Activate your account first to unlock withdrawals.",
         redirect: "/activate?plan=regular",
@@ -765,13 +771,18 @@ const load = async () => {
       return;
     }
 
-    const totalCompleted = stats?.totalSurveysCompleted || 0;
-    const remaining = 60 - totalCompleted;
+    // User is activated — check survey completion
+    const completedCount = Object.keys(getCompletedSurveys()).length;
+    const remaining = 60 - completedCount;
 
-    if (totalCompleted < 60) {
-      setToast(`Complete ${remaining} more surveys to withdraw`);
-      goToSurveys();
-      setTimeout(() => setToast(""), 4000);
+    if (completedCount < 60) {
+      // Show notification card with Continue button to dashboard
+      setFullScreenNotification({
+        message: `Complete ${remaining} more surveys to reach 60 and unlock withdrawals.`,
+        redirect: "/dashboard",
+        goDashboard: true,
+        showContinueButton: true
+      });
       return;
     }
 
@@ -1004,6 +1015,50 @@ const load = async () => {
                 >
                   <span style={{ fontSize: '22px' }}>🔓</span>
                   ACTIVATE NOW
+                </button>
+              )}
+              
+              {fullScreenNotification.showContinueButton && (
+                <button
+                  onClick={() => {
+                    document.body.style.overflow = '';
+                    document.body.style.position = '';
+                    document.body.style.width = '';
+                    document.body.style.height = '';
+                    
+                    setFullScreenNotification(null);
+                    navigate(fullScreenNotification.redirect || "/dashboard");
+                  }}
+                  style={{
+                    background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '14px',
+                    padding: '18px 24px',
+                    fontSize: '18px',
+                    fontWeight: '900',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    width: '100%',
+                    boxShadow: '0 10px 30px rgba(124, 58, 237, 0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-3px)';
+                    e.currentTarget.style.boxShadow = '0 15px 40px rgba(124, 58, 237, 0.7)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 10px 30px rgba(124, 58, 237, 0.5)';
+                  }}
+                >
+                  <span style={{ fontSize: '22px' }}>📊</span>
+                  CONTINUE
                 </button>
               )}
               
