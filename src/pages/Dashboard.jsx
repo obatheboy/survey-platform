@@ -960,7 +960,7 @@ const SURVEY_TOTAL = 60;
                     document.body.style.height = '';
                     
                     setFullScreenNotification(null);
-                    navigate("/activate");
+                    navigate(fullScreenNotification.redirect || "/activate");
                   }}
                   style={{
                     background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',

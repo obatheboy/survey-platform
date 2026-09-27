@@ -18,7 +18,7 @@ export default function Auth() {
     full_name: "",
     phone: "",
     referralCode: referralCodeFromUrl || "",
-    country: "",
+    country: COUNTRIES.KENYA,
   });
    const [regMessage, setRegMessage] = useState("");
    const [inviterInfo, setInviterInfo] = useState(null);
@@ -338,35 +338,42 @@ export default function Auth() {
                 </div>
               )}
 
-              <div style={{ marginTop: "16px", marginBottom: "8px" }}>
-                <label style={{ color: "#94a3b8", fontSize: "12px", fontWeight: 600, marginBottom: "6px", display: "block" }}>
-                  🌍 Select Your Country
-                </label>
-                <select
-                  value={regData.country}
-                  onChange={(e) => {
-                    setCtxCountry(e.target.value);
-                    setRegData(prev => ({ ...prev, country: e.target.value }));
-                  }}
-                  style={{
-                    width: "100%",
-                    padding: "12px 14px",
-                    background: "rgba(255, 255, 255, 0.06)",
-                    border: "3px solid #7c3aed",
-                    borderRadius: "8px",
-                    color: "#fff",
-                    fontSize: "14px",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    outline: "none",
-                    boxShadow: "0 0 0 3px rgba(124, 58, 237, 0.25)",
-                  }}
-                >
-                  <option value="" disabled style={{background:"#1a1a2e", color:"#666"}}>🌍 Select Your Country</option>
-                  <option value={COUNTRIES.KENYA} style={{ background: "#1a1a2e", color: "#fff" }}>🇰🇪 Kenya (KES)</option>
-                  <option value={COUNTRIES.UGANDA} style={{ background: "#1a1a2e", color: "#fff" }}>🇺🇬 Uganda (UGX)</option>
-                </select>
-              </div>
+<div style={{ marginTop: "16px", marginBottom: "8px", position: "relative" }}>
+                 <label style={{ color: "#94a3b8", fontSize: "12px", fontWeight: 600, marginBottom: "6px", display: "block" }}>
+                   🌍 Select Your Country
+                 </label>
+                 <select
+                   value={regData.country}
+                   onChange={(e) => {
+                     setCtxCountry(e.target.value);
+                     setRegData(prev => ({ ...prev, country: e.target.value }));
+                   }}
+                   style={{
+                     width: "100%",
+                     padding: "12px 40px 12px 14px",
+                     background: "rgba(255, 255, 255, 0.06)",
+                     border: "3px solid #7c3aed",
+                     borderRadius: "8px",
+                     color: "#fff",
+                     fontSize: "14px",
+                     fontWeight: 700,
+                     cursor: "pointer",
+                     outline: "none",
+                     boxShadow: "0 0 0 3px rgba(124, 58, 237, 0.25)",
+                     appearance: "none",
+                     WebkitAppearance: "none",
+                     MozAppearance: "none",
+                     backgroundImage: "url('data:image/svg+xml;utf8,<svg fill=%22white%22 height=%2212%22 viewBox=%220 0 24 24%22 width=%2224%22 xmlns=%22http://www.w3.org/2000/svg%22><path d=%22M7 10l5 5 5-5z%22/></svg>')",
+                     backgroundRepeat: "no-repeat",
+                     backgroundPosition: "right 14px center",
+                   }}
+                 >
+                   <option value="" disabled style={{background:"#1a1a2e", color:"#666"}}>🌍 Select Your Country</option>
+                   <option value={COUNTRIES.KENYA} style={{ background: "#1a1a2e", color: "#fff" }}>🇰🇪 Kenya (KES)</option>
+                   <option value={COUNTRIES.UGANDA} style={{ background: "#1a1a2e", color: "#fff" }}>🇺🇬 Uganda (UGX)</option>
+                 </select>
+                 <span style={{ position: "absolute", right: "14px", top: "38px", pointerEvents: "none", fontSize: "10px", color: "#7c3aed", fontWeight: "900" }}>▼</span>
+               </div>
               {errors.country && <span style={styles.error}>{errors.country}</span>}
 
               <div style={styles.inputWrapper}>

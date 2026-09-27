@@ -364,29 +364,15 @@ const [planKey, setPlanKey] = useState(null);
            }
          }
 
-         if (planFromQuery && ACTIVATION_PLANS.includes(planFromQuery)) {
-           const nextPlan = getNextActivationPlan(res.data);
-
-           if (isPlanDone(res.data, planFromQuery)) {
-             if (nextPlan) {
-               navigate(getDashboardFocusUrl(nextPlan), { replace: true });
-             } else {
-               navigate("/withdraw-form", { replace: true });
-             }
-             return;
-           }
-
-           if (nextPlan && nextPlan !== planFromQuery) {
-             navigate(getDashboardFocusUrl(nextPlan), { replace: true });
-             return;
-           }
-
-           const planData = res.data.plans?.[planFromQuery];
-           if (!planData || (planData.surveys_completed || 0) < 10 || planData.completed !== true) {
-             navigate(getDashboardFocusUrl(planFromQuery), { replace: true });
-             return;
-           }
-         }
+if (planFromQuery && ACTIVATION_PLANS.includes(planFromQuery)) {
+            // Always show activation page when plan is specified in URL
+            // (user came from withdraw button or dashboard activation prompt)
+            const planData = res.data.plans?.[planFromQuery];
+            setPlanKey(planFromQuery);
+            setPlanState(planData || { is_activated: false, completed: false, surveys_completed: 0 });
+            setLoading(false);
+            return;
+          }
 
          if (!planFromQuery) {
            const nextPlan = getNextActivationPlan(res.data);
