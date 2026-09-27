@@ -743,9 +743,10 @@ const SURVEY_TOTAL = 60;
 
     if (!accountActivated) {
       // Show notification card with bold ACTIVATE NOW button inside it
+      // Redirect to activate page with REGULAR plan so user can pay
       setFullScreenNotification({
         message: "Activate your account first to unlock withdrawals.",
-        redirect: "/activate",
+        redirect: "/activate?plan=regular",
         goDashboard: false,
         showActivateButton: true
       });
@@ -1357,7 +1358,7 @@ const SURVEY_TOTAL = 60;
               </div>
             </div>
 <button
-               onClick={() => navigate("/withdraw-form")}
+               onClick={handleWithdrawClick}
                style={{
                  background: 'linear-gradient(135deg, #ff7a7a, #ef4444)',
                  border: 'none',
