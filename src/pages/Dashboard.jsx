@@ -329,6 +329,17 @@ setUser(resUser.data);
         // Today's survey count (5/day limit) — use localStorage as source of truth
         setDailySurveyCount(getDailySurveyCount());
 
+        // Check if daily limit was just reached - show congratulation popup
+        const dailyCount = getDailySurveyCount();
+        if (dailyCount >= SURVEY_DAILY_LIMIT) {
+          const hasShownPopup = localStorage.getItem("daily_complete_popup_shown");
+          const today = new Date().toISOString().split("T")[0];
+          if (hasShownPopup !== today) {
+            localStorage.setItem("daily_complete_popup_shown", today);
+            setTimeout(() => setShowDailyCompletePopup(true), 1000);
+          }
+        }
+
         // Mark completed surveys from localStorage
         const completed = getCompletedSurveys();
         setSurveysState(prev => prev.map(s => ({
