@@ -22,6 +22,7 @@ exports.getSurveys = async (req, res) => {
       _id: s._id,
       title: s.title,
       category: s.category,
+      description: s.description,
       earnings: s.earnings,
       estimatedTime: s.estimatedTime,
       totalQuestions: s.totalQuestions,
@@ -37,6 +38,36 @@ exports.getSurveys = async (req, res) => {
     });
   } catch (err) {
     console.error("getSurveys error:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+/* ===============================
+   GET SINGLE SURVEY BY ID
+   Used by SurveyTake page to load a specific survey
+=============================== */
+exports.getSurveyById = async (req, res) => {
+  try {
+    const { surveyId } = req.params;
+
+    const survey = await Survey.findById(surveyId);
+    if (!survey) {
+      return res.status(404).json({ message: "Survey not found" });
+    }
+
+    return res.json({
+      _id: survey._id,
+      title: survey.title,
+      category: survey.category,
+      description: survey.description,
+      earnings: survey.earnings,
+      estimatedTime: survey.estimatedTime,
+      totalQuestions: survey.totalQuestions,
+      questions: survey.questions,
+      isActive: survey.isActive
+    });
+  } catch (err) {
+    console.error("getSurveyById error:", err);
     return res.status(500).json({ message: "Server error" });
   }
 };
