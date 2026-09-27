@@ -1682,7 +1682,7 @@ const load = async () => {
                  e.currentTarget.style.boxShadow = '0 3px 10px rgba(255, 107, 107, 0.4)';
                }}
              >
-               {welcomeBonusPaid ? '✓ CLAIMED' : 'CLAIM NOW'}
+               {welcomeBonusPaid ? '✅ CLAIMED' : 'CLAIM NOW'}
              </button>
           </div>
         </div>
