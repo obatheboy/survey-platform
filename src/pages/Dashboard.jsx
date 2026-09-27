@@ -1863,55 +1863,87 @@ const load = async () => {
                        }}>
                          Limit Reached - Come Back Tomorrow
                        </div>
-                     ) : showSurveyOverlay ? (
-                       <div
-                         style={{
-                           position: 'absolute',
-                           top: 0,
-                           left: 0,
-                           right: 0,
-                           bottom: 0,
-                           background: 'rgba(124, 58, 237, 0.55)',
-                           backdropFilter: 'blur(2px)',
-                           WebkitBackdropFilter: 'blur(2px)',
-                           display: 'flex',
-                           flexDirection: 'column',
-                           alignItems: 'center',
-                                           justifyContent: 'center',
-                                           gap: '8px',
-                                           padding: '16px',
-                                           borderRadius: '8px',
-                                           cursor: 'pointer',
-                                           zIndex: 5
-                                         }}
-                                         onClick={() => navigate('/activate?plan=regular')}
-                                       >
-                                         <span style={{ fontSize: '32px' }}>🔒</span>
-                                         <span style={{
-                                           color: '#ffffff',
-                                           fontSize: '13px',
-                                           fontWeight: '900',
-                                           textShadow: '0 1px 4px rgba(0,0,0,0.4)',
-                                           textAlign: 'center'
-                                         }}>
-                                           Activate to unlock
-                                         </span>
-                                       </div>
-                                     ) : (
-                                       <button
-                                         className="start-survey-btn"
-                                         onClick={() => navigate(`/surveys/${survey._id}`)}
-                                         style={{
-                                           width: '100%',
-                                           padding: '10px',
-                                           fontSize: '12px',
-                                           fontWeight: '800',
-                                           borderRadius: '6px',
-                                           border: 'none',
-                                           background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
-                                           color: 'white',
-                                           cursor: 'pointer',
-                                           opacity: isStarting ? 0.7 : 1,
+) : showSurveyOverlay ? (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            background: 'rgba(124, 58, 237, 0.12)',
+                            backdropFilter: 'blur(0px)',
+                            WebkitBackdropFilter: 'blur(0px)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'flex-end',
+                            gap: '6px',
+                            padding: '12px',
+                            borderRadius: '8px',
+                            cursor: 'default',
+                            zIndex: 5
+                          }}
+                        >
+                          <span style={{
+                            color: '#7c3aed',
+                            fontSize: '12px',
+                            fontWeight: '900',
+                            textAlign: 'center',
+                            textShadow: '0 1px 2px rgba(255,255,255,0.8)'
+                          }}>
+                            🔒 Activate to unlock
+                          </span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setFullScreenNotification({
+                                message: "Activate your account first to unlock surveys.",
+                                redirect: "/activate?plan=regular",
+                                goDashboard: false,
+                                showActivateButton: true
+                              });
+                            }}
+                            style={{
+                              background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                              color: '#1a1a1a',
+                              border: 'none',
+                              borderRadius: '8px',
+                              padding: '8px 16px',
+                              fontSize: '12px',
+                              fontWeight: '900',
+                              cursor: 'pointer',
+                              boxShadow: '0 4px 12px rgba(245, 158, 11, 0.5)',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.5px'
+                            }}
+                            onMouseOver={(e) => {
+                              e.currentTarget.style.transform = 'translateY(-2px)';
+                              e.currentTarget.style.boxShadow = '0 6px 16px rgba(245, 158, 11, 0.7)';
+                            }}
+                            onMouseOut={(e) => {
+                              e.currentTarget.style.transform = 'translateY(0)';
+                              e.currentTarget.style.boxShadow = '0 4px 12px rgba(245, 158, 11, 0.5)';
+                            }}
+                          >
+                            Activate Now
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          className="start-survey-btn"
+                          onClick={() => navigate(`/surveys/${survey._id}`)}
+                          style={{
+                            width: '100%',
+                            padding: '10px',
+                            fontSize: '12px',
+                            fontWeight: '800',
+                            borderRadius: '6px',
+                            border: 'none',
+                            background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
+                            color: 'white',
+                            cursor: 'pointer',
+                            opacity: isStarting ? 0.7 : 1,
                                            transition: 'all 0.2s ease'
                                          }}
                                        >
