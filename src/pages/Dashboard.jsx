@@ -291,6 +291,7 @@ const SURVEY_TOTAL = 60;
    const [fullScreenNotification, setFullScreenNotification] = useState(null);
    const [show72HourAffiliatePrompt, setShow72HourAffiliatePrompt] = useState(false);
    const [showSurveyOverlay, setShowSurveyOverlay] = useState(true);
+  const [showDailyCompletePopup, setShowDailyCompletePopup] = useState(false);
 
   /* =========================
      GAMIFICATION STATE
@@ -550,6 +551,13 @@ const load = async () => {
     setToast(`Survey completed! Earned ${format(SURVEY_EARNINGS)}`);
     setStartingSurveyId(null);
     setTimeout(() => setToast(""), 4000);
+
+    // Check if daily limit reached - show beautiful popup
+    if (newDailyCount >= SURVEY_DAILY_LIMIT) {
+      setTimeout(() => {
+        setShowDailyCompletePopup(true);
+      }, 1500);
+    }
   };
 
   /* =========================
@@ -1137,6 +1145,139 @@ const load = async () => {
         </div>
       )}
 
+      {showDailyCompletePopup && (
+  <div style={{
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'linear-gradient(135deg, #0f0a1a 0%, #1a1128 50%, #0f0a1a 100%)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '20px',
+    padding: '40px',
+    zIndex: 9999,
+    animation: 'fadeIn 0.5s ease-out'
+  }}>
+    <style dangerouslySetInnerHTML={{__html: `
+      @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      @keyframes bounceIn {
+        0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+        50% { transform: scale(1.2) rotate(10deg); opacity: 1; }
+        100% { transform: scale(1) rotate(0deg); opacity: 1; }
+      }
+      @keyframes sparkle {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 1; }
+      }
+    `}} />
+    
+    <div style={{
+      fontSize: '80px',
+      animation: 'bounceIn 0.8s ease-out 0.2s both',
+      filter: 'drop-shadow(0 0 30px rgba(250, 204, 21, 0.6))'
+    }}>
+      🏆
+    </div>
+    
+    <h2 style={{
+      color: '#fbbf24',
+      margin: 0,
+      fontSize: '36px',
+      fontWeight: '900',
+      textAlign: 'center',
+      textShadow: '0 4px 20px rgba(250, 204, 21, 0.5)',
+      animation: 'fadeIn 0.8s ease-out 0.4s both'
+    }}>
+      Amazing Work!
+    </h2>
+    
+    <p style={{
+      color: 'rgba(255,255,255,0.95)',
+      fontSize: '20px',
+      fontWeight: '700',
+      textAlign: 'center',
+      margin: 0,
+      animation: 'fadeIn 0.8s ease-out 0.5s both'
+    }}>
+      You completed your daily surveys!
+    </p>
+    
+    <div style={{
+      background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(91, 33, 182, 0.3))',
+      border: '2px solid rgba(124, 58, 237, 0.5)',
+      borderRadius: '20px',
+      padding: '20px 40px',
+      textAlign: 'center',
+      animation: 'fadeIn 0.8s ease-out 0.6s both'
+    }}>
+      <p style={{
+        color: '#c4b5fd',
+        fontSize: '16px',
+        margin: '0 0 8px 0',
+        fontWeight: '600'
+      }}>
+        📅 See you tomorrow!
+      </p>
+      <p style={{
+        color: 'rgba(255,255,255,0.8)',
+        fontSize: '14px',
+        margin: 0,
+        lineHeight: '1.5'
+      }}>
+        Come back tomorrow and continue earning more!
+      </p>
+    </div>
+    
+    <div style={{
+      display: 'flex',
+      gap: '12px',
+      marginTop: '10px',
+      animation: 'fadeIn 0.8s ease-out 0.7s both'
+    }}>
+      <span style={{ fontSize: '24px', animation: 'sparkle 1.5s infinite' }}>⭐</span>
+      <span style={{ fontSize: '28px', animation: 'sparkle 1.5s infinite 0.2s' }}>✨</span>
+      <span style={{ fontSize: '24px', animation: 'sparkle 1.5s infinite 0.4s' }}>⭐</span>
+    </div>
+    
+    <button
+      onClick={() => setShowDailyCompletePopup(false)}
+      style={{
+        background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
+        color: 'white',
+        border: 'none',
+        borderRadius: '16px',
+        padding: '18px 48px',
+        fontSize: '18px',
+        fontWeight: '900',
+        cursor: 'pointer',
+        marginTop: '10px',
+        boxShadow: '0 10px 40px rgba(124, 58, 237, 0.6)',
+        textTransform: 'uppercase',
+        letterSpacing: '1px',
+        animation: 'fadeIn 0.8s ease-out 0.8s both',
+        transition: 'all 0.3s ease'
+      }}
+      onMouseOver={(e) => {
+        e.currentTarget.style.transform = 'translateY(-3px)';
+        e.currentTarget.style.boxShadow = '0 15px 50px rgba(124, 58, 237, 0.8)';
+      }}
+      onMouseOut={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = '0 10px 40px rgba(124, 58, 237, 0.6)';
+      }}
+    >
+      🎉 Awesome!
+    </button>
+  </div>
+)}
+
       {/* MAIN MENU HEADER */}
       <header className="dashboard-main-header">
         <div className="header-title-container">
@@ -1544,89 +1685,13 @@ const load = async () => {
         </div>
       </section>
 {/* AVAILABLE SURVEYS - 60 individual surveys (single column) */}
-       <section className="dashboard-section" id="surveys-section" ref={surveysSectionRef} style={{ position: 'relative' }}>
-         {showSurveyOverlay && (
-           <div
-             style={{
-               position: 'absolute',
-               top: 0,
-               left: 0,
-               right: 0,
-               bottom: 0,
-               background: 'rgba(0, 0, 0, 0.75)',
-               backdropFilter: 'blur(4px)',
-               WebkitBackdropFilter: 'blur(4px)',
-               display: 'flex',
-               flexDirection: 'column',
-               alignItems: 'center',
-               justifyContent: 'center',
-               gap: '16px',
-               padding: '30px',
-               borderRadius: '8px',
-               zIndex: 10,
-               cursor: 'pointer',
-               textAlign: 'center'
-             }}
-             onClick={() => {
-               navigate('/activate?plan=regular');
-             }}
-           >
-             <span style={{ fontSize: '48px' }}>🔒</span>
-             <h3 style={{
-               color: '#ffffff',
-               margin: 0,
-               fontSize: '20px',
-               fontWeight: '900',
-               textShadow: '0 2px 8px rgba(0,0,0,0.5)'
-             }}>
-               Activate your account to unlock surveys
-             </h3>
-             <p style={{
-               color: 'rgba(255,255,255,0.9)',
-               fontSize: '14px',
-               margin: 0,
-               lineHeight: '1.4'
-             }}>
-               Pay KES 100 activation fee to start completing surveys and earning
-             </p>
-             <button
-               onClick={(e) => {
-                 e.stopPropagation();
-                 navigate('/activate?plan=regular');
-               }}
-               style={{
-                 background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                 color: '#1a1a1a',
-                 border: 'none',
-                 borderRadius: '14px',
-                 padding: '16px 32px',
-                 fontSize: '18px',
-                 fontWeight: '900',
-                 cursor: 'pointer',
-                 boxShadow: '0 10px 30px rgba(245, 158, 11, 0.5)',
-                 textTransform: 'uppercase',
-                 letterSpacing: '1px',
-                 transition: 'all 0.3s ease'
-               }}
-               onMouseOver={(e) => {
-                 e.currentTarget.style.transform = 'translateY(-3px)';
-                 e.currentTarget.style.boxShadow = '0 15px 40px rgba(245, 158, 11, 0.7)';
-               }}
-               onMouseOut={(e) => {
-                 e.currentTarget.style.transform = 'translateY(0)';
-                 e.currentTarget.style.boxShadow = '0 10px 30px rgba(245, 158, 11, 0.5)';
-               }}
-             >
-               Activate Now
-             </button>
-           </div>
-         )}
-         <div className="section-heading">
-          <h3>Available Surveys</h3>
-          <p>Complete surveys to earn {format(SURVEY_EARNINGS)} each</p>
-        </div>
+        <section className="dashboard-section" id="surveys-section" ref={surveysSectionRef}>
+          <div className="section-heading">
+           <h3>Available Surveys</h3>
+           <p>Complete surveys to earn {format(SURVEY_EARNINGS)} each</p>
+         </div>
 
-        {/* DAILY PROGRESS */}
+         {/* DAILY PROGRESS */}
         <div style={{
           background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)',
           border: '1px solid #7c3aed',
@@ -1674,152 +1739,188 @@ const load = async () => {
            gap: '10px',
            width: '100%'
          }}>
-           {surveys.map((survey, index) => {
-              const isDone = survey.isCompleted === true;
-              const limitReached = dailySurveyCount >= SURVEY_DAILY_LIMIT;
-              const isStarting = startingSurveyId === survey._id;
+{surveys.map((survey, index) => {
+               const isDone = survey.isCompleted === true;
+               const limitReached = dailySurveyCount >= SURVEY_DAILY_LIMIT;
+               const isStarting = startingSurveyId === survey._id;
 
-              return (
-                <div
-                  key={survey._id || index}
-                  className="survey-card"
-                  style={{
-                    background: '#ffffff',
-                    border: isDone ? '1px solid #16a34a' : '1px solid #7c3aed',
-                    borderRadius: '8px',
-                    padding: '10px 12px',
-                    boxShadow: isDone
-                      ? '0 2px 8px rgba(22, 163, 74, 0.12)'
-                      : '0 2px 8px rgba(124, 58, 237, 0.08)',
-                    opacity: isDone ? 0.9 : 1,
-                    transition: 'box-shadow 0.2s ease, border-color 0.2s ease'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                    <span
-                      className="survey-icon"
-                      style={{
-                        fontSize: '26px',
-                        lineHeight: 1,
-                        flexShrink: 0,
-                        width: '42px',
-                        height: '42px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)',
-                        borderRadius: '8px'
-                      }}
-                    >
-                      {getCategoryIcon(survey.category)}
-                    </span>
+               return (
+                 <div
+                   key={survey._id || index}
+                   className="survey-card"
+                   style={{
+                     background: '#ffffff',
+                     border: isDone ? '1px solid #16a34a' : '1px solid #7c3aed',
+                     borderRadius: '8px',
+                     padding: '10px 12px',
+                     boxShadow: isDone
+                       ? '0 2px 8px rgba(22, 163, 74, 0.12)'
+                       : '0 2px 8px rgba(124, 58, 237, 0.08)',
+                     opacity: isDone ? 0.9 : 1,
+                     transition: 'box-shadow 0.2s ease, border-color 0.2s ease',
+                     position: 'relative',
+                     overflow: 'hidden'
+                   }}
+                 >
+                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                     <span
+                       className="survey-icon"
+                       style={{
+                         fontSize: '26px',
+                         lineHeight: 1,
+                         flexShrink: 0,
+                         width: '42px',
+                         height: '42px',
+                         display: 'flex',
+                         alignItems: 'center',
+                         justifyContent: 'center',
+                         background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)',
+                         borderRadius: '8px'
+                       }}
+                     >
+                       {getCategoryIcon(survey.category)}
+                     </span>
 
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      {survey.category && (
-                        <span style={{
-                          display: 'block',
-                          fontSize: '10px',
-                          fontWeight: '700',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.5px',
-                          color: '#7c3aed',
-                          marginBottom: '2px'
-                        }}>
-                          {survey.category}
-                        </span>
-                      )}
-                      <h4 style={{
-                        margin: 0,
-                        fontSize: '14px',
-                        fontWeight: '800',
-                        color: '#5b21b6',
-                        lineHeight: 1.3
-                      }}>
-                        {survey.title}
-                      </h4>
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        marginTop: '6px',
-                        flexWrap: 'wrap'
-                      }}>
-                        <span className="survey-earnings-badge" style={{
-                          background: 'linear-gradient(135deg, #1f7405 0%, #2d9a07 100%)',
-                          color: '#ffffff',
-                          fontSize: '11px',
-                          fontWeight: '900',
-                          padding: '3px 10px',
-                          borderRadius: '12px'
-                        }}>
-{format(SURVEY_EARNINGS)}
-                        </span>
-                        <span style={{
-                          fontSize: '11px',
-                          fontWeight: '600',
-                          color: '#6b7280'
-                        }}>
-                          ⏱️ 5-10 min
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+                     <div style={{ flex: 1, minWidth: 0 }}>
+                       {survey.category && (
+                         <span style={{
+                           display: 'block',
+                           fontSize: '10px',
+                           fontWeight: '700',
+                           textTransform: 'uppercase',
+                           letterSpacing: '0.5px',
+                           color: '#7c3aed',
+                           marginBottom: '2px'
+                         }}>
+                           {survey.category}
+                         </span>
+                       )}
+                       <h4 style={{
+                         margin: 0,
+                         fontSize: '14px',
+                         fontWeight: '800',
+                         color: '#5b21b6',
+                         lineHeight: 1.3
+                       }}>
+                         {survey.title}
+                       </h4>
+                       <div style={{
+                         display: 'flex',
+                         alignItems: 'center',
+                         gap: '8px',
+                         marginTop: '6px',
+                         flexWrap: 'wrap'
+                       }}>
+                         <span className="survey-earnings-badge" style={{
+                           background: 'linear-gradient(135deg, #1f7405 0%, #2d9a07 100%)',
+                           color: '#ffffff',
+                           fontSize: '11px',
+                           fontWeight: '900',
+                           padding: '3px 10px',
+                           borderRadius: '12px'
+                         }}>
+                           {format(SURVEY_EARNINGS)}
+                         </span>
+                         <span style={{
+                           fontSize: '11px',
+                           fontWeight: '600',
+                           color: '#6b7280'
+                         }}>
+                           ⏱️ 5-10 min
+                         </span>
+                       </div>
+                     </div>
+                   </div>
 
-                  <div style={{ marginTop: '10px' }}>
-                    {isDone ? (
-                      <span className="survey-completed-badge" style={{
-                        display: 'block',
-                        textAlign: 'center',
-                        background: 'linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)',
-                        border: '1px solid #16a34a',
-                        color: '#15803d',
-                        fontSize: '12px',
-                        fontWeight: '800',
-                        padding: '9px',
-                        borderRadius: '6px'
-                      }}>
-                        ✓ Completed
-                      </span>
-                    ) : limitReached ? (
-                      <div className="survey-limit-message" style={{
-                        textAlign: 'center',
-                        background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-                        border: '1px solid #d97706',
-                        color: '#b45309',
-                        fontSize: '12px',
-                        fontWeight: '800',
-                        padding: '9px',
-                        borderRadius: '6px'
-                      }}>
-                        Limit Reached - Come Back Tomorrow
-                      </div>
-                    ) : (
-                      <button
-                        className="start-survey-btn"
-                        onClick={() => navigate(`/surveys/${survey._id}`)}
-                        style={{
-                          width: '100%',
-                          padding: '10px',
-                          fontSize: '12px',
-                          fontWeight: '800',
-                          borderRadius: '6px',
-                          border: 'none',
-                          background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
-                          color: 'white',
-                          cursor: 'pointer',
-                          opacity: isStarting ? 0.7 : 1,
-                          transition: 'all 0.2s ease'
-                        }}
-                      >
-                        {isStarting ? '⏳ Submitting...' : '🚀 Start Survey'}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
+                   <div style={{ marginTop: '10px' }}>
+                     {isDone ? (
+                       <span className="survey-completed-badge" style={{
+                         display: 'block',
+                         textAlign: 'center',
+                         background: 'linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)',
+                         border: '1px solid #16a34a',
+                         color: '#15803d',
+                         fontSize: '12px',
+                         fontWeight: '800',
+                         padding: '9px',
+                         borderRadius: '6px'
+                       }}>
+                         ✓ Completed
+                       </span>
+                     ) : limitReached ? (
+                       <div className="survey-limit-message" style={{
+                         textAlign: 'center',
+                         background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+                         border: '1px solid #d97706',
+                         color: '#b45309',
+                         fontSize: '12px',
+                         fontWeight: '800',
+                         padding: '9px',
+                         borderRadius: '6px'
+                       }}>
+                         Limit Reached - Come Back Tomorrow
+                       </div>
+                     ) : showSurveyOverlay ? (
+                       <div
+                         style={{
+                           position: 'absolute',
+                           top: 0,
+                           left: 0,
+                           right: 0,
+                           bottom: 0,
+                           background: 'rgba(124, 58, 237, 0.55)',
+                           backdropFilter: 'blur(2px)',
+                           WebkitBackdropFilter: 'blur(2px)',
+                           display: 'flex',
+                           flexDirection: 'column',
+                           alignItems: 'center',
+                                           justifyContent: 'center',
+                                           gap: '8px',
+                                           padding: '16px',
+                                           borderRadius: '8px',
+                                           cursor: 'pointer',
+                                           zIndex: 5
+                                         }}
+                                         onClick={() => navigate('/activate?plan=regular')}
+                                       >
+                                         <span style={{ fontSize: '32px' }}>🔒</span>
+                                         <span style={{
+                                           color: '#ffffff',
+                                           fontSize: '13px',
+                                           fontWeight: '900',
+                                           textShadow: '0 1px 4px rgba(0,0,0,0.4)',
+                                           textAlign: 'center'
+                                         }}>
+                                           Activate to unlock
+                                         </span>
+                                       </div>
+                                     ) : (
+                                       <button
+                                         className="start-survey-btn"
+                                         onClick={() => navigate(`/surveys/${survey._id}`)}
+                                         style={{
+                                           width: '100%',
+                                           padding: '10px',
+                                           fontSize: '12px',
+                                           fontWeight: '800',
+                                           borderRadius: '6px',
+                                           border: 'none',
+                                           background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
+                                           color: 'white',
+                                           cursor: 'pointer',
+                                           opacity: isStarting ? 0.7 : 1,
+                                           transition: 'all 0.2s ease'
+                                         }}
+                                       >
+                                         {isStarting ? '⏳ Submitting...' : '🚀 Start Survey'}
+                                       </button>
+                                     )}
+                   </div>
+                 </div>
+               );
              })}
            </div>
-       </section>
+        </section>
 
       {/* EARNINGS DASHBOARD */}
       <section className="dashboard-section">
