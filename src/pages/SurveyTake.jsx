@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
   import { useNavigate, useParams } from "react-router-dom";
   import { toast } from "react-hot-toast";
   import { getHardcodedSurveys } from "../data/surveys";
+  import { markSurveyCompleted, getDailySurveyCount } from "../utils/surveyCompletion";
   import { useCurrency } from "../contexts/CurrencyContext.jsx";
   import "./SurveyTake.css";
 
@@ -18,13 +19,15 @@ import { useState, useEffect } from "react";
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState("");
 
+    const SURVEY_DAILY_LIMIT = 5;
+    const SURVEY_EARNINGS = 97;
+
     useEffect(() => {
       loadSurvey();
     }, [surveyId]);
 
     const loadSurvey = () => {
       try {
-        // Use hardcoded surveys — always available, no API dependency
         const allSurveys = getHardcodedSurveys();
         const found = allSurveys.find(s => s._id === surveyId);
         if (found) {
@@ -39,125 +42,132 @@ import { useState, useEffect } from "react";
       }
     };
 
-  const handleAnswerSelect = (optionIndex) => {
-    setSelectedAnswer(optionIndex);
-  };
+    const handleAnswerSelect = (optionIndex) => {
+      setSelectedAnswer(optionIndex);
+    };
 
-  const handleNext = () => {
-    if (selectedAnswer === null) {
-      toast.error("Please select an answer");
-      return;
-    }
-    setAnswers(prev => ({ ...prev, [currentQuestion]: selectedAnswer }));
-    setSelectedAnswer(null);
-    setCurrentQuestion(prev => prev + 1);
-  };
+    const handleNext = () => {
+      if (selectedAnswer === null) {
+        toast.error("Please select an answer");
+        return;
+      }
+      setAnswers(prev => ({ ...prev, [currentQuestion]: selectedAnswer }));
+      setSelectedAnswer(null);
+      setCurrentQuestion(prev => prev + 1);
+    };
 
-  const handlePrevious = () => {
-    setCurrentQuestion(prev => prev - 1);
-    setSelectedAnswer(answers[currentQuestion - 1] ?? null);
-  };
+    const handlePrevious = () => {
+      setCurrentQuestion(prev => prev - 1);
+      setSelectedAnswer(answers[currentQuestion - 1] ?? null);
+    };
 
-  const handleSubmit = () => {
-    if (selectedAnswer === null) {
-      toast.error("Please select an answer");
-      return;
-    }
+    const handleSubmit = () => {
+      if (selectedAnswer === null) {
+        toast.error("Please select an answer");
+        return;
+      }
 
-    // Mark survey as completed locally - no backend API call needed
-    const finalAnswers = { ...answers, [currentQuestion]: selectedAnswer };
-    console.log("Survey answers:", finalAnswers);
+      // Check daily limit
+      const dailyCount = getDailySurveyCount();
+      if (dailyCount >= SURVEY_DAILY_LIMIT) {
+        toast.error("Daily limit reached - come back tomorrow");
+        return;
+      }
 
-    setSubmitting(true);
-    setTimeout(() => {
-      toast.success(`Survey completed! Earned KES 97`);
-      setSubmitting(false);
-      navigate("/dashboard");
-    }, 500);
-  };
+      setSubmitting(true);
 
-  if (loading) {
-    return (
-      <div className="survey-take-container">
-        <div className="survey-take-loading">Loading survey...</div>
-      </div>
-    );
-  }
+      // Mark survey as completed in localStorage
+      markSurveyCompleted(surveyId);
 
-  if (error || !survey) {
-    return (
-      <div className="survey-take-container">
-        <div className="survey-take-error">{error || "Survey not found"}</div>
-        <button className="survey-take-back" onClick={() => navigate("/dashboard")}>
-          ← Back to Dashboard
-        </button>
-      </div>
-    );
-  }
+      setTimeout(() => {
+        toast.success(`Survey completed! Earned ${format(SURVEY_EARNINGS)}`);
+        setSubmitting(false);
+        navigate("/dashboard");
+      }, 500);
+    };
 
-  const questions = survey.questions || [];
-  const totalQuestions = questions.length;
-  const progress = ((currentQuestion + 1) / totalQuestions) * 100;
-  const question = questions[currentQuestion];
-
-  return (
-    <div className="survey-take-container">
-      <div className="survey-take-header">
-        <button className="survey-take-back" onClick={() => navigate("/dashboard")}>
-          ← Back
-        </button>
-        <div className="survey-take-info">
-          <h2>{survey.title}</h2>
-          <span className="survey-take-earnings">Earn {format(survey.earnings)}</span>
+    if (loading) {
+      return (
+        <div className="survey-take-container">
+          <div className="survey-take-loading">Loading survey...</div>
         </div>
-      </div>
+      );
+    }
 
-      <div className="survey-take-progress">
-        <div className="survey-take-progress-bar" style={{ width: `${progress}%` }}></div>
-      </div>
-      <div className="survey-take-progress-text">
-        Question {currentQuestion + 1} of {totalQuestions}
-      </div>
+    if (error || !survey) {
+      return (
+        <div className="survey-take-container">
+          <div className="survey-take-error">{error || "Survey not found"}</div>
+          <button className="survey-take-back" onClick={() => navigate("/dashboard")}>
+            ← Back to Dashboard
+          </button>
+        </div>
+      );
+    }
 
-      <div className="survey-take-question">
-        <h3>{question.question}</h3>
-        <div className="survey-take-options">
-          {question.options.map((option, idx) => (
-            <button
-              key={idx}
-              className={`survey-take-option ${selectedAnswer === idx ? "selected" : ""}`}
-              onClick={() => handleAnswerSelect(idx)}
-            >
-              <span className="survey-take-option-letter">
-                {String.fromCharCode(65 + idx)}
-              </span>
-              <span className="survey-take-option-text">{option}</span>
+    const questions = survey.questions || [];
+    const totalQuestions = questions.length;
+    const progress = ((currentQuestion + 1) / totalQuestions) * 100;
+    const question = questions[currentQuestion];
+
+    return (
+      <div className="survey-take-container">
+        <div className="survey-take-header">
+          <button className="survey-take-back" onClick={() => navigate("/dashboard")}>
+            ← Back
+          </button>
+          <div className="survey-take-info">
+            <h2>{survey.title}</h2>
+            <span className="survey-take-earnings">Earn {format(survey.earnings)}</span>
+          </div>
+        </div>
+
+        <div className="survey-take-progress">
+          <div className="survey-take-progress-bar" style={{ width: `${progress}%` }}></div>
+        </div>
+        <div className="survey-take-progress-text">
+          Question {currentQuestion + 1} of {totalQuestions}
+        </div>
+
+        <div className="survey-take-question">
+          <h3>{question.question}</h3>
+          <div className="survey-take-options">
+            {question.options.map((option, idx) => (
+              <button
+                key={idx}
+                className={`survey-take-option ${selectedAnswer === idx ? "selected" : ""}`}
+                onClick={() => handleAnswerSelect(idx)}
+              >
+                <span className="survey-take-option-letter">
+                  {String.fromCharCode(65 + idx)}
+                </span>
+                <span className="survey-take-option-text">{option}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="survey-take-nav">
+          {currentQuestion > 0 && (
+            <button className="survey-take-btn secondary" onClick={handlePrevious}>
+              ← Previous
             </button>
-          ))}
+          )}
+          <div className="survey-take-spacer"></div>
+          {currentQuestion < totalQuestions - 1 ? (
+            <button className="survey-take-btn primary" onClick={handleNext}>
+              Next →
+            </button>
+          ) : (
+            <button
+              className="survey-take-btn primary"
+              onClick={handleSubmit}
+              disabled={submitting}
+            >
+              {submitting ? "Submitting..." : "Submit Survey"}
+            </button>
+          )}
         </div>
       </div>
-
-      <div className="survey-take-nav">
-        {currentQuestion > 0 && (
-          <button className="survey-take-btn secondary" onClick={handlePrevious}>
-            ← Previous
-          </button>
-        )}
-        <div className="survey-take-spacer"></div>
-        {currentQuestion < totalQuestions - 1 ? (
-          <button className="survey-take-btn primary" onClick={handleNext}>
-            Next →
-          </button>
-        ) : (
-          <button
-            className="survey-take-btn primary"
-            onClick={handleSubmit}
-            disabled={submitting}
-          >
-            {submitting ? "Submitting..." : "Submit Survey"}
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
+    );
+  }

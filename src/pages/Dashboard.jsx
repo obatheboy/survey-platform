@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
   import { useNavigate, useLocation } from "react-router-dom";
   import api from "../api/api";
   import { useCurrency } from "../contexts/CurrencyContext.jsx";
+  import { getCompletedSurveys, getDailySurveyCount, markSurveyCompleted, getCompletedSurveyCount } from "../utils/surveyCompletion";
 import MainMenuDrawer from "./components/MainMenuDrawer.jsx";
 import LiveWithdrawalFeed from "./components/LiveWithdrawalFeed.jsx";
 import UserNotifications from "../components/UserNotifications.jsx";
@@ -315,7 +316,7 @@ const SURVEY_TOTAL = 60;
   // Version check removed - handled globally in App.jsx via cache utility
   // This prevents duplicate reload loops
 
-    const load = async () => {
+const load = async () => {
       try {
         const resUser = await api.get(`/auth/me?_t=${Date.now()}`);
         if (!alive) return;
@@ -324,50 +325,40 @@ const SURVEY_TOTAL = 60;
         setPlans(resUser.data.plans || {});
         setActivationRequests(resUser.data.activation_requests || []);
 
-        // Today's survey count (5/day limit)
-        const today = new Date().toISOString().split("T")[0];
-        setDailySurveyCount(
-          resUser.data.daily_survey_date === today ? (resUser.data.daily_survey_count || 0) : 0
-        );
+        // Today's survey count (5/day limit) — use localStorage as source of truth
+        setDailySurveyCount(getDailySurveyCount());
 
-        // Surveys are hardcoded - always available
-        
-        let surveyEarnings = 0;
-        let calculatedTotalSurveys = 0;
+        // Mark completed surveys from localStorage
+        const completed = getCompletedSurveys();
+        setSurveysState(prev => prev.map(s => ({
+          ...s,
+          isCompleted: !!completed[s._id]
+        })));
 
-        Object.keys(PLANS).forEach(planKey => {
-          const backendPlan = resUser.data.plans?.[planKey] || { surveys_completed: 0 };
-          let count = backendPlan.surveys_completed || 0;
-          
-          if (backendPlan.is_activated) {
-            count = TOTAL_SURVEYS;
-          }
-          
-          count = Math.min(count, TOTAL_SURVEYS);
-          
-          calculatedTotalSurveys += count;
-          surveyEarnings += count * PLANS[planKey].perSurvey;
-        });
-        
+        // Calculate survey earnings from localStorage completions
+        const completedCount = Object.keys(completed).length;
+        const surveyEarnings = completedCount * SURVEY_EARNINGS;
+
         let availableBalance = Number(resUser.data.total_earned || 0);
         const totalWithdrawals = Number(resUser.data.total_withdrawals || 0);
-        
+
+        // Use localStorage earnings if higher than backend
         const expectedBalance = surveyEarnings - totalWithdrawals;
         if (expectedBalance > availableBalance) {
             availableBalance = expectedBalance;
         }
-        
+
         setStats({
           totalEarned: availableBalance + totalWithdrawals,
           availableBalance: availableBalance,
           affiliateEarnings: resUser.data.referral_commission_earned || 0,
-          totalSurveysCompleted: calculatedTotalSurveys,
+          totalSurveysCompleted: completedCount,
           totalWithdrawals: totalWithdrawals
         });
 
         loadPendingWithdrawals();
 
-         localStorage.setItem("cachedUser", JSON.stringify(resUser.data));
+          localStorage.setItem("cachedUser", JSON.stringify(resUser.data));
 
         // 72-hour affiliate prompt
         const withdrawalSubmittedAt = resUser.data.withdrawal_submitted_at;
@@ -405,10 +396,36 @@ const SURVEY_TOTAL = 60;
       clearInterval(interval);
       window.removeEventListener("focus", load);
     };
-  }, []);
+}, []);
+
+  // Listen for survey completion events from other tabs/components
+  useEffect(() => {
+    const handleSurveyUpdate = () => {
+      const completed = getCompletedSurveys();
+      setSurveysState(prev => prev.map(s => ({
+        ...s,
+        isCompleted: !!completed[s._id]
+      })));
+      setDailySurveyCount(getDailySurveyCount());
+      const completedCount = Object.keys(completed).length;
+      const earnings = completedCount * SURVEY_EARNINGS;
+      setStats(prev => ({
+        ...prev,
+        totalSurveysCompleted: completedCount,
+        availableBalance: Math.max(prev.availableBalance || 0, earnings),
+        totalEarned: Math.max(prev.totalEarned || 0, earnings)
+      }));
+    };
+    window.addEventListener("storage", handleSurveyUpdate);
+    window.addEventListener("survey-completed", handleSurveyUpdate);
+    return () => {
+      window.removeEventListener("storage", handleSurveyUpdate);
+      window.removeEventListener("survey-completed", handleSurveyUpdate);
+    }
+  }, [SURVEY_EARNINGS]);
 
   /* =========================
-      REDIRECT FOCUS HANDLER
+       REDIRECT FOCUS HANDLER
       Redirects like /dashboard?focusPlan=WELCOME_BONUS&highlightPlan=WELCOME_BONUS
       land directly on the exact next plan card.
    ========================= */
@@ -485,37 +502,32 @@ const SURVEY_TOTAL = 60;
     }
 
     setStartingSurveyId(surveyId);
-    try {
-      // Mark survey as completed locally
-      const updatedSurveys = surveys.map(s =>
-        s._id === surveyId ? { ...s, isCompleted: true } : s
-      );
-      // Surveys are hardcoded - always available
-      // Since useState doesn't have setter, we need to use a ref or re-create
-      // Actually we need to add a surveys state setter
-      setSurveysState(updatedSurveys);
 
-      const newDailyCount = dailySurveyCount + 1;
-      setDailySurveyCount(newDailyCount);
+    // Mark survey as completed in localStorage
+    markSurveyCompleted(surveyId);
 
-      // Add KES 97 to balance
-      const newBalance = (stats.availableBalance || 0) + SURVEY_EARNINGS;
-      const newTotalEarned = (stats.totalEarned || 0) + SURVEY_EARNINGS;
-      setStats(prev => ({
-        ...prev,
-        availableBalance: newBalance,
-        totalEarned: newTotalEarned,
-        totalSurveysCompleted: (prev.totalSurveysCompleted || 0) + 1
-      }));
+    // Update local state
+    const updatedSurveys = surveys.map(s =>
+      s._id === surveyId ? { ...s, isCompleted: true } : s
+    );
+    setSurveysState(updatedSurveys);
 
-      setToast(`Survey completed! Earned ${format(SURVEY_EARNINGS)}`);
-    } catch (err) {
-      const message = err?.response?.data?.message || "Failed to complete survey. Please try again.";
-      setToast(message);
-    } finally {
-      setStartingSurveyId(null);
-      setTimeout(() => setToast(""), 4000);
-    }
+    const newDailyCount = dailySurveyCount + 1;
+    setDailySurveyCount(newDailyCount);
+
+    // Add KES 97 to balance
+    const newBalance = (stats.availableBalance || 0) + SURVEY_EARNINGS;
+    const newTotalEarned = (stats.totalEarned || 0) + SURVEY_EARNINGS;
+    setStats(prev => ({
+      ...prev,
+      availableBalance: newBalance,
+      totalEarned: newTotalEarned,
+      totalSurveysCompleted: (prev.totalSurveysCompleted || 0) + 1
+    }));
+
+    setToast(`Survey completed! Earned ${format(SURVEY_EARNINGS)}`);
+    setStartingSurveyId(null);
+    setTimeout(() => setToast(""), 4000);
   };
 
   /* =========================
