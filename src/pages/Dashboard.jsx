@@ -290,6 +290,7 @@ const SURVEY_TOTAL = 60;
    const [highlightPlan, setHighlightPlan] = useState(null);
    const [fullScreenNotification, setFullScreenNotification] = useState(null);
    const [show72HourAffiliatePrompt, setShow72HourAffiliatePrompt] = useState(false);
+   const [showSurveyOverlay, setShowSurveyOverlay] = useState(true);
 
   /* =========================
      GAMIFICATION STATE
@@ -324,6 +325,14 @@ const load = async () => {
         setUser(resUser.data);
         setPlans(resUser.data.plans || {});
         setActivationRequests(resUser.data.activation_requests || []);
+
+        // Hide survey overlay if user is activated (paid KES 100)
+        const isActivated = resUser.data?.all_plans_completed === true ||
+                            Object.values(resUser.data.plans || {}).some(p => p.is_activated) ||
+                            resUser.data?.plans_paid?.REGULAR === true;
+        if (isActivated) {
+          setShowSurveyOverlay(false);
+        }
 
         // Today's survey count (5/day limit) — use localStorage as source of truth
         setDailySurveyCount(getDailySurveyCount());
@@ -378,6 +387,12 @@ const load = async () => {
             const parsedUser = JSON.parse(cachedUser);
             setUser(parsedUser);
             setPlans(parsedUser.plans || {});
+            const isActivated = parsedUser?.all_plans_completed === true ||
+                                Object.values(parsedUser.plans || {}).some(p => p.is_activated) ||
+                                parsedUser?.plans_paid?.REGULAR === true;
+            if (isActivated) {
+              setShowSurveyOverlay(false);
+            }
           }
         }
       } finally {
@@ -897,6 +912,11 @@ const load = async () => {
   // Check if user has activated (paid KES 100)
   const accountActivated = user?.all_plans_completed === true ||
                       Object.values(plans || {}).some(p => p.is_activated);
+
+  // Welcome Bonus paid check
+  const welcomeBonusPaid = user?.plans_paid?.WELCOME_BONUS === true ||
+                           user?.plans?.WELCOME_BONUS?.is_activated === true ||
+                           user?.welcome_bonus_paid === true;
 
   return (
     <div className="dashboard" ref={dashboardRef} style={{ paddingBottom: '80px' }}>
@@ -1462,66 +1482,146 @@ const load = async () => {
             gap: '10px',
             padding: '10px 16px 14px'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 auto', minWidth: 0, overflow: 'hidden' }}>
-              <span style={{ fontSize: '18px', flexShrink: 0 }}>🎁</span>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', minWidth: 0, overflow: 'hidden' }}>
-                <span style={{
-                  fontSize: '10px',
-                  fontWeight: '600',
-                  color: 'rgba(255,255,255,0.8)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
-                }}>
-                  Welcome Bonus
-                </span>
-                <span style={{
-                  fontSize: '16px',
-                  fontWeight: '900',
-                  color: '#ffffff',
-                  letterSpacing: '-0.02em',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap'
-                }}>
-                  {format(1200)}
-                </span>
-              </div>
-            </div>
-            <button
-              className="start-survey-btn"
-              onClick={handleWelcomeBonusWithdraw}
-              style={{
-                background: 'linear-gradient(135deg, #ff7a7a, #ef4444)',
-                border: 'none',
-                borderRadius: '6px',
-                padding: '8px 16px',
-                fontWeight: '800',
-                fontSize: '11px',
-                color: 'white',
-                textTransform: 'uppercase',
-                cursor: 'pointer',
-                flexShrink: 0,
-                whiteSpace: 'nowrap',
-                boxShadow: '0 3px 10px rgba(255, 107, 107, 0.4)',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-1px)';
-                e.currentTarget.style.boxShadow = '0 4px 14px rgba(255, 107, 107, 0.5)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 3px 10px rgba(255, 107, 107, 0.4)';
-              }}
-            >
-              CLAIM NOW
-            </button>
+<div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 auto', minWidth: 0, overflow: 'hidden' }}>
+               <span style={{ fontSize: '18px', flexShrink: 0 }}>🎁</span>
+               <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', minWidth: 0, overflow: 'hidden' }}>
+                 <span style={{
+                   fontSize: '10px',
+                   fontWeight: '600',
+                   color: 'rgba(255,255,255,0.8)',
+                   textTransform: 'uppercase',
+                   letterSpacing: '0.5px'
+                 }}>
+                   Welcome Bonus
+                 </span>
+                 <span style={{
+                   fontSize: '16px',
+                   fontWeight: '900',
+                   color: '#ffffff',
+                   letterSpacing: '-0.02em',
+                   overflow: 'hidden',
+                   textOverflow: 'ellipsis',
+                   whiteSpace: 'nowrap'
+                 }}>
+                   {format(1200)}
+                 </span>
+               </div>
+             </div>
+             <button
+               className="start-survey-btn"
+               onClick={handleWelcomeBonusWithdraw}
+               disabled={welcomeBonusPaid}
+               style={{
+                 background: welcomeBonusPaid ? 'linear-gradient(135deg, #16a34a, #15803d)' : 'linear-gradient(135deg, #ff7a7a, #ef4444)',
+                 border: 'none',
+                 borderRadius: '6px',
+                 padding: '8px 16px',
+                 fontWeight: '800',
+                 fontSize: '11px',
+                 color: 'white',
+                 textTransform: 'uppercase',
+                 cursor: welcomeBonusPaid ? 'default' : 'pointer',
+                 flexShrink: 0,
+                 whiteSpace: 'nowrap',
+                 boxShadow: welcomeBonusPaid ? '0 3px 10px rgba(22, 163, 74, 0.4)' : '0 3px 10px rgba(255, 107, 107, 0.4)',
+                 transition: 'all 0.2s ease',
+                 opacity: welcomeBonusPaid ? 1 : 1
+               }}
+               onMouseEnter={(e) => {
+                 if (welcomeBonusPaid) return;
+                 e.currentTarget.style.transform = 'translateY(-1px)';
+                 e.currentTarget.style.boxShadow = '0 4px 14px rgba(255, 107, 107, 0.5)';
+               }}
+               onMouseLeave={(e) => {
+                 if (welcomeBonusPaid) return;
+                 e.currentTarget.style.transform = 'translateY(0)';
+                 e.currentTarget.style.boxShadow = '0 3px 10px rgba(255, 107, 107, 0.4)';
+               }}
+             >
+               {welcomeBonusPaid ? '✅ DONE' : 'CLAIM NOW'}
+             </button>
           </div>
         </div>
       </section>
-      {/* AVAILABLE SURVEYS - 60 individual surveys (single column) */}
-      <section className="dashboard-section" id="surveys-section" ref={surveysSectionRef}>
-        <div className="section-heading">
+{/* AVAILABLE SURVEYS - 60 individual surveys (single column) */}
+       <section className="dashboard-section" id="surveys-section" ref={surveysSectionRef} style={{ position: 'relative' }}>
+         {showSurveyOverlay && (
+           <div
+             style={{
+               position: 'absolute',
+               top: 0,
+               left: 0,
+               right: 0,
+               bottom: 0,
+               background: 'rgba(0, 0, 0, 0.75)',
+               backdropFilter: 'blur(4px)',
+               WebkitBackdropFilter: 'blur(4px)',
+               display: 'flex',
+               flexDirection: 'column',
+               alignItems: 'center',
+               justifyContent: 'center',
+               gap: '16px',
+               padding: '30px',
+               borderRadius: '8px',
+               zIndex: 10,
+               cursor: 'pointer',
+               textAlign: 'center'
+             }}
+             onClick={() => {
+               navigate('/activate?plan=regular');
+             }}
+           >
+             <span style={{ fontSize: '48px' }}>🔒</span>
+             <h3 style={{
+               color: '#ffffff',
+               margin: 0,
+               fontSize: '20px',
+               fontWeight: '900',
+               textShadow: '0 2px 8px rgba(0,0,0,0.5)'
+             }}>
+               Activate your account to unlock surveys
+             </h3>
+             <p style={{
+               color: 'rgba(255,255,255,0.9)',
+               fontSize: '14px',
+               margin: 0,
+               lineHeight: '1.4'
+             }}>
+               Pay KES 100 activation fee to start completing surveys and earning
+             </p>
+             <button
+               onClick={(e) => {
+                 e.stopPropagation();
+                 navigate('/activate?plan=regular');
+               }}
+               style={{
+                 background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                 color: '#1a1a1a',
+                 border: 'none',
+                 borderRadius: '14px',
+                 padding: '16px 32px',
+                 fontSize: '18px',
+                 fontWeight: '900',
+                 cursor: 'pointer',
+                 boxShadow: '0 10px 30px rgba(245, 158, 11, 0.5)',
+                 textTransform: 'uppercase',
+                 letterSpacing: '1px',
+                 transition: 'all 0.3s ease'
+               }}
+               onMouseOver={(e) => {
+                 e.currentTarget.style.transform = 'translateY(-3px)';
+                 e.currentTarget.style.boxShadow = '0 15px 40px rgba(245, 158, 11, 0.7)';
+               }}
+               onMouseOut={(e) => {
+                 e.currentTarget.style.transform = 'translateY(0)';
+                 e.currentTarget.style.boxShadow = '0 10px 30px rgba(245, 158, 11, 0.5)';
+               }}
+             >
+               Activate Now
+             </button>
+           </div>
+         )}
+         <div className="section-heading">
           <h3>Available Surveys</h3>
           <p>Complete surveys to earn {format(SURVEY_EARNINGS)} each</p>
         </div>

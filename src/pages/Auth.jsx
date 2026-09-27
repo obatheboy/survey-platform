@@ -172,6 +172,10 @@ export default function Auth() {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("lastLoginTime", Date.now().toString());
         localStorage.setItem("pendingWelcomeBonus", "true");
+        // Clear any stale survey completions on new registration
+        localStorage.removeItem("survey_completions");
+        localStorage.removeItem("survey_daily_count");
+        localStorage.removeItem("survey_daily_date");
       }
 
       // Skip login fee - redirect to onboarding survey

@@ -19,6 +19,12 @@ export function isSurveyCompleted(surveyId) {
   return !!getCompletedSurveys()[surveyId];
 }
 
+export function clearSurveyCompletions() {
+  localStorage.removeItem(SURVEY_COMPLETION_KEY);
+  localStorage.removeItem(SURVEY_DAILY_COUNT_KEY);
+  localStorage.removeItem(SURVEY_DAILY_DATE_KEY);
+}
+
 export function markSurveyCompleted(surveyId) {
   const completed = getCompletedSurveys();
   completed[surveyId] = true;

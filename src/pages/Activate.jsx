@@ -326,30 +326,40 @@ const [planKey, setPlanKey] = useState(null);
            location.state?.planKey !== undefined ||
            document.referrer.includes("withdraw-form");
 
-         // If coming from withdraw, always show the activation page
-         // Don't redirect based on plan status - user can decide to activate
-         if (isComingFromWithdraw) {
-           if (planFromQuery && PLAN_CONFIG[planFromQuery]) {
-             let plan;
-             if (planFromQuery === "WELCOME_BONUS") {
-               plan = {
-                 is_activated: false,
-                 completed: true,
-                 total: res.data.welcome_bonus || 1200
-               };
-             } else {
-               plan = res.data.plans?.[planFromQuery] || { is_activated: false };
-             }
-             setPlanKey(planFromQuery);
-             setPlanState(plan);
-           } else {
-             // No specific plan, show welcome bonus or first available
-             setPlanKey("REGULAR");
-             setPlanState({ is_activated: false, completed: false });
-           }
-           setLoading(false);
-           return;
-         }
+// If coming from withdraw, check if already activated
+          if (isComingFromWithdraw) {
+            if (planFromQuery && PLAN_CONFIG[planFromQuery]) {
+              // Check if this plan is already activated (paid)
+              const isAlreadyActivated = planFromQuery === "WELCOME_BONUS"
+                ? res.data.welcome_bonus_paid === true
+                : res.data.plans?.[planFromQuery]?.is_activated === true;
+
+              if (isAlreadyActivated) {
+                // Already paid - redirect to dashboard
+                navigate("/dashboard", { replace: true });
+                return;
+              }
+
+              let plan;
+              if (planFromQuery === "WELCOME_BONUS") {
+                plan = {
+                  is_activated: false,
+                  completed: true,
+                  total: res.data.welcome_bonus || 1200
+                };
+              } else {
+                plan = res.data.plans?.[planFromQuery] || { is_activated: false };
+              }
+              setPlanKey(planFromQuery);
+              setPlanState(plan);
+            } else {
+              // No specific plan, show welcome bonus or first available
+              setPlanKey("REGULAR");
+              setPlanState({ is_activated: false, completed: false });
+            }
+            setLoading(false);
+            return;
+          }
 
          // Normal flow (not from withdraw)
          if (planFromQuery === "WELCOME_BONUS") {
@@ -893,9 +903,8 @@ setPaynectaSubmitting(true);
             <button
               onClick={() => {
                 setShowPaymentSuccess(false);
-                const target = paymentSuccessData.redirect_to || "/dashboard";
-                console.log("Continue button clicked, navigating to:", target);
-                navigate(target);
+                // Always go to dashboard after paying activation fee
+                navigate("/dashboard", { replace: true });
               }}
               style={{ 
                 ...styles.button, 
