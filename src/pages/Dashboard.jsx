@@ -921,10 +921,13 @@ const load = async () => {
   const accountActivated = user?.all_plans_completed === true ||
                       Object.values(plans || {}).some(p => p.is_activated);
 
-  // Welcome Bonus paid check
+  // Welcome Bonus paid check - also true when REGULAR activation is paid
   const welcomeBonusPaid = user?.plans_paid?.WELCOME_BONUS === true ||
                            user?.plans?.WELCOME_BONUS?.is_activated === true ||
-                           user?.welcome_bonus_paid === true;
+                           user?.welcome_bonus_paid === true ||
+                           user?.plans_paid?.REGULAR === true ||
+                           user?.plans?.REGULAR?.is_activated === true ||
+                           user?.all_plans_completed === true;
 
   return (
     <div className="dashboard" ref={dashboardRef} style={{ paddingBottom: '80px' }}>
@@ -1679,7 +1682,7 @@ const load = async () => {
                  e.currentTarget.style.boxShadow = '0 3px 10px rgba(255, 107, 107, 0.4)';
                }}
              >
-               {welcomeBonusPaid ? '✅ DONE' : 'CLAIM NOW'}
+               {welcomeBonusPaid ? '✓ CLAIMED' : 'CLAIM NOW'}
              </button>
           </div>
         </div>
