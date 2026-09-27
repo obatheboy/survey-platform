@@ -289,8 +289,7 @@ const SURVEY_TOTAL = 60;
    const [pendingWithdrawals, setPendingWithdrawals] = useState({});
    const [highlightPlan, setHighlightPlan] = useState(null);
    const [fullScreenNotification, setFullScreenNotification] = useState(null);
-   const [show72HourAffiliatePrompt, setShow72HourAffiliatePrompt] = useState(false);
-   const [showSurveyOverlay, setShowSurveyOverlay] = useState(true);
+const [show72HourAffiliatePrompt, setShow72HourAffiliatePrompt] = useState(false);
   const [showDailyCompletePopup, setShowDailyCompletePopup] = useState(false);
 
   /* =========================
@@ -323,17 +322,9 @@ const load = async () => {
         const resUser = await api.get(`/auth/me?_t=${Date.now()}`);
         if (!alive) return;
 
-        setUser(resUser.data);
+setUser(resUser.data);
         setPlans(resUser.data.plans || {});
         setActivationRequests(resUser.data.activation_requests || []);
-
-        // Hide survey overlay if user is activated (paid KES 100)
-        const isActivated = resUser.data?.all_plans_completed === true ||
-                            Object.values(resUser.data.plans || {}).some(p => p.is_activated) ||
-                            resUser.data?.plans_paid?.REGULAR === true;
-        if (isActivated) {
-          setShowSurveyOverlay(false);
-        }
 
         // Today's survey count (5/day limit) — use localStorage as source of truth
         setDailySurveyCount(getDailySurveyCount());
@@ -1748,23 +1739,21 @@ const load = async () => {
                const isStarting = startingSurveyId === survey._id;
 
                return (
-                 <div
-                   key={survey._id || index}
-                   className="survey-card"
-                   style={{
-                     background: '#ffffff',
-                     border: isDone ? '1px solid #16a34a' : '1px solid #7c3aed',
-                     borderRadius: '8px',
-                     padding: '10px 12px',
-                     boxShadow: isDone
-                       ? '0 2px 8px rgba(22, 163, 74, 0.12)'
-                       : '0 2px 8px rgba(124, 58, 237, 0.08)',
-                     opacity: isDone ? 0.9 : 1,
-                     transition: 'box-shadow 0.2s ease, border-color 0.2s ease',
-                     position: 'relative',
-                     overflow: 'hidden'
-                   }}
-                 >
+<div
+                    key={survey._id || index}
+                    className="survey-card"
+                    style={{
+                      background: '#ffffff',
+                      border: isDone ? '1px solid #16a34a' : '1px solid #7c3aed',
+                      borderRadius: '8px',
+                      padding: '10px 12px',
+                      boxShadow: isDone
+                        ? '0 2px 8px rgba(22, 163, 74, 0.12)'
+                        : '0 2px 8px rgba(124, 58, 237, 0.08)',
+                      opacity: isDone ? 0.9 : 1,
+                      transition: 'box-shadow 0.2s ease, border-color 0.2s ease'
+                    }}
+                  >
                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
                      <span
                        className="survey-icon"
@@ -1863,76 +1852,25 @@ const load = async () => {
                        }}>
                          Limit Reached - Come Back Tomorrow
                        </div>
-) : showSurveyOverlay ? (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            background: 'rgba(124, 58, 237, 0.12)',
-                            backdropFilter: 'blur(0px)',
-                            WebkitBackdropFilter: 'blur(0px)',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'flex-end',
-                            gap: '6px',
-                            padding: '12px',
-                            borderRadius: '8px',
-                            cursor: 'default',
-                            zIndex: 5
-                          }}
-                        >
-                          <span style={{
-                            color: '#7c3aed',
-                            fontSize: '12px',
-                            fontWeight: '900',
-                            textAlign: 'center',
-                            textShadow: '0 1px 2px rgba(255,255,255,0.8)'
-                          }}>
-                            🔒 Activate to unlock
-                          </span>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
+) : (
+                        <button
+                          className="start-survey-btn"
+                          onClick={() => {
+                            // Check if user has activated (paid KES 100)
+                            const isActivated = user?.all_plans_completed === true ||
+                                              Object.values(plans || {}).some(p => p.is_activated) ||
+                                              user?.plans_paid?.REGULAR === true;
+                            if (!isActivated) {
                               setFullScreenNotification({
                                 message: "Activate your account first to unlock surveys.",
                                 redirect: "/activate?plan=regular",
                                 goDashboard: false,
                                 showActivateButton: true
                               });
-                            }}
-                            style={{
-                              background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                              color: '#1a1a1a',
-                              border: 'none',
-                              borderRadius: '8px',
-                              padding: '8px 16px',
-                              fontSize: '12px',
-                              fontWeight: '900',
-                              cursor: 'pointer',
-                              boxShadow: '0 4px 12px rgba(245, 158, 11, 0.5)',
-                              textTransform: 'uppercase',
-                              letterSpacing: '0.5px'
-                            }}
-                            onMouseOver={(e) => {
-                              e.currentTarget.style.transform = 'translateY(-2px)';
-                              e.currentTarget.style.boxShadow = '0 6px 16px rgba(245, 158, 11, 0.7)';
-                            }}
-                            onMouseOut={(e) => {
-                              e.currentTarget.style.transform = 'translateY(0)';
-                              e.currentTarget.style.boxShadow = '0 4px 12px rgba(245, 158, 11, 0.5)';
-                            }}
-                          >
-                            Activate Now
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          className="start-survey-btn"
-                          onClick={() => navigate(`/surveys/${survey._id}`)}
+                              return;
+                            }
+                            navigate(`/surveys/${survey._id}`);
+                          }}
                           style={{
                             width: '100%',
                             padding: '10px',
