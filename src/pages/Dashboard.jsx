@@ -69,6 +69,155 @@ const SURVEY_TOTAL = 60;
 const SURVEY_DAILY_LIMIT = 5;
 const SURVEY_EARNINGS = 97;
 
+const SURVEY_TITLES_BY_CATEGORY = {
+  "daily lifestyle": [
+    "Morning Routine Habits",
+    "Sleep Patterns & Quality",
+    "Daily Productivity",
+    "Weekend Activities",
+    "Home Organization",
+    "Personal Care & Grooming",
+    "Stress Management",
+    "Time Management",
+    "Daily Commute Experience",
+    "Evening Relaxation Habits"
+  ],
+  "food": [
+    "Breakfast Habits Survey",
+    "Fast Food Preferences",
+    "Healthy Eating Patterns",
+    "Restaurant Dining Experience",
+    "Cooking Habits & Skills",
+    "Dietary Restrictions",
+    "Snacking Patterns",
+    "Daily Water Intake",
+    "Coffee & Tea Consumption",
+    "Dining Out Preferences"
+  ],
+  "football": [
+    "Premier League Fan Survey",
+    "Fan Engagement & Passion",
+    "Match Viewing Habits",
+    "Fantasy Football Experience",
+    "Football Memorabilia Collection",
+    "Game Day Experience",
+    "Youth Football Participation",
+    "Women's Football Interest",
+    "Football Streaming Habits",
+    "Stadium Visit Experience"
+  ],
+  "safaricom": [
+    "M-Pesa Usage Survey",
+    "Network Quality & Coverage",
+    "Customer Service Experience",
+    "Safaricom App Usage",
+    "Data Bundle Preferences",
+    "Roaming Services Survey",
+    "Bill Payments via Mobile",
+    "Till Number Usage",
+    "M-Shwari & Savings",
+    "Safaricom Boda Service"
+  ],
+  "equity bank": [
+    "Banking App Usage Survey",
+    "Account Types & Usage",
+    "Loan Services Experience",
+    "Equity Agent Usage",
+    "Mobile Banking Habits",
+    "Savings & Investment",
+    "Insurance Products Interest",
+    "Remittance Services",
+    "Equity Card Survey",
+    "Branch Visit Experience"
+  ],
+  "communication": [
+    "WhatsApp Usage Patterns",
+    "Voice & Video Call Habits",
+    "Social Media Platforms",
+    "Email Communication",
+    "Messaging App Preferences",
+    "Video Streaming Habits",
+    "SMS Usage Trends",
+    "Phone Call Duration",
+    "Group Chat Participation",
+    "Digital Communication"
+  ]
+};
+
+const generateSurveyQuestions = (surveyTitle) => [
+  {
+    id: "q1",
+    question: `What is your primary experience with ${surveyTitle.toLowerCase()}?`,
+    options: ["Very positive", "Somewhat positive", "Neutral", "Somewhat negative", "Very negative"]
+  },
+  {
+    id: "q2",
+    question: `How often do you engage in activities related to ${surveyTitle.toLowerCase()}?`,
+    options: ["Daily", "Several times a week", "Once a week", "A few times a month", "Rarely"]
+  },
+  {
+    id: "q3",
+    question: `How much time do you spend on ${surveyTitle.toLowerCase()} per session?`,
+    options: ["Less than 5 minutes", "5-15 minutes", "15-30 minutes", "30-60 minutes", "More than 1 hour"]
+  },
+  {
+    id: "q4",
+    question: `What factors influence your ${surveyTitle.toLowerCase()} choices?`,
+    options: ["Price", "Convenience", "Quality", "Recommendations", "All of the above"]
+  },
+  {
+    id: "q5",
+    question: `Where do you typically encounter ${surveyTitle.toLowerCase()}?`,
+    options: ["At home", "At work", "On the go", "In stores", "Online"]
+  },
+  {
+    id: "q6",
+    question: `How would you describe your ${surveyTitle.toLowerCase()} knowledge?`,
+    options: ["Expert", "Intermediate", "Beginner", "Just starting", "No experience"]
+  },
+  {
+    id: "q7",
+    question: `How satisfied are you with your current ${surveyTitle.toLowerCase()}?`,
+    options: ["Very satisfied", "Satisfied", "Neutral", "Dissatisfied", "Very dissatisfied"]
+  },
+  {
+    id: "q8",
+    question: `What would improve your ${surveyTitle.toLowerCase()}?`,
+    options: ["Lower cost", "Better quality", "More options", "Easier access", "Other"]
+  },
+  {
+    id: "q9",
+    question: `How likely are you to recommend ${surveyTitle.toLowerCase()} related options?`,
+    options: ["Very likely", "Likely", "Neutral", "Unlikely", "Very unlikely"]
+  },
+  {
+    id: "q10",
+    question: `How do you prefer to learn about ${surveyTitle.toLowerCase()}?`,
+    options: ["Social media", "Friends or family", "Search engines", "Advertisements", "News articles"]
+  }
+];
+
+const HARDCODED_SURVEYYS = (() => {
+  const surveys = [];
+  let counter = 1;
+  Object.entries(SURVEY_TITLES_BY_CATEGORY).forEach(([category, titles]) => {
+    titles.forEach((title) => {
+      surveys.push({
+        _id: `survey-${String(counter).padStart(3, "0")}`,
+        title,
+        category,
+        earnings: SURVEY_EARNINGS,
+        estimatedTime: "5-10 min",
+        totalQuestions: 10,
+        questions: generateSurveyQuestions(title),
+        isCompleted: false
+      });
+      counter++;
+    });
+  });
+  return surveys;
+})();
+
 const CATEGORY_ICONS = {
   "daily lifestyle": "🏠",
   "food": "🍽️",
@@ -90,8 +239,6 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const surveyRef = useRef(null);
-  const surveysLoadedRef = useRef(false);
-  const lastSurveyFetchRef = useRef(0);
   const welcomeRef = useRef(null);
   const dashboardRef = useRef(null);
 
@@ -124,8 +271,7 @@ export default function Dashboard() {
   ========================= */
   const [user, setUser] = useState(null);
   const [plans, setPlans] = useState({});
-  const [surveys, setSurveys] = useState([]);
-  const [surveyLoading, setSurveyLoading] = useState(true);
+  const [surveys, setSurveysState] = useState(HARDCODED_SURVEYYS);
   const [dailySurveyCount, setDailySurveyCount] = useState(0);
   const [startingSurveyId, setStartingSurveyId] = useState(null);
   const [activationRequests, setActivationRequests] = useState([]);
@@ -184,8 +330,7 @@ export default function Dashboard() {
           resUser.data.daily_survey_date === today ? (resUser.data.daily_survey_count || 0) : 0
         );
 
-        // 60 individual surveys
-        loadSurveys();
+        // Surveys are hardcoded - always available
         
         let surveyEarnings = 0;
         let calculatedTotalSurveys = 0;
@@ -322,29 +467,7 @@ export default function Dashboard() {
    // Theme removed - light mode only
 
   /* =========================
-     LOAD SURVEYS (60 individual)
-   ========================= */
-  const loadSurveys = async (force = false) => {
-    const now = Date.now();
-    if (!force && surveysLoadedRef.current && now - lastSurveyFetchRef.current < 8000) return;
-
-    lastSurveyFetchRef.current = now;
-    try {
-      const res = await surveyApi.getSurveys();
-      const list = Array.isArray(res.data?.surveys)
-        ? res.data.surveys
-        : (Array.isArray(res.data) ? res.data : []);
-      setSurveys(list);
-      surveysLoadedRef.current = true;
-    } catch (err) {
-      console.error("Failed to load surveys:", err);
-    } finally {
-      setSurveyLoading(false);
-    }
-  };
-
-  /* =========================
-     COMPLETE A SURVEY
+      COMPLETE A SURVEY
    ========================= */
   const handleCompleteSurvey = async (surveyId) => {
     if (dailySurveyCount >= SURVEY_DAILY_LIMIT) {
@@ -353,15 +476,39 @@ export default function Dashboard() {
       return;
     }
 
+    // Check if survey already completed locally
+    const survey = surveys.find(s => s._id === surveyId);
+    if (survey?.isCompleted) {
+      setToast("You already completed this survey");
+      setTimeout(() => setToast(""), 3000);
+      return;
+    }
+
     setStartingSurveyId(surveyId);
     try {
-      const res = await surveyApi.completeSurvey(surveyId);
-      setDailySurveyCount(res.data?.daily_count ?? dailySurveyCount + 1);
-      setToast(res.data?.message || `Survey completed! Earned KES ${SURVEY_EARNINGS}`);
-      await loadSurveys(true);
-      api.get(`/auth/me?_t=${Date.now()}`)
-        .then(r => setUser(r.data))
-        .catch(() => {});
+      // Mark survey as completed locally
+      const updatedSurveys = surveys.map(s =>
+        s._id === surveyId ? { ...s, isCompleted: true } : s
+      );
+      // We need to update state - surveys is currently useState(HARDCODED_SURVEYYS)
+      // Since useState doesn't have setter, we need to use a ref or re-create
+      // Actually we need to add a surveys state setter
+      setSurveysState(updatedSurveys);
+
+      const newDailyCount = dailySurveyCount + 1;
+      setDailySurveyCount(newDailyCount);
+
+      // Add KES 97 to balance
+      const newBalance = (stats.availableBalance || 0) + SURVEY_EARNINGS;
+      const newTotalEarned = (stats.totalEarned || 0) + SURVEY_EARNINGS;
+      setStats(prev => ({
+        ...prev,
+        availableBalance: newBalance,
+        totalEarned: newTotalEarned,
+        totalSurveysCompleted: (prev.totalSurveysCompleted || 0) + 1
+      }));
+
+      setToast(`Survey completed! Earned KES ${SURVEY_EARNINGS}`);
     } catch (err) {
       const message = err?.response?.data?.message || "Failed to complete survey. Please try again.";
       setToast(message);
@@ -590,6 +737,25 @@ export default function Dashboard() {
     }
     localStorage.setItem("lastWithdrawClick", now.toString());
 
+    // Check if user has activated (paid KES 100)
+    const accountActivated = user?.all_plans_completed === true ||
+                        Object.values(plans || {}).some(p => p.is_activated);
+
+    if (!accountActivated) {
+      setToast("Activate your account first to unlock withdrawals");
+      setTimeout(() => setToast(""), 4000);
+      // Show bold Activate Now button
+      const confirm = window.confirm(
+        "You need to activate your account (pay KES 100) before you can withdraw. " +
+        "Complete all surveys to reach 60 surveys required for withdrawal.\n\n" +
+        "Would you like to go to the Activate page now?"
+      );
+      if (confirm) {
+        navigate("/activate");
+      }
+      return;
+    }
+
     const totalCompleted = stats?.totalSurveysCompleted || 0;
     const remaining = 60 - totalCompleted;
 
@@ -708,8 +874,18 @@ export default function Dashboard() {
     );
   }
 
+  // Check if user has activated (paid KES 100)
+  const accountActivated = user?.all_plans_completed === true ||
+                      Object.values(plans || {}).some(p => p.is_activated);
+
   return (
     <div className="dashboard" ref={dashboardRef} style={{ paddingBottom: '80px' }}>
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+        }
+      `}} />
       {/* TOAST NOTIFICATION */}
       {toast && <div className="toast-notification">{toast}</div>}
 
@@ -1326,34 +1502,13 @@ export default function Dashboard() {
         </div>
 
         {/* 60 SURVEYS - SINGLE VERTICAL COLUMN */}
-        {surveyLoading ? (
-          <div style={{
-            padding: '24px',
-            textAlign: 'center',
-            color: '#7c3aed',
-            fontWeight: '700',
-            fontSize: '13px'
-          }}>
-            Loading surveys...
-          </div>
-        ) : surveys.length === 0 ? (
-          <div style={{
-            padding: '24px',
-            textAlign: 'center',
-            color: '#7c3aed',
-            fontWeight: '700',
-            fontSize: '13px'
-          }}>
-            No surveys available right now. Please check back later.
-          </div>
-        ) : (
-          <div className="survey-list" style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '10px',
-            width: '100%'
-          }}>
-            {surveys.map((survey, index) => {
+         <div className="survey-list" style={{
+           display: 'flex',
+           flexDirection: 'column',
+           gap: '10px',
+           width: '100%'
+         }}>
+           {surveys.map((survey, index) => {
               const isDone = survey.isCompleted === true;
               const limitReached = dailySurveyCount >= SURVEY_DAILY_LIMIT;
               const isStarting = startingSurveyId === survey._id;
@@ -1496,10 +1651,9 @@ export default function Dashboard() {
                   </div>
                 </div>
               );
-            })}
-          </div>
-        )}
-      </section>
+             })}
+           </div>
+       </section>
 
       {/* EARNINGS DASHBOARD */}
       <section className="dashboard-section">
@@ -1735,28 +1889,51 @@ export default function Dashboard() {
           </button>
 
 {user && (
-            <button
-              className="nav-btn"
-              onClick={handleWithdrawClick}
-              style={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '2px',
-                padding: '6px',
-                background: 'linear-gradient(135deg, #ff6b6b 0%, #ef4444 100%)',
-                color: 'white',
-                border: 'none',
-                borderRadius: '10px',
-                cursor: 'pointer',
-                minHeight: '50px'
-              }}
-            >
-              <span className="nav-icon" style={{ fontSize: '20px', color: 'white' }}>💰</span>
-              <span className="nav-label" style={{ fontSize: '10px', fontWeight: '600', color: 'white' }}>Withdraw</span>
-            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'center' }}>
+              {!accountActivated && (
+                <button
+                  onClick={() => navigate("/activate")}
+                  style={{
+                    background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '6px 12px',
+                    fontWeight: '900',
+                    fontSize: '10px',
+                    color: 'white',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(217, 119, 6, 0.5)',
+                    animation: 'pulse 2s infinite',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
+                  }}
+                >
+                  🔓 ACTIVATE NOW
+                </button>
+              )}
+              <button
+                className="nav-btn"
+                onClick={handleWithdrawClick}
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '2px',
+                  padding: '6px',
+                  background: 'linear-gradient(135deg, #ff6b6b 0%, #ef4444 100%)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  minHeight: '50px'
+                }}
+              >
+                <span className="nav-icon" style={{ fontSize: '20px', color: 'white' }}>💰</span>
+                <span className="nav-label" style={{ fontSize: '10px', fontWeight: '600', color: 'white' }}>Withdraw</span>
+              </button>
+            </div>
           )}
        </div>
 
