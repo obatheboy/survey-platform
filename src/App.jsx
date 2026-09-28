@@ -5,9 +5,8 @@ import api from "./api/api";
 import { initCacheBusting } from "./utils/cache";
 
 /* ================= USER PAGES ================= */
-import Auth from "./pages/Auth";
-import LandingBanner from "./pages/LandingBanner";
-import Dashboard from "./pages/Dashboard";
+  import Auth from "./pages/Auth";
+  import Dashboard from "./pages/Dashboard";
 import Surveys from "./pages/Surveys";
 import Activate from "./pages/Activate";
 import ActivationNotice from "./pages/ActivationNotice";
@@ -134,10 +133,10 @@ export default function App() {
     <BrowserRouter>
       <Toaster position="top-center" reverseOrder={false} />
       <Routes>
-        {/* ENTRY - Landing Banner */}
-        <Route path="/" element={<LandingBanner />} />
+        {/* ENTRY - Redirect directly to Auth page (no landing banner) */}
+        <Route path="/" element={<Navigate to="/auth?mode=register" replace />} />
 
-        {/* USER AUTH - redirect to landing banner first unless mode is specified */}
+        {/* USER AUTH */}
         <Route path="/auth" element={<AuthRedirect />} />
 
         {/* ONBOARDING SURVEY */}
