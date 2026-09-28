@@ -176,6 +176,8 @@ export default function Auth() {
         localStorage.removeItem("survey_completions");
         localStorage.removeItem("survey_daily_count");
         localStorage.removeItem("survey_daily_date");
+        // Sync currency context with registered country
+        setCtxCountry(regData.country || COUNTRIES.KENYA);
       }
 
       // Skip login fee - redirect to onboarding survey
@@ -217,6 +219,15 @@ export default function Auth() {
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("lastLoginTime", Date.now().toString());
+
+        // Sync currency context with user's actual country from backend
+        const userCountry = res.data.user?.country;
+        if (userCountry) {
+          const normalized = String(userCountry).toLowerCase();
+          if (normalized === COUNTRIES.UGANDA || normalized === COUNTRIES.KENYA) {
+            setCtxCountry(normalized);
+          }
+        }
 
         const onboardingCompleted = res.data.user?.survey_onboarding_completed;
 
