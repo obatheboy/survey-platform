@@ -23,6 +23,9 @@ const formatPhoneToInternational = (phone) => {
   // Standard: 070, 071, 072, 074, 075, 076, 078, 079 → 07xxxxxxxx
   // Safaricom 01: 011, 0110, 0111 → 011xxxxxxxx
   // Airtel 01: 0100, 0101, 0102 → 0100xxxxxxzxxxxx, or 10xxxxxxx (all exactly 9 digits)
+  if (cleaned.startsWith('0') && cleaned.length === 9) {
+    cleaned = '254' + cleaned.slice(1);
+  }
   else if (cleaned.startsWith('7') && cleaned.length === 9) {
     cleaned = '254' + cleaned;
   } else if (cleaned.startsWith('11') && cleaned.length === 9) {
