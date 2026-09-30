@@ -109,9 +109,11 @@ exports.awardReferralCommission = async (referredUserId) => {
       return { success: false, message: "Commission already awarded" };
     }
 
-    // Award commission
+    // Award commission. This is a SEPARATE affiliate balance: it is withdrawn
+    // from referral_commission_earned (see withdraw.controller.js) and must NOT
+    // also inflate total_earned, which is only fed by the KES 1200 welcome bonus
+    // and survey earnings.
     referrer.referral_commission_earned = (referrer.referral_commission_earned || 0) + REFERRAL_COMMISSION;
-    referrer.total_earned = (referrer.total_earned || 0) + REFERRAL_COMMISSION;
 
     // Add to commissions history
     if (!referrer.referral_commissions) {
