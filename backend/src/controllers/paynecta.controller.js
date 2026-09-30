@@ -384,37 +384,40 @@ exports.manualApprovePaynectaPayment = async (req, res) => {
       userPlan.activated_at = new Date();
     }
 
-    const allPlansTypes = ["REGULAR", "VIP", "VVIP"];
-    const allPaid = allPlansTypes.every(p => user.plans_paid?.[p] === true);
-    user.all_plans_completed = allPaid;
-    user.is_activated = allPaid;
-    if (allPaid) {
+    // Single-fee model: paying the one-time KES 100 activation fee (welcome bonus
+    // claim or any plan fee) activates the account and unlocks surveys.
+    const welcomePaid = isWelcomeBonus || user.welcome_bonus_paid === true;
+    const accountActive = welcomePaid || user.plans_paid?.REGULAR === true ||
+      user.plans_paid?.VIP === true || user.plans_paid?.VVIP === true;
+
+    user.all_plans_completed = accountActive;
+    user.account_activated = accountActive;
+    user.is_activated = accountActive;
+    if (accountActive) {
+      if (!user.activated_at) user.activated_at = new Date();
       user.activated_by = plan;
-      user.activated_at = new Date();
+      if (isWelcomeBonus) {
+        user.welcome_bonus_paid = true;
+        user.welcome_bonus_received = true;
+        if (!user.plans) user.plans = {};
+        user.plans.WELCOME_BONUS = {
+          surveys_completed: 10, completed: true, is_activated: true,
+          total_surveys: 10, activated_at: new Date(),
+        };
+      }
     }
 
-    // Credit earnings
-    let creditAmount;
-    if (isWelcomeBonus) {
-      creditAmount = user.welcome_bonus || PLAN_EARNINGS.WELCOME_BONUS;
-      user.welcome_bonus_received = true;
-    } else {
-      creditAmount = PLAN_EARNINGS[plan] || 0;
-    }
-
+    // 💰 Activation is a FEE, not earnings - no balance credit here.
     const oldBalance = user.total_earned || 0;
-    user.total_earned = oldBalance + creditAmount;
 
     console.log(`✅ Manually approved MegaPay payment - ${plan} plan for user ${user.full_name}`);
-    console.log(`💰 Added KES ${creditAmount} - Old: ${oldBalance}, New: ${user.total_earned}`);
+    console.log(`💰 Balance unchanged: KES ${oldBalance} (activation is a fee, not earnings)`);
+    console.log(`🔓 Account activated: ${accountActive}`);
 
     await user.save();
 
-    // Calculate remaining unpaid plans for redirect
-    const planOrderForRedirect = ["REGULAR", "VIP", "VVIP"];
-    const remainingPlans = planOrderForRedirect.filter(p => user.plans_paid?.[p] !== true);
-    const nextPlanKey = remainingPlans.length > 0 ? remainingPlans[0] : null;
-    const redirectTo = allPaid ? "/withdraw" : (nextPlanKey ? `/dashboard?focusPlan=${nextPlanKey}&highlightPlan=${nextPlanKey}` : "/dashboard");
+    // Payment only unlocks the account - always send the user to their surveys.
+    const redirectTo = "/dashboard";
 
     console.log(`➡️ Redirect to: ${redirectTo}`);
 
@@ -422,9 +425,9 @@ exports.manualApprovePaynectaPayment = async (req, res) => {
     try {
       const notification = new Notification({
         user_id: user._id,
-        title: `✅ ${isWelcomeBonus ? 'Welcome Bonus' : plan} Plan Activated!`,
-        message: `Your ${isWelcomeBonus ? 'Welcome Bonus' : plan} plan has been activated! KES ${creditAmount} has been added to your balance.`,
-        action_route: isWelcomeBonus ? "/withdraw" : "/withdraw-form",
+        title: `✅ ${isWelcomeBonus ? 'Account' : `${plan} Plan`} Activated!`,
+        message: "Your account is now active! You can start taking surveys and earning.",
+        action_route: "/dashboard",
         type: "activation"
       });
       await notification.save();
@@ -441,7 +444,7 @@ exports.manualApprovePaynectaPayment = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: `${isWelcomeBonus ? 'Welcome Bonus' : plan} plan approved successfully`,
+      message: "Payment approved. Your account is now active!",
       plan: plan,
       token: token,
       user: {
@@ -449,14 +452,15 @@ exports.manualApprovePaynectaPayment = async (req, res) => {
         full_name: user.full_name,
         phone: user.phone,
         is_activated: user.is_activated,
-        all_plans_completed: allPaid,
+        account_activated: user.account_activated,
+        all_plans_completed: user.all_plans_completed,
         plans_paid: user.plans_paid
       },
       balance_before: oldBalance,
-      balance_added: creditAmount,
+      balance_added: 0,
       new_balance: user.total_earned,
       redirect_to: redirectTo,
-      remaining_plans: remainingPlans.map(p => p === "WELCOME_BONUS" ? "Welcome Bonus" : p)
+      remaining_plans: []
     });
   } catch (error) {
     console.error("❌ Manual approval error:", error);

@@ -304,14 +304,23 @@ exports.confirmPlanPayment = async (req, res) => {
   const vvipPaid = justPaidPlan === "VVIP" ? true : (currentPlansPaid.VVIP === true);
   const allThreePaid = regularPaid && vipPaid && vvipPaid;
 
-  console.log(`🔍 Activation check - REGULAR: ${regularPaid}, VIP: ${vipPaid}, VVIP: ${vvipPaid}, All three: ${allThreePaid}`);
+  // ✅ Single-fee model: paying the one-time KES 100 activation fee (welcome bonus
+  // claim or any plan fee) activates the account and unlocks surveys immediately.
+  const welcomeBonusPaid = user.welcome_bonus_paid === true || currentPlansPaid.WELCOME_BONUS === true;
+  const anyFeePaid = welcomeBonusPaid || regularPaid || vipPaid || vvipPaid;
+  const accountActive = anyFeePaid || allThreePaid;
 
-  if (allThreePaid) {
+  console.log(`🔍 Activation check - REGULAR: ${regularPaid}, VIP: ${vipPaid}, VVIP: ${vvipPaid}, All three: ${allThreePaid}, WelcomeBonus: ${welcomeBonusPaid}, Active: ${accountActive}`);
+
+  if (accountActive) {
     user.account_activated = true;
     user.all_plans_completed = true;
     user.is_activated = true;
     if (!user.activated_at) {
       user.activated_at = new Date();
+    }
+    if (!user.activated_by) {
+      user.activated_by = normalizedPlanKey;
     }
   } else {
     user.account_activated = false;
@@ -331,12 +340,14 @@ exports.confirmPlanPayment = async (req, res) => {
   const rPaid = freshUser.regular_paid === true || freshUser.plans_paid?.REGULAR === true;
   const vPaid = freshUser.vip_paid === true || freshUser.plans_paid?.VIP === true;
   const vvPaid = freshUser.vvip_paid === true || freshUser.plans_paid?.VVIP === true;
+  const freshWelcomePaid = freshUser.welcome_bonus_paid === true || freshUser.plans_paid?.WELCOME_BONUS === true;
   const trulyAllThree = rPaid && vPaid && vvPaid;
+  const trulyActive = freshWelcomePaid || rPaid || vPaid || vvPaid || trulyAllThree;
 
-  console.log(`🔍 FRESH check after save - REGULAR: ${rPaid}, VIP: ${vPaid}, VVIP: ${vvPaid}, AllThree: ${trulyAllThree}`);
+  console.log(`🔍 FRESH check after save - REGULAR: ${rPaid}, VIP: ${vPaid}, VVIP: ${vvPaid}, AllThree: ${trulyAllThree}, WelcomeBonus: ${freshWelcomePaid}, Active: ${trulyActive}`);
 
-  // If DB has stale all_plans_completed=true but not all 3 paid, force-correct it
-  if (!trulyAllThree && (freshUser.all_plans_completed === true || freshUser.account_activated === true)) {
+  // If DB has stale activation data but the user has NOT paid, force-correct it
+  if (!trulyActive && (freshUser.all_plans_completed === true || freshUser.account_activated === true)) {
     console.log(`⚠️ Stale activation data detected! Fixing DB for user ${freshUser._id}`);
     freshUser.account_activated = false;
     freshUser.all_plans_completed = false;
@@ -346,22 +357,17 @@ exports.confirmPlanPayment = async (req, res) => {
   }
 
   // Use FRESH data from DB for all calculations
-  const finalAllThreePaid = trulyAllThree;
+  const finalAllThreePaid = trulyActive;
   const finalRegularPaid = rPaid;
   const finalVipPaid = vPaid;
   const finalVvipPaid = vvPaid;
 
   let allPaid = finalAllThreePaid;
 
-  let creditEarnings = true;
-  let earnings = PLAN_EARNINGS[normalizedPlanKey] || 0;
-  if (normalizedPlanKey === "WELCOME_BONUS") {
-    creditEarnings = false;
-  }
+  // 💰 Activation is a FEE, not earnings. Paying it must never add money to the
+  // balance. The only credits to total_earned are the KES 1200 welcome bonus
+  // (granted at signup) and survey earnings (tracked client-side).
   const oldBalance = freshUser.total_earned || 0;
-  if (creditEarnings) {
-    freshUser.total_earned = oldBalance + earnings;
-  }
 
   let redirectTo;
   let remainingPlansList;
@@ -389,9 +395,9 @@ exports.confirmPlanPayment = async (req, res) => {
   }
 
   const successMessage = normalizedPlanKey === "WELCOME_BONUS"
-    ? "✅ Welcome Bonus activated! Redirecting to next plan..."
+    ? "🎉 Welcome Bonus activated! Your account is now ACTIVE and you can start taking surveys."
     : finalAllThreePaid
-      ? "🎉 Congratulations! Your account is now ACTIVE!\nYou can now withdraw your earnings!"
+      ? "🎉 Congratulations! Your account is now ACTIVE!\nYou can now start taking surveys and withdraw your earnings!"
       : `✅ You have successfully paid for ${normalizedPlanKey.replace(/_/g, ' ')}!\nRemaining survey plans: ${remainingPlansList.length > 0 ? remainingPlansList.join(', ') : 'none'}`;
 
   console.log(`✅ Redirect: ${redirectTo}, Remaining: ${remainingPlansList.join(', ') || 'none'}, AllThreePaid: ${finalAllThreePaid}`);
@@ -416,16 +422,16 @@ exports.confirmPlanPayment = async (req, res) => {
    }
 
    console.log(`✅ Plan payment confirmed - ${normalizedPlanKey} for user ${freshUser.full_name}`);
-  console.log(`💰 Added KES ${earnings} - Old: ${oldBalance}, New: ${freshUser.total_earned}`);
-  console.log(`📋 All plans completed: ${finalAllThreePaid}`);
+  console.log(`💰 Balance unchanged: KES ${oldBalance} (activation is a fee, not earnings)`);
+  console.log(`🔓 Account activated: ${finalAllThreePaid}`);
   console.log(`➡️ Redirect to: ${redirectTo}`);
 
   // Create notification
   try {
     const notification = new Notification({
       user_id: freshUser._id,
-      title: `✅ ${normalizedPlanKey.replace(/_/g, ' ')} Plan Paid!`,
-      message: `You have successfully paid for ${normalizedPlanKey.replace(/_/g, ' ')} plan! KES ${earnings} has been added to your balance.${finalAllThreePaid ? ' All plans completed! You can now withdraw.' : ''}`,
+      title: `✅ ${normalizedPlanKey === "WELCOME_BONUS" ? "Account" : `${normalizedPlanKey.replace(/_/g, ' ')} Plan`} Activated!`,
+      message: "Your account is now active! You can start taking surveys and earning KES 97 per survey.",
       action_route: redirectTo,
       type: "payment"
     });
@@ -467,6 +473,7 @@ exports.confirmPlanPayment = async (req, res) => {
       phone: freshUser.phone,
       all_plans_completed: finalAllThreePaid,
       account_activated: freshUser.account_activated === true,
+      is_activated: freshUser.is_activated === true,
       user_activated: freshUser.is_activated || false,
       plans_paid: freshUser.plans_paid,
       regular_paid: finalRegularPaid,
@@ -477,7 +484,7 @@ exports.confirmPlanPayment = async (req, res) => {
       plans: freshUser.plans || {}
     },
     balance_before: oldBalance,
-    balance_added: earnings,
+    balance_added: 0,
     new_balance: freshUser.total_earned
   });
 
@@ -516,7 +523,8 @@ exports.getPlanPaymentStatus = async (req, res) => {
         paid: isPaid,
         activated: !!planData?.is_activated,
         fee: PLAN_FEES[planKey],
-        earnings: PLAN_EARNINGS[planKey],
+        // Activation is a fee, not a payout - there is no plan earnings amount.
+        earnings: 0,
         label: planKey === "WELCOME_BONUS" ? "Welcome Bonus" : planKey
       };
     });
@@ -537,7 +545,7 @@ exports.getPlanPaymentStatus = async (req, res) => {
       next_plan: nextPlan ? {
         plan: nextPlan,
         fee: PLAN_FEES[nextPlan],
-        earnings: PLAN_EARNINGS[nextPlan],
+        earnings: 0,
         label: nextPlan
       } : null,
       redirect_to: redirect.redirect_to,
@@ -592,7 +600,7 @@ exports.getNextUnpaidPlan = async (req, res) => {
       next_plan: {
         plan: nextPlanKey,
         fee: PLAN_FEES[nextPlanKey],
-        earnings: PLAN_EARNINGS[nextPlanKey],
+        earnings: 0,
         label: nextPlanKey
       },
        all_plans_completed: user.all_plans_completed || false,

@@ -15,6 +15,9 @@ const TILL_NUMBER = "7282886";
 // payment option. Set to false to show manual M-Pesa Send Money only.
 const AUTO_PAY_ENABLED = true;
 
+// Single KES 100 activation fee. Paying it only UNLOCKS the account - it pays
+// out nothing. The only money a user ever receives is the KES 1200 welcome
+// bonus (credited at signup) and KES 97 per completed survey.
 const PLAN_CONFIG = {
   WELCOME_BONUS: {
     label: "Welcome Bonus",
@@ -24,23 +27,23 @@ const PLAN_CONFIG = {
     glow: "rgba(6, 182, 212, 0.2)"
   },
   REGULAR: {
-    label: "REGULAR SURVEYS",
-    total: 1500,
+    label: "Activate Account",
+    total: 0,
     activationFee: 100,
     color: "#06b6d4",
     glow: "rgba(6, 182, 212, 0.2)"
   },
   VIP: {
-    label: "VIP SURVEY",
-    total: 2000,
-    activationFee: 200,
+    label: "Activate Account",
+    total: 0,
+    activationFee: 100,
     color: "#7c3aed",
     glow: "rgba(124, 58, 237, 0.2)"
   },
   VVIP: {
-    label: "VVIP SURVEYS",
-    total: 3000,
-    activationFee: 300,
+    label: "Activate Account",
+    total: 0,
+    activationFee: 100,
     color: "#ff6b6b",
     glow: "rgba(255, 107, 107, 0.2)"
   },
@@ -364,12 +367,8 @@ const [planKey, setPlanKey] = useState(null);
          // Normal flow (not from withdraw)
          if (planFromQuery === "WELCOME_BONUS") {
            if (res.data.welcome_bonus_paid === true) {
-             const nextPlan = getNextActivationPlan(res.data);
-             if (nextPlan) {
-               navigate(getDashboardFocusUrl(nextPlan), { replace: true });
-             } else {
-               navigate("/withdraw-form", { replace: true });
-             }
+             // Single-fee model: the account is active — go straight to surveys.
+             navigate("/dashboard", { replace: true });
              return;
            }
          }
@@ -724,9 +723,11 @@ setPaynectaSubmitting(true);
                      <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
                        {config?.label || p}
                      </div>
-                     <div style={{ fontSize: '0.85rem', opacity: 0.9 }}>
-                       Earn up to {format(config?.total || 0)}
-                     </div>
+                      <div style={{ fontSize: '0.85rem', opacity: 0.9 }}>
+                        {config?.total > 0
+                          ? `Welcome bonus worth ${format(config.total)}`
+                          : 'Unlocks all 60 surveys'}
+                      </div>
                    </div>
                    <div style={{ textAlign: 'right' }}>
                      {isActivated || planPaid ? (
@@ -942,11 +943,11 @@ setPaynectaSubmitting(true);
             </div>
 
             <div style={{ fontSize: "16px", fontWeight: 700, color: "#e2e8f0", marginBottom: "4px" }}>
-              You have earned
+              {planKey === "WELCOME_BONUS" ? "You have earned" : "Your account is now"}
             </div>
 
             <div style={{ fontSize: "38px", fontWeight: 900, color: "#06b6d4", lineHeight: "1.2", marginBottom: "10px", textShadow: "0 4px 12px rgba(6, 182, 212, 0.5)" }}>
-              {format(plan.total)}
+              {planKey === "WELCOME_BONUS" ? format(plan.total) : "ACTIVE"}
             </div>
 
             <div style={{
@@ -1043,9 +1044,9 @@ setPaynectaSubmitting(true);
                 </span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px", marginTop: "4px" }}>
-                <span style={{ color: "#e0f2fe", fontWeight: 600 }}>💵After paying you will Receive:</span>
+                <span style={{ color: "#e0f2fe", fontWeight: 600 }}>✅After paying you get:</span>
                 <span style={{ color: "#4ade80", fontWeight: 900, fontSize: "17px" }}>
-{format(plan.total)}
+                  {planKey === "WELCOME_BONUS" ? `${format(plan.total)} bonus + surveys` : "Surveys unlocked"}
                 </span>
               </div>
             </div>

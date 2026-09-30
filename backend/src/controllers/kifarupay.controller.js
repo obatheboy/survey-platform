@@ -70,165 +70,6 @@ module.exports = {
     });
   }
 };
-  try {
-    const { plan, phone_number } = req.body;
-    const userId = req.user?.id || req.body?.userId;
-
-    console.log("=== KIFARUPAY INITIATE PAYMENT ===");
-    console.log("User ID:", userId);
-    console.log("Plan:", plan);
-    console.log("Phone:", phone_number);
-
-    // Validate plan
-    const planKey = (plan?.toUpperCase() === "WELCOME_BONUS" || plan?.toLowerCase() === "welcome") ? "WELCOME_BONUS" : (plan?.toUpperCase() || "");
-    const amount = PLAN_FEES[planKey];
-
-    if (!amount) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid plan selected. Valid plans: welcome_bonus, regular, vip, vvip"
-      });
-    }
-
-    if (!userId) {
-      return res.status(400).json({
-        success: false,
-        message: "User ID is required"
-      });
-    }
-
-    // Validate phone number
-    if (!phone_number) {
-      return res.status(400).json({
-        success: false,
-        message: "Phone number is required"
-      });
-    }
-
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // Generate payment reference
-    const reference = `KFY_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-
-    // Store payment info in user record for admin verification
-    if (!user.activation_requests) {
-      user.activation_requests = [];
-    }
-
-    const isWelcomeBonus = planKey === "WELCOME_BONUS";
-
-    // Add activation request for admin tracking
-    user.activation_requests.push({
-      plan: planKey,
-      mpesa_code: reference, // Using our reference as the payment identifier
-      amount: amount,
-      status: 'SUBMITTED',
-      created_at: new Date(),
-      is_welcome_bonus: isWelcomeBonus,
-      payment_method: "kifarupay"
-    });
-
-    // Store last payment reference for lookup
-    user.last_payment_reference = reference;
-    user.last_payment_attempt = new Date();
-    user.last_payment_plan = planKey;
-    user.payment_method = "kifarupay";
-    await user.save();
-
-    // Determine description based on plan
-    const description = isWelcomeBonus
-      ? "Welcome Bonus Activation"
-      : `${planKey} Plan Activation`;
-
-    // Send STK Push via Kifarupay
-    const paymentResult = await kifarupayService.initiateSTKPush(
-      amount,
-      phone_number,
-      userId,
-      description,
-      reference
-    );
-
-    if (paymentResult.success) {
-      console.log(`✅ Kifarupay STK Push sent for ${planKey} - User: ${user._id}`);
-
-      // Send notification to user
-      try {
-        const notification = new Notification({
-          user_id: user._id,
-          title: `🔔 ${isWelcomeBonus ? 'Welcome Bonus' : planKey} Payment`,
-          message: `STK push of KES ${amount} sent to ${phone_number}. Complete payment to activate your plan. Admin will verify and activate.`,
-          action_route: "/activate",
-          type: "payment"
-        });
-        await notification.save();
-      } catch (notifError) {
-        console.error("Notification error:", notifError);
-      }
-
-      return res.status(200).json({
-        success: true,
-        message: "STK Push sent! Check your phone and enter PIN.",
-        reference: reference,
-        checkout_request_id: paymentResult.checkout_request_id,
-        amount: amount,
-        plan: planKey,
-        phone: paymentResult.phone,
-        requires_manual_approval: true,
-        instructions: "Please check your phone for the M-Pesa STK push, enter your PIN. Admin will verify and activate your plan."
-      });
-    } else {
-      // Clear the stored reference if payment failed
-      user.activation_requests.pop();
-      user.last_payment_reference = null;
-      await user.save();
-
-      console.error("❌ Kifarupay STK Push failed:", paymentResult.message);
-
-      return res.status(400).json({
-        success: false,
-        message: paymentResult.message || "Failed to initiate STK Push. Please try again.",
-        error_code: paymentResult.code || null,
-        details: paymentResult.details || null
-      });
-    }
-  } catch (error) {
-    console.error("❌ Kifarupay initiation error:", error);
-
-    // Handle DNS/connection errors
-    if (error.code === 'ENOTFOUND' || (error.message && error.message.includes("ENOTFOUND"))) {
-      return res.status(503).json({
-        success: false,
-        message: "Payment gateway temporarily unavailable. Please try again in a few minutes.",
-        error: "DNS_RESOLUTION_FAILED"
-      });
-    }
-
-    if (error.code === 'ECONNREFUSED') {
-      return res.status(503).json({
-        success: false,
-        message: "Payment gateway connection refused. Please try again later.",
-        error: "CONNECTION_REFUSED"
-      });
-    }
-
-    if (error.code === 'ETIMEDOUT') {
-      return res.status(504).json({
-        success: false,
-        message: "Payment gateway timed out. Please try again.",
-        error: "TIMEOUT"
-      });
-    }
-
-    return res.status(500).json({
-      success: false,
-      message: "Server error: " + (error.message || "Unknown error")
-    });
-  }
-};
 
 /* =====================================
    GET USER PAYMENT STATUS
@@ -411,37 +252,40 @@ exports.manualApproveKifarupayPayment = async (req, res) => {
       userPlan.activated_at = new Date();
     }
 
-    const allPlansTypes = ["REGULAR", "VIP", "VVIP"];
-    const allPaid = allPlansTypes.every(p => user.plans_paid?.[p] === true);
-    user.all_plans_completed = allPaid;
-    user.is_activated = allPaid;
-    if (allPaid) {
+    // Single-fee model: paying the one-time KES 100 activation fee (welcome bonus
+    // claim or any plan fee) activates the account and unlocks surveys.
+    const welcomePaid = isWelcomeBonus || user.welcome_bonus_paid === true;
+    const accountActive = welcomePaid || user.plans_paid?.REGULAR === true ||
+      user.plans_paid?.VIP === true || user.plans_paid?.VVIP === true;
+
+    user.all_plans_completed = accountActive;
+    user.account_activated = accountActive;
+    user.is_activated = accountActive;
+    if (accountActive) {
+      if (!user.activated_at) user.activated_at = new Date();
       user.activated_by = plan;
-      user.activated_at = new Date();
+      if (isWelcomeBonus) {
+        user.welcome_bonus_paid = true;
+        user.welcome_bonus_received = true;
+        if (!user.plans) user.plans = {};
+        user.plans.WELCOME_BONUS = {
+          surveys_completed: 10, completed: true, is_activated: true,
+          total_surveys: 10, activated_at: new Date(),
+        };
+      }
     }
 
-    // Credit earnings
-    let creditAmount;
-    if (isWelcomeBonus) {
-      creditAmount = user.welcome_bonus || PLAN_EARNINGS.WELCOME_BONUS;
-      user.welcome_bonus_received = true;
-    } else {
-      creditAmount = PLAN_EARNINGS[plan] || 0;
-    }
-
+    // 💰 Activation is a FEE, not earnings - no balance credit here.
     const oldBalance = user.total_earned || 0;
-    user.total_earned = oldBalance + creditAmount;
 
     console.log(`✅ Manually approved Kifarupay payment - ${plan} plan for user ${user.full_name}`);
-    console.log(`💰 Added KES ${creditAmount} - Old: ${oldBalance}, New: ${user.total_earned}`);
+    console.log(`💰 Balance unchanged: KES ${oldBalance} (activation is a fee, not earnings)`);
+    console.log(`🔓 Account activated: ${accountActive}`);
 
     await user.save();
 
-    // Calculate remaining unpaid plans for redirect
-    const planOrderForRedirect = ["REGULAR", "VIP", "VVIP"];
-    const remainingPlans = planOrderForRedirect.filter(p => user.plans_paid?.[p] !== true);
-    const nextPlanKey = remainingPlans.length > 0 ? remainingPlans[0] : null;
-    const redirectTo = allPaid ? "/withdraw" : (nextPlanKey ? `/dashboard?focusPlan=${nextPlanKey}&highlightPlan=${nextPlanKey}` : "/dashboard");
+    // Payment only unlocks the account - always send the user to their surveys.
+    const redirectTo = "/dashboard";
 
     console.log(`➡️ Redirect to: ${redirectTo}`);
 
@@ -449,9 +293,9 @@ exports.manualApproveKifarupayPayment = async (req, res) => {
     try {
       const notification = new Notification({
         user_id: user._id,
-        title: `✅ ${isWelcomeBonus ? 'Welcome Bonus' : plan} Plan Activated!`,
-        message: `Your ${isWelcomeBonus ? 'Welcome Bonus' : plan} plan has been activated! KES ${creditAmount} has been added to your balance.`,
-        action_route: isWelcomeBonus ? "/withdraw" : "/withdraw-form",
+        title: `✅ ${isWelcomeBonus ? 'Account' : `${plan} Plan`} Activated!`,
+        message: "Your account is now active! You can start taking surveys and earning.",
+        action_route: "/dashboard",
         type: "activation"
       });
       await notification.save();
@@ -468,17 +312,21 @@ exports.manualApproveKifarupayPayment = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: `${isWelcomeBonus ? 'Welcome Bonus' : plan} plan approved successfully`,
+      message: "Payment approved. Your account is now active!",
       plan: plan,
       token: token,
+      redirect_to: redirectTo,
       user: {
         id: user._id,
         full_name: user.full_name,
         phone: user.phone,
-        is_activated: user.is_activated
+        is_activated: user.is_activated,
+        account_activated: user.account_activated,
+        all_plans_completed: user.all_plans_completed,
+        plans_paid: user.plans_paid
       },
       balance_before: oldBalance,
-      balance_added: creditAmount,
+      balance_added: 0,
       new_balance: user.total_earned
     });
   } catch (error) {

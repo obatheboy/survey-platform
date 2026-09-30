@@ -390,9 +390,10 @@ setUser(resUser.data);
             const parsedUser = JSON.parse(cachedUser);
             setUser(parsedUser);
             setPlans(parsedUser.plans || {});
-            const isActivated = parsedUser?.all_plans_completed === true ||
-                                Object.values(parsedUser.plans || {}).some(p => p.is_activated) ||
-                                parsedUser?.plans_paid?.REGULAR === true;
+            const isActivated = parsedUser?.is_activated === true ||
+                                parsedUser?.account_activated === true ||
+                                parsedUser?.welcome_bonus_paid === true ||
+                                Object.values(parsedUser.plans || {}).some(p => p.is_activated);
             if (isActivated) {
               setShowSurveyOverlay(false);
             }
@@ -724,6 +725,16 @@ setUser(resUser.data);
   };
   const isCompleted = (plan) => surveysDone(plan) >= TOTAL_SURVEYS;
   const isActivated = (plan) => plans[plan]?.is_activated === true || user?.plans_paid?.[plan] === true || user?.[`${plan.toLowerCase()}_paid`] === true;
+
+  // Single KES 100 activation fee unlocks surveys. Treat the welcome-bonus
+  // claim or any paid plan as an active account.
+  const isAccountActive = () => (
+    user?.is_activated === true ||
+    user?.account_activated === true ||
+    user?.all_plans_completed === true ||
+    user?.welcome_bonus_paid === true ||
+    Object.values(plans || {}).some(p => p?.is_activated === true)
+  );
 
   const hasPendingActivation = (plan) => {
     return activationRequests.some(
@@ -1868,10 +1879,8 @@ setUser(resUser.data);
                           className="start-survey-btn"
                           onClick={() => {
                             // Check if user has activated (paid KES 100)
-                            const isActivated = user?.all_plans_completed === true ||
-                                              Object.values(plans || {}).some(p => p.is_activated) ||
-                                              user?.plans_paid?.REGULAR === true;
-                            if (!isActivated) {
+                            const active = isAccountActive();
+                            if (!active) {
                               setFullScreenNotification({
                                 message: "Activate your account first to unlock surveys.",
                                 redirect: "/activate?plan=regular",

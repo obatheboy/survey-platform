@@ -272,15 +272,26 @@ exports.approveActivation = async (req, res) => {
       payment.status = 'APPROVED';
       payment.processed_at = new Date();
       
-      // 🔥 ADD WELCOME BONUS TO BALANCE
+      // 💰 The KES 1200 welcome bonus was already credited at signup — approving
+      // the payment only UNLOCKS the account, it must not add money again.
       const oldBalance = user.total_earned || 0;
-      user.total_earned = oldBalance + PLAN_EARNINGS.WELCOME_BONUS;
       user.welcome_bonus_received = true;
+      user.welcome_bonus_paid = true;
       if (!user.plans_paid) user.plans_paid = {};
       user.plans_paid.WELCOME_BONUS = true;
+      if (!user.plans) user.plans = {};
+      user.plans.WELCOME_BONUS = {
+        surveys_completed: 10, completed: true, is_activated: true,
+        total_surveys: 10, activated_at: new Date(),
+      };
+      user.account_activated = true;
+      user.all_plans_completed = true;
+      user.is_activated = true;
+      if (!user.activated_at) user.activated_at = new Date();
+      user.activated_by = 'WELCOME_BONUS';
       
-      console.log(`💰 Added KES ${PLAN_EARNINGS.WELCOME_BONUS} welcome bonus to ${user.full_name}`);
-      console.log(`💰 Old balance: ${oldBalance}, New balance: ${user.total_earned}`);
+      console.log(`💰 Balance unchanged: KES ${oldBalance} (activation is a fee, not earnings)`);
+      console.log(`🔓 Account activated for ${user.full_name}`);
       
       if (isFromWithdrawal) {
         const activationRequest = user.activation_requests?.find(
@@ -343,15 +354,16 @@ exports.approveActivation = async (req, res) => {
 
       return res.json({
         success: true,
-        message: "✅ Welcome bonus approved",
+        message: "✅ Payment approved. Account activated!",
         user_id: user._id,
         plan: 'WELCOME_BONUS',
         full_name: user.full_name,
-        balance_added: PLAN_EARNINGS.WELCOME_BONUS,
+        balance_added: 0,
         new_balance: user.total_earned,
-        redirect_to: "/dashboard?focusPlan=REGULAR&highlightPlan=REGULAR",
-        next_plan: "REGULAR",
-        remaining_plans: ACTIVATION_PLANS
+        account_activated: user.is_activated === true,
+        redirect_to: "/dashboard",
+        next_plan: null,
+        remaining_plans: []
       });
     }
     
@@ -403,20 +415,19 @@ if (userPlan.is_activated) {
     // Check if all plans are paid OR all plans are activated (manual activation)
     syncActivationStatus(user);
     const shouldActivate = user.is_activated === true;
-    const allPaid = ACTIVATION_PLANS.every(p => user.plans_paid?.[p] === true);
     const redirect = buildActivationRedirect(user);
     
     if (shouldActivate && !user.activated_at) {
       user.activated_at = new Date();
     }
     
-    // 🔥 ADD PLAN EARNINGS TO BALANCE (using correct amounts)
-    const earningsToAdd = PLAN_EARNINGS[plan] || 0;
+    // 💰 Activation is a FEE, not earnings - it must never add money to the
+    // balance. Only the KES 1200 welcome bonus (credited at signup) and survey
+    // earnings (tracked client-side) credit total_earned.
     const oldBalance = user.total_earned || 0;
-    user.total_earned = oldBalance + earningsToAdd;
-    
-    console.log(`💰 Added KES ${earningsToAdd} to user balance for ${plan} plan activation`);
-    console.log(`💰 Old balance: ${oldBalance}, New balance: ${user.total_earned}`);
+
+    console.log(`💰 Balance unchanged: KES ${oldBalance} (activation is a fee, not earnings)`);
+    console.log(`🔓 Account activated: ${shouldActivate}`);
 
     await user.save({ session });
     await session.commitTransaction();
@@ -460,11 +471,11 @@ if (userPlan.is_activated) {
 
     res.json({
       success: true,
-      message: "✅ Activation approved",
+      message: "✅ Payment approved. Your account is now active!",
       user_id: user._id,
       plan: plan,
       full_name: user.full_name,
-      balance_added: earningsToAdd,
+      balance_added: 0,
       new_balance: user.total_earned,
       withdraw_unlocked: user.is_activated === true,
       user_activated: user.is_activated === true,

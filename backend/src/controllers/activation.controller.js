@@ -72,14 +72,9 @@ exports.submitActivationPayment = async (req, res) => {
 
     const userPlan = user.plans?.[planKey];
 
-    // Skip survey completion check for welcome bonus
-    if (planKey !== "WELCOME_BONUS") {
-      if (!userPlan.completed || userPlan.surveys_completed !== TOTAL_SURVEYS) {
-        return res.status(400).json({
-          message: "Complete all surveys before activation",
-        });
-      }
-    }
+    // Single KES 100 activation fee: there is no server-side survey prerequisite
+    // (survey completion is tracked in the browser), so the only requirement is
+    // the payment itself.
 
     // Check if already activated
     if (planKey !== "WELCOME_BONUS" && userPlan?.is_activated) {
@@ -189,23 +184,18 @@ exports.approveActivation = async (req, res) => {
     const plan = activationRequest.plan;
     const isWelcomeBonus = activationRequest.is_welcome_bonus === true;
 
-    // For non-welcome-bonus, enforce survey completion; for welcome bonus skip this check
-    if (!isWelcomeBonus) {
-      if (!user.plans || !user.plans[plan]) {
-        return res.status(400).json({
-          message: "User has not completed required surveys",
-        });
-      }
-
-      const userPlan = user.plans[plan];
-      
-      if (!userPlan.completed || userPlan.surveys_completed !== TOTAL_SURVEYS) {
-        return res.status(400).json({
-          message: "User has not completed required surveys",
-        });
-      }
-    } else {
-      if (!user.plans) user.plans = {};
+    // Single KES 100 activation fee: there is no server-side survey prerequisite
+    // (survey completion is tracked in the browser), so once an admin verifies
+    // the payment the account is activated regardless of plan state.
+    if (!user.plans) user.plans = {};
+    if (plan !== "WELCOME_BONUS" && !user.plans[plan]) {
+      user.plans[plan] = {
+        surveys_completed: 0,
+        completed: false,
+        is_activated: false,
+        total_surveys: 10,
+        activated_at: null,
+      };
     }
 
     // Check if already activated
@@ -231,10 +221,25 @@ exports.approveActivation = async (req, res) => {
       user.plans_paid[plan] = true;
     }
 
+    // Welcome bonus: flag the one-time activation fee as paid BEFORE syncing so
+    // syncActivationStatus can see it and activate the account.
+    if (isWelcomeBonus) {
+      if (!user.plans_paid) user.plans_paid = {};
+      user.plans_paid.WELCOME_BONUS = true;
+      user.welcome_bonus_paid = true;
+      if (!user.plans) user.plans = {};
+      user.plans.WELCOME_BONUS = {
+        surveys_completed: 10,
+        completed: true,
+        is_activated: true,
+        total_surveys: 10,
+        activated_at: new Date(),
+      };
+    }
+
     // Check if all plans are paid OR all plans are activated (manual activation)
     syncActivationStatus(user);
     const shouldActivate = user.is_activated === true;
-    const allPaid = ACTIVATION_PLANS.every(p => user.plans_paid?.[p] === true);
     
     const redirect = buildActivationRedirect(user);
     
@@ -245,27 +250,21 @@ exports.approveActivation = async (req, res) => {
       user.activated_by = plan;
     }
 
-    // Credit earnings to total_earned:
-    // Welcome bonus: credited here only (earnings were earned via signup, not surveys)
-    // Regular/VIP/VVIP: earnings already credited on 10th survey completion (survey.controller.js)
-    let creditAmount;
+    // 💰 Activation is a FEE, not earnings - it must never add money to the
+    // balance. The KES 1200 welcome bonus is credited once at signup, and
+    // survey earnings are tracked client-side.
+    const creditAmount = 0;
     if (isWelcomeBonus) {
-      creditAmount = user.welcome_bonus || 1200;
       user.welcome_bonus_received = true;
+      user.welcome_bonus_paid = true;
       if (!user.plans_paid) user.plans_paid = {};
       user.plans_paid.WELCOME_BONUS = true;
-    } else {
-      creditAmount = 0; // Earnings already credited when 10th survey was completed
     }
-    
+
     const oldBalance = user.total_earned || 0;
-    // Only apply credit for welcome bonus; keep existing balance for normal plans
-    if (creditAmount > 0) {
-      user.total_earned = oldBalance + creditAmount;
-    }
-    
-     console.log(`💰 Added KES ${creditAmount} to user balance for ${plan} plan activation${isWelcomeBonus ? ' (welcome bonus)' : ''}`);
-    console.log(`💰 Old balance: KES ${oldBalance}, New balance: KES ${user.total_earned}`);
+
+    console.log(`💰 Balance unchanged: KES ${oldBalance} for ${plan} activation (fee, not earnings)`);
+    console.log(`🔓 Account activated: ${shouldActivate}`);
 
     await user.save();
 
@@ -290,9 +289,11 @@ exports.approveActivation = async (req, res) => {
     try {
       const notification = new Notification({
         user_id: user._id,
-        title: `✅ ${plan} Plan Activated!`,
-        message: `Your ${plan} plan has been successfully activated! You can now withdraw your earnings of KES ${PLAN_EARNINGS[plan] || 0}.`,
-        action_route: "/withdraw",
+        title: `✅ ${plan === "WELCOME_BONUS" ? "Account" : `${plan} Plan`} Activated!`,
+        message: isWelcomeBonus
+          ? "Your account is now active! You can start taking surveys and earning."
+          : `Your ${plan} plan has been successfully activated! You can now withdraw your earnings of KES ${PLAN_EARNINGS[plan] || 0}.`,
+        action_route: "/dashboard",
         type: "activation"
       });
       await notification.save();
@@ -306,7 +307,7 @@ exports.approveActivation = async (req, res) => {
       plan: plan,
       withdraw_unlocked: true,
       user_activated: user.is_activated,
-      all_plans_completed: allPaid,
+      all_plans_completed: shouldActivate,
       balance_before: oldBalance,
       balance_added: creditAmount,
       new_balance: user.total_earned,
@@ -528,22 +529,36 @@ exports.approveWelcomeBonus = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Add welcome bonus to balance
+    // The KES 1200 welcome bonus is credited once at signup, so approving it must
+    // not add money again. This only marks it as claimed/paid and activates.
     const WELCOME_BONUS_AMOUNT = 1200;
     const oldBalance = user.total_earned || 0;
-    user.total_earned = oldBalance + WELCOME_BONUS_AMOUNT;
     user.welcome_bonus_received = true;
+    user.welcome_bonus_paid = true;
+    if (!user.plans_paid) user.plans_paid = {};
+    user.plans_paid.WELCOME_BONUS = true;
+    if (!user.plans) user.plans = {};
+    user.plans.WELCOME_BONUS = {
+      surveys_completed: 10, completed: true, is_activated: true,
+      total_surveys: 10, activated_at: new Date(),
+    };
+    user.account_activated = true;
+    user.all_plans_completed = true;
+    user.is_activated = true;
+    if (!user.activated_at) user.activated_at = new Date();
+    user.activated_by = "WELCOME_BONUS";
 
     await user.save();
 
-    console.log(`🎁 Welcome bonus approved - Added KES ${WELCOME_BONUS_AMOUNT} to ${user.full_name}`);
+    console.log(`🎁 Welcome bonus approved for ${user.full_name} - balance unchanged at KES ${oldBalance} (KES ${WELCOME_BONUS_AMOUNT} was credited at signup)`);
 
     return res.json({
       success: true,
-      message: "Welcome bonus approved",
+      message: "Welcome bonus approved. Account activated.",
       balance_before: oldBalance,
-      balance_added: WELCOME_BONUS_AMOUNT,
-      new_balance: user.total_earned
+      balance_added: 0,
+      new_balance: user.total_earned,
+      account_activated: true
     });
   } catch (error) {
     console.error("❌ Welcome bonus approval error:", error);
@@ -585,24 +600,8 @@ exports.initiateDirectStkPush = async (req, res) => {
       });
     }
 
-    // Skip survey completion check for welcome bonus
-    if (!is_welcome_bonus) {
-      if (!user.plans || !user.plans[planKey]) {
-        return res.status(400).json({
-          success: false,
-          message: "Complete all surveys before activation"
-        });
-      }
-
-      const userPlan = user.plans[planKey];
-
-      if (!userPlan.completed || userPlan.surveys_completed !== TOTAL_SURVEYS) {
-        return res.status(400).json({
-          success: false,
-          message: `Complete ${TOTAL_SURVEYS - (userPlan.surveys_completed || 0)} more surveys to activate`
-        });
-      }
-    }
+    // Single KES 100 activation fee: no server-side survey prerequisite, the
+    // payment itself is what activates the account.
 
     // Check if already activated
     const userPlan = user.plans?.[planKey];

@@ -93,6 +93,14 @@ const buildPaymentRedirect = (user) => {
   };
 };
 
+const hasPaidActivationFee = (user) => {
+  if (isWelcomeBonusPaid(user)) return true;
+  return ACTIVATION_PLANS.some((planKey) => {
+    const field = PLAN_FIELD_MAP[planKey];
+    return user[field] === true || user.plans_paid?.[planKey] === true;
+  });
+};
+
 const syncActivationStatus = (user) => {
   let changed = false;
   let paidCount = 0;
@@ -133,7 +141,11 @@ const syncActivationStatus = (user) => {
     }
   });
 
-  const shouldActivate = paidCount === ACTIVATION_PLANS.length;
+  // Single-fee model: the account is activated as soon as the user has paid
+  // the one-time KES 100 activation fee (welcome bonus claim, or any plan fee).
+  // The legacy 3-plan requirement is still honoured for older accounts.
+  const paidActivationFee = hasPaidActivationFee(user);
+  const shouldActivate = paidActivationFee || paidCount === ACTIVATION_PLANS.length;
 
   if (user.account_activated !== shouldActivate) {
     user.account_activated = shouldActivate;
@@ -156,7 +168,8 @@ const syncActivationStatus = (user) => {
   }
 
   if (shouldActivate && !user.activated_by) {
-    user.activated_by = ACTIVATION_PLANS.find(planKey => isPlanDone(user, planKey)) || "REGULAR";
+    user.activated_by = (isWelcomeBonusPaid(user) ? "WELCOME_BONUS" : null) ||
+      ACTIVATION_PLANS.find(planKey => isPlanDone(user, planKey)) || "REGULAR";
     changed = true;
   }
 
