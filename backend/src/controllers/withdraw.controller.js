@@ -98,15 +98,15 @@ exports.requestWithdraw = async (req, res) => {
     console.log("User all_plans_completed:", user.all_plans_completed);
     console.log("User plans_paid:", user.plans_paid);
     
-     // Only allow withdrawals when REGULAR, VIP, and VVIP plans are paid OR all manually activated
-     const allPlansPaid = ACTIVATION_PLANS.every(p => user.plans_paid?.[p] === true);
-     const allPlansManuallyActivated = ACTIVATION_PLANS.every(p => user.plans?.[p]?.is_activated === true);
-     const canWithdraw = allPlansPaid || allPlansManuallyActivated;
-     if (!canWithdraw && type !== "affiliate" && type !== "welcome_bonus") {
-       console.log("❌ Not all plans paid or activated yet:", { allPlansPaid, allPlansManuallyActivated });
-       return res.status(403).json({
-         message: "⚠️ Please complete REGULAR, VIP, and VVIP plans before withdrawing.",
-         all_plans_completed: user.all_plans_completed || false,
+      // Single KES 100 activation fee: paying it (from the welcome bonus or the
+      // withdraw button) activates the account and unlocks surveys + withdrawal.
+      const canWithdraw = user.is_activated === true || user.account_activated === true;
+      if (!canWithdraw && type !== "affiliate" && type !== "welcome_bonus") {
+        console.log("❌ Account not activated yet:", { canWithdraw });
+        return res.status(403).json({
+          message: "⚠️ Please activate your account before withdrawing.",
+          is_activated: false,
+          all_plans_completed: user.all_plans_completed || false,
          plans_paid: user.plans_paid || {}
        });
      }
@@ -168,8 +168,10 @@ exports.requestWithdraw = async (req, res) => {
         });
       }
       
-      // Check if this specific plan is activated
-      isPlanActivated = user.plans[type].is_activated === true;
+      // Single-fee model: the KES 100 payment activates the ACCOUNT, whichever
+      // entry point it came from (welcome bonus claim or the withdraw button).
+      // The account-level flag is authoritative, not a specific plan's flag.
+      isPlanActivated = user.is_activated === true || user.account_activated === true;
       planSurveysCompleted = user.plans[type].surveys_completed || 0;
       
       console.log(`${type} plan details:`, {
@@ -367,23 +369,17 @@ exports.requestWithdraw = async (req, res) => {
          console.log(`❌ Insufficient affiliate balance: ${user.referral_commission_earned} < ${withdrawAmount}`);
          return res.status(403).json({ message: "Insufficient affiliate balance" });
        }
-     } else {
-       let availableBalance = user.total_earned || 0;
-       
-        if (type !== "welcome_bonus" && user.plans && user.plans[type]) {
-          const planData = user.plans[type];
-          // ✅ CHANGED: Allow withdrawal of plan earnings when activated (not just when completed)
-          if (planData.is_activated) {
-            const PLAN_TOTAL_EARNINGS = { REGULAR: 1500, VIP: 2000, VVIP: 3000 };
-            availableBalance = Math.max(availableBalance, PLAN_TOTAL_EARNINGS[type] || 0);
-          }
+      } else {
+        // Available balance is exactly what the user has actually earned:
+        // the KES 1200 welcome bonus plus KES 97 per completed survey.
+        // There are no per-plan payouts to add on top of this.
+        const availableBalance = user.total_earned || 0;
+
+        if (availableBalance < withdrawAmount) {
+          console.log(`❌ Insufficient balance: ${availableBalance} < ${withdrawAmount}`);
+          return res.status(403).json({ message: "Insufficient balance" });
         }
-       
-       if (availableBalance < withdrawAmount) {
-         console.log(`❌ Insufficient balance: ${availableBalance} < ${withdrawAmount}`);
-         return res.status(403).json({ message: "Insufficient balance" });
-       }
-     }
+      }
 
     // Check daily withdrawal limit
     if (user.withdrawal_requests) {

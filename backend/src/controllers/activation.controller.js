@@ -290,9 +290,7 @@ exports.approveActivation = async (req, res) => {
       const notification = new Notification({
         user_id: user._id,
         title: `✅ ${plan === "WELCOME_BONUS" ? "Account" : `${plan} Plan`} Activated!`,
-        message: isWelcomeBonus
-          ? "Your account is now active! You can start taking surveys and earning."
-          : `Your ${plan} plan has been successfully activated! You can now withdraw your earnings of KES ${PLAN_EARNINGS[plan] || 0}.`,
+        message: "Your account is now active! You can start taking surveys and earning KES 97 per survey.",
         action_route: "/dashboard",
         type: "activation"
       });

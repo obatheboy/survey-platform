@@ -347,16 +347,14 @@ setUser(resUser.data);
           isCompleted: !!completed[s._id]
         })));
 
-        // Calculate balance: 1200 welcome bonus base + survey earnings - withdrawals
+        // Balance is owned by the server: total_earned is the KES 1200 welcome
+        // bonus plus KES 97 per completed survey, minus completed withdrawals.
+        // Never add survey earnings on top here or the figure double-counts.
         const completedCount = Object.keys(completed).length;
-        const surveyEarnings = completedCount * SURVEY_EARNINGS;
         const backendTotalEarned = Number(resUser.data.total_earned || 0);
         const totalWithdrawals = Number(resUser.data.total_withdrawals || 0);
 
-        // Base balance starts at 1200 (welcome bonus) plus any backend earnings
-        const baseBalance = Math.max(1200, backendTotalEarned);
-        let availableBalance = baseBalance + surveyEarnings - totalWithdrawals;
-        if (availableBalance < 0) availableBalance = 0;
+        const availableBalance = Math.max(0, backendTotalEarned);
 
         setStats({
           totalEarned: availableBalance + totalWithdrawals,
@@ -415,6 +413,26 @@ setUser(resUser.data);
     };
 }, []);
 
+  // Refetch the authoritative balance from the server. The server owns
+  // total_earned (KES 1200 welcome bonus + KES 97 per completed survey), so the
+  // client must never add survey earnings on top of it.
+  const refreshBalance = async () => {
+    try {
+      const res = await api.get(`/auth/me?_t=${Date.now()}`);
+      const totalEarned = Number(res.data?.total_earned || 0);
+      const totalWithdrawals = Number(res.data?.total_withdrawals || 0);
+      setUser(res.data);
+      setPlans(res.data.plans || {});
+      setStats(prev => ({
+        ...prev,
+        availableBalance: Math.max(0, totalEarned),
+        totalEarned: Math.max(0, totalEarned) + totalWithdrawals
+      }));
+    } catch (err) {
+      console.error("Balance refresh failed:", err);
+    }
+  };
+
   // Listen for survey completion events from other tabs/components
   useEffect(() => {
     const handleSurveyUpdate = () => {
@@ -425,15 +443,12 @@ setUser(resUser.data);
       })));
       setDailySurveyCount(getDailySurveyCount());
       const completedCount = Object.keys(completed).length;
-      const surveyEarnings = completedCount * SURVEY_EARNINGS;
-      const backendBase = Math.max(1200, Number(user?.total_earned || 0));
-      const totalWithdrawals = Number(user?.total_withdrawals || 0);
-      const newBalance = backendBase + surveyEarnings - totalWithdrawals;
+      // The server credited the KES 97, so refetch the authoritative balance
+      // rather than recomputing it on the client.
+      refreshBalance();
       setStats(prev => ({
         ...prev,
-        totalSurveysCompleted: completedCount,
-        availableBalance: Math.max(0, newBalance),
-        totalEarned: backendBase + surveyEarnings
+        totalSurveysCompleted: completedCount
       }));
     };
     window.addEventListener("storage", handleSurveyUpdate);
@@ -442,7 +457,7 @@ setUser(resUser.data);
       window.removeEventListener("storage", handleSurveyUpdate);
       window.removeEventListener("survey-completed", handleSurveyUpdate);
     }
-  }, [SURVEY_EARNINGS]);
+  }, []);
 
   /* =========================
        REDIRECT FOCUS HANDLER
@@ -535,19 +550,14 @@ setUser(resUser.data);
     const newDailyCount = dailySurveyCount + 1;
     setDailySurveyCount(newDailyCount);
 
-    // Recalculate balance from localStorage completions
+    // The server credited the KES 97, so refetch the authoritative balance
+    // rather than recomputing it on the client.
     const completed = getCompletedSurveys();
     const completedCount = Object.keys(completed).length;
-    const surveyEarnings = completedCount * SURVEY_EARNINGS;
-    const backendBase = Math.max(1200, Number(user?.total_earned || 0));
-    const totalWithdrawals = Number(user?.total_withdrawals || 0);
-    const newBalance = backendBase + surveyEarnings - totalWithdrawals;
-    const newTotalEarned = backendBase + surveyEarnings;
+    refreshBalance();
 
     setStats(prev => ({
       ...prev,
-      availableBalance: Math.max(0, newBalance),
-      totalEarned: newTotalEarned,
       totalSurveysCompleted: completedCount
     }));
 

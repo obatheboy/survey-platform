@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
   import { toast } from "react-hot-toast";
   import { getHardcodedSurveys } from "../data/surveys";
   import { markSurveyCompleted, getDailySurveyCount } from "../utils/surveyCompletion";
+import { surveyApi } from "../api/api";
   import { useCurrency } from "../contexts/CurrencyContext.jsx";
   import "./SurveyTake.css";
 
@@ -61,30 +62,42 @@ import { useState, useEffect } from "react";
       setSelectedAnswer(answers[currentQuestion - 1] ?? null);
     };
 
-    const handleSubmit = () => {
-      if (selectedAnswer === null) {
-        toast.error("Please select an answer");
-        return;
-      }
+  const handleSubmit = async () => {
+    if (selectedAnswer === null) {
+      toast.error("Please select an answer");
+      return;
+    }
 
-      // Check daily limit
-      const dailyCount = getDailySurveyCount();
-      if (dailyCount >= SURVEY_DAILY_LIMIT) {
-        toast.error("Daily limit reached - come back tomorrow");
-        return;
-      }
+    // Check daily limit
+    const dailyCount = getDailySurveyCount();
+    if (dailyCount >= SURVEY_DAILY_LIMIT) {
+      toast.error("Daily limit reached - come back tomorrow");
+      return;
+    }
 
-      setSubmitting(true);
+    setSubmitting(true);
 
-      // Mark survey as completed in localStorage
+    // Record the completion on the server. This is what actually credits the
+    // KES 97 to the user's balance, so it must succeed before we show success
+    // and before we write to localStorage.
+    try {
+      const res = await surveyApi.completeSurvey(surveyId);
+      const earned = res.data?.earnings ?? SURVEY_EARNINGS;
+
+      // Keep the local mirror in sync for the dashboard UI and daily limit.
       markSurveyCompleted(surveyId);
 
+      toast.success(`Survey completed! Earned ${format(earned)}`);
       setTimeout(() => {
-        toast.success(`Survey completed! Earned ${format(SURVEY_EARNINGS)}`);
         setSubmitting(false);
         navigate("/dashboard");
-      }, 500);
-    };
+      }, 600);
+    } catch (err) {
+      setSubmitting(false);
+      const message = err.response?.data?.message || "Could not record your survey. Please try again.";
+      toast.error(message);
+    }
+  };
 
     if (loading) {
       return (

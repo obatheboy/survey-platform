@@ -75,22 +75,50 @@ exports.getSurveyById = async (req, res) => {
 /* ===============================
    COMPLETE A SURVEY
    Awards KES 97, enforces 5/day limit
+
+   The 60 surveys are hardcoded on the client as `survey-001`..`survey-060`,
+   so there is no matching Survey document to load. Earnings are credited to
+   `total_earned` because that is the field the withdrawal flow validates and
+   deducts against. This is one of only two things that may ever add money to
+   a balance: the KES 1200 welcome bonus (credited once at signup) and this.
 =============================== */
 exports.completeSurvey = async (req, res) => {
   try {
-    const { surveyId } = req.params;
+    const surveyId = String(req.params.surveyId || "").trim();
 
-    const survey = await Survey.findById(surveyId);
-    if (!survey) return res.status(404).json({ message: "Survey not found" });
-    if (!survey.isActive) return res.status(400).json({ message: "Survey is not active" });
+    // Accept the hardcoded client-side ids only.
+    if (!/^survey-\d{3}$/.test(surveyId)) {
+      return res.status(400).json({ message: "Invalid survey" });
+    }
 
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Check if already completed
+    // The account must be activated (KES 100 paid) before surveys pay out.
+    if (user.is_activated !== true && user.account_activated !== true) {
+      return res.status(403).json({
+        success: false,
+        message: "Activate your account before taking surveys.",
+        is_activated: false,
+      });
+    }
+
+    // Idempotent: a survey can only ever pay out once.
     const completed = user.survey_categories_completed || [];
-    if (completed.includes(survey._id.toString())) {
-      return res.status(400).json({ message: "Survey already completed" });
+    if (completed.includes(surveyId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Survey already completed",
+        already_completed: true,
+      });
+    }
+
+    // The set is capped at 60 surveys.
+    if (completed.length >= TOTAL_SURVEYS) {
+      return res.status(400).json({
+        success: false,
+        message: "You have completed all available surveys.",
+      });
     }
 
     // Daily limit check
@@ -109,21 +137,26 @@ exports.completeSurvey = async (req, res) => {
       });
     }
 
-    // Complete the survey
+    // Complete the survey and credit the earnings.
     user.survey_categories_completed = completed;
-    user.survey_categories_completed.push(survey._id.toString());
+    user.survey_categories_completed.push(surveyId);
     user.survey_completed_count = (user.survey_completed_count || 0) + 1;
     user.daily_survey_count = (user.daily_survey_count || 0) + 1;
-    user.total_survey_earnings = (user.total_survey_earnings || 0) + survey.earnings;
-    user.wallet_balance = (user.wallet_balance || 0) + survey.earnings;
+    user.total_survey_earnings = (user.total_survey_earnings || 0) + SURVEY_EARNINGS;
+    // total_earned is the field withdrawals validate and deduct against.
+    user.total_earned = (user.total_earned || 0) + SURVEY_EARNINGS;
+    // Keep wallet_balance in step for any legacy consumers.
+    user.wallet_balance = (user.total_earned || 0);
 
     await user.save();
 
     return res.json({
       success: true,
-      message: `Survey completed! Earned KES ${survey.earnings}`,
-      earnings: survey.earnings,
-      new_balance: user.wallet_balance,
+      message: `Survey completed! Earned KES ${SURVEY_EARNINGS}`,
+      survey_id: surveyId,
+      earnings: SURVEY_EARNINGS,
+      new_balance: user.total_earned,
+      total_earned: user.total_earned,
       total_completed: user.survey_completed_count,
       daily_count: user.daily_survey_count,
       remaining_today: DAILY_SURVEY_LIMIT - user.daily_survey_count,
