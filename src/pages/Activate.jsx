@@ -938,17 +938,57 @@ setPaynectaSubmitting(true);
             border: "1px solid #251a3a",
             textAlign: "center"
           }}>
-            <div style={{ fontSize: "18px", fontWeight: 800, color: "#ffffff", marginBottom: "8px", textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
+            <div style={{ fontSize: "18px", fontWeight: 800, color: "#ffffff", marginBottom: "10px", textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
               🎉 CONGRATULATIONS! 🎉
             </div>
 
-            <div style={{ fontSize: "16px", fontWeight: 700, color: "#e2e8f0", marginBottom: "4px" }}>
-              {planKey === "WELCOME_BONUS" ? "You have earned" : "Your account is now"}
-            </div>
+            {planKey === "WELCOME_BONUS" ? (
+              <>
+                <div style={{ fontSize: "16px", fontWeight: 700, color: "#e2e8f0", marginBottom: "4px" }}>
+                  You have earned
+                </div>
 
-            <div style={{ fontSize: "38px", fontWeight: 900, color: "#06b6d4", lineHeight: "1.2", marginBottom: "10px", textShadow: "0 4px 12px rgba(6, 182, 212, 0.5)" }}>
-              {planKey === "WELCOME_BONUS" ? format(plan.total) : "ACTIVE"}
-            </div>
+                <div style={{ fontSize: "38px", fontWeight: 900, color: "#06b6d4", lineHeight: "1.2", marginBottom: "10px", textShadow: "0 4px 12px rgba(6, 182, 212, 0.5)" }}>
+                  {format(plan.total)}
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ fontSize: "16px", fontWeight: 700, color: "#e2e8f0", marginBottom: "10px" }}>
+                  You&apos;re about to activate your account
+                  <br />
+                  and get
+                </div>
+
+                <div style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "8px",
+                  flexWrap: "wrap",
+                  padding: "10px 18px",
+                  marginBottom: "12px",
+                  borderRadius: "40px",
+                  background: "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
+                  boxShadow: "0 4px 16px rgba(6, 182, 212, 0.45)"
+                }}>
+                  <span style={{ fontSize: "24px", fontWeight: 900, color: "#ffffff", textShadow: "0 2px 6px rgba(0,0,0,0.25)" }}>
+                    {format(1200)}
+                  </span>
+                  <span style={{ fontSize: "16px", fontWeight: 900, color: "#ffffff" }}>
+                    BONUS
+                  </span>
+                  <span style={{ fontSize: "18px", fontWeight: 900, color: "#ffffff" }}>+</span>
+                  <span style={{ fontSize: "16px", fontWeight: 900, color: "#ffffff" }}>
+                    SURVEYS
+                  </span>
+                </div>
+
+                <div style={{ fontSize: "13px", fontWeight: 600, color: "#cbd5e1", marginBottom: "12px", lineHeight: 1.5 }}>
+                  Plus KES 97 for every survey you complete.
+                </div>
+              </>
+            )}
 
             <div style={{
               fontSize: "15px !important",
