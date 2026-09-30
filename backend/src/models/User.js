@@ -134,6 +134,15 @@ const userSchema = new mongoose.Schema({
       is_activated: { type: Boolean, default: false },
       total_surveys: { type: Number, default: 10 },
       activated_at: { type: Date }
+    },
+    // The welcome bonus is a paid plan entry too. It must be declared here or
+    // Mongoose strict mode silently drops it on save.
+    WELCOME_BONUS: {
+      surveys_completed: { type: Number, default: 0 },
+      completed: { type: Boolean, default: false },
+      is_activated: { type: Boolean, default: false },
+      total_surveys: { type: Number, default: 10 },
+      activated_at: { type: Date }
     }
   },
    // ✅ Activation requests array - ENUM RESTRICTION REMOVED
@@ -323,9 +332,11 @@ const userSchema = new mongoose.Schema({
   // ============================================
   // 🆕 SURVEY SYSTEM — 60 surveys, KES 97 each, 5/day limit
   // ============================================
+  // The 60 surveys are hardcoded client-side as `survey-001`..`survey-060`,
+  // so this holds string ids, not Survey ObjectIds. Typing it as ObjectId
+  // threw a CastError on every completion and no earnings were ever credited.
   survey_categories_completed: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Survey"
+    type: String
   }],
   survey_completed_count: {
     type: Number,
