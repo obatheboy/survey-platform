@@ -1835,16 +1835,31 @@ setUser(resUser.data);
                          marginTop: '6px',
                          flexWrap: 'wrap'
                        }}>
-                         <span className="survey-earnings-badge" style={{
-                           background: 'linear-gradient(135deg, #1f7405 0%, #2d9a07 100%)',
-                           color: '#ffffff',
-                           fontSize: '11px',
-                           fontWeight: '900',
-                           padding: '3px 10px',
-                           borderRadius: '12px'
-                         }}>
-                           {format(SURVEY_EARNINGS)}
-                         </span>
+                          <span className="survey-earnings-badge" style={{
+                            display: 'inline-flex',
+                            alignItems: 'baseline',
+                            gap: '5px',
+                            background: 'linear-gradient(135deg, #1f7405 0%, #2d9a07 100%)',
+                            color: '#ffffff',
+                            fontSize: '20px',
+                            fontWeight: '900',
+                            letterSpacing: '-0.5px',
+                            lineHeight: 1.1,
+                            padding: '5px 12px',
+                            borderRadius: '12px',
+                            boxShadow: '0 2px 6px rgba(31, 116, 5, 0.3)'
+                          }}>
+                            <span style={{
+                              fontSize: '10px',
+                              fontWeight: '900',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.5px',
+                              opacity: 0.9
+                            }}>
+                              Earn
+                            </span>
+                            {format(SURVEY_EARNINGS)}
+                          </span>
                          <span style={{
                            fontSize: '11px',
                            fontWeight: '600',

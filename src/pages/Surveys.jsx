@@ -118,7 +118,31 @@ export default function Surveys() {
                   <div className="survey-card-info">
                     <h3>{survey.title}</h3>
                     <div className="survey-meta">
-                      <span className="survey-earnings">{format(survey.earnings)}</span>
+                      <span className="survey-earnings" style={{
+                        display: 'inline-flex',
+                        alignItems: 'baseline',
+                        gap: '5px',
+                        background: 'linear-gradient(135deg, #1f7405 0%, #2d9a07 100%)',
+                        color: '#ffffff',
+                        fontSize: '18px',
+                        fontWeight: '900',
+                        letterSpacing: '-0.5px',
+                        lineHeight: 1.1,
+                        padding: '4px 10px',
+                        borderRadius: '12px',
+                        boxShadow: '0 2px 6px rgba(31, 116, 5, 0.3)'
+                      }}>
+                        <span style={{
+                          fontSize: '9px',
+                          fontWeight: '900',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px',
+                          opacity: 0.9
+                        }}>
+                          Earn
+                        </span>
+                        {format(survey.earnings)}
+                      </span>
                       <span className="survey-time">⏱️ {survey.estimatedTime}</span>
                       <span className="survey-questions">📝 {survey.totalQuestions} questions</span>
                     </div>
