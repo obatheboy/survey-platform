@@ -371,7 +371,7 @@ exports.requestWithdraw = async (req, res) => {
        }
       } else {
         // Available balance is exactly what the user has actually earned:
-        // the KES 1200 welcome bonus plus KES 97 per completed survey.
+        // the KES 1200 welcome bonus plus KES 450 per completed survey.
         // There are no per-plan payouts to add on top of this.
         const availableBalance = user.total_earned || 0;
 

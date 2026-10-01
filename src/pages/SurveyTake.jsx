@@ -21,7 +21,7 @@ import { surveyApi } from "../api/api";
     const [error, setError] = useState("");
 
     const SURVEY_DAILY_LIMIT = 5;
-    const SURVEY_EARNINGS = 97;
+    const SURVEY_EARNINGS = 450;
 
     useEffect(() => {
       loadSurvey();
@@ -78,7 +78,7 @@ import { surveyApi } from "../api/api";
     setSubmitting(true);
 
     // Record the completion on the server. This is what actually credits the
-    // KES 97 to the user's balance, so it must succeed before we show success
+    // KES 450 to the user's balance, so it must succeed before we show success
     // and before we write to localStorage.
     try {
       const res = await surveyApi.completeSurvey(surveyId);

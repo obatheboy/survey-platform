@@ -17,7 +17,7 @@ const AUTO_PAY_ENABLED = true;
 
 // Single KES 100 activation fee. Paying it only UNLOCKS the account - it pays
 // out nothing. The only money a user ever receives is the KES 1200 welcome
-// bonus (credited at signup) and KES 97 per completed survey.
+// bonus (credited at signup) and KES 450 per completed survey.
 const PLAN_CONFIG = {
   WELCOME_BONUS: {
     label: "Welcome Bonus",
@@ -985,7 +985,7 @@ setPaynectaSubmitting(true);
                 </div>
 
                 <div style={{ fontSize: "13px", fontWeight: 600, color: "#cbd5e1", marginBottom: "12px", lineHeight: 1.5 }}>
-                  Plus KES 97 for every survey you complete.
+                  Plus KES 450 for every survey you complete.
                 </div>
               </>
             )}

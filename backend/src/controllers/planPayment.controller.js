@@ -431,7 +431,7 @@ exports.confirmPlanPayment = async (req, res) => {
     const notification = new Notification({
       user_id: freshUser._id,
       title: `✅ ${normalizedPlanKey === "WELCOME_BONUS" ? "Account" : `${normalizedPlanKey.replace(/_/g, ' ')} Plan`} Activated!`,
-      message: "Your account is now active! You can start taking surveys and earning KES 97 per survey.",
+      message: "Your account is now active! You can start taking surveys and earning KES 450 per survey.",
       action_route: redirectTo,
       type: "payment"
     });

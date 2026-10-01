@@ -75,7 +75,7 @@ export default function Surveys() {
     <div className="surveys-container">
       <div className="surveys-header">
         <h1>Available Surveys</h1>
-        <p>Complete surveys to earn {format(97)} each</p>
+        <p>Complete surveys to earn {format(450)} each</p>
       </div>
 
       {stats && (

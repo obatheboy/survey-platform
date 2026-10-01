@@ -258,7 +258,7 @@ export function getHardcodedSurveys() {
         _id: `survey-${String(id).padStart(3, "0")}`,
         title,
         category,
-        earnings: 97,
+        earnings: 450,
         estimatedTime: "5-10 min",
         totalQuestions: 10,
         questions: buildQuestions(idx, category, title),
