@@ -6,7 +6,6 @@ export default function MultiFunctionDashboard() {
   const { format } = useCurrency();
   const navigate = useNavigate();
   const [hoveredCard, setHoveredCard] = useState(null);
-  const [hoveredButton, setHoveredButton] = useState(null);
 
   const EARNING_OPTIONS = [
     {
@@ -49,7 +48,7 @@ export default function MultiFunctionDashboard() {
         minHeight: "100vh",
         background: "linear-gradient(160deg, #f0f4f8 0%, #ffffff 100%)",
         color: "#1f2937",
-        padding: "24px 16px 40px",
+        padding: "16px 14px 24px",
         fontFamily:
           "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif",
       }}
@@ -58,15 +57,15 @@ export default function MultiFunctionDashboard() {
       <div
         style={{
           textAlign: "center",
-          marginBottom: "32px",
-          padding: "28px 20px 20px",
+          marginBottom: "18px",
+          padding: "4px 6px 0",
         }}
       >
         <h1
           style={{
-            fontSize: "34px",
+            fontSize: "24px",
             fontWeight: 800,
-            margin: "0 0 8px",
+            margin: "0 0 4px",
             color: "#111827",
             letterSpacing: "-0.02em",
           }}
@@ -75,7 +74,7 @@ export default function MultiFunctionDashboard() {
         </h1>
         <p
           style={{
-            fontSize: "16px",
+            fontSize: "13px",
             color: "#6b7280",
             margin: 0,
             fontWeight: 500,
@@ -90,9 +89,9 @@ export default function MultiFunctionDashboard() {
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "20px",
+          gap: "10px",
           alignItems: "center",
-          marginBottom: "32px",
+          marginBottom: "18px",
         }}
       >
         {EARNING_OPTIONS.map((option) => {
@@ -103,112 +102,82 @@ export default function MultiFunctionDashboard() {
               onClick={() => handleOptionClick(option)}
               onMouseEnter={() => setHoveredCard(option.id)}
               onMouseLeave={() => setHoveredCard(null)}
+              title={option.description}
               style={{
                 display: "flex",
-                flexDirection: "column",
                 alignItems: "center",
-                textAlign: "center",
+                gap: "12px",
                 width: "100%",
                 maxWidth: "480px",
                 background: "#ffffff",
-                borderRadius: "24px",
-                padding: "34px 28px",
+                borderRadius: "16px",
+                padding: "12px 14px",
                 cursor: "pointer",
-                transition: "all 0.25s ease",
-                transform: isHovered ? "translateY(-10px)" : "translateY(0)",
+                transition: "all 0.2s ease",
+                transform: isHovered ? "translateX(3px)" : "translateX(0)",
                 boxShadow: isHovered
-                  ? "0 24px 40px rgba(0,0,0,0.16)"
-                  : "0 6px 18px rgba(0,0,0,0.06)",
+                  ? "0 10px 22px rgba(0,0,0,0.12)"
+                  : "0 3px 10px rgba(0,0,0,0.05)",
                 border: "1px solid #e5e7eb",
               }}
             >
               {/* Icon Circle */}
               <div
                 style={{
-                  width: "80px",
-                  height: "80px",
+                  width: "44px",
+                  height: "44px",
+                  minWidth: "44px",
                   borderRadius: "50%",
                   background: option.gradient,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: "40px",
-                  marginBottom: "22px",
+                  fontSize: "22px",
                   boxShadow: isHovered
-                    ? "0 12px 28px rgba(0,0,0,0.22)"
-                    : "0 8px 22px rgba(0,0,0,0.1)",
+                    ? "0 6px 14px rgba(0,0,0,0.18)"
+                    : "0 4px 10px rgba(0,0,0,0.08)",
                 }}
               >
                 {option.icon}
               </div>
 
-              {/* Title */}
-              <h2
-                style={{
-                  fontSize: "26px",
-                  fontWeight: 800,
-                  margin: "0 0 6px",
-                  color: "#111827",
-                }}
-              >
-                {option.title}
-              </h2>
+              {/* Title + Subtitle */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <h2
+                  style={{
+                    fontSize: "15px",
+                    fontWeight: 800,
+                    margin: 0,
+                    color: "#111827",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {option.title}
+                </h2>
+                <p
+                  style={{
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    margin: "2px 0 0",
+                    color: "#4b5563",
+                  }}
+                >
+                  {option.subtitle}
+                </p>
+              </div>
 
-              {/* Subtitle */}
-              <p
+              {/* Chevron */}
+              <span
                 style={{
-                  fontSize: "15px",
-                  fontWeight: 700,
-                  margin: "0 0 18px",
-                  color: "#4b5563",
+                color: "#9ca3af",
+                fontSize: "18px",
+                fontWeight: 800,
+                minWidth: "16px",
+                textAlign: "right",
                 }}
               >
-                {option.subtitle}
-              </p>
-
-              {/* Description */}
-              <p
-                style={{
-                  fontSize: "14px",
-                  color: "#6b7280",
-                  lineHeight: 1.6,
-                  maxWidth: "400px",
-                  margin: "0 0 26px",
-                }}
-              >
-                {option.description}
-              </p>
-
-              {/* Start Button */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleOptionClick(option);
-                }}
-                onMouseEnter={() => setHoveredButton(option.id)}
-                onMouseLeave={() => setHoveredButton(null)}
-                style={{
-                  width: "100%",
-                  maxWidth: "360px",
-                  padding: "14px 24px",
-                  fontSize: "16px",
-                  fontWeight: 700,
-                  color: "#ffffff",
-                  border: "none",
-                  borderRadius: "16px",
-                  background: option.gradient,
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                  transform:
-                    hoveredButton === option.id ? "scale(1.03)" : "scale(1)",
-                  boxShadow:
-                    hoveredButton === option.id
-                      ? "0 10px 24px rgba(0,0,0,0.22)"
-                      : "0 4px 14px rgba(0,0,0,0.12)",
-                }}
-              >
-                Start Now →
-              </button>
+                ›
+              </span>
             </div>
           );
         })}
@@ -218,9 +187,9 @@ export default function MultiFunctionDashboard() {
       <div
         style={{
           background: "#ffffff",
-          borderRadius: "20px",
-          padding: "24px 28px",
-          boxShadow: "0 6px 18px rgba(0,0,0,0.05)",
+          borderRadius: "16px",
+          padding: "14px 16px",
+          boxShadow: "0 3px 10px rgba(0,0,0,0.05)",
           border: "1px solid #e5e7eb",
           maxWidth: "480px",
           margin: "0 auto",
@@ -228,9 +197,9 @@ export default function MultiFunctionDashboard() {
       >
         <h3
           style={{
-            fontSize: "20px",
+            fontSize: "15px",
             fontWeight: 700,
-            margin: "0 0 20px",
+            margin: "0 0 10px",
             textAlign: "center",
             color: "#111827",
           }}
@@ -267,14 +236,14 @@ function StatRow({ label, value, highlight }) {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "8px 0",
+        padding: "4px 0",
         borderBottom: "1px solid #f3f4f6",
       }}
     >
-      <span style={{ fontSize: "14px", color: "#6b7280" }}>{label}</span>
+      <span style={{ fontSize: "12px", color: "#6b7280" }}>{label}</span>
       <span
         style={{
-          fontSize: "15px",
+          fontSize: "13px",
           fontWeight: 700,
           color: highlight ? "#0DAA65" : "#111827",
         }}
@@ -292,14 +261,14 @@ function TotalRow({ label, value }) {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        paddingTop: "16px",
-        marginTop: "4px",
+        paddingTop: "8px",
+        marginTop: "2px",
         borderTop: "2px solid #06b6d4",
       }}
     >
       <span
         style={{
-          fontSize: "16px",
+          fontSize: "13px",
           fontWeight: 800,
           color: "#111827",
         }}
@@ -308,7 +277,7 @@ function TotalRow({ label, value }) {
       </span>
       <span
         style={{
-          fontSize: "20px",
+          fontSize: "16px",
           fontWeight: 800,
           background: "linear-gradient(135deg, #06b6d4 0%, #ea580c 100%)",
           WebkitBackgroundClip: "text",
