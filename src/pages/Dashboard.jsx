@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
   import { useNavigate, useLocation } from "react-router-dom";
   import api from "../api/api";
   import { useCurrency } from "../contexts/CurrencyContext.jsx";
-  import { getCompletedSurveys, getDailySurveyCount, markSurveyCompleted, getCompletedSurveyCount } from "../utils/surveyCompletion";
+  import { getCompletedSurveys, getDailySurveyCount, markSurveyCompleted, getCompletedSurveyCount, syncCompletedSurveys, syncDailySurveyCount } from "../utils/surveyCompletion";
 import MainMenuDrawer from "./components/MainMenuDrawer.jsx";
 import LiveWithdrawalFeed from "./components/LiveWithdrawalFeed.jsx";
 import UserNotifications from "../components/UserNotifications.jsx";
@@ -322,15 +322,22 @@ const load = async () => {
         const resUser = await api.get(`/auth/me?_t=${Date.now()}`);
         if (!alive) return;
 
-setUser(resUser.data);
+        setUser(resUser.data);
         setPlans(resUser.data.plans || {});
         setActivationRequests(resUser.data.activation_requests || []);
 
-        // Today's survey count (5/day limit) — use localStorage as source of truth
-        setDailySurveyCount(getDailySurveyCount());
+        // The server owns completion state. Pull it down and merge it into the
+        // local cache so completed surveys stay "Completed" permanently, even
+        // after a cache clear or on a different device. The 5/day counter is
+        // adopted from the server for the same reason.
+        syncCompletedSurveys(resUser.data.survey_categories_completed);
+        const dailyCount = syncDailySurveyCount(
+          resUser.data.daily_survey_count,
+          resUser.data.daily_survey_date
+        );
+        setDailySurveyCount(dailyCount);
 
         // Check if daily limit was just reached - show congratulation popup
-        const dailyCount = getDailySurveyCount();
         if (dailyCount >= SURVEY_DAILY_LIMIT) {
           const hasShownPopup = localStorage.getItem("daily_complete_popup_shown");
           const today = new Date().toISOString().split("T")[0];
@@ -340,7 +347,7 @@ setUser(resUser.data);
           }
         }
 
-        // Mark completed surveys from localStorage
+        // Mark completed surveys from localStorage (now merged with the server)
         const completed = getCompletedSurveys();
         setSurveysState(prev => prev.map(s => ({
           ...s,
@@ -1729,10 +1736,15 @@ setUser(resUser.data);
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '4px',
             marginBottom: '8px'
           }}>
             <span style={{ fontSize: '12px', fontWeight: '800', color: '#5b21b6' }}>
-              {completedSurveyCount}/{SURVEY_TOTAL} surveys completed • {dailySurveyCount}/{SURVEY_DAILY_LIMIT} today
+              {completedSurveyCount}/{SURVEY_TOTAL} surveys completed
+              <span style={{ color: '#7c3aed', fontWeight: '700' }}>
+                {' '}• {dailySurveyCount}/{SURVEY_DAILY_LIMIT} done today
+              </span>
             </span>
             <span style={{ fontSize: '11px', fontWeight: '700', color: '#7c3aed' }}>
               {format(completedSurveyCount * SURVEY_EARNINGS)} earned

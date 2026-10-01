@@ -325,6 +325,16 @@ exports.getMe = async (req, res) => {
       recommended_plan: recommendedPlan,
       surveys_completed: surveysCompleted,
       total_surveys_completed: totalSurveysCompleted,
+      // Authoritative survey completion state. The cards read this so a
+      // completed survey stays "Completed" permanently, even if the browser's
+      // localStorage is cleared or the user switches device.
+      survey_categories_completed: user.survey_categories_completed || [],
+      survey_completed_count: user.survey_completed_count || 0,
+      total_survey_earnings: user.total_survey_earnings || 0,
+      daily_survey_count: user.daily_survey_date === new Date().toISOString().split("T")[0]
+        ? (user.daily_survey_count || 0)
+        : 0,
+      daily_survey_date: user.daily_survey_date || "",
       surveys_locked: surveysLocked,
       plans: user.plans || {},
       activation_requests: user.activation_requests || [],

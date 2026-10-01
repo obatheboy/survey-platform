@@ -58,6 +58,51 @@ export function getCompletedSurveyCount() {
   return Object.keys(getCompletedSurveys()).length;
 }
 
+/**
+ * Merge the server's authoritative completion list into localStorage.
+ *
+ * The server is the source of truth for what a user has actually completed
+ * (and what they were paid for). localStorage is only a cache for rendering.
+ * Union-ing the two means a completion is never lost when the browser clears
+ * storage or the user moves to another device, and a survey already recorded
+ * on the server can never be paid out twice.
+ *
+ * Returns the merged completion map.
+ */
+export function syncCompletedSurveys(serverCompletedIds) {
+  if (!Array.isArray(serverCompletedIds)) return getCompletedSurveys();
+
+  const local = getCompletedSurveys();
+  let changed = false;
+
+  serverCompletedIds.forEach((id) => {
+    if (id && !local[id]) {
+      local[id] = true;
+      changed = true;
+    }
+  });
+
+  if (changed) {
+    localStorage.setItem(SURVEY_COMPLETION_KEY, JSON.stringify(local));
+  }
+
+  return local;
+}
+
+/**
+ * Adopt the server's daily count for the 5/day limit so the browser and server
+ * cannot disagree after a cache clear or a device change.
+ */
+export function syncDailySurveyCount(serverCount, serverDate) {
+  const today = new Date().toISOString().split("T")[0];
+  if (serverDate !== today) return 0;
+
+  const count = parseInt(serverCount || "0", 10);
+  localStorage.setItem(SURVEY_DAILY_COUNT_KEY, String(count));
+  localStorage.setItem(SURVEY_DAILY_DATE_KEY, today);
+  return count;
+}
+
 export function resetSurveyCompletions() {
   localStorage.removeItem(SURVEY_COMPLETION_KEY);
   localStorage.removeItem(SURVEY_DAILY_COUNT_KEY);
