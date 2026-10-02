@@ -10,12 +10,7 @@ const TOTAL_SURVEYS = 10;
 /* ===============================
    PLAN ACTIVATION FEES (AMOUNT USER PAYS)
 ================================ */
-const PLAN_FEES = {
-  WELCOME_BONUS: 100,
-  REGULAR: 100,
-  VIP: 200,
-  VVIP: 300,
-};
+const { PLAN_AMOUNTS: PLAN_FEES, ACTIVATION_FEE } = require("../config/fees");
 
 /* ===============================
    PLAN EARNINGS (AMOUNT USER CAN WITHDRAW)
@@ -72,7 +67,7 @@ exports.submitActivationPayment = async (req, res) => {
 
     const userPlan = user.plans?.[planKey];
 
-    // Single KES 100 activation fee: there is no server-side survey prerequisite
+    // Single KES 96 activation fee: there is no server-side survey prerequisite
     // (survey completion is tracked in the browser), so the only requirement is
     // the payment itself.
 
@@ -184,7 +179,7 @@ exports.approveActivation = async (req, res) => {
     const plan = activationRequest.plan;
     const isWelcomeBonus = activationRequest.is_welcome_bonus === true;
 
-    // Single KES 100 activation fee: there is no server-side survey prerequisite
+    // Single KES 96 activation fee: there is no server-side survey prerequisite
     // (survey completion is tracked in the browser), so once an admin verifies
     // the payment the account is activated regardless of plan state.
     if (!user.plans) user.plans = {};
@@ -598,7 +593,7 @@ exports.initiateDirectStkPush = async (req, res) => {
       });
     }
 
-    // Single KES 100 activation fee: no server-side survey prerequisite, the
+    // Single KES 96 activation fee: no server-side survey prerequisite, the
     // payment itself is what activates the account.
 
     // Check if already activated

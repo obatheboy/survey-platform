@@ -180,7 +180,8 @@ export default function Auth() {
         setCtxCountry(regData.country || COUNTRIES.KENYA);
       }
 
-      // Skip login fee - redirect to onboarding survey
+      // New account: onboarding first, then the activation gate sends the
+      // user to /activate to pay the one-time fee before the dashboard.
       navigate("/onboarding", { replace: true });
     } catch (err) {
       let errorMessage;
@@ -231,8 +232,22 @@ export default function Auth() {
 
         const onboardingCompleted = res.data.user?.survey_onboarding_completed;
 
-        // Login fee removed - all users have access
-        if (!onboardingCompleted) {
+        // The activation fee is a one-time gate to the app. An unpaid user
+        // goes to /activate to pay (STK push), and is redirected into the
+        // dashboard once MegaPay confirms. ProtectedRoute enforces this too,
+        // but checking here avoids a visible redirect hop after login.
+        const paidActivationFee =
+          res.data.user?.is_activated === true ||
+          res.data.user?.account_activated === true ||
+          res.data.user?.all_plans_completed === true ||
+          res.data.user?.welcome_bonus_paid === true ||
+          res.data.user?.regular_paid === true ||
+          Object.values(res.data.user?.plans_paid || {}).some((v) => v === true);
+
+        if (!paidActivationFee) {
+          localStorage.removeItem("showWelcomeBonusOnDashboard");
+          navigate("/activate", { replace: true });
+        } else if (!onboardingCompleted) {
           localStorage.removeItem("showWelcomeBonusOnDashboard");
           navigate("/onboarding", { replace: true });
         } else {

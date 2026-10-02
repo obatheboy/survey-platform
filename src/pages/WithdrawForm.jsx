@@ -4,6 +4,7 @@ import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import api, { queueWithdrawRequest, canMakeRequest } from "../api/api";
 import { useCurrency } from "../contexts/CurrencyContext.jsx";
 import "./WithdrawForm.css";
+import { ACTIVATION_FEE } from "../constants/fees";
 
 export default function WithdrawForm() {
   const { format, symbol } = useCurrency();
@@ -14,7 +15,7 @@ export default function WithdrawForm() {
     total: 1500, 
     color: "#06b6d4",
     gradient: "linear-gradient(135deg, #06b6d4, #0891b2)",
-    activationFee: 100,
+    activationFee: ACTIVATION_FEE,
     earningsLabel: `Total Earnings: ${format(1500)}`
   },
   VIP: { 
@@ -23,7 +24,7 @@ export default function WithdrawForm() {
     total: 2000, 
     color: "#7c3aed",
     gradient: "linear-gradient(135deg, #7c3aed, #4f46e5)",
-    activationFee: 200,
+    activationFee: ACTIVATION_FEE,
     earningsLabel: `Total Earnings: ${format(2000)}`
   },
   VVIP: { 
@@ -32,7 +33,7 @@ export default function WithdrawForm() {
     total: 3000, 
     color: "#ff6b6b",
     gradient: "linear-gradient(135deg, #ff6b6b, #d97706)",
-    activationFee: 300,
+    activationFee: ACTIVATION_FEE,
     earningsLabel: `Total Earnings: ${format(3000)}`
   },
   affiliate: {

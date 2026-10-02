@@ -37,7 +37,29 @@ import AdminAffiliateWithdrawals from "./pages/admin/AdminAffiliateWithdrawals";
 import AdminLoginFee from "./pages/admin/AdminLoginFee";
 
 /* ================= USER AUTH GUARD ================= */
-function ProtectedRoute({ children }) {
+/* hasPaidActivationFee mirrors backend/src/utils/activationStatus.js
+   hasPaidActivationFee(). The derived is_activated / account_activated
+   flags are recomputed server-side on every /auth/me call, so they are
+   safe to trust here. */
+function hasPaidActivationFee(user) {
+  if (!user) return false;
+  return (
+    user.is_activated === true ||
+    user.account_activated === true ||
+    user.all_plans_completed === true ||
+    user.welcome_bonus_paid === true ||
+    user.regular_paid === true ||
+    user.plans_paid?.WELCOME_BONUS === true ||
+    user.plans_paid?.REGULAR === true ||
+    user.plans_paid?.VIP === true ||
+    user.plans_paid?.VVIP === true
+  );
+}
+
+/* requireActivation gates the app behind the one-time activation fee.
+   Pages that must stay reachable while UNPAID must opt out, otherwise the
+   redirect to /activate loops forever. */
+function ProtectedRoute({ children, requireActivation = true }) {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
@@ -50,8 +72,6 @@ function ProtectedRoute({ children }) {
         if (!isMounted) return;
         const userData = res.data;
         setUser(userData);
-
-        // Login fee removed - all users have access
       })
       .catch((err) => {
         console.error("Auth check failed:", err);
@@ -69,6 +89,13 @@ function ProtectedRoute({ children }) {
 
   if (!user) {
     return <Navigate to="/auth?mode=register" replace />;
+  }
+
+  // The activation fee is a one-time gate to the dashboard. Unpaid users
+  // are sent to the payment page, which STK-pushes the fee and then
+  // redirects them into the app once MegaPay confirms it.
+  if (requireActivation && !hasPaidActivationFee(user)) {
+    return <Navigate to="/activate" replace />;
   }
 
   return children;
@@ -145,7 +172,7 @@ export default function App() {
         <Route
           path="/onboarding"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requireActivation={false}>
               <OnboardingSurvey />
             </ProtectedRoute>
           }
@@ -200,7 +227,7 @@ export default function App() {
         <Route
           path="/activation-notice"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requireActivation={false}>
               <ActivationNotice />
             </ProtectedRoute>
           }
@@ -209,7 +236,7 @@ export default function App() {
         <Route
           path="/activate"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requireActivation={false}>
               <Activate />
             </ProtectedRoute>
           }

@@ -42,16 +42,11 @@ exports.protect = async (req, res, next) => {
       });
     }
 
-    // 4️⃣ Auto-approve login fee for legacy users (fee removed - all users have access)
-    if (!user.login_fee_paid) {
-      try {
-        user.login_fee_paid = true;
-        user.login_fee_paid_at = user.login_fee_paid_at || new Date();
-        await user.save();
-      } catch (saveErr) {
-        console.error("Auto-approve login fee error:", saveErr.message);
-      }
-    }
+    // NOTE: the old auto-approve of login_fee_paid was removed. It force-set
+    // the flag to true and saved on EVERY authenticated request, which made
+    // the flag meaningless as a gate. Activation is now enforced by
+    // ProtectedRoute via the activation-fee flags, and it is never written
+    // here.
 
     // Attach user to request (format to match old structure)
     req.user = {

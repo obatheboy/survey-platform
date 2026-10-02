@@ -6,6 +6,7 @@ import TrustBadges from "../components/TrustBadges";
 import Testimonials from "../components/Testimonials";
 import "./Activate.css";
 import { planPaymentApi } from "../api/api";
+import { ACTIVATION_FEE } from "../constants/fees";
 
 const PHONE_NUMBER = "0140834185";
 const BUSINESS_NAME = "OBADIAH NYAKUNDI OTOKI";
@@ -15,35 +16,36 @@ const TILL_NUMBER = "7282886";
 // payment option. Set to false to show manual M-Pesa Send Money only.
 const AUTO_PAY_ENABLED = true;
 
-// Single KES 100 activation fee. Paying it only UNLOCKS the account - it pays
-// out nothing. The only money a user ever receives is the KES 1200 welcome
+// Single KES 96 activation fee, imported from constants/fees.js so it always
+// matches the backend. Paying it only UNLOCKS the account - it pays out
+// nothing. The only money a user ever receives is the KES 1200 welcome
 // bonus (credited at signup) and KES 450 per completed survey.
 const PLAN_CONFIG = {
   WELCOME_BONUS: {
     label: "Welcome Bonus",
     total: 1200,
-    activationFee: 100,
+    activationFee: ACTIVATION_FEE,
     color: "#06b6d4",
     glow: "rgba(6, 182, 212, 0.2)"
   },
   REGULAR: {
     label: "Activate Account",
     total: 0,
-    activationFee: 100,
+    activationFee: ACTIVATION_FEE,
     color: "#06b6d4",
     glow: "rgba(6, 182, 212, 0.2)"
   },
   VIP: {
     label: "Activate Account",
     total: 0,
-    activationFee: 100,
+    activationFee: ACTIVATION_FEE,
     color: "#7c3aed",
     glow: "rgba(124, 58, 237, 0.2)"
   },
   VVIP: {
     label: "Activate Account",
     total: 0,
-    activationFee: 100,
+    activationFee: ACTIVATION_FEE,
     color: "#ff6b6b",
     glow: "rgba(255, 107, 107, 0.2)"
   },
@@ -758,7 +760,7 @@ setPaynectaSubmitting(true);
       ? { 
           label: "Welcome Bonus", 
           total: user.welcome_bonus || 1200, 
-          activationFee: 100, 
+          activationFee: ACTIVATION_FEE, 
           color: "#06b6d4", 
           glow: "rgba(6, 182, 212, 0.2)" 
         }

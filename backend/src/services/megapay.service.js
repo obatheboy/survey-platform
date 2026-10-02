@@ -267,29 +267,16 @@ const checkTransactionStatus = async (transactionRequestId, expectedAmount) => {
   }
 };
 
-// Plan amounts in KES - KEEP EXACTLY THE SAME AS BEFORE
-const PLAN_AMOUNTS = {
-  WELCOME_BONUS: 100,
-  REGULAR: 100,
-  VIP: 200,
-  VVIP: 300
-};
-
-const LOGIN_FEE = 95;
-
-const getPlanAmount = (planKey) => {
-  return PLAN_AMOUNTS[planKey?.toUpperCase()] || PLAN_AMOUNTS.REGULAR;
-};
-
-const getPlanAmountByKey = (planKey) => {
-  return PLAN_AMOUNTS[planKey?.toUpperCase()] || null;
-};
+// Plan amounts in KES. Single source of truth - see config/fees.js.
+// Every plan now costs the same one-time activation fee.
+const { ACTIVATION_FEE, LOGIN_FEE, PLAN_AMOUNTS, getPlanAmount, getPlanAmountByKey } = require("../config/fees");
 
 module.exports = {
   initiateSTKPush,
   checkTransactionStatus,
   formatPhone,
   generateShortReference,
+  ACTIVATION_FEE,
   LOGIN_FEE,
   PLAN_AMOUNTS,
   getPlanAmount,

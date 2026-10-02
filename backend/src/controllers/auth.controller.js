@@ -68,7 +68,7 @@ exports.register = async (req, res) => {
       email: null,
       password_hash: null,
        is_activated: false,
-       login_fee_paid: true, // Bypassed - no login fee required
+       login_fee_paid: false, // Not charged - activation is the only fee
        ...userActivationFields,
       total_earned: 1200,      // ✅ Welcome bonus credited immediately on registration
       welcome_bonus_received: true,  // ✅ Marked as received so Activate.jsx shows the plan
@@ -149,7 +149,7 @@ exports.register = async (req, res) => {
         is_activated: user.is_activated,
         welcome_bonus_received: user.welcome_bonus_received,
          welcome_bonus: user.welcome_bonus || 1200,
-          login_fee_paid: true, // Bypassed - login fee waived on registration
+          login_fee_paid: user.login_fee_paid || false,
         plans_paid: user.plans_paid || {},
        all_plans_completed: user.all_plans_completed || false,
        referral_commission_earned: user.referral_commission_earned || 0,

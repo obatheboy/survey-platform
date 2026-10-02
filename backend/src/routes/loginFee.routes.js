@@ -26,7 +26,8 @@ router.post("/initiate", protect, async (req, res) => {
     // Import service on-demand to avoid circular dependency
     const megaPayService = require("../services/megapay.service");
 
-    const result = await megaPayService.initiateSTKPush(95, phone_number, reference);
+    const { LOGIN_FEE } = require("../config/fees");
+    const result = await megaPayService.initiateSTKPush(LOGIN_FEE, phone_number, reference);
 
     if (result.success) {
       return res.status(200).json({

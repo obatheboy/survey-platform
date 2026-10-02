@@ -4,28 +4,31 @@ import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/api";
 import { useCurrency } from "../contexts/CurrencyContext.jsx";
 import "./ActivationNotice.css";
+import { ACTIVATION_FEE } from "../constants/fees";
 
 /* =========================
    PLAN CONFIG
+   Every plan costs the same one-time activation fee - it is just a
+   gate to the dashboard, not a tier purchase.
 ========================= */
 const PLAN_CONFIG = {
   REGULAR: {
     label: "REGULAR SURVEYS",
-    activationFee: 100,
+    activationFee: ACTIVATION_FEE,
     color: "#06b6d4",
     icon: "⭐",
     total: 1500,
   },
   VIP: {
     label: "VIP SURVEY",
-    activationFee: 200,
+    activationFee: ACTIVATION_FEE,
     color: "#7c3aed",
     icon: "💎",
     total: 2000,
   },
   VVIP: {
     label: "VVIP SURVEYS",
-    activationFee: 300,
+    activationFee: ACTIVATION_FEE,
     color: "#ff6b6b",
     icon: "👑",
     total: 3000,

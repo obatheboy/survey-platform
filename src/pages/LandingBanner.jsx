@@ -16,7 +16,7 @@ import "./LandingBanner.css";
      - Chat Wazungu : KES 500 per unlocked profile, 200 profiles
      - Welcome bonus: KES 1,200 credited once at signup
      - Withdrawal   : from KES 200 to M-Pesa (KE) / MTN+Airtel (UG)
-     - Activation   : KES 100
+     - Activation   : KES 96
    ===================================================== */
 
 const EARN_METHODS = [

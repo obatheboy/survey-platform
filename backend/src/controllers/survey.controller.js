@@ -94,7 +94,7 @@ exports.completeSurvey = async (req, res) => {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // The account must be activated (KES 100 paid) before surveys pay out.
+    // The account must be activated (KES 96 paid) before surveys pay out.
     if (user.is_activated !== true && user.account_activated !== true) {
       return res.status(403).json({
         success: false,

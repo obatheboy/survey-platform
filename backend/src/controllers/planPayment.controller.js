@@ -5,12 +5,8 @@ const Notification = require("../models/Notification");
 const { ACTIVATION_PLANS, buildPaymentRedirect, getRemainingActivationPlans, isPlanDone, isWelcomeBonusPaid, syncActivationStatus } = require("../utils/activationStatus");
 const { awardReferralCommission } = require("./affiliate.controller");
 
-const PLAN_FEES = {
-  WELCOME_BONUS: 100,
-  REGULAR: 100,
-  VIP: 200,
-  VVIP: 300,
-};
+// Every plan costs the same one-time activation fee - see config/fees.js.
+const { PLAN_AMOUNTS: PLAN_FEES, ACTIVATION_FEE } = require("../config/fees");
 
 const PLAN_EARNINGS = {
   REGULAR: 1500,
@@ -48,7 +44,9 @@ exports.initiatePlanPayment = async (req, res) => {
   try {
     const { plan, phone_number, userId } = req.body;
     const userIdFromToken = req.user?.id;
-    const targetUserId = userId || userIdFromToken;
+    // Always resolve the user from the verified JWT so a payment started for
+    // one account can never be confirmed against another.
+    const targetUserId = userIdFromToken;
 
     console.log("=== INITIATE PLAN PAYMENT ===");
     console.log("User ID:", targetUserId);
@@ -191,10 +189,10 @@ exports.confirmPlanPayment = async (req, res) => {
     });
   }
 
-  // Find user by authenticated user ID (from JWT token, protect middleware)
-  // No need for phone lookup - auth middleware already verified the user
-  const providedUserId = req.body.user_id || req.user?.id;
-  const userId = providedUserId;
+  // Always resolve the user from the verified JWT. Never trust a user_id in
+  // the request body - otherwise one user could activate another account by
+  // passing their id, since the activation fee is the only gate to the app.
+  const userId = req.user?.id;
 
   if (!userId) {
     return res.status(401).json({
@@ -304,7 +302,7 @@ exports.confirmPlanPayment = async (req, res) => {
   const vvipPaid = justPaidPlan === "VVIP" ? true : (currentPlansPaid.VVIP === true);
   const allThreePaid = regularPaid && vipPaid && vvipPaid;
 
-  // ✅ Single-fee model: paying the one-time KES 100 activation fee (welcome bonus
+  // ✅ Single-fee model: paying the one-time KES 96 activation fee (welcome bonus
   // claim or any plan fee) activates the account and unlocks surveys immediately.
   const welcomeBonusPaid = user.welcome_bonus_paid === true || currentPlansPaid.WELCOME_BONUS === true;
   const anyFeePaid = welcomeBonusPaid || regularPaid || vipPaid || vvipPaid;

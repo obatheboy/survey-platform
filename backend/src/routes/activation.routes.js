@@ -12,12 +12,8 @@ const activationController = require("../controllers/activation.controller");
  * =====================================
  */
 
-const PLAN_FEES = {
-  REGULAR: 100,
-  VIP: 200,
-  VVIP: 300,
-  WELCOME_BONUS: 100
-};
+// Every plan costs the same one-time activation fee - see config/fees.js.
+const { PLAN_AMOUNTS: PLAN_FEES } = require("../config/fees");
 
 const PLAN_NAMES = {
   REGULAR: "SurveyEarn REGULAR",

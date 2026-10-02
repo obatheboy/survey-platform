@@ -142,7 +142,7 @@ const syncActivationStatus = (user) => {
   });
 
   // Single-fee model: the account is activated as soon as the user has paid
-  // the one-time KES 100 activation fee (welcome bonus claim, or any plan fee).
+  // the one-time KES 96 activation fee (welcome bonus claim, or any plan fee).
   // The legacy 3-plan requirement is still honoured for older accounts.
   const paidActivationFee = hasPaidActivationFee(user);
   const shouldActivate = paidActivationFee || paidCount === ACTIVATION_PLANS.length;

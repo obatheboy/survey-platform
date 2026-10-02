@@ -68,7 +68,7 @@ const userSchema = new mongoose.Schema({
   },
   login_fee_pending: {
     mpesa_code: { type: String },
-    amount: { type: Number, default: 100 },
+    amount: { type: Number, default: require("../config/fees").ACTIVATION_FEE },
     submitted_at: { type: Date },
     status: { 
       type: String, 

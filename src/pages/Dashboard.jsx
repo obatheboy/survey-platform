@@ -743,7 +743,7 @@ const load = async () => {
   const isCompleted = (plan) => surveysDone(plan) >= TOTAL_SURVEYS;
   const isActivated = (plan) => plans[plan]?.is_activated === true || user?.plans_paid?.[plan] === true || user?.[`${plan.toLowerCase()}_paid`] === true;
 
-  // Single KES 100 activation fee unlocks surveys. Treat the welcome-bonus
+  // Single KES 96 activation fee unlocks surveys. Treat the welcome-bonus
   // claim or any paid plan as an active account.
   const isAccountActive = () => (
     user?.is_activated === true ||
@@ -809,7 +809,7 @@ const load = async () => {
     }
     localStorage.setItem("lastWithdrawClick", now.toString());
 
-    // Check if user has activated (paid KES 100)
+    // Check if user has activated (paid KES 96)
     const accountActivated = user?.all_plans_completed === true ||
                         Object.values(plans || {}).some(p => p.is_activated);
 
@@ -947,7 +947,7 @@ const load = async () => {
     );
   }
 
-  // Check if user has activated (paid KES 100)
+  // Check if user has activated (paid KES 96)
   const accountActivated = user?.all_plans_completed === true ||
                       Object.values(plans || {}).some(p => p.is_activated);
 
@@ -1915,7 +1915,7 @@ const load = async () => {
                         <button
                           className="start-survey-btn"
                           onClick={() => {
-                            // Check if user has activated (paid KES 100)
+                            // Check if user has activated (paid KES 96)
                             const active = isAccountActive();
                             if (!active) {
                               setFullScreenNotification({

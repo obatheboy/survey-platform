@@ -98,7 +98,7 @@ exports.requestWithdraw = async (req, res) => {
     console.log("User all_plans_completed:", user.all_plans_completed);
     console.log("User plans_paid:", user.plans_paid);
     
-      // Single KES 100 activation fee: paying it (from the welcome bonus or the
+      // Single KES 96 activation fee: paying it (from the welcome bonus or the
       // withdraw button) activates the account and unlocks surveys + withdrawal.
       const canWithdraw = user.is_activated === true || user.account_activated === true;
       if (!canWithdraw && type !== "affiliate" && type !== "welcome_bonus") {
@@ -168,7 +168,7 @@ exports.requestWithdraw = async (req, res) => {
         });
       }
       
-      // Single-fee model: the KES 100 payment activates the ACCOUNT, whichever
+      // Single-fee model: the KES 96 payment activates the ACCOUNT, whichever
       // entry point it came from (welcome bonus claim or the withdraw button).
       // The account-level flag is authoritative, not a specific plan's flag.
       isPlanActivated = user.is_activated === true || user.account_activated === true;

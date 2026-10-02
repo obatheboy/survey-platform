@@ -9,12 +9,7 @@ const TOTAL_SURVEYS = 10;
 /* ===============================
    PLAN PAYMENT AMOUNTS
 =============================== */
-const PLAN_FEES = {
-  WELCOME_BONUS: 100,
-  REGULAR: 100,
-  VIP: 200,
-  VVIP: 300,
-};
+const { PLAN_AMOUNTS: PLAN_FEES, ACTIVATION_FEE } = require("../config/fees");
 
 const PLAN_EARNINGS = {
   REGULAR: 1500,
@@ -384,7 +379,7 @@ exports.manualApprovePaynectaPayment = async (req, res) => {
       userPlan.activated_at = new Date();
     }
 
-    // Single-fee model: paying the one-time KES 100 activation fee (welcome bonus
+    // Single-fee model: paying the one-time KES 96 activation fee (welcome bonus
     // claim or any plan fee) activates the account and unlocks surveys.
     const welcomePaid = isWelcomeBonus || user.welcome_bonus_paid === true;
     const accountActive = welcomePaid || user.plans_paid?.REGULAR === true ||

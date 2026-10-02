@@ -7,12 +7,7 @@
  * =============================================================================
  */
 
-const PLAN_AMOUNTS = {
-  WELCOME_BONUS: 100,
-  REGULAR: 100,
-  VIP: 200,
-  VVIP: 300
-};
+const { PLAN_AMOUNTS, ACTIVATION_FEE, getPlanAmount, getPlanAmountByKey } = require("../config/fees");
 
 const initiateSTKPush = async () => {
   return {
@@ -26,18 +21,11 @@ const formatPhone = (phone) => {
   return phone;
 };
 
-const getPlanAmount = () => {
-  return PLAN_AMOUNTS.REGULAR;
-};
-
-const getPlanAmountByKey = () => {
-  return null;
-};
-
 module.exports = {
   initiateSTKPush,
   formatPhone,
   getPlanAmount,
   getPlanAmountByKey,
+  ACTIVATION_FEE,
   PLAN_AMOUNTS
 };
