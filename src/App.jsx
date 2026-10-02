@@ -22,7 +22,6 @@ import LoginFeePayment from "./pages/LoginFeePayment";
 import OnboardingSurvey from "./pages/OnboardingSurvey";
 import ChatWazunguDashboard from "./pages/ChatWazunguDashboard";
 import MultiFunctionDashboard from "./pages/MultiFunctionDashboard";
-import LandingBanner from "./pages/LandingBanner";
 
 /* ================= ADMIN ================= */
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -85,51 +84,6 @@ function AdminRoute({ children }) {
   return children;
 }
 
-/* ================= ENTRY BANNER ROUTE ================= */
-/* Shows the "how you can earn" banner to visitors who are not
-   signed in. Anyone already logged in goes straight to their
-   dashboard instead of being asked to register again. */
-function EntryRoute() {
-  const [checking, setChecking] = useState(true);
-  const [signedIn, setSignedIn] = useState(false);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    api
-      .get("/auth/me")
-      .then(() => isMounted && setSignedIn(true))
-      .catch(() => isMounted && setSignedIn(false))
-      .finally(() => isMounted && setChecking(false));
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  if (checking) {
-    return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "#0f0a1a",
-          color: "rgba(255,255,255,0.7)",
-          fontSize: "14px",
-        }}
-      >
-        Loading…
-      </div>
-    );
-  }
-
-  if (signedIn) return <Navigate to="/dashboard" replace />;
-
-  return <LandingBanner />;
-}
-
 /* ================= AUTH REDIRECT ================= */
 function AuthRedirect() {
   const [searchParams] = useSearchParams();
@@ -179,8 +133,8 @@ export default function App() {
     <BrowserRouter>
       <Toaster position="top-center" reverseOrder={false} />
       <Routes>
-        {/* ENTRY — earning banner for new visitors, dashboard for members */}
-        <Route path="/" element={<EntryRoute />} />
+        {/* ENTRY - Redirect directly to Auth page (no landing banner) */}
+        <Route path="/" element={<Navigate to="/auth?mode=register" replace />} />
 
         {/* USER AUTH */}
         <Route path="/auth" element={<AuthRedirect />} />
