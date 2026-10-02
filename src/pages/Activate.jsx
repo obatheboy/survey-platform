@@ -1026,12 +1026,10 @@ setPaynectaSubmitting(true);
             </div>
 
             <div style={{ fontSize: "15px", fontWeight: 700, color: "#e2e8f0", marginBottom: "12px" }}>
-              and unlock
+              and get
             </div>
 
-            {/* What the user receives once activated. Deliberately no figures
-                here - the earning amounts vary per survey and are better
-                discovered inside the app than promised on the paywall. */}
+            {/* What the user receives once activated */}
             <div style={{
               display: "flex",
               flexDirection: "column",
@@ -1050,6 +1048,9 @@ setPaynectaSubmitting(true);
                 background: "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
                 boxShadow: "0 4px 16px rgba(6, 182, 212, 0.45)"
               }}>
+                <span style={{ fontSize: "24px", fontWeight: 900, color: "#ffffff", textShadow: "0 2px 6px rgba(0,0,0,0.25)" }}>
+                  {format(1200)}
+                </span>
                 <span style={{ fontSize: "16px", fontWeight: 900, color: "#ffffff" }}>
                   BONUS
                 </span>
@@ -1077,7 +1078,7 @@ setPaynectaSubmitting(true);
             </div>
 
             <div style={{ fontSize: "13px", fontWeight: 600, color: "#cbd5e1", marginBottom: "14px", lineHeight: 1.5 }}>
-              Get paid for every survey you complete.
+              Plus KES 450 for every survey you complete.
             </div>
 
             {/* What they are paying for - stated plainly so there is no
