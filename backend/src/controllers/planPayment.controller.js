@@ -371,32 +371,19 @@ exports.confirmPlanPayment = async (req, res) => {
   let remainingPlansList;
   let nextPlanKey;
 
-  if (finalAllThreePaid) {
+  /* The activation fee is a SINGLE one-time payment, so paying any one plan
+     fully activates the account. This previously required all three plans to
+     be paid before redirecting to the dashboard, which sent a user who had
+     just paid KES 96 straight back to /activate asking to pay again. */
     redirectTo = "/dashboard";
     remainingPlansList = [];
     nextPlanKey = null;
-  } else {
-    const remaining = ACTIVATION_PLANS.filter(p => {
-      if (p === "REGULAR") return !finalRegularPaid;
-      if (p === "VIP") return !finalVipPaid;
-      if (p === "VVIP") return !finalVvipPaid;
-      return true;
-    });
-    remainingPlansList = remaining;
-    nextPlanKey = remaining.length > 0 ? remaining[0] : null;
 
-    if (nextPlanKey) {
-      redirectTo = `/activate?plan=${nextPlanKey.toLowerCase()}`;
-    } else {
-      redirectTo = "/dashboard";
-    }
-  }
-
+  /* One payment activates the account, so the message must not talk about
+     remaining plans to buy. */
   const successMessage = normalizedPlanKey === "WELCOME_BONUS"
     ? "🎉 Welcome Bonus activated! Your account is now ACTIVE and you can start taking surveys."
-    : finalAllThreePaid
-      ? "🎉 Congratulations! Your account is now ACTIVE!\nYou can now start taking surveys and withdraw your earnings!"
-      : `✅ You have successfully paid for ${normalizedPlanKey.replace(/_/g, ' ')}!\nRemaining survey plans: ${remainingPlansList.length > 0 ? remainingPlansList.join(', ') : 'none'}`;
+    : "🎉 Congratulations! Your account is now ACTIVE!\nYou can now start taking surveys and withdraw your earnings!";
 
   console.log(`✅ Redirect: ${redirectTo}, Remaining: ${remainingPlansList.join(', ') || 'none'}, AllThreePaid: ${finalAllThreePaid}`);
 
@@ -580,14 +567,18 @@ exports.getNextUnpaidPlan = async (req, res) => {
     const remainingPlans = getRemainingActivationPlans(user);
     const nextPlanKey = remainingPlans[0] || null;
 
-    if (!nextPlanKey) {
+    /* If the account is already activated, the user belongs in the app - not on
+       the withdraw form, which is a separate flow they have not asked for. */
+    if (!nextPlanKey || user.is_activated || user.account_activated) {
       return res.status(200).json({
         success: true,
         next_plan: null,
         all_plans_completed: true,
         user_activated: user.is_activated || false,
-        redirect_to: "/withdraw-form",
-        message: "All plans have been paid!"
+        redirect_to: "/dashboard",
+        message: user.is_activated || user.account_activated
+          ? "Your account is already activated."
+          : "All plans have been paid!"
       });
     }
 
