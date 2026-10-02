@@ -10,13 +10,11 @@ import "./LandingBanner.css";
    Deliberately has NO auth check: it renders for everyone,
    including signed-in members who tap the link again.
 
-   Every figure below is taken from the live platform rules so the
-   claims stay verifiable:
-     - Surveys      : 60 topics, KES 450 each, max 5/day  -> KES 2,250/day
-     - Chat Wazungu : KES 500 per unlocked profile, 200 profiles
-     - Welcome bonus: KES 1,200 credited once at signup
-     - Withdrawal   : from KES 200 to M-Pesa (KE) / MTN+Airtel (UG)
-     - Activation   : KES 96
+   NO EARNING AMOUNTS ARE SHOWN. The banner says the user will earn
+   but never quotes a figure. Per-survey values live in-app and can
+   change, so publishing them here risks a promise the platform does
+   not keep. The only money shown is what the user PAYS: the KES 96
+   activation fee, and the KES 200 minimum withdrawal.
    ===================================================== */
 
 const EARN_METHODS = [
@@ -25,7 +23,7 @@ const EARN_METHODS = [
     icon: "📝",
     title: "Complete Surveys",
     text: "60 topics — Safaricom, Equity Bank, food, football and more. Answer a few questions, get paid instantly.",
-    tag: "KES 450 each",
+    tag: "Paid daily",
     accent: "#06b6d4",
   },
   {
@@ -33,7 +31,7 @@ const EARN_METHODS = [
     icon: "💬",
     title: "Chat Wazungu",
     text: "Unlock 200 profiles and chat with new people. Every profile you unlock pays you straight away.",
-    tag: "KES 500 / unlock",
+    tag: "Per unlock",
     accent: "#0DAA65",
   },
   {
@@ -48,16 +46,19 @@ const EARN_METHODS = [
     id: "withdraw",
     icon: "💰",
     title: "Withdraw to M-Pesa",
-    text: "Cash out from KES 200 directly to your M-Pesa. MTN and Airtel supported in Uganda.",
-    tag: "From KES 200",
+    text: "Cash out straight to your M-Pesa once you reach the minimum balance. MTN and Airtel supported in Uganda.",
+    tag: "M-Pesa",
     accent: "#7c3aed",
   },
 ];
 
+/* No figures on the banner. It says the user will earn, without promising
+   specific amounts - the exact per-survey values are discovered in-app and
+   can change, so stating them here risks a promise the platform doesn't keep. */
 const PROOF = [
-  { value: "KES 450", label: "Per Survey" },
-  { value: "KES 2,250", label: "Per Day" },
-  { value: "KES 1,200", label: "Welcome Bonus" },
+  { value: "SURVEYS", label: "Every Day" },
+  { value: "BONUS", label: "On Signup" },
+  { value: "REFERRALS", label: "Earn More" },
 ];
 
 export default function LandingBanner() {
@@ -92,7 +93,7 @@ export default function LandingBanner() {
       <div className="lb-content">
         {/* Welcome bonus badge */}
         <div className="lb-badge">
-          <span className="lb-badge-text">🎁 KES 1,200 WELCOME BONUS</span>
+          <span className="lb-badge-text">🎁 WELCOME BONUS INCLUDED</span>
         </div>
 
         {/* Logo */}
@@ -132,7 +133,7 @@ export default function LandingBanner() {
           ))}
         </div>
 
-        {/* Provable figures — replaces the old "500K+ Users" claim */}
+        {/* What you can earn - deliberately no figures */}
         <div className="lb-proof">
           {PROOF.map((p, i) => (
             <Fragment key={p.label}>
