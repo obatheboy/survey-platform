@@ -48,7 +48,7 @@ export default function MultiFunctionDashboard() {
         minHeight: "100vh",
         background: "linear-gradient(160deg, #f0f4f8 0%, #ffffff 100%)",
         color: "#1f2937",
-        padding: "16px 14px 24px",
+        padding: "16px 16px 20px",
         fontFamily:
           "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif",
       }}
@@ -57,15 +57,15 @@ export default function MultiFunctionDashboard() {
       <div
         style={{
           textAlign: "center",
-          marginBottom: "18px",
+          marginBottom: "16px",
           padding: "4px 6px 0",
         }}
       >
         <h1
           style={{
-            fontSize: "24px",
+            fontSize: "28px",
             fontWeight: 800,
-            margin: "0 0 4px",
+            margin: "0 0 6px",
             color: "#111827",
             letterSpacing: "-0.02em",
           }}
@@ -74,7 +74,7 @@ export default function MultiFunctionDashboard() {
         </h1>
         <p
           style={{
-            fontSize: "13px",
+            fontSize: "14px",
             color: "#6b7280",
             margin: 0,
             fontWeight: 500,
@@ -89,9 +89,9 @@ export default function MultiFunctionDashboard() {
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "10px",
+          gap: "14px",
           alignItems: "center",
-          marginBottom: "18px",
+          marginBottom: "16px",
         }}
       >
         {EARNING_OPTIONS.map((option) => {
@@ -106,46 +106,46 @@ export default function MultiFunctionDashboard() {
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "12px",
+                gap: "14px",
                 width: "100%",
                 maxWidth: "480px",
                 background: "#ffffff",
-                borderRadius: "16px",
-                padding: "12px 14px",
+                borderRadius: "20px",
+                padding: "16px 18px",
                 cursor: "pointer",
                 transition: "all 0.2s ease",
                 transform: isHovered ? "translateX(3px)" : "translateX(0)",
                 boxShadow: isHovered
-                  ? "0 10px 22px rgba(0,0,0,0.12)"
-                  : "0 3px 10px rgba(0,0,0,0.05)",
+                  ? "0 12px 26px rgba(0,0,0,0.14)"
+                  : "0 4px 12px rgba(0,0,0,0.06)",
                 border: "1px solid #e5e7eb",
               }}
             >
               {/* Icon Circle */}
               <div
                 style={{
-                  width: "44px",
-                  height: "44px",
-                  minWidth: "44px",
+                  width: "56px",
+                  height: "56px",
+                  minWidth: "56px",
                   borderRadius: "50%",
                   background: option.gradient,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: "22px",
+                  fontSize: "28px",
                   boxShadow: isHovered
-                    ? "0 6px 14px rgba(0,0,0,0.18)"
-                    : "0 4px 10px rgba(0,0,0,0.08)",
+                    ? "0 8px 18px rgba(0,0,0,0.2)"
+                    : "0 5px 12px rgba(0,0,0,0.1)",
                 }}
               >
                 {option.icon}
               </div>
 
-              {/* Title + Subtitle */}
+              {/* Title + Subtitle + Description */}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <h2
                   style={{
-                    fontSize: "15px",
+                    fontSize: "18px",
                     fontWeight: 800,
                     margin: 0,
                     color: "#111827",
@@ -156,24 +156,34 @@ export default function MultiFunctionDashboard() {
                 </h2>
                 <p
                   style={{
-                    fontSize: "12px",
+                    fontSize: "13px",
                     fontWeight: 700,
-                    margin: "2px 0 0",
+                    margin: "3px 0 0",
                     color: "#4b5563",
                   }}
                 >
                   {option.subtitle}
+                </p>
+                <p
+                  style={{
+                    fontSize: "11.5px",
+                    color: "#6b7280",
+                    lineHeight: 1.45,
+                    margin: "3px 0 0",
+                  }}
+                >
+                  {option.description}
                 </p>
               </div>
 
               {/* Chevron */}
               <span
                 style={{
-                color: "#9ca3af",
-                fontSize: "18px",
-                fontWeight: 800,
-                minWidth: "16px",
-                textAlign: "right",
+                  color: "#9ca3af",
+                  fontSize: "22px",
+                  fontWeight: 800,
+                  minWidth: "16px",
+                  textAlign: "right",
                 }}
               >
                 ›
@@ -187,9 +197,9 @@ export default function MultiFunctionDashboard() {
       <div
         style={{
           background: "#ffffff",
-          borderRadius: "16px",
-          padding: "14px 16px",
-          boxShadow: "0 3px 10px rgba(0,0,0,0.05)",
+          borderRadius: "20px",
+          padding: "14px 18px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
           border: "1px solid #e5e7eb",
           maxWidth: "480px",
           margin: "0 auto",
@@ -197,9 +207,9 @@ export default function MultiFunctionDashboard() {
       >
         <h3
           style={{
-            fontSize: "15px",
+            fontSize: "16px",
             fontWeight: 700,
-            margin: "0 0 10px",
+            margin: "0 0 14px",
             textAlign: "center",
             color: "#111827",
           }}
@@ -236,14 +246,14 @@ function StatRow({ label, value, highlight }) {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "4px 0",
+        padding: "6px 0",
         borderBottom: "1px solid #f3f4f6",
       }}
     >
-      <span style={{ fontSize: "12px", color: "#6b7280" }}>{label}</span>
+      <span style={{ fontSize: "13px", color: "#6b7280" }}>{label}</span>
       <span
         style={{
-          fontSize: "13px",
+          fontSize: "14px",
           fontWeight: 700,
           color: highlight ? "#0DAA65" : "#111827",
         }}
@@ -261,14 +271,14 @@ function TotalRow({ label, value }) {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        paddingTop: "8px",
+        paddingTop: "10px",
         marginTop: "2px",
         borderTop: "2px solid #06b6d4",
       }}
     >
       <span
         style={{
-          fontSize: "13px",
+          fontSize: "14px",
           fontWeight: 800,
           color: "#111827",
         }}
@@ -277,7 +287,7 @@ function TotalRow({ label, value }) {
       </span>
       <span
         style={{
-          fontSize: "16px",
+          fontSize: "18px",
           fontWeight: 800,
           background: "linear-gradient(135deg, #06b6d4 0%, #ea580c 100%)",
           WebkitBackgroundClip: "text",
