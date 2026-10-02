@@ -6,7 +6,7 @@ import TrustBadges from "../components/TrustBadges";
 import Testimonials from "../components/Testimonials";
 import "./Activate.css";
 import { planPaymentApi } from "../api/api";
-import { ACTIVATION_FEE } from "../constants/fees";
+import { ACTIVATION_FEE, SURVEY_EARNINGS } from "../constants/fees";
 
 const PHONE_NUMBER = "0140834185";
 const BUSINESS_NAME = "OBADIAH NYAKUNDI OTOKI";
@@ -1072,7 +1072,7 @@ setPaynectaSubmitting(true);
               flexDirection: "column",
               gap: "8px",
               alignItems: "center",
-              marginBottom: "12px"
+              marginBottom: "16px"
             }}>
               <div style={{
                 display: "inline-flex",
@@ -1099,11 +1099,11 @@ setPaynectaSubmitting(true);
 
               <div style={{
                 display: "inline-flex",
+                flexDirection: "column",
                 alignItems: "center",
-                justifyContent: "center",
-                gap: "8px",
+                gap: "4px",
                 flexWrap: "wrap",
-                padding: "10px 18px",
+                padding: "10px 22px",
                 borderRadius: "40px",
                 background: "linear-gradient(135deg, #0DAA65 0%, #1a8d55 100%)",
                 boxShadow: "0 4px 16px rgba(13, 170, 101, 0.45)"
@@ -1111,11 +1111,10 @@ setPaynectaSubmitting(true);
                 <span style={{ fontSize: "16px", fontWeight: 900, color: "#ffffff" }}>
                   SURVEYS
                 </span>
+                <span style={{ fontSize: "12px", fontWeight: 700, color: "#d1fae5" }}>
+                  Plus {format(SURVEY_EARNINGS)} for every survey you complete.
+                </span>
               </div>
-            </div>
-
-            <div style={{ fontSize: "13px", fontWeight: 600, color: "#cbd5e1", marginBottom: "14px", lineHeight: 1.5 }}>
-              Plus KES 75 for every survey you complete.
             </div>
 
             {/* What they are paying for - stated plainly so there is no
