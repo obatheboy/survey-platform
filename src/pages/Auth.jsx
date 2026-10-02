@@ -12,8 +12,13 @@ export default function Auth() {
   const [mode, setMode] = useState(initialMode);
   const referralCodeFromUrl = searchParams.get("ref");
   const [loading, setLoading] = useState(false);
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [installFeedback, setInstallFeedback] = useState("");
+  /* The INSTALL APP button was removed from this page, so the deferredPrompt
+     state and handleInstall() that backed it are gone too.
+
+     Note: components/PWAInstallPrompt.jsx exists but is NOT currently
+     mounted anywhere, so nothing offers PWA installation in-app right now.
+     If installation is wanted later, mount that component - but re-check
+     where it should appear before assuming it is active. */
   const [regData, setRegData] = useState({
     full_name: "",
     phone: "",
@@ -63,52 +68,10 @@ export default function Auth() {
     wakeBackend();
   }, []);
 
-  useEffect(() => {
-    const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
+  /* The beforeinstallprompt listener and handleInstall() that backed the
+     removed INSTALL APP button are gone. Note that
+     components/PWAInstallPrompt.jsx exists but is not mounted anywhere. */
 
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-
-    return () => window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-  }, []);
-
-  const handleInstall = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === "accepted") {
-        localStorage.setItem("hasSeenInstallPrompt", "true");
-        setInstallFeedback("✅ Installing...");
-      } else {
-        setInstallFeedback("Install cancelled");
-      }
-      setDeferredPrompt(null);
-      setTimeout(() => setInstallFeedback(""), 3000);
-      return;
-    }
-
-    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
-      setInstallFeedback("📱 App is already installed");
-      setTimeout(() => setInstallFeedback(""), 3000);
-      return;
-    }
-
-    localStorage.setItem("hasSeenInstallPrompt", "true");
-
-    if ('serviceWorker' in navigator) {
-      try {
-        await navigator.serviceWorker.register('/sw.js');
-      } catch (e) {
-        console.error("SW registration failed:", e);
-      }
-    }
-
-    setInstallFeedback("📲 To install: tap your browser menu (⋮) → 'Add to Home Screen' or 'Install App'");
-    setTimeout(() => setInstallFeedback(""), 6000);
-  };
- 
    const validateRegistration = () => {
     const newErrors = {};
     
@@ -520,20 +483,9 @@ export default function Auth() {
           </div>
         </div>
 
-        {/* Install App Button */}
-        <button
-          style={styles.installAppBtn}
-          onClick={handleInstall}
-          type="button"
-        >
-          <span style={styles.installAppIcon}>📲</span>
-          INSTALL APP
-        </button>
-        {installFeedback && (
-          <p style={{ fontSize: "11px", color: installFeedback.startsWith("✅") ? "#22c55e" : installFeedback.startsWith("📱") ? "#7c3aed" : "#ff6b6b", fontWeight: 600, marginTop: "8px", textAlign: "center", lineHeight: 1.4 }}>
-            {installFeedback}
-          </p>
-        )}
+        {/* The PWA install button used to sit here. Removed at the user's
+            request. components/PWAInstallPrompt.jsx exists but is not
+            mounted anywhere, so nothing replaces it in-app. */}
 
        <button
             style={styles.whatsappGroupBtn}
@@ -862,26 +814,6 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     gap: "8px",
-  },
-  installAppBtn: {
-    width: "100%",
-    padding: "14px",
-    borderRadius: "12px",
-    border: "none",
-    background: "linear-gradient(135deg, #06b6d4 0%, #ff6b6b 100%)",
-    color: "#ffffff",
-    fontSize: "15px",
-    fontWeight: "800",
-    cursor: "pointer",
-    marginBottom: "12px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "8px",
-    boxShadow: "0 6px 20px rgba(131, 56, 236, 0.5)",
-  },
-  installAppIcon: {
-    fontSize: "16px",
   },
   footer: {
     textAlign: "center",
