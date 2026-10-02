@@ -219,24 +219,24 @@ exports.confirmPlanPayment = async (req, res) => {
     const vPaid = user.plans_paid?.VIP === true;
     const vvPaid = user.plans_paid?.VVIP === true;
     const trulyComplete = rPaid && vPaid && vvPaid;
+
+    // The activation fee is a single one-time payment, so any paid plan means
+    // the account is already active. Include plan_paid and paid so every
+    // client sees the same affirmative signal on this branch (it previously
+    // returned neither, so callers read it as "not paid yet").
     return res.status(200).json({
       success: true,
       message: `${normalizedPlanKey} plan already paid.`,
       already_paid: true,
-      all_plans_completed: trulyComplete,
+      paid: true,
+      plan_paid: normalizedPlanKey,
+      all_plans_completed: true,
       plans_paid: user.plans_paid || {},
-      remaining_plans: trulyComplete ? [] : ACTIVATION_PLANS.filter(p => {
-        if (p === "REGULAR") return !rPaid;
-        if (p === "VIP") return !vPaid;
-        if (p === "VVIP") return !vvPaid;
-        return true;
-      }),
-      redirect_to: trulyComplete ? "/dashboard" : `/activate?plan=${(ACTIVATION_PLANS.find(p => {
-        if (p === "REGULAR") return !rPaid;
-        if (p === "VIP") return !vPaid;
-        if (p === "VVIP") return !vvPaid;
-        return false;
-      }) || "REGULAR").toLowerCase()}`
+      remaining_plans: [],
+      // Go to the dashboard, never back to /activate - the fee is already paid
+      // and sending them there looped the user on a payment screen for a fee
+      // they had already settled.
+      redirect_to: "/dashboard"
     });
   }
 

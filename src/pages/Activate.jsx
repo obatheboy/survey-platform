@@ -222,8 +222,27 @@ const [planKey, setPlanKey] = useState(null);
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
   const [paymentSuccessData, setPaymentSuccessData] = useState(null);
   const pollRef = useRef(null);
+  const redirectTimerRef = useRef(null);
 
-  const startPaymentPolling = (transactionRequestId, phone, targetPlanKey, userId) => {
+  /* Once the activation fee is confirmed, take the user into the app.
+     Short delay so the success screen is visible before navigating.
+     Always use the server-provided redirect_to when present. */
+  const redirectAfterPayment = (redirectTo) => {
+    const target = redirectTo || "/dashboard";
+    if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
+    redirectTimerRef.current = setTimeout(() => {
+      navigate(target, { replace: true });
+    }, 2500);
+  };
+
+  // Clear any pending redirect if the page unmounts first
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
+    };
+  }, []);
+
+  const startPaymentPolling = (transactionRequestId, phone, targetPlanKey) => {
     let attempts = 0;
     let pollTimer = null;
     let fallbackTimer = null;
@@ -254,11 +273,26 @@ const [planKey, setPlanKey] = useState(null);
           phone: phone,
           plan: targetPlanKey
         };
-        if (userId) confirmBody.user_id = userId;
+        // user_id is intentionally NOT sent: the server resolves the account
+        // from the verified JWT only, so a body-supplied id cannot be used to
+        // confirm a payment against somebody else's account.
         const confirmRes = await planPaymentApi.confirm(confirmBody);
         console.log(`Poll attempt ${attempts}`, confirmRes.data);
 
-        if (confirmRes.data.success && (confirmRes.data.plan_paid || confirmRes.data.paid === true)) {
+        // Treat any affirmative confirmation as paid. The backend reports this
+        // three different ways depending on the branch it took:
+        //   - plan_paid (fresh verification)
+        //   - paid === true (some flows)
+        //   - already_paid === true (the payment was confirmed on an
+        //     earlier poll; the endpoint short-circuits and never sets
+        //     plan_paid, which previously left the user polling until
+        //     timeout instead of entering the app).
+        const confirmed =
+          confirmRes.data.plan_paid ||
+          confirmRes.data.paid === true ||
+          confirmRes.data.already_paid === true;
+
+        if (confirmRes.data.success && confirmed) {
           stop();
           const remainingPlans = confirmRes.data.remaining_plans || [];
           setPaymentSuccessData({
@@ -272,6 +306,11 @@ const [planKey, setPlanKey] = useState(null);
           });
           setShowPaymentSuccess(true);
           if (confirmRes.data.user) setUser(prev => ({ ...prev, ...confirmRes.data.user }));
+
+          // Auto-enter the app once the fee is confirmed. Redirecting only
+          // on a button press left users sitting on a success screen that
+          // looked stuck.
+          redirectAfterPayment(confirmRes.data.redirect_to);
           return;
         }
 
@@ -584,7 +623,7 @@ setPaynectaSubmitting(true);
       if (response.data.success === true && transactionRequestId) {
         console.log("✅ STK push acknowledged by gateway. txId:", transactionRequestId);
         setPaynectaWaiting(true);
-        startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey, user._id);
+        startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
       } else {
         console.error("❌ STK push NOT confirmed by gateway:", apiMessage, response.data);
         setPaynectaError(apiMessage || "Payment initiation failed. Please try again or use manual payment.");
@@ -941,13 +980,14 @@ setPaynectaSubmitting(true);
               marginBottom: "20px",
               textAlign: "center"
             }}>
-               🚀 Auto-redirecting in 6 seconds... Tap below to continue now
+               🚀 Taking you to your dashboard... Tap below to continue now
             </p>
 
             <button
               onClick={() => {
                 setShowPaymentSuccess(false);
-                // Always go to dashboard after paying activation fee
+                if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
+                // Always go to dashboard after paying the activation fee
                 navigate("/dashboard", { replace: true });
               }}
               style={{ 
@@ -981,78 +1021,103 @@ setPaynectaSubmitting(true);
             border: "1px solid #251a3a",
             textAlign: "center"
           }}>
-            <div style={{ fontSize: "18px", fontWeight: 800, color: "#ffffff", marginBottom: "10px", textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
-              🎉 CONGRATULATIONS! 🎉
+            <div style={{ fontSize: "21px", fontWeight: 900, color: "#ffffff", marginBottom: "4px", textShadow: "0 2px 4px rgba(0,0,0,0.3)", lineHeight: 1.25 }}>
+              🎉 ACTIVATE YOUR ACCOUNT NOW! 🎉
             </div>
 
-            {planKey === "WELCOME_BONUS" ? (
-              <>
-                <div style={{ fontSize: "16px", fontWeight: 700, color: "#e2e8f0", marginBottom: "4px" }}>
-                  You have earned
-                </div>
+            <div style={{ fontSize: "15px", fontWeight: 700, color: "#e2e8f0", marginBottom: "12px" }}>
+              and get
+            </div>
 
-                <div style={{ fontSize: "38px", fontWeight: 900, color: "#06b6d4", lineHeight: "1.2", marginBottom: "10px", textShadow: "0 4px 12px rgba(6, 182, 212, 0.5)" }}>
-                  {format(plan.total)}
-                </div>
-              </>
-            ) : (
-              <>
-                <div style={{ fontSize: "16px", fontWeight: 700, color: "#e2e8f0", marginBottom: "10px" }}>
-                  You&apos;re about to activate your account
-                  <br />
-                  and get
-                </div>
+            {/* What the user receives once activated */}
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              alignItems: "center",
+              marginBottom: "12px"
+            }}>
+              <div style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+                flexWrap: "wrap",
+                padding: "10px 18px",
+                borderRadius: "40px",
+                background: "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
+                boxShadow: "0 4px 16px rgba(6, 182, 212, 0.45)"
+              }}>
+                <span style={{ fontSize: "24px", fontWeight: 900, color: "#ffffff", textShadow: "0 2px 6px rgba(0,0,0,0.25)" }}>
+                  {format(1200)}
+                </span>
+                <span style={{ fontSize: "16px", fontWeight: 900, color: "#ffffff" }}>
+                  BONUS
+                </span>
+              </div>
 
-                <div style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "8px",
-                  flexWrap: "wrap",
-                  padding: "10px 18px",
-                  marginBottom: "12px",
-                  borderRadius: "40px",
-                  background: "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
-                  boxShadow: "0 4px 16px rgba(6, 182, 212, 0.45)"
-                }}>
-                  <span style={{ fontSize: "24px", fontWeight: 900, color: "#ffffff", textShadow: "0 2px 6px rgba(0,0,0,0.25)" }}>
-                    {format(1200)}
-                  </span>
-                  <span style={{ fontSize: "16px", fontWeight: 900, color: "#ffffff" }}>
-                    BONUS
-                  </span>
-                  <span style={{ fontSize: "18px", fontWeight: 900, color: "#ffffff" }}>+</span>
-                  <span style={{ fontSize: "16px", fontWeight: 900, color: "#ffffff" }}>
-                    SURVEYS
-                  </span>
-                </div>
+              <div style={{ fontSize: "15px", fontWeight: 800, color: "#22d3ee" }}>
+                +
+              </div>
 
-                <div style={{ fontSize: "13px", fontWeight: 600, color: "#cbd5e1", marginBottom: "12px", lineHeight: 1.5 }}>
-                  Plus KES 450 for every survey you complete.
-                </div>
-              </>
-            )}
+              <div style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+                flexWrap: "wrap",
+                padding: "10px 18px",
+                borderRadius: "40px",
+                background: "linear-gradient(135deg, #0DAA65 0%, #1a8d55 100%)",
+                boxShadow: "0 4px 16px rgba(13, 170, 101, 0.45)"
+              }}>
+                <span style={{ fontSize: "16px", fontWeight: 900, color: "#ffffff" }}>
+                  SURVEYS
+                </span>
+              </div>
+            </div>
 
+            <div style={{ fontSize: "13px", fontWeight: 600, color: "#cbd5e1", marginBottom: "14px", lineHeight: 1.5 }}>
+              Plus KES 450 for every survey you complete.
+            </div>
+
+            {/* What they are paying for - stated plainly so there is no
+                ambiguity about what the KES 96 actually unlocks. */}
             <div style={{
               fontSize: "15px !important",
               fontWeight: "700 !important",
               color: "#1a1128 !important",
               background: "#fef3c7 !important",
-              padding: "12px 24px !important",
-              borderRadius: "40px !important",
+              padding: "12px 20px !important",
+              borderRadius: "14px !important",
               border: "2px solid #ff6b6b !important",
-              display: "inline-block !important",
+              display: "block !important",
+              lineHeight: 1.5,
               boxShadow: "0 4px 12px rgba(255, 107, 107, 0.3) !important"
             }}>
-              ⚡ <span style={{
+              ⚡ Pay{" "}
+              <span style={{
                 color: "#dc2626 !important",
                 fontWeight: "900 !important",
                 fontSize: "22px !important",
                 background: "#ffe0e0 !important",
-                padding: "4px 10px !important",
+                padding: "2px 10px !important",
                 borderRadius: "8px !important",
-                border: "2px solid #ef4444 !important"
-              }}>Pay{format(plan.activationFee)}</span> activation fee to activate your account and withdraw your earnings!
+                border: "2px solid #ef4444 !important",
+                marginLeft: "2px",
+                marginRight: "2px"
+              }}>
+                {format(plan.activationFee)}
+              </span>{" "}
+              one-time activation fee to activate your account and start earning.
+              <div style={{
+                fontSize: "12px",
+                fontWeight: "700",
+                color: "#78350f",
+                marginTop: "6px"
+              }}>
+                This is a one-time payment. You pay it only once.
+              </div>
             </div>
           </div>
 
