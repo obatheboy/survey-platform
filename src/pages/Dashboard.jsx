@@ -11,6 +11,7 @@ import Testimonials from "../components/Testimonials.jsx";
 import Leaderboard from "./components/Leaderboard.jsx";
 import Achievements from "./components/Achievements.jsx";
 import { SURVEY_EARNINGS } from "../constants/fees";
+import { getHardcodedSurveys } from "../data/surveys";
 import DailyRewardPopup from "./components/DailyRewardPopup.jsx";
 import WelcomeBonusPopup from "./components/WelcomeBonusPopup.jsx";
 import { gamificationApi } from "../api/api";
@@ -86,154 +87,10 @@ const SURVEY_TOTAL = 60;
 
 // Theme removed - light mode only
 
-  const SURVEY_TITLES_BY_CATEGORY = {
-    "daily lifestyle": [
-      "Morning Routine Habits",
-      "Sleep Patterns & Quality",
-      "Daily Productivity",
-      "Weekend Activities",
-      "Home Organization",
-      "Personal Care & Grooming",
-      "Stress Management",
-      "Time Management",
-      "Daily Commute Experience",
-      "Evening Relaxation Habits"
-    ],
-    "food": [
-      "Breakfast Habits Survey",
-      "Fast Food Preferences",
-      "Healthy Eating Patterns",
-      "Restaurant Dining Experience",
-      "Cooking Habits & Skills",
-      "Dietary Restrictions",
-      "Snacking Patterns",
-      "Daily Water Intake",
-      "Coffee & Tea Consumption",
-      "Dining Out Preferences"
-    ],
-    "football": [
-      "Premier League Fan Survey",
-      "Fan Engagement & Passion",
-      "Match Viewing Habits",
-      "Fantasy Football Experience",
-      "Football Memorabilia Collection",
-      "Game Day Experience",
-      "Youth Football Participation",
-      "Women's Football Interest",
-      "Football Streaming Habits",
-      "Stadium Visit Experience"
-    ],
-    "safaricom": [
-      "M-Pesa Usage Survey",
-      "Network Quality & Coverage",
-      "Customer Service Experience",
-      "Safaricom App Usage",
-      "Data Bundle Preferences",
-      "Roaming Services Survey",
-      "Bill Payments via Mobile",
-      "Till Number Usage",
-      "M-Shwari & Savings",
-      "Safaricom Boda Service"
-    ],
-    "equity bank": [
-      "Banking App Usage Survey",
-      "Account Types & Usage",
-      "Loan Services Experience",
-      "Equity Agent Usage",
-      "Mobile Banking Habits",
-      "Savings & Investment",
-      "Insurance Products Interest",
-      "Remittance Services",
-      "Equity Card Survey",
-      "Branch Visit Experience"
-    ],
-    "communication": [
-      "WhatsApp Usage Patterns",
-      "Voice & Video Call Habits",
-      "Social Media Platforms",
-      "Email Communication",
-      "Messaging App Preferences",
-      "Video Streaming Habits",
-      "SMS Usage Trends",
-      "Phone Call Duration",
-      "Group Chat Participation",
-      "Digital Communication"
-    ]
-  };
-
-  const generateSurveyQuestions = (surveyTitle) => [
-    {
-      id: "q1",
-      question: `What is your primary experience with ${surveyTitle.toLowerCase()}?`,
-      options: ["Excellent", "Good", "Average", "Poor", "Very Poor"]
-    },
-    {
-      id: "q2",
-      question: `How often do you engage with ${surveyTitle.toLowerCase()}?`,
-      options: ["Daily", "Weekly", "Monthly", "Rarely", "Never"]
-    },
-    {
-      id: "q3",
-      question: `How satisfied are you with ${surveyTitle.toLowerCase()}?`,
-      options: ["Very Satisfied", "Satisfied", "Neutral", "Dissatisfied", "Very Dissatisfied"]
-    },
-    {
-      id: "q4",
-      question: `Would you recommend ${surveyTitle.toLowerCase()} to a friend?`,
-      options: ["Yes", "No", "Maybe"]
-    },
-    {
-      id: "q5",
-      question: `How much time do you spend on ${surveyTitle.toLowerCase()} daily?`,
-      options: ["< 30 min", "30-60 min", "1-2 hrs", "2-4 hrs", "> 4 hrs"]
-    },
-    {
-      id: "q6",
-      question: `What is your primary reason for using ${surveyTitle.toLowerCase()}?`,
-      options: ["Convenience", "Cost", "Quality", "Social", "Other"]
-    },
-    {
-      id: "q7",
-      question: `How has ${surveyTitle.toLowerCase()} improved your daily life?`,
-      options: ["Significantly", "Moderately", "Slightly", "Not at all", "Made it worse"]
-    },
-    {
-      id: "q8",
-      question: `Which feature of ${surveyTitle.toLowerCase()} do you use most?`,
-      options: ["Feature A", "Feature B", "Feature C", "Feature D", "All of them"]
-    },
-    {
-      id: "q9",
-      question: `How easy is ${surveyTitle.toLowerCase()} to use?`,
-      options: ["Very Easy", "Easy", "Neutral", "Difficult", "Very Difficult"]
-    },
-    {
-      id: "q10",
-      question: `Would you pay for a premium version of ${surveyTitle.toLowerCase()}?`,
-      options: ["Definitely", "Maybe", "Not sure", "Probably not", "Definitely not"]
-    }
-  ];
-
-  const HARDCODED_SURVEYS = (() => {
-    const surveys = [];
-    let counter = 1;
-    Object.entries(SURVEY_TITLES_BY_CATEGORY).forEach(([category, titles]) => {
-      titles.forEach(title => {
-        surveys.push({
-          _id: `survey-${String(counter).padStart(3, "0")}`,
-          title,
-          category,
-          earnings: SURVEY_EARNINGS,
-          estimatedTime: "5-10 min",
-          totalQuestions: 10,
-          questions: generateSurveyQuestions(title),
-          isCompleted: false,
-        });
-        counter++;
-      });
-    });
-    return surveys;
-  })();
+// Surveys come from the single canonical list in src/data/surveys.js.
+// This file used to hold a second copy of the titles plus its own question
+// generator that produced identical questions for every survey.
+const HARDCODED_SURVEYS = getHardcodedSurveys();
 
   export default function Dashboard() {
   const { format } = useCurrency();
