@@ -22,6 +22,7 @@ import LoginFeePayment from "./pages/LoginFeePayment";
 import OnboardingSurvey from "./pages/OnboardingSurvey";
 import ChatWazunguDashboard from "./pages/ChatWazunguDashboard";
 import MultiFunctionDashboard from "./pages/MultiFunctionDashboard";
+import LandingBanner from "./pages/LandingBanner";
 
 /* ================= ADMIN ================= */
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -133,8 +134,9 @@ export default function App() {
     <BrowserRouter>
       <Toaster position="top-center" reverseOrder={false} />
       <Routes>
-        {/* ENTRY - Redirect directly to Auth page (no landing banner) */}
-        <Route path="/" element={<Navigate to="/auth?mode=register" replace />} />
+        {/* ENTRY — earning banner. Every visitor lands here first;
+            tapping anywhere goes to /auth?mode=register. */}
+        <Route path="/" element={<LandingBanner />} />
 
         {/* USER AUTH */}
         <Route path="/auth" element={<AuthRedirect />} />
