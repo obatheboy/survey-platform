@@ -895,13 +895,18 @@ const load = async () => {
   // Reminder notification for unactivated plans
   useEffect(() => {
     if (!user || reminderShown) return;
+
+    // The activation fee is a single one-time payment. Anyone who has
+    // activated has already paid it, so there is nothing left to remind them
+    // about. This used to nag activated users to go pay again after 8s.
     const allCompleted = user.all_plans_completed === true;
     if (allCompleted) return;
     const hasAnyActivated = Object.values(plans).some(p => p.is_activated);
-    if (!hasAnyActivated) return;
+    if (hasAnyActivated) return;
+
     const timer = setTimeout(() => {
       setFullScreenNotification({
-        message: `You have ${getRemainingPlansCount()} plan(s) remaining to activate. Complete them to unlock withdrawals and start earning your full potential!`,
+        message: "Your account is not active yet. Complete the one-time activation fee to start earning from surveys.",
         redirect: "/activate",
         goDashboard: false,
       });
@@ -909,17 +914,6 @@ const load = async () => {
     }, 8000);
     return () => clearTimeout(timer);
   }, [user, plans, reminderShown]);
-
-  const getRemainingPlansCount = () => {
-    if (!user) return 0;
-    const remaining = [];
-    ['REGULAR', 'VIP', 'VVIP'].forEach(plan => {
-      const isPaid = user.plans_paid?.[plan] || user[`${plan.toLowerCase()}_paid`];
-      const isActivated = plans[plan]?.is_activated;
-      if (!isPaid && !isActivated) remaining.push(plan);
-    });
-    return remaining.length;
-  };
   
   // Theme toggle removed - light mode only
 
@@ -1366,7 +1360,7 @@ const load = async () => {
                   }}
                 >
                   <span className="btn-icon" style={{ fontSize: '14px' }}>✅</span>
-                  ALL PLANS COMPLETE - WITHDRAW READY
+                  ACCOUNT ACTIVATED - START EARNING
                   <span style={{ fontSize: '12px', marginLeft: '2px' }}>🎉</span>
                   </button>
                 );
@@ -1377,28 +1371,27 @@ const load = async () => {
                     disabled
                     className="activate-btn-pulse"
                   style={{
-                    background: 'linear-gradient(135deg, #ff7a7a 0%, #ff6b6b 50%, #d97706 100%)',
+                    background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 50%, #047857 100%)',
                     border: '2px solid rgba(255,255,255,0.4)',
                     borderRadius: '20px',
                     padding: '6px 14px',
                     color: 'white',
                     fontWeight: '700',
                     fontSize: '11px',
-                    cursor: 'not-allowed',
-                    boxShadow: '0 4px 16px rgba(255, 122, 122, 0.4), 0 0 24px rgba(255, 107, 107, 0.25)',
+                    cursor: 'default',
+                    boxShadow: '0 4px 16px rgba(6, 182, 212, 0.4), 0 0 24px rgba(5, 150, 105, 0.25)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '6px',
                     whiteSpace: 'nowrap',
                     textTransform: 'uppercase',
-                    letterSpacing: '0.3px',
-                    opacity: 0.9
+                    letterSpacing: '0.3px'
                   }}
                 >
-                  <span className="btn-icon" style={{ fontSize: '14px' }}>⏳</span>
-                  COMPLETE REMAINING PLANS
-                  <span style={{ fontSize: '12px', marginLeft: '2px' }}>🔓</span>
+                  <span className="btn-icon" style={{ fontSize: '14px' }}>📝</span>
+                  COMPLETE SURVEYS TO EARN
+                  <span style={{ fontSize: '12px', marginLeft: '2px' }}>💰</span>
                   </button>
                 );
               }
