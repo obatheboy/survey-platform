@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api, { surveyApi } from "../api/api";
 import { useCurrency } from "../contexts/CurrencyContext.jsx";
+import { SURVEY_EARNINGS } from "../constants/fees";
 import "./Surveys.css";
 
 const CATEGORY_ICONS = {
@@ -75,7 +76,7 @@ export default function Surveys() {
     <div className="surveys-container">
       <div className="surveys-header">
         <h1>Available Surveys</h1>
-        <p>Complete surveys to earn {format(450)} each</p>
+        <p>Complete surveys to earn {format(SURVEY_EARNINGS)} each</p>
       </div>
 
       {stats && (

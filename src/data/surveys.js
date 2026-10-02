@@ -1,6 +1,8 @@
 // ========================= surveys.js =========================
 // Shared hardcoded 60 surveys — always available, no API dependency
 
+import { SURVEY_EARNINGS } from "../constants/fees";
+
 export const SURVEY_TITLES_BY_CATEGORY = {
   "Daily Lifestyle": [
     "Morning Routine Habits",
@@ -258,7 +260,7 @@ export function getHardcodedSurveys() {
         _id: `survey-${String(id).padStart(3, "0")}`,
         title,
         category,
-        earnings: 450,
+        earnings: SURVEY_EARNINGS,
         estimatedTime: "5-10 min",
         totalQuestions: 10,
         questions: buildQuestions(idx, category, title),

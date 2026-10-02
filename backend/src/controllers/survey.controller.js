@@ -1,9 +1,9 @@
 const User = require("../models/User");
 const Survey = require("../models/Survey");
+const { SURVEY_EARNINGS } = require("../config/fees");
 
 const TOTAL_SURVEYS = 60;
 const DAILY_SURVEY_LIMIT = 5;
-const SURVEY_EARNINGS = 450;
 
 /* ===============================
    GET ALL SURVEYS
@@ -74,7 +74,7 @@ exports.getSurveyById = async (req, res) => {
 
 /* ===============================
    COMPLETE A SURVEY
-   Awards KES 450, enforces 5/day limit
+   Awards KES 75, enforces 5/day limit
 
    The 60 surveys are hardcoded on the client as `survey-001`..`survey-060`,
    so there is no matching Survey document to load. Earnings are credited to

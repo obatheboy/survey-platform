@@ -330,7 +330,7 @@ const userSchema = new mongoose.Schema({
     default: 0
   },
   // ============================================
-  // 🆕 SURVEY SYSTEM — 60 surveys, KES 450 each, 5/day limit
+  // 🆕 SURVEY SYSTEM — 60 surveys, KES 75 each, 5/day limit
   // ============================================
   // The 60 surveys are hardcoded client-side as `survey-001`..`survey-060`,
   // so this holds string ids, not Survey ObjectIds. Typing it as ObjectId

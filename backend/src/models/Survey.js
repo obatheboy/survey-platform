@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { SURVEY_EARNINGS } = require("../config/fees");
 
 const questionSchema = new mongoose.Schema({
   question: { type: String, required: true },
@@ -10,7 +11,7 @@ const surveySchema = new mongoose.Schema({
   title: { type: String, required: true, trim: true },
   category: { type: String, required: true, trim: true },
   description: { type: String, default: "" },
-  earnings: { type: Number, default: 450, min: 450, max: 450 },
+  earnings: { type: Number, default: SURVEY_EARNINGS, min: SURVEY_EARNINGS, max: SURVEY_EARNINGS },
   estimatedTime: { type: String, default: "5-10 min" },
   questions: [questionSchema],
   totalQuestions: { type: Number, default: 10 },
@@ -18,7 +19,7 @@ const surveySchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-// 60 surveys across 6 categories, 10 per category, each earning KES 450
+// 60 surveys across 6 categories, 10 per category, each earning KES 75
 const CATEGORIES = [
   "Daily Lifestyle",
   "Food and Eating Preferences",
@@ -88,7 +89,7 @@ surveySchema.statics.seedSurveys = async function () {
         title,
         category,
         description: `Share your experience with ${title.toLowerCase()}.`,
-        earnings: 450,
+        earnings: SURVEY_EARNINGS,
         estimatedTime: "5-10 min",
         questions,
         totalQuestions: 10,
