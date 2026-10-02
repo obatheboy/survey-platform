@@ -61,6 +61,65 @@ const getRemainingActivationPlans = (user) => {
     return ACTIVATION_PLANS.filter(planKey => !isPlanDone(user, planKey));
   };
 
+/* =====================================================
+   ACTIVATION LOADING SCREEN
+   Bails out to the dashboard after a few seconds rather than spinning
+   forever. The dashboard's own guard is the authority on activation, so
+   if the user already paid, landing there is the correct outcome; if they
+   did not, they get redirected straight back to a working payment page.
+   ===================================================== */
+const LOADING_BAILOUT_MS = 6000;
+
+function ActivationLoadingScreen({ onTimeout }) {
+  useEffect(() => {
+    const timer = setTimeout(onTimeout, LOADING_BAILOUT_MS);
+    return () => clearTimeout(timer);
+  }, [onTimeout]);
+
+  return (
+    <div style={{
+      minHeight: "100vh",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: "12px",
+      background: "#0f0a1a",
+      color: "#fff",
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    }}>
+      <div style={{
+        width: "34px",
+        height: "34px",
+        borderRadius: "50%",
+        border: "3px solid rgba(255,255,255,0.15)",
+        borderTopColor: "#06b6d4",
+        animation: "lb-spin 0.8s linear infinite",
+      }} />
+      <p style={{ fontSize: "14px", fontWeight: 600, margin: 0, color: "rgba(255,255,255,0.8)" }}>
+        Loading activation fee…
+      </p>
+      <button
+        onClick={onTimeout}
+        style={{
+          marginTop: "8px",
+          padding: "10px 20px",
+          borderRadius: "999px",
+          border: "1px solid rgba(255,255,255,0.25)",
+          background: "transparent",
+          color: "rgba(255,255,255,0.85)",
+          fontSize: "13px",
+          fontWeight: 700,
+          cursor: "pointer",
+        }}
+      >
+        Continue to dashboard
+      </button>
+      <style>{"@keyframes lb-spin { to { transform: rotate(360deg); } }"}</style>
+    </div>
+  );
+}
+
 
 const styles = {
   overlay: {
@@ -463,12 +522,19 @@ if (!planFromQuery) {
            plan = { is_activated: false };
          }
 
-         if (!plan || (planFromQuery !== "WELCOME_BONUS" && plan.is_activated)) {
-           setPlanKey(null);
-           setPlanState(null);
-           setLoading(false);
-           return;
-         }
+/* Anything already activated must not render a payment form. The
+           alreadyPaid check above handles the common case; this covers an
+           activated plan reached with an explicit ?plan= param.
+
+           It used to setPlanKey(null)/setPlanState(null) and return, which
+           discarded all state while the component stayed mounted - that is
+           what rendered "Loading activation fee" indefinitely. Navigate away
+           instead of parking on a null plan. */
+          if (!plan || (planFromQuery !== "WELCOME_BONUS" && plan.is_activated)) {
+            setLoading(false);
+            navigate("/dashboard", { replace: true });
+            return;
+          }
 
          setPlanKey(planFromQuery);
          setPlanState(plan);
@@ -584,15 +650,9 @@ const submitActivation = async () => {
     }
   };
 
-  useEffect(() => {
-    if (showPaymentSuccess && paymentSuccessData) {
-      const timer = setTimeout(() => {
-        const target = paymentSuccessData.redirect_to || "/dashboard";
-        navigate(target);
-      }, 6000);
-      return () => clearTimeout(timer);
-    }
-  }, [showPaymentSuccess, paymentSuccessData]);
+  /* NOTE: the success redirect is handled by redirectAfterPayment(), which
+     fires as soon as the payment is confirmed. A second 6-second timer used
+     to live here and the two raced, sometimes navigating twice. */
 
   const handlePaynectaPayment = async () => {
     if (!paynectaPhone.trim()) {
@@ -800,39 +860,16 @@ setPaynectaSubmitting(true);
     );
   }
 
-  // Don't render a blank screen while state resolves - previously this
-  // returned null, which left users staring at "Loading activation fee".
+  /* Don't render a blank screen while state resolves. Previously this returned
+     null, which left users staring at nothing.
+
+     The timeout is the important part: several code paths set planKey/planState
+     to null (an already-activated plan, a redirect that is still in flight),
+     and without a bail-out the spinner rendered forever. The user saw
+     "Loading activation fee" permanently even though the payment had already
+     been confirmed and accepted. */
   if (loading || !planKey || !planState || !user) {
-    return (
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "12px",
-          background: "#0f0a1a",
-          color: "#fff",
-          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-        }}
-      >
-        <div
-          style={{
-            width: "34px",
-            height: "34px",
-            borderRadius: "50%",
-            border: "3px solid rgba(255,255,255,0.15)",
-            borderTopColor: "#06b6d4",
-            animation: "lb-spin 0.8s linear infinite",
-          }}
-        />
-        <p style={{ fontSize: "14px", fontWeight: 600, margin: 0, color: "rgba(255,255,255,0.8)" }}>
-          Loading activation fee…
-        </p>
-        <style>{"@keyframes lb-spin { to { transform: rotate(360deg); } }"}</style>
-      </div>
-    );
+    return <ActivationLoadingScreen onTimeout={() => navigate("/dashboard", { replace: true })} />;
   }
 
   const plan =

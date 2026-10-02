@@ -3,7 +3,16 @@
  * Handles version checking, storage clearing, and cache busting
  */
 
-const APP_VERSION = '2.0.1';
+/**
+ * Must match APP_VERSION in src/main.jsx.
+ *
+ * These two both write the same `app_version` localStorage key on every boot.
+ * When they disagreed, main.jsx wrote its value, cache.js immediately read it
+ * as a version mismatch, and cleared ALL app storage - including the auth
+ * token - which logged the user out and bounced them back to the activation
+ * page on every single load. They must never drift apart again.
+ */
+const APP_VERSION = '2026-09-27-v4-fix-currency';
 const STORAGE_KEYS = {
   TOKEN: 'token',
   ADMIN_TOKEN: 'adminToken',
@@ -70,9 +79,22 @@ export function getCurrentVersion() {
 /**
  * Check if version mismatch exists
  */
+/* The stale legacy value that used to live here. When it is present, adopt the
+   current version WITHOUT wiping storage - existing users already carry it
+   from the mismatch bug, and wiping again would log them out a second time. */
+const LEGACY_APP_VERSIONS = ['2.0.1'];
+
 export function isVersionMismatch() {
-  const storedVersion = getStoredVersion();
-  return storedVersion !== APP_VERSION;
+  const storedVersion = localStorage.getItem(STORAGE_KEYS.APP_VERSION);
+  if (storedVersion !== APP_VERSION) {
+    // Legacy stale value: silently upgrade rather than clearing the session.
+    if (LEGACY_APP_VERSIONS.includes(storedVersion)) {
+      localStorage.setItem(STORAGE_KEYS.APP_VERSION, APP_VERSION);
+      return false;
+    }
+    return true;
+  }
+  return false;
 }
 
 /**
