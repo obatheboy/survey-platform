@@ -1,369 +1,167 @@
+import { Fragment } from "react";
+import { useNavigate } from "react-router-dom";
+import "./LandingBanner.css";
+
+/* =====================================================
+   💰 ENTRANCE BANNER — "How you can earn"
+   Shown at "/" for visitors who are not signed in.
+   Tapping anywhere (or START NOW) goes to /auth?mode=register.
+
+   Every figure below is taken from the live platform rules so the
+   claims stay verifiable:
+     - Surveys      : 60 topics, KES 450 each, max 5/day  -> KES 2,250/day
+     - Chat Wazungu : KES 500 per unlocked profile, 200 profiles
+     - Welcome bonus: KES 1,200 credited once at signup
+     - Withdrawal   : from KES 200 to M-Pesa (KE) / MTN+Airtel (UG)
+     - Activation   : KES 100
+   ===================================================== */
+
+const EARN_METHODS = [
+  {
+    id: "surveys",
+    icon: "📝",
+    title: "Complete Surveys",
+    text: "60 topics — Safaricom, Equity Bank, food, football and more. Answer a few questions, get paid instantly.",
+    tag: "KES 450 each",
+    accent: "#06b6d4",
+  },
+  {
+    id: "chat",
+    icon: "💬",
+    title: "Chat Wazungu",
+    text: "Unlock 200 profiles and chat with new people. Every profile you unlock pays you straight away.",
+    tag: "KES 500 / unlock",
+    accent: "#0DAA65",
+  },
+  {
+    id: "affiliate",
+    icon: "👥",
+    title: "Refer & Earn",
+    text: "Share your link with friends. Keep earning every time someone joins through you.",
+    tag: "Unlimited",
+    accent: "#ea580c",
+  },
+  {
+    id: "withdraw",
+    icon: "💰",
+    title: "Withdraw to M-Pesa",
+    text: "Cash out from KES 200 directly to your M-Pesa. MTN and Airtel supported in Uganda.",
+    tag: "From KES 200",
+    accent: "#7c3aed",
+  },
+];
+
+const PROOF = [
+  { value: "KES 450", label: "Per Survey" },
+  { value: "KES 2,250", label: "Per Day" },
+  { value: "KES 1,200", label: "Welcome Bonus" },
+];
+
 export default function LandingBanner() {
-  const handleStart = (e) => {
+  const navigate = useNavigate();
+
+  const goToRegister = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    window.location.href = "/auth?mode=register";
+    navigate("/auth?mode=register");
+  };
+
+  const onKeyDown = (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      navigate("/auth?mode=register");
+    }
   };
 
   return (
-    <div style={styles.page} onClick={handleStart}>
-      {/* Animated background orbs */}
-      <div style={styles.orb1}></div>
-      <div style={styles.orb2}></div>
-      <div style={styles.orb3}></div>
+    <div
+      className="lb-page"
+      onClick={goToRegister}
+      onKeyDown={onKeyDown}
+      role="button"
+      tabIndex={0}
+      aria-label="Start earning. Tap to register."
+    >
+      {/* Soft glow orbs */}
+      <div className="lb-orb lb-orb-1" aria-hidden="true" />
+      <div className="lb-orb lb-orb-2" aria-hidden="true" />
 
-      <div style={styles.content}>
-        {/* Trust badge */}
-        <div style={styles.trustBadge}>
-          <span style={styles.trustBadgeText}>🔒 Secure & Safe to Use</span>
+      <div className="lb-content">
+        {/* Welcome bonus badge */}
+        <div className="lb-badge">
+          <span className="lb-badge-text">🎁 KES 1,200 WELCOME BONUS</span>
         </div>
 
         {/* Logo */}
-        <div style={styles.logoContainer}>
-          <span style={styles.logoText}>CW</span>
+        <div className="lb-logo" aria-hidden="true">
+          <span className="lb-logo-text">CW</span>
         </div>
 
-        {/* Main headline */}
-        <h1 style={styles.headline}>
-          EASY APP
+        {/* Headline */}
+        <h1 className="lb-headline">
+          Turn Your Phone
           <br />
-          <span style={styles.headlineAccent}>Multiple Ways to Earn Using Your Smartphone</span>
+          <span className="lb-headline-accent">Into Real Cash</span>
         </h1>
+        <p className="lb-sub">4 simple ways to earn every single day</p>
 
-        {/* Earning options grid */}
-        <div style={styles.earnOptions}>
-          <div style={styles.earnOption}>
-            <span style={styles.earnOptionIcon}>📝</span>
-            <span style={styles.earnOptionText}>60 Survey Categories — Daily Lifestyle, Food, Football, Safaricom, Equity Bank, Communication & More. Complete easy survey and Earn</span>
-          </div>
-          <div style={styles.earnOption}>
-            <span style={styles.earnOptionIcon}>💬</span>
-            <span style={styles.earnOptionText}>Chat Wazungu — Chat with Foreigners and unlock various bonuses</span>
-          </div>
-          <div style={styles.earnOption}>
-            <span style={styles.earnOptionIcon}>👥</span>
-            <span style={styles.earnOptionText}>Affiliate Program — Earn endlessly by doing easy affiliate</span>
-          </div>
+        {/* How you can earn */}
+        <div className="lb-methods">
+          {EARN_METHODS.map((m, i) => (
+            <div
+              key={m.id}
+              className="lb-method"
+              style={{ animationDelay: `${0.12 + i * 0.09}s` }}
+            >
+              <span className="lb-method-icon" style={{ background: m.accent }}>
+                {m.icon}
+              </span>
+              <div className="lb-method-body">
+                <div className="lb-method-head">
+                  <span className="lb-method-title">{m.title}</span>
+                  <span className="lb-method-tag" style={{ color: m.accent }}>
+                    {m.tag}
+                  </span>
+                </div>
+                <span className="lb-method-text">{m.text}</span>
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* Small enticing caption */}
-        <p style={styles.subheadline}>
-          Join thousands of earners today. Complete surveys, chat with interesting profiles, and refer friends to earn. Fast payouts, secure platform.
-        </p>
-
-        {/* Stats row */}
-        <div style={styles.statsRow}>
-          <div style={styles.statCard}>
-            <span style={styles.statNumber}>🌍</span>
-            <span style={styles.statLabel}>500K+ Users</span>
-          </div>
-          <div style={styles.statDivider}></div>
-          <div style={styles.statCard}>
-            <span style={styles.statNumber}>⭐</span>
-            <span style={styles.statLabel}>Top Rated</span>
-          </div>
-          <div style={styles.statDivider}></div>
-          <div style={styles.statCard}>
-            <span style={styles.statNumber}>⚡</span>
-            <span style={styles.statLabel}>Instant Withdraw</span>
-          </div>
+        {/* Provable figures — replaces the old "500K+ Users" claim */}
+        <div className="lb-proof">
+          {PROOF.map((p, i) => (
+            <Fragment key={p.label}>
+              {i > 0 && <span className="lb-proof-divider" aria-hidden="true" />}
+              <div className="lb-proof-item">
+                <span className="lb-proof-value">{p.value}</span>
+                <span className="lb-proof-label">{p.label}</span>
+              </div>
+            </Fragment>
+          ))}
         </div>
 
-        {/* Benefits - compact */}
-        <div style={styles.benefits}>
-          <div style={styles.benefit}>
-            <span style={styles.benefitIcon}>⚡</span>
-            <span style={styles.benefitText}>Fast & Instant</span>
-          </div>
-          <div style={styles.benefit}>
-            <span style={styles.benefitIcon}>🔒</span>
-            <span style={styles.benefitText}>Secure & Trusted</span>
-          </div>
-          <div style={styles.benefit}>
-            <span style={styles.benefitIcon}>👥</span>
-            <span style={styles.benefitText}>Refer & Earn</span>
-          </div>
+        {/* Trust strip */}
+        <div className="lb-trust">
+          <span className="lb-trust-chip">🇰🇪 🇺🇬 Kenya & Uganda</span>
+          <span className="lb-trust-chip">🔒 Secure payments</span>
         </div>
 
-        {/* CTA - centered and bold */}
-        <div style={styles.ctaContainer}>
-          <button style={styles.ctaButton} onClick={handleStart}>
-            START NOW 🚀
-          </button>
-          <p style={styles.ctaNote}>
-            Free to join • Join 500K+ earners today
-          </p>
-        </div>
+        {/* CTA */}
+        <button
+          type="button"
+          className="lb-cta"
+          onClick={goToRegister}
+          aria-label="Start now and create your free account"
+        >
+          START NOW
+        </button>
+        <p className="lb-cta-note">Free to join • Takes under a minute</p>
 
         {/* Tap hint */}
-        <p style={styles.tapHint}>
-          👆 Tap anywhere to continue
-        </p>
+        <p className="lb-tap-hint">👆 Tap anywhere to register</p>
       </div>
-
     </div>
   );
 }
-
-const styles = {
-  page: {
-    width: "100%",
-    height: "100vh",
-    background: "linear-gradient(135deg, #0f0a1a 0%, #1a1128 50%, #0f0a1a 100%)",
-    cursor: "pointer",
-    position: "relative",
-    overflow: "hidden",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  },
-  orb1: {
-    position: "absolute",
-    top: "10%",
-    right: "-10%",
-    width: "300px",
-    height: "300px",
-    borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(124, 58, 237, 0.3) 0%, transparent 70%)",
-    animation: "float-orb 8s ease-in-out infinite",
-    pointerEvents: "none",
-  },
-  orb2: {
-    position: "absolute",
-    bottom: "20%",
-    left: "-10%",
-    width: "250px",
-    height: "250px",
-    borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(6, 182, 212, 0.25) 0%, transparent 70%)",
-    animation: "float-orb 10s ease-in-out infinite reverse",
-    pointerEvents: "none",
-  },
-  orb3: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: "400px",
-    height: "400px",
-    borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(255, 107, 107, 0.15) 0%, transparent 70%)",
-    animation: "float-orb 12s ease-in-out infinite",
-    pointerEvents: "none",
-  },
-  content: {
-    width: "100%",
-    maxWidth: "420px",
-    padding: "20px 18px 28px",
-    position: "relative",
-    zIndex: 2,
-    textAlign: "center",
-    animation: "fadeInUp 0.6s ease-out",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "100vh",
-  },
-  logoContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "56px",
-    height: "56px",
-    margin: "0 auto 16px",
-    background: "linear-gradient(135deg, #0DAA65 0%, #0A0A0A 100%)",
-    borderRadius: "16px",
-    boxShadow: "0 8px 32px rgba(13, 170, 101, 0.4)",
-  },
-  logoText: {
-    fontSize: "24px",
-    fontWeight: "900",
-    color: "white",
-    letterSpacing: "1px",
-  },
-  trustBadge: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "6px",
-    background: "rgba(13, 170, 101, 0.15)",
-    border: "1px solid rgba(13, 170, 101, 0.3)",
-    padding: "6px 16px",
-    borderRadius: "24px",
-    fontSize: "11px",
-    fontWeight: "700",
-    color: "#c4b5fd",
-    marginBottom: "10px",
-    backdropFilter: "blur(10px)",
-    letterSpacing: "0.3px",
-  },
-  trustBadgeText: {
-    background: "linear-gradient(90deg, #c4b5fd, #67e8f9)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-    backgroundClip: "text",
-  },
-  headline: {
-    fontSize: "30px",
-    fontWeight: "900",
-    color: "#fff",
-    lineHeight: "1.1",
-    marginBottom: "10px",
-    textShadow: "0 2px 12px rgba(0,0,0,0.4)",
-    letterSpacing: "-0.5px",
-  },
-  headlineAccent: {
-    background: "linear-gradient(90deg, #06b6d4, #7c3aed)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-    backgroundClip: "text",
-  },
-  earnOptions: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
-    marginBottom: "16px",
-    maxWidth: "380px",
-    marginLeft: "auto",
-    marginRight: "auto",
-  },
-  earnOption: {
-    display: "flex",
-    alignItems: "flex-start",
-    gap: "10px",
-    background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(13, 170, 101, 0.25)",
-    borderRadius: "12px",
-    padding: "12px 14px",
-    backdropFilter: "blur(6px)",
-    transition: "transform 0.2s, border-color 0.2s",
-  },
-  earnOptionIcon: {
-    fontSize: "22px",
-    flexShrink: 0,
-    filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))",
-  },
-  earnOptionText: {
-    fontSize: "13px",
-    fontWeight: "700",
-    color: "#fff",
-    lineHeight: "1.45",
-    textShadow: "0 1px 3px rgba(0,0,0,0.3)",
-  },
-  subheadline: {
-    fontSize: "13px",
-    color: "rgba(255,255,255,0.85)",
-    lineHeight: "1.5",
-    marginBottom: "18px",
-    maxWidth: "380px",
-    marginLeft: "auto",
-    marginRight: "auto",
-    textShadow: "0 1px 4px rgba(0,0,0,0.3)",
-    fontWeight: "500",
-  },
-  statsRow: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "6px",
-    marginBottom: "18px",
-    padding: "10px 8px",
-    background: "rgba(255,255,255,0.06)",
-    borderRadius: "16px",
-    backdropFilter: "blur(8px)",
-    border: "1px solid rgba(255,255,255,0.1)",
-  },
-  statCard: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "2px",
-    flex: 1,
-  },
-  statNumber: {
-    fontSize: "16px",
-    fontWeight: "800",
-    color: "#fff",
-    textShadow: "0 2px 8px rgba(0,0,0,0.3)",
-  },
-  statLabel: {
-    fontSize: "9px",
-    color: "rgba(255,255,255,0.7)",
-    fontWeight: "600",
-    textTransform: "uppercase",
-    letterSpacing: "0.3px",
-  },
-  statDivider: {
-    width: "1px",
-    height: "24px",
-    background: "rgba(255,255,255,0.12)",
-  },
-  benefits: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "8px",
-    marginBottom: "20px",
-    flexWrap: "wrap",
-  },
-  benefit: {
-    display: "flex",
-    alignItems: "center",
-    gap: "6px",
-    fontSize: "11px",
-    color: "#fff",
-    fontWeight: "600",
-    padding: "6px 12px",
-    background: "rgba(255,255,255,0.06)",
-    borderRadius: "12px",
-    border: "1px solid rgba(255,255,255,0.1)",
-    backdropFilter: "blur(4px)",
-  },
-  benefitIcon: {
-    fontSize: "14px",
-    flexShrink: 0,
-  },
-  benefitText: {
-    textShadow: "0 1px 3px rgba(0,0,0,0.2)",
-  },
-  ctaContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    textAlign: "center",
-    margin: "24px 0",
-    width: "100%",
-  },
-  ctaButton: {
-    background: "linear-gradient(135deg, #FFE66D 0%, #f59e0b 100%)",
-    color: "#0A0A0A",
-    border: "none",
-    borderRadius: "32px",
-    padding: "20px 64px",
-    fontSize: "20px",
-    fontWeight: "900",
-    cursor: "pointer",
-    boxShadow: "0 12px 40px rgba(255, 230, 109, 0.5)",
-    letterSpacing: "1.5px",
-    animation: "pulse-glow 3s ease-in-out infinite",
-    transition: "transform 0.2s",
-    display: "block",
-    margin: "0 auto",
-  },
-  ctaNote: {
-    marginTop: "10px",
-    fontSize: "12px",
-    color: "rgba(255,255,255,0.75)",
-    fontWeight: "600",
-    letterSpacing: "0.3px",
-  },
-  tapHint: {
-    marginTop: "12px",
-    fontSize: "11px",
-    color: "rgba(255,255,255,0.5)",
-    fontWeight: "600",
-    letterSpacing: "0.5px",
-    animation: "fadeInUp 1s ease-out 0.5s both",
-  },
-};
