@@ -180,9 +180,10 @@ export default function Auth() {
         setCtxCountry(regData.country || COUNTRIES.KENYA);
       }
 
-      // New account: onboarding first, then the activation gate sends the
-      // user to /activate to pay the one-time fee before the dashboard.
-      navigate("/onboarding", { replace: true });
+      // New accounts pay the one-time activation fee immediately, before
+      // onboarding. Onboarding is part of the app, so it must come after
+      // the gate rather than before it.
+      navigate("/activate", { replace: true });
     } catch (err) {
       let errorMessage;
       

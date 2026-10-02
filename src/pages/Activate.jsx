@@ -57,17 +57,9 @@ const isPlanDone = (user, planKey) => {
    return user?.plans_paid?.[planKey] === true || user?.plans?.[planKey]?.is_activated === true || user?.[`${planKey.toLowerCase()}_paid`] === true;
  };
 
- const getRemainingActivationPlans = (user) => {
-   return ACTIVATION_PLANS.filter(planKey => !isPlanDone(user, planKey));
- };
-
- const getNextActivationPlan = (user) => {
-   return getRemainingActivationPlans(user)[0] || null;
- };
-
- const getDashboardFocusUrl = (planKey) => {
-   return `/dashboard?focusPlan=${planKey}&highlightPlan=${planKey}`;
- };
+const getRemainingActivationPlans = (user) => {
+    return ACTIVATION_PLANS.filter(planKey => !isPlanDone(user, planKey));
+  };
 
 
 const styles = {
@@ -367,6 +359,23 @@ const [planKey, setPlanKey] = useState(null);
           }
 
          // Normal flow (not from withdraw)
+
+         // The activation fee is a one-time gate. Anyone who has already paid
+         // has no business on this page, so send them into the app regardless
+         // of which plan they arrived with. Mirrors hasPaidActivationFee() in
+         // src/App.jsx.
+         const alreadyPaid =
+           res.data.is_activated === true ||
+           res.data.account_activated === true ||
+           res.data.all_plans_completed === true ||
+           res.data.welcome_bonus_paid === true ||
+           Object.values(res.data.plans_paid || {}).some((v) => v === true);
+
+         if (alreadyPaid) {
+           navigate("/dashboard", { replace: true });
+           return;
+         }
+
          if (planFromQuery === "WELCOME_BONUS") {
            if (res.data.welcome_bonus_paid === true) {
              // Single-fee model: the account is active — go straight to surveys.
@@ -385,21 +394,20 @@ if (planFromQuery && ACTIVATION_PLANS.includes(planFromQuery)) {
             return;
           }
 
-         if (!planFromQuery) {
-           const nextPlan = getNextActivationPlan(res.data);
-           if (!nextPlan) {
-             navigate("/withdraw-form", { replace: true });
-             return;
-           }
-
-           const planData = res.data.plans?.[nextPlan];
-           if (planData?.completed === true || (planData?.surveys_completed || 0) >= 10) {
-             navigate(`/activate?plan=${nextPlan.toLowerCase()}`, { replace: true });
-           } else {
-             navigate(getDashboardFocusUrl(nextPlan), { replace: true });
-           }
-           return;
-         }
+if (!planFromQuery) {
+            // The activation fee is a plain one-time gate to the dashboard, so
+            // there is nothing to decide here: show the payment page. Previously
+            // this resolved a "next plan" and redirected to the dashboard or
+            // withdraw form, which are both gated - that bounced the user in a
+            // loop and left the page stuck on "Loading activation fee".
+            //
+            // Already-paid users are redirected out (handled above), so anyone
+            // still on this page has an outstanding fee.
+            setPlanKey("REGULAR");
+            setPlanState(res.data.plans?.REGULAR || { is_activated: false, completed: false, surveys_completed: 0 });
+            setLoading(false);
+            return;
+          }
 
          let plan;
          if (planFromQuery === "WELCOME_BONUS") {
@@ -753,7 +761,40 @@ setPaynectaSubmitting(true);
     );
   }
 
-  if (!planKey || !planState || !user) return null;
+  // Don't render a blank screen while state resolves - previously this
+  // returned null, which left users staring at "Loading activation fee".
+  if (loading || !planKey || !planState || !user) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "12px",
+          background: "#0f0a1a",
+          color: "#fff",
+          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        }}
+      >
+        <div
+          style={{
+            width: "34px",
+            height: "34px",
+            borderRadius: "50%",
+            border: "3px solid rgba(255,255,255,0.15)",
+            borderTopColor: "#06b6d4",
+            animation: "lb-spin 0.8s linear infinite",
+          }}
+        />
+        <p style={{ fontSize: "14px", fontWeight: 600, margin: 0, color: "rgba(255,255,255,0.8)" }}>
+          Loading activation fee…
+        </p>
+        <style>{"@keyframes lb-spin { to { transform: rotate(360deg); } }"}</style>
+      </div>
+    );
+  }
 
   const plan =
     planKey === "WELCOME_BONUS"
