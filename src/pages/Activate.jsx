@@ -281,25 +281,6 @@ const [planKey, setPlanKey] = useState(null);
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
   const [paymentSuccessData, setPaymentSuccessData] = useState(null);
   const pollRef = useRef(null);
-  const redirectTimerRef = useRef(null);
-
-  /* Once the activation fee is confirmed, take the user into the app.
-     Short delay so the success screen is visible before navigating.
-     Always use the server-provided redirect_to when present. */
-  const redirectAfterPayment = (redirectTo) => {
-    const target = redirectTo || "/dashboard";
-    if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
-    redirectTimerRef.current = setTimeout(() => {
-      navigate(target, { replace: true });
-    }, 2500);
-  };
-
-  // Clear any pending redirect if the page unmounts first
-  useEffect(() => {
-    return () => {
-      if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
-    };
-  }, []);
 
   const startPaymentPolling = (transactionRequestId, phone, targetPlanKey) => {
     let attempts = 0;
@@ -366,10 +347,6 @@ const [planKey, setPlanKey] = useState(null);
           setShowPaymentSuccess(true);
           if (confirmRes.data.user) setUser(prev => ({ ...prev, ...confirmRes.data.user }));
 
-          // Auto-enter the app once the fee is confirmed. Redirecting only
-          // on a button press left users sitting on a success screen that
-          // looked stuck.
-          redirectAfterPayment(confirmRes.data.redirect_to);
           return;
         }
 
@@ -650,9 +627,8 @@ const submitActivation = async () => {
     }
   };
 
-  /* NOTE: the success redirect is handled by redirectAfterPayment(), which
-     fires as soon as the payment is confirmed. A second 6-second timer used
-     to live here and the two raced, sometimes navigating twice. */
+  /* NOTE: the success popup's "Continue Now" button handles navigation
+     directly. No timer-based redirect is used here. */
 
   const handlePaynectaPayment = async () => {
     if (!paynectaPhone.trim()) {
@@ -1022,14 +998,13 @@ setPaynectaSubmitting(true);
 
             <button
               onClick={() => {
+                sessionStorage.setItem("justActivated", "1");
                 setShowPaymentSuccess(false);
-                if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
-                // Always go to dashboard after paying the activation fee
                 navigate("/dashboard", { replace: true });
               }}
-              style={{ 
-                ...styles.button, 
-                marginTop: "8px", 
+              style={{
+                ...styles.button,
+                marginTop: "8px",
                 background: "linear-gradient(135deg, #7c3aed, #5b21b6)",
                 boxShadow: "0 8px 25px rgba(124, 58, 237, 0.4)",
                 fontSize: "16px",

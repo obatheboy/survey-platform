@@ -171,6 +171,33 @@ const [show72HourAffiliatePrompt, setShow72HourAffiliatePrompt] = useState(false
   useEffect(() => {
     let alive = true;
 
+    // If the user just activated from the Activate page, render immediately
+    // with cached data instead of waiting for the /auth/me round-trip.
+    const justActivated = sessionStorage.getItem("justActivated");
+    if (justActivated) {
+      sessionStorage.removeItem("justActivated");
+      const cachedUser = localStorage.getItem("cachedUser");
+      if (cachedUser) {
+        try {
+          const parsedUser = JSON.parse(cachedUser);
+          setUser(parsedUser);
+          setPlans(parsedUser.plans || {});
+          setActivationRequests(parsedUser.activation_requests || []);
+          const completedCount = Object.keys(getCompletedSurveys()).length;
+          setStats({
+            totalEarned: parsedUser.total_earned || 0,
+            availableBalance: Math.max(0, parsedUser.total_earned || 0),
+            affiliateEarnings: parsedUser.referral_commission_earned || 0,
+            totalSurveysCompleted: completedCount,
+            totalWithdrawals: parsedUser.total_withdrawals || 0,
+          });
+          setLoading(false);
+        } catch {
+          // corrupted cache - fall through to normal load
+        }
+      }
+    }
+
   // Version check removed - handled globally in App.jsx via cache utility
   // This prevents duplicate reload loops
 
