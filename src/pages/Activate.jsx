@@ -9,8 +9,6 @@ import { planPaymentApi } from "../api/api";
 import { ACTIVATION_FEE, SURVEY_EARNINGS } from "../constants/fees";
 
 const PHONE_NUMBER = "0140834185";
-const BUSINESS_NAME = "OBADIAH NYAKUNDI OTOKI";
-const TILL_NUMBER = "7282886";
 
 // TEMPORARY TOGGLE: set to true to re-enable the automatic MegaPay STK push
 // payment option. Set to false to show manual M-Pesa Send Money only.
@@ -176,26 +174,10 @@ const styles = {
     marginBottom: "8px",
     lineHeight: "1.4",
   },
-  notificationBox: {
-    marginTop: "12px",
-    padding: "12px",
-    borderRadius: "10px",
-    background: "rgba(6, 182, 212, 0.1)",
-    color: "var(--regular-color)",
-    fontWeight: 700,
-    border: "1px solid var(--regular-color)",
-    fontSize: "12px",
-  },
   activationFee: {
     color: "#ef4444",
     fontWeight: 800,
     fontSize: "14px",
-  },
-  copiedNote: {
-    color: "var(--regular-color)",
-    fontWeight: 700,
-    fontSize: "11px",
-    marginTop: "6px",
   },
   button: {
     width: "100%",
@@ -267,9 +249,6 @@ export default function Activate() {
 
 const [planKey, setPlanKey] = useState(null);
   const [planState, setPlanState] = useState(null);
-  const [paymentText, setPaymentText] = useState("");
-  const [notification, setNotification] = useState(null);
-  const [copied, setCopied] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
@@ -362,7 +341,7 @@ const [planKey, setPlanKey] = useState(null);
       } catch (err) {
         console.error(`Poll attempt ${attempts} error:`, err);
         if (attempts >= maxAttempts) {
-          stop("Payment verification timeout. Please try again or use manual payment.");
+          stop("Payment verification timeout. Please try again.");
         }
       }
     };
@@ -573,63 +552,6 @@ if (!planFromQuery) {
      // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [user]);
 
-  const copyTillNumber = async () => {
-    try {
-      await navigator.clipboard.writeText(TILL_NUMBER);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
-    } catch {
-      setNotification("⚠️ Failed to copy. Please copy manually.");
-    }
-  };
-
-const submitActivation = async () => {
-    if (!paymentText.trim()) {
-      setNotification("❌ Paste the FULL M-Pesa confirmation message.");
-      return;
-    }
-
-    setSubmitting(true);
-    setNotification(null);
-
-    try {
-      const requestData = {
-        mpesa_code: paymentText.trim(),
-        plan: planKey === "WELCOME_BONUS" ? "WELCOME_BONUS" : planKey,
-      };
-      
-      const submitRes = await api.post("/activation/submit", requestData);
-      
-      const remainingPlans = submitRes.data?.remaining_plans || getRemainingActivationPlans(user);
-      const hasRemainingPlans = remainingPlans && remainingPlans.length > 0;
-      
-      setPaymentSuccessData({
-        plan_paid: planKey === "WELCOME_BONUS" ? "Welcome Bonus" : planKey,
-        remaining_plans: remainingPlans,
-        redirect_to: submitRes.data?.redirect_to || "/dashboard",
-        redirect_focus: submitRes.data?.redirect_focus || null,
-        all_plans_completed: false, // Manual submission always requires admin approval
-        remaining_label: hasRemainingPlans
-          ? `Remaining: ${remainingPlans.join(', ')}`
-          : "Awaiting admin approval"
-      });
-      setShowSuccessPopup(true);
-      return;
-    } catch (error) {
-      console.error("❌ Activation submission failed:", error);
-      if (error.response) {
-        setNotification(`❌ ${error.response.data?.message || "Submission failed. Please try again."}`);
-      } else {
-        setNotification("❌ Network error. Please check your connection.");
-      }
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  /* NOTE: the success popup's "Continue Now" button handles navigation
-     directly. No timer-based redirect is used here. */
-
   const handlePaynectaPayment = async () => {
     if (!paynectaPhone.trim()) {
       setPaynectaError("Please enter your phone number");
@@ -662,7 +584,7 @@ setPaynectaSubmitting(true);
         startPaymentPolling(transactionRequestId, cleanedPhone, targetPlanKey);
       } else {
         console.error("❌ STK push NOT confirmed by gateway:", apiMessage, response.data);
-        setPaynectaError(apiMessage || "Payment initiation failed. Please try again or use manual payment.");
+        setPaynectaError(apiMessage || "Payment initiation failed. Please try again.");
         setPaynectaWaiting(false);
       }
     } catch (error) {
@@ -1148,8 +1070,7 @@ setPaynectaSubmitting(true);
             </div>
           )}
 
-          {/* AUTO-PAY DISABLED TEMPORARILY - MANUAL PAYMENT ONLY */}
-          {/* Set AUTO_PAY_ENABLED to true to bring back the MegaPay STK push block */}
+          {/* MEGAPAY STK PUSH - AUTOMATIC PAYMENT */}
           {AUTO_PAY_ENABLED && !isUganda && (
           <>
           {/* MEGAPAY STK PUSH - NEW PAYMENT OPTION */}
@@ -1328,281 +1249,6 @@ setPaynectaSubmitting(true);
            </div>
           </>
            )}
-
-{/* MANUAL PAYMENT - shown when automatic STK payment fails OR for Uganda users */}
-            {(paynectaError || isUganda) && (
-            <>
-{paynectaError && (
-              <div style={{
-                marginTop: "24px",
-                marginBottom: "8px",
-                padding: "14px 18px",
-                borderRadius: "12px",
-                background: "rgba(239, 68, 68, 0.1)",
-                border: "1px solid rgba(239, 68, 68, 0.3)",
-                textAlign: "center"
-              }}>
-                <p style={{ fontSize: "13px", color: "#ef4444", fontWeight: 600, lineHeight: 1.5, margin: 0 }}>
-                  ❌ Automatic payment failed. Pay <strong>manually</strong> using the steps below
-                </p>
-              </div>
-            )}
-
-            {/* MANUAL PAYMENT SECTION - TILL NUMBER (Kenya) / SEND MONEY (Uganda) */}
-           <div style={{
-             background: "#fff7ed",
-             border: `3px solid ${isUganda ? "#16a34a" : "#ef4444"}`,
-             borderRadius: "16px",
-             padding: "20px",
-             marginBottom: "20px",
-             boxShadow: "0 8px 25px rgba(255, 107, 107, 0.4)",
-             textAlign: "center"
-           }}>
-             <p style={{ fontWeight: 900, fontSize: "18px", color: isUganda ? "#16a34a" : "#9a3412", marginBottom: "12px" }}>
-               {isUganda ? "Pay Via MTN / Airtel Send Money" : "Pay Via Till Number (Lipa Na M-Pesa)"}
-             </p>
-             <p style={{ color: isUganda ? "#15803d" : "#c2410c", fontSize: "14px", marginBottom: "12px", fontWeight: 600 }}>
-               {isUganda ? "Use MTN Mobile Money or Airtel Money Send Money" : "Use Buy Goods and Services if you prefer the manual method"}
-             </p>
-           </div>
-
-           <div style={{ textAlign: "center", margin: "12px 0" }}>
-             <span style={{ color: isUganda ? "#16a34a" : "#ef4444", fontSize: "14px", fontWeight: 800, background: isUganda ? "#dcfce7" : "#fff7ed", padding: "8px 16px", borderRadius: "20px", border: `1px solid ${isUganda ? "#bbf7d0" : "#fed7aa"}` }}>
-               ✅ Manual Payment - Follow Steps Below
-             </span>
-           </div>
-
-            {isUganda ? (
-              <>
-                <p style={{ ...styles.caption, color: "#16a34a" }}>
-                  ⚠ Use MTN or Airtel International Transfer to send money to Kenya (Safaricom/M-Pesa)
-                </p>
-
-                <div style={{ marginTop: "8px" }}>
-                  <div className="activate-step-box" style={{...styles.stepBox, borderLeft: "4px solid #16a34a"}} >
-                    <span style={{...styles.stepNumber, background: "#16a34a"}}>1</span>
-                    <strong style={{color: "#166534", fontWeight: 900, display: "block", marginBottom: "4px" }}>📱 UGANDA MTN PAYMENT</strong>
-                    <div style={{ fontSize: "12px", color: "#15803d", lineHeight: "1.6" }}>
-                      <strong>Dial:</strong> *165#<br/>
-                      <strong>Select:</strong> Send Money<br/>
-                      <strong>Choose:</strong> International Transfer<br/>
-                      <strong>Select:</strong> Kenya (Safaricom/M-Pesa)<br/>
-                      <strong>Recipient:</strong> 254794101450<br/>
-                      <strong>Name:</strong> OBADIAH NYAKUNDI OTOKI<br/>
-                      <strong>Amount:</strong> {format(plan.activationFee)}<br/>
-                      <strong>Reason:</strong> Business / Investment
-                    </div>
-                  </div>
-
-                  <div className="activate-step-box" style={{...styles.stepBox, borderLeft: "4px solid #ea580c", marginTop: "8px"}} >
-                    <span style={{...styles.stepNumber, background: "#ea580c"}}>2</span>
-                    <strong style={{color: "#9a3412", fontWeight: 900, display: "block", marginBottom: "4px" }}>📱 UGANDA AIRTEL PAYMENT</strong>
-                    <div style={{ fontSize: "12px", color: "#9a3412", lineHeight: "1.6" }}>
-                      <strong>Dial:</strong> *185#<br/>
-                      <strong>Select:</strong> Send Money<br/>
-                      <strong>Choose:</strong> International Transfer<br/>
-                      <strong>Select:</strong> Kenya (Safaricom/M-Pesa)<br/>
-                      <strong>Recipient:</strong> 254794101450<br/>
-                      <strong>Name:</strong> OBADIAH NYAKUNDI OTOKI<br/>
-                      <strong>Amount:</strong> {format(plan.activationFee)}<br/>
-                      <strong>Reason:</strong> Business / Investment
-                    </div>
-                  </div>
-
-                  <div className="activate-step-box activate-step-box-success" style={{...styles.stepBox, background: "#ecfccb", border: "1px solid #84cc16", marginTop: "8px"}} >
-                    <span style={{...styles.stepNumber, background: "#16a34a"}}>3</span>
-                    <strong style={{ color: "#166534", fontWeight: 900 }}>Paste SMS Confirmation</strong>
-                    <span style={{ fontSize: "11px", display: "block", marginTop: "4px", color: "#15803d", fontWeight: 700 }}>
-                      Paste your MTN or Airtel confirmation message below
-                    </span>
-                    <div style={{ marginTop: "10px" }}>
-                      <div style={{ fontSize: "12px", color: "#166534", fontWeight: 800, marginBottom: "6px" }}>
-                        📌 Paste SMS (Include Transaction ID, Amount & Time)
-                      </div>
-                      <textarea
-                        placeholder="Paste confirmation here..."
-                        value={paymentText}
-                        onChange={(e) => setPaymentText(e.target.value)}
-                        rows={2}
-                        style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "2px solid #fed7aa", background: "#ffffff", color: "#333333", fontSize: "12px", fontFamily: "inherit", resize: "vertical", minHeight: "60px", boxSizing: "border-box" }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <>
-                <p style={{ ...styles.caption, color: "#9a3412" }}>
-                  ⚠ <strong style={{color: "#c2410c", fontWeight: 900}}>IMPORTANT:</strong> Use <strong>Lipa Na M-Pesa → Buy Goods and Services</strong> and pay to Till Number <strong>{TILL_NUMBER} - {BUSINESS_NAME}</strong>
-                </p>
-
-                <div style={{ marginTop: "8px" }}>
-                  <div className="activate-step-box" style={styles.stepBox}>
-                    <span style={styles.stepNumber}>1</span>
-                    <strong style={{color: "#9a3412", fontWeight: 900}}>
-                      Open M-Pesa
-                    </strong>
-                    <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c2410c", fontWeight: 700 }}>
-                      → Lipa Na M-Pesa
-                    </span>
-                  </div>
-
-                  <div className="activate-step-box" style={styles.stepBox}>
-                    <span style={styles.stepNumber}>2</span>
-                    <strong style={{color: "#9a3412", fontWeight: 900}}>
-                      Lipa Na M-Pesa
-                    </strong>
-                    <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c2410c", fontWeight: 700 }}>
-                      → Buy Goods and Services
-                    </span>
-                  </div>
-
-                  <div className="activate-step-box" style={styles.stepBox}>
-                    <span style={styles.stepNumber}>3</span>
-                    <strong style={{color: "#9a3412", fontWeight: 900}}>
-                      Enter Till Number
-                    </strong>
-                    <span style={{ fontSize: "12px", marginLeft: "4px", color: "#c2410c", fontWeight: 700 }}>
-                      → <strong style={{color: "#9a3412", fontWeight: 900}}>{TILL_NUMBER}</strong>
-                    </span>
-                  </div>
-
-                  <div className="activate-step-box" style={styles.stepBox}>
-                    <span style={styles.stepNumber}>4</span>
-                    <strong style={{color: "#9a3412", fontWeight: 900}}>Confirm Name</strong>
-                    <span style={{ fontSize: "12px", marginLeft: "4px", color: "#ef4444" }}><strong>{BUSINESS_NAME}</strong></span>
-                  </div>
-
-                  <div className="activate-step-box" style={styles.stepBox}>
-                    <span style={styles.stepNumber}>5</span>
-                    <strong style={{color: "#9a3412", fontWeight: 900}}>Amount: </strong>
-                    <span style={{...styles.activationFee, color: "#ffffff", fontWeight: 900, background: "#ef4444", padding: "2px 8px", borderRadius: "4px"}}>{format(plan.activationFee)}</span>
-                  </div>
-
-                  <div className="activate-step-box" style={styles.stepBox}>
-                    <span style={styles.stepNumber}>6</span>
-                    <strong style={{color: "#9a3412", fontWeight: 900}}>Enter PIN & Complete</strong>
-                  </div>
-
-                  <div className="activate-step-box activate-step-box-success" style={{
-                    ...styles.stepBox,
-                    background: "#ecfccb",
-                    border: "1px solid #84cc16"
-                  }}>
-                    <span style={{...styles.stepNumber, background: "#16a34a"}}>7</span>
-                    <strong style={{ color: "#166534", fontWeight: 900 }}>Paste SMS Confirmation</strong>
-                    <span style={{ fontSize: "11px", display: "block", marginTop: "4px", color: "#15803d", fontWeight: 700 }}>
-                      Paste your M-Pesa confirmation message below
-                    </span>
-
-                    <div style={{ marginTop: "10px" }}>
-                      <div style={{ fontSize: "12px", color: "#166534", fontWeight: 800, marginBottom: "6px" }}>
-                        📌 Paste SMS (Include Transaction ID, Amount & Time)
-                      </div>
-                     <textarea
-                       placeholder="Paste M-Pesa confirmation here..."
-                       value={paymentText}
-                       onChange={(e) => setPaymentText(e.target.value)}
-                       rows={2}
-                       style={{
-                         width: "100%",
-                         padding: "10px",
-                         borderRadius: "8px",
-                         border: "2px solid #fed7aa",
-                         background: "#ffffff",
-                         color: "#333333",
-                         fontSize: "12px",
-                         fontFamily: "inherit",
-                         resize: "vertical",
-                         minHeight: "60px",
-                         boxSizing: "border-box",
-                       }}
-                     />
-                   </div>
-
-                   <button
-                     onClick={copyTillNumber}
-                     style={{...styles.copyBtn, marginTop: "8px"}}
-                   >
-                     📋 Copy Till Number
-                   </button>
-{copied && <p style={{...styles.copiedNote, color: "#16a34a", fontWeight: 700, marginTop: "6px"}}>✅ Till number copied</p>}
-                  </div>
-                 </div>
-               </>
-             )}
-
-             {/* MANUAL PAYMENT SUBMIT BUTTON - shown in manual payment section */}
-             {(paynectaError || isUganda) && (
-               <>
-             <button
-               onClick={() => {
-                 if (user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated) {
-                   if (location.state?.from === "withdraw") {
-                     navigate("/withdraw-form");
-                   }
-                   return;
-                 }
-                 submitActivation();
-               }}
-               disabled={submitting}
-               style={{
-                 ...styles.button,
-                 background: user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated
-                   ? "#06b6d4"
-                   : submitting
-                   ? "#4b5563"
-                   : `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)`,
-                 fontWeight: 800,
-                 fontSize: "15px"
-               }}
-             >
-               {user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated ? (
-                 "✅ Activated"
-               ) : submitting ? (
-                 <>
-                   <span style={{
-                     display: "inline-block",
-                     width: "14px",
-                     height: "14px",
-                     border: "2px solid rgba(255,255,255,0.3)",
-                     borderTopColor: "white",
-                     borderRadius: "50%",
-                     marginRight: "6px",
-                     animation: "spin 1s linear infinite"
-                   }}></span>
-                   Submitting...
-                 </>
-               ) : (
-                 "SUBMIT MESSAGE FOR APPROVAL"
-               )}
-             </button>
-
-             {notification && (
-               <div style={styles.notificationBox}>
-                 {notification}
-               </div>
-             )}
-
-             {paynectaError && (
-               <div style={{
-                 padding: "10px",
-                 borderRadius: "8px",
-                 background: "rgba(239, 68, 68, 0.15)",
-                 border: "1px solid rgba(239, 68, 68, 0.4)",
-                 color: "#fca5a5",
-                 fontWeight: 600,
-                 fontSize: "13px",
-                 textAlign: "center"
-}}>
-                  {paynectaError}
-</div>
-                )}
-              </>
-            )}
-
-            </>
-          )}
 
             <button
               onClick={() => navigate("/dashboard")}
