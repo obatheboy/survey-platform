@@ -942,24 +942,24 @@ setPaynectaSubmitting(true);
 
       <div className="activate-page" style={styles.page}>
         <div style={{ ...styles.card, boxShadow: `0 0 20px ${plan.glow}` }}>
-          <h2 style={{ textAlign: "center", color: plan.color, fontSize: "18px", marginBottom: "4px", fontWeight: 700 }}>
+          <h2 style={{ textAlign: "center", color: plan.color, fontSize: "16px", marginBottom: "2px", fontWeight: 700 }}>
             🔓 Account Activation
           </h2>
 
           <div className="activate-top-caption" style={{
-            marginTop: "4px",
-            marginBottom: "16px",
-            padding: "16px 12px",
-            borderRadius: "14px",
+            marginTop: "2px",
+            marginBottom: "10px",
+            padding: "12px 10px",
+            borderRadius: "10px",
             background: "#1a1128",
             border: "1px solid #251a3a",
             textAlign: "center"
           }}>
-            <div style={{ fontSize: "21px", fontWeight: 900, color: "#ffffff", marginBottom: "4px", textShadow: "0 2px 4px rgba(0,0,0,0.3)", lineHeight: 1.25 }}>
+            <div style={{ fontSize: "18px", fontWeight: 900, color: "#ffffff", marginBottom: "2px", textShadow: "0 2px 4px rgba(0,0,0,0.3)", lineHeight: 1.25 }}>
               🎉 ACTIVATE YOUR ACCOUNT NOW! 🎉
             </div>
 
-            <div style={{ fontSize: "15px", fontWeight: 700, color: "#e2e8f0", marginBottom: "12px" }}>
+            <div style={{ fontSize: "13px", fontWeight: 700, color: "#e2e8f0", marginBottom: "8px" }}>
               and get
             </div>
 
@@ -967,30 +967,30 @@ setPaynectaSubmitting(true);
             <div style={{
               display: "flex",
               flexDirection: "column",
-              gap: "8px",
+              gap: "6px",
               alignItems: "center",
-              marginBottom: "16px"
+              marginBottom: "10px"
             }}>
               <div style={{
                 display: "inline-flex",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: "8px",
+                gap: "6px",
                 flexWrap: "wrap",
-                padding: "10px 18px",
+                padding: "8px 14px",
                 borderRadius: "40px",
                 background: "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
                 boxShadow: "0 4px 16px rgba(6, 182, 212, 0.45)"
               }}>
-                <span style={{ fontSize: "24px", fontWeight: 900, color: "#ffffff", textShadow: "0 2px 6px rgba(0,0,0,0.25)" }}>
+                <span style={{ fontSize: "20px", fontWeight: 900, color: "#ffffff", textShadow: "0 2px 6px rgba(0,0,0,0.25)" }}>
                   {format(1200)}
                 </span>
-                <span style={{ fontSize: "16px", fontWeight: 900, color: "#ffffff" }}>
+                <span style={{ fontSize: "14px", fontWeight: 900, color: "#ffffff" }}>
                   WELCOME BONUS
                 </span>
               </div>
 
-              <div style={{ fontSize: "15px", fontWeight: 800, color: "#22d3ee" }}>
+              <div style={{ fontSize: "13px", fontWeight: 800, color: "#22d3ee" }}>
                 +
               </div>
 
@@ -998,17 +998,17 @@ setPaynectaSubmitting(true);
                 display: "inline-flex",
                 flexDirection: "column",
                 alignItems: "center",
-                gap: "4px",
+                gap: "2px",
                 flexWrap: "wrap",
-                padding: "10px 22px",
+                padding: "8px 14px",
                 borderRadius: "40px",
                 background: "linear-gradient(135deg, #0DAA65 0%, #1a8d55 100%)",
                 boxShadow: "0 4px 16px rgba(13, 170, 101, 0.45)"
               }}>
-                <span style={{ fontSize: "16px", fontWeight: 900, color: "#ffffff" }}>
+                <span style={{ fontSize: "14px", fontWeight: 900, color: "#ffffff" }}>
                   FREE DAILY SURVEYS
                 </span>
-                <span style={{ fontSize: "12px", fontWeight: 700, color: "#d1fae5" }}>
+                <span style={{ fontSize: "11px", fontWeight: 700, color: "#d1fae5" }}>
                   Plus {format(SURVEY_EARNINGS)} for every survey you complete.
                 </span>
               </div>
@@ -1017,24 +1017,24 @@ setPaynectaSubmitting(true);
             {/* What they are paying for - stated plainly so there is no
                 ambiguity about what the KES 100 actually unlocks. */}
             <div style={{
-              fontSize: "15px !important",
+              fontSize: "13px !important",
               fontWeight: "700 !important",
               color: "#1a1128 !important",
               background: "#fef3c7 !important",
-              padding: "12px 20px !important",
-              borderRadius: "14px !important",
+              padding: "10px 14px !important",
+              borderRadius: "10px !important",
               border: "2px solid #ff6b6b !important",
               display: "block !important",
-              lineHeight: 1.5,
+              lineHeight: 1.4,
               boxShadow: "0 4px 12px rgba(255, 107, 107, 0.3) !important"
             }}>
               ⚡ Pay{" "}
               <span style={{
                 color: "#dc2626 !important",
                 fontWeight: "900 !important",
-                fontSize: "22px !important",
+                fontSize: "18px !important",
                 background: "#ffe0e0 !important",
-                padding: "2px 10px !important",
+                padding: "2px 8px !important",
                 borderRadius: "8px !important",
                 border: "2px solid #ef4444 !important",
                 marginLeft: "2px",
@@ -1044,10 +1044,10 @@ setPaynectaSubmitting(true);
               </span>{" "}
               one-time fee to activate your account and start earning.
               <div style={{
-                fontSize: "12px",
+                fontSize: "11px",
                 fontWeight: "700",
                 color: "#78350f",
-                marginTop: "6px"
+                marginTop: "4px"
               }}>
                 This is a one-time payment. You pay it only once.
               </div>
@@ -1077,9 +1077,9 @@ setPaynectaSubmitting(true);
           <div style={{
             background: "linear-gradient(135deg, #0c4a6e 0%, #5b21b6 50%, #7c3aed 100%)",
             border: "3px solid #a78bfa",
-            borderRadius: "20px",
-            padding: "20px 18px",
-            marginBottom: "32px",
+            borderRadius: "14px",
+            padding: "14px 12px",
+            marginBottom: "20px",
             boxShadow: "0 0 40px rgba(124, 58, 237, 0.6), 0 0 80px rgba(124, 58, 237, 0.4), inset 0 1px 0 rgba(255,255,255,0.15)",
             textAlign: "center",
             position: "relative",
@@ -1097,42 +1097,42 @@ setPaynectaSubmitting(true);
               animation: "shimmer 3s ease-in-out infinite"
             }}>            </div>
 
-            <div style={{ fontSize: "38px", marginBottom: "8px", animation: "bounce 2s infinite" }}>
+            <div style={{ fontSize: "30px", marginBottom: "4px", animation: "bounce 2s infinite" }}>
               ⚡📱
             </div>
 
-            <p style={{ fontWeight: 900, fontSize: "22px", color: "#ffffff", marginBottom: "8px", textShadow: "0 2px 8px rgba(0,0,0,0.5)", letterSpacing: "1px" }}>
+            <p style={{ fontWeight: 900, fontSize: "18px", color: "#ffffff", marginBottom: "6px", textShadow: "0 2px 8px rgba(0,0,0,0.5)", letterSpacing: "1px" }}>
               AUTOMATIC ACTIVATION
             </p>
 
-            <p style={{ color: "#e0f2fe", fontSize: "14px", marginBottom: "16px", fontWeight: 600, lineHeight: 1.5 }}>
+            <p style={{ color: "#e0f2fe", fontSize: "13px", marginBottom: "10px", fontWeight: 600, lineHeight: 1.4 }}>
               📲 Pay directly from your <strong>M-Pesa</strong> — enter your number and tap the button below, then enter your M-Pesa PIN to complete payment instantly
             </p>
 
             <div style={{
               background: "rgba(255, 255, 255, 0.1)",
               borderRadius: "10px",
-              padding: "10px 12px",
-              marginBottom: "12px",
+              padding: "8px 10px",
+              marginBottom: "8px",
               border: "1px solid rgba(255, 255, 255, 0.2)",
               backdropFilter: "blur(4px)"
             }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "12px" }}>
                 <span style={{ color: "#e0f2fe", fontWeight: 600 }}>💰Amount to Pay is:</span>
-                <span style={{ color: "#ff7a7a", fontWeight: 900, fontSize: "18px", textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
-{format(plan.activationFee)}
+                <span style={{ color: "#ff7a7a", fontWeight: 900, fontSize: "16px", textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
+                  {format(plan.activationFee)}
                 </span>
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px", marginTop: "4px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "12px", marginTop: "4px" }}>
                 <span style={{ color: "#e0f2fe", fontWeight: 600 }}>✅After paying you get:</span>
-                <span style={{ color: "#4ade80", fontWeight: 900, fontSize: "17px" }}>
+                <span style={{ color: "#4ade80", fontWeight: 900, fontSize: "15px" }}>
                   {planKey === "WELCOME_BONUS" ? `${format(plan.total)} bonus + surveys` : "Surveys unlocked"}
                 </span>
               </div>
             </div>
 
-            <div style={{ marginBottom: "10px", textAlign: "left" }}>
-              <label style={{ ...styles.caption, color: "#c4b5fd", fontWeight: "800", fontSize: "13px", marginBottom: "4px", display: "block" }}>
+            <div style={{ marginBottom: "8px", textAlign: "left" }}>
+              <label style={{ ...styles.caption, color: "#c4b5fd", fontWeight: "800", fontSize: "12px", marginBottom: "2px", display: "block" }}>
                 📱 M-Pesa Number
               </label>
               <input
@@ -1142,12 +1142,12 @@ setPaynectaSubmitting(true);
                 onChange={(e) => setPaynectaPhone(e.target.value)}
                 style={{
                   width: "100%",
-                  padding: "12px",
+                  padding: "10px",
                   borderRadius: "10px",
                   border: "2px solid rgba(167, 139, 250, 0.4)",
                   background: "rgba(15, 10, 26, 0.8)",
                   color: "#ffffff",
-                  fontSize: "16px",
+                  fontSize: "15px",
                   fontWeight: "700",
                   boxSizing: "border-box",
                   outline: "none",
@@ -1163,18 +1163,18 @@ setPaynectaSubmitting(true);
               disabled={paynectaSubmitting || !paynectaPhone.trim()}
               style={{
                 width: "100%",
-                marginTop: "6px",
-                padding: "14px",
+                marginTop: "4px",
+                padding: "12px",
                 borderRadius: "12px",
                 fontWeight: 900,
-                fontSize: "15px",
+                fontSize: "14px",
                 cursor: "pointer",
                 border: "none",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: "8px",
-                minHeight: "48px",
+                minHeight: "42px",
                 background: paynectaSubmitting
                   ? "#4b5563"
                   : "linear-gradient(135deg, #ff6b6b 0%, #ff6b6b 50%, #ff6b6b 100%)",
