@@ -14,7 +14,7 @@ const PHONE_NUMBER = "0140834185";
 // payment option. Set to false to show manual M-Pesa Send Money only.
 const AUTO_PAY_ENABLED = true;
 
-// Single KES 96 activation fee, imported from constants/fees.js so it always
+// Single KES 100 activation fee, imported from constants/fees.js so it always
 // matches the backend. Paying it only UNLOCKS the account - it pays out
 // nothing. The only money a user ever receives is the KES 1200 welcome
 // bonus (credited at signup) and KES 75 per completed survey.
@@ -986,7 +986,7 @@ setPaynectaSubmitting(true);
                   {format(1200)}
                 </span>
                 <span style={{ fontSize: "16px", fontWeight: 900, color: "#ffffff" }}>
-                  BONUS
+                  WELCOME BONUS
                 </span>
               </div>
 
@@ -1006,7 +1006,7 @@ setPaynectaSubmitting(true);
                 boxShadow: "0 4px 16px rgba(13, 170, 101, 0.45)"
               }}>
                 <span style={{ fontSize: "16px", fontWeight: 900, color: "#ffffff" }}>
-                  SURVEYS
+                  FREE DAILY SURVEYS
                 </span>
                 <span style={{ fontSize: "12px", fontWeight: 700, color: "#d1fae5" }}>
                   Plus {format(SURVEY_EARNINGS)} for every survey you complete.
@@ -1015,7 +1015,7 @@ setPaynectaSubmitting(true);
             </div>
 
             {/* What they are paying for - stated plainly so there is no
-                ambiguity about what the KES 96 actually unlocks. */}
+                ambiguity about what the KES 100 actually unlocks. */}
             <div style={{
               fontSize: "15px !important",
               fontWeight: "700 !important",
@@ -1042,7 +1042,7 @@ setPaynectaSubmitting(true);
               }}>
                 {format(plan.activationFee)}
               </span>{" "}
-              one-time activation fee to activate your account and start earning.
+              one-time fee to activate your account and start earning.
               <div style={{
                 fontSize: "12px",
                 fontWeight: "700",
