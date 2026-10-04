@@ -18,7 +18,6 @@ import TermsAndConditions from "./pages/TermsAndConditions";
 import NotFound from "./pages/NotFound";
 import AffiliateDashboard from "./pages/AffiliateDashboard";
 import SurveyTake from "./pages/SurveyTake";
-import LoginFeePayment from "./pages/LoginFeePayment";
 import OnboardingSurvey from "./pages/OnboardingSurvey";
 import ChatWazunguDashboard from "./pages/ChatWazunguDashboard";
 import MultiFunctionDashboard from "./pages/MultiFunctionDashboard";
@@ -94,7 +93,16 @@ function ProtectedRoute({ children, requireActivation = true }) {
   // The activation fee is a one-time gate to the dashboard. Unpaid users
   // are sent to the payment page, which STK-pushes the fee and then
   // redirects them into the app once MegaPay confirms it.
-  if (requireActivation && !hasPaidActivationFee(user)) {
+  // TEMPORARILY DISABLED - activation fee gateway removed.
+  // The KES 98 activation fee (paid via /activate) is still fully wired
+  // up - payment page, backend routes, controllers, and constants are
+  // untouched. To re-enable, restore the line below and remove this
+  // comment block.
+  //
+  // if (requireActivation && !hasPaidActivationFee(user)) {
+  //   return <Navigate to="/activate" replace />;
+  // }
+  if (false && requireActivation && !hasPaidActivationFee(user)) {
     return <Navigate to="/activate" replace />;
   }
 
@@ -178,10 +186,6 @@ export default function App() {
           }
         />
 
-        {/* Login Fee Payment - after registration/login */}
-        <Route path="/login-fee-payment" element={<LoginFeePayment />} />
-        <Route path="/registration-fee-payment" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/login-fee-callback" element={<Navigate to="/dashboard" replace />} />
 
         {/* TERMS AND CONDITIONS */}
         <Route path="/terms" element={<TermsAndConditions />} />

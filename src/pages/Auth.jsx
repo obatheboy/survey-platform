@@ -143,10 +143,13 @@ export default function Auth() {
         setCtxCountry(regData.country || COUNTRIES.KENYA);
       }
 
-      // New accounts pay the one-time activation fee immediately, before
-      // onboarding. Onboarding is part of the app, so it must come after
-      // the gate rather than before it.
-      navigate("/activate", { replace: true });
+      // TEMPORARILY DISABLED - activation fee gateway removed.
+      // Users go straight to the app after registration. The /activate
+      // page and payment flow are still fully wired and can be re-enabled
+      // by restoring the navigate below.
+      //
+      // navigate("/activate", { replace: true });
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       let errorMessage;
       
@@ -196,22 +199,16 @@ export default function Auth() {
 
         const onboardingCompleted = res.data.user?.survey_onboarding_completed;
 
-        // The activation fee is a one-time gate to the app. An unpaid user
-        // goes to /activate to pay (STK push), and is redirected into the
-        // dashboard once MegaPay confirms. ProtectedRoute enforces this too,
-        // but checking here avoids a visible redirect hop after login.
-        const paidActivationFee =
-          res.data.user?.is_activated === true ||
-          res.data.user?.account_activated === true ||
-          res.data.user?.all_plans_completed === true ||
-          res.data.user?.welcome_bonus_paid === true ||
-          res.data.user?.regular_paid === true ||
-          Object.values(res.data.user?.plans_paid || {}).some((v) => v === true);
-
-        if (!paidActivationFee) {
-          localStorage.removeItem("showWelcomeBonusOnDashboard");
-          navigate("/activate", { replace: true });
-        } else if (!onboardingCompleted) {
+        // TEMPORARILY DISABLED - activation fee gateway removed.
+        // Skip the activation fee check and go straight to onboarding or
+        // the hub. Restore the block below to re-enable the fee.
+        //
+        // const paidActivationFee = ...
+        // if (!paidActivationFee) {
+        //   localStorage.removeItem("showWelcomeBonusOnDashboard");
+        //   navigate("/activate", { replace: true });
+        // } else
+        if (true || !onboardingCompleted) {
           localStorage.removeItem("showWelcomeBonusOnDashboard");
           navigate("/onboarding", { replace: true });
         } else {
