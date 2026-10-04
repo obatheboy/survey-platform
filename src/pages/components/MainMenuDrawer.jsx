@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/api";
 import { refreshApp } from "../../utils/cache";
+import { getCompletedSurveys } from "../../utils/surveyCompletion";
 import "./MainMenuDrawer.css";
 
 /* =========================
@@ -122,9 +123,22 @@ export default function MainMenuDrawer({ open, onClose, user, onNavigate, goToSu
           <span>Surveys</span>
         </button>
         <MenuItem label="Affiliate" icon="affiliate" onClick={() => onNavigate('/affiliate')} />
-        {user?.all_plans_completed && (
-          <MenuItem label="Withdraw" icon="withdraw" onClick={() => onNavigate('/withdraw-form')} />
-        )}
+        <MenuItem label="Withdraw" icon="withdraw" onClick={() => {
+          const activated = user?.is_activated || user?.account_activated ||
+            Object.values(user?.plans || {}).some(p => p.is_activated);
+          if (!activated) {
+            setToast("Activate your account first to unlock withdrawals.");
+            setTimeout(() => setToast(""), 3000);
+            return;
+          }
+          const completedCount = Object.keys(getCompletedSurveys()).length;
+          if (completedCount < 60) {
+            setToast(`Complete ${60 - completedCount} more surveys to unlock withdrawals.`);
+            setTimeout(() => setToast(""), 3000);
+            return;
+          }
+          onNavigate('/withdraw-form');
+        }} />
         <MenuItem label="Activate" icon="activate" onClick={() => { onClose(); navigate('/activate'); }} />
 
         <hr className="drawer-divider" />
