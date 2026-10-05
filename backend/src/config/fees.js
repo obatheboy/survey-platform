@@ -1,10 +1,10 @@
 /* =====================================================
    💰 FEES - SINGLE SOURCE OF TRUTH
    =====================================================
-   The account activation fee is a one-time KES 96 gate. Paying it
-   unlocks the app (dashboard, surveys, withdrawal). It pays out
-   nothing - the only money a user receives is the KES 1,200 welcome
-   bonus credited at signup and KES 75 per completed survey.
+   The account activation fee is a one-time KES 97 gate. Paying it
+   unlocks the app (dashboard, surveys, withdrawal, work tasks).
+   It pays out nothing - the only money a user receives is the KES 1,200
+   welcome bonus credited at signup and KES 75 per completed survey.
 
    WHY THIS FILE EXISTS
    --------------------
@@ -21,11 +21,6 @@
 
 /* One-time activation fee - the gate to the dashboard */
 const ACTIVATION_FEE = 97;
-
-/* One-time work-task activation fee. Paying it unlocks only the paid
-   work-task hub; it does not unlock surveys. Surveys remain gated by the
-   main ACTIVATION_FEE and the existing survey/plan flow. */
-const TASK_ACTIVATION_FEE = 98;
 
 /* Legacy login fee. Distinct from the activation fee and not charged
    on the current flow; kept for the /api/login-fee routes. */
@@ -57,7 +52,6 @@ const getPlanAmountByKey = (planKey) => {
 
 module.exports = {
   ACTIVATION_FEE,
-  TASK_ACTIVATION_FEE,
   LOGIN_FEE,
   SURVEY_EARNINGS,
   PLAN_AMOUNTS,

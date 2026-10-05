@@ -35,31 +35,6 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-
-  task_activated: {
-    type: Boolean,
-    default: false
-  },
-
-  task_activated_at: {
-    type: Date
-  },
-
-  task_activation_fee_paid: {
-    type: Boolean,
-    default: false
-  },
-
-  task_activation_requests: [{
-    plan: { type: String },
-    mpesa_code: { type: String },
-    amount: { type: Number },
-    status: { type: String, default: 'SUBMITTED' },
-    created_at: { type: Date, default: Date.now },
-    processed_at: { type: Date },
-    is_welcome_bonus: { type: Boolean, default: false },
-    payment_method: { type: String, default: 'megapay' }
-  }],
   login_fee_paid: {
     type: Boolean,
     default: false

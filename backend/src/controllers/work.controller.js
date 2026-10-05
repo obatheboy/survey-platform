@@ -28,14 +28,14 @@ const {
 
 const today = () => new Date().toISOString().split("T")[0];
 
-/** Mirrors hasPaidActivationFee() in utils/activationStatus.js, but for
-    work tasks. Account activation unlocks surveys; task activation unlocks
-    the work-task hub. Either path pays a one-time fee, but they are
-    separate flags and separate amounts. */
+/** Mirrors hasPaidActivationFee() in utils/activationStatus.js.
+    Account activation unlocks surveys AND work tasks. */
 function isActivated(user) {
   return (
-    user.task_activated === true ||
-    user.task_activation_fee_paid === true
+    user.is_activated === true ||
+    user.account_activated === true ||
+    user.all_plans_completed === true ||
+    user.welcome_bonus_paid === true
   );
 }
 
