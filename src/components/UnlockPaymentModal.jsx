@@ -1,10 +1,8 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { chatWazunguApi } from "../api/api";
 import { toast } from "react-hot-toast";
 import { useCurrency } from "../contexts/CurrencyContext.jsx";
-
-const CHATWAZUNGU_GREEN = "#0DAA65";
-const CHATWAZUNGU_DARK = "#0A0A0A";
+import "./UnlockPaymentModal.css";
 
 export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onClose }) {
   const { format, isUganda } = useCurrency();
@@ -16,32 +14,6 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
   const [smsText, setSmsText] = useState("");
   const pollRef = useRef(null);
   const fallbackRef = useRef(null);
-
-  const styles = {
-    stepBox: {
-      display: "flex",
-      alignItems: "flex-start",
-      gap: "10px",
-      padding: "10px 12px",
-      background: "rgba(255,255,255,0.04)",
-      borderRadius: "8px",
-      marginBottom: "8px",
-      border: "1px solid rgba(255,255,255,0.08)",
-    },
-    stepNumber: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      width: "22px",
-      height: "22px",
-      borderRadius: "50%",
-      background: "#16a34a",
-      color: "white",
-      fontSize: "11px",
-      fontWeight: "800",
-      flexShrink: 0,
-    },
-  };
 
   const startPaymentPolling = (txId) => {
     let attempts = 0;
@@ -102,7 +74,6 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
     e.preventDefault();
     if (!phoneNumber) return;
 
-    // Uganda: manual payment - just move to SMS submission step
     if (isUganda) {
       setStep("polling");
       setPolling(false);
@@ -191,36 +162,40 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
             <>
               <div className="unlock-amount">{format(99)}</div>
               {isUganda ? (
-                <div style={{ marginTop: "8px" }}>
-                  <p style={{ ...styles.caption, color: "#16a34a", marginBottom: "8px" }}>
+                <div style={{ marginTop: "8px", textAlign: "left" }}>
+                  <p style={{ color: "#4ade80", marginBottom: "12px", fontWeight: 700, fontSize: "14px", textAlign: "center" }}>
                     ⚠ Use MTN or Airtel International Transfer to send money to Kenya (Safaricom/M-Pesa)
                   </p>
-                  <div className="activate-step-box" style={{...styles.stepBox, borderLeft: "4px solid #16a34a", marginBottom: "8px"}} >
-                    <span style={{...styles.stepNumber, background: "#16a34a"}}>1</span>
-                    <strong style={{color: "#166534", fontWeight: 900, display: "block", marginBottom: "4px" }}>📱 UGANDA MTN PAYMENT</strong>
-                    <div style={{ fontSize: "12px", color: "#15803d", lineHeight: "1.6" }}>
-                      <strong>Dial:</strong> *165#<br/>
-                      <strong>Select:</strong> Send Money<br/>
-                      <strong>Choose:</strong> International Transfer<br/>
-                      <strong>Select:</strong> Kenya (Safaricom/M-Pesa)<br/>
-                      <strong>Recipient:</strong> 254794101450<br/>
-                      <strong>Name:</strong> OBADIAH NYAKUNDI OTOKI<br/>
-                      <strong>Amount:</strong> {format(99)}<br/>
-                      <strong>Reason:</strong> ChatWazungu Unlock
+                  <div className="activate-step-box" style={{ borderLeft: "4px solid #16a34a", marginBottom: "12px" }} >
+                    <span className="step-number">1</span>
+                    <div>
+                      <strong style={{ color: "#86efac", fontWeight: 900, display: "block", marginBottom: "4px", fontSize: "14px" }}>📱 UGANDA MTN PAYMENT</strong>
+                      <div style={{ fontSize: "12px", color: "#bbf7d0", lineHeight: "1.7" }}>
+                        <strong>Dial:</strong> *165#<br/>
+                        <strong>Select:</strong> Send Money<br/>
+                        <strong>Choose:</strong> International Transfer<br/>
+                        <strong>Select:</strong> Kenya (Safaricom/M-Pesa)<br/>
+                        <strong>Recipient:</strong> 254794101450<br/>
+                        <strong>Name:</strong> OBADIAH NYAKUNDI OTOKI<br/>
+                        <strong>Amount:</strong> {format(99)}<br/>
+                        <strong>Reason:</strong> ChatWazungu Unlock
+                      </div>
                     </div>
                   </div>
-                  <div className="activate-step-box" style={{...styles.stepBox, borderLeft: "4px solid #ea580c", marginBottom: "16px"}} >
-                    <span style={{...styles.stepNumber, background: "#ea580c"}}>2</span>
-                    <strong style={{color: "#9a3412", fontWeight: 900, display: "block", marginBottom: "4px" }}>📱 UGANDA AIRTEL PAYMENT</strong>
-                    <div style={{ fontSize: "12px", color: "#9a3412", lineHeight: "1.6" }}>
-                      <strong>Dial:</strong> *185#<br/>
-                      <strong>Select:</strong> Send Money<br/>
-                      <strong>Choose:</strong> International Transfer<br/>
-                      <strong>Select:</strong> Kenya (Safaricom/M-Pesa)<br/>
-                      <strong>Recipient:</strong> 254794101450<br/>
-                      <strong>Name:</strong> OBADIAH NYAKUNDI OTOKI<br/>
-                      <strong>Amount:</strong> {format(99)}<br/>
-                      <strong>Reason:</strong> ChatWazungu Unlock
+                  <div className="activate-step-box" style={{ borderLeft: "4px solid #ea580c", marginBottom: "20px" }} >
+                    <span className="step-number" style={{ background: "#ea580c" }}>2</span>
+                    <div>
+                      <strong style={{ color: "#fed7aa", fontWeight: 900, display: "block", marginBottom: "4px", fontSize: "14px" }}>📱 UGANDA AIRTEL PAYMENT</strong>
+                      <div style={{ fontSize: "12px", color: "#fdba74", lineHeight: "1.7" }}>
+                        <strong>Dial:</strong> *185#<br/>
+                        <strong>Select:</strong> Send Money<br/>
+                        <strong>Choose:</strong> International Transfer<br/>
+                        <strong>Select:</strong> Kenya (Safaricom/M-Pesa)<br/>
+                        <strong>Recipient:</strong> 254794101450<br/>
+                        <strong>Name:</strong> OBADIAH NYAKUNDI OTOKI<br/>
+                        <strong>Amount:</strong> {format(99)}<br/>
+                        <strong>Reason:</strong> ChatWazungu Unlock
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -280,19 +255,7 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
                     onChange={(e) => setSmsText(e.target.value)}
                     placeholder="Paste your MTN/Airtel SMS confirmation here..."
                     rows={4}
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      borderRadius: "10px",
-                      border: "2px solid #444",
-                      background: "#2A2A2A",
-                      color: "#fff",
-                      fontSize: "13px",
-                      fontFamily: "inherit",
-                      resize: "vertical",
-                      marginBottom: "14px",
-                      boxSizing: "border-box",
-                    }}
+                    className="sms-input"
                   />
                   <button
                     type="submit"
@@ -303,7 +266,7 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
                   </button>
                 </form>
               ) : (
-                <div style={{ margin: "16px 0", color: "#888", fontSize: "13px" }}>
+                <div style={{ margin: "16px 0", color: "#94a3b8", fontSize: "13px", fontWeight: 600 }}>
                   {polling ? "⏳ Verifying payment..." : "✅ Payment confirmed!"}
                 </div>
               )}
@@ -314,186 +277,6 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
             </>
           )}
         </div>
-
-        <style jsx>{`
-          .unlock-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 1100;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-          }
-
-.unlock-modal {
-            background-color: ${CHATWAZUNGU_DARK};
-            border-radius: 20px;
-            width: 100%;
-            max-width: 440px;
-            border: 1px solid #333;
-            overflow: hidden;
-          }
-
-          .unlock-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 24px;
-            background-color: #1A1A1A;
-            color: white;
-          }
-
-          .unlock-header h2 {
-            margin: 0;
-            font-size: 20px;
-          }
-
-          .unlock-close {
-            background: none;
-            border: none;
-            color: #aaa;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 6px;
-            transition: all 0.2s;
-          }
-
-          .unlock-close:hover {
-            color: white;
-            background-color: #333;
-          }
-
-          .unlock-body {
-            padding: 28px;
-            text-align: center;
-            color: white;
-          }
-
-          .unlock-amount {
-            font-size: 42px;
-            font-weight: 800;
-            color: ${CHATWAZUNGU_GREEN};
-            margin-bottom: 20px;
-            letterSpacing: "-1px";
-          }
-
-          .unlock-instructions {
-            color: #aaa;
-            font-size: 15px;
-            margin-bottom: 24px;
-            lineHeight: 1.5;
-          }
-
-          .phone-input-wrapper {
-            display: flex;
-            background-color: #2A2A2A;
-            border-radius: 14px;
-            padding: 6px 16px;
-            margin-bottom: 24px;
-            border: 1px solid #444;
-          }
-
-          .phone-prefix {
-            color: #888;
-            font-size: 18px;
-            margin-right: 12px;
-            padding-top: 4px;
-          }
-
-          .phone-input {
-            flex: 1;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 18px;
-            outline: none;
-            padding: 10px 0;
-          }
-
-          .pay-btn {
-            width: 100%;
-            padding: 18px;
-            background-color: ${CHATWAZUNGU_GREEN};
-            color: white;
-            border: none;
-            border-radius: 28px;
-            font-size: 17px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-bottom: 14px;
-            transition: all 0.2s;
-          }
-
-          .pay-btn:hover:not(:disabled) {
-            background-color: #1a8d55;
-            transform: translateY(-1px);
-          }
-
-          .pay-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-          }
-
-          .payment-instructions {
-            text-align: left;
-            background-color: #2A2A2A;
-            border-radius: 14px;
-            padding: 20px;
-            margin-bottom: 24px;
-          }
-
-          .payment-instructions p {
-            margin: 10px 0;
-            font-size: 14px;
-            color: #ccc;
-            lineHeight: 1.5;
-          }
-
-          .payment-instructions p:first-child {
-            color: ${CHATWAZUNGU_GREEN};
-            font-weight: 700;
-            fontSize: 15px;
-            marginBottom: 12px;
-          }
-
-          .retry-note {
-            font-size: 13px;
-            color: #888;
-            margin-top: 16px;
-            lineHeight: 1.4;
-          }
-
-          .activate-step-box {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 14px 16px;
-            background: rgba(255,255,255,0.04);
-            border-radius: 10px;
-            margin-bottom: 10px;
-            border: 1px solid rgba(255,255,255,0.08);
-          }
-
-          .stepNumber {
-            display: flex;
-            align-items: center;
-            justifyContent: center;
-            width: 26px;
-            height: 26px;
-            borderRadius: 50%;
-            background: #16a34a;
-            color: white;
-            fontSize: 13px,
-            fontWeight: 800,
-            flexShrink: 0,
-          }
-        `}</style>
       </div>
     </div>
   );
