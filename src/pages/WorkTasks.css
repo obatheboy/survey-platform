@@ -64,10 +64,11 @@
   border: none;
   color: #7c3aed;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 800;
   cursor: pointer;
   padding: 0;
   margin-bottom: 12px;
+  letter-spacing: 0.2px;
 }
 
 .work-back-btn:hover {

@@ -365,16 +365,17 @@
 .activate-tasks-back {
   width: 100%;
   margin-top: 12px;
-  padding: 12px;
+  padding: 14px;
   border-radius: 12px;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 14px;
   cursor: pointer;
-  border: 2px solid rgba(124, 58, 237, 0.4);
+  border: 2px solid rgba(124, 58, 237, 0.5);
   background: transparent;
   color: #a78bfa;
   transition: all 0.2s ease;
   font-family: 'Inter', sans-serif;
+  letter-spacing: 0.3px;
 }
 
 .activate-tasks-back:hover {
