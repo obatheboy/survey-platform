@@ -5,10 +5,16 @@ import "./ChatWindow.css";
 
 const getWhiteAvatar = (profileId) => {
   const id = Number(profileId) || 1;
-  const seed = Math.abs(id) % 100;
-  const gender = seed % 2 === 0 ? "men" : "women";
-  const num = (seed % 50) + 1;
+  const num = (Math.abs(id) % 50) + 1;
+  const gender = Math.abs(id) % 2 === 0 ? "men" : "women";
   return `https://randomuser.me/api/portraits/${gender}/${num}.jpg`;
+};
+
+const handleAvatarError = (e) => {
+  const fallback = "https://randomuser.me/api/portraits/men/1.jpg";
+  if (e.target.src !== fallback) {
+    e.target.src = fallback;
+  }
 };
 
 export default function ChatWindow({ profile, onClose }) {
@@ -95,9 +101,10 @@ export default function ChatWindow({ profile, onClose }) {
         <div className="chat-window-header">
           <div className="chat-profile-info">
             <img
-              src={profile.avatar || `https://i.pravatar.cc/48?img=${Math.floor(Math.random() * 70) + 1}`}
+              src={(profile.avatar && profile.avatar.trim()) ? profile.avatar : getWhiteAvatar(profile.id)}
               alt="profile"
               className="chat-profile-avatar"
+              onError={handleAvatarError}
             />
             <span className="chat-profile-details">📍 {profile.location}</span>
           </div>
@@ -119,9 +126,10 @@ export default function ChatWindow({ profile, onClose }) {
                   {msg.role === "ai" && (
                     <div className="message-avatar">
                       <img
-                        src={profile.avatar || "https://i.pravatar.cc/32"}
+                        src={(profile.avatar && profile.avatar.trim()) ? profile.avatar : getWhiteAvatar(profile.id)}
                         alt="AI"
                         className="message-avatar-img"
+                        onError={handleAvatarError}
                       />
                     </div>
                   )}

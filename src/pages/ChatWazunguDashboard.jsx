@@ -8,12 +8,19 @@ import UnlockPaymentModal from "../components/UnlockPaymentModal";
 import { useCurrency } from "../contexts/CurrencyContext.jsx";
 import "./ChatWazunguDashboard.css";
 
-const getWhiteAvatar = (profileId) => {
-  const id = Number(profileId) || 1;
-  const num = (Math.abs(id) % 50) + 1;
-  const gender = Math.abs(id) % 2 === 0 ? "men" : "women";
-  return `https://randomuser.me/api/portraits/${gender}/${num}.jpg`;
-};
+  const getWhiteAvatar = (profileId) => {
+    const id = Number(profileId) || 1;
+    const num = (Math.abs(id) % 50) + 1;
+    const gender = Math.abs(id) % 2 === 0 ? "men" : "women";
+    return `https://randomuser.me/api/portraits/${gender}/${num}.jpg`;
+  };
+
+  const handleAvatarError = (e) => {
+    const fallback = "https://randomuser.me/api/portraits/men/1.jpg";
+    if (e.target.src !== fallback) {
+      e.target.src = fallback;
+    }
+  };
 
 export default function ChatWazunguDashboard() {
   const { format } = useCurrency();
@@ -118,13 +125,13 @@ export default function ChatWazunguDashboard() {
     >
       <div className="profile-avatar-container">
         <img
-          src={profile.avatar || getWhiteAvatar(profile.id)}
+          src={(profile.avatar && profile.avatar.trim()) ? profile.avatar : getWhiteAvatar(profile.id)}
           alt={profile.name}
           className="profile-avatar"
+          onError={handleAvatarError}
         />
         {!profile.is_unlocked && (
           <div className="profile-lock-overlay">
-            <span className="profile-lock-text">KES {format(99)}</span>
           </div>
         )}
       </div>
