@@ -63,6 +63,10 @@ export default function WorkTaskHub() {
   return (
     <div className="work-page">
       <div className="work-card" style={{ maxWidth: "600px", margin: "0 auto" }}>
+        <button onClick={() => navigate("/hub")} className="work-back-btn">
+          ← Back to Hub
+        </button>
+
         <h1 className="work-title">💼 Work Tasks</h1>
         <p className="work-subtitle">
           Complete tasks and get paid. Pick a category below to start.
