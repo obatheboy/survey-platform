@@ -76,7 +76,7 @@ export default function MultiFunctionDashboard() {
       >
         <h1
           style={{
-            fontSize: "30px",
+            fontSize: "24px",
             fontWeight: 900,
             margin: "0 0 8px",
             color: "#111827",
@@ -87,7 +87,7 @@ export default function MultiFunctionDashboard() {
         </h1>
         <p
           style={{
-            fontSize: "15px",
+            fontSize: "13px",
             color: "#6b7280",
             margin: 0,
             fontWeight: 600,
@@ -158,7 +158,7 @@ export default function MultiFunctionDashboard() {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <h2
                   style={{
-                    fontSize: "20px",
+                    fontSize: "17px",
                     fontWeight: 900,
                     margin: 0,
                     color: "#111827",
@@ -170,7 +170,7 @@ export default function MultiFunctionDashboard() {
                 </h2>
                 <p
                   style={{
-                    fontSize: "14px",
+                    fontSize: "12px",
                     fontWeight: 800,
                     margin: "4px 0 0",
                     color: "#4b5563",
@@ -180,7 +180,7 @@ export default function MultiFunctionDashboard() {
                 </p>
                 <p
                   style={{
-                    fontSize: "12px",
+                    fontSize: "11px",
                     color: "#6b7280",
                     lineHeight: 1.5,
                     margin: "4px 0 0",
@@ -199,7 +199,7 @@ export default function MultiFunctionDashboard() {
               >
                 <div
                   style={{
-                    fontSize: "18px",
+                    fontSize: "15px",
                     fontWeight: 900,
                     background: option.gradient,
                     WebkitBackgroundClip: "text",
@@ -212,7 +212,7 @@ export default function MultiFunctionDashboard() {
                 </div>
                 <div
                   style={{
-                    fontSize: "11px",
+                    fontSize: "10px",
                     fontWeight: 700,
                     color: "#6b7280",
                     marginTop: "2px",
@@ -255,7 +255,7 @@ export default function MultiFunctionDashboard() {
       >
         <h3
           style={{
-            fontSize: "16px",
+            fontSize: "14px",
             fontWeight: 800,
             margin: "0 0 16px",
             textAlign: "center",
@@ -303,10 +303,10 @@ function StatRow({ label, value, highlight }) {
         borderBottom: "1px solid #f3f4f6",
       }}
     >
-      <span style={{ fontSize: "14px", color: "#6b7280", fontWeight: 600 }}>{label}</span>
+      <span style={{ fontSize: "12px", color: "#6b7280", fontWeight: 600 }}>{label}</span>
       <span
         style={{
-          fontSize: "16px",
+          fontSize: "14px",
           fontWeight: 900,
           color: highlight ? "#0DAA65" : "#111827",
           letterSpacing: "-0.01em",
@@ -332,7 +332,7 @@ function TotalRow({ label, value }) {
     >
       <span
         style={{
-          fontSize: "15px",
+          fontSize: "13px",
           fontWeight: 900,
           color: "#111827",
           letterSpacing: "-0.01em",
@@ -342,7 +342,7 @@ function TotalRow({ label, value }) {
       </span>
       <span
         style={{
-          fontSize: "20px",
+          fontSize: "17px",
           fontWeight: 900,
           background: "linear-gradient(135deg, #06b6d4 0%, #ea580c 100%)",
           WebkitBackgroundClip: "text",
