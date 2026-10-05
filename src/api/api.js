@@ -307,6 +307,28 @@ export const chatWazunguApi = {
 };
 
 /* =====================================================
-   📦 DEFAULT EXPORT
+   � WORK TASKS — articles, AI training, transcription, academic writing
+   ==================================================== */
+export const workApi = {
+  /* The four earning options with this user's progress on each. */
+  getTypes: () => api.get("/work/types"),
+
+  /* Tasks of one type. `typeSlug` is the route slug, e.g. "ai-training". */
+  getTasks: (typeSlug) =>
+    api.get(`/work/tasks?type=${encodeURIComponent(typeSlug)}`),
+
+  getTask: (taskId) => api.get(`/work/tasks/${taskId}`),
+
+  /* Body is { content } for written and transcription work, or
+     { selectedOption } for AI-training tasks. */
+  submitTask: (taskId, payload) => api.post(`/work/tasks/${taskId}/submit`, payload),
+
+  getStats: () => api.get("/work/stats"),
+
+  getSubmissions: (limit = 50) => api.get(`/work/submissions?limit=${limit}`),
+};
+
+/* =====================================================
+   �📦 DEFAULT EXPORT
    ==================================================== */
 export default api;

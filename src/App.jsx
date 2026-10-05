@@ -22,6 +22,10 @@ import OnboardingSurvey from "./pages/OnboardingSurvey";
 import ChatWazunguDashboard from "./pages/ChatWazunguDashboard";
 import MultiFunctionDashboard from "./pages/MultiFunctionDashboard";
 import LandingBanner from "./pages/LandingBanner";
+import WorkTaskHub from "./pages/WorkTaskHub";
+import WorkTaskList from "./pages/WorkTaskList";
+import WorkTaskSubmit from "./pages/WorkTaskSubmit";
+import WorkSubmissions from "./pages/WorkSubmissions";
 
 /* ================= ADMIN ================= */
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -294,6 +298,40 @@ export default function App() {
           element={
             <ProtectedRoute>
               <ChatWazunguDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Work Tasks */}
+        <Route
+          path="/work"
+          element={
+            <ProtectedRoute>
+              <WorkTaskHub />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/work/:typeSlug"
+          element={
+            <ProtectedRoute>
+              <WorkTaskList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/work/task/:taskId"
+          element={
+            <ProtectedRoute>
+              <WorkTaskSubmit />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/work/submissions"
+          element={
+            <ProtectedRoute>
+              <WorkSubmissions />
             </ProtectedRoute>
           }
         />

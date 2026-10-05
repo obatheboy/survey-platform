@@ -149,7 +149,13 @@ export default function Auth() {
       // by restoring the navigate below.
       //
       // navigate("/activate", { replace: true });
-      navigate("/dashboard", { replace: true });
+      
+      const onboardingCompleted = regData.user?.survey_onboarding_completed;
+      if (!onboardingCompleted) {
+        navigate("/onboarding", { replace: true });
+      } else {
+        navigate("/hub", { replace: true });
+      }
     } catch (err) {
       let errorMessage;
       
@@ -208,7 +214,7 @@ export default function Auth() {
         //   localStorage.removeItem("showWelcomeBonusOnDashboard");
         //   navigate("/activate", { replace: true });
         // } else
-        if (true || !onboardingCompleted) {
+        if (!onboardingCompleted) {
           localStorage.removeItem("showWelcomeBonusOnDashboard");
           navigate("/onboarding", { replace: true });
         } else {

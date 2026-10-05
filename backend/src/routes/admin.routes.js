@@ -5,6 +5,7 @@ const { adminProtect } = require("../middlewares/auth.middleware");
 const adminController = require("../controllers/admin.controller");
 // ADD THIS LINE:
 const activationController = require("../controllers/activation.controller");
+const adminWorkController = require("../controllers/admin.work.controller");
 
 /**
  * =========================================
@@ -91,6 +92,20 @@ router.get("/stats", adminController.getAdminStats);
  */
 router.get("/affiliate/withdrawals", adminController.getPendingAffiliateWithdrawals);
 router.get("/affiliate/referrals", adminController.getAffiliateReferrals);
+
+/**
+ * =========================================
+ * 💼 WORK TASK REVIEW QUEUE
+ * =========================================
+ * Articles, academic pieces and mid-band transcriptions are judged by a
+ * human before they pay out, so this is where their payment is released.
+ * Approving is what credits the earner - see admin.work.controller.js.
+ */
+router.get("/work/overview", adminWorkController.getWorkOverview);
+router.get("/work/submissions", adminWorkController.getSubmissions);
+router.get("/work/submissions/:id", adminWorkController.getSubmissionById);
+router.post("/work/submissions/:id/approve", adminWorkController.approveSubmission);
+router.post("/work/submissions/:id/reject", adminWorkController.rejectSubmission);
 
 /**
  * =========================================

@@ -353,6 +353,36 @@ const userSchema = new mongoose.Schema({
   total_survey_earnings: {
     type: Number,
     default: 0
+  },
+  // ============================================
+  // 🆕 WORK SYSTEM — articles, AI training, transcription, academic writing
+  // ============================================
+  // Task ids the user has already been PAID for (or auto-approved). This is
+  // the idempotency guard: a task in here can never be submitted or paid
+  // again. Tasks held for review live in work_pending_ids instead, so a
+  // rejected submission can be retried.
+  work_completed_ids: [{
+    type: String
+  }],
+  // Task ids submitted and waiting on a human reviewer. A task appears in
+  // exactly one of work_completed_ids or work_pending_ids at a time.
+  work_pending_ids: [{
+    type: String
+  }],
+  // Per-type daily counters, mirroring daily_survey_date/daily_survey_count.
+  // All counts reset together when the date rolls over.
+  work_daily_date: {
+    type: String,
+    default: ""
+  },
+  work_daily_counts: {
+    type: Map,
+    of: Number,
+    default: {}
+  },
+  total_work_earnings: {
+    type: Number,
+    default: 0
   }
 });
 

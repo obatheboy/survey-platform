@@ -18,6 +18,15 @@ export default function MultiFunctionDashboard() {
       description: `Complete surveys and earn between ${format(1200)} and ${format(6500)} daily.`,
     },
     {
+      id: "work",
+      title: "Work Tasks",
+      subtitle: "KES 40 - KES 300 per task",
+      icon: "💼",
+      gradient: "linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)",
+      route: "/work",
+      description: "Write articles, train AI, transcribe audio, or write academic pieces.",
+    },
+    {
       id: "chat",
       title: "Chat Wazungu",
       subtitle: `${format(500)} - ${format(5500)} daily`,
@@ -226,6 +235,10 @@ export default function MultiFunctionDashboard() {
           <StatRow
             label="Surveys"
             value={`${format(1200)} - ${format(6500)}`}
+          />
+          <StatRow
+            label="Work Tasks"
+            value={`${format(40)} - ${format(300)}`}
           />
           <StatRow
             label="Chat Wazungu (6 unlocks)"

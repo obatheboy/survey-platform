@@ -2040,27 +2040,50 @@ const load = async () => {
         </button>
 
          <button
-            className="nav-btn"
-            onClick={() => navigate('/affiliate')}
-            style={{
-              flex: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '2px',
-              padding: '6px',
-              background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '10px',
-              cursor: 'pointer',
-              minHeight: '50px'
-            }}
-          >
-            <span className="nav-icon" style={{ fontSize: '20px', color: 'white' }}>👥</span>
-            <span className="nav-label" style={{ fontSize: '10px', fontWeight: '600', color: 'white' }}>Affiliate</span>
-          </button>
+           className="nav-btn"
+           onClick={() => navigate('/affiliate')}
+           style={{
+             flex: 1,
+             display: 'flex',
+             flexDirection: 'column',
+             alignItems: 'center',
+             justifyContent: 'center',
+             gap: '2px',
+             padding: '6px',
+             background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)',
+             color: 'white',
+             border: 'none',
+             borderRadius: '10px',
+             cursor: 'pointer',
+             minHeight: '50px'
+           }}
+         >
+           <span className="nav-icon" style={{ fontSize: '20px', color: 'white' }}>👥</span>
+           <span className="nav-label" style={{ fontSize: '10px', fontWeight: '600', color: 'white' }}>Affiliate</span>
+         </button>
+
+         <button
+           className="nav-btn"
+           onClick={() => navigate('/work')}
+           style={{
+             flex: 1,
+             display: 'flex',
+             flexDirection: 'column',
+             alignItems: 'center',
+             justifyContent: 'center',
+             gap: '2px',
+             padding: '6px',
+             background: 'linear-gradient(135deg, #0DAA65 0%, #1a8d55 100%)',
+             color: 'white',
+             border: 'none',
+             borderRadius: '10px',
+             cursor: 'pointer',
+             minHeight: '50px'
+           }}
+         >
+           <span className="nav-icon" style={{ fontSize: '20px', color: 'white' }}>💼</span>
+           <span className="nav-label" style={{ fontSize: '10px', fontWeight: '600', color: 'white' }}>Work</span>
+         </button>
 
 {user && (
             <button
