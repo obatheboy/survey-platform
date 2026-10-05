@@ -107,7 +107,7 @@ function ProtectedRoute({ children, requireActivation = true }) {
   // if (requireActivation && !hasPaidActivationFee(user)) {
   //   return <Navigate to="/activate" replace />;
   // }
-  if (false && requireActivation && !hasPaidActivationFee(user)) {
+  if (requireActivation && !hasPaidActivationFee(user)) {
     return <Navigate to="/activate" replace />;
   }
 

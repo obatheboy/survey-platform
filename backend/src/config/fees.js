@@ -20,7 +20,7 @@
    ===================================================== */
 
 /* One-time activation fee - the gate to the dashboard */
-const ACTIVATION_FEE = 100;
+const ACTIVATION_FEE = 97;
 
 /* One-time work-task activation fee. Paying it unlocks only the paid
    work-task hub; it does not unlock surveys. Surveys remain gated by the

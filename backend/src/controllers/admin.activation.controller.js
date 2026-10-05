@@ -361,7 +361,7 @@ exports.approveActivation = async (req, res) => {
         balance_added: 0,
         new_balance: user.total_earned,
         account_activated: user.is_activated === true,
-        redirect_to: "/dashboard",
+        redirect_to: "/hub",
         next_plan: null,
         remaining_plans: []
       });

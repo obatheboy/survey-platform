@@ -143,19 +143,7 @@ export default function Auth() {
         setCtxCountry(regData.country || COUNTRIES.KENYA);
       }
 
-      // TEMPORARILY DISABLED - activation fee gateway removed.
-      // Users go straight to the app after registration. The /activate
-      // page and payment flow are still fully wired and can be re-enabled
-      // by restoring the navigate below.
-      //
-      // navigate("/activate", { replace: true });
-      
-      const onboardingCompleted = regData.user?.survey_onboarding_completed;
-      if (!onboardingCompleted) {
-        navigate("/onboarding", { replace: true });
-      } else {
-        navigate("/hub", { replace: true });
-      }
+      navigate("/activate", { replace: true });
     } catch (err) {
       let errorMessage;
       
@@ -205,16 +193,16 @@ export default function Auth() {
 
         const onboardingCompleted = res.data.user?.survey_onboarding_completed;
 
-        // TEMPORARILY DISABLED - activation fee gateway removed.
-        // Skip the activation fee check and go straight to onboarding or
-        // the hub. Restore the block below to re-enable the fee.
-        //
-        // const paidActivationFee = ...
-        // if (!paidActivationFee) {
-        //   localStorage.removeItem("showWelcomeBonusOnDashboard");
-        //   navigate("/activate", { replace: true });
-        // } else
-        if (!onboardingCompleted) {
+        const paidActivationFee =
+          res.data.user?.is_activated === true ||
+          res.data.user?.account_activated === true ||
+          res.data.user?.all_plans_completed === true ||
+          res.data.user?.welcome_bonus_paid === true;
+
+        if (!paidActivationFee) {
+          localStorage.removeItem("showWelcomeBonusOnDashboard");
+          navigate("/activate", { replace: true });
+        } else if (!onboardingCompleted) {
           localStorage.removeItem("showWelcomeBonusOnDashboard");
           navigate("/onboarding", { replace: true });
         } else {

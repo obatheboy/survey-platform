@@ -236,7 +236,7 @@ exports.confirmPlanPayment = async (req, res) => {
       // Go to the dashboard, never back to /activate - the fee is already paid
       // and sending them there looped the user on a payment screen for a fee
       // they had already settled.
-      redirect_to: "/dashboard"
+      redirect_to: "/hub"
     });
   }
 
@@ -575,7 +575,7 @@ exports.getNextUnpaidPlan = async (req, res) => {
         next_plan: null,
         all_plans_completed: true,
         user_activated: user.is_activated || false,
-        redirect_to: "/dashboard",
+        redirect_to: "/hub",
         message: user.is_activated || user.account_activated
           ? "Your account is already activated."
           : "All plans have been paid!"

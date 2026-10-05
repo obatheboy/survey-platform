@@ -13,7 +13,7 @@
    nothing.
    ===================================================== */
 
-export const ACTIVATION_FEE = 100;
+export const ACTIVATION_FEE = 97;
 
 /* Work-task activation fee - unlocks only the paid work-task hub.
    It does not unlock surveys. Surveys remain gated by ACTIVATION_FEE. */

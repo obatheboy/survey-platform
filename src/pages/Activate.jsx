@@ -319,7 +319,7 @@ const [planKey, setPlanKey] = useState(null);
             remaining_plans: remainingPlans,
             redirect_to: confirmRes.data.redirect_to || (remainingPlans.length > 0
               ? `/dashboard?focusPlan=${remainingPlans[0]}&highlightPlan=${remainingPlans[0]}`
-              : "/dashboard"),
+              : "/hub"),
             all_plans_completed: confirmRes.data.all_plans_completed || false,
             success_message: confirmRes.data.success_message || confirmRes.data.message || `Payment successful for ${confirmRes.data.plan_paid || targetPlanKey}!`
           });
