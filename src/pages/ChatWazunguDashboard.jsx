@@ -8,6 +8,13 @@ import UnlockPaymentModal from "../components/UnlockPaymentModal";
 import { useCurrency } from "../contexts/CurrencyContext.jsx";
 import "./ChatWazunguDashboard.css";
 
+const getWhiteAvatar = (profileId) => {
+  const id = Number(profileId) || 1;
+  const num = (Math.abs(id) % 50) + 1;
+  const gender = Math.abs(id) % 2 === 0 ? "men" : "women";
+  return `https://randomuser.me/api/portraits/${gender}/${num}.jpg`;
+};
+
 export default function ChatWazunguDashboard() {
   const { format } = useCurrency();
   const navigate = useNavigate();
@@ -111,7 +118,7 @@ export default function ChatWazunguDashboard() {
     >
       <div className="profile-avatar-container">
         <img
-          src={profile.avatar || `https://i.pravatar.cc/80?img=${Math.floor(Math.random() * 70) + 1}`}
+          src={profile.avatar || getWhiteAvatar(profile.id)}
           alt={profile.name}
           className="profile-avatar"
         />

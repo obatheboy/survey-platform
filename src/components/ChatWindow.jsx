@@ -3,6 +3,14 @@ import { chatWazunguApi } from "../api/api";
 import { toast } from "react-hot-toast";
 import "./ChatWindow.css";
 
+const getWhiteAvatar = (profileId) => {
+  const id = Number(profileId) || 1;
+  const seed = Math.abs(id) % 100;
+  const gender = seed % 2 === 0 ? "men" : "women";
+  const num = (seed % 50) + 1;
+  return `https://randomuser.me/api/portraits/${gender}/${num}.jpg`;
+};
+
 export default function ChatWindow({ profile, onClose }) {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
