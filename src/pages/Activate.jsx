@@ -993,10 +993,7 @@ setPaynectaSubmitting(true);
                 boxShadow: "0 4px 16px rgba(13, 170, 101, 0.45)"
               }}>
                 <span style={{ fontSize: "14px", fontWeight: 900, color: "#ffffff" }}>
-                  FREE DAILY SURVEYS
-                </span>
-                <span style={{ fontSize: "11px", fontWeight: 700, color: "#d1fae5" }}>
-                  Plus {format(SURVEY_EARNINGS)} for every survey you complete.
+                  DAILY SURVEYS & OTHER TASKS
                 </span>
               </div>
             </div>
