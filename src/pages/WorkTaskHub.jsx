@@ -9,6 +9,7 @@ import {
   TASK_PAY,
   DAILY_LIMITS,
   VERIFICATION_MODE,
+  getSlugForType,
 } from "../constants/workTasks";
 import "./WorkTasks.css";
 
@@ -84,7 +85,7 @@ export default function WorkTaskHub() {
               <div
                 key={type}
                 className="work-type-card"
-                onClick={() => navigate(`/work/${type}`)}
+                onClick={() => navigate(`/work/${typeData.slug || getSlugForType(type)}`)}
               >
                 <div className="work-type-info">
                   <span className="work-type-icon">{meta.icon || "📋"}</span>
