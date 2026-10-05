@@ -37,9 +37,9 @@ const EARN_METHODS = [
   {
     id: "affiliate",
     icon: "👥",
-    title: "Refer & Earn",
-    text: "Share your link with friends. Keep earning every time someone joins through you.",
-    tag: "Unlimited",
+    title: "Affiliate Program",
+    text: "Invite friends and build your team. Earn commissions on every unlock and survey completion.",
+    tag: "Up to KES 3,000/day",
     accent: "#ea580c",
   },
   {
@@ -58,7 +58,7 @@ const EARN_METHODS = [
 const PROOF = [
   { value: "SURVEYS", label: "Every Day" },
   { value: "BONUS", label: "On Signup" },
-  { value: "REFERRALS", label: "Earn More" },
+  { value: "AFFILIATE", label: "Up to 3K/day" },
 ];
 
 export default function LandingBanner() {

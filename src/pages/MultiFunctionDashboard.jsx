@@ -41,13 +41,13 @@ export default function MultiFunctionDashboard() {
     {
       id: "affiliate",
       title: "Affiliate Program",
-      subtitle: "Endless commissions",
+      subtitle: "Up to KES 3,000/day",
       icon: "👥",
       gradient: "linear-gradient(135deg, #ea580c 0%, #FF6600 100%)",
       route: "/affiliate",
       description:
-        "Refer friends and earn endless commissions on every unlock and survey.",
-      earnHighlight: "∞",
+        "Invite friends, unlock profiles, and complete tasks. Consistently doing all tasks plus affiliate can earn you up to KES 3,000 daily.",
+      earnHighlight: "Up to 3K",
     },
   ];
 
