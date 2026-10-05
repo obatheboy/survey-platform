@@ -25,12 +25,10 @@ export default function WorkTaskHub() {
 
   const loadHub = async () => {
     try {
-      const [typesRes, statsRes] = await Promise.all([
-        workApi.getTaskTypes(),
-        workApi.getHubStats(),
-      ]);
-      setTypes(typesRes.data?.types || []);
-      setStats(statsRes.data || {});
+      const res = await workApi.getTypes();
+      const data = res.data || {};
+      setTypes(data.types || []);
+      setStats(data);
     } catch (err) {
       console.error("Failed to load hub:", err);
       toast.error("Failed to load work tasks");
@@ -75,12 +73,12 @@ export default function WorkTaskHub() {
         </p>
 
         <div className="work-types-list">
-          {types.map((type) => {
+          {types.map((typeData) => {
+            const type = typeData.type;
             const meta = TASK_TYPE_META[type] || {};
-            const pay = TASK_PAY[type] || 0;
-            const dailyLimit = DAILY_LIMITS[type] || 0;
-            const todayCount = stats?.today_counts?.[type] || 0;
-            const remaining = Math.max(0, dailyLimit - todayCount);
+            const pay = typeData.pay || TASK_PAY[type] || 0;
+            const dailyLimit = typeData.dailyLimit || DAILY_LIMITS[type] || 0;
+            const remaining = typeData.remainingToday ?? dailyLimit;
 
             return (
               <div
