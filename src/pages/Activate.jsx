@@ -111,7 +111,7 @@ function ActivationLoadingScreen({ onTimeout }) {
           cursor: "pointer",
         }}
       >
-        Continue to dashboard
+        Continue to hub
       </button>
       <style>{"@keyframes lb-spin { to { transform: rotate(360deg); } }"}</style>
     </div>
@@ -767,7 +767,7 @@ setPaynectaSubmitting(true);
      "Loading activation fee" permanently even though the payment had already
      been confirmed and accepted. */
   if (loading || !planKey || !planState || !user) {
-    return <ActivationLoadingScreen onTimeout={() => navigate("/dashboard", { replace: true })} />;
+    return <ActivationLoadingScreen onTimeout={() => navigate("/hub", { replace: true })} />;
   }
 
   const plan =
@@ -811,10 +811,10 @@ setPaynectaSubmitting(true);
             </p>
 
             <button
-              onClick={() => navigate("/dashboard", { replace: true })}
+              onClick={() => navigate("/hub", { replace: true })}
               style={{ ...styles.button, marginTop: "20px", background: "#7c3aed" }}
             >
-              Go to Dashboard
+              Go to Hub
             </button>
           </div>
         </div>
@@ -922,7 +922,7 @@ setPaynectaSubmitting(true);
               onClick={() => {
                 sessionStorage.setItem("justActivated", "1");
                 setShowPaymentSuccess(false);
-                navigate("/dashboard", { replace: true });
+                navigate("/hub", { replace: true });
               }}
               style={{
                 ...styles.button,

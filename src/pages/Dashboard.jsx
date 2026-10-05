@@ -848,6 +848,14 @@ const load = async () => {
       {/* TOAST NOTIFICATION */}
       {toast && <div className="toast-notification">{toast}</div>}
 
+      {/* Back to Hub */}
+      <button
+        onClick={() => navigate("/hub")}
+        className="dashboard-back-btn"
+      >
+        ← Back to Hub
+      </button>
+
       {/* FULL SCREEN NOTIFICATION - FIXED CENTER */}
       {fullScreenNotification && (
         <div style={{
