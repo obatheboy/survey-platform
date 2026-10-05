@@ -90,12 +90,13 @@ export default function WorkTaskSubmit() {
     if (!task) return;
 
     if (task.type === "AI_TRAINING") {
-      if (selectedOption === null) {
+      if (selectedOption === null || selectedOption === undefined) {
         toast.error("Please select an option");
         return;
       }
     } else {
-      if (!content.trim()) {
+      const trimmed = String(content || "").trim();
+      if (!trimmed) {
         toast.error("Please enter your work before submitting");
         return;
       }
@@ -106,23 +107,43 @@ export default function WorkTaskSubmit() {
       const payload =
         task.type === "AI_TRAINING"
           ? { selectedOption }
-          : { content: content.trim() };
+          : { content: String(content || "").trim() };
+
       const res = await workApi.submitTask(taskId, payload);
-      if (res.data?.success) {
-        setResult(res.data);
-        if (res.data.outcome === "paid") {
-          toast.success(`+${format(res.data.pay)} credited!`);
-        } else if (res.data.outcome === "review") {
+
+      const data = res.data || {};
+      if (data.success) {
+        setResult(data);
+        if (data.outcome === "paid") {
+          toast.success(`+${format(data.pay || task.pay)} credited!`);
+        } else if (data.outcome === "review") {
           toast.success("Submitted for review");
+        } else if (data.outcome === "rejected") {
+          toast.error(data.message || "Submission not accepted. Please try another task.");
         } else {
-          toast.error(res.data.message || "Submission failed");
+          toast.error(data.message || "Submission failed");
         }
       } else {
-        toast.error(res.data?.message || "Submission failed");
+        const msg = data.message || "Submission failed";
+        if (msg.toLowerCase().includes("activate")) {
+          toast.error("Activate your account before taking on paid work.");
+        } else if (msg.toLowerCase().includes("already been paid")) {
+          toast.error("You have already been paid for this task.");
+        } else if (msg.toLowerCase().includes("already waiting for review")) {
+          toast.error("This task is already waiting for review.");
+        } else if (msg.toLowerCase().includes("daily limit")) {
+          toast.error(msg);
+        } else {
+          toast.error(msg);
+        }
       }
     } catch (err) {
       console.error("submitTask error:", err);
-      toast.error("Could not submit your work");
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Could not submit your work. Please try again.";
+      toast.error(msg);
     } finally {
       setSubmitting(false);
     }
