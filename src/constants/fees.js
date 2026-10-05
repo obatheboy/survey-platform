@@ -15,6 +15,10 @@
 
 export const ACTIVATION_FEE = 100;
 
+/* Work-task activation fee - unlocks only the paid work-task hub.
+   It does not unlock surveys. Surveys remain gated by ACTIVATION_FEE. */
+export const TASK_ACTIVATION_FEE = 98;
+
 /* Paid to the user for each completed survey. Mirrors
    SURVEY_EARNINGS in backend/src/config/fees.js - the backend credits this
    server-side, so both must agree or the advertised amount is wrong. */
@@ -23,4 +27,4 @@ export const SURVEY_EARNINGS = 75;
 /* ChatWazungu profile unlock - unrelated to account activation */
 export const UNLOCK_FEE = 99;
 
-export default { ACTIVATION_FEE, SURVEY_EARNINGS, UNLOCK_FEE };
+export default { ACTIVATION_FEE, TASK_ACTIVATION_FEE, SURVEY_EARNINGS, UNLOCK_FEE };

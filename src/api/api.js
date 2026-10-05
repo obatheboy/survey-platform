@@ -265,8 +265,19 @@ export const planPaymentApi = {
 };
 
 /* =====================================================
-    👑 ADMIN MEGAPAY API
-    ===================================================================================== */
+    💼 TASK ACTIVATION API
+    - Separate KES 98 fee that unlocks only the work-task hub
+    - Does NOT unlock surveys
+    ==================================================== */
+export const taskActivationApi = {
+  initiate: (phoneNumber) => api.post("/task-activation/initiate", { phone_number: phoneNumber }),
+  confirm: (data) => api.post("/task-activation/confirm", data),
+  getStatus: () => api.get("/task-activation/status"),
+};
+
+/* =====================================================
+     👑 ADMIN MEGAPAY API
+     ===================================================================================== */
 export const adminMegapayApi = {
   // Get all pending payments for admin verification
   getPending: () => adminApi.get("/megapay/admin/pending"),

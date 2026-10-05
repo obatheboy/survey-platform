@@ -9,6 +9,7 @@ import { initCacheBusting } from "./utils/cache";
   import Dashboard from "./pages/Dashboard";
 import Surveys from "./pages/Surveys";
 import Activate from "./pages/Activate";
+import ActivateTasks from "./pages/ActivateTasks";
 import ActivationNotice from "./pages/ActivationNotice";
 import Withdraw from "./pages/Withdraw";
 import WithdrawForm from "./pages/WithdrawForm";
@@ -246,6 +247,15 @@ export default function App() {
           element={
             <ProtectedRoute requireActivation={false}>
               <Activate />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/activate-tasks"
+          element={
+            <ProtectedRoute requireActivation={false}>
+              <ActivateTasks />
             </ProtectedRoute>
           }
         />

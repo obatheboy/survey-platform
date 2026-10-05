@@ -22,6 +22,11 @@
 /* One-time activation fee - the gate to the dashboard */
 const ACTIVATION_FEE = 100;
 
+/* One-time work-task activation fee. Paying it unlocks only the paid
+   work-task hub; it does not unlock surveys. Surveys remain gated by the
+   main ACTIVATION_FEE and the existing survey/plan flow. */
+const TASK_ACTIVATION_FEE = 98;
+
 /* Legacy login fee. Distinct from the activation fee and not charged
    on the current flow; kept for the /api/login-fee routes. */
 const LOGIN_FEE = 95;
@@ -52,6 +57,7 @@ const getPlanAmountByKey = (planKey) => {
 
 module.exports = {
   ACTIVATION_FEE,
+  TASK_ACTIVATION_FEE,
   LOGIN_FEE,
   SURVEY_EARNINGS,
   PLAN_AMOUNTS,
