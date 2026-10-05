@@ -47,6 +47,10 @@ import AdminLoginFee from "./pages/admin/AdminLoginFee";
    safe to trust here. */
 function hasPaidActivationFee(user) {
   if (!user) return false;
+  if (sessionStorage.getItem("justActivated") === "1") {
+    sessionStorage.removeItem("justActivated");
+    return true;
+  }
   return (
     user.is_activated === true ||
     user.account_activated === true ||

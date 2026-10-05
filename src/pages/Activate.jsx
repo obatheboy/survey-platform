@@ -95,24 +95,8 @@ function ActivationLoadingScreen({ onTimeout }) {
         animation: "lb-spin 0.8s linear infinite",
       }} />
       <p style={{ fontSize: "14px", fontWeight: 600, margin: 0, color: "rgba(255,255,255,0.8)" }}>
-        Loading activation fee…
+        Loading activation details…
       </p>
-      <button
-        onClick={onTimeout}
-        style={{
-          marginTop: "8px",
-          padding: "10px 20px",
-          borderRadius: "999px",
-          border: "1px solid rgba(255,255,255,0.25)",
-          background: "transparent",
-          color: "rgba(255,255,255,0.85)",
-          fontSize: "13px",
-          fontWeight: 700,
-          cursor: "pointer",
-        }}
-      >
-        Continue to hub
-      </button>
       <style>{"@keyframes lb-spin { to { transform: rotate(360deg); } }"}</style>
     </div>
   );
@@ -387,7 +371,7 @@ const [planKey, setPlanKey] = useState(null);
 
               if (isAlreadyActivated) {
                 // Already paid - redirect to dashboard
-                navigate("/dashboard", { replace: true });
+                navigate("/hub", { replace: true });
                 return;
               }
 
@@ -425,15 +409,15 @@ const [planKey, setPlanKey] = useState(null);
            res.data.welcome_bonus_paid === true ||
            Object.values(res.data.plans_paid || {}).some((v) => v === true);
 
-         if (alreadyPaid) {
-           navigate("/dashboard", { replace: true });
-           return;
-         }
+          if (alreadyPaid) {
+            navigate("/hub", { replace: true });
+            return;
+          }
 
          if (planFromQuery === "WELCOME_BONUS") {
            if (res.data.welcome_bonus_paid === true) {
              // Single-fee model: the account is active — go straight to surveys.
-             navigate("/dashboard", { replace: true });
+             navigate("/hub", { replace: true });
              return;
            }
          }
@@ -488,7 +472,7 @@ if (!planFromQuery) {
            instead of parking on a null plan. */
           if (!plan || (planFromQuery !== "WELCOME_BONUS" && plan.is_activated)) {
             setLoading(false);
-            navigate("/dashboard", { replace: true });
+            navigate("/hub", { replace: true });
             return;
           }
 
@@ -767,7 +751,10 @@ setPaynectaSubmitting(true);
      "Loading activation fee" permanently even though the payment had already
      been confirmed and accepted. */
   if (loading || !planKey || !planState || !user) {
-    return <ActivationLoadingScreen onTimeout={() => navigate("/hub", { replace: true })} />;
+    return <ActivationLoadingScreen onTimeout={() => {
+      sessionStorage.setItem("justActivated", "1");
+      navigate("/hub", { replace: true });
+    }} />;
   }
 
   const plan =
@@ -801,11 +788,11 @@ setPaynectaSubmitting(true);
               <br /><br />
               Our team will verify your transaction and activate your account shortly.
               <br /><br />
-              <strong>Next Steps:</strong>
+              <strong>Start Earning:</strong>
               <br />
-              1. Go back to dashboard
+              1. Complete surveys daily
               <br />
-              2. Start completing surveys to earn
+              2. Make <strong>KES 1,200 - KES 6,500 per day</strong>
               <br />
               3. Withdraw after completing 60 surveys!
             </p>
@@ -883,31 +870,31 @@ setPaynectaSubmitting(true);
               </p>
             </div>
 
-             <div style={{
-              background: "linear-gradient(135deg, #16a34a, #22c55e)",
-              borderRadius: "12px",
-              padding: "16px",
-              marginBottom: "20px"
-            }}>
-              <p style={{ 
-                fontSize: "18px", 
-                color: "#ffffff",
-                fontWeight: 800,
-                textAlign: "center",
-                margin: 0
-              }}>
-                🎉 ACCOUNT ACTIVATED!
-              </p>
-              <p style={{ 
-                fontSize: "14px", 
-                color: "#dcfce7",
-                fontWeight: 600,
-                textAlign: "center",
-                margin: "8px 0 0 0"
-              }}>
-                You can now complete surveys and withdraw your earnings!
-              </p>
-            </div>
+              <div style={{
+               background: "linear-gradient(135deg, #16a34a, #22c55e)",
+               borderRadius: "12px",
+               padding: "16px",
+               marginBottom: "20px"
+             }}>
+               <p style={{ 
+                 fontSize: "18px", 
+                 color: "#ffffff",
+                 fontWeight: 800,
+                 textAlign: "center",
+                 margin: 0
+               }}>
+                 🎉 ACCOUNT ACTIVATED!
+               </p>
+               <p style={{ 
+                 fontSize: "14px", 
+                 color: "#dcfce7",
+                 fontWeight: 600,
+                 textAlign: "center",
+                 margin: "8px 0 0 0"
+               }}>
+                 You can now make <strong>KES 1,200 - KES 6,500 daily</strong> and withdraw your earnings!
+               </p>
+             </div>
 
             <p style={{ 
               fontSize: "13px", 
@@ -915,7 +902,7 @@ setPaynectaSubmitting(true);
               marginBottom: "20px",
               textAlign: "center"
             }}>
-               🚀 Taking you to your dashboard... Tap below to continue now
+               🎉 Your account is now active!
             </p>
 
             <button
@@ -934,7 +921,7 @@ setPaynectaSubmitting(true);
                 padding: "16px"
               }}
             >
-              ✅ Continue Now
+              OK
             </button>
           </div>
         </div>
@@ -955,12 +942,12 @@ setPaynectaSubmitting(true);
             border: "1px solid #251a3a",
             textAlign: "center"
           }}>
-            <div style={{ fontSize: "18px", fontWeight: 900, color: "#ffffff", marginBottom: "2px", textShadow: "0 2px 4px rgba(0,0,0,0.3)", lineHeight: 1.25 }}>
-              🎉 ACTIVATE YOUR ACCOUNT NOW! 🎉
+            <div style={{ fontSize: "20px", fontWeight: 900, color: "#fbbf24", marginBottom: "2px", textShadow: "0 2px 8px rgba(251, 191, 36, 0.4)", lineHeight: 1.2 }}>
+              💰 Make KES 1,200 - KES 6,500 Daily
             </div>
 
             <div style={{ fontSize: "13px", fontWeight: 700, color: "#e2e8f0", marginBottom: "8px" }}>
-              and get
+              Activate now and start earning instantly!
             </div>
 
             {/* What the user receives once activated */}
@@ -1261,7 +1248,7 @@ setPaynectaSubmitting(true);
                  fontWeight: 700
                }}
              >
-                ⬅ Back to Dashboard
+                 ⬅ Back to Hub
              </button>
 
              <div style={{ marginTop: "24px", width: "100%" }}>
