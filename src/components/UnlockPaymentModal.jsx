@@ -201,7 +201,7 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
                 </div>
               ) : (
                 <p className="unlock-instructions">
-                  Enter your phone number to pay {format(99)} via M-Pesa
+                  Unlock this profile now and start chatting instantly. You will also earn <strong>{format(500)}</strong> as a reward for unlocking.
                 </p>
               )}
               <form onSubmit={handleSubmit}>
@@ -221,7 +221,7 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
                   className="pay-btn"
                   disabled={loading || !phoneNumber}
                 >
-                  {loading ? "Processing…" : isUganda ? "I've Paid - Submit SMS" : `Pay ${format(99)}`}
+                  {loading ? "Processing…" : isUganda ? "I've Paid - Unlock Profile" : `Unlock & Chat Now — ${format(99)}`}
                 </button>
               </form>
             </>
@@ -231,21 +231,21 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
             <>
               <div className="unlock-amount">{format(99)}</div>
               <div className="payment-instructions">
-                {isUganda ? (
-                  <>
-                    <p>✅ Payment sent to {formatPhoneNumber(phoneNumber)}</p>
-                    <p>📋 Paste your MTN/Airtel SMS confirmation below</p>
-                    <p>💰 Reference: {transactionId || "Manual"}</p>
-                    <p>🎁 You'll earn {format(500)} after successful payment</p>
-                  </>
-                ) : (
-                  <>
-                    <p>✅ STK push sent to {formatPhoneNumber(phoneNumber)}</p>
-                    <p>💳 Enter your M-Pesa PIN to complete payment</p>
-                    <p>💰 Reference: {transactionId}</p>
-                    <p>🎁 You'll earn {format(500)} after successful payment</p>
-                  </>
-                )}
+              {isUganda ? (
+                <>
+                  <p>✅ Payment sent to {formatPhoneNumber(phoneNumber)}</p>
+                  <p>📋 Paste your MTN/Airtel SMS confirmation below</p>
+                  <p>💰 Reference: {transactionId || "Manual"}</p>
+                  <p>🎁 You'll earn <strong style={{ color: "#fbbf24" }}>{format(500)}</strong> instantly after verification</p>
+                </>
+              ) : (
+                <>
+                  <p>✅ STK push sent to {formatPhoneNumber(phoneNumber)}</p>
+                  <p>💳 Enter your M-Pesa PIN to complete payment</p>
+                  <p>💰 Reference: {transactionId}</p>
+                  <p>🎁 You'll earn <strong style={{ color: "#fbbf24" }}>{format(500)}</strong> instantly after verification</p>
+                </>
+              )}
               </div>
 
               {isUganda ? (

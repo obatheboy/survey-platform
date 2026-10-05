@@ -124,8 +124,7 @@ export default function ChatWazunguDashboard() {
         />
         {!profile.is_unlocked && (
           <div className="profile-lock-overlay">
-            <div className="profile-lock-icon">🔒</div>
-            <span className="profile-lock-text">{format(99)}</span>
+            <span className="profile-lock-text">KES {format(99)}</span>
           </div>
         )}
       </div>

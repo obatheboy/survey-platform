@@ -216,24 +216,25 @@
   left: 3px;
   right: 3px;
   bottom: 3px;
-  background: rgba(10, 10, 10, 0.75);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.15);
   border-radius: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 4px;
+  padding-bottom: 10px;
   transition: all 0.3s ease;
 }
 
 .profile-card:hover .profile-lock-overlay {
-  background: rgba(10, 10, 10, 0.65);
+  background: rgba(0, 0, 0, 0.25);
 }
 
 .profile-lock-icon {
-  font-size: 24px;
+  font-size: 20px;
   animation: lock-pulse 2s ease-in-out infinite;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
 }
 
 @keyframes lock-pulse {
@@ -242,10 +243,10 @@
 }
 
 .profile-lock-text {
-  font-size: 13px;
+  font-size: 11px;
   color: #FFE66D;
   font-weight: 800;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .profile-info {

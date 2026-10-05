@@ -19,16 +19,6 @@ export default function MultiFunctionDashboard() {
       earnHighlight: `${format(1200)} - ${format(6500)}`,
     },
     {
-      id: "work",
-      title: "Work Tasks",
-      subtitle: `${format(40)} - ${format(300)} per task`,
-      icon: "💼",
-      gradient: "linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)",
-      route: "/work",
-      description: "Write articles, train AI, transcribe audio, or write academic pieces.",
-      earnHighlight: `${format(40)} - ${format(300)}`,
-    },
-    {
       id: "chat",
       title: "Chat Wazungu",
       subtitle: `${format(500)} - ${format(5500)} daily`,
@@ -37,6 +27,16 @@ export default function MultiFunctionDashboard() {
       route: "/chatwazungu",
       description: `Unlock premium profiles for ${format(99)}, chat with AI, earn ${format(500)} per unlock.`,
       earnHighlight: `${format(500)} - ${format(5500)}`,
+    },
+    {
+      id: "work",
+      title: "Work Tasks",
+      subtitle: `${format(40)} - ${format(300)} per task`,
+      icon: "💼",
+      gradient: "linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)",
+      route: "/work",
+      description: "Write articles, train AI, transcribe audio, or write academic pieces.",
+      earnHighlight: `${format(40)} - ${format(300)}`,
     },
     {
       id: "affiliate",
