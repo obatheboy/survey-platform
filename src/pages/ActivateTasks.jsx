@@ -140,15 +140,15 @@ export default function ActivateTasks() {
   useEffect(() => {
     let isMounted = true;
     const load = async () => {
-      try {
-        const res = await api.get("/auth/me");
-        if (!isMounted) return;
-        setUser(res.data);
+    try {
+      const res = await api.get("/auth/me");
+      if (!isMounted) return;
+      setUser(res.data);
 
-        if (res.data.task_activated === true || res.data.task_activation_fee_paid === true) {
-          navigate("/hub", { replace: true });
-          return;
-        }
+      if (res.data.task_activated === true || res.data.task_activation_fee_paid === true) {
+        navigate("/work", { replace: true });
+        return;
+      }
       } catch (err) {
         console.error("Failed to load user:", err);
         if (isMounted) navigate("/login");

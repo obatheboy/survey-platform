@@ -51,14 +51,16 @@ export default function WorkTaskHub() {
     const maxAttempts = 40;
     const POLL_INTERVAL_MS = 3000;
     const INITIAL_DELAY_MS = 8000;
+    let pollTimer = null;
 
     const stop = (errorMsg) => {
+      if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
       setActivationWaiting(false);
       if (errorMsg) setActivationError(errorMsg);
     };
 
     const schedulePoll = () => {
-      const timer = setInterval(async () => {
+      pollTimer = setInterval(async () => {
         attempts++;
         try {
           const confirmRes = await taskActivationApi.confirm({
@@ -71,9 +73,7 @@ export default function WorkTaskHub() {
             stop();
             setTaskActivated(true);
             toast.success("Work tasks activated!");
-            setTimeout(() => {
-              navigate("/hub", { replace: true });
-            }, 1500);
+            loadHub();
             return;
           }
 
@@ -87,7 +87,6 @@ export default function WorkTaskHub() {
           }
         }
       }, POLL_INTERVAL_MS);
-      return timer;
     };
 
     setTimeout(() => schedulePoll(), INITIAL_DELAY_MS);
