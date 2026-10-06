@@ -13,7 +13,7 @@
    nothing.
    ===================================================== */
 
-export const ACTIVATION_FEE = 97;
+export const ACTIVATION_FEE = 100;
 
 /* Paid to the user for each completed survey. Mirrors
    SURVEY_EARNINGS in backend/src/config/fees.js - the backend credits this

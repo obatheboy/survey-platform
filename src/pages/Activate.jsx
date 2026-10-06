@@ -330,7 +330,7 @@ export default function Activate() {
         )}
 
         <button
-          onClick={() => navigate("/hub")}
+          onClick={() => navigate("/dashboard")}
           style={{
             width: "100%",
             marginTop: "16px",
@@ -345,7 +345,7 @@ export default function Activate() {
             minHeight: "44px"
           }}
         >
-          ← Back to Hub
+          ← Back to Dashboard
         </button>
       </div>
 

@@ -20,7 +20,7 @@
    ===================================================== */
 
 /* One-time activation fee - the gate to the dashboard */
-const ACTIVATION_FEE = 97;
+const ACTIVATION_FEE = 100;
 
 /* Legacy login fee. Distinct from the activation fee and not charged
    on the current flow; kept for the /api/login-fee routes. */
