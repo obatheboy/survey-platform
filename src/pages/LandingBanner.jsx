@@ -64,7 +64,7 @@ export default function LandingBanner() {
           {[
             { id: "surveys", icon: "📝", title: "Complete Surveys", tag: "Paid daily", accent: "#06b6d4", text: "60 topics — Safaricom, Equity Bank, food, football and more. Answer a few questions, get paid instantly." },
             { id: "chat", icon: "💬", title: "Chat Wazungu", tag: "Per unlock", accent: "#0DAA65", text: "Unlock 200 profiles and chat with new people. Every profile you unlock pays you straight away." },
-            { id: "affiliate", icon: "👥", title: "Affiliate Program", tag: "Up to KES 3,000/day", accent: "#ea580c", text: "Invite friends and build your team. Earn commissions on every unlock and survey completion." },
+            { id: "affiliate", icon: "👥", title: "Affiliate Program", tag: "Earn commissions", accent: "#ea580c", text: "Invite friends and build your team. Earn commissions on every unlock and survey completion." },
             { id: "withdraw", icon: "💰", title: "Withdraw to M-Pesa", tag: "M-Pesa", accent: "#7c3aed", text: "Cash out straight to your M-Pesa once you reach the minimum balance. MTN and Airtel supported in Uganda." },
           ].map((m, i) => (
             <div
