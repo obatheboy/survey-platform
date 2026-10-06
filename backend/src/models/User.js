@@ -325,6 +325,10 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  chat_earnings: {
+    type: Number,
+    default: 0
+  },
   wallet_balance: {
     type: Number,
     default: 0

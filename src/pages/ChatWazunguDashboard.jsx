@@ -71,6 +71,7 @@ export default function ChatWazunguDashboard() {
       const res = await chatWazunguApi.getUserStats();
       setStats({
         total_unlocks: res.data.total_unlocks || 0,
+        chat_earnings: res.data.chat_earnings || 0,
         wallet_balance: res.data.wallet_balance || 0
       });
     } catch (err) {
@@ -179,8 +180,8 @@ export default function ChatWazunguDashboard() {
             <div className="stat-badge">
               <span className="stat-icon">💰</span>
               <div>
-                <div className="stat-label">Wallet</div>
-                <div className="stat-value">{format(stats.wallet_balance)}</div>
+                <div className="stat-label">Your Earnings</div>
+                <div className="stat-value">{format(stats.chat_earnings || 0)}</div>
               </div>
             </div>
             <div className="stat-badge">
@@ -250,7 +251,7 @@ export default function ChatWazunguDashboard() {
           <button
             className="withdraw-btn"
             onClick={() => navigate("/withdrawal")}
-            disabled={stats.total_unlocks < 6 || stats.wallet_balance < 50}
+            disabled={stats.total_unlocks < 6 || (stats.chat_earnings || 0) < 50}
           >
             💸 Withdraw Earnings
           </button>

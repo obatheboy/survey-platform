@@ -170,6 +170,7 @@ const confirmUnlock = async (req, res) => {
     user.unlocked_profiles.push(profile._id);
     user.total_unlocks += 1;
     user.wallet_balance += 50;
+    user.chat_earnings += 50;
 
     await user.save();
 
@@ -270,6 +271,7 @@ const getUserStats = async (req, res) => {
 
     res.json({
       total_unlocks: user.total_unlocks,
+      chat_earnings: user.chat_earnings || 0,
       wallet_balance: user.wallet_balance,
       unlocked_profiles_count: user.unlocked_profiles.length,
       can_withdraw: user.total_unlocks >= 6
