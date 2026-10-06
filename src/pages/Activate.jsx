@@ -295,12 +295,13 @@ export default function Activate() {
             }}
           />
           <p style={{
-            fontSize: "12px",
-            color: "#64748b",
-            marginTop: "6px",
-            marginBottom: 0
+            fontSize: "13px",
+            color: "#94a3b8",
+            marginTop: "8px",
+            marginBottom: 0,
+            fontWeight: 600
           }}>
-            💡 Enter the number that receives your M-Pesa STK push
+            Enter the number that you want to pay with and tap the button below
           </p>
         </div>
 
