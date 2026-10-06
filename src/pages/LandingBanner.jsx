@@ -34,9 +34,9 @@ export default function LandingBanner() {
       <div className="lb-content">
         {/* Headline */}
         <h1 className="lb-headline">
-          Are You Looking Forward
+          Transform Your Digital Presence
           <br />
-          <span className="lb-headline-accent">To Make Cash Online?</span>
+          <span className="lb-headline-accent">Into An Income</span>
         </h1>
 
         <p className="lb-sub">
