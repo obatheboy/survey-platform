@@ -242,8 +242,7 @@ export default function Auth() {
         {/* Logo */}
         <div style={styles.logoSection}>
           <div style={styles.logoIcon}>💰</div>
-          <h1 style={styles.logo}>Survey<span style={styles.logoAccent}>Earn</span></h1>
-          <p style={styles.tagline}>East Africa's Most Trusted Survey Platform</p>
+          <h1 style={styles.logo}>Create Your Account Now</h1>
         </div>
 
         {/* Stats */}
