@@ -143,7 +143,8 @@ export default function Auth() {
         setCtxCountry(regData.country || COUNTRIES.KENYA);
       }
 
-      navigate("/activate", { replace: true });
+      // The activation fee gateway is removed. Users go straight to the hub.
+      navigate("/hub", { replace: true });
     } catch (err) {
       let errorMessage;
       
@@ -193,16 +194,7 @@ export default function Auth() {
 
         const onboardingCompleted = res.data.user?.survey_onboarding_completed;
 
-        const paidActivationFee =
-          res.data.user?.is_activated === true ||
-          res.data.user?.account_activated === true ||
-          res.data.user?.all_plans_completed === true ||
-          res.data.user?.welcome_bonus_paid === true;
-
-        if (!paidActivationFee) {
-          localStorage.removeItem("showWelcomeBonusOnDashboard");
-          navigate("/activate", { replace: true });
-        } else if (!onboardingCompleted) {
+        if (!onboardingCompleted) {
           localStorage.removeItem("showWelcomeBonusOnDashboard");
           navigate("/onboarding", { replace: true });
         } else {

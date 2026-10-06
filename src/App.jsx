@@ -98,22 +98,10 @@ function ProtectedRoute({ children, requireActivation = true }) {
     return <Navigate to="/auth?mode=register" replace />;
   }
 
-  // The activation fee is a one-time gate to the dashboard. Unpaid users
-  // are sent to the payment page, which STK-pushes the fee and then
-  // redirects them into the app once MegaPay confirms it.
-  // TEMPORARILY DISABLED - activation fee gateway removed.
-  // The KES 98 activation fee (paid via /activate) is still fully wired
-  // up - payment page, backend routes, controllers, and constants are
-  // untouched. To re-enable, restore the line below and remove this
-  // comment block.
-  //
-  // if (requireActivation && !hasPaidActivationFee(user)) {
-  //   return <Navigate to="/activate" replace />;
-  // }
-  if (requireActivation && !hasPaidActivationFee(user)) {
-    return <Navigate to="/activate" replace />;
-  }
-
+  // The activation fee gateway is removed. Users can freely access the hub
+  // and survey app after login. The survey app still has its own server-side
+  // gate (is_activated / account_activated) that blocks survey completion
+  // until the welcome bonus is paid.
   return children;
 }
 
