@@ -11,6 +11,7 @@ export default function Activate() {
   const [submitting, setSubmitting] = useState(false);
   const [waiting, setWaiting] = useState(false);
   const [error, setError] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
   const pollRef = useRef(null);
 
   useEffect(() => {
@@ -71,7 +72,8 @@ export default function Activate() {
         if (res.data.success && confirmed) {
           stop();
           sessionStorage.setItem("justActivated", "1");
-          navigate("/dashboard", { replace: true });
+          setShowSuccess(true);
+          setWaiting(false);
           return;
         }
 
@@ -176,6 +178,58 @@ export default function Activate() {
         textAlign: "center",
         boxShadow: "0 20px 60px rgba(0,0,0,0.4)"
       }}>
+        {showSuccess ? (
+          <>
+            <div style={{ fontSize: "64px", marginBottom: "16px" }}>✅</div>
+            <h2 style={{
+              fontSize: "26px",
+              fontWeight: 900,
+              color: "#22c55e",
+              margin: "0 0 12px 0"
+            }}>
+              Payment Successful!
+            </h2>
+            <p style={{
+              fontSize: "16px",
+              fontWeight: 700,
+              color: "#ffffff",
+              marginBottom: "8px"
+            }}>
+              🎁 You have received your Welcome Bonus of{" "}
+              <span style={{ color: "#ffd700", fontWeight: 900 }}>KES 1,200</span>
+            </p>
+            <p style={{
+              fontSize: "14px",
+              color: "#94a3b8",
+              marginBottom: "24px",
+              lineHeight: 1.5
+            }}>
+              Your account is now activated. Go to the dashboard and complete all surveys to earn more!
+            </p>
+            <button
+              onClick={() => {
+                sessionStorage.setItem("justActivated", "1");
+                navigate("/dashboard", { replace: true });
+              }}
+              style={{
+                width: "100%",
+                padding: "16px",
+                borderRadius: "14px",
+                fontWeight: 900,
+                fontSize: "16px",
+                cursor: "pointer",
+                border: "none",
+                color: "#ffffff",
+                background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
+                boxShadow: "0 8px 24px rgba(34, 197, 94, 0.5)",
+                minHeight: "52px"
+              }}
+            >
+              GO TO THE DASHBOARD AND COMPLETE ALL SURVEYS
+            </button>
+          </>
+        ) : (
+          <>
         <div style={{ fontSize: "52px", marginBottom: "12px" }}>🎉</div>
         <h1 style={{
           fontSize: "28px",
@@ -347,6 +401,8 @@ export default function Activate() {
         >
           ← Back to Dashboard
         </button>
+          </>
+        )}
       </div>
 
       <style>{
