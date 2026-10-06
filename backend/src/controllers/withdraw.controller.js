@@ -7,7 +7,7 @@ const { ACTIVATION_PLANS, syncActivationStatus } = require("../utils/activationS
 ================================ */
 const MIN_WITHDRAW = 200;
 const MIN_AFFILIATE_WITHDRAW = 50;
-const MIN_UNLOCK_WITHDRAW = 500;
+const MIN_UNLOCK_WITHDRAW = 50;
 const MIN_UNLOCKS_REQUIRED = 6;
 const MAX_WITHDRAW = 500000;
 const DAILY_WITHDRAW_LIMIT = 93;

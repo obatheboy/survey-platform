@@ -20,7 +20,10 @@ export const ACTIVATION_FEE = 97;
    server-side, so both must agree or the advertised amount is wrong. */
 export const SURVEY_EARNINGS = 75;
 
-/* ChatWazungu profile unlock - unrelated to account activation */
+/* ChatWazungu profile unlock - cost to unlock one profile */
 export const UNLOCK_FEE = 99;
 
-export default { ACTIVATION_FEE, SURVEY_EARNINGS, UNLOCK_FEE };
+/* Paid to the user for each ChatWazungu profile unlock. */
+export const CHAT_UNLOCK_EARNINGS = 50;
+
+export default { ACTIVATION_FEE, SURVEY_EARNINGS, UNLOCK_FEE, CHAT_UNLOCK_EARNINGS };

@@ -21,12 +21,12 @@ export default function MultiFunctionDashboard() {
     {
       id: "chat",
       title: "Chat Wazungu",
-      subtitle: `${format(500)} - ${format(5500)} daily`,
+      subtitle: `${format(50)} - ${format(550)} daily`,
       icon: "💬",
       gradient: "linear-gradient(135deg, #0DAA65 0%, #1a8d55 100%)",
       route: "/chatwazungu",
-      description: `Unlock premium profiles for ${format(99)}, chat with AI, earn ${format(500)} per unlock.`,
-      earnHighlight: `${format(500)} - ${format(5500)}`,
+      description: `Unlock premium profiles for ${format(99)}, chat with AI, earn ${format(50)} per unlock.`,
+      earnHighlight: `${format(50)} - ${format(550)}`,
     },
     {
       id: "work",

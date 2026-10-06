@@ -6,6 +6,7 @@ import api from "../api/api";
 import ChatWindow from "../components/ChatWindow";
 import UnlockPaymentModal from "../components/UnlockPaymentModal";
 import { useCurrency } from "../contexts/CurrencyContext.jsx";
+import { CHAT_UNLOCK_EARNINGS } from "../constants/fees";
 import "./ChatWazunguDashboard.css";
 
   const getWhiteAvatar = (profileId) => {
@@ -92,7 +93,7 @@ export default function ChatWazunguDashboard() {
       setActiveChat(updatedProfile);
     }
     setSelectedProfile(null);
-    toast.success(`Profile unlocked! You earned ${format(500)}`);
+    toast.success(`Profile unlocked! You earned ${format(CHAT_UNLOCK_EARNINGS)}`);
   };
 
   const handleChat = (profile) => {
@@ -249,7 +250,7 @@ export default function ChatWazunguDashboard() {
           <button
             className="withdraw-btn"
             onClick={() => navigate("/withdrawal")}
-            disabled={stats.total_unlocks < 6 || stats.wallet_balance < 500}
+            disabled={stats.total_unlocks < 6 || stats.wallet_balance < 50}
           >
             💸 Withdraw Earnings
           </button>

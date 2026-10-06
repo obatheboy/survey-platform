@@ -169,7 +169,7 @@ const confirmUnlock = async (req, res) => {
 
     user.unlocked_profiles.push(profile._id);
     user.total_unlocks += 1;
-    user.wallet_balance += 500;
+    user.wallet_balance += 50;
 
     await user.save();
 
@@ -190,7 +190,7 @@ const confirmUnlock = async (req, res) => {
       is_unlocked: true,
       total_unlocks: user.total_unlocks,
       wallet_balance: user.wallet_balance,
-      earnings: 500
+      earnings: 50
     });
   } catch (error) {
     console.error('Error confirming unlock:', error);

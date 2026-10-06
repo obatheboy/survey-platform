@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { chatWazunguApi } from "../api/api";
 import { toast } from "react-hot-toast";
 import { useCurrency } from "../contexts/CurrencyContext.jsx";
+import { CHAT_UNLOCK_EARNINGS } from "../constants/fees";
 import "./UnlockPaymentModal.css";
 
 export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onClose }) {
@@ -39,7 +40,7 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
 
         if (res.data.is_unlocked) {
           stop();
-          toast.success("Profile unlocked! You earned " + format(500));
+          toast.success("Profile unlocked! You earned " + format(CHAT_UNLOCK_EARNINGS));
           onSuccess();
           return;
         }
@@ -135,7 +136,7 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
         phone: phoneNumber,
       });
       if (res.data?.is_unlocked) {
-        toast.success("Profile unlocked! You earned " + format(500));
+        toast.success("Profile unlocked! You earned " + format(CHAT_UNLOCK_EARNINGS));
         onSuccess();
         onClose();
       } else {
@@ -201,7 +202,7 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
                 </div>
               ) : (
                 <p className="unlock-instructions">
-                  Unlock this profile now and start chatting instantly. You will also earn <strong>{format(500)}</strong> as a reward for unlocking.
+                  Unlock this profile now and start chatting instantly. You will also earn <strong>{format(CHAT_UNLOCK_EARNINGS)}</strong> as a reward for unlocking.
                 </p>
               )}
               <form onSubmit={handleSubmit}>
@@ -236,14 +237,14 @@ export default function UnlockPaymentModal({ profile, userPhone, onSuccess, onCl
                   <p>✅ Payment sent to {formatPhoneNumber(phoneNumber)}</p>
                   <p>📋 Paste your MTN/Airtel SMS confirmation below</p>
                   <p>💰 Reference: {transactionId || "Manual"}</p>
-                  <p>🎁 You'll earn <strong style={{ color: "#fbbf24" }}>{format(500)}</strong> instantly after verification</p>
+                  <p>🎁 You'll earn <strong style={{ color: "#fbbf24" }}>{format(CHAT_UNLOCK_EARNINGS)}</strong> instantly after verification</p>
                 </>
               ) : (
                 <>
                   <p>✅ STK push sent to {formatPhoneNumber(phoneNumber)}</p>
                   <p>💳 Enter your M-Pesa PIN to complete payment</p>
                   <p>💰 Reference: {transactionId}</p>
-                  <p>🎁 You'll earn <strong style={{ color: "#fbbf24" }}>{format(500)}</strong> instantly after verification</p>
+                  <p>🎁 You'll earn <strong style={{ color: "#fbbf24" }}>{format(CHAT_UNLOCK_EARNINGS)}</strong> instantly after verification</p>
                 </>
               )}
               </div>
