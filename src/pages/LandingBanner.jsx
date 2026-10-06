@@ -2,41 +2,6 @@ import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LandingBanner.css";
 
-const EARN_METHODS = [
-  {
-    id: "surveys",
-    icon: "📝",
-    title: "Complete Surveys",
-    text: "60 topics — Safaricom, Equity Bank, food, football and more. Answer a few questions, get paid instantly.",
-    tag: "Paid daily",
-    accent: "#06b6d4",
-  },
-  {
-    id: "chat",
-    icon: "💬",
-    title: "Chat Wazungu",
-    text: "Unlock 200 profiles and chat with new people. Every profile you unlock pays you straight away.",
-    tag: "Per unlock",
-    accent: "#0DAA65",
-  },
-  {
-    id: "affiliate",
-    icon: "👥",
-    title: "Affiliate Program",
-    text: "Invite friends and build your team. Earn commissions on every unlock and survey completion.",
-    tag: "Up to KES 3,000/day",
-    accent: "#ea580c",
-  },
-  {
-    id: "withdraw",
-    icon: "💰",
-    title: "Withdraw to M-Pesa",
-    text: "Cash out straight to your M-Pesa once you reach the minimum balance. MTN and Airtel supported in Uganda.",
-    tag: "M-Pesa",
-    accent: "#7c3aed",
-  },
-];
-
 export default function LandingBanner() {
   const navigate = useNavigate();
 
@@ -62,7 +27,7 @@ export default function LandingBanner() {
       tabIndex={0}
       aria-label="Start earning. Tap to register."
     >
-      {/* Soft glow orbs */}
+      {/* Animated background orbs */}
       <div className="lb-orb lb-orb-1" aria-hidden="true" />
       <div className="lb-orb lb-orb-2" aria-hidden="true" />
 
@@ -84,13 +49,24 @@ export default function LandingBanner() {
           <span className="lb-headline-accent">To Make Cash Online?</span>
         </h1>
 
+        {/* Bold daily claim */}
+        <div className="lb-daily-claim">
+          <span className="lb-daily-amount">KES 500 – 3,500</span>
+          <span className="lb-daily-label">per day</span>
+        </div>
+
         <p className="lb-sub">
           Start now and make <strong style={{ color: "#fbbf24", fontWeight: 900, fontSize: "18px" }}>KES 500 – 3,500 daily</strong> by completing simple tasks.
         </p>
 
         {/* Earning methods */}
         <div className="lb-methods">
-          {EARN_METHODS.map((m, i) => (
+          {[
+            { id: "surveys", icon: "📝", title: "Complete Surveys", tag: "Paid daily", accent: "#06b6d4", text: "60 topics — Safaricom, Equity Bank, food, football and more. Answer a few questions, get paid instantly." },
+            { id: "chat", icon: "💬", title: "Chat Wazungu", tag: "Per unlock", accent: "#0DAA65", text: "Unlock 200 profiles and chat with new people. Every profile you unlock pays you straight away." },
+            { id: "affiliate", icon: "👥", title: "Affiliate Program", tag: "Up to KES 3,000/day", accent: "#ea580c", text: "Invite friends and build your team. Earn commissions on every unlock and survey completion." },
+            { id: "withdraw", icon: "💰", title: "Withdraw to M-Pesa", tag: "M-Pesa", accent: "#7c3aed", text: "Cash out straight to your M-Pesa once you reach the minimum balance. MTN and Airtel supported in Uganda." },
+          ].map((m, i) => (
             <div
               key={m.id}
               className="lb-method"
@@ -112,12 +88,7 @@ export default function LandingBanner() {
           ))}
         </div>
 
-        {/* Bold daily claim */}
-        <div className="lb-daily-claim">
-          <span className="lb-daily-amount">KES 500 – 3,500</span>
-          <span className="lb-daily-label">per day</span>
-        </div>
-
+        {/* Task type pills */}
         <div className="lb-proof">
           {["AFFILIATE MARKETING", "SURVEYS", "AI TRAINING", "TRANSCRIPTION", "ONLINE WRITING"].map((label, i) => (
             <Fragment key={label}>
