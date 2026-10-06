@@ -848,14 +848,6 @@ const load = async () => {
       {/* TOAST NOTIFICATION */}
       {toast && <div className="toast-notification">{toast}</div>}
 
-      {/* Back to Hub */}
-      <button
-        onClick={() => navigate("/hub")}
-        className="dashboard-back-btn"
-      >
-        ← Back to Hub
-      </button>
-
       {/* FULL SCREEN NOTIFICATION - FIXED CENTER */}
       {fullScreenNotification && (
         <div style={{
@@ -1203,23 +1195,33 @@ const load = async () => {
           <button className="menu-btn" onClick={() => setMenuOpen(true)} style={{ position: 'absolute', left: '14px' }}>
             <span className="menu-icon">☰</span>
           </button>
-          <button
-            onClick={handleInstallApp}
-            className="install-app-btn"
-            title="Install App"
-            style={{ margin: '0 auto' }}
-          >
-            📲 Install App
-          </button>
+          <div style={{ display: 'flex', gap: '8px', margin: '0 auto', flexWrap: 'wrap', justifyContent: 'center' }}>
             <button
-              onClick={openWhatsAppSupport}
-              className="whatsapp-header-btn"
-              style={{ position: 'absolute', right: '14px' }}
-              title="Contact Us on WhatsApp"
+              onClick={() => navigate("/hub")}
+              className="install-app-btn"
+              title="Back to Hub"
+              style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)' }}
             >
-              <span style={{ fontSize: '12px' }}>💬</span>
-              <span style={{ fontSize: '11px', fontWeight: '600' }}>Contact Us</span>
+              🏠 Back to Hub
             </button>
+            <button
+              onClick={handleInstallApp}
+              className="install-app-btn"
+              title="Install App"
+              style={{ background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)' }}
+            >
+              📲 Install App
+            </button>
+          </div>
+          <button
+            onClick={openWhatsAppSupport}
+            className="whatsapp-header-btn"
+            style={{ position: 'absolute', right: '14px' }}
+            title="Contact Us on WhatsApp"
+          >
+            <span style={{ fontSize: '12px' }}>💬</span>
+            <span style={{ fontSize: '11px', fontWeight: '600' }}>Contact Us</span>
+          </button>
         </div>
 
         <div className="header-activation-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
