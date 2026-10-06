@@ -43,7 +43,8 @@ export default function Activate() {
     if (user?.phone && !phone) {
       setPhone(user.phone);
     }
-  }, [user, phone]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const startPolling = (transactionRequestId) => {
     let attempts = 0;
@@ -265,33 +266,42 @@ export default function Activate() {
         <div style={{ marginBottom: "20px", textAlign: "left" }}>
           <label style={{
             display: "block",
-            fontSize: "13px",
-            fontWeight: 700,
+            fontSize: "15px",
+            fontWeight: 800,
             color: "#c4b5fd",
-            marginBottom: "6px"
+            marginBottom: "8px",
+            letterSpacing: "0.5px"
           }}>
-            📱 M-Pesa Number
+            📱 Enter your M-Pesa Number
           </label>
           <input
             type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            placeholder="2547XXXXXXXX or 07XXXXXXXX"
+            placeholder="e.g. 0712345678 or 254712345678"
             disabled={submitting || waiting}
             style={{
               width: "100%",
-              padding: "12px",
+              padding: "14px 16px",
               borderRadius: "12px",
               border: "2px solid #251a3a",
               background: "#1a1128",
               color: "#ffffff",
-              fontSize: "15px",
+              fontSize: "17px",
               fontWeight: 700,
               boxSizing: "border-box",
               outline: "none",
               letterSpacing: "1px"
             }}
           />
+          <p style={{
+            fontSize: "12px",
+            color: "#64748b",
+            marginTop: "6px",
+            marginBottom: 0
+          }}>
+            💡 Enter the number that receives your M-Pesa STK push
+          </p>
         </div>
 
         <button
