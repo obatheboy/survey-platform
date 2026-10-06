@@ -32,11 +32,6 @@ export default function LandingBanner() {
       <div className="lb-orb lb-orb-2" aria-hidden="true" />
 
       <div className="lb-content">
-        {/* Welcome bonus badge */}
-        <div className="lb-badge">
-          <span className="lb-badge-text">🎁 WELCOME BONUS INCLUDED</span>
-        </div>
-
         {/* Logo */}
         <div className="lb-logo" aria-hidden="true">
           <span className="lb-logo-text">CW</span>
@@ -49,15 +44,20 @@ export default function LandingBanner() {
           <span className="lb-headline-accent">To Make Cash Online?</span>
         </h1>
 
-        {/* Bold daily claim */}
-        <div className="lb-daily-claim">
-          <span className="lb-daily-amount">KES 500 – 3,500</span>
-          <span className="lb-daily-label">per day</span>
-        </div>
-
         <p className="lb-sub">
           Start now and make <strong style={{ color: "#fbbf24", fontWeight: 900, fontSize: "18px" }}>KES 500 – 3,500 daily</strong> by completing simple tasks.
         </p>
+
+        {/* CTA near top */}
+        <button
+          type="button"
+          className="lb-cta"
+          onClick={goToRegister}
+          aria-label="Start now and create your free account"
+        >
+          START NOW
+        </button>
+        <p className="lb-cta-note">Free to join • Takes under a minute</p>
 
         {/* Earning methods */}
         <div className="lb-methods">
@@ -103,17 +103,6 @@ export default function LandingBanner() {
           <span className="lb-trust-chip">🇰🇪 🇺🇬 Kenya & Uganda</span>
           <span className="lb-trust-chip">🔒 Secure payments</span>
         </div>
-
-        {/* CTA */}
-        <button
-          type="button"
-          className="lb-cta"
-          onClick={goToRegister}
-          aria-label="Start now and create your free account"
-        >
-          START NOW
-        </button>
-        <p className="lb-cta-note">Free to join • Takes under a minute</p>
 
         {/* Tap hint */}
         <p className="lb-tap-hint">👆 Tap anywhere to register</p>
