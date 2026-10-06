@@ -2,21 +2,6 @@ import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LandingBanner.css";
 
-/* =====================================================
-   💰 ENTRANCE BANNER — "How you can earn"
-   Shown at "/" so every new visitor lands here first.
-   Tapping anywhere (or START NOW) goes to /auth?mode=register.
-
-   Deliberately has NO auth check: it renders for everyone,
-   including signed-in members who tap the link again.
-
-   NO EARNING AMOUNTS ARE SHOWN. The banner says the user will earn
-   but never quotes a figure. Per-survey values live in-app and can
-   change, so publishing them here risks a promise the platform does
-   not keep. The only money shown is what the user PAYS: the KES 96
-   activation fee, and the KES 200 minimum withdrawal.
-   ===================================================== */
-
 const EARN_METHODS = [
   {
     id: "surveys",
@@ -50,15 +35,6 @@ const EARN_METHODS = [
     tag: "M-Pesa",
     accent: "#7c3aed",
   },
-];
-
-/* No figures on the banner. It says the user will earn, without promising
-   specific amounts - the exact per-survey values are discovered in-app and
-   can change, so stating them here risks a promise the platform doesn't keep. */
-const PROOF = [
-  { value: "SURVEYS", label: "Every Day" },
-  { value: "BONUS", label: "On Signup" },
-  { value: "AFFILIATE", label: "Up to 3K/day" },
 ];
 
 export default function LandingBanner() {
@@ -103,13 +79,16 @@ export default function LandingBanner() {
 
         {/* Headline */}
         <h1 className="lb-headline">
-          Turn Your Phone
+          Are You Looking Forward
           <br />
-          <span className="lb-headline-accent">Into Real Cash</span>
+          <span className="lb-headline-accent">To Make Cash Online?</span>
         </h1>
-        <p className="lb-sub">4 simple ways to earn every single day</p>
 
-        {/* How you can earn */}
+        <p className="lb-sub">
+          Start now and make <strong style={{ color: "#fbbf24", fontWeight: 900, fontSize: "18px" }}>KES 500 – 3,500 daily</strong> by completing simple tasks.
+        </p>
+
+        {/* Earning methods */}
         <div className="lb-methods">
           {EARN_METHODS.map((m, i) => (
             <div
@@ -133,15 +112,17 @@ export default function LandingBanner() {
           ))}
         </div>
 
-        {/* What you can earn - deliberately no figures */}
+        {/* Bold daily claim */}
+        <div className="lb-daily-claim">
+          <span className="lb-daily-amount">KES 500 – 3,500</span>
+          <span className="lb-daily-label">per day</span>
+        </div>
+
         <div className="lb-proof">
-          {PROOF.map((p, i) => (
-            <Fragment key={p.label}>
+          {["AFFILIATE MARKETING", "SURVEYS", "AI TRAINING", "TRANSCRIPTION", "ONLINE WRITING"].map((label, i) => (
+            <Fragment key={label}>
               {i > 0 && <span className="lb-proof-divider" aria-hidden="true" />}
-              <div className="lb-proof-item">
-                <span className="lb-proof-value">{p.value}</span>
-                <span className="lb-proof-label">{p.label}</span>
-              </div>
+              <span className="lb-proof-pill">{label}</span>
             </Fragment>
           ))}
         </div>
