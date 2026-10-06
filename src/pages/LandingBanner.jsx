@@ -32,11 +32,6 @@ export default function LandingBanner() {
       <div className="lb-orb lb-orb-2" aria-hidden="true" />
 
       <div className="lb-content">
-        {/* Logo */}
-        <div className="lb-logo" aria-hidden="true">
-          <span className="lb-logo-text">CW</span>
-        </div>
-
         {/* Headline */}
         <h1 className="lb-headline">
           Are You Looking Forward
