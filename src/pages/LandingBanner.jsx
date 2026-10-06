@@ -57,7 +57,7 @@ export default function LandingBanner() {
         >
           START NOW
         </button>
-        <p className="lb-cta-note">Free to join • Takes under a minute</p>
+        <p className="lb-cta-note">Easier to join • Takes under a minute</p>
 
         {/* Earning methods */}
         <div className="lb-methods">
