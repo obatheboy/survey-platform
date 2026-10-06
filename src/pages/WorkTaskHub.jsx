@@ -102,6 +102,52 @@ export default function WorkTaskHub() {
             );
           })}
         </div>
+
+        <div
+          style={{
+            marginTop: "20px",
+            padding: "16px",
+            borderRadius: "14px",
+            background: "linear-gradient(135deg, #25D366 0%, #128C7E 100%)",
+            boxShadow: "0 6px 20px rgba(37, 211, 102, 0.3)",
+            cursor: "pointer",
+            textAlign: "center",
+            transition: "all 0.3s ease",
+          }}
+          onClick={() => window.open("https://whatsapp.com/channel/0029Vb8a7kKElagpd2ZHlm3b", "_blank")}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              window.open("https://whatsapp.com/channel/0029Vb8a7kKElagpd2ZHlm3b", "_blank");
+            }
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+              color: "#ffffff",
+              fontSize: "14px",
+              fontWeight: 800,
+            }}
+          >
+            <span>💬</span>
+            <span>Join Our WhatsApp Channel</span>
+          </div>
+          <p
+            style={{
+              margin: "6px 0 0",
+              fontSize: "12px",
+              color: "rgba(255,255,255,0.9)",
+              fontWeight: 600,
+            }}
+          >
+            Get updates, tips, and support from our community
+          </p>
+        </div>
       </div>
     </div>
   );

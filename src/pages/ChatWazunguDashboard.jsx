@@ -260,6 +260,12 @@ export default function ChatWazunguDashboard() {
           >
             👥 Affiliate
           </button>
+          <button
+            className="whatsapp-join-btn"
+            onClick={() => window.open("https://whatsapp.com/channel/0029Vb8a7kKElagpd2ZHlm3b", "_blank")}
+          >
+            💬 Join WhatsApp Channel
+          </button>
         </div>
       </div>
     </div>

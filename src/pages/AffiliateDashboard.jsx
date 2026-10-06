@@ -154,7 +154,7 @@ export default function AffiliateDashboard() {
 <button className="share-btn whatsapp" onClick={shareToWhatsApp}>
                💬 Share on WhatsApp
              </button>
-<button className="share-btn whatsapp" onClick={() => window.open("https://whatsapp.com/channel/0029VbDaMReDeONE65SbVk0y", "_blank")}>
+<button className="share-btn whatsapp" onClick={() => window.open("https://whatsapp.com/channel/0029Vb8a7kKElagpd2ZHlm3b", "_blank")}>
                 💬 Join Our Group
               </button>
           </div>

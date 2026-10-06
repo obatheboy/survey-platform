@@ -478,13 +478,6 @@ export default function Auth() {
             request. components/PWAInstallPrompt.jsx exists but is not
             mounted anywhere, so nothing replaces it in-app. */}
 
-       <button
-            style={styles.whatsappGroupBtn}
-            onClick={() => window.open("https://whatsapp.com/channel/0029VbDaMReDeONE65SbVk0y", "_blank")}
-          >
-            👥 Join Our Group
-          </button>
-
           {/* Footer */}
          <p style={styles.footer}>
            © 2026 SurveyEarn

@@ -199,6 +199,54 @@ export default function MultiFunctionDashboard() {
           );
         })}
       </div>
+
+      <div
+        style={{
+          maxWidth: "520px",
+          margin: "0 auto",
+          padding: "16px",
+          borderRadius: "20px",
+          background: "linear-gradient(135deg, #25D366 0%, #128C7E 100%)",
+          boxShadow: "0 8px 24px rgba(37, 211, 102, 0.3)",
+          cursor: "pointer",
+          transition: "all 0.3s ease",
+        }}
+        onClick={() => window.open("https://whatsapp.com/channel/0029Vb8a7kKElagpd2ZHlm3b", "_blank")}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            window.open("https://whatsapp.com/channel/0029Vb8a7kKElagpd2ZHlm3b", "_blank");
+          }
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "10px",
+            color: "#ffffff",
+            fontSize: "16px",
+            fontWeight: 800,
+            letterSpacing: "0.3px",
+          }}
+        >
+          <span style={{ fontSize: "22px" }}>💬</span>
+          <span>Join Our WhatsApp Channel</span>
+        </div>
+        <p
+          style={{
+            margin: "8px 0 0",
+            fontSize: "12px",
+            color: "rgba(255,255,255,0.9)",
+            textAlign: "center",
+            fontWeight: 600,
+          }}
+        >
+          Get updates, tips, and support from our community
+        </p>
+      </div>
     </div>
   );
 }

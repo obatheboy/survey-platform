@@ -757,7 +757,7 @@ const load = async () => {
       WHATSAPP SUPPORT FUNCTION
    ========================= */
   const openWhatsAppSupport = () => {
-    window.open("https://whatsapp.com/channel/0029VbDaMReDeONE65SbVk0y", "_blank");
+    window.open("https://whatsapp.com/channel/0029Vb8a7kKElagpd2ZHlm3b", "_blank");
   };
 
   const handleInstallApp = async () => {
@@ -2182,7 +2182,7 @@ const load = async () => {
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}>
             Need help? 
             <button 
-              onClick={() => window.open("https://whatsapp.com/channel/0029VbDaMReDeONE65SbVk0y", "_blank")}
+              onClick={() => window.open("https://whatsapp.com/channel/0029Vb8a7kKElagpd2ZHlm3b", "_blank")}
               style={{
                 background: 'none',
                 border: 'none',
