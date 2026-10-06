@@ -9,7 +9,7 @@ export default function MultiFunctionDashboard() {
     {
       id: "survey",
       title: "Do Surveys",
-      subtitle: "Available now",
+      subtitle: "Earn KES 1,200 - 3,500 daily",
       icon: "📊",
       gradient: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
       route: "/dashboard",
@@ -25,18 +25,9 @@ export default function MultiFunctionDashboard() {
       description: "Unlock premium profiles and chat with new people.",
     },
     {
-      id: "work",
-      title: "Work Tasks",
-      subtitle: "Available now",
-      icon: "💼",
-      gradient: "linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)",
-      route: "/work",
-      description: "Write articles, train AI, transcribe audio, or write academic pieces.",
-    },
-    {
       id: "affiliate",
       title: "Affiliate Program",
-      subtitle: "Available now",
+      subtitle: "Make up to KES 3,600/day",
       icon: "👥",
       gradient: "linear-gradient(135deg, #ea580c 0%, #FF6600 100%)",
       route: "/affiliate",
@@ -52,8 +43,8 @@ export default function MultiFunctionDashboard() {
     <div
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(160deg, #f0f4f8 0%, #ffffff 100%)",
-        color: "#1f2937",
+        background: "linear-gradient(160deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)",
+        color: "#f1f5f9",
         padding: "16px 16px 20px",
         fontFamily:
           "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif",
@@ -72,8 +63,9 @@ export default function MultiFunctionDashboard() {
             fontSize: "24px",
             fontWeight: 900,
             margin: "0 0 8px",
-            color: "#111827",
+            color: "#fbbf24",
             letterSpacing: "-0.03em",
+            textShadow: "0 2px 12px rgba(251, 191, 36, 0.3)"
           }}
         >
           Welcome back, Champion!
@@ -81,7 +73,7 @@ export default function MultiFunctionDashboard() {
         <p
           style={{
             fontSize: "13px",
-            color: "#6b7280",
+            color: "#94a3b8",
             margin: 0,
             fontWeight: 600,
           }}
@@ -115,16 +107,16 @@ export default function MultiFunctionDashboard() {
                 gap: "16px",
                 width: "100%",
                 maxWidth: "520px",
-                background: "#ffffff",
+                background: "linear-gradient(135deg, #1e293b 0%, #334155 100%)",
                 borderRadius: "24px",
                 padding: "18px 20px",
                 cursor: "pointer",
                 transition: "all 0.25s ease",
                 transform: isHovered ? "translateX(6px)" : "translateX(0)",
                 boxShadow: isHovered
-                  ? "0 20px 40px rgba(0,0,0,0.18)"
-                  : "0 6px 16px rgba(0,0,0,0.06)",
-                border: "1px solid #e5e7eb",
+                  ? "0 20px 40px rgba(0,0,0,0.5)"
+                  : "0 6px 16px rgba(0,0,0,0.3)",
+                border: "1px solid #475569",
               }}
             >
               {/* Icon Circle */}
@@ -140,8 +132,8 @@ export default function MultiFunctionDashboard() {
                   justifyContent: "center",
                   fontSize: "30px",
                   boxShadow: isHovered
-                    ? "0 10px 24px rgba(0,0,0,0.25)"
-                    : "0 6px 14px rgba(0,0,0,0.12)",
+                    ? "0 10px 24px rgba(0,0,0,0.4)"
+                    : "0 6px 14px rgba(0,0,0,0.3)",
                 }}
               >
                 {option.icon}
@@ -154,7 +146,7 @@ export default function MultiFunctionDashboard() {
                     fontSize: "17px",
                     fontWeight: 900,
                     margin: 0,
-                    color: "#111827",
+                    color: "#f1f5f9",
                     lineHeight: 1.2,
                     letterSpacing: "-0.01em",
                   }}
@@ -166,7 +158,7 @@ export default function MultiFunctionDashboard() {
                     fontSize: "12px",
                     fontWeight: 800,
                     margin: "4px 0 0",
-                    color: "#4b5563",
+                    color: "#fbbf24",
                   }}
                 >
                   {option.subtitle}
@@ -174,7 +166,7 @@ export default function MultiFunctionDashboard() {
                 <p
                   style={{
                     fontSize: "11px",
-                    color: "#6b7280",
+                    color: "#94a3b8",
                     lineHeight: 1.5,
                     margin: "4px 0 0",
                   }}
