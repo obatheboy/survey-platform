@@ -13,7 +13,7 @@ export default function MultiFunctionDashboard() {
       icon: "📊",
       gradient: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
       route: "/dashboard",
-      description: "Complete surveys on topics like Safaricom, Equity Bank, food, football and more.",
+      description: "Complete quick surveys and earn cash instantly. Topics on finance, food, football and more.",
     },
     {
       id: "chat",
