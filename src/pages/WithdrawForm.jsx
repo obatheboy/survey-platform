@@ -68,6 +68,9 @@ export default function WithdrawForm() {
   const [allPlansCompleted, setAllPlansCompleted] = useState(false);
   const [userPlans, setUserPlans] = useState({});
   const [affiliateBalance, setAffiliateBalance] = useState(0);
+  const [referralCount, setReferralCount] = useState(0);
+  const [showReferralPopup, setShowReferralPopup] = useState(false);
+  const [surveyCompletedCount, setSurveyCompletedCount] = useState(0);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -98,6 +101,9 @@ export default function WithdrawForm() {
         
         // Store affiliate balance for affiliate withdrawals
         setAffiliateBalance(userData.referral_commission_earned || 0);
+        // Store referral count for the survey-completion withdrawal gate
+        setReferralCount(userData.referral_count || 0);
+        setSurveyCompletedCount(userData.survey_completed_count || 0);
         
         // Update cache
         localStorage.setItem("cachedUser", JSON.stringify(userData));
@@ -177,6 +183,16 @@ export default function WithdrawForm() {
   // Main withdrawal submission handler
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Referral gate: once a user has completed all 60 surveys, they must
+    // refer at least 5 people before the platform lets them withdraw.
+    // This is a soft gate enforced client-side via a popup; the backend
+    // still does its own validation.
+    const surveysDone = surveyCompletedCount >= 60;
+    if (!isAffiliateWithdraw && surveysDone && referralCount < 5) {
+      setShowReferralPopup(true);
+      return;
+    }
     
     // Double-check activation before submission - Skip for affiliate
     if (!isAffiliateWithdraw && !isUserActivated) {
@@ -405,6 +421,73 @@ export default function WithdrawForm() {
               <button 
                 className="cancel-activation-btn"
                 onClick={closeActivationModal}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Referral Gate Popup — shown when a user has finished all 60 surveys
+          but has not yet referred at least 5 people. The only way forward
+          is the "Go to Affiliate" button, which drops them into the
+          Affiliate Dashboard where they can copy their link and start
+          referring. */}
+      {showReferralPopup && (
+        <div className="referral-gate-overlay">
+          <div className="referral-gate-modal">
+            <div className="referral-gate-header">
+              <h3>🎯 Refer 5 Friends to Unlock Withdrawals</h3>
+              <button
+                className="modal-close-btn"
+                onClick={() => setShowReferralPopup(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="referral-gate-content">
+              <div className="referral-gate-icon">👥</div>
+
+              <p className="referral-gate-message">
+                You've completed all <strong>60 surveys</strong> — great work!
+                To withdraw your earnings, you need to refer at least
+                <strong>5 people</strong> first.
+              </p>
+
+              <div className="referral-gate-progress">
+                <div className="referral-gate-progress-label">
+                  Referrals: <strong>{referralCount}/5</strong>
+                </div>
+                <div className="referral-gate-progress-bar">
+                  <div
+                    className="referral-gate-progress-fill"
+                    style={{ width: `${Math.min((referralCount / 5) * 100, 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              <p className="referral-gate-hint">
+                Share your referral link with friends. Each person who signs up
+                using your code counts toward the 5 required referrals.
+              </p>
+            </div>
+
+            <div className="referral-gate-actions">
+              <button
+                className="referral-gate-primary-btn"
+                onClick={() => {
+                  setShowReferralPopup(false);
+                  navigate("/affiliate", { replace: true });
+                }}
+              >
+                📣 Go to Affiliate Dashboard
+              </button>
+
+              <button
+                className="referral-gate-secondary-btn"
+                onClick={() => setShowReferralPopup(false)}
               >
                 Cancel
               </button>

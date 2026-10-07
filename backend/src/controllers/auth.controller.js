@@ -152,11 +152,15 @@ exports.register = async (req, res) => {
           login_fee_paid: user.login_fee_paid || false,
         plans_paid: user.plans_paid || {},
        all_plans_completed: user.all_plans_completed || false,
-       referral_commission_earned: user.referral_commission_earned || 0,
-       referral_code: user.referral_code || null,
-       withdrawal_submitted_at: user.withdrawal_submitted_at || null,
-       withdrawal_status: user.withdrawal_status || 'none',
-       ...publicUserActivationFields(user)
+referral_commission_earned: user.referral_commission_earned || 0,
+      referral_code: user.referral_code || null,
+      // Number of users this user has referred. Used by the withdrawal gate:
+      // once all 60 surveys are done, a user must refer at least 5 people
+      // before the platform lets them withdraw.
+      referral_count: (user.referrals || []).length,
+      withdrawal_submitted_at: user.withdrawal_submitted_at || null,
+      withdrawal_status: user.withdrawal_status || 'none',
+        ...publicUserActivationFields(user)
       },
     });
   } catch (error) {
@@ -316,6 +320,11 @@ exports.getMe = async (req, res) => {
       is_activated: user.is_activated,
       total_earned: user.total_earned,
       referral_commission_earned: user.referral_commission_earned || 0,
+      referral_code: user.referral_code || null,
+      // Number of users this user has referred. Used by the withdrawal gate:
+      // once all 60 surveys are done, a user must refer at least 5 people
+      // before the platform lets them withdraw.
+      referral_count: (user.referrals || []).length,
       welcome_bonus: user.welcome_bonus || 1200,
       welcome_bonus_received: user.welcome_bonus_received,
       welcome_bonus_withdrawn: user.welcome_bonus_withdrawn || false,
