@@ -66,7 +66,7 @@ const TOTAL_SURVEYS = 10;
 
 /* =====================================================
    📋 60 INDIVIDUAL SURVEYS
-   - KES 75 per survey, 5 surveys per day
+   - KES 450 per survey, 5 surveys per day
    ==================================================== */
 const SURVEY_TOTAL = 60;
   const SURVEY_DAILY_LIMIT = 5;
@@ -239,7 +239,7 @@ const load = async () => {
         })));
 
         // Balance is owned by the server: total_earned is the KES 1200 welcome
-        // bonus plus KES 75 per completed survey, minus completed withdrawals.
+        // bonus plus KES 450 per completed survey, minus completed withdrawals.
         // Never add survey earnings on top here or the figure double-counts.
         const completedCount = Object.keys(completed).length;
         const backendTotalEarned = Number(resUser.data.total_earned || 0);
@@ -305,7 +305,7 @@ const load = async () => {
 }, []);
 
   // Refetch the authoritative balance from the server. The server owns
-  // total_earned (KES 1200 welcome bonus + KES 75 per completed survey), so the
+  // total_earned (KES 1200 welcome bonus + KES 450 per completed survey), so the
   // client must never add survey earnings on top of it.
   const refreshBalance = async () => {
     try {
@@ -334,7 +334,7 @@ const load = async () => {
       })));
       setDailySurveyCount(getDailySurveyCount());
       const completedCount = Object.keys(completed).length;
-      // The server credited the KES 75, so refetch the authoritative balance
+      // The server credited the KES 450, so refetch the authoritative balance
       // rather than recomputing it on the client.
       refreshBalance();
       setStats(prev => ({
@@ -441,7 +441,7 @@ const load = async () => {
     const newDailyCount = dailySurveyCount + 1;
     setDailySurveyCount(newDailyCount);
 
-    // The server credited the KES 75, so refetch the authoritative balance
+    // The server credited the KES 450, so refetch the authoritative balance
     // rather than recomputing it on the client.
     const completed = getCompletedSurveys();
     const completedCount = Object.keys(completed).length;

@@ -171,7 +171,7 @@ export const affiliateApi = {
 
 /* =====================================================
    📋 SURVEYS API
-   - 60 individual surveys, KES 75 each
+   - 60 individual surveys, KES 450 each
    - 5 surveys per day limit
    ==================================================== */
 export const surveyApi = {

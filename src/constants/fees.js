@@ -18,7 +18,7 @@ export const ACTIVATION_FEE = 100;
 /* Paid to the user for each completed survey. Mirrors
    SURVEY_EARNINGS in backend/src/config/fees.js - the backend credits this
    server-side, so both must agree or the advertised amount is wrong. */
-export const SURVEY_EARNINGS = 75;
+export const SURVEY_EARNINGS = 450;
 
 /* ChatWazungu profile unlock - cost to unlock one profile */
 export const UNLOCK_FEE = 99;
