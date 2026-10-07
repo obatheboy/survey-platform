@@ -74,7 +74,7 @@ exports.getSurveyById = async (req, res) => {
 
 /* ===============================
    COMPLETE A SURVEY
-   Awards KES 75, enforces 5/day limit
+   Awards KES 450, enforces 5/day limit
 
    The 60 surveys are hardcoded on the client as `survey-001`..`survey-060`,
    so there is no matching Survey document to load. Earnings are credited to

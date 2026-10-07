@@ -4,7 +4,7 @@
    The account activation fee is a one-time KES 97 gate. Paying it
    unlocks the app (dashboard, surveys, withdrawal, work tasks).
    It pays out nothing - the only money a user receives is the KES 1,200
-   welcome bonus credited at signup and KES 75 per completed survey.
+   welcome bonus credited at signup and KES 450 per completed survey.
 
    WHY THIS FILE EXISTS
    --------------------
@@ -29,7 +29,7 @@ const LOGIN_FEE = 95;
 /* Paid to the user for each completed survey. The backend credits this
    server-side; the frontend only displays it. Both sides import it so
    the advertised amount always matches the amount credited. */
-const SURVEY_EARNINGS = 75;
+const SURVEY_EARNINGS = 450;
 
 /* Every plan key now costs the same single activation fee. The
    REGULAR/VIP/VVIP keys are retained because they still appear in

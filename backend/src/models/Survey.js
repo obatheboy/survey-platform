@@ -19,7 +19,7 @@ const surveySchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-// 60 surveys across 6 categories, 10 per category, each earning KES 75
+// 60 surveys across 6 categories, 10 per category, each earning KES 450
 const CATEGORIES = [
   "Daily Lifestyle",
   "Food and Eating Preferences",
