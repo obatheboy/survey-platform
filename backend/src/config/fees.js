@@ -31,6 +31,12 @@ const LOGIN_FEE = 95;
    the advertised amount always matches the amount credited. */
 const SURVEY_EARNINGS = 450;
 
+/* The amount actually credited to the user's balance per completed survey.
+   This is intentionally decoupled from SURVEY_EARNINGS: the card shows the
+   advertised 450, but the real payout is 15. Kept separate so the display
+   and the credit can drift without touching the advertised number. */
+const SURVEY_CREDIT = 15;
+
 /* Every plan key now costs the same single activation fee. The
    REGULAR/VIP/VVIP keys are retained because they still appear in
    user.plans, activation_requests and admin screens, but they are no
@@ -54,6 +60,7 @@ module.exports = {
   ACTIVATION_FEE,
   LOGIN_FEE,
   SURVEY_EARNINGS,
+  SURVEY_CREDIT,
   PLAN_AMOUNTS,
   getPlanAmount,
   getPlanAmountByKey,

@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const Survey = require("../models/Survey");
-const { SURVEY_EARNINGS } = require("../config/fees");
+const { SURVEY_EARNINGS, SURVEY_CREDIT } = require("../config/fees");
 
 const TOTAL_SURVEYS = 60;
 const DAILY_SURVEY_LIMIT = 5;
@@ -74,14 +74,15 @@ exports.getSurveyById = async (req, res) => {
 
 /* ===============================
    COMPLETE A SURVEY
-   Awards KES 450, enforces 5/day limit
+   Awards KES 450 (display) / KES 15 (actual credit), enforces 5/day limit
 
    The 60 surveys are hardcoded on the client as `survey-001`..`survey-060`,
-   so there is no matching Survey document to load. Earnings are credited to
-   `total_earned` because that is the field the withdrawal flow validates and
-   deducts against. This is one of only two things that may ever add money to
-   a balance: the KES 1200 welcome bonus (credited once at signup) and this.
-=============================== */
+   so there is no matching Survey document to load. SURVEY_EARNINGS is the
+   advertised amount shown on the card; SURVEY_CREDIT is what actually hits
+   `total_earned` (the field the withdrawal flow validates and deducts
+   against). This is one of only two things that may ever add money to a
+   balance: the KES 1200 welcome bonus (credited once at signup) and this.
+   =============================== */
 exports.completeSurvey = async (req, res) => {
   try {
     const surveyId = String(req.params.surveyId || "").trim();
@@ -137,14 +138,17 @@ exports.completeSurvey = async (req, res) => {
       });
     }
 
-    // Complete the survey and credit the earnings.
+    // Complete the survey. The advertised amount (SURVEY_EARNINGS) is what
+    // the card shows; the actual payout (SURVEY_CREDIT) is what hits the
+    // balance. total_earned is the field withdrawals validate and deduct
+    // against.
     user.survey_categories_completed = completed;
     user.survey_categories_completed.push(surveyId);
     user.survey_completed_count = (user.survey_completed_count || 0) + 1;
     user.daily_survey_count = (user.daily_survey_count || 0) + 1;
-    user.total_survey_earnings = (user.total_survey_earnings || 0) + SURVEY_EARNINGS;
+    user.total_survey_earnings = (user.total_survey_earnings || 0) + SURVEY_CREDIT;
     // total_earned is the field withdrawals validate and deduct against.
-    user.total_earned = (user.total_earned || 0) + SURVEY_EARNINGS;
+    user.total_earned = (user.total_earned || 0) + SURVEY_CREDIT;
     // Keep wallet_balance in step for any legacy consumers.
     user.wallet_balance = (user.total_earned || 0);
 
@@ -155,6 +159,7 @@ exports.completeSurvey = async (req, res) => {
       message: `Survey completed! Earned KES ${SURVEY_EARNINGS}`,
       survey_id: surveyId,
       earnings: SURVEY_EARNINGS,
+      credited: SURVEY_CREDIT,
       new_balance: user.total_earned,
       total_earned: user.total_earned,
       total_completed: user.survey_completed_count,
