@@ -153,14 +153,14 @@ exports.register = async (req, res) => {
         plans_paid: user.plans_paid || {},
        all_plans_completed: user.all_plans_completed || false,
 referral_commission_earned: user.referral_commission_earned || 0,
-      referral_code: user.referral_code || null,
-      // Number of users this user has referred. Used by the withdrawal gate:
-      // once all 60 surveys are done, a user must refer at least 5 people
-      // before the platform lets them withdraw.
-      referral_count: (user.referrals || []).length,
-      withdrawal_submitted_at: user.withdrawal_submitted_at || null,
-      withdrawal_status: user.withdrawal_status || 'none',
-        ...publicUserActivationFields(user)
+       referral_code: user.referral_code || null,
+       // Number of users this user has referred. Used by the withdrawal gate:
+       // once all 60 surveys are done, a user must refer at least 5 people
+       // before the platform lets them withdraw.
+       referral_count: (user.referrals || []).length,
+       withdrawal_submitted_at: user.withdrawal_submitted_at || null,
+       withdrawal_status: user.withdrawal_status || 'none',
+       ...publicUserActivationFields(user)
       },
     });
   } catch (error) {
