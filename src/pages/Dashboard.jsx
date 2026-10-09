@@ -763,7 +763,7 @@ const load = async () => {
   const handleInstallApp = async () => {
     const promptEvent = getDeferredPrompt();
     if (!promptEvent) {
-      setToast('To install: open in Chrome/Edge → tap menu (⋮) → "Add to Home Screen" or "Install App"');
+      setToast('To install: open in Chrome, Edge, or Samsung Internet → tap menu (⋮) → "Add to Home Screen" or "Install App"');
       setTimeout(() => setToast(''), 4000);
       return;
     }

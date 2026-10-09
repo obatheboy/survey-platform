@@ -18,10 +18,13 @@ export default function PWAInstallPrompt() {
     const isFB = /FB4A|FB_IAB|FBAV|Messenger|Instagram|Twitter|Snapchat|LinkedIn|Pinterest|Tiktok|Microsoft-Edge/i.test(ua);
     const isAndroid = /Android/i.test(ua);
     const isIOS = /iPhone|iPad|iPod/i.test(ua);
-    const isChrome = /Chrome/i.test(ua) && !/Edg/i.test(ua);
+    // Match any Chromium-based browser that fires the beforeinstallprompt
+    // event on Android: Chrome, Edge, Samsung Internet, Opera, DuckDuckGo, etc.
+    const isChromium = /Chrome|CriOS|Edg|SamsungBrowser|Opera|OPR|DuckDuckGo/i.test(ua);
+    const isChrome = /Chrome/i.test(ua) && !/Edg/i.test(ua) && !/SamsungBrowser/i.test(ua) && !/Opera|OPR/i.test(ua);
     const isSafari = /Safari/i.test(ua) && !/Chrome/i.test(ua) && !/FBIAB/i.test(ua);
 
-    const inApp = isFB || (isAndroid && !isChrome) || (isIOS && !isSafari);
+    const inApp = isFB || (isAndroid && !isChromium) || (isIOS && !isSafari);
     setIsInAppBrowser(inApp);
 
     const handleBeforeInstall = (e) => {
@@ -116,9 +119,9 @@ export default function PWAInstallPrompt() {
             lineHeight: 1.6
           }}>
             <div style={{ fontSize: '28px', marginBottom: '8px' }}>⚠️</div>
-            <strong>This app can't be installed from inside Facebook/Messenger.</strong><br/>
+            <strong>This app can't be installed from inside Facebook/Messenger or this browser.</strong><br/>
             <span style={{ fontWeight: 400, fontSize: '12px', color: '#0d47a1' }}>
-              Please open this link in Chrome or Safari to install.
+              Please open this link in Chrome, Edge, or Samsung Internet to install.
             </span>
           </div>
         )}
