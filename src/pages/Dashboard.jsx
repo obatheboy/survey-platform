@@ -833,31 +833,31 @@ export default function Dashboard() {
           <button className="menu-btn" onClick={() => setMenuOpen(true)} style={{ position: 'absolute', left: '14px' }}>
             <span className="menu-icon">☰</span>
           </button>
-          <button
-            onClick={handleInstallApp}
-            className="install-app-btn"
-            title="Install App"
-            style={{ margin: '0 auto' }}
-          >
-            📲 Install App
-          </button>
-          <button
-            onClick={() => navigate('/chatwazungu')}
-            className="chat-wazungu-header-btn"
-            title="Chat Wazungu"
-            style={{ margin: '0 auto', marginLeft: '8px' }}
-          >
-            💬 Chat Wazungu
-          </button>
+          <div className="header-center-group">
             <button
-              onClick={openWhatsAppSupport}
-              className="whatsapp-header-btn"
-              style={{ position: 'absolute', right: '14px' }}
-              title="Contact Us on WhatsApp"
+              onClick={handleInstallApp}
+              className="install-app-btn"
+              title="Install App"
             >
-              <span style={{ fontSize: '12px' }}>💬</span>
-              <span style={{ fontSize: '11px', fontWeight: '600' }}>Contact Us</span>
+              📲 Install App
             </button>
+            <button
+              onClick={() => navigate('/chatwazungu')}
+              className="chat-wazungu-header-btn"
+              title="Chat Wazungu"
+              style={{ marginLeft: '8px' }}
+            >
+              💬 Chat Wazungu
+            </button>
+          </div>
+          <button
+            onClick={openWhatsAppSupport}
+            className="whatsapp-header-btn"
+            title="Contact Us on WhatsApp"
+          >
+            <span style={{ fontSize: '12px' }}>💬</span>
+            <span style={{ fontSize: '11px', fontWeight: '600' }}>Contact Us</span>
+          </button>
         </div>
 
         <div className="header-activation-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
