@@ -57,6 +57,16 @@ const connectDB = async () => {
     // Test with a simple query
     const collections = await mongoose.connection.db.listCollections().toArray();
     console.log(`📁 Available collections: ${collections.length > 0 ? collections.map(c => c.name).join(', ') : 'None yet'}`);
+
+    // Auto-seed chat profiles if collection is empty
+    const { Profile, seedProfiles } = require("../models/Profile");
+    const profileCount = await Profile.estimatedDocumentCount();
+    if (profileCount === 0) {
+      await seedProfiles();
+      console.log(`🌱 Auto-seeded chat profiles`);
+    } else {
+      console.log(`📋 ${profileCount} chat profiles already present`);
+    }
     
   } catch (error) {
     // Error already handled in connectDB

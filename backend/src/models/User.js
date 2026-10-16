@@ -282,6 +282,25 @@ const userSchema = new mongoose.Schema({
     default: 0
   },
   // ============================================
+  // CHAT WAZUNGU FIELDS
+  // ============================================
+  unlocked_profiles: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Profile'
+  }],
+  total_unlocks: {
+    type: Number,
+    default: 0
+  },
+  wallet_balance: {
+    type: Number,
+    default: 0
+  },
+  chat_earnings: {
+    type: Number,
+    default: 0
+  },
+  // ============================================
   // PROGRESSIVE PLAN PAYMENT FIELDS
   // ============================================
   plans_paid: {
