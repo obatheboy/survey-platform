@@ -586,7 +586,7 @@ export default function Dashboard() {
       WHATSAPP SUPPORT FUNCTION
    ========================= */
   const openWhatsAppSupport = () => {
-    window.open("https://whatsapp.com/channel/0029VbDvcWpHAdNTohtjrz26", "_blank");
+    window.open("https://whatsapp.com/channel/0029Vb8a7kKElagpd2ZHlm3b", "_blank");
   };
 
   const handleInstallApp = async () => {
@@ -840,6 +840,14 @@ export default function Dashboard() {
             style={{ margin: '0 auto' }}
           >
             📲 Install App
+          </button>
+          <button
+            onClick={() => navigate('/chatwazungu')}
+            className="chat-wazungu-header-btn"
+            title="Chat Wazungu"
+            style={{ margin: '0 auto', marginLeft: '8px' }}
+          >
+            💬 Chat Wazungu
           </button>
             <button
               onClick={openWhatsAppSupport}
@@ -1637,7 +1645,7 @@ export default function Dashboard() {
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}>
             Need help? 
             <button 
-              onClick={() => window.open("https://whatsapp.com/channel/0029VbDvcWpHAdNTohtjrz26", "_blank")}
+              onClick={() => window.open("https://whatsapp.com/channel/0029Vb8a7kKElagpd2ZHlm3b", "_blank")}
               style={{
                 background: 'none',
                 border: 'none',

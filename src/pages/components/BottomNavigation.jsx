@@ -1,10 +1,10 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const ORANGE = '#f59e0b';
-const ORANGE_LIGHT = '#fbbf24';
-const ORANGE_BG = 'rgba(245, 158, 11, 0.15)';
-const ORANGE_BG_ACTIVE = 'rgba(245, 158, 11, 0.25)';
-const ORANGE_SHADOW = 'rgba(245, 158, 11, 0.4)';
+const ORANGE = '#ff8c00';
+const ORANGE_LIGHT = '#ffa726';
+const ORANGE_BG = 'rgba(255, 140, 0, 0.2)';
+const ORANGE_BG_ACTIVE = 'rgba(255, 140, 0, 0.35)';
+const ORANGE_SHADOW = 'rgba(255, 140, 0, 0.5)';
 
 const NAV_ITEMS = [
   {
@@ -167,17 +167,19 @@ export default function BottomNavigation({ user }) {
     alignItems: 'center',
     justifyContent: 'center',
     gap: '3px',
-    background: active ? ORANGE_BG_ACTIVE : 'transparent',
-    border: 'none',
+    background: active ? ORANGE_BG_ACTIVE : 'rgba(255, 255, 255, 0.6)',
+    border: active ? `2px solid ${ORANGE}` : 'none',
+    borderRadius: '16px',
     cursor: 'pointer',
     padding: '8px 4px',
     position: 'relative',
-    color: ORANGE,
+    color: active ? '#ff6d00' : '#6b7280',
     transition: 'all 0.2s ease',
     minHeight: '64px',
     WebkitTapHighlightColor: 'transparent',
-    fontWeight: 700,
+    fontWeight: 800,
     textDecoration: 'none',
+    boxShadow: active ? `0 4px 12px ${ORANGE_SHADOW}` : 'none',
   });
 
   const getTopBarStyle = (active) => ({
@@ -255,11 +257,11 @@ export default function BottomNavigation({ user }) {
               </span>
               <span style={{
                 fontSize: '10px',
-                fontWeight: 700,
+                fontWeight: 800,
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
                 whiteSpace: 'nowrap',
-                opacity: active ? 1 : 0.85,
+                color: active ? '#ff6d00' : '#9ca3af',
               }}>
                 {item.label}
               </span>
