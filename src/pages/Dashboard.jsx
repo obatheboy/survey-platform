@@ -830,10 +830,10 @@ export default function Dashboard() {
       {/* MAIN MENU HEADER */}
       <header className="dashboard-main-header">
         <div className="header-title-container">
-          <button className="menu-btn" onClick={() => setMenuOpen(true)} style={{ position: 'absolute', left: '14px' }}>
+          <button className="menu-btn" onClick={() => setMenuOpen(true)} style={{ flex: '0 0 auto' }}>
             <span className="menu-icon">☰</span>
           </button>
-          <div className="header-center-group">
+          <div className="header-center-group" style={{ margin: 'auto' }}>
             <button
               onClick={handleInstallApp}
               className="install-app-btn"

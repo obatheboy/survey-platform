@@ -55,13 +55,14 @@
   margin-bottom: 8px;
   position: relative;
   min-height: 40px;
-  padding-right: 14px;
+  padding: 0 14px;
 }
 
 .header-center-group {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin: auto;
 }
 
 .whatsapp-header-btn {
