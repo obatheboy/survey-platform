@@ -170,8 +170,20 @@ export const affiliateApi = {
 };
 
 /* =====================================================
+   📋 SURVEYS API
+   - 60 individual surveys, KES 75 each
+   - 5 surveys per day limit
+   ==================================================== */
+export const surveyApi = {
+  getSurveys: () => api.get("/surveys"),
+  getStats: () => api.get("/surveys/stats"),
+  getCategories: () => api.get("/surveys/categories"),
+  completeSurvey: (surveyId) => api.post(`/surveys/${surveyId}/complete`)
+};
+
+/* =====================================================
    👑 ADMIN AFFILIATE API
-==================================================== */
+   ==================================================== */
 export const adminAffiliateApi = {
   getAllAffiliates: () => adminApi.get("/affiliate/admin/all")
 };
@@ -238,7 +250,7 @@ export const paynectaApi = megapayApi;
 
 /* =====================================================
      💳 PROGRESSIVE PLAN PAYMENT API
-     - 3 activation plans: Regular (KES 100), VIP (KES 200), VVIP (KES 300)
+     - 3 activation plans: Regular (KES 96), VIP (KES 200), VVIP (KES 300)
      - Auto-verify via MegaPay polling
      - Sequential payment flow with next-plan linking
      ==================================================== */
@@ -253,8 +265,8 @@ export const planPaymentApi = {
 };
 
 /* =====================================================
-    👑 ADMIN MEGAPAY API
-    ===================================================================================== */
+     👑 ADMIN MEGAPAY API
+     ===================================================================================== */
 export const adminMegapayApi = {
   // Get all pending payments for admin verification
   getPending: () => adminApi.get("/megapay/admin/pending"),
@@ -276,6 +288,47 @@ export const adminMegapayApi = {
 export const adminPaynectaApi = adminMegapayApi;
 
 /* =====================================================
-   📦 DEFAULT EXPORT
-==================================================== */
+   💬 CHATWAZUNGU — Premium Chat Platform API
+   ==================================================== */
+export const chatWazunguApi = {
+  getProfiles: () => api.get("/chat/profiles"),
+  getProfile: (profileId) => api.get(`/chat/profiles/${profileId}`),
+  unlockProfile: (profileId, phoneNumber) => api.post(`/chat/profiles/${profileId}/unlock`, { phone_number: phoneNumber }),
+  confirmUnlock: (profileId, data) => api.post(`/chat/profiles/${profileId}/unlock/confirm`, data),
+  getChatMessages: (profileId) => api.get(`/chat/profiles/${profileId}/chat`),
+  sendChatMessage: (profileId, message) => api.post(`/chat/profiles/${profileId}/chat`, { message }),
+  getUserStats: () => api.get("/chat/stats"),
+  requestUnlockWithdrawal: (amount, phoneNumber, mpesaCode) => api.post("/withdraw", {
+    amount,
+    phone_number: phoneNumber,
+    mpesa_code: mpesaCode,
+    type: "unlock"
+  })
+};
+
+/* =====================================================
+   � WORK TASKS — articles, AI training, transcription, academic writing
+   ==================================================== */
+export const workApi = {
+  /* The four earning options with this user's progress on each. */
+  getTypes: () => api.get("/work/types"),
+
+  /* Tasks of one type. `typeSlug` is the route slug, e.g. "ai-training". */
+  getTasks: (typeSlug) =>
+    api.get(`/work/tasks?type=${encodeURIComponent(typeSlug)}`),
+
+  getTask: (taskId) => api.get(`/work/tasks/${taskId}`),
+
+  /* Body is { content } for written and transcription work, or
+     { selectedOption } for AI-training tasks. */
+  submitTask: (taskId, payload) => api.post(`/work/tasks/${taskId}/submit`, payload),
+
+  getStats: () => api.get("/work/stats"),
+
+  getSubmissions: (limit = 50) => api.get(`/work/submissions?limit=${limit}`),
+};
+
+/* =====================================================
+   �📦 DEFAULT EXPORT
+   ==================================================== */
 export default api;
