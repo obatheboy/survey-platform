@@ -25,7 +25,7 @@
   height: 100%;
   width: 85vw;
   max-width: 320px;
-  background: linear-gradient(180deg, #5b21b6 0%, #4c1d95 100%);
+  background: linear-gradient(180deg, #0d9488 0%, #0f766e 100%);
   z-index: 99999;
   padding: var(--space-5) var(--space-4);
   box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);

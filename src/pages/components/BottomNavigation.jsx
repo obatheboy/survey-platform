@@ -1,10 +1,10 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const ORANGE = '#ff8c00';
-const ORANGE_LIGHT = '#ffa726';
-const ORANGE_BG = 'rgba(255, 140, 0, 0.2)';
-const ORANGE_BG_ACTIVE = 'rgba(255, 140, 0, 0.35)';
-const ORANGE_SHADOW = 'rgba(255, 140, 0, 0.5)';
+const TEAL = '#0d9488';
+const TEAL_LIGHT = '#14b8a6';
+const TEAL_BG = 'rgba(13, 148, 136, 0.2)';
+const TEAL_BG_ACTIVE = 'rgba(13, 148, 136, 0.35)';
+const TEAL_SHADOW = 'rgba(13, 148, 136, 0.5)';
 
 const NAV_ITEMS = [
   {
@@ -167,19 +167,19 @@ export default function BottomNavigation({ user }) {
     alignItems: 'center',
     justifyContent: 'center',
     gap: '3px',
-    background: active ? ORANGE_BG_ACTIVE : 'rgba(255, 255, 255, 0.6)',
-    border: active ? `2px solid ${ORANGE}` : 'none',
+    background: active ? TEAL_BG_ACTIVE : 'rgba(255, 255, 255, 0.6)',
+    border: active ? `2px solid ${TEAL}` : 'none',
     borderRadius: '16px',
     cursor: 'pointer',
     padding: '8px 4px',
     position: 'relative',
-    color: active ? '#ff6d00' : '#6b7280',
+    color: active ? '#0d9488' : '#6b7280',
     transition: 'all 0.2s ease',
     minHeight: '64px',
     WebkitTapHighlightColor: 'transparent',
     fontWeight: 800,
     textDecoration: 'none',
-    boxShadow: active ? `0 4px 12px ${ORANGE_SHADOW}` : 'none',
+    boxShadow: active ? `0 4px 12px ${TEAL_SHADOW}` : 'none',
   });
 
   const getTopBarStyle = (active) => ({
@@ -190,7 +190,7 @@ export default function BottomNavigation({ user }) {
     transform: 'translateX(-50%)',
     width: active ? '100%' : '0',
     height: '3px',
-    background: `linear-gradient(90deg, ${ORANGE_LIGHT}, ${ORANGE})`,
+    background: `linear-gradient(90deg, ${TEAL_LIGHT}, ${TEAL})`,
     borderRadius: '0 0 9999px 9999px',
     transition: 'width 0.3s ease',
   });
@@ -202,7 +202,7 @@ export default function BottomNavigation({ user }) {
     transform: 'translateX(-50%)',
     width: '4px',
     height: '4px',
-    background: ORANGE,
+    background: TEAL,
     borderRadius: '50%',
     opacity: active ? 1 : 0,
     transition: 'opacity 0.3s ease',
@@ -217,8 +217,8 @@ export default function BottomNavigation({ user }) {
       background: 'rgba(255, 255, 255, 0.98)',
       backdropFilter: 'blur(20px) saturate(180%)',
       WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-      borderTop: `1px solid ${ORANGE_BG}`,
-      boxShadow: `0 -4px 24px ${ORANGE_SHADOW}`,
+      borderTop: `1px solid ${TEAL_BG}`,
+      boxShadow: `0 -4px 24px ${TEAL_SHADOW}`,
       zIndex: 1000,
       paddingBottom: 'env(safe-area-inset-bottom, 0)',
     }}>
@@ -261,7 +261,7 @@ export default function BottomNavigation({ user }) {
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
                 whiteSpace: 'nowrap',
-                color: active ? '#ff6d00' : '#9ca3af',
+                color: active ? '#0d9488' : '#9ca3af',
               }}>
                 {item.label}
               </span>
