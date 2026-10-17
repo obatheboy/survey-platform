@@ -5,11 +5,13 @@ const TEAL_LIGHT = '#14b8a6';
 const TEAL_BG = 'rgba(13, 148, 136, 0.2)';
 const TEAL_BG_ACTIVE = 'rgba(13, 148, 136, 0.35)';
 const TEAL_SHADOW = 'rgba(13, 148, 136, 0.5)';
+const YELLOW = '#facc15';
 
 const NAV_ITEMS = [
   {
     id: 'home',
     label: 'Home',
+    yellow: true,
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -28,6 +30,7 @@ const NAV_ITEMS = [
   {
     id: 'surveys',
     label: 'Surveys',
+    yellow: true,
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -92,6 +95,7 @@ const NAV_ITEMS = [
   {
     id: 'affiliate',
     label: 'Earn More',
+    yellow: true,
     icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -160,7 +164,7 @@ export default function BottomNavigation({ user }) {
     return location.pathname.startsWith(item.path);
   };
 
-  const getButtonStyle = (active) => ({
+  const getButtonStyle = (active, isYellow) => ({
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
@@ -173,7 +177,7 @@ export default function BottomNavigation({ user }) {
     cursor: 'pointer',
     padding: '8px 4px',
     position: 'relative',
-    color: active ? '#0d9488' : '#6b7280',
+    color: isYellow ? YELLOW : (active ? '#0d9488' : '#6b7280'),
     transition: 'all 0.2s ease',
     minHeight: '64px',
     WebkitTapHighlightColor: 'transparent',
@@ -182,7 +186,7 @@ export default function BottomNavigation({ user }) {
     boxShadow: active ? `0 4px 12px ${TEAL_SHADOW}` : 'none',
   });
 
-  const getTopBarStyle = (active) => ({
+  const getTopBarStyle = (active, isYellow) => ({
     content: '""',
     position: 'absolute',
     top: '0',
@@ -190,19 +194,19 @@ export default function BottomNavigation({ user }) {
     transform: 'translateX(-50%)',
     width: active ? '100%' : '0',
     height: '3px',
-    background: `linear-gradient(90deg, ${TEAL_LIGHT}, ${TEAL})`,
+    background: isYellow ? `linear-gradient(90deg, #fde047, ${YELLOW})` : `linear-gradient(90deg, ${TEAL_LIGHT}, ${TEAL})`,
     borderRadius: '0 0 9999px 9999px',
     transition: 'width 0.3s ease',
   });
 
-  const getIndicatorStyle = (active) => ({
+  const getIndicatorStyle = (active, isYellow) => ({
     position: 'absolute',
     bottom: '4px',
     left: '50%',
     transform: 'translateX(-50%)',
     width: '4px',
     height: '4px',
-    background: TEAL,
+    background: isYellow ? YELLOW : TEAL,
     borderRadius: '50%',
     opacity: active ? 1 : 0,
     transition: 'opacity 0.3s ease',
@@ -232,13 +236,14 @@ export default function BottomNavigation({ user }) {
       }}>
         {NAV_ITEMS.filter(item => item.show).map((item, index) => {
           const active = isActive(item);
+          const isYellow = item.yellow;
           return (
             <button
               key={item.id}
               onClick={() => handleNav(item)}
               aria-label={item.label}
               style={{
-                ...getButtonStyle(active),
+                ...getButtonStyle(active, isYellow),
                 animationDelay: `${index * 50}ms`,
                 opacity: 0,
                 animation: `fadeInUp 0.4s ease-out ${index * 50}ms forwards`,
@@ -261,11 +266,11 @@ export default function BottomNavigation({ user }) {
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
                 whiteSpace: 'nowrap',
-                color: active ? '#0d9488' : '#9ca3af',
+                color: isYellow ? YELLOW : (active ? '#0d9488' : '#9ca3af'),
               }}>
                 {item.label}
               </span>
-              <span style={getIndicatorStyle(active)} />
+              <span style={getIndicatorStyle(active, isYellow)} />
               <style>{`
                 @keyframes fadeInUp {
                   from { opacity: 0; transform: translateY(10px); }
