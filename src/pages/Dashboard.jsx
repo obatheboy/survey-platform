@@ -10,6 +10,7 @@ import Leaderboard from "./components/Leaderboard.jsx";
 import Achievements from "./components/Achievements.jsx";
 import DailyRewardPopup from "./components/DailyRewardPopup.jsx";
 import WelcomeBonusPopup from "./components/WelcomeBonusPopup.jsx";
+import ActivatePlansPopup from "./components/ActivatePlansPopup.jsx";
 import { gamificationApi } from "../api/api";
 import { getDeferredPrompt, clearDeferredPrompt } from "../utils/pwaInstall";
 import "./Dashboard.css";
@@ -119,6 +120,8 @@ export default function Dashboard() {
   const [showDailyReward, setShowDailyReward] = useState(false);
   const [canClaimDailyReward, setCanClaimDailyReward] = useState(false);
   const [showWelcomeBonus, setShowWelcomeBonus] = useState(false);
+const [showActivatePlans, setShowActivatePlans] = useState(false);
+const [activatePlansDismissed, setActivatePlansDismissed] = useState(false);
   const [gamificationStats, setGamificationStats] = useState({
     level: 1,
     xp: 0,
@@ -371,6 +374,49 @@ export default function Dashboard() {
 
   const handleWelcomeBonusClose = () => {
     setShowWelcomeBonus(false);
+  };
+
+  /* =========================
+     ACTIVATE REMAINING PLANS POPUP
+     Shows only when user has paid for REGULAR or WELCOME BONUS (KES 100)
+     and still has unpaid plans remaining. Dismissible via tap/overlay.
+    ========================= */
+  const getRemainingPlanKeys = () => {
+    if (!user) return [];
+    const remaining = [];
+    ['REGULAR', 'VIP', 'VVIP'].forEach(plan => {
+      const isPaid = user.plans_paid?.[plan] === true || user[`${plan.toLowerCase()}_paid`] === true;
+      const isActivated = plans[plan]?.is_activated === true;
+      if (!isPaid && !isActivated) remaining.push(plan);
+    });
+    return remaining;
+  };
+
+  const hasPaidRegularOrWelcome = () => {
+    if (!user) return false;
+    const regularPaid = user.plans_paid?.REGULAR === true || user.regular_paid === true;
+    const welcomePaid = user.welcome_bonus_paid === true;
+    return regularPaid || welcomePaid;
+  };
+
+  useEffect(() => {
+    if (!user || activatePlansDismissed) return;
+    if (user.all_plans_completed === true) return;
+    if (!hasPaidRegularOrWelcome()) return;
+
+    const remaining = getRemainingPlanKeys();
+    if (remaining.length === 0) return;
+
+    const timer = setTimeout(() => {
+      setShowActivatePlans(true);
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, [user, plans, activatePlansDismissed]);
+
+  const handleActivatePlansClose = () => {
+    setShowActivatePlans(false);
+    setActivatePlansDismissed(true);
   };
 
   /* =========================
@@ -1667,6 +1713,14 @@ export default function Dashboard() {
           isOpen={showWelcomeBonus}
           onClose={handleWelcomeBonusClose}
           onActivate={() => navigate('/activate?welcome_bonus=true')}
+        />
+
+        {/* ACTIVATE REMAINING PLANS POPUP */}
+        <ActivatePlansPopup
+          isOpen={showActivatePlans}
+          onClose={handleActivatePlansClose}
+          onActivate={() => navigate('/activate')}
+          remainingPlans={getRemainingPlanKeys()}
         />
 
       {/* DAILY REWARD POPUP */}
