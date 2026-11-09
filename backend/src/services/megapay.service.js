@@ -14,7 +14,7 @@ const generateShortReference = (prefix = "PAY") => {
 const MEGAPAY_CONFIG = {
   apiKey: "MGPYe8nva8dk",
   email: "obavanteshia65@gmail.com",
-  endpoint: "https://megapay.co.ke/backend/v1/initiatestk"
+  endpoint: "https://megapay.co.ke/backend/v1/initiatestk",
   statusEndpoint: "https://megapay.co.ke/backend/v1/transactionstatus"
 };
 
