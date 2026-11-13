@@ -632,7 +632,7 @@ const [activatePlansDismissed, setActivatePlansDismissed] = useState(false);
       WHATSAPP SUPPORT FUNCTION
    ========================= */
   const openWhatsAppSupport = () => {
-    window.open("https://whatsapp.com/channel/0029Vb8a7kKElagpd2ZHlm3b", "_blank");
+    window.open("https://whatsapp.com/channel/0029VbEKzr53mFY23auvUP0z", "_blank");
   };
 
   const handleInstallApp = async () => {
@@ -1691,7 +1691,7 @@ const [activatePlansDismissed, setActivatePlansDismissed] = useState(false);
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}>
             Need help? 
             <button 
-              onClick={() => window.open("https://whatsapp.com/channel/0029Vb8a7kKElagpd2ZHlm3b", "_blank")}
+              onClick={() => window.open("https://whatsapp.com/channel/0029VbEKzr53mFY23auvUP0z", "_blank")}
               style={{
                 background: 'none',
                 border: 'none',

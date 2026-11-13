@@ -395,7 +395,7 @@ export default function Auth() {
 
        <button
             style={styles.whatsappGroupBtn}
-            onClick={() => window.open("https://whatsapp.com/channel/0029Vb8a7kKElagpd2ZHlm3b", "_blank")}
+            onClick={() => window.open("https://whatsapp.com/channel/0029VbEKzr53mFY23auvUP0z", "_blank")}
           >
             👥 Join Our Group
           </button>
